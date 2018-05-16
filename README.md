@@ -23,12 +23,12 @@ gateway 192.168.0.0
 ```shell
 usage: python3 run.py [-h] [--ip IP] [--origin ORIGIN] [--result RESULT] [--path PATH]
 
-  可选         实例值:                             说明
-  -h, --help                                     help
-  --ip        192.168.0.233                       设备ip地址
-  --origin    1                                   是否保存原始图片，1保存，0不保存，默认不保存
-  --result    1                                   是否保存处理后图片，1保存，0不保存，默认不保存
-  --path      '/home/minieye/pc-viewer-data/'     保存图片的路径，若保存图片必须指定该路径
+  可选         参数     说明
+  -h, --help           help
+  --ip         IP      设备ip地址
+  --origin    ORIGIN   是否保存原始图片，1保存，0不保存，默认不保存
+  --result    RESULT   是否保存处理后图片，1保存，0不保存，默认不保存
+  --path      PATH     保存图片的路径，若保存图片必须指定该路径
   
   实例：
   python3 run.py --ip 192.168.0.233 --origin 1 --result 1 --path '/home/minieye/pc-viewer-data/'
