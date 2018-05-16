@@ -6,7 +6,8 @@ pc-viewer是一个实时显示车道线，车辆，以及相关参数的工具�
 * numpy
 
 ## 使用
-1. 修改/etc/network/interfaces，设置电脑IP为静态地址与设备同一网段，例：
+1. 修改/etc/network/interfaces，设置电脑IP为静态地址与设备同一网段，
+例：
 
 ```shell
 auto ens33(网卡名)
@@ -20,12 +21,15 @@ gateway 192.168.0.0
 2. 运行pc-viewer
 
 ```shell
-usage: run.py [-h] [--ip IP] [--origin ORIGIN] [--result RESULT] [--path PATH]
+usage: python3 run.py [-h] [--ip IP] [--origin ORIGIN] [--result RESULT] [--path PATH]
 
-optional arguments:
-  -h, --help       show this help message and exit
-  --ip IP          设备ip地址
-  --origin ORIGIN  是否保存原始图片，1保存，0不保存，默认不保存
-  --result RESULT  是否保存处理后图片，1保存，0不保存，默认不保存
-  --path PATH      保存图片的路径，若保存图片必须指定该路径
+  可选         实例值:                             说明
+  -h, --help                                     help
+  --ip IP     192.168.0.233                       设备ip地址
+  --origin    1                                   是否保存原始图片，1保存，0不保存，默认不保存
+  --result    1                                   是否保存处理后图片，1保存，0不保存，默认不保存
+  --path      '/home/minieye/pc-viewer-data/'     保存图片的路径，若保存图片必须指定该路径
+  
+  实例：
+  python3 run.py --ip 192.168.0.233 
 ```
