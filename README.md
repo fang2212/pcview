@@ -31,5 +31,5 @@ usage: python3 run.py [-h] [--ip IP] [--origin ORIGIN] [--result RESULT] [--path
   --path      '/home/minieye/pc-viewer-data/'     保存图片的路径，若保存图片必须指定该路径
   
   实例：
-  python3 run.py --ip 192.168.0.233 
+  python3 run.py --ip 192.168.0.233 --origin 1 --result 1 --path '/home/minieye/pc-viewer-data/'
 ```
