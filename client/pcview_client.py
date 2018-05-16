@@ -237,7 +237,7 @@ class Hub(threading.Thread):
                 self._cv.wait()
         print('elms size', len(self.elms))
         elm = self.elms.pop(0)
-        while len(elm[1])<=0:
+        while len(elm[1])<=0: # 取出image_data不为空的elm
             elm = self.elms.pop(0)
         return {"frame_id": elm[0], "data": elm[1:]}
 
@@ -260,7 +260,15 @@ import numpy as np
 import cv2
 from .draw.ui_draw import Player
 class PCViewer():
+    """pc-viewer功能类，用于接收每一帧数据，并绘制
 
+    Attributes:
+       ip: 数据源设备的ip地址
+       save_origin_image: 是否保存原始图片
+       save_result_image: 是否保存处理图片
+       queue: 存储每一帧数据
+       player: 图片播放器
+    """
     def __init__(self, save_path, ip = "192.168.1.251", save_origin_image = 0, save_result_image = 0):
         self.hub = None
         self.queue = Queue(5)
@@ -271,6 +279,7 @@ class PCViewer():
         self.ip = ip
 
     def start(self):
+        """不断接收帧数据，并将数据放进queue中。"""
         self.hub = WorkHub(self.ip)
         draw_process = Process(target=self.draw)
         draw_process.daemon = True
@@ -296,6 +305,7 @@ class PCViewer():
             'vehicle_data': vehicle_data})
 
     def draw(self):
+        """从queue取出帧数据，并绘制。"""
         FORMAT = '%Y%m%d%H%M'
         date = datetime.now().strftime(FORMAT)
         if self.save_origin_image:
@@ -334,6 +344,8 @@ class PCViewer():
             self.player.show_parameters_background(img)
             speed = 0
             light_mode = -1
+
+            # vehicle
             type, index, ttc, fcw ,hwm, hw, vb = '','','','','','',''
             if vehicle_data:
                 focus_index = vehicle_data['focus_index']
@@ -410,6 +422,7 @@ class PCViewer():
         
 
     def test(self):
+        """用于测试，读取离线数据"""
         fp = open('/home/tester/minieye/pc-viewer/pc-viewer-data/socket/out/log.json', 'r')
         log_contents = json.load(fp)
         fp.close()
@@ -426,12 +439,7 @@ class PCViewer():
                 'img': img,
                 'lane_data': data['lane_data'],
                 'vehicle_data': data['vehicle_data']})            
-            '''
-            self.draw({
-                'img': img,
-                'lane_data': data['lane_data'],
-                'vehicle_data': data['vehicle_data']})
-            '''
+
 
 if __name__ == "__main__":
     import argparse

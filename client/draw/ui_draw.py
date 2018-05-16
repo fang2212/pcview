@@ -15,7 +15,8 @@ from .base import CVColor
 pack = os.path.join
 
 class Player(object):
-    
+    """图片播放器"""
+
     def __init__(self):
         self.overlook_background_image = cv2.imread(pack(logodir, 'back.png'))
         self.circlesmall_image = cv2.imread(pack(logodir, 'circlesmall.tif'))
@@ -26,6 +27,11 @@ class Player(object):
         self.overlook_beforecar_image = cv2.imread(pack(logodir, 'before.tif'))
 
     def show_overlook_background(self, img):
+        """绘制俯视图的背景，包括背景图，车背景图，光线图
+
+        Args:
+            img: 原始图片
+        """
         y_background, x_background, _ = self.overlook_background_image.shape
         y_img, x_img, _ = img.shape
         roi_img = img[0 : y_background, x_img - x_background : x_img]
@@ -73,6 +79,7 @@ class Player(object):
                               roi_img, 1.0, 0.0, roi_img)
     
     def show_parameters_background(self, img):
+        """左上角参数背景图"""
 
         BaseDraw.draw_alpha_rect(img, (0, 0, 350, 170), 0.4)
         BaseDraw.draw_text(img, 'env', (10, 20), 0.5, CVColor.Cyan, 1)
@@ -80,6 +87,14 @@ class Player(object):
         BaseDraw.draw_text(img, 'lane', (210, 20), 0.5, CVColor.Cyan, 1)
         
     def show_vehicle(self, img, position, color=CVColor.Cyan, thickness = 2):
+        """绘制车辆框
+        Args:
+            img: 原始图片
+            position: (x, y, width, height),车辆框的位置，大小
+            color: CVColor 车辆颜色
+            thickness: int 线粗
+        """
+
         x, y, width, height = position
         x1 = int(x)
         y1 = int(y)
@@ -90,7 +105,15 @@ class Player(object):
         BaseDraw.draw_vehicle_rect_corn(img, (x1, y1), (x2, y2), color, thickness)
     
     def show_vehicle_info(self, img, position, vertical_dis, horizontal_dis, vehicle_width, vehicle_type):
-        
+        """绘制车辆信息
+        Args:
+            img: 原始图片
+            position: (x, y, width, height),车辆框的位置，大小
+            vertical_dis: float 与检测车辆的竖直距离
+            horizontal_dis: float 与检测车辆的水平距离
+            vehicle_width: float 检测车辆的宽度
+            vehicle: str 车辆类型，见const_type
+        """
         x, y, width, height = position
         x1 = int(x)
         y1 = int(y)
@@ -119,6 +142,14 @@ class Player(object):
         BaseDraw.draw_text(img, str(vehicle_width), (x2 - 50, y1 - 5), 0.5, CVColor.White, 1)
     
     def show_overlook_vehicle(self, img, type, y, x):
+        """在俯视图绘制车辆
+        Args:
+            img: 原始图片
+            type: 是否关键车
+            y: float 与检测车辆的竖直距离
+            x: float 与检测车辆的水平距离
+        """
+
         d_y = int(float(y))
         d_x = int(float(x))
         y_car = max(20, 190 - d_y * 2)
@@ -139,6 +170,11 @@ class Player(object):
         cv2.addWeighted(car, 0.5, roi_img, 1.0, 0.0, roi_img)
     
     def show_vehicle_parameters(self, img, parameters):
+        """显示关键车参数信息
+        Args:
+            img: 原始图片
+            parameters: List [type, index, ttc, fcw, hwm, hw, vb] 关键车参数
+        """
         type = parameters[0]
         index = parameters[1]
         ttc = parameters[2]
@@ -159,6 +195,14 @@ class Player(object):
         BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v * 6), 0.5, CVColor.White, 1)
     
     def show_lane(self, img, ratios, width, color):
+        """绘制车道线
+        Args:
+            img: 原始图片
+            ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
+            width: float 车道线宽度
+            color: CVColor 车道线颜色
+        """
+
         a0, a1, a2, a3 = ratios
         a0 = float(a0)
         a1 = float(a1)
@@ -175,6 +219,16 @@ class Player(object):
             BaseDraw.draw_line(img, (x1, y1), (x2, y2), CVColor.Cyan, width)
     
     def show_lane_info(self, img, ratios, index, width, type, conf, color):
+        """绘制车道线信息
+        Args:
+            img: 原始数据
+            ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
+            index: 车道索引
+            width: float 车道线宽度
+            type: 车道线类型
+            conf: 置信度
+            color: CVColor 车道线颜色
+        """
         a0, a1, a2, a3 = ratios
         a0 = float(a0)
         a1 = float(a1)
@@ -191,6 +245,12 @@ class Player(object):
         BaseDraw.draw_text(img, 'conf:' + str(conf), (x1, y1), 0.5, color, 1)
     
     def show_overlook_lane(self, img, ratios, color):
+        """在俯视图绘制车道线
+        Args:
+            img: 原始数据
+            ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
+            color: CVColor 车道线颜色
+        """
         a0, a1, a2, a3 = ratios
         a0 = float(a0)
         a1 = float(a1)
@@ -209,6 +269,11 @@ class Player(object):
             BaseDraw.draw_line(img, (x1, y1), (x2, y2), CVColor.Cyan, 1)
 
     def show_lane_parameters(self, img, parameters):
+        """显示车道线参数
+        Args:
+            img: 原始图像
+            parameters: List [lw_dis, rw_dis, ldw, trend] 车道线信息
+        """
         lw_dis = parameters[0]
         rw_dis = parameters[1]
         ldw = parameters[2]
@@ -223,6 +288,12 @@ class Player(object):
         BaseDraw.draw_text(img, 'trend:'+trend, (origin_x, origin_y+gap_v*3), 0.5, CVColor.White, 1)
         
     def show_env(self,img, speed, light_mode, fps):
+        """显示环境信息
+        Args:
+            img: 原始图片
+            light_mode: 白天或夜间
+            fps: 帧率
+        """
         BaseDraw.draw_text(img, 'light:'+ str(light_mode), (10, 40), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'speed:'+ str(int(speed)), (10, 60), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'fps:'+ str(int(fps)), (10, 80), 0.5, CVColor.White, 1)
