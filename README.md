@@ -24,7 +24,7 @@ usage: run.py [-h] [--ip IP] [--origin ORIGIN] [--result RESULT] [--path PATH]
 
 optional arguments:
   -h, --help       show this help message and exit
-  --ip IP          ip address
+  --ip IP          设备ip地址
   --origin ORIGIN  是否保存原始图片，1保存，0不保存，默认不保存
   --result RESULT  是否保存处理后图片，1保存，0不保存，默认不保存
   --path PATH      保存图片的路径，若保存图片必须指定该路径
