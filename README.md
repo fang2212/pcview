@@ -32,9 +32,6 @@ pip3 install numpy
 pip3 install msgpack
 ```
 
-二 msgpack安装
-sudo pip3 install msgpack
-
 ## 使用
 1. 修改/etc/network/interfaces，设置电脑IP为静态地址与设备同一网段，
 例：
