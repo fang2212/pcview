@@ -3,7 +3,37 @@ pc-viewer是一个实时显示车道线，车辆，以及相关参数的工具�
 
 ## 依赖库
 * cv2
+```shell
+pip3 install opencv-python
+```
+
 * numpy
+```shell
+pip3 install numpy
+
+```
+* nanomsg
+```shell
+1. 下载源码https://github.com/nanomsg/nanomsg
+    接着按下面操作
+    % mkdir build
+    % cd build
+    % cmake ..
+    % cmake --build .
+    % ctest .
+    % sudo cmake --build . --target install
+    % sudo ldconfig (if on Linux)
+
+2. sudo pip3 install nanomsg
+```
+
+* msgpack
+```shell
+pip3 install msgpack
+```
+
+二 msgpack安装
+sudo pip3 install msgpack
 
 ## 使用
 1. 修改/etc/network/interfaces，设置电脑IP为静态地址与设备同一网段，
