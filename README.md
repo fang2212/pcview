@@ -41,7 +41,7 @@ auto ens33(网卡名)
 iface ens33 inet static
 address 192.168.0.110
 netmask 255.255.255.0
-gateway 192.168.0.0
+gateway 192.168.0.1
 ```
 重启网络服务： /etc/init.d/networking restart
 
