@@ -274,9 +274,22 @@ class PCViewer():
         self.queue = Queue(5)
         self.save_origin_image = save_origin_image
         self.save_result_image = save_result_image
-        self.save_path = save_path
         self.player = Player()
         self.ip = ip
+
+        FORMAT = '%Y%m%d%H%M'
+        date = datetime.now().strftime(FORMAT)
+        self.date_dir = os.path.join(save_path, date)
+        if not os.path.exists(self.date_dir):
+            os.makedirs(self.date_dir)
+        self.log_fp = open(os.path.join(self.date_dir, 'log.json'), 'w+')
+
+    def __del__(self):
+        self.log_fp.seek(0, 0)
+        self.log_fp.write('[')
+        self.log_fp.seek(0, 2)
+        self.log_fp.write(']')
+        self.log_fp.close()
 
     def start(self):
         """不断接收帧数据，并将数据放进queue中。"""
@@ -297,26 +310,32 @@ class PCViewer():
             image = np.fromstring(image_data, dtype=np.uint8).reshape(720, 1280, 1)
             image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
             print('size:', self.queue.qsize())
-            if self.queue.qsize() > 15:
-                self.queue.get()
+            #if self.queue.qsize() > 15:
+            #    self.queue.get()
             self.queue.put({
+            'frame_id': d['frame_id'],
             'img': image,
             'lane_data': lane_data,
             'vehicle_data': vehicle_data})
 
     def draw(self):
         """从queue取出帧数据，并绘制。"""
-        FORMAT = '%Y%m%d%H%M'
-        date = datetime.now().strftime(FORMAT)
         if self.save_origin_image:
-            origin_path = os.path.join(self.save_path,date,'origin')
+            origin_path = os.path.join(self.date_dir,'origin')
             if not os.path.exists(origin_path):
                 os.makedirs(origin_path)
         if self.save_result_image:
-            result_path = os.path.join(self.save_path,date,'result')
+            result_path = os.path.join(self.date_dir,'result')
             if not os.path.exists(result_path):
                 os.makedirs(result_path)
 
+        def write_log_to_file():
+            global timer
+            timer = threading.Timer(5, write_log_to_file)
+            timer.start()
+
+        timer = threading.Timer(5, write_log_to_file)
+        timer.start()
         start_time = datetime.now()
         frame_cnt = 0
         while True:
@@ -331,12 +350,19 @@ class PCViewer():
             duration = (end_time - start_time).seconds
             duration = duration if duration > 0 else 1
             fps = frame_cnt / duration
+            
+            log = {'frame_id': mess['frame_id'],
+                   'lane_data': mess['lane_data'],
+                   'vehicle_data': mess['vehicle_data']
+                  }
+            log_str = ',' + json.dumps(log)
+            self.log_fp.write(log_str)
 
             img = mess['img']
             
             if self.save_origin_image:
-                if self.queue.qsize()<3:
-                    cv2.imwrite(os.path.join(origin_path, str(frame_cnt) + '.jpg'), img)
+             #   if self.queue.qsize()<3:
+                cv2.imwrite(os.path.join(origin_path, str(mess['frame_id']) + '.jpg'), img)
 
             vehicle_data = mess['vehicle_data']
             lane_data = mess['lane_data']
@@ -411,8 +437,8 @@ class PCViewer():
             
             self.player.show_env(img, speed, light_mode, fps)
             if self.save_result_image:
-                if self.queue.qsize()<3:
-                    cv2.imwrite(os.path.join(result_path, str(frame_cnt) + '.jpg'), img)
+               # if self.queue.qsize()<3:
+                cv2.imwrite(os.path.join(result_path, str(mess['frame_id']) + '.jpg'), img)
             
             cv2.imshow('2333', img)
                 
@@ -436,6 +462,7 @@ class PCViewer():
             while self.queue.qsize() > 5:
                 self.queue.get()
             self.queue.put({
+                'frame_id': data['frame_id'],
                 'img': img,
                 'lane_data': data['lane_data'],
                 'vehicle_data': data['vehicle_data']})            
