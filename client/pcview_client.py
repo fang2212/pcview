@@ -215,7 +215,7 @@ class Hub(threading.Thread):
                 if len(self.elms) > 20:
                     self.elms.pop(0)
                 if len(elm[1])>0:
-                    print('----len:', len(elm[1])) 
+                    # print('----len:', len(elm[1])) 
                     self.elms.append(elm)
                 continue
 
@@ -235,7 +235,7 @@ class Hub(threading.Thread):
         if len(self.elms) <= 0 or not self.check_ready():
             with self._cv:
                 self._cv.wait()
-        print('elms size', len(self.elms))
+        # print('elms size', len(self.elms))
         elm = self.elms.pop(0)
         while len(elm[1])<=0: # 取出image_data不为空的elm
             elm = self.elms.pop(0)
@@ -309,7 +309,7 @@ class PCViewer():
 
             image = np.fromstring(image_data, dtype=np.uint8).reshape(720, 1280, 1)
             image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-            print('size:', self.queue.qsize())
+            # print('size:', self.queue.qsize())
             #if self.queue.qsize() > 15:
             #    self.queue.get()
             self.queue.put({
@@ -361,8 +361,9 @@ class PCViewer():
             img = mess['img']
             
             if self.save_origin_image:
-             #   if self.queue.qsize()<3:
-                cv2.imwrite(os.path.join(origin_path, str(mess['frame_id']) + '.jpg'), img)
+                # print("---qszie:", self.queue.qsize())
+                if self.queue.qsize()<3:
+                    cv2.imwrite(os.path.join(origin_path, str(mess['frame_id']) + '.jpg'), img)
 
             vehicle_data = mess['vehicle_data']
             lane_data = mess['lane_data']
@@ -437,8 +438,8 @@ class PCViewer():
             
             self.player.show_env(img, speed, light_mode, fps)
             if self.save_result_image:
-               # if self.queue.qsize()<3:
-                cv2.imwrite(os.path.join(result_path, str(mess['frame_id']) + '.jpg'), img)
+                if self.queue.qsize()<3:
+                    cv2.imwrite(os.path.join(result_path, str(mess['frame_id']) + '.jpg'), img)
             
             cv2.imshow('2333', img)
                 
@@ -449,7 +450,7 @@ class PCViewer():
 
     def test(self):
         """用于测试，读取离线数据"""
-        fp = open('/home/tester/minieye/pc-viewer/pc-viewer-data/socket/out/log.json', 'r')
+        fp = open('/home/tester/Documents/pc-viewer-data/201805212004/log.json', 'r')
         log_contents = json.load(fp)
         fp.close()
         
