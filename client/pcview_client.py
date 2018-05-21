@@ -310,8 +310,8 @@ class PCViewer():
             image = np.fromstring(image_data, dtype=np.uint8).reshape(720, 1280, 1)
             image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
             # print('size:', self.queue.qsize())
-            #if self.queue.qsize() > 15:
-            #    self.queue.get()
+            if self.queue.qsize() > 15:
+                self.queue.get()
             self.queue.put({
             'frame_id': d['frame_id'],
             'img': image,
