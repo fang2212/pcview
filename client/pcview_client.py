@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf8 -*-
 
-
+import time
 import threading
 import nanomsg
 import msgpack
@@ -9,6 +9,7 @@ import json
 from datetime import datetime
 from multiprocessing import Process
 from multiprocessing import Queue
+from multiprocessing import Value
 from .draw.base import BaseDraw
 from .draw.base import CVColor
 import os
@@ -259,6 +260,7 @@ class WorkHub(Hub):
 import numpy as np
 import cv2
 from .draw.ui_draw import Player
+import screeninfo
 class PCViewer():
     """pc-viewer功能类，用于接收每一帧数据，并绘制
 
@@ -294,10 +296,11 @@ class PCViewer():
     def start(self):
         """不断接收帧数据，并将数据放进queue中。"""
         self.hub = WorkHub(self.ip)
-        draw_process = Process(target=self.draw)
+        running = Value('i', 1)
+        draw_process = Process(target=self.draw, args=(running,))
         draw_process.daemon = True
         draw_process.start()
-        while True:
+        while running.value:
             d = self.hub.deq()
             image_data = d["data"][0]
             lane_data = d["data"][1]
@@ -310,15 +313,15 @@ class PCViewer():
             image = np.fromstring(image_data, dtype=np.uint8).reshape(720, 1280, 1)
             image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
             print('size:', self.queue.qsize())
-            #if self.queue.qsize() > 15:
-            #    self.queue.get()
+            if self.queue.qsize() > 15:
+                self.queue.get()
             self.queue.put({
             'frame_id': d['frame_id'],
             'img': image,
             'lane_data': lane_data,
             'vehicle_data': vehicle_data})
 
-    def draw(self):
+    def draw(self, running):
         """从queue取出帧数据，并绘制。"""
         if self.save_origin_image:
             origin_path = os.path.join(self.date_dir,'origin')
@@ -361,8 +364,8 @@ class PCViewer():
             img = mess['img']
             
             if self.save_origin_image:
-             #   if self.queue.qsize()<3:
-                cv2.imwrite(os.path.join(origin_path, str(mess['frame_id']) + '.jpg'), img)
+                if self.queue.qsize()<3:
+                    cv2.imwrite(os.path.join(origin_path, str(mess['frame_id']) + '.jpg'), img)
 
             vehicle_data = mess['vehicle_data']
             lane_data = mess['lane_data']
@@ -437,36 +440,55 @@ class PCViewer():
             
             self.player.show_env(img, speed, light_mode, fps)
             if self.save_result_image:
-               # if self.queue.qsize()<3:
-                cv2.imwrite(os.path.join(result_path, str(mess['frame_id']) + '.jpg'), img)
+                if self.queue.qsize()<3:
+                    cv2.imwrite(os.path.join(result_path, str(mess['frame_id']) + '.jpg'), img)
             
-            cv2.imshow('2333', img)
-                
-            key = cv2.waitKey(10) & 0xFF
+            screen = screeninfo.get_monitors()[0]
+            cv2.namedWindow('UI', cv2.WINDOW_NORMAL)
+            #cv2.resizeWindow('UI', 1920, 1080)
+            cv2.moveWindow('UI', screen.x-1, screen.y-1)
+            cv2.setWindowProperty('UI', cv2.WND_PROP_FULLSCREEN,
+                          cv2.WINDOW_FULLSCREEN)
+            cv2.imshow('UI', img)
+            '''
+            cv2.namedWindow('ori', cv2.WINDOW_NORMAL)
+            # cv2.startWindowThread()
+            #cv2.resizeWindow('ori', screen.width, screen.height)
+            cv2.setWindowProperty('ori', cv2.WND_PROP_FULLSCREEN,
+                          cv2.WINDOW_FULLSCREEN)
+            cv2.moveWindow('ori', screen.width-1, screen.y-1)
+            cv2.imshow('ori', img)
+            '''
+            key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 cv2.destroyAllWindows()
-        
+                running.value = 0
+            elif key == 27:
+                cv2.destroyAllWindows()
+                running.value = 0
 
     def test(self):
         """用于测试，读取离线数据"""
-        fp = open('/home/tester/minieye/pc-viewer/pc-viewer-data/socket/out/log.json', 'r')
+        fp = open('/media/minieye/testdisk0/Minieye/pc-viewer-data/socket/out/log.json', 'r')
         log_contents = json.load(fp)
         fp.close()
         
-        draw_process = Process(target=self.draw)
+        running = Value('i', 1)
+        draw_process = Process(target=self.draw, args=(running,))
         draw_process.daemon = True
         draw_process.start()
-        
         for data in log_contents:
-            img = cv2.imread('/home/tester/minieye/pc-viewer/pc-viewer-data/socket/out/'+str(data['frame_id']) + '.jpg')
-            while self.queue.qsize() > 5:
-                self.queue.get()
-            self.queue.put({
-                'frame_id': data['frame_id'],
-                'img': img,
-                'lane_data': data['lane_data'],
-                'vehicle_data': data['vehicle_data']})            
-
+            if running.value:
+                img = cv2.imread('/media/minieye/testdisk0/Minieye/pc-viewer-data/socket/out/'+str(data['frame_id']) + '.jpg')
+                while self.queue.qsize() > 5:
+                    self.queue.get()
+                self.queue.put({
+                    'frame_id': data['frame_id'],
+                    'img': img,
+                    'lane_data': data['lane_data'],
+                    'vehicle_data': data['vehicle_data']})            
+            else:
+                break
 
 if __name__ == "__main__":
     import argparse
