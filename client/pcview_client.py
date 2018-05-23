@@ -236,7 +236,7 @@ class Hub(threading.Thread):
         if len(self.elms) <= 0 or not self.check_ready():
             with self._cv:
                 self._cv.wait()
-        # print('elms size', len(self.elms))
+        print('elms size', len(self.elms))
         elm = self.elms.pop(0)
         while len(elm[1])<=0: # 取出image_data不为空的elm
             elm = self.elms.pop(0)
@@ -271,7 +271,7 @@ class PCViewer():
        queue: 存储每一帧数据
        player: 图片播放器
     """
-    def __init__(self, save_path, ip = "192.168.1.251", save_origin_image = 0, save_result_image = 0):
+    def __init__(self, save_path, ip = "192.168.0.233", save_origin_image = 0, save_result_image = 0):
         self.hub = None
         self.queue = Queue(5)
         self.save_origin_image = save_origin_image
@@ -443,13 +443,13 @@ class PCViewer():
             if self.save_result_image:
                 if self.queue.qsize()<3:
                     cv2.imwrite(os.path.join(result_path, str(mess['frame_id']) + '.jpg'), img)
-            
-            screen = screeninfo.get_monitors()[0]
-            cv2.namedWindow('UI', cv2.WINDOW_NORMAL)
+             
+            # screen = screeninfo.get_monitors()[0]
+            # cv2.namedWindow('UI', cv2.WINDOW_NORMAL)
             #cv2.resizeWindow('UI', 1920, 1080)
-            cv2.moveWindow('UI', screen.x-1, screen.y-1)
-            cv2.setWindowProperty('UI', cv2.WND_PROP_FULLSCREEN,
-                          cv2.WINDOW_FULLSCREEN)
+            #cv2.moveWindow('UI', screen.x-1, screen.y-1)
+            #cv2.setWindowProperty('UI', cv2.WND_PROP_FULLSCREEN,
+            #             cv2.WINDOW_FULLSCREEN)
             cv2.imshow('UI', img)
             '''
             cv2.namedWindow('ori', cv2.WINDOW_NORMAL)

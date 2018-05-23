@@ -9,9 +9,9 @@ from client.pcview_client import PCViewer
 import argparse
 
 def run(ip, origin_save, result_save, path):
-    # PCViewer(path, ip, origin_save, result_save).start()
+    PCViewer(path, ip, origin_save, result_save).start()
     # PCViewer('/home/sji32/文档/pcview-data', ip, 1, 1).start()
-    PCViewer('/mnt/hgfs/pcview-data', ip, 0, 0).start()
+    # PCViewer('/mnt/hgfs/pcview-data', ip, 0, 0).start()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
