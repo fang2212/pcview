@@ -238,7 +238,10 @@ class Hub(threading.Thread):
                 self._cv.wait()
         print('elms size', len(self.elms))
         elm = self.elms.pop(0)
-        while len(elm[1])<=0: # 取出image_data不为空的elm
+        while len(elm[1])<=0 or len(elm[3])<=0: # 取出image_data不为空或vehicle_data不为空的elm
+            if len(self.elms) <= 0 or not self.check_ready():
+                with self._cv:
+                    self._cv.wait()
             elm = self.elms.pop(0)
         return {"frame_id": elm[0], "data": elm[1:]}
 
@@ -285,6 +288,7 @@ class PCViewer():
         if not os.path.exists(self.date_dir):
             os.makedirs(self.date_dir)
         self.log_fp = open(os.path.join(self.date_dir, 'log.json'), 'w+')
+        self.alert_fp = open(os.path.join(self.date_dir, 'demo.json'), 'w+')
 
     def __del__(self):
         self.log_fp.seek(0, 0)
@@ -292,6 +296,7 @@ class PCViewer():
         self.log_fp.seek(0, 2)
         self.log_fp.write(']')
         self.log_fp.close()
+        self.alert_fp.close()
 
     def start(self):
         """不断接收帧数据，并将数据放进queue中。"""
@@ -348,6 +353,7 @@ class PCViewer():
             if not mess:
                 continue
             
+            alert = {}
             frame_cnt += 1
             end_time = datetime.now()
             duration = (end_time - start_time).seconds
@@ -362,11 +368,11 @@ class PCViewer():
             self.log_fp.write(log_str)
 
             img = mess['img']
-            
+            print('frame_id:', str(mess['frame_id'])) 
             if self.save_origin_image:
                 # print("---qszie:", self.queue.qsize())
-                if self.queue.qsize()<3:
-                    cv2.imwrite(os.path.join(origin_path, str(mess['frame_id']) + '.jpg'), img)
+                # if self.queue.qsize()<3:
+                cv2.imwrite(os.path.join(origin_path, str(mess['frame_id']) + '.jpg'), img)
 
             vehicle_data = mess['vehicle_data']
             lane_data = mess['lane_data']
@@ -376,7 +382,8 @@ class PCViewer():
             light_mode = -1
 
             # vehicle
-            type, index, ttc, fcw ,hwm, hw, vb = '','','','','','',''
+            type, index, ttc, fcw ,hwm, hw, vb = '-','-','-','-','-','-','-'
+            warning_level, alert_ttc, hw_state, fcw_state, vb_state, sg_state = 0,0,0,0,0,0
             if vehicle_data:
                 focus_index = vehicle_data['focus_index']
                 speed = vehicle_data['speed'] * 3.6
@@ -397,18 +404,33 @@ class PCViewer():
                     
                 if focus_index != -1:
                     vehicle = vehicle_data['dets'][focus_index]
-                    type = str(vehicle['type'])
-                    index = str(vehicle['index'])
-                    ttc = str('%.2f' % vehicle['rel_ttc'])
-                    fcw = str(vehicle_data['forward_collision_warning'])
-                    hwm = str(vehicle_data['headway_warning'])
-                    hw = str('%.2f' % vehicle_data['ttc'])
-                    vb = str(vehicle_data['bumper_warning'])
-            parameters = [type, index, ttc, fcw, hwm, hw, vb]
+                    type = vehicle['type']
+                    index = vehicle['index']
+                    ttc = '%.2f' % vehicle['rel_ttc']
+                    fcw = vehicle_data['forward_collision_warning']
+                    fcw_state = vehicle_data['forward_collision_warning']
+                    hwm = vehicle_data['headway_warning']
+                    hw_state = vehicle_data['headway_warning']
+                    hw = '%.2f' % vehicle_data['ttc']
+                    vb = vehicle_data['bumper_warning']
+                    vb_state = vehicle_data['bumper_state']
+                    sg_state = vehicle_data['stop_and_go_state']
+                    alert_ttc = '%.2f' % vehicle_data['ttc']
+                    warning_level = vehicle_data['warning_level']
+                    if ttc == '1000.00':
+                        ttc = '-'
+            parameters = [str(type), str(index), str(ttc), str(fcw), str(hwm), str(hw), str(vb)]
             self.player.show_vehicle_parameters(img, parameters)
+            alert['ttc'] = float(alert_ttc)
+            alert['warning_level'] = int(warning_level)
+            alert['hw_state'] = int(hw_state)
+            alert['fcw_state'] = int(fcw_state)
+            alert['vb_state'] = int(vb_state)
+            alert['sg_state'] = int(sg_state)
                         
             # lane
-            lw_dis, rw_dis, ldw, trend = '', '', '', ''
+            lw_dis, rw_dis, ldw, trend = '-', '-', '-', '-'
+            lane_warning = 0
             if lane_data:
                 speed = lane_data['speed']
                 for lane in lane_data['lanelines']:
@@ -432,17 +454,30 @@ class PCViewer():
                         self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
                         self.player.show_lane_info(img, lane['perspective_view_poly_coeff'], index, width, type, conf, color)
 
-                lw_dis = str('%.2f' % (lane_data['left_wheel_dist']))
-                rw_dis = str('%.2f' % (lane_data['right_wheel_dist']))
-                ldw = str(lane_data['deviate_state'])
-                trend = str(lane_data['deviate_trend'])
-            parameters = [lw_dis, rw_dis, ldw, trend]
+                lw_dis = '%.2f' % (lane_data['left_wheel_dist'])
+                rw_dis = '%.2f' % (lane_data['right_wheel_dist'])
+                ldw = lane_data['deviate_state']
+                lane_warning = lane_data['deviate_state']
+                trend = lane_data['deviate_trend']
+                if lw_dis == '111.00':
+                    lw_dis = '-'
+                if rw_dis == '111.00':
+                    rw_dis = '-'
+            parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
             self.player.show_lane_parameters(img, parameters)
+            alert['lane_warning'] = lane_warning
+            alert['speed'] = float('%.2f' % speed)
+
+            temp = {}
+            temp[str(mess['frame_id']) + '.jpg'] = alert
+            alert_str = json.dumps(temp) + '\n'
+            self.alert_fp.write(alert_str)
+            self.alert_fp.flush()
             
             self.player.show_env(img, speed, light_mode, fps)
             if self.save_result_image:
-                if self.queue.qsize()<3:
-                    cv2.imwrite(os.path.join(result_path, str(mess['frame_id']) + '.jpg'), img)
+               # if self.queue.qsize()<3:
+                cv2.imwrite(os.path.join(result_path, str(mess['frame_id']) + '.jpg'), img)
              
             # screen = screeninfo.get_monitors()[0]
             # cv2.namedWindow('UI', cv2.WINDOW_NORMAL)
@@ -470,7 +505,8 @@ class PCViewer():
 
     def test(self):
         """用于测试，读取离线数据"""
-        fp = open('/media/minieye/testdisk0/Minieye/pc-viewer-data/socket/out/log.json', 'r')
+        path = '/home/tester/minieye/pc-viewer/pc-viewer-data/socket/suit-out'
+        fp = open(os.path.join(path, 'log.json'), 'r')
         log_contents = json.load(fp)
         fp.close()
         
@@ -480,9 +516,12 @@ class PCViewer():
         draw_process.start()
         for data in log_contents:
             if running.value:
-                img = cv2.imread('/media/minieye/testdisk0/Minieye/pc-viewer-data/socket/out/'+str(data['frame_id']) + '.jpg')
-                while self.queue.qsize() > 5:
-                    self.queue.get()
+                img_path = os.path.join(path, str(data['frame_id']) + '.jpg')
+                if not os.path.exists(img_path):
+                    continue
+                img = cv2.imread(img_path)
+                #while self.queue.qsize() > 5:
+                 #   self.queue.get()
                 self.queue.put({
                     'frame_id': data['frame_id'],
                     'img': img,
