@@ -503,9 +503,8 @@ class PCViewer():
                 cv2.destroyAllWindows()
                 running.value = 0
 
-    def test(self):
+    def test(self, path):
         """用于测试，读取离线数据"""
-        path = '/home/tester/minieye/pc-viewer/pc-viewer-data/socket/suit-out'
         fp = open(os.path.join(path, 'log.json'), 'r')
         log_contents = json.load(fp)
         fp.close()
