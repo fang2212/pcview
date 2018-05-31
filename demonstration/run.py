@@ -5,7 +5,7 @@ __author__ = 'pengquanhua<pengquanhua.minieye.cc>'
 __version__ = '0.1.0'
 __name____ = 'test'
 
-from demonstration.player import DemoPlayer
+from DemoPlayer import DemoPlayer
 import argparse
 
 def run(path):
