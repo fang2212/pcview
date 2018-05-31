@@ -189,11 +189,11 @@ class Player(object):
         gap_v = 20
         BaseDraw.draw_text(img, 'type:' + type, (origin_x, origin_y), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'index:' + index, (origin_x, origin_y + gap_v), 0.5, CVColor.White, 1)
-        # BaseDraw.draw_text(img, 'ttc:' + ttc, (origin_x, origin_y + gap_v * 2), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v * 2), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v * 3), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v * 4), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v * 5), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'ttc:' + ttc, (origin_x, origin_y + gap_v * 2), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v * 3), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v * 4), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v * 5), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v * 6), 0.5, CVColor.White, 1)
     
     def show_lane(self, img, ratios, width, color):
         """绘制车道线
@@ -243,7 +243,7 @@ class Player(object):
         width = '%.2f' % width
         BaseDraw.draw_text(img, 'width:' + str(width), (x1, y1-30), 0.5, color, 1)
         BaseDraw.draw_text(img, 'type:' + str(type), (x1, y1-15), 0.5, color, 1)
-        # BaseDraw.draw_text(img, 'conf:' + str(conf), (x1, y1), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'conf:' + str(conf), (x1, y1), 0.5, color, 1)
     
     def show_overlook_lane(self, img, ratios, color):
         """在俯视图绘制车道线
@@ -286,7 +286,7 @@ class Player(object):
         BaseDraw.draw_text(img, 'lw_dis:'+lw_dis, (origin_x, origin_y), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'rw_dis:'+rw_dis, (origin_x, origin_y+gap_v), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'ldw:'+ldw, (origin_x, origin_y+gap_v*2), 0.5, CVColor.White, 1)
-        # BaseDraw.draw_text(img, 'trend:'+trend, (origin_x, origin_y+gap_v*3), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'trend:'+trend, (origin_x, origin_y+gap_v*3), 0.5, CVColor.White, 1)
         
     def show_env(self,img, speed, light_mode, fps):
         """显示环境信息
@@ -297,4 +297,4 @@ class Player(object):
         """
         BaseDraw.draw_text(img, 'light:'+ str(light_mode), (10, 40), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'speed:'+ str(int(speed)), (10, 60), 0.5, CVColor.White, 1)
-        #BaseDraw.draw_text(img, 'fps:'+ str(int(fps)), (10, 80), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'fps:'+ str(int(fps)), (10, 80), 0.5, CVColor.White, 1)

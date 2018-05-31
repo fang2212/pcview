@@ -479,22 +479,7 @@ class PCViewer():
                # if self.queue.qsize()<3:
                 cv2.imwrite(os.path.join(result_path, str(mess['frame_id']) + '.jpg'), img)
              
-            # screen = screeninfo.get_monitors()[0]
-            # cv2.namedWindow('UI', cv2.WINDOW_NORMAL)
-            #cv2.resizeWindow('UI', 1920, 1080)
-            #cv2.moveWindow('UI', screen.x-1, screen.y-1)
-            #cv2.setWindowProperty('UI', cv2.WND_PROP_FULLSCREEN,
-            #             cv2.WINDOW_FULLSCREEN)
             cv2.imshow('UI', img)
-            '''
-            cv2.namedWindow('ori', cv2.WINDOW_NORMAL)
-            # cv2.startWindowThread()
-            #cv2.resizeWindow('ori', screen.width, screen.height)
-            cv2.setWindowProperty('ori', cv2.WND_PROP_FULLSCREEN,
-                          cv2.WINDOW_FULLSCREEN)
-            cv2.moveWindow('ori', screen.width-1, screen.y-1)
-            cv2.imshow('ori', img)
-            '''
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 cv2.destroyAllWindows()
