@@ -14,6 +14,6 @@ pip3 install screeninfo
 
 ## 使用
 ```shell
-python3 run.py --path [data_pach]
+python3 run.py --path [data_path]
 ```
 data_path包含origin目录，result目录以及demo.json，其中origin目录包含未处理的图片，result目录包含已经处理的图片，demo.json包含警报信息。origin，result，demo.json可以通过pc-viewer运行获得。
