@@ -8,10 +8,11 @@ __name____ = 'test'
 from client.pcview_client import PCViewer
 
 def run(ip):
-    source_path = '/home/minieye/pc-viewer-data/origin'
-    save_path = '/home/minieye/文档/new_data/'
-    PCViewer(save_path, ip, 0, 0).test(source_path)
+    source_path = '/media/minieye/testdisk0/Minieye/pc-viewer-data/socket/out'
+    save_path = '/home/minieye/Documents/pc-viewer-data/'
+    PCViewer(save_path, ip, 1, 1).test(source_path)
 
 if __name__ == "__main__":
     ip = "192.168.0.111"
     run(ip)
+

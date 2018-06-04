@@ -14,16 +14,82 @@ from .draw.base import BaseDraw
 from .draw.base import CVColor
 import os
 
-class Sink(threading.Thread):
+import numpy as np
+import cv2
+from .draw.ui_draw import Player
 
-    def __init__(self, ip, port=1200):
+class FileHandle(threading.Thread):
+    def __init__(self, path):
+        #Process.__init__(self)
         threading.Thread.__init__(self)
+        self.queue = Queue()
+        self.path = path
+        self._max_cnt = 6000
+        FORMAT = '%Y%m%d%H%M'
+        date = datetime.now().strftime(FORMAT)
+        self.path = os.path.join(path, date)
+
+    def run(self):
+        cnt = 0
+        while True:
+            while not self.queue.empty():
+                frame_id, data = self.queue.get() 
+                #cv2.imwrite('out/'+ str(frame_id) + '.jpg', image)
+                self.handler(data,frame_id, cnt)
+                cnt += 1
+            time.sleep(0.02)
+
+    def insert(self, msg):
+        self.queue.put(msg)
+
+    def handler(self, data, frame_id, cnt):
+        pass
+
+class LogHandle(FileHandle):
+
+    def __init__(self, path, type):
+        FileHandle.__init__(self, path)
+        self.type = type
+        self.log_fp = None
+        self.file_path = os.path.join(self.path, self.type)
+        if not os.path.exists(self.file_path):
+            os.makedirs(self.file_path)
+
+    def handler(self, data, frame_id, cnt):
+        if cnt % self._max_cnt == 0:
+            if self.log_fp:
+                self.log_fp.close()
+            self.log_fp = open(os.path.join(self.file_path, str(cnt)+'.json'), 'w+')
+        self.log_fp.write(json.dumps(data) + '\n')
+        self.log_fp.flush()
+
+class VideoHandle(FileHandle):
+    def __init__(self, path, type):
+        FileHandle.__init__(self, path)
+        self.video_writer = None
+        self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        self.type = type
+        self.video_path = os.path.join(self.path, 'video', self.type)
+        if not os.path.exists(self.video_path):
+            os.makedirs(self.video_path)
+       # self.video_writer = cv2.VideoWriter(os.path.join(video_path, 'aaa.avi'), self.fourcc, 20.0, (1280, 720), True)
+        #image = np.fromstring(data, dtype=np.uint8).reshape(720, 1280, 1)
+
+    def handler(self, data,frame_id, cnt):
+        if cnt % self._max_cnt == 0:
+            if self.video_writer:
+                self.video_writer.release()
+            self.video_writer = cv2.VideoWriter(os.path.join(self.video_path, str(cnt)+'.avi'), self.fourcc, 20.0, (1280, 720), True)
+        self.video_writer.write(data)
+
+class Sink(Process):
+    def __init__(self, queue, ip, port=1200):
+        Process.__init__(self)
         self.ip = ip
         self.port = port
-        self._init_socket()
+        self.queue = queue
+        self.q_max = 20
         self.cur_frame_id = -1
-        self._data_queue = []
-        self._cv = threading.Condition()
 
     def _init_socket(self):
         self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
@@ -31,14 +97,17 @@ class Sink(threading.Thread):
         nanomsg.wrapper.nn_connect(self._socket, "tcp://%s:%s" % (self.ip, self.port, ))
 
     def run(self):
+        self._init_socket()
         while True:
+            # print('sink main run')
             buf = nanomsg.wrapper.nn_recv(self._socket, 0)
             frame_id, data = self.pkg_handler(buf[1])
             #if len(self._data_queue) > 0 and frame_id < self._data_queue[-1][0]:
             #    continue
-            self._data_queue.append((frame_id, data, ))
-            with self._cv:
-                self._cv.notify()
+            self.queue.put((frame_id, data))
+            # print('queuesize', self.queue.qsize())
+            if self.queue.qsize() > self.q_max:
+                self.queue.get()
 
     def pkg_handler(self, msg_buf):
         pass
@@ -47,35 +116,31 @@ class Sink(threading.Thread):
         # This method must be called
         self.cur_frame_id = frame_id
 
-    def deq(self, block=False):
-        if block:
-            with self._cv:
-                while len(self._data_queue) <= 0:
-                    self._cv.wait()
-                frame_id, data = self._data_queue.pop(0)
-                return frame_id, data
-        if len(self._data_queue) <= 0:
-            return -1, None
-        frame_id, data = self._data_queue.pop(0)
-        return frame_id, data
-
-
 class CameraSink(Sink):
 
-    def __init__(self, ip, port=1200):
-        Sink.__init__(self, ip, port)
+    def __init__(self, queue, ip, port=1200):
+        Sink.__init__(self, queue, ip, port)
+        self.fp = open('/home/minieye/pc-viewer-data/c_id.txt', 'w+')
+        self.cnt = 0
 
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         data = msg[16:]
+        print('c id', frame_id)
+        self.fp.write(str(frame_id)+'\n')
+        self.cnt += 1
+        if self.cnt % 10000 == 0:
+            self.fp.flush()
         return frame_id, data
-
 
 class LaneSink(Sink):
 
-    def __init__(self, ip, port=1203):
-        Sink.__init__(self, ip, port)
+    def __init__(self, queue, ip, port=1203):
+        Sink.__init__(self, queue, ip, port)
+        self.fp = open('/home/minieye/pc-viewer-data/l_id.txt', 'w+')
+        self.log_fp = open('/home/minieye/pc-viewer-data/lane.json', 'w+')
+        self.cnt = 0
 
     def pkg_handler(self, msg):
         data = msgpack.loads(msg)
@@ -98,13 +163,22 @@ class LaneSink(Sink):
             ldict = dict(zip(line_keys, line))
             lines.append(ldict)
         res["lanelines"] = lines
+        print('l id', frame_id)
+        self.fp.write(str(frame_id)+'\n')
+        self.log_fp.write(json.dumps(res)+'\n')
+        self.cnt += 1
+        if self.cnt % 10000 == 0:
+            self.fp.flush()
+            self.log_fp.flush()
         return frame_id, res
-
 
 class VehicleSink(Sink):
 
-    def __init__(self, ip, port=1204):
-        Sink.__init__(self, ip, port)
+    def __init__(self, queue, ip, port=1204):
+        Sink.__init__(self, queue, ip, port)
+        self.fp = open('/home/minieye/pc-viewer-data/v_id.txt', 'w+')
+        self.log_fp = open('/home/minieye/pc-viewer-data/vehicle.json', 'w+')
+        self.cnt = 0
 
     def pkg_handler(self, msg):
         data = msgpack.loads(msg)
@@ -126,144 +200,108 @@ class VehicleSink(Sink):
             ddict = dict(zip(det_keys, det))
             dets.append(ddict)
         res["dets"] = dets
+        print('v id', frame_id)
+        self.fp.write(str(frame_id)+'\n')
+        self.log_fp.write(json.dumps(res)+'\n')
+        self.cnt += 1
+        if self.cnt % 10000 == 0:
+            self.fp.flush()
+            self.log_fp.flush()
         return frame_id, res
 
-
-class Hub(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self._sinks = []
-        self.elms = []
-        self._flag_start = False
-        self._cur_frame_id = []
-        self._num_sink = -1
-        self._init_frame_done = False
-        self._cv = threading.Condition()
-
-    def add_sink(self, sink):
-        if not self._flag_start:
-            self._sinks.append(sink)
-
-    def _add_sink_done(self):
-        self._flag_start = True
-        self._cur_frame_id = [-1] * len(self._sinks)
-        self._num_sink = len(self._sinks)
-
-    def check_ready(self):
-        if len(self.elms) <= 0:
-            return False
-        for fid in self._cur_frame_id:
-            if fid == -1 or fid < self.elms[0][0]:
-                return False
-        return True
-
-    def start_main_loop(self):
-        self._add_sink_done()
-        self.start()
-
-    def run(self):
-        while True:
-            self.init_frame()
-            self.run_frame()
-
-    def init_frame(self):
-        if self._init_frame_done:
-            return
-        self._init_frame_done = True
-
-        for i, fid in enumerate(self._cur_frame_id):
-            frame_id, data = -1, None
-            if fid == -1:
-                frame_id, data = self._sinks[i].deq(block=True)
-
-            self._cur_frame_id[i] = frame_id
-
-            ind = -1
-            for j, elm in enumerate(self.elms):
-                if frame_id <= elm[0]:
-                    ind = j
-                    break
-
-            if ind == -1:
-                elm = [frame_id] + [[]] * 3
-                elm[i + 1] = data
-                self.elms.append(elm)
-                continue
-
-            if frame_id == self.elms[j][0]:
-                self.elms[j][i + 1] = data
-            else:
-                elm = [frame_id] + [[]] * 3
-                elm[i + 1] = data
-                self.elms.insert(j, elm)
-
-    def run_frame(self):
-        for i, sink in enumerate(self._sinks):
-            frame_id, data = sink.deq()
-            if frame_id < 0:
-                return
-            self._cur_frame_id[i] = frame_id
-
-            ind = -1
-            for j, elm in enumerate(self.elms):
-                if frame_id <= elm[0]:
-                    ind = j
-                    break
-
-            if ind == -1:
-                elm = [frame_id] + [[]] * 3
-                elm[i + 1] = data
-                if len(self.elms) > 20:
-                    self.elms.pop(0)
-                if len(elm[1])>0:
-                    # print('----len:', len(elm[1])) 
-                    self.elms.append(elm)
-                continue
-
-            if frame_id == self.elms[j][0]:
-                self.elms[j][i + 1] = data
-            else:
-                elm = [frame_id] + [[]] * 3
-                elm[i + 1] = data
-                self.elms.insert(j, elm)
-
-        if self.check_ready():
-            with self._cv:
-                self._cv.notify()
-
-    def deq(self):
-        # Should be a blocking method
-        if len(self.elms) <= 0 or not self.check_ready():
-            with self._cv:
-                self._cv.wait()
-        print('elms size', len(self.elms))
-        elm = self.elms.pop(0)
-        while len(elm[1])<=0 or len(elm[3])<=0: # 取出image_data不为空或vehicle_data不为空的elm
-            if len(self.elms) <= 0 or not self.check_ready():
-                with self._cv:
-                    self._cv.wait()
-            elm = self.elms.pop(0)
-        return {"frame_id": elm[0], "data": elm[1:]}
-
-
-class WorkHub(Hub):
-    def __init__(self, ip):
-        Hub.__init__(self)
-        camera_sink = CameraSink(ip, 1200)
-        lane_sink = LaneSink(ip, 1203)
-        vehicle_sink = VehicleSink(ip, 1204)
-        self.add_sink(camera_sink)
-        self.add_sink(lane_sink)
-        self.add_sink(vehicle_sink)
+class Hub(Process):
+    
+    def __init__(self, ip='192.168.0.233'):
+        Process.__init__(self)
+        self.camera_queue = Queue()
+        camera_sink = CameraSink(queue=self.camera_queue, ip=ip, port=1200)
         camera_sink.start()
-        lane_sink.start()
-        vehicle_sink.start()
-        self.start_main_loop()
 
-import numpy as np
-import cv2
-from .draw.ui_draw import Player
-import screeninfo
+        self.lane_queue = Queue()
+        lane_sink = LaneSink(queue=self.lane_queue, ip=ip, port=1203)
+        lane_sink.start()
+
+        self.vehicle_queue = Queue()
+        vehicle_sink = VehicleSink(queue=self.vehicle_queue, ip=ip, port=1204)
+        vehicle_sink.start()
+
+        self.camera_list = []
+        self.lane_list = []
+        self.vehicle_list = []
+    
+    @staticmethod
+    def pending(queue, list):
+        while not len(list):
+            if not queue.empty():
+                list.append(queue.get())
+            time.sleep(0.02)
+
+    @staticmethod
+    def waiting(queue, list, frame_id):
+        while True:
+            if not queue.empty():
+                id, data = queue.get()
+                if id >= frame_id:
+                    list.append((id, data))
+                    break
+            time.sleep(0.01)
+            
+    def pop(self):
+
+        ''''
+        inc = 5
+        while inc:
+            if not self.camera_queue.empty():
+                self.camera_list.append(self.camera_queue.get())
+            if not self.lane_queue.empty():
+                self.lane_list.append(self.lane_queue.get())
+            if not self.vehicle_queue.empty():
+                self.vehicle_list.append(self.vehicle_queue.get())
+            inc -= 1
+        '''
+        self.pending(self.camera_queue, self.camera_list)
+        # self.pending(self.vehicle_queue, self.vehicle_list)
+        # self.pending(self.lane_queue, self.lane_list)
+        frame_id, image_data = self.camera_list.pop(0)
+        self.waiting(self.vehicle_queue, self.vehicle_list, frame_id)
+        self.waiting(self.lane_queue, self.lane_list, frame_id)
+
+        '''
+        self.camera_list.sort(key=lambda log:log[0])
+        self.vehicle_list.sort(key=lambda log:log[0])
+        self.lane_list.sort(key=lambda log:log[0])
+        '''
+
+        res = {
+            'frame_id': None,
+            'img': None,
+            'vehicle_data': {},
+            'lane_data': {},
+        }
+
+        image = np.fromstring(image_data, dtype=np.uint8).reshape(720, 1280, 1)
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+        res['frame_id'] = frame_id
+        res['img'] = image
+
+        # print(frame_id, end='')
+        while len(self.vehicle_list) and self.vehicle_list[0][0]<=frame_id:
+            temp = self.vehicle_list.pop(0)
+            if temp[0] == frame_id:
+                res['vehicle_data'] = temp[1]
+                # print(' vehicle', end='')
+        
+        while len(self.lane_list) and self.lane_list[0][0]<=frame_id:
+            temp = self.lane_list.pop(0)
+            if temp[0] == frame_id:
+                res['lane_data'] = temp[1]
+                # print(' lane', end='')
+        print()
+        if not res['lane_data'] and not res['vehicle_data']:
+            res['frame_id'] = None
+        # print('data show', res['vehicle_data'], res['lane_data'])
+        return res
+
 class PCViewer():
     """pc-viewer功能类，用于接收每一帧数据，并绘制
 
@@ -274,219 +312,163 @@ class PCViewer():
        queue: 存储每一帧数据
        player: 图片播放器
     """
-    def __init__(self, save_path, ip = "192.168.0.233", save_origin_image = 0, save_result_image = 0):
+    def __init__(self, path, ip = "192.168.0.233", save_video=1, save_demo=1):
         self.hub = None
-        self.queue = Queue(5)
-        self.save_origin_image = save_origin_image
-        self.save_result_image = save_result_image
+        self.save_video = save_video
+        self.save_demo = save_demo
         self.player = Player()
         self.ip = ip
+        self.exit = False
 
-        FORMAT = '%Y%m%d%H%M'
-        date = datetime.now().strftime(FORMAT)
-        self.date_dir = os.path.join(save_path, date)
-        if not os.path.exists(self.date_dir):
-            os.makedirs(self.date_dir)
-        self.log_fp = open(os.path.join(self.date_dir, 'log.json'), 'w+')
-        self.alert_fp = open(os.path.join(self.date_dir, 'demo.json'), 'w+')
+        self.logHandle = LogHandle(path, 'log')
+        self.logHandle.start()
+        if self.save_demo:
+            self.demoHandle = LogHandle(path, 'demo')
+            self.demoHandle.start()
 
-    def __del__(self):
-        self.log_fp.seek(0, 0)
-        self.log_fp.write('[')
-        self.log_fp.seek(0, 2)
-        self.log_fp.write(']')
-        self.log_fp.close()
-        self.alert_fp.close()
+        if self.save_video:
+            self.originVideo = VideoHandle(path, 'origin')
+            self.originVideo.start()
+
+            self.resultVideo = VideoHandle(path, 'result')
+            self.resultVideo.start()
 
     def start(self):
-        """不断接收帧数据，并将数据放进queue中。"""
-        self.hub = WorkHub(self.ip)
-        running = Value('i', 1)
-        draw_process = Process(target=self.draw, args=(running,))
-        draw_process.daemon = True
-        draw_process.start()
-        while running.value:
-            d = self.hub.deq()
-            image_data = d["data"][0]
-            lane_data = d["data"][1]
-            vehicle_data = d["data"][2]
-            if len(image_data) <= 0:
+        self.hub = Hub(self.ip)
+        bool = 1
+        while not self.exit:
+            d = self.hub.pop()
+            # bool = 1 - bool
+            if not d.get('frame_id'):
                 continue
-            #if len(vehicle_data) <= 0:
+            # if bool:
             #    continue
+            self.draw(d)
 
-            image = np.fromstring(image_data, dtype=np.uint8).reshape(720, 1280, 1)
-            image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-            # print('size:', self.queue.qsize())
-            if self.queue.qsize() > 15:
-                self.queue.get()
-            self.queue.put({
-            'frame_id': d['frame_id'],
-            'img': image,
-            'lane_data': lane_data,
-            'vehicle_data': vehicle_data})
+    def draw(self, mess):
+        vehicle_data = mess['vehicle_data']
+        lane_data = mess['lane_data']
+        img = mess['img']
+        frame_id = mess['frame_id']
+        
+        temp_mess = mess
+        temp_mess.pop('img')
+        self.logHandle.insert((frame_id, temp_mess))
+        if self.save_video:
+            temp_img = img.copy()
+            self.originVideo.insert((frame_id, temp_img))
+    
+        # print('vehicle', vehicle_data)
+        # print('lane', lane_data)
 
-    def draw(self, running):
-        """从queue取出帧数据，并绘制。"""
-        if self.save_origin_image:
-            origin_path = os.path.join(self.date_dir,'origin')
-            if not os.path.exists(origin_path):
-                os.makedirs(origin_path)
-        if self.save_result_image:
-            result_path = os.path.join(self.date_dir,'result')
-            if not os.path.exists(result_path):
-                os.makedirs(result_path)
+        self.player.show_overlook_background(img)
+        self.player.show_parameters_background(img)
 
-        def write_log_to_file():
-            global timer
-            timer = threading.Timer(5, write_log_to_file)
-            timer.start()
+        alert = {}
+        speed = 0
+        light_mode = -1
 
-        timer = threading.Timer(5, write_log_to_file)
-        timer.start()
-        start_time = datetime.now()
-        frame_cnt = 0
-        while True:
-            mess = None
-            while not self.queue.empty():
-                mess = self.queue.get()
-            if not mess:
-                continue
-            
-            alert = {}
-            frame_cnt += 1
-            end_time = datetime.now()
-            duration = (end_time - start_time).seconds
-            duration = duration if duration > 0 else 1
-            fps = frame_cnt / duration
-            
-            log = {'frame_id': mess['frame_id'],
-                   'lane_data': mess['lane_data'],
-                   'vehicle_data': mess['vehicle_data']
-                  }
-            log_str = ',' + json.dumps(log)
-            self.log_fp.write(log_str)
-
-            img = mess['img']
-            print('frame_id:', str(mess['frame_id'])) 
-            if self.save_origin_image:
-                # print("---qszie:", self.queue.qsize())
-                # if self.queue.qsize()<3:
-                cv2.imwrite(os.path.join(origin_path, str(mess['frame_id']) + '.jpg'), img)
-
-            vehicle_data = mess['vehicle_data']
-            lane_data = mess['lane_data']
-            self.player.show_overlook_background(img)
-            self.player.show_parameters_background(img)
-            speed = 0
-            light_mode = -1
-
-            # vehicle
-            type, index, ttc, fcw ,hwm, hw, vb = '-','-','-','-','-','-','-'
-            warning_level, alert_ttc, hw_state, fcw_state, vb_state, sg_state = 0,0,0,0,0,0
-            if vehicle_data:
-                focus_index = vehicle_data['focus_index']
-                speed = vehicle_data['speed'] * 3.6
-                light_mode = vehicle_data['light_mode']
-                for i, vehicle in enumerate(vehicle_data['dets']):
-                    focus_vehicle = (i == focus_index)
-                    position = vehicle['bounding_rect']
+        # vehicle
+        v_type, index, ttc, fcw ,hwm, hw, vb = '-','-','-','-','-','-','-'
+        warning_level, alert_ttc, hw_state, fcw_state, vb_state, sg_state = 0,0,0,0,0,0
+        if vehicle_data:
+            focus_index = vehicle_data['focus_index']
+            speed = vehicle_data['speed'] * 3.6
+            light_mode = vehicle_data['light_mode']
+            for i, vehicle in enumerate(vehicle_data['dets']):
+                focus_vehicle = (i == focus_index)
+                position = vehicle['bounding_rect']
+                
+                color = CVColor.Red if focus_index == i else CVColor.Cyan
+                self.player.show_vehicle(img, position, color, 2)
+                
+                self.player.show_vehicle_info(img, position,
+                                        vehicle['vertical_dist'],vehicle['horizontal_dist'], 
+                                        vehicle['vehicle_width'], str(vehicle['type']))
+                self.player.show_overlook_vehicle(img, focus_vehicle,
+                                            vehicle['vertical_dist'],
+                                            vehicle['horizontal_dist'])
+                
+            if focus_index != -1:
+                vehicle = vehicle_data['dets'][focus_index]
+                v_type = vehicle['type']
+                index = vehicle['index']
+                ttc = '%.2f' % vehicle['rel_ttc']
+                fcw = vehicle_data['forward_collision_warning']
+                fcw_state = vehicle_data['forward_collision_warning']
+                hwm = vehicle_data['headway_warning']
+                hw_state = vehicle_data['headway_warning']
+                hw = '%.2f' % vehicle_data['ttc']
+                vb = vehicle_data['bumper_warning']
+                vb_state = vehicle_data['bumper_state']
+                sg_state = vehicle_data['stop_and_go_state']
+                alert_ttc = '%.2f' % vehicle_data['ttc']
+                warning_level = vehicle_data['warning_level']
+                if ttc == '1000.00':
+                    ttc = '-'
+        parameters = [str(v_type), str(index), str(ttc), str(fcw), str(hwm), str(hw), str(vb)]
+        self.player.show_vehicle_parameters(img, parameters)
+        alert['ttc'] = float(alert_ttc)
+        alert['warning_level'] = int(warning_level)
+        alert['hw_state'] = int(hw_state)
+        alert['fcw_state'] = int(fcw_state)
+        alert['vb_state'] = int(vb_state)
+        alert['sg_state'] = int(sg_state)
                     
-                    color = CVColor.Red if focus_index == i else CVColor.Cyan
-                    self.player.show_vehicle(img, position, color, 2)
-                    
-                    self.player.show_vehicle_info(img, position,
-                                            vehicle['vertical_dist'],vehicle['horizontal_dist'], 
-                                            vehicle['vehicle_width'], str(vehicle['type']))
-                    self.player.show_overlook_vehicle(img, focus_vehicle,
-                                                vehicle['vertical_dist'],
-                                                vehicle['horizontal_dist'])
-                    
-                if focus_index != -1:
-                    vehicle = vehicle_data['dets'][focus_index]
-                    type = vehicle['type']
-                    index = vehicle['index']
-                    ttc = '%.2f' % vehicle['rel_ttc']
-                    fcw = vehicle_data['forward_collision_warning']
-                    fcw_state = vehicle_data['forward_collision_warning']
-                    hwm = vehicle_data['headway_warning']
-                    hw_state = vehicle_data['headway_warning']
-                    hw = '%.2f' % vehicle_data['ttc']
-                    vb = vehicle_data['bumper_warning']
-                    vb_state = vehicle_data['bumper_state']
-                    sg_state = vehicle_data['stop_and_go_state']
-                    alert_ttc = '%.2f' % vehicle_data['ttc']
-                    warning_level = vehicle_data['warning_level']
-                    if ttc == '1000.00':
-                        ttc = '-'
-            parameters = [str(type), str(index), str(ttc), str(fcw), str(hwm), str(hw), str(vb)]
-            self.player.show_vehicle_parameters(img, parameters)
-            alert['ttc'] = float(alert_ttc)
-            alert['warning_level'] = int(warning_level)
-            alert['hw_state'] = int(hw_state)
-            alert['fcw_state'] = int(fcw_state)
-            alert['vb_state'] = int(vb_state)
-            alert['sg_state'] = int(sg_state)
-                        
-            # lane
-            lw_dis, rw_dis, ldw, trend = '-', '-', '-', '-'
-            lane_warning = 0
-            if lane_data:
-                speed = lane_data['speed']
-                for lane in lane_data['lanelines']:
-                    if int(lane['label']) in [1, 2] and speed > 30:
-                        Color = {
-                            '0': CVColor.Red,
-                            '1': CVColor.Green,
-                            '2': CVColor.Cyan,
-                            '3': CVColor.Magenta,
-                            '4': CVColor.Yellow,
-                            '5': CVColor.Black,
-                            '6': CVColor.White,
-                            '7': CVColor.Pink,
-                        }
-                        color = Color[str(lane['color'])]
-                        width = lane['width']
-                        type = lane['type']
-                        conf = lane['confidence']
-                        index = lane['label']
-                        self.player.show_lane(img, lane['perspective_view_poly_coeff'], width, color)
-                        self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
-                        self.player.show_lane_info(img, lane['perspective_view_poly_coeff'], index, width, type, conf, color)
+        # lane
+        lw_dis, rw_dis, ldw, trend = '-', '-', '-', '-'
+        lane_warning = 0
+        if lane_data:
+            speed = lane_data['speed']
+            for lane in lane_data['lanelines']:
+                if True:
+                # if int(lane['label']) in [1, 2] and speed > 30:
+                    Color = {
+                        '0': CVColor.Red,
+                        '1': CVColor.Green,
+                        '2': CVColor.Cyan,
+                        '3': CVColor.Magenta,
+                        '4': CVColor.Yellow,
+                        '5': CVColor.Black,
+                        '6': CVColor.White,
+                        '7': CVColor.Pink,
+                    }
+                    color = Color[str(lane['color'])]
+                    width = lane['width']
+                    l_type = lane['type']
+                    conf = lane['confidence']
+                    index = lane['label']
+                    self.player.show_lane(img, lane['perspective_view_poly_coeff'], width, color)
+                    self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
+                    self.player.show_lane_info(img, lane['perspective_view_poly_coeff'], index, width, l_type, conf, color)
 
-                lw_dis = '%.2f' % (lane_data['left_wheel_dist'])
-                rw_dis = '%.2f' % (lane_data['right_wheel_dist'])
-                ldw = lane_data['deviate_state']
-                lane_warning = lane_data['deviate_state']
-                trend = lane_data['deviate_trend']
-                if lw_dis == '111.00':
-                    lw_dis = '-'
-                if rw_dis == '111.00':
-                    rw_dis = '-'
-            parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
-            self.player.show_lane_parameters(img, parameters)
-            alert['lane_warning'] = lane_warning
-            alert['speed'] = float('%.2f' % speed)
-
-            temp = {}
-            temp[str(mess['frame_id']) + '.jpg'] = alert
-            alert_str = json.dumps(temp) + '\n'
-            self.alert_fp.write(alert_str)
-            self.alert_fp.flush()
-            
-            self.player.show_env(img, speed, light_mode, fps)
-            if self.save_result_image:
-               # if self.queue.qsize()<3:
-                cv2.imwrite(os.path.join(result_path, str(mess['frame_id']) + '.jpg'), img)
-             
-            cv2.imshow('UI', img)
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord('q'):
-                cv2.destroyAllWindows()
-                running.value = 0
-            elif key == 27:
-                cv2.destroyAllWindows()
-                running.value = 0
+            lw_dis = '%.2f' % (lane_data['left_wheel_dist'])
+            rw_dis = '%.2f' % (lane_data['right_wheel_dist'])
+            ldw = lane_data['deviate_state']
+            lane_warning = lane_data['deviate_state']
+            trend = lane_data['deviate_trend']
+            if lw_dis == '111.00':
+                lw_dis = '-'
+            if rw_dis == '111.00':
+                rw_dis = '-'
+        parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
+        self.player.show_lane_parameters(img, parameters)
+        self.player.show_env(img, speed, light_mode, 0)
+        alert['lane_warning'] = lane_warning
+        alert['speed'] = float('%.2f' % speed)
+        
+        if self.save_video:
+            self.resultVideo.insert((frame_id, img))
+        if self.save_demo:
+            self.demoHandle.insert((frame_id, alert))
+        cv2.imshow('UI', img)
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q'):
+            cv2.destroyAllWindows()
+            self.exit = True
+        elif key == 27:
+            cv2.destroyAllWindows()
+            self.exit = True
 
     def test(self, path):
         """用于测试，读取离线数据"""
@@ -494,36 +476,18 @@ class PCViewer():
         log_contents = json.load(fp)
         fp.close()
         
-        running = Value('i', 1)
-        draw_process = Process(target=self.draw, args=(running,))
-        draw_process.daemon = True
-        draw_process.start()
         for data in log_contents:
-            if running.value:
+            if not self.exit:
                 img_path = os.path.join(path, str(data['frame_id']) + '.jpg')
                 if not os.path.exists(img_path):
                     continue
                 img = cv2.imread(img_path)
-                #while self.queue.qsize() > 5:
-                 #   self.queue.get()
-                self.queue.put({
+                data = {
                     'frame_id': data['frame_id'],
                     'img': img,
                     'lane_data': data['lane_data'],
-                    'vehicle_data': data['vehicle_data']})            
+                    'vehicle_data': data['vehicle_data']
+                }
+                self.draw(data)
             else:
                 break
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--ip", help="ip address",
-                        type=str)
-    parser.add_argument("--origin", help="save origin images",
-                        type=str)
-    parser.add_argument("--result", help="save result images",
-                        type=str)
-    parser.add_argument("--path", help="the save path of images",
-                        type=str)
-    args = parser.parse_args()
-    PCViewer(args.ip, args.origin, args.result, args.path).draw()
