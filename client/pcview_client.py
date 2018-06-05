@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#.!/usr/bin/python
 # -*- coding:utf8 -*-
 
 import time
@@ -18,10 +18,11 @@ import numpy as np
 import cv2
 from .draw.ui_draw import Player
 
-class FileHandle(threading.Thread):
+class FileHandle(Process):
     def __init__(self, path):
-        #Process.__init__(self)
-        threading.Thread.__init__(self)
+        Process.__init__(self)
+        self.deamon = True
+        #threading.Thread.__init__(self)
         self.queue = Queue()
         self.path = path
         self._max_cnt = 6000
@@ -72,8 +73,6 @@ class VideoHandle(FileHandle):
         self.video_path = os.path.join(self.path, 'video', self.type)
         if not os.path.exists(self.video_path):
             os.makedirs(self.video_path)
-       # self.video_writer = cv2.VideoWriter(os.path.join(video_path, 'aaa.avi'), self.fourcc, 20.0, (1280, 720), True)
-        #image = np.fromstring(data, dtype=np.uint8).reshape(720, 1280, 1)
 
     def handler(self, data,frame_id, cnt):
         if cnt % self._max_cnt == 0:
@@ -85,6 +84,7 @@ class VideoHandle(FileHandle):
 class Sink(Process):
     def __init__(self, queue, ip, port=1200):
         Process.__init__(self)
+        self.deamon = True
         self.ip = ip
         self.port = port
         self.queue = queue
@@ -127,7 +127,7 @@ class CameraSink(Sink):
         msg = memoryview(msg).tobytes()
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         data = msg[16:]
-        print('c id', frame_id)
+        # print('c id', frame_id)
         self.fp.write(str(frame_id)+'\n')
         self.cnt += 1
         if self.cnt % 10000 == 0:
@@ -163,7 +163,7 @@ class LaneSink(Sink):
             ldict = dict(zip(line_keys, line))
             lines.append(ldict)
         res["lanelines"] = lines
-        print('l id', frame_id)
+        # print('l id', frame_id)
         self.fp.write(str(frame_id)+'\n')
         self.log_fp.write(json.dumps(res)+'\n')
         self.cnt += 1
@@ -200,7 +200,7 @@ class VehicleSink(Sink):
             ddict = dict(zip(det_keys, det))
             dets.append(ddict)
         res["dets"] = dets
-        print('v id', frame_id)
+        # print('v id', frame_id)
         self.fp.write(str(frame_id)+'\n')
         self.log_fp.write(json.dumps(res)+'\n')
         self.cnt += 1
@@ -214,20 +214,25 @@ class Hub(Process):
     def __init__(self, ip='192.168.0.233'):
         Process.__init__(self)
         self.camera_queue = Queue()
-        camera_sink = CameraSink(queue=self.camera_queue, ip=ip, port=1200)
-        camera_sink.start()
+        self.camera_sink = CameraSink(queue=self.camera_queue, ip=ip, port=1200)
+        self.camera_sink.start()
 
         self.lane_queue = Queue()
-        lane_sink = LaneSink(queue=self.lane_queue, ip=ip, port=1203)
-        lane_sink.start()
+        self.lane_sink = LaneSink(queue=self.lane_queue, ip=ip, port=1203)
+        self.lane_sink.start()
 
         self.vehicle_queue = Queue()
-        vehicle_sink = VehicleSink(queue=self.vehicle_queue, ip=ip, port=1204)
-        vehicle_sink.start()
+        self.vehicle_sink = VehicleSink(queue=self.vehicle_queue, ip=ip, port=1204)
+        self.vehicle_sink.start()
 
         self.camera_list = []
         self.lane_list = []
         self.vehicle_list = []
+
+    def __del__(self):
+        self.camera_sink.exit = True
+        self.lane_sink.exit = True
+        self.vehicle_sink.exit = True
     
     @staticmethod
     def pending(queue, list):
@@ -296,7 +301,7 @@ class Hub(Process):
             if temp[0] == frame_id:
                 res['lane_data'] = temp[1]
                 # print(' lane', end='')
-        print()
+        # print()
         if not res['lane_data'] and not res['vehicle_data']:
             res['frame_id'] = None
         # print('data show', res['vehicle_data'], res['lane_data'])
@@ -318,23 +323,24 @@ class PCViewer():
         self.save_demo = save_demo
         self.player = Player()
         self.ip = ip
+        self.path = path
         self.exit = False
-
-        self.logHandle = LogHandle(path, 'log')
+    
+    def start(self):
+        self.hub = Hub(self.ip)
+        self.logHandle = LogHandle(self.path, 'log')
         self.logHandle.start()
         if self.save_demo:
-            self.demoHandle = LogHandle(path, 'demo')
+            self.demoHandle = LogHandle(self.path, 'demo')
             self.demoHandle.start()
 
         if self.save_video:
-            self.originVideo = VideoHandle(path, 'origin')
+            self.originVideo = VideoHandle(self.path, 'origin')
             self.originVideo.start()
 
-            self.resultVideo = VideoHandle(path, 'result')
+            self.resultVideo = VideoHandle(self.path, 'result')
             self.resultVideo.start()
-
-    def start(self):
-        self.hub = Hub(self.ip)
+        
         bool = 1
         while not self.exit:
             d = self.hub.pop()
