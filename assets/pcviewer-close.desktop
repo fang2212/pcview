@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=CLOSE
+Exec=sh  /home/minieye/Documents/pc-viewer/kill.sh
+Icon=/home/minieye/Documents/pc-viewer/assets/adas.jpg
+Info="close pc-viewer"
+Terminal=false
+Type=Application
+StartupNotify=true

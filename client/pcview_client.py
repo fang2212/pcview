@@ -120,27 +120,33 @@ class CameraSink(Sink):
 
     def __init__(self, queue, ip, port=1200):
         Sink.__init__(self, queue, ip, port)
+        '''
         self.fp = open('/home/minieye/pc-viewer-data/c_id.txt', 'w+')
         self.cnt = 0
+        '''
 
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         data = msg[16:]
         # print('c id', frame_id)
+        '''
         self.fp.write(str(frame_id)+'\n')
         self.cnt += 1
         if self.cnt % 10000 == 0:
             self.fp.flush()
+        '''
         return frame_id, data
 
 class LaneSink(Sink):
 
     def __init__(self, queue, ip, port=1203):
         Sink.__init__(self, queue, ip, port)
+        '''
         self.fp = open('/home/minieye/pc-viewer-data/l_id.txt', 'w+')
         self.log_fp = open('/home/minieye/pc-viewer-data/lane.json', 'w+')
         self.cnt = 0
+        '''
 
     def pkg_handler(self, msg):
         data = msgpack.loads(msg)
@@ -164,21 +170,25 @@ class LaneSink(Sink):
             lines.append(ldict)
         res["lanelines"] = lines
         # print('l id', frame_id)
+        '''
         self.fp.write(str(frame_id)+'\n')
         self.log_fp.write(json.dumps(res)+'\n')
         self.cnt += 1
         if self.cnt % 10000 == 0:
             self.fp.flush()
             self.log_fp.flush()
+        '''
         return frame_id, res
 
 class VehicleSink(Sink):
 
     def __init__(self, queue, ip, port=1204):
         Sink.__init__(self, queue, ip, port)
+        '''
         self.fp = open('/home/minieye/pc-viewer-data/v_id.txt', 'w+')
         self.log_fp = open('/home/minieye/pc-viewer-data/vehicle.json', 'w+')
         self.cnt = 0
+        '''
 
     def pkg_handler(self, msg):
         data = msgpack.loads(msg)
@@ -201,12 +211,14 @@ class VehicleSink(Sink):
             dets.append(ddict)
         res["dets"] = dets
         # print('v id', frame_id)
+        '''
         self.fp.write(str(frame_id)+'\n')
         self.log_fp.write(json.dumps(res)+'\n')
         self.cnt += 1
         if self.cnt % 10000 == 0:
             self.fp.flush()
             self.log_fp.flush()
+        '''
         return frame_id, res
 
 class Hub(Process):
@@ -325,9 +337,6 @@ class PCViewer():
         self.ip = ip
         self.path = path
         self.exit = False
-    
-    def start(self):
-        self.hub = Hub(self.ip)
         self.logHandle = LogHandle(self.path, 'log')
         self.logHandle.start()
         if self.save_demo:
@@ -340,6 +349,9 @@ class PCViewer():
 
             self.resultVideo = VideoHandle(self.path, 'result')
             self.resultVideo.start()
+    
+    def start(self):
+        self.hub = Hub(self.ip)
         
         bool = 1
         while not self.exit:
