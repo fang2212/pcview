@@ -352,8 +352,9 @@ class PCViewer():
     
     def start(self):
         self.hub = Hub(self.ip)
-        
+        self.start_time = datetime.now()
         bool = 1
+        frame_cnt = 0
         while not self.exit:
             d = self.hub.pop()
             # bool = 1 - bool
@@ -361,9 +362,10 @@ class PCViewer():
                 continue
             # if bool:
             #    continue
-            self.draw(d)
+            frame_cnt += 1
+            self.draw(d, frame_cnt)
 
-    def draw(self, mess):
+    def draw(self, mess, frame_cnt):
         vehicle_data = mess['vehicle_data']
         lane_data = mess['lane_data']
         img = mess['img']
@@ -381,6 +383,11 @@ class PCViewer():
 
         self.player.show_overlook_background(img)
         self.player.show_parameters_background(img)
+
+        end_time = datetime.now()
+        duration = (end_time - self.start_time).seconds
+        duration = duration if duration > 0 else 1
+        fps = frame_cnt / duration
 
         alert = {}
         speed = 0
@@ -471,7 +478,7 @@ class PCViewer():
                 rw_dis = '-'
         parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
         self.player.show_lane_parameters(img, parameters)
-        self.player.show_env(img, speed, light_mode, 0)
+        self.player.show_env(img, speed, light_mode, fps)
         alert['lane_warning'] = lane_warning
         alert['speed'] = float('%.2f' % speed)
         
@@ -494,7 +501,9 @@ class PCViewer():
         log_contents = json.load(fp)
         fp.close()
         
+        frame_cnt = 0
         for data in log_contents:
+            frame_cnt += 1
             if not self.exit:
                 img_path = os.path.join(path, str(data['frame_id']) + '.jpg')
                 if not os.path.exists(img_path):
@@ -506,6 +515,6 @@ class PCViewer():
                     'lane_data': data['lane_data'],
                     'vehicle_data': data['vehicle_data']
                 }
-                self.draw(data)
+                self.draw(data, frame_cnt)
             else:
                 break
