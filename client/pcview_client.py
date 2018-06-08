@@ -64,6 +64,18 @@ class LogHandle(FileHandle):
         self.log_fp.write(json.dumps(data) + '\n')
         self.log_fp.flush()
 
+class ImageHandle(FileHandle):
+    def __init__(self, path, type):
+        FileHandle.__init__(self, path)
+        self.type = type
+        self.image_path = os.path.join(self.path, 'image', self.type)
+        if not os.path.exists(self.image_path):
+            os.makedirs(self.image_path)
+    
+    def handler(self, data, frame_id, cnt):
+        cv2.imwrite(os.path.join(self.image_path, str(frame_id) + '.jpg'), data)
+
+
 class VideoHandle(FileHandle):
     def __init__(self, path, type):
         FileHandle.__init__(self, path)
@@ -329,7 +341,7 @@ class PCViewer():
        queue: 存储每一帧数据
        player: 图片播放器
     """
-    def __init__(self, path, ip = "192.168.0.233", save_video=1, save_demo=1):
+    def __init__(self, path, ip = "192.168.0.233", save_video=1, save_demo=1, source=''):
         self.hub = None
         self.save_video = save_video
         self.save_demo = save_demo
@@ -337,11 +349,18 @@ class PCViewer():
         self.ip = ip
         self.path = path
         self.exit = False
+        self.source = source
         self.logHandle = LogHandle(self.path, 'log')
         self.logHandle.start()
         if self.save_demo:
             self.demoHandle = LogHandle(self.path, 'demo')
             self.demoHandle.start()
+
+            # self.originImage = ImageHandle(self.path, 'origin')
+            # self.originImage.start()
+
+            self.resultImage = ImageHandle(self.path, 'result')
+            self.resultImage.start()
 
         if self.save_video:
             self.originVideo = VideoHandle(self.path, 'origin')
@@ -370,6 +389,7 @@ class PCViewer():
         lane_data = mess['lane_data']
         img = mess['img']
         frame_id = mess['frame_id']
+        image_name = '%s_%08d' % (self.source, frame_id)
         
         temp_mess = mess
         temp_mess.pop('img')
@@ -377,6 +397,11 @@ class PCViewer():
         if self.save_video:
             temp_img = img.copy()
             self.originVideo.insert((frame_id, temp_img))
+        '''
+        if self.save_demo:
+            temp_img = img.copy()
+            self.originImage.insert((image_name, temp_img))
+        '''
     
         # print('vehicle', vehicle_data)
         # print('lane', lane_data)
@@ -485,7 +510,8 @@ class PCViewer():
         if self.save_video:
             self.resultVideo.insert((frame_id, img))
         if self.save_demo:
-            self.demoHandle.insert((frame_id, alert))
+            self.demoHandle.insert((frame_id, {image_name: alert}))
+            self.resultImage.insert((image_name, img))
         cv2.imshow('UI', img)
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
