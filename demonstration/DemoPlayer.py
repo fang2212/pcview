@@ -24,9 +24,9 @@ class DemoPlayer():
         log_contents = fp.readlines()
         fp.close()
         
-        t = threading.Thread(target=self.init_tcp, args=())
-        t.daemon = True
-        t.start()
+#        t = threading.Thread(target=self.init_tcp, args=())
+#        t.daemon = True
+#       t.start()
         
         main_screen = screeninfo.get_monitors()[0]
         sub_screen = None
@@ -38,11 +38,11 @@ class DemoPlayer():
                 alert_data = json.loads(data)
                 for img, alert in alert_data.items():
                     pass
-                origin_file = os.path.join(path, 'origin', img)
+                origin_file = os.path.join(path, 'origin', img+'.jpg')
                 if not os.path.exists(origin_file):
                     continue
                 origin_img = cv2.imread(origin_file)
-                result_file = os.path.join(path, 'result', img)
+                result_file = os.path.join(path, 'result', img+'.jpg')
                 if not os.path.exists(result_file):
                     continue
                 result_img = cv2.imread(result_file)

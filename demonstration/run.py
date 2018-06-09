@@ -16,7 +16,7 @@ if __name__ == "__main__":
     parser.add_argument("--path", help="data path",
                         type=str)
     args = parser.parse_args()
-    path = '/home/minieye/pcview/201805261934'
+    path = '/home/minieye/pcviewer-demo-data/201806082023/image/'
     
     #path = '/home/minieye/文档/pc-viewer-data/rgb/201805261134'
     if args.path:

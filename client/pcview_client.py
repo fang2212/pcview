@@ -341,7 +341,7 @@ class PCViewer():
        queue: 存储每一帧数据
        player: 图片播放器
     """
-    def __init__(self, path, ip = "192.168.0.233", save_video=1, save_demo=1, source=''):
+    def __init__(self, path, ip = "192.168.0.233", save_video=1, save_demo=1, source='', max_frame=1):
         self.hub = None
         self.save_video = save_video
         self.save_demo = save_demo
@@ -350,14 +350,15 @@ class PCViewer():
         self.path = path
         self.exit = False
         self.source = source
+        self.max_frame = max_frame
         self.logHandle = LogHandle(self.path, 'log')
         self.logHandle.start()
         if self.save_demo:
             self.demoHandle = LogHandle(self.path, 'demo')
             self.demoHandle.start()
 
-            # self.originImage = ImageHandle(self.path, 'origin')
-            # self.originImage.start()
+            self.originImage = ImageHandle(self.path, 'origin')
+            self.originImage.start()
 
             self.resultImage = ImageHandle(self.path, 'result')
             self.resultImage.start()
@@ -389,19 +390,21 @@ class PCViewer():
         lane_data = mess['lane_data']
         img = mess['img']
         frame_id = mess['frame_id']
-        image_name = '%s_%08d' % (self.source, frame_id)
+        if self.source:
+            image_name = '%s_%08d' % (self.source, (int(frame_id/3))*4+frame_id%3)
+        else:
+            image_name = frame_id
         
         temp_mess = mess
         temp_mess.pop('img')
+        temp_mess['frame_id'] = image_name
         self.logHandle.insert((frame_id, temp_mess))
         if self.save_video:
             temp_img = img.copy()
             self.originVideo.insert((frame_id, temp_img))
-        '''
         if self.save_demo:
             temp_img = img.copy()
             self.originImage.insert((image_name, temp_img))
-        '''
     
         # print('vehicle', vehicle_data)
         # print('lane', lane_data)
@@ -524,13 +527,16 @@ class PCViewer():
     def test(self, path):
         """用于测试，读取离线数据"""
         fp = open(os.path.join(path, 'log.json'), 'r')
-        log_contents = json.load(fp)
+        log_contents = fp.readlines()
         fp.close()
         
         frame_cnt = 0
+        self.start_time = datetime.now()
         for data in log_contents:
             frame_cnt += 1
+            print(frame_cnt)
             if not self.exit:
+                data = json.loads(data)
                 img_path = os.path.join(path, str(data['frame_id']) + '.jpg')
                 if not os.path.exists(img_path):
                     continue
