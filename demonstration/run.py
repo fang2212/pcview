@@ -9,7 +9,7 @@ from DemoPlayer import DemoPlayer
 import argparse
 
 def run(path):
-    DemoPlayer().test(path)
+    DemoPlayer().play(path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
