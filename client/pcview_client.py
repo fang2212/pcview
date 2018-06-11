@@ -13,85 +13,83 @@ from multiprocessing import Value
 from .draw.base import BaseDraw
 from .draw.base import CVColor
 import os
-
+                             
 import numpy as np
 import cv2
 from .draw.ui_draw import Player
 
 class FileHandle(Process):
-    def __init__(self, path):
+    def __init__(self, path, save_log, save_alert, save_video):
         Process.__init__(self)
         self.deamon = True
-        #threading.Thread.__init__(self)
-        self.queue = Queue()
+        self.log_queue = Queue()
+        self.alert_queue = Queue()
+        self.image_queue = Queue()
+        self.video_queue = Queue()
         self.path = path
-        self._max_cnt = 6000
+        self._max_cnt = 7000
+        self.save_log = save_log
+        self.save_alert = save_alert
+        self.save_video = save_video
+ 
         FORMAT = '%Y%m%d%H%M'
         date = datetime.now().strftime(FORMAT)
         self.path = os.path.join(path, date)
+        os.makedirs(self.path)
+ 
+        if self.save_log:
+            self.log_fp = open(os.path.join(self.path, 'log.json'), 'w+')
+        if self.save_alert:
+            self.alert_fp = open(os.path.join(self.path, 'alert.json'), 'w+')
+            self.image_path = os.path.join(self.path, 'image')
+            os.makedirs(self.image_path)
+
+        if self.save_video:
+            self.video_writer = None
+            self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+            self.video_path = os.path.join(self.path, 'video')
+            os.makedirs(self.video_path)
 
     def run(self):
         cnt = 0
         while True:
-            while not self.queue.empty():
-                frame_id, data = self.queue.get() 
-                #cv2.imwrite('out/'+ str(frame_id) + '.jpg', image)
-                self.handler(data,frame_id, cnt)
+            # print('---fileHandle process id----', os.getpid())
+            while self.save_log and not self.log_queue.empty():
+                frame_id, data = self.log_queue.get() 
+                self.log_fp.write(json.dumps(data) + '\n')
+                self.log_fp.flush()
+ 
+            if self.save_alert:
+                while not self.alert_queue.empty():
+                    frame_id, data = self.alert_queue.get() 
+                    self.alert_fp.write(json.dumps(data) + '\n')
+                    self.alert_fp.flush()
+ 
+                while not self.image_queue.empty():
+                    image_name, data = self.image_queue.get() 
+                    cv2.imwrite(os.path.join(self.image_path, str(image_name) + '.jpg'), data)
+ 
+            while self.save_video and not self.video_queue.empty():
+                frame_id, data = self.video_queue.get() 
+                if cnt % self._max_cnt == 0:
+                    if self.video_writer:
+                        self.video_writer.release()
+                    self.video_writer = cv2.VideoWriter(os.path.join(self.video_path, str(cnt)+'.avi'), self.fourcc, 20.0, (1280, 720), True)
+                self.video_writer.write(data)
                 cnt += 1
             time.sleep(0.02)
+ 
+    def insert_log(self, msg):
+        self.log_queue.put(msg)
 
-    def insert(self, msg):
-        self.queue.put(msg)
+    def insert_alert(self, msg):
+        self.alert_queue.put(msg)
 
-    def handler(self, data, frame_id, cnt):
-        pass
+    def insert_image(self, msg):
+        self.image_queue.put(msg)
 
-class LogHandle(FileHandle):
-
-    def __init__(self, path, type):
-        FileHandle.__init__(self, path)
-        self.type = type
-        self.log_fp = None
-        self.file_path = os.path.join(self.path, self.type)
-        if not os.path.exists(self.file_path):
-            os.makedirs(self.file_path)
-
-    def handler(self, data, frame_id, cnt):
-        if cnt % self._max_cnt == 0:
-            if self.log_fp:
-                self.log_fp.close()
-            self.log_fp = open(os.path.join(self.file_path, str(cnt)+'.json'), 'w+')
-        self.log_fp.write(json.dumps(data) + '\n')
-        self.log_fp.flush()
-
-class ImageHandle(FileHandle):
-    def __init__(self, path, type):
-        FileHandle.__init__(self, path)
-        self.type = type
-        self.image_path = os.path.join(self.path, 'image', self.type)
-        if not os.path.exists(self.image_path):
-            os.makedirs(self.image_path)
-    
-    def handler(self, data, frame_id, cnt):
-        cv2.imwrite(os.path.join(self.image_path, str(frame_id) + '.jpg'), data)
-
-
-class VideoHandle(FileHandle):
-    def __init__(self, path, type):
-        FileHandle.__init__(self, path)
-        self.video_writer = None
-        self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        self.type = type
-        self.video_path = os.path.join(self.path, 'video', self.type)
-        if not os.path.exists(self.video_path):
-            os.makedirs(self.video_path)
-
-    def handler(self, data,frame_id, cnt):
-        if cnt % self._max_cnt == 0:
-            if self.video_writer:
-                self.video_writer.release()
-            self.video_writer = cv2.VideoWriter(os.path.join(self.video_path, str(cnt)+'.avi'), self.fourcc, 20.0, (1280, 720), True)
-        self.video_writer.write(data)
+    def insert_video(self, msg):
+        self.video_queue.put(msg)
 
 class Sink(Process):
     def __init__(self, queue, ip, port=1200):
@@ -111,7 +109,6 @@ class Sink(Process):
     def run(self):
         self._init_socket()
         while True:
-            # print('sink main run')
             buf = nanomsg.wrapper.nn_recv(self._socket, 0)
             frame_id, data = self.pkg_handler(buf[1])
             #if len(self._data_queue) > 0 and frame_id < self._data_queue[-1][0]:
@@ -138,6 +135,7 @@ class CameraSink(Sink):
         '''
 
     def pkg_handler(self, msg):
+        # print('c--process-id:', os.getpid())
         msg = memoryview(msg).tobytes()
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         data = msg[16:]
@@ -161,6 +159,7 @@ class LaneSink(Sink):
         '''
 
     def pkg_handler(self, msg):
+        # print('l--process-id:', os.getpid())
         data = msgpack.loads(msg)
         self.set_frame_id(data[0])
         frame_id = data[0]
@@ -244,6 +243,8 @@ class Hub(Process):
         self.lane_queue = Queue()
         self.lane_sink = LaneSink(queue=self.lane_queue, ip=ip, port=1203)
         self.lane_sink.start()
+
+        # print('---------------process id:', os.getpid())
 
         self.vehicle_queue = Queue()
         self.vehicle_sink = VehicleSink(queue=self.vehicle_queue, ip=ip, port=1204)
@@ -341,40 +342,28 @@ class PCViewer():
        queue: 存储每一帧数据
        player: 图片播放器
     """
-    def __init__(self, path, ip = "192.168.0.233", save_video=1, save_demo=1, source='', max_frame=1):
+    def __init__(self, path, ip = "192.168.0.233", save_video=0, save_log=0, save_alert=0, source=''):
         self.hub = None
         self.save_video = save_video
-        self.save_demo = save_demo
+        self.save_log = save_log
+        self.save_alert = save_alert
         self.player = Player()
         self.ip = ip
         self.path = path
         self.exit = False
         self.source = source
-        self.max_frame = max_frame
-        self.logHandle = LogHandle(self.path, 'log')
-        self.logHandle.start()
-        if self.save_demo:
-            self.demoHandle = LogHandle(self.path, 'demo')
-            self.demoHandle.start()
-
-            self.originImage = ImageHandle(self.path, 'origin')
-            self.originImage.start()
-
-            self.resultImage = ImageHandle(self.path, 'result')
-            self.resultImage.start()
-
-        if self.save_video:
-            self.originVideo = VideoHandle(self.path, 'origin')
-            self.originVideo.start()
-
-            self.resultVideo = VideoHandle(self.path, 'result')
-            self.resultVideo.start()
+        
+        if self.save_log or self.save_alert or self.save_video:
+            self.fileHandler = FileHandle(path, self.save_log, self.save_alert, self.save_video)
+            self.fileHandler.start()
     
     def start(self):
         self.hub = Hub(self.ip)
         self.start_time = datetime.now()
         bool = 1
         frame_cnt = 0
+        # print('main process id:', os.getpid())
+
         while not self.exit:
             d = self.hub.pop()
             # bool = 1 - bool
@@ -398,14 +387,19 @@ class PCViewer():
         temp_mess = mess
         temp_mess.pop('img')
         temp_mess['frame_id'] = image_name
-        self.logHandle.insert((frame_id, temp_mess))
+        if self.save_log:
+            self.fileHandler.insert_log((frame_id, temp_mess))
+
+        #self.logHandle.insert((frame_id, temp_mess))
+        '''
         if self.save_video:
             temp_img = img.copy()
             self.originVideo.insert((frame_id, temp_img))
         if self.save_demo:
             temp_img = img.copy()
             self.originImage.insert((image_name, temp_img))
-    
+        '''
+         
         # print('vehicle', vehicle_data)
         # print('lane', lane_data)
 
@@ -474,8 +468,7 @@ class PCViewer():
         if lane_data:
             speed = lane_data['speed']
             for lane in lane_data['lanelines']:
-                if True:
-                # if int(lane['label']) in [1, 2] and speed > 30:
+                if int(lane['label']) in [1, 2] and speed > 30:
                     Color = {
                         '0': CVColor.Red,
                         '1': CVColor.Green,
@@ -509,12 +502,20 @@ class PCViewer():
         self.player.show_env(img, speed, light_mode, fps)
         alert['lane_warning'] = lane_warning
         alert['speed'] = float('%.2f' % speed)
-        
+
+        # self.video_writer.write(img)
+        '''
         if self.save_video:
             self.resultVideo.insert((frame_id, img))
         if self.save_demo:
             self.demoHandle.insert((frame_id, {image_name: alert}))
             self.resultImage.insert((image_name, img))
+        '''
+        if self.save_alert:
+            self.fileHandler.insert_alert((frame_id, {image_name: alert}))
+            self.fileHandler.insert_image((image_name, img))
+        if self.save_video:
+            self.fileHandler.insert_video((frame_id, img))
         cv2.imshow('UI', img)
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
@@ -534,7 +535,6 @@ class PCViewer():
         self.start_time = datetime.now()
         for data in log_contents:
             frame_cnt += 1
-            print(frame_cnt)
             if not self.exit:
                 data = json.loads(data)
                 img_path = os.path.join(path, str(data['frame_id']) + '.jpg')

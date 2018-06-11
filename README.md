@@ -48,15 +48,16 @@ gateway 192.168.0.1
 2. 运行pc-viewer
 
 ```shell
-usage: python3 run.py [-h] [--ip IP] [--origin ORIGIN] [--result RESULT] [--path PATH]
+usage: python3 run_pcviewer.py [-h] [--ip IP] [--video VIDEO] [--alert ALERT] [--log LOG] [--path PATH]
 
   可选         参数     说明
   -h, --help           help
   --ip         IP      设备ip地址
-  --origin    ORIGIN   是否保存原始图片，1保存，0不保存，默认不保存
-  --result    RESULT   是否保存处理后图片，1保存，0不保存，默认不保存
-  --path      PATH     保存图片的路径，若保存图片必须指定该路径
+  --video    VIDEO   是否保存视频，1保存，0不保存，默认不保存
+  --alert    ALERT   是否保存警报信息和图片，用于演示平台，1保存，0不保存，默认不保存
+  --log    LOG   是否保存日志，1保存，0不保存，默认不保存
+  --path      PATH    保存路径
   
   实例：
-  python3 run.py --ip 192.168.0.233 --origin 1 --result 1 --path '/home/minieye/pc-viewer-data/'
+  python3 run_viewer.py --ip 192.168.0.233 --video 1 --alert 0 --log 0 --path '/home/minieye/pc-viewer-data/'
 ```
