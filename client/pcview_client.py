@@ -254,11 +254,6 @@ class Hub(Process):
         self.lane_list = []
         self.vehicle_list = []
 
-    def __del__(self):
-        self.camera_sink.exit = True
-        self.lane_sink.exit = True
-        self.vehicle_sink.exit = True
-    
     @staticmethod
     def pending(queue, list):
         while not len(list):
