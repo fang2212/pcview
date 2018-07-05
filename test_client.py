@@ -9,7 +9,7 @@ from client.pcview_client import PCViewer
 import argparse
 
 def run(source_path='/home/minieye/pcview-data-rgb/rec_20180526_161914', save_path='/home/minieye/pcviewer-demo-data/'):
-    PCViewer(save_path, None, 0, 0, 1, None).test(source_path)
+    PCViewer(save_path, None, 0, 0, 1).test(source_path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -33,15 +33,8 @@ class BaseDraw(object):
                     thickness, type)
     
     @classmethod
-    def draw_vehicle_rect(cls, img_content, rect):
-        x = int(rect[0])
-        y = int(rect[1])
-        w = int(rect[2])
-        h = int(rect[3])
-        # x, y, w, h = rect
-        tl = (x, y)
-        br = (x + w - 1, y + h - 1)
-        cv2.rectangle(img_content, tl, br, CVColor.Red, 2)
+    def draw_rect(cls, img_content, point1, point2, color, thickness=2):
+        cv2.rectangle(img_content, point1, point2, color, thickness)
 
     @classmethod
     def draw_vehicle_rect_corn(cls, img, point1, point2, color, thickness=2):

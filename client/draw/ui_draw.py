@@ -212,7 +212,7 @@ class Player(object):
         
         width = int(float(width) * 10 + 0.5)
 
-        for y in range(450, 720, 50):
+        for y in range(500, 720, 50):
             y1 = y
             y2 = y1 + 50
             x1 = (int)(a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1)
@@ -237,7 +237,7 @@ class Player(object):
         a3 = float(a3)
         
         color = CVColor.Cyan
-        y1 = 450
+        y1 = 500
         x1 = (int)(a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1)
         BaseDraw.draw_text(img, 'index:' + str(index), (x1, y1-45), 0.5, color, 1)
         width = '%.2f' % width
@@ -287,6 +287,24 @@ class Player(object):
         BaseDraw.draw_text(img, 'rw_dis:'+rw_dis, (origin_x, origin_y+gap_v), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'ldw:'+ldw, (origin_x, origin_y+gap_v*2), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'trend:'+trend, (origin_x, origin_y+gap_v*3), 0.5, CVColor.White, 1)
+
+    def show_pedestrains(self, img, position, color=CVColor.Cyan, thickness = 2):
+        """绘制pedestrain
+        Args:
+            img: 原始图片
+            position: (x, y, width, height),车辆框的位置，大小
+            color: CVColor 颜色
+            thickness: int 线粗
+        """
+
+        x, y, width, height = position
+        x1 = int(x)
+        y1 = int(y)
+        width = int(width)
+        height = int(height)
+        x2 = x1 + width
+        y2 = y1 + height
+        BaseDraw.draw_rect(img, (x1, y1), (x2, y2), color, thickness)
         
     def show_env(self,img, speed, light_mode, fps):
         """显示环境信息
