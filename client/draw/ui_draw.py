@@ -78,13 +78,9 @@ class Player(object):
         cv2.addWeighted(self.car_image, 1.0,
                               roi_img, 1.0, 0.0, roi_img)
     
-    def show_parameters_background(self, img):
+    def show_parameters_background(self, img, rect):
         """左上角参数背景图"""
-
-        BaseDraw.draw_alpha_rect(img, (0, 0, 350, 170), 0.4)
-        BaseDraw.draw_text(img, 'env', (10, 20), 0.5, CVColor.Cyan, 1)
-        BaseDraw.draw_text(img, 'vechicle', (110, 20), 0.5, CVColor.Cyan, 1)
-        BaseDraw.draw_text(img, 'lane', (210, 20), 0.5, CVColor.Cyan, 1)
+        BaseDraw.draw_alpha_rect(img, rect, 0.4)
         
     def show_vehicle(self, img, position, color=CVColor.Cyan, thickness = 2):
         """绘制车辆框
@@ -141,7 +137,7 @@ class Player(object):
 
         vehicle_width = '%.2f' % vehicle_width 
         # BaseDraw.draw_text(img, str(vehicle_width), (x2 - 50, y1 - 5), 0.5, CVColor.White, 1)
-    
+ 
     def show_overlook_vehicle(self, img, type, y, x):
         """在俯视图绘制车辆
         Args:
@@ -170,7 +166,7 @@ class Player(object):
         roi_img = img[y_begin: y_end, x_begin: x_end]
         cv2.addWeighted(car, 0.5, roi_img, 1.0, 0.0, roi_img)
     
-    def show_vehicle_parameters(self, img, parameters):
+    def show_vehicle_parameters(self, img, parameters, point):
         """显示关键车参数信息
         Args:
             img: 原始图片
@@ -184,16 +180,16 @@ class Player(object):
         hw = parameters[5]
         vb = parameters[6]
 
-        origin_x = 110
-        origin_y = 40
+        origin_x, origin_y = point
         gap_v = 20
-        BaseDraw.draw_text(img, 'type:' + type, (origin_x, origin_y), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'index:' + index, (origin_x, origin_y + gap_v), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'ttc:' + ttc, (origin_x, origin_y + gap_v * 2), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v * 3), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v * 4), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v * 5), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v * 6), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'vechicle', (origin_x, origin_y + gap_v), 0.5, CVColor.Cyan, 1)
+        BaseDraw.draw_text(img, 'type:' + type, (origin_x, origin_y + gap_v*2), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'index:' + index, (origin_x, origin_y + gap_v*3), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'ttc:' + ttc, (origin_x, origin_y + gap_v*4), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v*5), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v*6), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v*7), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v*8), 0.5, CVColor.White, 1)
     
     def show_lane(self, img, ratios, width, color):
         """绘制车道线
@@ -269,7 +265,7 @@ class Player(object):
             y2 = 240 - y2 * 2
             BaseDraw.draw_line(img, (x1, y1), (x2, y2), CVColor.Cyan, 1)
 
-    def show_lane_parameters(self, img, parameters):
+    def show_lane_parameters(self, img, parameters, point):
         """显示车道线参数
         Args:
             img: 原始图像
@@ -280,13 +276,13 @@ class Player(object):
         ldw = parameters[2]
         trend = parameters[3]
 
-        origin_x = 210
-        origin_y = 40
+        origin_x, origin_y = point
         gap_v = 20
-        BaseDraw.draw_text(img, 'lw_dis:'+lw_dis, (origin_x, origin_y), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'rw_dis:'+rw_dis, (origin_x, origin_y+gap_v), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'ldw:'+ldw, (origin_x, origin_y+gap_v*2), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'trend:'+trend, (origin_x, origin_y+gap_v*3), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'lane', (origin_x, origin_y+gap_v), 0.5, CVColor.Cyan, 1)
+        BaseDraw.draw_text(img, 'lw_dis:'+lw_dis, (origin_x, origin_y*2), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'rw_dis:'+rw_dis, (origin_x, origin_y+gap_v*3), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'ldw:'+ldw, (origin_x, origin_y+gap_v*4), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'trend:'+trend, (origin_x, origin_y+gap_v*5), 0.5, CVColor.White, 1)
 
     def show_pedestrains(self, img, position, color=CVColor.Cyan, thickness = 2):
         """绘制pedestrain
@@ -306,13 +302,37 @@ class Player(object):
         y2 = y1 + height
         BaseDraw.draw_rect(img, (x1, y1), (x2, y2), color, thickness)
         
-    def show_env(self,img, speed, light_mode, fps):
+    def show_env(self,img, speed, light_mode, fps, point):
         """显示环境信息
         Args:
             img: 原始图片
             light_mode: 白天或夜间
             fps: 帧率
         """
-        BaseDraw.draw_text(img, 'light:'+ str(light_mode), (10, 40), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'speed:'+ str(int(speed)), (10, 60), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'fps:'+ str(int(fps)), (10, 80), 0.5, CVColor.White, 1)
+        origin_x, origin_y = point
+        origin_x += 10
+        BaseDraw.draw_text(img, 'env', (origin_x, origin_y+20), 0.5, CVColor.Cyan, 1)
+        BaseDraw.draw_text(img, 'light:'+ str(light_mode), (origin_x, origin_y+40), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'speed:'+ str(int(speed)), (origin_x, origin_y+60), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'fps:'+ str(int(fps)), (origin_x, origin_y+80), 0.5, CVColor.White, 1)
+    
+    def show_mobile_parameters(self, img, parameters, point):
+        """显示关键车参数信息
+        Args:
+            img: 原始图片
+            parameters: List [type, index, ttc, fcw, hwm, hw, vb] 关键车参数
+        """
+        hwm = parameters[0]
+        hw = parameters[1]
+        fcw = parameters[2]
+        vb = parameters[3]
+        ldw = parameters[4]
+
+        origin_x, origin_y = point
+        gap_v = 20
+        color = CVColor.Green
+        BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v*5), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v*6), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v*7), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v*8), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'ldw:'+ldw, (origin_x + 120*2, origin_y+gap_v*4), 0.5, color, 1)

@@ -269,7 +269,6 @@ class PedesSink(Sink):
             self.fp.flush()
             self.log_fp.flush()
         '''
-        print('---------------pedes:', res)
         return frame_id, res
 
 class Hub(Process):
@@ -277,14 +276,16 @@ class Hub(Process):
     def __init__(self, is_pic, ip='192.168.0.233'):
         Process.__init__(self)
         self.is_pic = int(is_pic)
-        if os.path.exists('/home/minieye/testdisk1/TestCase/warn_vedio/image_list.txt'):
-            self.is_pic = 1
-        if not self.is_pic:
+        if self.is_pic:
+            print('-------------------pic-------------------------------')
             self.camera_list = []
             self.camera_queue = Queue()
             self.camera_sink = CameraSink(queue=self.camera_queue, ip=ip, port=1200)
             self.camera_sink.start()
-            
+        else: 
+            print('-------------------no_pic-------------------------------')
+#            image_fp = open('/home/minieye/testdisk1/TestCase/B9J5G7-20180109/case/fpga_case/case1/image_list.txt', 'r+')
+            # image_fp = open('/home/minieye/collecting-data/0530pcw_7f418/case/fpga_case/case1/image_list.txt', 'r+')
             image_fp = open('/home/minieye/testdisk1/TestCase/warn_vedio/image_list.txt', 'r+')
             self.image_list = image_fp.readlines()
             image_fp.close()
@@ -334,6 +335,7 @@ class Hub(Process):
         }
         while True:
             if not self.is_pic:
+                print('-------------------no__pic-------------------------------')
                 self.pending(self.lane_queue, self.lane_list)
                 self.pending(self.vehicle_queue, self.vehicle_list)
                 self.pending(self.pedes_queue, self.pedes_list)
@@ -369,7 +371,10 @@ class Hub(Process):
                 return res         
             
             else:
+                print('-------------------__pic-------------------------------')
                 self.pending(self.camera_queue, self.camera_list)
+                if len(self.camera_list) <= 0:
+                    continue
                 frame_id, image_data = self.camera_list.pop(0)
                 self.waiting(self.vehicle_queue, self.vehicle_list, frame_id)
                 self.waiting(self.lane_queue, self.lane_list, frame_id)
@@ -419,7 +424,8 @@ class PCViewer():
         self.save_video = save_video
         self.save_log = save_log
         self.save_alert = save_alert
-        self.is_pic = is_pic
+        self.is_pic = 1
+        #self.is_pic = is_pic
         self.player = Player()
         self.ip = ip
         self.path = path
@@ -429,13 +435,20 @@ class PCViewer():
         self.pre_vehicle = {}
         self.lane_cnt = 0
         self.vehicle_cnt = 0
+
+        self.show_mobile_info = False
+        if self.show_mobile_info:
+            mobile_fp = open('/home/minieye/testdisk1/TestCase/B9J5G7-20180109/case/fpga_case/case1/mobile/log.json', 'r+')
+            self.mobile_content = json.load(mobile_fp)
+            print('len:', len(self.mobile_content))
+            mobile_fp.close()
         
         if self.save_log or self.save_alert or self.save_video:
             self.fileHandler = FileHandle(path, self.save_log, self.save_alert, self.save_video)
             self.fileHandler.start()
     
     def start(self):
-        self.hub = Hub(self.ip, self.is_pic)
+        self.hub = Hub(self.is_pic, self.ip)
         self.start_time = datetime.now()
         bool = 1
         frame_cnt = 0
@@ -448,12 +461,16 @@ class PCViewer():
                 continue
             frame_cnt += 1
             self.draw(d, frame_cnt)
+            if frame_cnt >= 100:
+                self.start_time = datatime.now()
+                frame_cnt = 0
 
     def draw(self, mess, frame_cnt):
         vehicle_data = mess['vehicle_data']
         lane_data = mess['lane_data']
         pedes_data = mess['pedes_data']
         img = mess['img']
+        frame_id = mess['frame_id']
 
         # 
         #if not lane_data:
@@ -480,10 +497,14 @@ class PCViewer():
             self.fileHandler.insert_log((frame_id, temp_mess))
 
         self.player.show_overlook_background(img)
-        self.player.show_parameters_background(img)
+        if self.show_mobile_info:
+            bg_width = 120 * 5
+        else:
+            bg_width = 120 * 3
+        self.player.show_parameters_background(img, (0, 0, bg_width, 170))
 
         end_time = datetime.now()
-        duration = (end_time - self.start_time).seconds
+        duration = (end_time - self.start_time).total_seconds()
         duration = duration if duration > 0 else 1
         fps = frame_cnt / duration
 
@@ -530,7 +551,7 @@ class PCViewer():
                 if ttc == '1000.00':
                     ttc = '-'
         parameters = [str(v_type), str(index), str(ttc), str(fcw), str(hwm), str(hw), str(vb)]
-        self.player.show_vehicle_parameters(img, parameters)
+        self.player.show_vehicle_parameters(img, parameters, (120, 0))
         alert['ttc'] = float(alert_ttc)
         alert['warning_level'] = int(warning_level)
         alert['hw_state'] = int(hw_state)
@@ -581,15 +602,35 @@ class PCViewer():
                 self.player.show_pedestrains(img, position, CVColor.Yellow, 2)
 
         parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
-        self.player.show_lane_parameters(img, parameters)
-        self.player.show_env(img, speed, light_mode, fps)
+        if self.show_mobile_info:
+            lane_y = 120 * 3
+        else:
+            lane_y = 120 * 2
+        self.player.show_lane_parameters(img, parameters, (lane_y, 0))
+        self.player.show_env(img, speed, light_mode, fps, (0, 0))
         alert['lane_warning'] = lane_warning
         alert['speed'] = float('%.2f' % speed)
 
+        
+        index = int(frame_id/3)*4+frame_id%3
+        print('index:', index)
+        if self.show_mobile_info:
+            mobile_ldw, mobile_hw, mobile_fcw, mobile_vb, mobile_hwm = '-', '-', '-', '-', '-'
+            mobile_log = self.mobile_content[index]
+            if mobile_log:
+                mobile_hwm = mobile_log.get('headway_measurement') if mobile_log.get('headway_measurement') else 0
+                mobile_hw = 1 if mobile_log.get('sound_type') == 3 else 0
+                mobile_fcw = 1 if mobile_log.get('sound_type') == 6 and mobile_log.get('fcw_on') == 1 else 0
+                mobile_vb = 1 if mobile_log.get('sound_type') == 5 else 0
+                mobile_ldw = mobile_log['left_ldw'] * 2 + mobile_log['right_ldw'] if 'left_ldw' in mobile_log else 0
+
+            mobile_parameters = [str(mobile_hwm), str(mobile_hw), str(mobile_fcw), str(mobile_vb), str(mobile_ldw)]
+            self.player.show_mobile_parameters(img, mobile_parameters, (120*2, 0))
+            
+
         if self.save_alert:
-            image_index = int(frame_id/3)*4+frame_id%3
-            self.fileHandler.insert_alert((frame_id, {image_index: alert}))
-            self.fileHandler.insert_image((image_index, img))
+            self.fileHandler.insert_alert((frame_id, {index: alert}))
+            self.fileHandler.insert_image((index, img))
         if self.save_video:
             self.fileHandler.insert_video((frame_id, img))
         cv2.imshow('UI', img)
