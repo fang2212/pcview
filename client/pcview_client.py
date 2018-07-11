@@ -306,11 +306,10 @@ class Hub(Process):
         self.lane_list = []
         self.vehicle_list = []
 
-
     @staticmethod
     def pending(queue, list):
-        inc = 5
-        while (not len(list)) and inc:
+        inc = 3
+        while (not list) and inc:
             inc -= 1
             if not queue.empty():
                 list.append(queue.get())
@@ -318,12 +317,15 @@ class Hub(Process):
 
     @staticmethod
     def waiting(queue, list, frame_id):
-        while not queue.empty():
-            id, data = queue.get()
-            if id >= frame_id:
-                list.append((id, data))
-                break
+        inc = 2
+        while inc:
+            if not queue.empty():
+                id, data = queue.get()
+                if id >= frame_id:
+                    list.append((id, data))
+                    break
             time.sleep(0.01)
+            inc -= 1
             
     def pop(self):
         res = {
@@ -335,7 +337,7 @@ class Hub(Process):
         }
         while True:
             if not self.is_pic:
-                print('-------------------no__pic-------------------------------')
+                # print('-------------------no__pic-------------------------------')
                 self.pending(self.lane_queue, self.lane_list)
                 self.pending(self.vehicle_queue, self.vehicle_list)
                 self.pending(self.pedes_queue, self.pedes_list)
@@ -371,13 +373,13 @@ class Hub(Process):
                 return res         
             
             else:
-                print('-------------------__pic-------------------------------')
+                # print('-------------------__pic-------------------------------')
                 self.pending(self.camera_queue, self.camera_list)
                 if len(self.camera_list) <= 0:
                     continue
                 frame_id, image_data = self.camera_list.pop(0)
-                self.waiting(self.vehicle_queue, self.vehicle_list, frame_id)
                 self.waiting(self.lane_queue, self.lane_list, frame_id)
+                self.waiting(self.vehicle_queue, self.vehicle_list, frame_id)
                 self.waiting(self.pedes_queue, self.pedes_list, frame_id)
 
                 image = np.fromstring(image_data, dtype=np.uint8).reshape(720, 1280, 1)
@@ -462,7 +464,7 @@ class PCViewer():
             frame_cnt += 1
             self.draw(d, frame_cnt)
             if frame_cnt >= 100:
-                self.start_time = datatime.now()
+                self.start_time = datetime.now()
                 frame_cnt = 0
 
     def draw(self, mess, frame_cnt):
@@ -613,7 +615,7 @@ class PCViewer():
 
         
         index = int(frame_id/3)*4+frame_id%3
-        print('index:', index)
+        # print('index:', index)
         if self.show_mobile_info:
             mobile_ldw, mobile_hw, mobile_fcw, mobile_vb, mobile_hwm = '-', '-', '-', '-', '-'
             mobile_log = self.mobile_content[index]
