@@ -356,7 +356,6 @@ class Hub(Process):
                 index = int(frame_id/3)*4+frame_id%3
                 image_path = self.image_list[index]
                 image_path = image_path.strip()
-                # print('image_path:', image_path)
                 img = cv2.imread(image_path)
                 res['frame_id'] = frame_id
                 res['img'] = img
@@ -426,8 +425,7 @@ class PCViewer():
         self.save_video = save_video
         self.save_log = save_log
         self.save_alert = save_alert
-        self.is_pic = 1
-        #self.is_pic = is_pic
+        self.is_pic = is_pic
         self.player = Player()
         self.ip = ip
         self.path = path
@@ -454,11 +452,9 @@ class PCViewer():
         self.start_time = datetime.now()
         bool = 1
         frame_cnt = 0
-        # print('main process id:', os.getpid())
 
         while not self.exit:
             d = self.hub.pop()
-            # bool = 1 - bool
             if not d.get('frame_id'):
                 continue
             frame_cnt += 1
@@ -615,7 +611,6 @@ class PCViewer():
 
         
         index = int(frame_id/3)*4+frame_id%3
-        # print('index:', index)
         if self.show_mobile_info:
             mobile_ldw, mobile_hw, mobile_fcw, mobile_vb, mobile_hwm = '-', '-', '-', '-', '-'
             mobile_log = self.mobile_content[index]

@@ -8,7 +8,7 @@ __progname__ = 'run'
 from client.pcview_client import PCViewer
 import argparse
 
-def run(ip='192.168.0.233', save_video=0, save_alert=0, save_log=0, path='/home/minieye/pcviewer-data/', source=None, ispic=0):
+def run(ip='192.168.0.233', save_video=0, save_alert=0, save_log=0, path='/home/minieye/pcviewer-data/', source=None, ispic=1):
     PCViewer(path, ispic, ip, int(save_video), int(save_log), int(save_alert)).start()
 
 if __name__ == "__main__":
