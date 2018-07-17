@@ -279,7 +279,7 @@ class Player(object):
         origin_x, origin_y = point
         gap_v = 20
         BaseDraw.draw_text(img, 'lane', (origin_x, origin_y+gap_v), 0.5, CVColor.Cyan, 1)
-        BaseDraw.draw_text(img, 'lw_dis:'+lw_dis, (origin_x, origin_y*2), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'lw_dis:'+lw_dis, (origin_x, origin_y+gap_v*2), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'rw_dis:'+rw_dis, (origin_x, origin_y+gap_v*3), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'ldw:'+ldw, (origin_x, origin_y+gap_v*4), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'trend:'+trend, (origin_x, origin_y+gap_v*5), 0.5, CVColor.White, 1)
