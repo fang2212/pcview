@@ -286,7 +286,7 @@ class Hub(Process):
             print('-------------------no_pic-------------------------------')
 #            image_fp = open('/home/minieye/testdisk1/TestCase/B9J5G7-20180109/case/fpga_case/case1/image_list.txt', 'r+')
             # image_fp = open('/home/minieye/collecting-data/0530pcw_7f418/case/fpga_case/case1/image_list.txt', 'r+')
-            image_fp = open('/home/minieye/testdisk1/TestCase/warn_vedio/image_list.txt', 'r+')
+            image_fp = open('/home/minieye/testdisk1/TestCase/pcshow/image_list5.txt', 'r+')
             self.image_list = image_fp.readlines()
             image_fp.close()
 
@@ -470,24 +470,26 @@ class PCViewer():
         img = mess['img']
         frame_id = mess['frame_id']
 
-        # 
-        #if not lane_data:
-        #    if self.lane_cnt == 0:
-        #        lane_data = self.pre_lane
-        #        self.lane_cnt += 1
-        #        self.pre_lane = {}
-        #else:
-        #    self.pre_lane = lane_data
-        #    self.lane_cnt = 0    
+        '''
+        # 连续处理
+        if not lane_data:
+            if self.lane_cnt == 0:
+                lane_data = self.pre_lane
+                self.lane_cnt += 1
+                self.pre_lane = {}
+        else:
+            self.pre_lane = lane_data
+            self.lane_cnt = 0
 
-        #if not vehicle_data:
-        #    if self.vehicle_cnt == 0:
-        #        vehicle_data = self.pre_vehicle
-        #        self.vehicle_cnt += 1
-        #        self.pre_vehicle = {}
-        #else:
-        #    self.pre_vehicle = vehicle_data
-        #    self.vehicle_cnt = 0    
+        if not vehicle_data:
+            if self.vehicle_cnt == 0:
+                vehicle_data = self.pre_vehicle
+                self.vehicle_cnt += 1
+                self.pre_vehicle = {}
+        else:
+            self.pre_vehicle = vehicle_data
+            self.vehicle_cnt = 0
+        '''
         
         temp_mess = mess
         temp_mess.pop('img')
