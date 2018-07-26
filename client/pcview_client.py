@@ -18,34 +18,32 @@ import sys
 import numpy as np
 import cv2
 from .draw.ui_draw import Player
+from ../etc/config import config
 
 class FileHandle(Process):
-    def __init__(self, path, save_log, save_alert, save_video):
+    def __init__(self):
         Process.__init__(self)
         self.deamon = True
         self.log_queue = Queue()
         self.alert_queue = Queue()
         self.image_queue = Queue()
         self.video_queue = Queue()
-        self.path = path
         self._max_cnt = 7000
-        self.save_log = save_log
-        self.save_alert = save_alert
-        self.save_video = save_video
+        path = config.save.path
  
         FORMAT = '%Y%m%d%H%M'
         date = datetime.now().strftime(FORMAT)
         self.path = os.path.join(path, date)
         os.makedirs(self.path)
  
-        if self.save_log:
+        if config.save.log:
             self.log_fp = open(os.path.join(self.path, 'log.json'), 'w+')
-        if self.save_alert:
+        if config.save.alert:
             self.alert_fp = open(os.path.join(self.path, 'alert.json'), 'w+')
             self.image_path = os.path.join(self.path, 'image')
             os.makedirs(self.image_path)
 
-        if self.save_video:
+        if config.save.video:
             self.video_writer = None
             self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
             self.video_path = os.path.join(self.path, 'video')
@@ -55,12 +53,12 @@ class FileHandle(Process):
         cnt = 0
         while True:
             # print('---fileHandle process id----', os.getpid())
-            while self.save_log and not self.log_queue.empty():
+            while config.save.log and not self.log_queue.empty():
                 frame_id, data = self.log_queue.get() 
                 self.log_fp.write(json.dumps(data) + '\n')
                 self.log_fp.flush()
  
-            if self.save_alert:
+            if config.save.alert:
                 while not self.alert_queue.empty():
                     frame_id, data = self.alert_queue.get()
                     self.alert_fp.write(json.dumps(data) + '\n')
@@ -70,12 +68,13 @@ class FileHandle(Process):
                     image_index, data = self.image_queue.get() 
                     cv2.imwrite(os.path.join(self.image_path, str(image_index) + '.jpg'), data)
  
-            while self.save_video and not self.video_queue.empty():
+            while config.save.video and not self.video_queue.empty():
                 frame_id, data = self.video_queue.get() 
                 if cnt % self._max_cnt == 0:
                     if self.video_writer:
                         self.video_writer.release()
-                    self.video_writer = cv2.VideoWriter(os.path.join(self.video_path, str(cnt)+'.avi'), self.fourcc, 20.0, (1280, 720), True)
+                    self.video_writer = cv2.VideoWriter(os.path.join(self.video_path, str(cnt)+'.avi'),
+                            self.fourcc, 20.0, (1280, 720), True)
                 self.video_writer.write(data)
                 cnt += 1
             time.sleep(0.02)
@@ -96,7 +95,6 @@ class Sink(Process):
     def __init__(self, queue, ip, port=1200):
         Process.__init__(self)
         self.deamon = True
-        self.ip = ip
         self.port = port
         self.queue = queue
         self.q_max = 20
@@ -105,7 +103,7 @@ class Sink(Process):
     def _init_socket(self):
         self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
         nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
-        nanomsg.wrapper.nn_connect(self._socket, "tcp://%s:%s" % (self.ip, self.port, ))
+        nanomsg.wrapper.nn_connect(self._socket, "tcp://%s:%s" % (config.ip, self.port, ))
 
     def run(self):
         self._init_socket()
@@ -270,9 +268,8 @@ class PedesSink(Sink):
 
 class Hub(Process):
     
-    def __init__(self, is_pic, ip='192.168.0.233'):
+    def __init__(self):
         Process.__init__(self)
-        self.is_pic = int(is_pic)
         self.msg_queue = Queue()
         self.msg_list = {
             'lane': [],
@@ -280,14 +277,14 @@ class Hub(Process):
             'ped': [],
         }
 
-        if self.is_pic:
+        if config.pic.ispic:
             self.img_list =[]
             print('-------------------pic-------------------------------')
             self.camera_sink = CameraSink(queue=self.msg_queue, ip=ip, port=1200)
             self.camera_sink.start()
         else: 
             print('-------------------no_pic-------------------------------')
-            image_fp = open('/home/minieye/testdisk1/TestCase/pcshow/image_list5.txt', 'r+')
+            image_fp = open(config.pic.path, 'r+')
             self.image_list = image_fp.readlines()
             image_fp.close()
 
@@ -320,7 +317,7 @@ class Hub(Process):
             'pedes_data': {},
         }
         while True:
-            if not self.is_pic:
+            if not config.pic.ispic:
                 # print('-------------------no__pic-------------------------------')
                 while not self.all_has() and self.list_len() < 10:
                     while not self.msg_queue.empty():
@@ -370,7 +367,8 @@ class Hub(Process):
                             self.img_list.append((msg_data['frame_id'], msg_data))
                             break
                         else:
-                            self.msg_list[msg_type].append((msg_data['frame_id'], msg_data))
+                            self.msg_list[msg_type].append((msg_data['frame_id'],
+                                msg_data))
                     time.sleep(0.02)
 
                 while not self.all_has() and self.list_len() < 10:
@@ -422,15 +420,9 @@ class PCViewer():
        queue: 存储每一帧数据
        player: 图片播放器
     """
-    def __init__(self, path, is_pic, ip = "192.168.0.233", save_video=0, save_log=0, save_alert=0):
+    def __init__(self):
         self.hub = None
-        self.save_video = save_video
-        self.save_log = save_log
-        self.save_alert = save_alert
-        self.is_pic = is_pic
         self.player = Player()
-        self.ip = ip
-        self.path = path
         self.exit = False
 
         self.pre_lane = {}
@@ -438,19 +430,18 @@ class PCViewer():
         self.lane_cnt = 0
         self.vehicle_cnt = 0
 
-        self.show_mobile_info = False
-        if self.show_mobile_info:
-            mobile_fp = open('/home/minieye/testdisk1/TestCase/B9J5G7-20180109/case/fpga_case/case1/mobile/log.json', 'r+')
+        if config.mobile.show:
+            mobile_fp = open(config.mobile.path, 'r+')
             self.mobile_content = json.load(mobile_fp)
-            print('len:', len(self.mobile_content))
+            print('moible_len:', len(self.mobile_content))
             mobile_fp.close()
         
-        if self.save_log or self.save_alert or self.save_video:
-            self.fileHandler = FileHandle(path, self.save_log, self.save_alert, self.save_video)
+        if config.save.log or config.save.alert or config.save.video:
+            self.fileHandler = FileHandle()
             self.fileHandler.start()
     
     def start(self):
-        self.hub = Hub(self.is_pic, self.ip)
+        self.hub = Hub()
         self.start_time = datetime.now()
         bool = 1
         frame_cnt = 0
@@ -495,11 +486,11 @@ class PCViewer():
         
         temp_mess = mess
         temp_mess.pop('img')
-        if self.save_log:
+        if config.save.log:
             self.fileHandler.insert_log((frame_id, temp_mess))
 
         self.player.show_overlook_background(img)
-        if self.show_mobile_info:
+        if config.show_mobile:
             bg_width = 120 * 5
         else:
             bg_width = 120 * 3
@@ -629,10 +620,10 @@ class PCViewer():
             self.player.show_mobile_parameters(img, mobile_parameters, (120*2, 0))
             
 
-        if self.save_alert:
+        if config.save.alert:
             self.fileHandler.insert_alert((frame_id, {index: alert}))
             self.fileHandler.insert_image((index, img))
-        if self.save_video:
+        if config.save.video:
             self.fileHandler.insert_video((frame_id, img))
         cv2.imshow('UI', img)
         key = cv2.waitKey(1) & 0xFF
@@ -643,8 +634,9 @@ class PCViewer():
             cv2.destroyAllWindows()
             self.exit = True
 
-    def test(self, path):
+    def test(self):
         """用于测试，读取离线数据"""
+        path = ""
         fp = open(os.path.join(path, 'log.json'), 'r')
         log_contents = fp.readlines()
         fp.close()
