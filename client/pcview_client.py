@@ -112,12 +112,6 @@ class Sink(Process):
         while True:
             buf = nanomsg.wrapper.nn_recv(self._socket, 0)
             frame_id, data = self.pkg_handler(buf[1])
-            #if len(self._data_queue) > 0 and frame_id < self._data_queue[-1][0]:
-            #    continue
-            self.queue.put((frame_id, data))
-            # print('queuesize', self.queue.qsize())
-            if self.queue.qsize() > self.q_max:
-                self.queue.get()
 
     def pkg_handler(self, msg_buf):
         pass
@@ -181,6 +175,7 @@ class LaneSink(Sink):
             ldict = dict(zip(line_keys, line))
             lines.append(ldict)
         res["lanelines"] = lines
+        self.queue.put(('lane', res))
         # print('l id', frame_id)
         '''
         self.fp.write(str(frame_id)+'\n')
@@ -222,6 +217,7 @@ class VehicleSink(Sink):
             ddict = dict(zip(det_keys, det))
             dets.append(ddict)
         res["dets"] = dets
+        self.queue.put(('vehicle', res))
         # print('v id', frame_id)
         '''
         self.fp.write(str(frame_id)+'\n')
@@ -261,6 +257,7 @@ class PedesSink(Sink):
             ddict = dict(zip(pedestrains_keys, pedestrain))
             pedestrains.append(ddict)
         res['pedestrains'] = pedestrains
+        self.queue.put(('ped', res))
         '''
         self.fp.write(str(frame_id)+'\n')
         self.log_fp.write(json.dumps(res)+'\n')
@@ -276,57 +273,44 @@ class Hub(Process):
     def __init__(self, is_pic, ip='192.168.0.233'):
         Process.__init__(self)
         self.is_pic = int(is_pic)
+        self.msg_queue = Queue()
+        self.msg_list = {
+            'lane': [],
+            'vehicle': [],
+            'ped': [],
+        }
+
         if self.is_pic:
+            self.img_list =[]
             print('-------------------pic-------------------------------')
-            self.camera_list = []
-            self.camera_queue = Queue()
-            self.camera_sink = CameraSink(queue=self.camera_queue, ip=ip, port=1200)
+            self.camera_sink = CameraSink(queue=self.msg_queue, ip=ip, port=1200)
             self.camera_sink.start()
         else: 
             print('-------------------no_pic-------------------------------')
-#            image_fp = open('/home/minieye/testdisk1/TestCase/B9J5G7-20180109/case/fpga_case/case1/image_list.txt', 'r+')
-            # image_fp = open('/home/minieye/collecting-data/0530pcw_7f418/case/fpga_case/case1/image_list.txt', 'r+')
             image_fp = open('/home/minieye/testdisk1/TestCase/pcshow/image_list5.txt', 'r+')
             self.image_list = image_fp.readlines()
             image_fp.close()
 
-        self.lane_queue = Queue()
-        self.lane_sink = LaneSink(queue=self.lane_queue, ip=ip, port=1203)
+        self.lane_sink = LaneSink(queue=self.msg_queue, ip=ip, port=1203)
         self.lane_sink.start()
 
-        self.vehicle_queue = Queue()
-        self.vehicle_sink = VehicleSink(queue=self.vehicle_queue, ip=ip, port=1204)
+        self.vehicle_sink = VehicleSink(queue=self.msg_queue, ip=ip, port=1204)
         self.vehicle_sink.start()
         
-        self.pedes_queue = Queue()
-        self.pedes_sink = PedesSink(queue=self.pedes_queue, ip=ip, port=1205)
+        self.pedes_sink = PedesSink(queue=self.msg_queue, ip=ip, port=1205)
         self.pedes_sink.start()
 
-        self.pedes_list = []
-        self.lane_list = []
-        self.vehicle_list = []
+    def list_len(self):
+        length = 0
+        for key in self.msg_list:
+            lenght += len(self.msg_list[key])
+            return length
+    def all_has(self):
+        for key in self.msg_list:
+            if not self.msg_list[key]:
+                return False
+        return True
 
-    @staticmethod
-    def pending(queue, list):
-        inc = 3
-        while (not list) and inc:
-            inc -= 1
-            if not queue.empty():
-                list.append(queue.get())
-            time.sleep(0.01)
-
-    @staticmethod
-    def waiting(queue, list, frame_id):
-        inc = 2
-        while inc:
-            if not queue.empty():
-                id, data = queue.get()
-                if id >= frame_id:
-                    list.append((id, data))
-                    break
-            time.sleep(0.01)
-            inc -= 1
-            
     def pop(self):
         res = {
             'frame_id': None,
@@ -338,77 +322,95 @@ class Hub(Process):
         while True:
             if not self.is_pic:
                 # print('-------------------no__pic-------------------------------')
-                self.pending(self.lane_queue, self.lane_list)
-                self.pending(self.vehicle_queue, self.vehicle_list)
-                self.pending(self.pedes_queue, self.pedes_list)
+                while not self.all_has() and self.list_len() < 10:
+                    while not self.msg_queue.empty():
+                        msg_type, msg_data = self.msg_queue.get()
+                        self.msg_list[msg_type].append((msg_data['frame_id'], msg_data))
+                    time.sleep(0.02)
+
                 lane_id, vehicle_id, pedes_id = sys.maxsize,sys.maxsize,sys.maxsize
-                if len(self.lane_list)>0:
-                    lane_id, lane_data = self.lane_list[0]
-                if len(self.vehicle_list)>0:
-                    vehicle_id, vehicle_data = self.vehicle_list[0]
-                if len(self.pedes_list)>0:
-                    pedes_id, pedes_data = self.pedes_list[0]
+
+                if len(self.msg_list['lane'])>0:
+                    lane_id, lane_data = self.msg_list['lane'][0]
+                if len(self.msg_list['vehicle'])>0:
+                    vehicle_id, vehicle_data = self.msg_list['vehicle'][0]
+                if len(self.msg_list['ped'])>0:
+                    pedes_id, pedes_data = self.msg_list['ped'][0]
+
                 frame_id = min(min(lane_id, vehicle_id), pedes_id)
+              
                 if frame_id == sys.maxsize:
-                    time.sleep(0.01)
+                    time.sleep(0.02)
                     continue
                 
-                index = int(frame_id/3)*4+frame_id%3
+                index = ((frame_id//3)*4+frame_id%3) % len(self.image_list)
                 image_path = self.image_list[index]
                 image_path = image_path.strip()
                 img = cv2.imread(image_path)
+
                 res['frame_id'] = frame_id
                 res['img'] = img
                 if lane_id == frame_id:
                     res['lane_data'] = lane_data
-                    self.lane_list.pop(0)
+                    self.msg_list['lane'].pop(0)
                 if vehicle_id == frame_id:
                     res['vehicle_data'] = vehicle_data
-                    self.vehicle_list.pop(0)
+                    self.msg_list['vehicle'].pop(0)
                 if pedes_id == frame_id:
                     res['pedes_data'] = pedes_data
-                    self.pedes_list.pop(0)
+                    self.msg_list['ped'].pop(0)
             
                 return res         
             
             else:
-                # print('-------------------__pic-------------------------------')
-                self.pending(self.camera_queue, self.camera_list)
-                if len(self.camera_list) <= 0:
+                while len(self.img_list) <= 0:
+                    while not self.msg_queue.empty():
+                        msg_type, msg_data = self.msg_queue.get()
+                        if msg_type == 'img':
+                            self.img_list.append((msg_data['frame_id'], msg_data))
+                            break
+                        else:
+                            self.msg_list[msg_type].append((msg_data['frame_id'], msg_data))
+                    time.sleep(0.02)
+
+                while not self.all_has() and self.list_len() < 10:
+                    while not self.msg_queue.empty():
+                        msg_type, msg_data = self.msg_queue.get()
+                        self.msg_list[msg_type].append((msg_data['frame_id'], msg_data))
+                    time.sleep(0.02)
+
+                lane_id, vehicle_id, pedes_id = sys.maxsize,sys.maxsize,sys.maxsize
+
+                if len(self.msg_list['lane'])>0:
+                    lane_id, lane_data = self.msg_list['lane'][0]
+                if len(self.msg_list['vehicle'])>0:
+                    vehicle_id, vehicle_data = self.msg_list['vehicle'][0]
+                if len(self.msg_list['ped'])>0:
+                    pedes_id, pedes_data = self.msg_list['ped'][0]
+
+                temp_id = min(min(lane_id, vehicle_id), pedes_id)
+              
+                if temp_id == sys.maxsize:
+                    time.sleep(0.02)
                     continue
-                frame_id, image_data = self.camera_list.pop(0)
-                self.waiting(self.lane_queue, self.lane_list, frame_id)
-                self.waiting(self.vehicle_queue, self.vehicle_list, frame_id)
-                self.waiting(self.pedes_queue, self.pedes_list, frame_id)
+                
+                frame_id, img_data = self.img_list.pop(0)
+                img_gray = np.fromstring(img_data, dtype=np.uint8).reshape(720, 1280, 1)
+                img = cv2.cvtColor(img_gray, cv2.COLOR_GRAY2RGB)
+                res['img'] = img
 
-                image = np.fromstring(image_data, dtype=np.uint8).reshape(720, 1280, 1)
-                image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
                 res['frame_id'] = frame_id
-                res['img'] = image
-
-                while len(self.vehicle_list) and self.vehicle_list[0][0]<=frame_id:
-                    temp = self.vehicle_list.pop(0)
-                    if temp[0] == frame_id:
-                        res['vehicle_data'] = temp[1]
-                
-                while len(self.lane_list) and self.lane_list[0][0]<=frame_id:
-                    temp = self.lane_list.pop(0)
-                    if temp[0] == frame_id:
-                        res['lane_data'] = temp[1]
-                        # print(' lane', end='')
-                
-                while len(self.pedes_list) and self.pedes_list[0][0]<=frame_id:
-                    temp = self.pedes_list.pop(0)
-                    if temp[0] == frame_id:
-                        res['pedes_data'] = temp[1]
-                        # print(' lane', end='')
-                # print()
-                
-                '''
-                if not res['lane_data'] and not res['vehicle_data'] and not res.get('pedes_data'):
-                    res['frame_id'] = None
-                '''
-                return res
+                if lane_id == frame_id:
+                    res['lane_data'] = lane_data
+                    self.msg_list['lane'].pop(0)
+                if vehicle_id == frame_id:
+                    res['vehicle_data'] = vehicle_data
+                    self.msg_list['vehicle'].pop(0)
+                if pedes_id == frame_id:
+                    res['pedes_data'] = pedes_data
+                    self.msg_list['ped'].pop(0)
+            
+                return res         
 
 class PCViewer():
     """pc-viewer功能类，用于接收每一帧数据，并绘制
