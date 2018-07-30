@@ -6,8 +6,9 @@ __version__ = '0.1.0'
 __progname__ = 'run'
 
 from client.pcview_client import PCViewer
-import argparse
+from client.pcview_client import MtkHub
 
 if __name__ == "__main__":
-    pc_viewer = PCViewer()
+    hub = MtkHub()
+    pc_viewer = PCViewer(hub)
     pc_viewer.start()

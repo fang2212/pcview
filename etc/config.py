@@ -1,11 +1,12 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-config = {
-    "ip": "192.168.1.251",
+config_dict = {
+    "ip": "192.168.1.233",
     "port": 1200,
+    "debug": True,
     "pic": {
         "ispic": True,
-        "path": "/home/minieye/testdisk1/TestCase/pcshow/image_list5.txt"
+        "path": "/home/minieye/TestCase/B9J5G7-201803271443/case/fpga_case/default_case/image_list.txt"
     },
 
     "mobile": {
@@ -14,7 +15,7 @@ config = {
     },
 
     "save": {
-        "path": "/home/minieye/pcviewer-data/",
+        "path": "/home/tester/pcviewer-data/",
         "video": False,
         "alert": False,
         "log": False
@@ -22,8 +23,22 @@ config = {
     
     "show": {
         "lane": True,
-        "lane_speed_limit": 30,
+        "lane_speed_limit": 50,
         "vehicle": True,
         "ped": True
     }
 }
+
+def dic2obj(d):
+    top = type('new', (object,), d)
+    seqs = tuple, list, set, frozenset
+    for i, j in d.items():
+        if isinstance(j, dict):
+            setattr(top, i, dic2obj(j))
+        elif isinstance(j, seqs):
+            setattr(top, i, type(j)(dic2obj(sj) if isinstance(sj, dict) else sj for sj in j))
+        else:
+            setattr(top, i, j)
+    return top
+
+config = dic2obj(config_dict)

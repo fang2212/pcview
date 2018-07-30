@@ -7,8 +7,8 @@ import time
 import json
 from datetime import datetime
 from multiprocessing import Process
-from mutilprocessing import Queue
-from ../etc/config import config
+from multiprocessing import Queue
+from etc.config import config
 
 class FileHandler(Process):
     def __init__(self):
