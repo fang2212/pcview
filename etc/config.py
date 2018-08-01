@@ -6,7 +6,7 @@ config_dict = {
     "debug": True,
     "pic": {
         "ispic": True,
-        "path": "/home/minieye/TestCase/B9J5G7-201803271443/case/fpga_case/default_case/image_list.txt"
+        "path": "/media/tester/testdisk1/TestCase/B9J5G7-201805301724/case/fpga_case/case1/image_list.txt"
     },
 
     "mobile": {
@@ -25,7 +25,15 @@ config_dict = {
         "lane": True,
         "lane_speed_limit": 50,
         "vehicle": True,
-        "ped": True
+        "ped": True,
+        "tsr": True
+    },
+
+    "fix": {
+        "lane": 3,
+        "vehicle": 5,
+        "ped": 5,
+        "tsr": 5
     }
 }
 

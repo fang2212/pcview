@@ -26,6 +26,15 @@ class PCViewer():
         self.hub = hub
         self.player = Player()
         self.exit = False
+        
+        self.pre_lane = {}
+        self.pre_vehicle = {}
+        self.pre_ped = {}
+        self.pre_tsr = {}
+        self.lane_cnt = 0
+        self.vehicle_cnt = 0
+        self.ped_cnt = 0
+        self.tsr_cnt = 0
 
         if config.mobile.show:
             mobile_fp = open(config.mobile.path, 'r+')
@@ -47,43 +56,68 @@ class PCViewer():
                 continue
             frame_cnt += 1
             self.draw(d, frame_cnt)
-            if frame_cnt >= 500:
+            if frame_cnt >= 200:
                 self.start_time = datetime.now()
                 frame_cnt = 0
+
+    def fix_frame(self, data, pre_data, cur_cnt, fix_cnt):
+        if not data:
+            if cur_cnt <= fix_cnt:
+                data = pre_data
+                cur_cnt += 1
+            else:
+                pre_data = {}
+        else:
+            pre_data = data
+            cur_cnt = 0
+        return pre_data, cur_cnt
 
     def draw(self, mess, frame_cnt):
         img = mess['img']
         frame_id = mess['frame_id']
+        vehicle_data = mess['vehicle_data']
+        lane_data = mess['lane_data']
+        ped_data = mess['ped_data']
+        tsr_data = mess['tsr_data']
 
         self.player.show_overlook_background(img)
         if config.mobile.show:
-            bg_width = 120 * 5
+            bg_width = 120 * 6
         else:
-            bg_width = 120 * 3
-        self.player.show_parameters_background(img, (0, 0, bg_width, 170))
+            bg_width = 120 * 4
+        self.player.show_parameters_background(img, (0, 0, bg_width+20, 150))
+        
+        # fix frame
+        self.pre_lane, self.lane_cnt = self.fix_frame(lane_data, self.pre_lane, self.lane_cnt, config.fix.lane)
+        self.pre_vehicle, self.vehicle_cnt = self.fix_frame(vehicle_data, self.pre_vehicle, self.vehicle_cnt, config.fix.vehicle)
+        self.pre_ped, self.ped_cnt = self.fix_frame(ped_data, self.pre_ped, self.ped_cnt, config.fix.ped)
+        self.pre_tsr, self.tsr_cnt = self.fix_frame(tsr_data, self.pre_tsr, self.tsr_cnt, config.fix.tsr)
         
         if config.show.vehicle:
-            self.draw_vehicle(img, mess['vehicle_data'])
+            self.draw_vehicle(img, vehicle_data)
         
         if config.show.lane:
-            self.draw_lane(img, mess['lane_data'])
+            self.draw_lane(img, lane_data)
 
         if config.show.ped:
-            self.draw_ped(img, mess['ped_data'])
+            self.draw_ped(img, ped_data)
+
+        if config.show.tsr:
+            self.draw_tsr(img, tsr_data)
         
         # show env info
         light_mode = -1
-        if mess['vehicle_data']:
-            lignt_mode = mess['vehicle_data']['light_mode']
-        speed = mess['vehicle_data'].get('speed') if mess['vehicle_data'].get('speed') else 0
-        speed = mess['lane_data'].get('speed')*3.6 if mess['lane_data'].get('speed') else speed
+        if vehicle_data:
+            light_mode = vehicle_data['light_mode']
+        speed = vehicle_data.get('speed') if vehicle_data.get('speed') else 0
+        speed = lane_data.get('speed')*3.6 if lane_data.get('speed') else speed
 
         fps = self.cal_fps(frame_cnt)
         self.player.show_env(img, speed, light_mode, fps, (0, 0))
         
         # save info
         if config.save.alert:
-            alert = self.get_alert(mess['vehicle'], mess['lane_data'], mess['ped_data'])
+            alert = self.get_alert(vehicle, lane_data, ped_data)
             self.fileHandler.insert_alert((frame_id, {index: alert}))
             self.fileHandler.insert_image((index, img))
 
@@ -143,7 +177,7 @@ class PCViewer():
             for i, vehicle in enumerate(vehicle_data['dets']):
                 focus_vehicle = (i == focus_index)
                 position = vehicle['bounding_rect']
-                
+                position = position['x'], position['y'], position['width'], position['height']
                 color = CVColor.Red if focus_index == i else CVColor.Cyan
                 self.player.show_vehicle(img, position, color, 2)
                 
@@ -205,10 +239,36 @@ class PCViewer():
     # ped
     def draw_ped(self, img, ped_data):
         if ped_data:
-            print('ped_data:', ped_data)
             for pedestrain in ped_data['pedestrians']:
                 position = pedestrain['regressed_box']
-                self.player.show_pedestrains(img, position, CVColor.Yellow, 2)
+                position = position['x'], position['y'], position['width'], position['height']
+                print('position:', position)
+                color = CVColor.Yellow
+                if pedestrain['is_key']:
+                    color = CVColor.Pink
+                if pedestrain['is_danger']:
+                    color = CVColor.Pink
+                self.player.show_peds(img, position, color, 2)
+                if position[0] > 0:
+                    self.player.show_peds_info(img, position, pedestrain['dist'])
+    
+    def draw_tsr(self, img, tsr_data):
+        focus_index, speed_limit, tsr_warning_level, tsr_warning_state = -1, 0, 0, 0
+        if tsr_data:
+            focus_index = tsr_data['focus_index']
+            speed_limit = tsr_data['speed_limit']
+            tsr_warning_level = tsr_data['tsr_warning_level']
+            tsr_warning_state = tsr_data['tsr_warning_state']
+            for i, tsr in enumerate(tsr_data['dets']):
+                position = tsr['position']
+                position = position['x'], position['y'], position['width'], position['height']
+                color = CVColor.Red
+                self.player.show_tsr(img, position, color, 2)
+                if tsr['max_speed'] != 0:
+                    self.player.show_tsr_info(img, position, tsr['max_speed'])                
+                
+        parameters = [str(focus_index), str(speed_limit), str(tsr_warning_level), str(tsr_warning_state)]
+        self.player.show_tsr_parameters(img, parameters, (369, 0))
     
     def cal_fps(self, frame_cnt):
         end_time = datetime.now()

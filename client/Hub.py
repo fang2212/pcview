@@ -8,10 +8,7 @@ import numpy as np
 from etc.config import config
 from multiprocessing import Queue
 from .sink_mtk import MtkSink
-from .sink_fpga import CameraSink
-from .sink_fpga import LaneSink
-from .sink_fpga import VehicleSink
-from .sink_fpga import PedSink
+from .sink_fpga import CameraSink,LaneSink,VehicleSink,PedSink,TsrSink
 
 class Hub():
     def __init__(self):
@@ -20,6 +17,7 @@ class Hub():
             'lane': [],
             'vehicle': [],
             'ped': [],
+            'tsr': [],
         }
         
         if not config.pic.ispic:
@@ -43,15 +41,18 @@ class Hub():
         return True
 
     def push_msg(self):
-        while not self.msg_queue.empty():
-            msg_type, msg_data = self.msg_queue.get()
-            if msg_type == 'img':
-                frame_id = int.from_bytes(msg_data[4:8], byteorder="little", signed=False)
-                data = msg_data[16:]
-                self.img_list.append((frame_id, data))
-                break
-            else:
-                self.msg_list[msg_type].append((msg_data['frame_id'], msg_data))
+        cnt = 3
+        while cnt >= 0:
+            if not self.msg_queue.empty():
+                msg_type, msg_data = self.msg_queue.get()
+                if msg_type == 'img':
+                    frame_id = int.from_bytes(msg_data[4:8], byteorder="little", signed=False)
+                    data = msg_data[16:]
+                    self.img_list.append((frame_id, data))
+                    break
+                else:
+                    self.msg_list[msg_type].append((msg_data['frame_id'], msg_data))
+            cnt -= 1
 
     def get_res_pic(self, res):
         while len(self.img_list) <= 0:
@@ -60,7 +61,7 @@ class Hub():
         frame_id, img_data = self.img_list.pop(0)
         img_gray = np.fromstring(img_data, dtype=np.uint8).reshape(720, 1280, 1)
         img = cv2.cvtColor(img_gray, cv2.COLOR_GRAY2RGB)
-   
+ 
         while not self.all_has() and self.list_len() < 10:
             self.push_msg()
             time.sleep(0.02)
@@ -81,23 +82,34 @@ class Hub():
             vehicle_id, vehicle_data = self.msg_list['vehicle'].pop(0)
             if vehicle_id == frame_id:
                 res['vehicle_data'] = vehicle_data
+                break
+
+        while len(self.msg_list['tsr']) > 0 and self.msg_list['tsr'][0][0] <= frame_id:
+            tsr_id, tsr_data = self.msg_list['tsr'].pop(0)
+            if tsr_id == frame_id:
+                res['tsr_data'] = tsr_data
+                break
         res['frame_id'] = frame_id
         res['img'] = img
         
         return res
     
     def get_res_nopic(self, res):
-        while not self.all_has() and self.list_len() < 10:
+        while not self.all_has() and self.list_len() < 12:
             self.push_msg()
             time.sleep(0.02)
         
-        lane_id, vehicle_id, pedes_id = sys.maxsize,sys.maxsize,sys.maxsize
+        lane_id, vehicle_id, pedes_id, tsr_id = sys.maxsize,sys.maxsize,sys.maxsize,sys.maxsize
         if len(self.msg_list['lane'])>0:
             lane_id, lane_data = self.msg_list['lane'][0]
         if len(self.msg_list['vehicle'])>0:
             vehicle_id, vehicle_data = self.msg_list['vehicle'][0]
         if len(self.msg_list['ped'])>0:
             pedes_id, pedes_data = self.msg_list['ped'][0]
+        if len(self.msg_list['tsr'])>0:
+            tsr_id, tsr_data = self.msg_list['tsr'][0]
+
+        frame_id = min(min(min(lane_id, vehicle_id), pedes_id), tsr_id)
 
         if frame_id == sys.maxsize:
             res['frame_id'] = sys.maxsize
@@ -118,6 +130,9 @@ class Hub():
         if pedes_id == frame_id:
             res['ped_data'] = pedes_data
             self.msg_list['ped'].pop(0)
+        if tsr_id == frame_id:
+            res['tsr_data'] = tsr_data
+            self.msg_list['tsr'].pop(0)
         return res
 
     def pop(self):
@@ -127,6 +142,7 @@ class Hub():
             'vehicle_data': {},
             'lane_data': {},
             'ped_data': {},
+            'tsr_data': {},
         }
         while True:
             if config.pic.ispic: # 传图情况获取frame_id, img
@@ -136,7 +152,6 @@ class Hub():
             # print('res:', res)
             if res['frame_id'] == sys.maxsize:
                 continue
-            
             return res
 
 class MtkHub(Hub):
@@ -164,3 +179,6 @@ class FpgaHub(Hub):
 
         ped_sink = PedSink(queue=self.msg_queue, port=1205)
         ped_sink.start()
+        
+        tsr_sink = TsrSink(queue=self.msg_queue, port=1206)
+        tsr_sink.start()

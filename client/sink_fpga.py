@@ -91,6 +91,19 @@ class PedSink(Sink):
         data = msgpack.loads(msg)
         res = convert(data)
         frame_id = res['frame_id']
-        # print('p data:', res)
+        print('p data:', res)
         self.queue.put(('ped', res))
+        return frame_id, res
+
+class TsrSink(Sink):
+
+    def __init__(self, queue, port=1206):
+        Sink.__init__(self, queue, port)
+
+    def pkg_handler(self, msg):
+        data = msgpack.loads(msg)
+        res = convert(data)
+        frame_id = res['frame_id']
+        # print('t data:', res)
+        self.queue.put(('tsr', res))
         return frame_id, res

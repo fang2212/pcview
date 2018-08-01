@@ -117,25 +117,26 @@ class Player(object):
         height = int(height)
         x2 = x1 + width
         y2 = y1 + height
-        origin_x = max(0, x2 - 100)
-        origin_y = max(0, y1 - 20)
-        BaseDraw.draw_alpha_rect(img, (origin_x, origin_y, 100, 20), 0.6)
+        origin_x = max(0, x2 - 150)
+        origin_y = max(0, y1 - 30)
+        BaseDraw.draw_alpha_rect(img, (origin_x, origin_y, 150, 30), 0.6)
+        size = 1
         const_type = {
             '2': 'CAR',
             '3': 'BUS',
             '4': 'BOX',
             '5': 'SSP'
         }
-        BaseDraw.draw_text(img, const_type[vehicle_type], (x2 - 90, y1 - 5),
-                          0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, const_type[vehicle_type], (x2 - 150, y1 - 5),
+                          size, CVColor.White, 1)
 
         d1 = int(float(vertical_dis) * 100) / 100
         d2 = int(float(horizontal_dis) * 10) / 10
         #data = str(d1) + ',' + str(d2)
         data = str(d1)
-        BaseDraw.draw_text(img, data, (x2 - 50, y1 - 5), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, data, (x2 - 90, y1 - 5), size, CVColor.White, 1)
 
-        vehicle_width = '%.2f' % vehicle_width 
+        # vehicle_width = '%.2f' % vehicle_width 
         # BaseDraw.draw_text(img, str(vehicle_width), (x2 - 50, y1 - 5), 0.5, CVColor.White, 1)
  
     def show_overlook_vehicle(self, img, type, y, x):
@@ -184,12 +185,12 @@ class Player(object):
         gap_v = 20
         BaseDraw.draw_text(img, 'vechicle', (origin_x, origin_y + gap_v), 0.5, CVColor.Cyan, 1)
         BaseDraw.draw_text(img, 'type:' + type, (origin_x, origin_y + gap_v*2), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'index:' + index, (origin_x, origin_y + gap_v*3), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'ttc:' + ttc, (origin_x, origin_y + gap_v*4), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v*5), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v*6), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v*7), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v*8), 0.5, CVColor.White, 1)
+        # BaseDraw.draw_text(img, 'index:' + index, (origin_x, origin_y + gap_v*3), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'ttc:' + ttc, (origin_x, origin_y + gap_v*3), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v*4), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v*5), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v*6), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v*7), 0.5, CVColor.White, 1)
     
     def show_lane(self, img, ratios, width, color):
         """绘制车道线
@@ -233,13 +234,14 @@ class Player(object):
         a3 = float(a3)
         
         color = CVColor.Cyan
+        size = 1
         y1 = 500
         x1 = (int)(a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1)
-        BaseDraw.draw_text(img, 'index:' + str(index), (x1, y1-45), 0.5, color, 1)
+        # BaseDraw.draw_text(img, 'index:' + str(index), (x1, y1-45), 0.5, color, 1)
         width = '%.2f' % width
-        BaseDraw.draw_text(img, 'width:' + str(width), (x1, y1-30), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'type:' + str(type), (x1, y1-15), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'conf:' + str(conf), (x1, y1), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'width:' + str(width), (x1, y1-20), size, color, 1)
+        BaseDraw.draw_text(img, 'type:' + str(type), (x1, y1), size, color, 1)
+        # BaseDraw.draw_text(img, 'conf:' + str(conf), (x1, y1), 0.5, color, 1)
     
     def show_overlook_lane(self, img, ratios, color):
         """在俯视图绘制车道线
@@ -284,7 +286,7 @@ class Player(object):
         BaseDraw.draw_text(img, 'ldw:'+ldw, (origin_x, origin_y+gap_v*4), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'trend:'+trend, (origin_x, origin_y+gap_v*5), 0.5, CVColor.White, 1)
 
-    def show_pedestrains(self, img, position, color=CVColor.Cyan, thickness = 2):
+    def show_peds(self, img, position, color=CVColor.Cyan, thickness = 2):
         """绘制pedestrain
         Args:
             img: 原始图片
@@ -301,7 +303,86 @@ class Player(object):
         x2 = x1 + width
         y2 = y1 + height
         BaseDraw.draw_rect(img, (x1, y1), (x2, y2), color, thickness)
-        
+    
+    def show_peds_info(self, img, position, distance):
+        """绘制车辆信息
+        Args:
+            img: 原始图片
+            position: (x, y, width, height),车辆框的位置，大小
+            max_speed: float 
+        """
+        x, y, width, height = position
+        x1 = int(x)
+        y1 = int(y)
+        width = int(width)
+        height = int(height)
+        x2 = x1 + width
+        y2 = y1 + height
+        origin_x = max(0, x2 - 65)
+        origin_y = max(0, y1 - 30)
+        font_size = 1
+        BaseDraw.draw_alpha_rect(img, (origin_x, origin_y, 65, 30), 0.6)
+        BaseDraw.draw_text(img, ('%.1f' % distance), (x2 - 65, y1 - 5),
+                          font_size, CVColor.White, 1)
+    
+    def show_tsr(self, img, position, color=CVColor.Cyan, thickness = 2):
+        """绘制tsr框
+        Args:
+            img: 原始图片
+            position: (x, y, width, height),框的位置，大小
+            color: CVColor 颜色
+            thickness: int 线粗
+        """
+
+        x, y, width, height = position
+        x1 = int(x)
+        y1 = int(y)
+        width = int(width)
+        height = int(height)
+        x2 = x1 + width
+        y2 = y1 + height
+        BaseDraw.draw_rect(img, (x1, y1), (x2, y2), color, thickness)
+    
+    def show_tsr_info(self, img, position, max_speed):
+        """绘制车辆信息
+        Args:
+            img: 原始图片
+            position: (x, y, width, height),车辆框的位置，大小
+            max_speed: float 
+        """
+        x, y, width, height = position
+        x1 = int(x)
+        y1 = int(y)
+        width = int(width)
+        height = int(height)
+        x2 = x1 + width
+        y2 = y1 + height
+        origin_x = max(0, x2 - 40)
+        origin_y = max(0, y2)
+        BaseDraw.draw_alpha_rect(img, (origin_x, origin_y, 40, 20), 0.6)
+        BaseDraw.draw_text(img, str(max_speed), (x2 - 30, y2 + 5),
+                          1, CVColor.Green, 1)
+    
+    def show_tsr_parameters(self, img, parameters, point):
+        """显示tsr信息
+        Args:
+            img: 原始图片
+            parameters: List [index, TODO ]
+        """
+        index = parameters[0]
+        speed_limit = parameters[1]
+        warning_level = parameters[2]
+        warning_state = parameters[3]
+
+        origin_x, origin_y = point
+        gap_v = 20
+        size = 0.5
+        BaseDraw.draw_text(img, 'tsr', (origin_x, origin_y + gap_v), size, CVColor.Cyan, 1)
+        BaseDraw.draw_text(img, 'focus_index:' + index, (origin_x, origin_y + gap_v * 2), size, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'speed_limit:' + speed_limit, (origin_x, origin_y + gap_v*3), size, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'warning_level:' + warning_level, (origin_x, origin_y + gap_v*4), size, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'warning_state:' + warning_state, (origin_x, origin_y + gap_v*5), size, CVColor.White, 1)
+    
     def show_env(self,img, speed, light_mode, fps, point):
         """显示环境信息
         Args:
