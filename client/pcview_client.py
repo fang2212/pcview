@@ -435,8 +435,8 @@ class PCViewer():
         # save info
         if config.save.alert:
             alert = self.get_alert(vehicle, lane_data, ped_data)
-            self.fileHandler.insert_alert((frame_id, {index: alert}))
-            self.fileHandler.insert_image((index, img))
+            self.fileHandler.insert_alert((frame_id, {frame_id: alert}))
+            self.fileHandler.insert_image((frame_id, img))
 
         if config.save.video:
             self.fileHandler.insert_video((frame_id, img))
