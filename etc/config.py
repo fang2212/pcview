@@ -1,26 +1,31 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+'''
 config_dict = {
     "ip": "192.168.1.233",
-    "port": 1200,
+    # "port": 1200,
+    "platform": "fpga",
     "debug": True,
     "pic": {
-        "ispic": True,
+        "use": False,
         "path": "/media/tester/testdisk1/TestCase/B9J5G7-201805301724/case/fpga_case/case1/image_list.txt"
     },
-
     "mobile": {
         "show": False,
         "path": "/home/minieye/testdisk1/TestCase/B9J5G7-20180109/case/fpga_case/case1/mobile/log.json"
     },
-
     "save": {
         "path": "/home/tester/pcviewer-data/",
         "video": False,
         "alert": False,
         "log": False
     },
-    
+    "msg_types": [
+        "lane",
+        "vehicle",
+        "ped",
+        "tsr"
+    ],
     "show": {
         "lane": True,
         "lane_speed_limit": 50,
@@ -28,12 +33,95 @@ config_dict = {
         "ped": True,
         "tsr": True
     },
-
     "fix": {
         "lane": 3,
         "vehicle": 5,
         "ped": 5,
         "tsr": 5
+    }
+}
+'''
+# debug config fpga
+config_dict = {
+    "ip": "192.168.1.233",
+    # "port": 1200,
+    "platform": "fpga",
+    "debug": True,
+    "pic": {
+        "use": False,
+        "path": "/media/minieye/localdata1/TestCase/ped/image_list0.txt"
+    },
+    "mobile": {
+        "show": False,
+        "path": "/home/minieye/testdisk1/TestCase/B9J5G7-20180109/case/fpga_case/case1/mobile/log.json"
+    },
+    "save": {
+        "path": "/home/tester/pcviewer-data/",
+        "video": False,
+        "alert": False,
+        "log": False
+    },
+    "msg_types": [
+        "lane",
+        "vehicle",
+        "ped",
+        "tsr"
+    ],
+    "show": {
+        "lane": True,
+        "lane_speed_limit": 50,
+        "vehicle": True,
+        "ped": True,
+        "tsr": True,
+        "color": "color"
+    },
+    "fix": {
+        "lane": 1,
+        "vehicle": 2,
+        "ped": 2,
+        "tsr": 2
+    }
+}
+
+# debug config m3
+config_dict_m3 = {
+    "ip": "192.168.1.201",
+    # "port": 1200,
+    "platform": "arm",
+    "debug": True,
+    "pic": {
+        "use": True,
+        "path": "/media/minieye/localdata1/TestCase/ped/image_list0.txt"
+    },
+    "mobile": {
+        "show": False,
+        "path": "/home/minieye/testdisk1/TestCase/B9J5G7-20180109/case/fpga_case/case1/mobile/log.json"
+    },
+    "save": {
+        "path": "/home/tester/pcviewer-data/",
+        "video": False,
+        "alert": False,
+        "log": False
+    },
+    "msg_types": [
+        "lane",
+        "vehicle",
+        "ped",
+        "tsr"
+    ],
+    "show": {
+        "lane": True,
+        "lane_speed_limit": 50,
+        "vehicle": True,
+        "ped": True,
+        "tsr": True,
+        "color": "color"
+    },
+    "fix": {
+        "lane": 1,
+        "vehicle": 2,
+        "ped": 2,
+        "tsr": 2
     }
 }
 

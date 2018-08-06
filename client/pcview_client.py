@@ -1,22 +1,336 @@
 #.!/usr/bin/python
 # -*- coding:utf8 -*-
 
-import time
-import threading
-import json
-from datetime import datetime
-from multiprocessing import Value
-from .draw.base import BaseDraw
-from .draw.base import CVColor
 import os
 import sys
-                             
+import logging
+import time
+import nanomsg
+import msgpack
+import json
+from datetime import datetime
+from multiprocessing import Process, Queue, Value
+
+import asyncio
+import websockets
+import numpy as np
 import cv2
+
+from .draw.base import BaseDraw, CVColor
 from .draw.ui_draw import Player
 from etc.config import config
 from .FileHandler import FileHandler
-from .Hub import MtkHub
-from .Hub import FpgaHub
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')  # logging.basicConfig函数对日志的输出格式及方式做相关配置
+''' logging usage
+logging.info('this is a loggging info message')
+logging.debug('this is a loggging debug message')
+logging.warning('this is loggging a warning message')
+logging.error('this is an loggging error message')
+logging.critical('this is a loggging critical message')
+'''
+
+def convert(data):
+    '''
+    msgpack dict type value convert
+    delete b'
+    '''
+    if isinstance(data, bytes):      return data.decode('ascii')
+    if isinstance(data, dict):       return dict(map(convert, data.items()))
+    if isinstance(data, tuple):      return tuple(map(convert, data))
+    if isinstance(data, list):       return list(map(convert, data))
+    if isinstance(data, set):        return set(map(convert, data))
+    return data
+
+async def arm_flow(uri, msg_queue, msg_types):
+
+    async with websockets.connect(uri) as websocket:
+        msg = {
+            'source': 'pcview-client',
+            'topic': 'subscribe',
+            'data': 'debug.hub.*',
+        }
+        data = msgpack.packb(msg)
+        await websocket.send(data)
+        # print('msg', msg_types)
+
+        while True:
+            try:
+                data = await websocket.recv()
+                # print('msg1')
+                msg = msgpack.unpackb(data, use_list=False)
+                for msg_type in msg_types:
+                    topic = msg[b'topic'].decode('ascii')
+                    if topic == 'debug.hub.'+msg_type:
+                        data = msgpack.unpackb(msg[b'data'], use_list=False)
+                        data = convert(data)
+                        msg_queue.put((data['frame_id'], data, msg_type))
+
+            except websockets.exceptions.ConnectionClosed as err:
+                print('Connection was closed')
+                break
+
+
+def arm_handle(msg_types, msg_queue, ip):
+    def msg_run(msg_queue, msg_types, ip):
+        uri = 'ws://'+ip+':24012'
+        logging.debug('uri {}'.format(uri))
+        asyncio.get_event_loop().run_until_complete(
+            arm_flow(uri, msg_queue, msg_types))
+    msg_process = Process(target=msg_run,
+                            args=(msg_queue, msg_types, ip, ))
+    msg_process.daemon = True
+    msg_process.start()
+    return msg_process
+
+class Sink(Process):
+    def __init__(self, queue, ip, port, msg_type):
+        Process.__init__(self)
+        self.deamon = True
+        self.ip = ip
+        self.port = port
+        self.queue = queue
+        self.type = msg_type
+
+    def _init_socket(self):
+        self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
+        nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
+        nanomsg.wrapper.nn_connect(self._socket, "tcp://%s:%s" % (self.ip, self.port, ))
+
+    def run(self):
+        self._init_socket()
+        while True:
+            buf = nanomsg.wrapper.nn_recv(self._socket, 0)
+            frame_id, data = self.pkg_handler(buf[1])
+            self.queue.put((frame_id, data, self.type))
+
+    def pkg_handler(self, msg_buf):
+        pass
+
+
+class CameraSink(Sink):
+
+    def __init__(self, queue, ip, port, msg_type):
+        Sink.__init__(self, queue, ip, port, msg_type)
+
+    def pkg_handler(self, msg):
+        # print('c--process-id:', os.getpid())
+        msg = memoryview(msg).tobytes()
+        frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
+        data = msg[16:]
+        logging.debug('cam id {}'.format(frame_id))
+        return frame_id, data
+
+class LaneSink(Sink):
+    
+    def __init__(self, queue, ip, port, msg_type):
+        Sink.__init__(self, queue, ip, port, msg_type)
+
+    def pkg_handler(self, msg): 
+        # print('l--process-id:', os.getpid())
+        data = msgpack.loads(msg)
+        res = convert(data)
+        frame_id = res['frame_id']
+        logging.debug('lan id {}'.format(frame_id))
+        return frame_id, res
+
+class VehicleSink(Sink):
+
+    def __init__(self, queue, ip, port, msg_type):
+        Sink.__init__(self, queue, ip, port, msg_type)
+
+    def pkg_handler(self, msg):
+        data = msgpack.loads(msg)
+        res = convert(data)
+        frame_id = res['frame_id']
+        logging.debug('veh id {}'.format(frame_id))
+        return frame_id, res
+
+class PedSink(Sink):
+
+    def __init__(self, queue, ip, port, msg_type):
+        Sink.__init__(self, queue, ip, port, msg_type)
+
+    def pkg_handler(self, msg):
+        data = msgpack.loads(msg)
+        res = convert(data)
+        frame_id = res['frame_id']
+        logging.debug('ped id {}'.format(frame_id))
+        return frame_id, res
+
+class TsrSink(Sink):
+
+    def __init__(self, queue, ip, port, msg_type):
+        Sink.__init__(self, queue, ip, port, msg_type)
+
+    def pkg_handler(self, msg):
+        data = msgpack.loads(msg)
+        res = convert(data)
+        frame_id = res['frame_id']
+        logging.debug('tsr id {}'.format(frame_id))
+        return frame_id, res
+
+def fpga_handle(msg_types, msg_queue, ip):
+    sink = {}
+    if 'lane' in msg_types:
+        sink['lane'] = LaneSink(queue=msg_queue, ip=ip, port=1203, msg_type='lane')
+        sink['lane'].start()
+
+    if 'vehicle' in msg_types:
+        sink['vehicle'] = VehicleSink(queue=msg_queue, ip=ip, port=1204, msg_type='vehicle')
+        sink['vehicle'].start()
+        
+    if 'ped' in msg_types:
+        sink['ped'] = PedSink(queue=msg_queue, ip=ip, port=1205, msg_type='ped')
+        sink['ped'].start()
+        
+    if 'tsr' in msg_types:
+        sink['tsr'] = TsrSink(queue=msg_queue, ip=ip, port=1206, msg_type='tsr')
+        sink['tsr'].start()
+
+
+class Hub(Process):
+    
+    def __init__(self):
+
+        msg_types = config.msg_types
+        image_list_path = config.pic.path 
+
+        Process.__init__(self)
+        # self.use_camera = True
+
+        if config.pic.use:
+            image_fp = open(image_list_path, 'r+')
+            self.image_list = image_fp.readlines()
+            image_fp.close()
+        
+        self.max_cache = len(msg_types)*10
+
+        self.msg_queue = Queue()
+        self.cam_queue = Queue()
+        self.sink = {}
+        self.cache = {}
+
+        self.msg_cnt = {}
+
+        for msg_type in msg_types:
+            self.cache[msg_type] = []
+            self.msg_cnt[msg_type] = {
+                'rev': 0,
+                'show': 0,
+                'fix': 0,
+            } 
+        self.msg_cnt['frame'] = 0
+
+        if not config.pic.use:
+            self.camera_sink = CameraSink(queue=self.cam_queue, ip=config.ip, port=1200, msg_type='camera')
+            self.camera_sink.start()
+        
+        if config.platform == 'fpga':
+            fpga_handle(msg_types, self.msg_queue, config.ip)
+        elif config.platform == 'arm':
+            logging.debug('arm platform')
+            arm_handle(msg_types, self.msg_queue, config.ip)
+
+    def list_len(self):
+        length = 0
+        for key in self.cache:
+            length += len(self.cache[key])
+        return length 
+
+    def all_has(self):
+        for key in self.cache:
+            if not self.cache[key]:
+                return False
+        return True 
+
+    def all_over(self, frame_id):
+        for key in self.cache:
+            if not self.cache[key]:
+                return False
+            if self.cache[key][-1][0] < frame_id:
+                return False
+        return True 
+
+    def msg_async(self):
+        while not self.msg_queue.empty():
+            frame_id, msg_data, msg_type = self.msg_queue.get()
+            logging.debug('queue id {}, type {}'.format(frame_id, msg_type))
+            self.cache[msg_type].append((frame_id, msg_data))
+            self.msg_cnt[msg_type]['rev'] += 1
+        time.sleep(0.02)
+
+    def pop(self):
+        res = {
+            'frame_id': None,
+            'img': None,
+            'vehicle': {},
+            'lane': {},
+            'ped': {},
+            'tsr':{},
+            'extra': {}
+        }
+
+        frame_id = None
+
+        if config.pic.use:
+            while not self.all_has() and self.list_len() < self.max_cache:
+                self.msg_async()
+            frame_id = sys.maxsize
+            for key in self.cache:
+                if self.cache[key]:
+                    temp_id = self.cache[key][0][0]
+                    # logging.debug('temp id {}'.format(temp_id))
+                    frame_id = min(temp_id, frame_id)
+        
+            logging.debug('frame_id {}'.format(frame_id))
+
+            index = ((frame_id//3)*4+frame_id%3) % len(self.image_list)
+            image_path = self.image_list[index]
+            res['extra'] = {
+                'image_path': image_path
+            }
+            image_path = image_path.strip()
+            img = cv2.imread(image_path)
+            if config.show.color == 'gray':
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+                img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+            res['img'] = img
+        else:
+            while True:
+                if not self.cam_queue.empty():
+                    frame_id, image_data, msg_type = self.cam_queue.get()
+                    image = np.fromstring(image_data, dtype=np.uint8).reshape(720, 1280, 1)
+                    image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+                    res['img'] = image
+                    break
+                time.sleep(0.02)
+            logging.debug('show cam id {}'.format(frame_id))
+            while not self.all_over(frame_id) and self.list_len() < self.max_cache:
+                self.msg_async()
+
+        logging.debug('out')
+        res['frame_id'] = frame_id
+        logging.debug('end0 res')
+
+        for key in self.cache:
+            while self.cache[key] and self.cache[key][0][0]<=frame_id:
+                if self.cache[key][0][0] == frame_id:
+                    res[key] = self.cache[key][0][1]
+                    self.msg_cnt[key]['show'] += 1
+                    self.cache[key].pop(0)
+                    break
+                else:
+                    self.cache[key].pop(0)
+    
+        self.msg_cnt['frame'] += 1
+        # logging.debug('end res {}'.format(res))
+        logging.debug('end res ped{}'.format(res['ped']))
+        logging.debug('end res tsr{}'.format(res['tsr']))
+
+        return res         
+
 
 class PCViewer():
     """pc-viewer功能类，用于接收每一帧数据，并绘制
@@ -27,15 +341,11 @@ class PCViewer():
         self.player = Player()
         self.exit = False
         
+        self.now_id = 0
         self.pre_lane = {}
         self.pre_vehicle = {}
         self.pre_ped = {}
         self.pre_tsr = {}
-        self.lane_cnt = 0
-        self.vehicle_cnt = 0
-        self.ped_cnt = 0
-        self.tsr_cnt = 0
-
         if config.mobile.show:
             mobile_fp = open(config.mobile.path, 'r+')
             self.mobile_content = json.load(mobile_fp)
@@ -60,25 +370,22 @@ class PCViewer():
                 self.start_time = datetime.now()
                 frame_cnt = 0
 
-    def fix_frame(self, data, pre_data, cur_cnt, fix_cnt):
-        if not data:
-            if cur_cnt <= fix_cnt:
-                data = pre_data
-                cur_cnt += 1
-            else:
-                pre_data = {}
-        else:
-            pre_data = data
-            cur_cnt = 0
-        return pre_data, cur_cnt
+    def fix_frame(self, pre_, now_, fix_range):
+        if now_.get('frame_id') or (not fix_range):
+            return now_, now_
+        if pre_.get('frame_id'):
+            if pre_.get('frame_id') + fix_range >= self.now_id:
+                return pre_, pre_
+        return {}, {}
 
     def draw(self, mess, frame_cnt):
         img = mess['img']
         frame_id = mess['frame_id']
-        vehicle_data = mess['vehicle_data']
-        lane_data = mess['lane_data']
-        ped_data = mess['ped_data']
-        tsr_data = mess['tsr_data']
+        self.now_id = frame_id
+        vehicle_data = mess['vehicle']
+        lane_data = mess['lane']
+        ped_data = mess['ped']
+        tsr_data = mess['tsr']
 
         self.player.show_overlook_background(img)
         if config.mobile.show:
@@ -88,23 +395,33 @@ class PCViewer():
         self.player.show_parameters_background(img, (0, 0, bg_width+20, 150))
         
         # fix frame
-        self.pre_lane, self.lane_cnt = self.fix_frame(lane_data, self.pre_lane, self.lane_cnt, config.fix.lane)
-        self.pre_vehicle, self.vehicle_cnt = self.fix_frame(vehicle_data, self.pre_vehicle, self.vehicle_cnt, config.fix.vehicle)
-        self.pre_ped, self.ped_cnt = self.fix_frame(ped_data, self.pre_ped, self.ped_cnt, config.fix.ped)
-        self.pre_tsr, self.tsr_cnt = self.fix_frame(tsr_data, self.pre_tsr, self.tsr_cnt, config.fix.tsr)
+        self.pre_lane, lane_data = self.fix_frame(self.pre_lane, lane_data, config.fix.lane)
+        self.pre_vehicle, vehicle_data = self.fix_frame(self.pre_vehicle, vehicle_data, config.fix.vehicle)
+        self.pre_ped, ped_data = self.fix_frame(self.pre_ped, ped_data, config.fix.ped)
+        self.pre_tsr, tsr_data = self.fix_frame(self.pre_tsr, tsr_data, config.fix.tsr)
         
         if config.show.vehicle:
+            if vehicle_data:
+                self.hub.msg_cnt['vehicle']['fix'] += 1
             self.draw_vehicle(img, vehicle_data)
         
         if config.show.lane:
+            if lane_data:
+                self.hub.msg_cnt['lane']['fix'] += 1
             self.draw_lane(img, lane_data)
 
         if config.show.ped:
+            if ped_data:
+                self.hub.msg_cnt['ped']['fix'] += 1
             self.draw_ped(img, ped_data)
 
         if config.show.tsr:
+            if tsr_data:
+                self.hub.msg_cnt['tsr']['fix'] += 1
             self.draw_tsr(img, tsr_data)
         
+        logging.info('msg state {}'.format(self.hub.msg_cnt))
+
         # show env info
         light_mode = -1
         if vehicle_data:
@@ -208,7 +525,7 @@ class PCViewer():
         if lane_data:
             speed = lane_data['speed'] * 3.6
             for lane in lane_data['lanelines']:
-                if int(lane['label']) in [1, 2] and speed >= config.show.lane_speed_limit:
+                if int(lane['label']) in [1, 2]:# and speed >= config.show.lane_speed_limit:
                     color = CVColor.Cyan
                     width = lane['width']
                     l_type = lane['type']
@@ -242,7 +559,7 @@ class PCViewer():
             for pedestrain in ped_data['pedestrians']:
                 position = pedestrain['regressed_box']
                 position = position['x'], position['y'], position['width'], position['height']
-                print('position:', position)
+                # print('position:', position)
                 color = CVColor.Yellow
                 if pedestrain['is_key']:
                     color = CVColor.Pink
@@ -255,12 +572,14 @@ class PCViewer():
     def draw_tsr(self, img, tsr_data):
         focus_index, speed_limit, tsr_warning_level, tsr_warning_state = -1, 0, 0, 0
         if tsr_data:
+            logging.info('tsr data {}'.format(tsr_data))
             focus_index = tsr_data['focus_index']
             speed_limit = tsr_data['speed_limit']
             tsr_warning_level = tsr_data['tsr_warning_level']
             tsr_warning_state = tsr_data['tsr_warning_state']
             for i, tsr in enumerate(tsr_data['dets']):
                 position = tsr['position']
+                logging.info('tsrrrr {}'.format(position))
                 position = position['x'], position['y'], position['width'], position['height']
                 color = CVColor.Red
                 self.player.show_tsr(img, position, color, 2)
