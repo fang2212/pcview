@@ -387,7 +387,9 @@ class PCViewer():
         ped_data = mess['ped']
         tsr_data = mess['tsr']
 
-        self.player.show_overlook_background(img)
+        if config.show.overlook:
+            self.player.show_overlook_background(img)
+
         if config.mobile.show:
             bg_width = 120 * 6
         else:
@@ -501,9 +503,10 @@ class PCViewer():
                 self.player.show_vehicle_info(img, position,
                                         vehicle['vertical_dist'],vehicle['horizontal_dist'], 
                                         vehicle['vehicle_width'], str(vehicle['type']))
-                self.player.show_overlook_vehicle(img, focus_vehicle,
-                                            vehicle['vertical_dist'],
-                                            vehicle['horizontal_dist'])
+                if config.show.overlook:
+                    self.player.show_overlook_vehicle(img, focus_vehicle,
+                                                vehicle['vertical_dist'],
+                                                vehicle['horizontal_dist'])
                 
             if focus_index != -1:
                 vehicle = vehicle_data['dets'][focus_index]
@@ -533,7 +536,8 @@ class PCViewer():
                     index = lane['label']
                     self.player.show_lane(img, lane['perspective_view_poly_coeff'], 
                                           0.2, color)
-                    self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
+                    if config.show.overlook:
+                        self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
                     self.player.show_lane_info(img, lane['perspective_view_poly_coeff'],
                                                index, width, l_type, conf, color)
 

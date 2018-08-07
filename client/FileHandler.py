@@ -23,20 +23,23 @@ class FileHandler(Process):
         FORMAT = '%Y%m%d%H%M'
         date = datetime.now().strftime(FORMAT)
         self.path = os.path.join(config.save.path, date)
-        os.makedirs(self.path)
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
  
         if config.save.log:
             self.log_fp = open(os.path.join(self.path, 'log.json'), 'w+')
         if config.save.alert:
             self.alert_fp = open(os.path.join(self.path, 'alert.json'), 'w+')
             self.image_path = os.path.join(self.path, 'image')
-            os.makedirs(self.image_path)
+            if not os.path.exists(self.image_path):
+                os.makedirs(self.image_path)
 
         if config.save.video:
             self.video_writer = None
             self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
             self.video_path = os.path.join(self.path, 'video')
-            os.makedirs(self.video_path)
+            if not os.path.exists(self.video_path):
+                os.makedirs(self.video_path)
 
     def run(self):
         cnt = 0

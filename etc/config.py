@@ -59,7 +59,7 @@ config_dict = {
         "path": "/home/minieye/pcviewer-data/",
         "video": True,
         "alert": False,
-        "log": False
+        "log": True
     },
     "msg_types": [
         "lane",
@@ -68,6 +68,7 @@ config_dict = {
         "tsr"
     ],
     "show": {
+        "overlook": True,
         "lane": True,
         "lane_speed_limit": 40,
         "vehicle": True,
@@ -101,7 +102,7 @@ config_dict_m3 = {
         "path": "/home/minieye/pcviewer-data/",
         "video": False,
         "alert": False,
-        "log": False
+        "log": True
     },
     "msg_types": [
         "lane",
@@ -110,6 +111,7 @@ config_dict_m3 = {
         "tsr"
     ],
     "show": {
+        "overlook": True,
         "lane": True,
         "lane_speed_limit": 50,
         "vehicle": True,
