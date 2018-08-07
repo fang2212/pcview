@@ -43,7 +43,7 @@ config_dict = {
 '''
 # debug config fpga
 config_dict = {
-    "ip": "192.168.1.233",
+    "ip": "192.168.0.233",
     # "port": 1200,
     "platform": "fpga",
     "debug": True,
@@ -56,8 +56,8 @@ config_dict = {
         "path": "/home/minieye/testdisk1/TestCase/B9J5G7-20180109/case/fpga_case/case1/mobile/log.json"
     },
     "save": {
-        "path": "/home/tester/pcviewer-data/",
-        "video": False,
+        "path": "/home/minieye/pcviewer-data/",
+        "video": True,
         "alert": False,
         "log": False
     },
@@ -69,7 +69,7 @@ config_dict = {
     ],
     "show": {
         "lane": True,
-        "lane_speed_limit": 50,
+        "lane_speed_limit": 40,
         "vehicle": True,
         "ped": True,
         "tsr": True,
@@ -98,7 +98,7 @@ config_dict_m3 = {
         "path": "/home/minieye/testdisk1/TestCase/B9J5G7-20180109/case/fpga_case/case1/mobile/log.json"
     },
     "save": {
-        "path": "/home/tester/pcviewer-data/",
+        "path": "/home/minieye/pcviewer-data/",
         "video": False,
         "alert": False,
         "log": False
