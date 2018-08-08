@@ -428,8 +428,8 @@ class PCViewer():
         light_mode = -1
         if vehicle_data:
             light_mode = vehicle_data['light_mode']
-        speed = vehicle_data.get('speed') if vehicle_data.get('speed') else 0
-        speed = lane_data.get('speed')*3.6 if lane_data.get('speed') else speed
+        speed = vehicle_data.get('speed')*3.6 if vehicle_data.get('speed') else 0
+        speed = lane_data.get('speed') if lane_data.get('speed') else speed
 
         fps = self.cal_fps(frame_cnt)
         self.player.show_env(img, speed, light_mode, fps, (0, 0))
@@ -526,9 +526,9 @@ class PCViewer():
     def draw_lane(self, img, lane_data):
         lw_dis, rw_dis, ldw, trend = '-', '-', '-', '-'
         if lane_data:
-            speed = lane_data['speed'] * 3.6
+            speed = lane_data['speed']
             for lane in lane_data['lanelines']:
-                if int(lane['label']) in [1, 2]:# and speed >= config.show.lane_speed_limit:
+                if int(lane['label']) in [1, 2] and speed >= config.show.lane_speed_limit:
                     color = CVColor.Cyan
                     width = lane['width']
                     l_type = lane['type']
