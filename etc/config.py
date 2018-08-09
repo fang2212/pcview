@@ -58,7 +58,7 @@ config_dict = {
     "save": {
         "path": "/home/minieye/pcviewer-data/",
         "video": False,
-        "alert": False,
+        "alert": False,  # 包括image和alert.log 主要用于演示平台
         "log": True
     },
     "msg_types": [
@@ -105,7 +105,7 @@ config_dict_m3 = {
     "save": {
         "path": "/home/minieye/pcviewer-data/",
         "video": False,
-        "alert": False,
+        "alert": False,   # 包括image和alert.log 主要用于演示平台
         "log": True
     },
     "msg_types": [

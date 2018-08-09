@@ -1,8 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=PCVIEWER
-Exec=sh  /home/minieye/Documents/pc-viewer/pc-viewer.sh
-Icon=/home/minieye/Documents/pc-viewer/assets/adas.jpg
+Exec=sh  path/to/pc-viewer/pc-viewer.sh
+Icon=path/to/pc-viewer/assets/adas.jpg
 Info="pc-viewer"
 Terminal=false
 Type=Application
