@@ -10,6 +10,7 @@ import msgpack
 import json
 from datetime import datetime
 from multiprocessing import Process, Queue, Value
+from threading import Thread
 
 import asyncio
 import websockets
@@ -20,7 +21,7 @@ from .draw.base import BaseDraw, CVColor
 from .draw.ui_draw import Player
 from etc.config import config
 from .FileHandler import FileHandler
-
+pack = os.path.join
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')  # logging.basicConfig函数对日志的输出格式及方式做相关配置
 ''' logging usage
@@ -331,7 +332,6 @@ class Hub(Process):
 
         return res         
 
-
 class PCViewer():
     """pc-viewer功能类，用于接收每一帧数据，并绘制
     """
@@ -346,15 +346,19 @@ class PCViewer():
         self.pre_vehicle = {}
         self.pre_ped = {}
         self.pre_tsr = {}
+
+        if config.testview.on:
+            Thread(target=self.init_testview, args=(asyncio.new_event_loop(), )).start()
+
         if config.mobile.show:
             mobile_fp = open(config.mobile.path, 'r+')
             self.mobile_content = json.load(mobile_fp)
             mobile_fp.close()
-        
+
         if config.save.log or config.save.alert or config.save.video:
             self.fileHandler = FileHandler()
             self.fileHandler.start()
-    
+
     def start(self):
         self.hub.start()
         self.start_time = datetime.now()
@@ -521,6 +525,18 @@ class PCViewer():
                     ttc = '-'
         parameters = [str(v_type), str(index), str(ttc), str(fcw), str(hwm), str(hw), str(vb)]
         self.player.show_vehicle_parameters(img, parameters, (120, 0))
+ 
+        # 获取testview数据
+        if config.testview.on:
+            if vehicle_data:
+                frame_id = vehicle_data['frame_id']
+                index = ((frame_id//3)*4+frame_id%3) % len(self.mobile_fcw_list)
+                self.tv_index = index
+
+                self.fcw_list[index] = fcw if fcw != '-' else ''
+                self.hw_list[index] = hw if hw != '-' else ''
+                self.hwm_list[index] = hwm if hwm != '-' else ''
+                self.vb_list[index] = vb if vb != '-' else ''
                     
     # lane
     def draw_lane(self, img, lane_data):
@@ -549,13 +565,21 @@ class PCViewer():
                 lw_dis = '-'
             if rw_dis == '111.00':
                 rw_dis = '-'
-            
+
         parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
         if config.mobile.show:
             lane_y = 120 * 3
         else:
             lane_y = 120 * 2
         self.player.show_lane_parameters(img, parameters, (lane_y, 0))
+
+        # 获取testview数据
+        if config.testview.on:
+            if lane_data:
+                frame_id = lane_data['frame_id']
+                index = ((frame_id//3)*4+frame_id%3) % len(self.mobile_ldw_list)
+                self.tv_index = index
+                self.ldw_list[index] = ldw if ldw != '-' else ''
 
     # ped
     def draw_ped(self, img, ped_data):
@@ -601,7 +625,7 @@ class PCViewer():
         return fps
 
     def draw_mobile(self, img, frame_id):
-        index = int(frame_id/3)*4+frame_id%3
+        index = ((frame_id//3)*4+frame_id%3) % len(self.image_list)
         if config.mobile.show:
             mobile_ldw, mobile_hw, mobile_fcw, mobile_vb, mobile_hwm = '-', '-', '-', '-', '-'
             mobile_log = self.mobile_content[index]
@@ -615,13 +639,66 @@ class PCViewer():
             mobile_parameters = [str(mobile_hwm), str(mobile_hw), str(mobile_fcw), str(mobile_vb), str(mobile_ldw)]
             self.player.show_mobile_parameters(img, mobile_parameters, (120*2, 0))
 
+    def init_testview(self, loop):
+        print('begin to connect...')
+        self.tv_index = 0
+        fp = open(pack(config.testview.mobile_path, 'ldw.json'), 'r+')
+        self.mobile_ldw_list = json.load(fp)
+        fp = open(pack(config.testview.mobile_path, 'fcw.json'), 'r+')
+        self.mobile_fcw_list = json.load(fp)
+        fp = open(pack(config.testview.mobile_path, 'hw.json'), 'r+')
+        self.mobile_hw_list = json.load(fp)
+        fp = open(pack(config.testview.mobile_path, 'hwm.json'), 'r+')
+        self.mobile_hwm_list = json.load(fp)
+        fp = open(pack(config.testview.mobile_path, 'vb.json'), 'r+')
+        self.mobile_vb_list = json.load(fp)
+
+        self.ldw_list = [''] * len(self.mobile_ldw_list)
+        self.fcw_list = [''] * len(self.mobile_fcw_list)
+        self.hw_list = [''] * len(self.mobile_hw_list)
+        self.hwm_list = [''] * len(self.mobile_hwm_list)
+        self.vb_list = [''] * len(self.mobile_vb_list)
+        print('`mobile---')
+        print(len(self.mobile_fcw_list))
+        print(len(self.mobile_fcw_list))
+        print(len(self.mobile_hw_list))
+        print(len(self.mobile_hwm_list))
+        print(len(self.mobile_hwm_list))
+
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(self.send_handler())
+
+    async def send_handler(self):
+        async with websockets.connect('ws://127.0.0.1:24012') as websocket:
+            while True:
+                print('tv_index:', self.tv_index)
+                await self.send_msg(websocket, 'algo.ldw', self.ldw_list[:self.tv_index+1])
+                await self.send_msg(websocket, 'algo.fcw', self.fcw_list[:self.tv_index+1])
+                await self.send_msg(websocket, 'algo.hw', self.hw_list[:self.tv_index+1])
+                await self.send_msg(websocket, 'algo.hwm', self.hwm_list[:self.tv_index+1])
+                await self.send_msg(websocket, 'algo.vb', self.vb_list[:self.tv_index+1])
+
+                await self.send_msg(websocket, 'mobile.algo.ldw', self.mobile_ldw_list[:self.tv_index+1])
+                await self.send_msg(websocket, 'mobile.algo.fcw', self.mobile_fcw_list[:self.tv_index+1])
+                await self.send_msg(websocket, 'mobile.algo.hw', self.mobile_hw_list[:self.tv_index+1])
+                await self.send_msg(websocket, 'mobile.algo.hwm', self.mobile_hwm_list[:self.tv_index+1])
+                await self.send_msg(websocket, 'mobile.algo.vb', self.mobile_vb_list[:self.tv_index+1])
+                time.sleep(1)
+    async def send_msg(self, websocket, topic, value):
+        msg = {
+            'source': 'device.server',
+            'topic': topic,
+            'data': msgpack.packb(value)
+        }
+        await websocket.send(msgpack.packb(msg))
+
     def test(self):
         """用于测试，读取离线数据"""
         path = ""
         fp = open(os.path.join(path, 'log.json'), 'r')
         log_contents = fp.readlines()
         fp.close()
-        
+
         frame_cnt = 0
         self.start_time = datetime.now()
         for data in log_contents:

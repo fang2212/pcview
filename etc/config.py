@@ -57,7 +57,7 @@ config_dict = {
     },
     "save": {
         "path": "/home/minieye/pcviewer-data/",
-        "video": True,
+        "video": False,
         "alert": False,
         "log": True
     },
@@ -81,6 +81,10 @@ config_dict = {
         "vehicle": 2,
         "ped": 2,
         "tsr": 2
+    },
+    "testview": {
+        "on": False,
+        "mobile_path": "/media/minieye/4139A91A24AB9CBE/B9J5G7-201805301724/mobile"
     }
 }
 
@@ -124,6 +128,10 @@ config_dict_m3 = {
         "vehicle": 2,
         "ped": 2,
         "tsr": 2
+    },
+    "testview": {
+        "on": False,
+        "mobile_path": "/media/minieye/4139A91A24AB9CBE/B9J5G7-201805301724/mobile"
     }
 }
 
