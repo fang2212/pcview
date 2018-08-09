@@ -658,12 +658,6 @@ class PCViewer():
         self.hw_list = [''] * len(self.mobile_hw_list)
         self.hwm_list = [''] * len(self.mobile_hwm_list)
         self.vb_list = [''] * len(self.mobile_vb_list)
-        print('`mobile---')
-        print(len(self.mobile_fcw_list))
-        print(len(self.mobile_fcw_list))
-        print(len(self.mobile_hw_list))
-        print(len(self.mobile_hwm_list))
-        print(len(self.mobile_hwm_list))
 
         asyncio.set_event_loop(loop)
         loop.run_until_complete(self.send_handler())
@@ -671,7 +665,6 @@ class PCViewer():
     async def send_handler(self):
         async with websockets.connect('ws://127.0.0.1:24012') as websocket:
             while True:
-                print('tv_index:', self.tv_index)
                 await self.send_msg(websocket, 'algo.ldw', self.ldw_list[:self.tv_index+1])
                 await self.send_msg(websocket, 'algo.fcw', self.fcw_list[:self.tv_index+1])
                 await self.send_msg(websocket, 'algo.hw', self.hw_list[:self.tv_index+1])
