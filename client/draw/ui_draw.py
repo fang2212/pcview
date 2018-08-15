@@ -239,8 +239,9 @@ class Player(object):
         x1 = (int)(a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1)
         # BaseDraw.draw_text(img, 'index:' + str(index), (x1, y1-45), 0.5, color, 1)
         width = '%.2f' % width
-        BaseDraw.draw_text(img, 'width:' + str(width), (x1, y1-20), size, color, 1)
-        BaseDraw.draw_text(img, 'type:' + str(type), (x1, y1), size, color, 1)
+        # BaseDraw.draw_text(img, 'width:' + str(width), (x1, y1-20), size, color, 1)
+        BaseDraw.draw_text(img, 'width:' + str(width), (x1, y1), size, color, 1)
+        # BaseDraw.draw_text(img, 'type:' + str(type), (x1, y1), size, color, 1)
         # BaseDraw.draw_text(img, 'conf:' + str(conf), (x1, y1), 0.5, color, 1)
     
     def show_overlook_lane(self, img, ratios, color):
@@ -363,6 +364,19 @@ class Player(object):
         BaseDraw.draw_text(img, str(max_speed), (x2 - 30, y2 + 5),
                           1, CVColor.Green, 1)
     
+    def show_ped_parameters(self, img, parameters, point):
+        """显示ped信息
+        Args:
+            img: 原始图片
+            parameters: List [index, TODO ]
+        """
+        pcw_on = parameters[0]
+        origin_x, origin_y = point
+        gap_v = 20
+        size = 0.5
+        BaseDraw.draw_text(img, 'ped', (origin_x, origin_y + gap_v), size, CVColor.Cyan, 1)
+        BaseDraw.draw_text(img, 'pcw_on:' + pcw_on, (origin_x, origin_y + gap_v * 2), size, CVColor.White, 1)
+
     def show_tsr_parameters(self, img, parameters, point):
         """显示tsr信息
         Args:
@@ -408,12 +422,15 @@ class Player(object):
         fcw = parameters[2]
         vb = parameters[3]
         ldw = parameters[4]
+        pcw = parameters[5]
 
         origin_x, origin_y = point
         gap_v = 20
         color = CVColor.Green
-        BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v*5), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v*6), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v*7), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v*8), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'ldw:'+ldw, (origin_x + 120*2, origin_y+gap_v*4), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'mobile', (origin_x, origin_y+20), 0.5, CVColor.Cyan, 1)
+        BaseDraw.draw_text(img, 'ldw:'+ldw, (origin_x, origin_y+gap_v*2), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v*3), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v*4), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v*5), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v*6), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'pcw:' + pcw, (origin_x, origin_y + gap_v*7), 0.5, color, 1)

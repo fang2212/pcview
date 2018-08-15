@@ -1,7 +1,15 @@
 #!/bin/bash
 
 # Install dependencies
-sudo apt-get update
+sudo apt-get -y update
+sudo apt install -y vim
+sudo apt install -y usbrelay
+sudo apt install -y fish
+sudo apt install -y tmux
+sudo apt install -y htop
+sudo apt install -y zip
+sudo apt install -y openssh-server
+sudo apt install -y screen 
 sudo apt-get install -y wget
 sudo apt-get install -y build-essential pkg-config cmake git
 sudo apt-get install -y libjpeg-dev libjasper-dev libpng-dev libtiff-dev libwebp-dev
@@ -81,8 +89,7 @@ sudo ldconfig
 
 echo "OpenCV has been successfully installed."
 
-
-NanomsgDir="/home/minieye/env/nanomsg"
+NanomsgDir="/home/minieye/env/nanomsg-1.1.3"
 
 cd "$NanomsgDir"
 
@@ -94,7 +101,17 @@ ctest .
 sudo cmake --build . --target install
 sudo ldconfig
 
-sudo apt install python3-pip
+sudo apt install -y python3-pip
 sudo pip3 install nanomsg
 sudo pip3 install msgpack
+sudo pip3 install websockets
 echo "nanomsg msgpack has been successfully installed."
+
+PyAVDir="/home/minieye/env/PyAV"
+cd "$PyAVDir"
+python3 setup.py install
+echo "PyAV has been successfully installed."
+
+DistDir="/home/minieye/env/dist"
+cd "$DistDir"
+cp dist/assets/pcviewer.desktop dist/assets/pcviewer-close.desktop /usr/share/applications/

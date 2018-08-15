@@ -20,7 +20,7 @@ class FileHandler(Process):
         self.video_queue = Queue()
         self._max_cnt = 7000
  
-        FORMAT = '%Y%m%d%H%M'
+        FORMAT = '%Y%m%d%H%M%S'
         date = datetime.now().strftime(FORMAT)
         self.path = os.path.join(config.save.path, date)
         if not os.path.exists(self.path):
@@ -36,7 +36,7 @@ class FileHandler(Process):
 
         if config.save.video:
             self.video_writer = None
-            self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+            self.fourcc = cv2.VideoWriter_fourcc(*'X264')
             self.video_path = os.path.join(self.path, 'video')
             if not os.path.exists(self.video_path):
                 os.makedirs(self.video_path)
@@ -46,7 +46,7 @@ class FileHandler(Process):
         while True:
             # print('---fileHandle process id----', os.getpid())
             while config.save.log and not self.log_queue.empty():
-                frame_id, data = self.log_queue.get() 
+                data = self.log_queue.get() 
                 self.log_fp.write(json.dumps(data) + '\n')
                 self.log_fp.flush()
  
@@ -71,7 +71,7 @@ class FileHandler(Process):
                             self.fourcc, 20.0, (1280, 720), True)
                 self.video_writer.write(data)
                 cnt += 1
-            time.sleep(0.02)
+            time.sleep(0.05)
  
     def insert_log(self, msg):
         self.log_queue.put(msg)

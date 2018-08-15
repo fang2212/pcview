@@ -20,7 +20,7 @@ import cv2
 from .draw.base import BaseDraw, CVColor
 from .draw.ui_draw import Player
 from etc.config import config
-from .FileHandler import FileHandler
+from .file_handler import FileHandler
 pack = os.path.join
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')  # logging.basicConfig函数对日志的输出格式及方式做相关配置
@@ -54,12 +54,12 @@ async def arm_flow(uri, msg_queue, msg_types):
         }
         data = msgpack.packb(msg)
         await websocket.send(data)
-        # print('msg', msg_types)
+        print('msg', msg_types)
 
         while True:
             try:
                 data = await websocket.recv()
-                # print('msg1')
+                print('msg1')
                 msg = msgpack.unpackb(data, use_list=False)
                 for msg_type in msg_types:
                     topic = msg[b'topic'].decode('ascii')
@@ -206,7 +206,7 @@ class Hub(Process):
             self.image_list = image_fp.readlines()
             image_fp.close()
         
-        self.max_cache = len(msg_types)*10
+        self.max_cache = len(msg_types)*20
 
         self.msg_queue = Queue()
         self.cam_queue = Queue()
@@ -288,9 +288,11 @@ class Hub(Process):
             logging.debug('frame_id {}'.format(frame_id))
 
             index = ((frame_id//3)*4+frame_id%3) % len(self.image_list)
-            image_path = self.image_list[index]
+            image_path = pack(config.pic.test_image, self.image_list[index])
+            items = self.image_list[index].split('/')
             res['extra'] = {
-                'image_path': image_path
+                'image_path': image_path,
+                'image_mark': items[0]+'/'+items[-1].strip()
             }
             image_path = image_path.strip()
             img = cv2.imread(image_path)
@@ -354,10 +356,18 @@ class PCViewer():
             mobile_fp = open(config.mobile.path, 'r+')
             self.mobile_content = json.load(mobile_fp)
             mobile_fp.close()
+            self.gen_mobile_dict()
 
         if config.save.log or config.save.alert or config.save.video:
             self.fileHandler = FileHandler()
             self.fileHandler.start()
+
+    def gen_mobile_dict(self):
+        temp_dict = {}
+        for mobile_log in self.mobile_content:
+            temp_dict[mobile_log['image_mark']] = mobile_log
+        self.mobile_content = temp_dict
+        # print(self.mobile_content)
 
     def start(self):
         self.hub.start()
@@ -425,6 +435,12 @@ class PCViewer():
             if tsr_data:
                 self.hub.msg_cnt['tsr']['fix'] += 1
             self.draw_tsr(img, tsr_data)
+
+        if config.mobile.show:
+            image_mark = mess['extra'].get('image_mark')
+            print('image_mark', image_mark)
+            if image_mark:
+                self.draw_mobile(img, image_mark)
         
         logging.info('msg state {}'.format(self.hub.msg_cnt))
 
@@ -440,7 +456,7 @@ class PCViewer():
         
         # save info
         if config.save.alert:
-            alert = self.get_alert(vehicle, lane_data, ped_data)
+            alert = self.get_alert(vehicle_data, lane_data, ped_data)
             self.fileHandler.insert_alert((frame_id, {frame_id: alert}))
             self.fileHandler.insert_image((frame_id, img))
 
@@ -450,7 +466,7 @@ class PCViewer():
         if config.save.log:
             temp_mess = mess
             temp_mess.pop('img')
-            self.fileHandler.insert_log((frame_id, temp_mess))
+            self.fileHandler.insert_log(temp_mess)
         
         cv2.imshow('UI', img)
         key = cv2.waitKey(1) & 0xFF
@@ -524,7 +540,7 @@ class PCViewer():
                 if ttc == '1000.00':
                     ttc = '-'
         parameters = [str(v_type), str(index), str(ttc), str(fcw), str(hwm), str(hw), str(vb)]
-        self.player.show_vehicle_parameters(img, parameters, (120, 0))
+        self.player.show_vehicle_parameters(img, parameters, (100, 0))
  
         # 获取testview数据
         if config.testview.on:
@@ -567,11 +583,7 @@ class PCViewer():
                 rw_dis = '-'
 
         parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
-        if config.mobile.show:
-            lane_y = 120 * 3
-        else:
-            lane_y = 120 * 2
-        self.player.show_lane_parameters(img, parameters, (lane_y, 0))
+        self.player.show_lane_parameters(img, parameters, (200, 0))
 
         # 获取testview数据
         if config.testview.on:
@@ -583,7 +595,9 @@ class PCViewer():
 
     # ped
     def draw_ped(self, img, ped_data):
+        pcw_on = False
         if ped_data:
+            pcw_on = ped_data['pcw_on']
             for pedestrain in ped_data['pedestrians']:
                 position = pedestrain['regressed_box']
                 position = position['x'], position['y'], position['width'], position['height']
@@ -596,6 +610,8 @@ class PCViewer():
                 self.player.show_peds(img, position, color, 2)
                 if position[0] > 0:
                     self.player.show_peds_info(img, position, pedestrain['dist'])
+        parameters = [str(pcw_on)]
+        self.player.show_ped_parameters(img, parameters, (450, 0))
     
     def draw_tsr(self, img, tsr_data):
         focus_index, speed_limit, tsr_warning_level, tsr_warning_state = -1, 0, 0, 0
@@ -615,7 +631,7 @@ class PCViewer():
                     self.player.show_tsr_info(img, position, tsr['max_speed'])                
                 
         parameters = [str(focus_index), str(speed_limit), str(tsr_warning_level), str(tsr_warning_state)]
-        self.player.show_tsr_parameters(img, parameters, (369, 0))
+        self.player.show_tsr_parameters(img, parameters, (300, 0))
     
     def cal_fps(self, frame_cnt):
         end_time = datetime.now()
@@ -624,20 +640,21 @@ class PCViewer():
         fps = frame_cnt / duration
         return fps
 
-    def draw_mobile(self, img, frame_id):
-        index = ((frame_id//3)*4+frame_id%3) % len(self.image_list)
-        if config.mobile.show:
+    def draw_mobile(self, img, image_mark):
+        mobile_log = self.mobile_content.get(image_mark)
+        print('mobile_log', mobile_log)
+        print('draw image_mark', image_mark)
+        if mobile_log:
             mobile_ldw, mobile_hw, mobile_fcw, mobile_vb, mobile_hwm = '-', '-', '-', '-', '-'
-            mobile_log = self.mobile_content[index]
-            if mobile_log:
-                mobile_hwm = mobile_log.get('headway_measurement') if mobile_log.get('headway_measurement') else 0
-                mobile_hw = 1 if mobile_log.get('sound_type') == 3 else 0
-                mobile_fcw = 1 if mobile_log.get('sound_type') == 6 and mobile_log.get('fcw_on') == 1 else 0
-                mobile_vb = 1 if mobile_log.get('sound_type') == 5 else 0
-                mobile_ldw = mobile_log['left_ldw'] * 2 + mobile_log['right_ldw'] if 'left_ldw' in mobile_log else 0
+            mobile_hwm = mobile_log.get('headway_measurement') if mobile_log.get('headway_measurement') else 0
+            mobile_hw = 1 if mobile_log.get('sound_type') == 3 else 0
+            mobile_fcw = 1 if mobile_log.get('sound_type') == 6 and mobile_log.get('fcw_on') == 1 else 0
+            mobile_pcw = 1 if mobile_log.get('sound_type') == 6 and mobile_log.get('peds_fcw') == 1 else 0
+            mobile_vb = 1 if mobile_log.get('sound_type') == 5 else 0
+            mobile_ldw = mobile_log['left_ldw'] * 2 + mobile_log['right_ldw'] if 'left_ldw' in mobile_log else 0
 
-            mobile_parameters = [str(mobile_hwm), str(mobile_hw), str(mobile_fcw), str(mobile_vb), str(mobile_ldw)]
-            self.player.show_mobile_parameters(img, mobile_parameters, (120*2, 0))
+            mobile_parameters = [str(mobile_hwm), str(mobile_hw), str(mobile_fcw), str(mobile_vb), str(mobile_ldw), str(mobile_pcw)]
+            self.player.show_mobile_parameters(img, mobile_parameters, (600, 0))
 
     def init_testview(self, loop):
         print('begin to connect...')

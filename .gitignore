@@ -5,13 +5,18 @@ bin-release/
 [Bb]in/
 
 # Other files and folders
-.settings/
+settings/
+cyrelease/
+dist/
+client/build/
 
 # Executables
 *.swf
 *.air
 *.ipa
 *.apk
+*.so
+*.c
 
 # python
 __pycache__
