@@ -9,6 +9,7 @@ settings/
 cyrelease/
 dist/
 client/build/
+try/
 
 # Executables
 *.swf

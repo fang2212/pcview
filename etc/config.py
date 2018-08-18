@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 # debug config fpga
+
 fpga_cfg = {
     "ip": "192.168.0.233",
     # "port": 1200,
@@ -55,11 +56,11 @@ m3_cfg = {
     "pic": {
         "use": True,
         "test_image": "/media/minieye/localdata1/TestImage",
-        "path": "/media/minieye/localdata1/TestCase/PCW04/image_list.txt"
+        "path": "/media/minieye/localdata1/TestCase/STRESS01/image_list.txt"
     },
     "mobile": {
         "show": True,
-        "path": "/media/minieye/localdata1/TestCase/PCW04/mobile_log.json"
+        "path": "/media/minieye/localdata1/TestCase/STRESS01/mobile_log.json"
     },
     "save": {
         "path": "/home/minieye/pcviewer-data/",
@@ -83,10 +84,58 @@ m3_cfg = {
         "color": "color"
     },
     "fix": {
-        "lane": 1,
-        "vehicle": 1,
-        "ped": 1,
-        "tsr": 1
+        "lane": 0,
+        "vehicle": 0,
+        "ped": 0,
+        "tsr": 0
+    },
+    "testview": {
+        "on": False,
+        "mobile_path": "/media/minieye/4139A91A24AB9CBE/B9J5G7-201805301724/mobile"
+    }
+}
+
+# debug config m3
+fpga_hil_cfg = {
+    "ip": "192.168.1.233",
+    # "port": 1200,
+    "platform": "fpga",
+    "debug": True,
+    "pic": {
+        "use": True,
+        "test_image": "/media/minieye/localdata1/TestImage",
+        "path": "/media/minieye/localdata1/TestCase/STRESS01/image_list.txt"
+    },
+    "mobile": {
+        "show": True,
+        "path": "/media/minieye/localdata1/TestCase/STRESS01/mobile_log.json"
+    },
+    "save": {
+        "path": "/home/minieye/pcviewer-data/",
+        "video": False,
+        "alert": False,   # 包括image和alert.log 主要用于演示平台
+        "log": True
+    },
+    "msg_types": [
+        "lane",
+        "vehicle",
+        "ped",
+        "tsr"
+    ],
+    "show": {
+        "overlook": True,
+        "lane": True,
+        "lane_speed_limit": 0,
+        "vehicle": True,
+        "ped": True,
+        "tsr": True,
+        "color": "color"
+    },
+    "fix": {
+        "lane": 0,
+        "vehicle": 0,
+        "ped": 0,
+        "tsr": 0
     },
     "testview": {
         "on": False,
@@ -106,7 +155,6 @@ def dic2obj(d):
             setattr(top, i, j)
     return top
 
-
 # config_dict = config_dict_fpga
 # config_dict = config_dict_m3
 
@@ -115,5 +163,7 @@ def load(usage):
         return dic2obj(fpga_cfg)
     elif usage == 'm3':
         return dic2obj(m3_cfg)
+    elif usage == 'fpga_hil':
+        return dic2obj(fpga_hil_cfg)
 
 config = load('fpga')

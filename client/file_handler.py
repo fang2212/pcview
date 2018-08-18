@@ -71,7 +71,7 @@ class FileHandler(Process):
                             self.fourcc, 20.0, (1280, 720), True)
                 self.video_writer.write(data)
                 cnt += 1
-            time.sleep(0.05)
+            time.sleep(0.02)
  
     def insert_log(self, msg):
         self.log_queue.put(msg)

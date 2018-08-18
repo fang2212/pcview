@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 #-*- coding:utf-8 -*-
 
+from etc import config
+config.load()
 from etc.config import config
 from client.pcview_client import PCViewer, Hub
 import argparse

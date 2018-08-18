@@ -51,6 +51,7 @@ async def arm_flow(uri, msg_queue, msg_types):
             'source': 'pcview-client',
             'topic': 'subscribe',
             'data': 'debug.hub.*',
+            # 'data': '*.*.*',
         }
         data = msgpack.packb(msg)
         await websocket.send(data)
@@ -59,7 +60,7 @@ async def arm_flow(uri, msg_queue, msg_types):
         while True:
             try:
                 data = await websocket.recv()
-                print('msg1')
+                # print('msg1')
                 msg = msgpack.unpackb(data, use_list=False)
                 for msg_type in msg_types:
                     topic = msg[b'topic'].decode('ascii')
@@ -67,6 +68,7 @@ async def arm_flow(uri, msg_queue, msg_types):
                         data = msgpack.unpackb(msg[b'data'], use_list=False)
                         data = convert(data)
                         msg_queue.put((data['frame_id'], data, msg_type))
+                time.sleep(0.01)
 
             except websockets.exceptions.ConnectionClosed as err:
                 print('Connection was closed')
@@ -191,7 +193,7 @@ def fpga_handle(msg_types, msg_queue, ip):
         sink['tsr'].start()
 
 
-class Hub(Process):
+class PCView():
     
     def __init__(self):
 
@@ -210,6 +212,8 @@ class Hub(Process):
 
         self.msg_queue = Queue()
         self.cam_queue = Queue()
+        self.mess_queue = Queue()
+
         self.sink = {}
         self.cache = {}
 
@@ -233,6 +237,27 @@ class Hub(Process):
         elif config.platform == 'arm':
             logging.debug('arm platform')
             arm_handle(msg_types, self.msg_queue, config.ip)
+
+        self.pc_draw = PCDraw(self.mess_queue)
+        self.pc_draw.start()
+
+        self.mobile_content = None
+        if config.mobile.show:
+            mobile_fp = open(config.mobile.path, 'r+')
+            self.mobile_content = json.load(mobile_fp)
+            mobile_fp.close()
+            self.gen_mobile_dict()
+
+        self.fileHandler = None
+        if config.save.log or config.save.alert or config.save.video:
+            self.fileHandler = FileHandler()
+            self.fileHandler.start()
+
+    def gen_mobile_dict(self):
+        temp_dict = {}
+        for mobile_log in self.mobile_content:
+            temp_dict[mobile_log['image_mark']] = mobile_log
+        self.mobile_content = temp_dict
 
     def list_len(self):
         length = 0
@@ -259,8 +284,33 @@ class Hub(Process):
             frame_id, msg_data, msg_type = self.msg_queue.get()
             logging.debug('queue id {}, type {}'.format(frame_id, msg_type))
             self.cache[msg_type].append((frame_id, msg_data))
+            # print('msg_type:', msg_type, 'frame_id', frame_id)
             self.msg_cnt[msg_type]['rev'] += 1
-        time.sleep(0.02)
+        time.sleep(0.01)
+
+    def go(self):
+        while True:
+            self.mess_queue.put(self.pop())
+            time.sleep(0.01)
+
+    def fix_frame(self, pre_, now_, fix_range):
+        if now_.get('frame_id') or (not fix_range):
+            return now_, now_
+        if pre_.get('frame_id'):
+            if pre_.get('frame_id') + fix_range >= self.now_id:
+                return pre_, pre_
+        return {}, {}
+
+    def cal_fps(self, frame_cnt):
+        end_time = datetime.now()
+        duration = (end_time - self.start_time).total_seconds()
+        duration = duration if duration > 0 else 1
+        fps = frame_cnt / duration
+        return fps
+
+    def update_extra(self, res):
+        pass
+        return res
 
     def pop(self):
         res = {
@@ -276,9 +326,11 @@ class Hub(Process):
         frame_id = None
 
         if config.pic.use:
-            while not self.all_has() and self.list_len() < self.max_cache:
+            print('len', self.list_len())
+            while (not self.all_has()) and (self.list_len() < self.max_cache):
                 self.msg_async()
             frame_id = sys.maxsize
+
             for key in self.cache:
                 if self.cache[key]:
                     temp_id = self.cache[key][0][0]
@@ -286,20 +338,25 @@ class Hub(Process):
                     frame_id = min(temp_id, frame_id)
         
             logging.debug('frame_id {}'.format(frame_id))
+            # print("use frame_id", frame_id)
 
             index = ((frame_id//3)*4+frame_id%3) % len(self.image_list)
-            image_path = pack(config.pic.test_image, self.image_list[index])
+            image_path = pack(config.pic.test_image, self.image_list[index].strip())
             items = self.image_list[index].split('/')
             res['extra'] = {
                 'image_path': image_path,
-                'image_mark': items[0]+'/'+items[-1].strip()
+                'image_mark': items[0]+'/'+items[-1],
+                'image_index': (frame_id//3)*4+frame_id%3
             }
+            '''
             image_path = image_path.strip()
             img = cv2.imread(image_path)
             if config.show.color == 'gray':
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
                 img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
             res['img'] = img
+            '''
+            res['img'] = None
         else:
             while True:
                 if not self.cam_queue.empty():
@@ -308,7 +365,7 @@ class Hub(Process):
                     image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
                     res['img'] = image
                     break
-                time.sleep(0.02)
+                time.sleep(0.01)
             logging.debug('show cam id {}'.format(frame_id))
             while not self.all_over(frame_id) and self.list_len() < self.max_cache:
                 self.msg_async()
@@ -332,129 +389,16 @@ class Hub(Process):
         logging.debug('end res ped{}'.format(res['ped']))
         logging.debug('end res tsr{}'.format(res['tsr']))
 
-        return res         
-
-class PCViewer():
-    """pc-viewer功能类，用于接收每一帧数据，并绘制
-    """
-    
-    def __init__(self, hub):
-        self.hub = hub
-        self.player = Player()
-        self.exit = False
-        
-        self.now_id = 0
-        self.pre_lane = {}
-        self.pre_vehicle = {}
-        self.pre_ped = {}
-        self.pre_tsr = {}
-
-        if config.testview.on:
-            Thread(target=self.init_testview, args=(asyncio.new_event_loop(), )).start()
-
-        if config.mobile.show:
-            mobile_fp = open(config.mobile.path, 'r+')
-            self.mobile_content = json.load(mobile_fp)
-            mobile_fp.close()
-            self.gen_mobile_dict()
-
-        if config.save.log or config.save.alert or config.save.video:
-            self.fileHandler = FileHandler()
-            self.fileHandler.start()
-
-    def gen_mobile_dict(self):
-        temp_dict = {}
-        for mobile_log in self.mobile_content:
-            temp_dict[mobile_log['image_mark']] = mobile_log
-        self.mobile_content = temp_dict
-        # print(self.mobile_content)
-
-    def start(self):
-        self.hub.start()
-        self.start_time = datetime.now()
-        frame_cnt = 0
-
-        while not self.exit:
-            d = self.hub.pop()
-            if not d.get('frame_id'):
-                continue
-            frame_cnt += 1
-            self.draw(d, frame_cnt)
-            if frame_cnt >= 200:
-                self.start_time = datetime.now()
-                frame_cnt = 0
-
-    def fix_frame(self, pre_, now_, fix_range):
-        if now_.get('frame_id') or (not fix_range):
-            return now_, now_
-        if pre_.get('frame_id'):
-            if pre_.get('frame_id') + fix_range >= self.now_id:
-                return pre_, pre_
-        return {}, {}
-
-    def draw(self, mess, frame_cnt):
-        img = mess['img']
-        frame_id = mess['frame_id']
-        self.now_id = frame_id
-        vehicle_data = mess['vehicle']
-        lane_data = mess['lane']
-        ped_data = mess['ped']
-        tsr_data = mess['tsr']
-
-        if config.show.overlook:
-            self.player.show_overlook_background(img)
-
-        if config.mobile.show:
-            bg_width = 120 * 6
-        else:
-            bg_width = 120 * 4
-        self.player.show_parameters_background(img, (0, 0, bg_width+20, 150))
-        
         # fix frame
+        '''
         self.pre_lane, lane_data = self.fix_frame(self.pre_lane, lane_data, config.fix.lane)
         self.pre_vehicle, vehicle_data = self.fix_frame(self.pre_vehicle, vehicle_data, config.fix.vehicle)
         self.pre_ped, ped_data = self.fix_frame(self.pre_ped, ped_data, config.fix.ped)
         self.pre_tsr, tsr_data = self.fix_frame(self.pre_tsr, tsr_data, config.fix.tsr)
-        
-        if config.show.vehicle:
-            if vehicle_data:
-                self.hub.msg_cnt['vehicle']['fix'] += 1
-            self.draw_vehicle(img, vehicle_data)
-        
-        if config.show.lane:
-            if lane_data:
-                self.hub.msg_cnt['lane']['fix'] += 1
-            self.draw_lane(img, lane_data)
+        '''
 
-        if config.show.ped:
-            if ped_data:
-                self.hub.msg_cnt['ped']['fix'] += 1
-            self.draw_ped(img, ped_data)
-
-        if config.show.tsr:
-            if tsr_data:
-                self.hub.msg_cnt['tsr']['fix'] += 1
-            self.draw_tsr(img, tsr_data)
-
-        if config.mobile.show:
-            image_mark = mess['extra'].get('image_mark')
-            print('image_mark', image_mark)
-            if image_mark:
-                self.draw_mobile(img, image_mark)
-        
-        logging.info('msg state {}'.format(self.hub.msg_cnt))
-
-        # show env info
-        light_mode = -1
-        if vehicle_data:
-            light_mode = vehicle_data['light_mode']
-        speed = vehicle_data.get('speed')*3.6 if vehicle_data.get('speed') else 0
-        speed = lane_data.get('speed') if lane_data.get('speed') else speed
-
-        fps = self.cal_fps(frame_cnt)
-        self.player.show_env(img, speed, light_mode, fps, (0, 0))
-        
-        # save info
+        # logging.info('msg state {}'.format(self.hub.msg_cnt))
+        '''
         if config.save.alert:
             alert = self.get_alert(vehicle_data, lane_data, ped_data)
             self.fileHandler.insert_alert((frame_id, {frame_id: alert}))
@@ -467,45 +411,93 @@ class PCViewer():
             temp_mess = mess
             temp_mess.pop('img')
             self.fileHandler.insert_log(temp_mess)
+        '''
+
+        res = self.update_extra(res)
+        return res         
+
+class PCDraw(Process):
+    """pc-viewer功能类，用于接收每一帧数据，并绘制
+    """
+    
+    def __init__(self, mess_queue):
+        Process.__init__(self)
+        self.daemon = True
+        self.mess_queue = mess_queue
+        self.player = Player()
+
+    def run(self):
+        while True: 
+            while not self.mess_queue.empty():
+                # print('e qsize', self.mess_queue.qsize())
+                d = self.mess_queue.get()
+                # print('mess_queue', d )
+                self.draw(d)
+            time.sleep(0.01)
+
+    def draw(self, mess):
+        img = mess['img']
+        frame_id = mess['frame_id']
+        self.now_id = frame_id
+        vehicle_data = mess['vehicle']
+        lane_data = mess['lane']
+        ped_data = mess['ped']
+        tsr_data = mess['tsr']
+        extra = mess['extra']
+
+        image_path = extra.get('image_path')
+        if image_path:
+            img = cv2.imread(image_path)
+        '''
+            cv2.imshow('hello', img)
+            cv2.waitKey(1)
+        return
+        '''
+        if config.show.overlook:
+            self.player.show_overlook_background(img)
+
+        if config.mobile.show:
+            bg_width = 120 * 6
+        else:
+            bg_width = 120 * 4
+        self.player.show_parameters_background(img, (0, 0, bg_width+20, 150))
+        
+        if config.show.vehicle:
+            self.draw_vehicle(img, vehicle_data)
+        
+        if config.show.lane:
+            self.draw_lane(img, lane_data)
+
+        if config.show.ped:
+            self.draw_ped(img, ped_data)
+
+        if config.show.tsr:
+            self.draw_tsr(img, tsr_data)
+
+        if config.mobile.show:
+            image_mark = mess['extra'].get('image_mark')
+            if image_mark:
+                self.draw_mobile(img, image_mark)
+        
+        # show env info
+        light_mode = -1
+        if vehicle_data:
+            light_mode = vehicle_data['light_mode']
+        speed = vehicle_data.get('speed')*3.6 if vehicle_data.get('speed') else 0
+        # speed = vehicle_data.get('speed') if vehicle_data.get('speed') else 0
+        speed = lane_data.get('speed')*3.6 if lane_data.get('speed') else speed
+
+        fps = extra.get('fps')
+        if not fps:
+            fps = 0
+
+        self.player.show_env(img, speed, light_mode, fps, (0, 0))
+        
+        # save info
         
         cv2.imshow('UI', img)
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):
-            cv2.destroyAllWindows()
-            self.exit = True
-        elif key == 27:
-            cv2.destroyAllWindows()
-            self.exit = True
-
-    def get_alert(self, vehicle_data, lane_data, ped_data):
-        alert = {}
-        warning_level, alert_ttc, hw_state, fcw_state, vb_state, sg_state = 0,0,0,0,0,0
-        if vehicle_data:
-            speed = vehicle_data['speed']
-            focus_index = vehicle_data['focus_index']
-            if focus_index != -1:
-                fcw_state = vehicle_data['forward_collision_warning']
-                alert_ttc = '%.2f' % vehicle_data['ttc']
-                vb_state = vehicle_data['bumper_state']
-                sg_state = vehicle_data['stop_and_go_state']
-                alert_ttc = '%.2f' % vehicle_data['ttc']
-                warning_level = vehicle_data['warning_level']
-                hw_state = vehicle_data['headway_warning']
-        alert['ttc'] = float(alert_ttc)
-        alert['warning_level'] = int(warning_level)
-        alert['hw_state'] = int(hw_state)
-        alert['fcw_state'] = int(fcw_state)
-        alert['vb_state'] = int(vb_state)
-        alert['sg_state'] = int(sg_state)
-
-        lane_warning = 0
-        if lane_data: 
-            lane_warning = lane_data['deviate_state']
-            speed = lane_data['speed']*3.6
-        alert['lane_warning'] = lane_warning
-        alert['speed'] = float('%.2f' % speed)
-       
-        return alert
+        key = cv2.waitKey(1)
+        return
 
     # vehicle
     def draw_vehicle(self, img, vehicle_data):
@@ -633,17 +625,10 @@ class PCViewer():
         parameters = [str(focus_index), str(speed_limit), str(tsr_warning_level), str(tsr_warning_state)]
         self.player.show_tsr_parameters(img, parameters, (300, 0))
     
-    def cal_fps(self, frame_cnt):
-        end_time = datetime.now()
-        duration = (end_time - self.start_time).total_seconds()
-        duration = duration if duration > 0 else 1
-        fps = frame_cnt / duration
-        return fps
 
     def draw_mobile(self, img, image_mark):
-        mobile_log = self.mobile_content.get(image_mark)
-        print('mobile_log', mobile_log)
-        print('draw image_mark', image_mark)
+        # mobile_log = self.mobile_content.get(image_mark)
+        mobile_log = None
         if mobile_log:
             mobile_ldw, mobile_hw, mobile_fcw, mobile_vb, mobile_hwm = '-', '-', '-', '-', '-'
             mobile_hwm = mobile_log.get('headway_measurement') if mobile_log.get('headway_measurement') else 0
@@ -652,79 +637,5 @@ class PCViewer():
             mobile_pcw = 1 if mobile_log.get('sound_type') == 6 and mobile_log.get('peds_fcw') == 1 else 0
             mobile_vb = 1 if mobile_log.get('sound_type') == 5 else 0
             mobile_ldw = mobile_log['left_ldw'] * 2 + mobile_log['right_ldw'] if 'left_ldw' in mobile_log else 0
-
             mobile_parameters = [str(mobile_hwm), str(mobile_hw), str(mobile_fcw), str(mobile_vb), str(mobile_ldw), str(mobile_pcw)]
             self.player.show_mobile_parameters(img, mobile_parameters, (600, 0))
-
-    def init_testview(self, loop):
-        print('begin to connect...')
-        self.tv_index = 0
-        fp = open(pack(config.testview.mobile_path, 'ldw.json'), 'r+')
-        self.mobile_ldw_list = json.load(fp)
-        fp = open(pack(config.testview.mobile_path, 'fcw.json'), 'r+')
-        self.mobile_fcw_list = json.load(fp)
-        fp = open(pack(config.testview.mobile_path, 'hw.json'), 'r+')
-        self.mobile_hw_list = json.load(fp)
-        fp = open(pack(config.testview.mobile_path, 'hwm.json'), 'r+')
-        self.mobile_hwm_list = json.load(fp)
-        fp = open(pack(config.testview.mobile_path, 'vb.json'), 'r+')
-        self.mobile_vb_list = json.load(fp)
-
-        self.ldw_list = [''] * len(self.mobile_ldw_list)
-        self.fcw_list = [''] * len(self.mobile_fcw_list)
-        self.hw_list = [''] * len(self.mobile_hw_list)
-        self.hwm_list = [''] * len(self.mobile_hwm_list)
-        self.vb_list = [''] * len(self.mobile_vb_list)
-
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(self.send_handler())
-
-    async def send_handler(self):
-        async with websockets.connect('ws://127.0.0.1:24012') as websocket:
-            while True:
-                await self.send_msg(websocket, 'algo.ldw', self.ldw_list[:self.tv_index+1])
-                await self.send_msg(websocket, 'algo.fcw', self.fcw_list[:self.tv_index+1])
-                await self.send_msg(websocket, 'algo.hw', self.hw_list[:self.tv_index+1])
-                await self.send_msg(websocket, 'algo.hwm', self.hwm_list[:self.tv_index+1])
-                await self.send_msg(websocket, 'algo.vb', self.vb_list[:self.tv_index+1])
-
-                await self.send_msg(websocket, 'mobile.algo.ldw', self.mobile_ldw_list[:self.tv_index+1])
-                await self.send_msg(websocket, 'mobile.algo.fcw', self.mobile_fcw_list[:self.tv_index+1])
-                await self.send_msg(websocket, 'mobile.algo.hw', self.mobile_hw_list[:self.tv_index+1])
-                await self.send_msg(websocket, 'mobile.algo.hwm', self.mobile_hwm_list[:self.tv_index+1])
-                await self.send_msg(websocket, 'mobile.algo.vb', self.mobile_vb_list[:self.tv_index+1])
-                time.sleep(1)
-    async def send_msg(self, websocket, topic, value):
-        msg = {
-            'source': 'device.server',
-            'topic': topic,
-            'data': msgpack.packb(value)
-        }
-        await websocket.send(msgpack.packb(msg))
-
-    def test(self):
-        """用于测试，读取离线数据"""
-        path = ""
-        fp = open(os.path.join(path, 'log.json'), 'r')
-        log_contents = fp.readlines()
-        fp.close()
-
-        frame_cnt = 0
-        self.start_time = datetime.now()
-        for data in log_contents:
-            frame_cnt += 1
-            if not self.exit:
-                data = json.loads(data)
-                img_path = os.path.join(path, str(data['frame_id']) + '.jpg')
-                if not os.path.exists(img_path):
-                    continue
-                img = cv2.imread(img_path)
-                data = {
-                    'frame_id': data['frame_id'],
-                    'img': img,
-                    'lane_data': data['lane_data'],
-                    'vehicle_data': data['vehicle_data']
-                }
-                self.draw(data, frame_cnt)
-            else:
-                break
