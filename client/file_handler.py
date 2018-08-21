@@ -11,13 +11,13 @@ from multiprocessing import Queue
 from etc.config import config
 
 class FileHandler(Process):
-    def __init__(self):
+    def __init__(self, video_queue):
         Process.__init__(self)
         self.deamon = True
         self.log_queue = Queue()
         self.alert_queue = Queue()
         self.image_queue = Queue()
-        self.video_queue = Queue()
+        self.video_queue = video_queue
         self._max_cnt = 7000
  
         FORMAT = '%Y%m%d%H%M%S'
@@ -36,7 +36,7 @@ class FileHandler(Process):
 
         if config.save.video:
             self.video_writer = None
-            self.fourcc = cv2.VideoWriter_fourcc(*'X264')
+            self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
             self.video_path = os.path.join(self.path, 'video')
             if not os.path.exists(self.video_path):
                 os.makedirs(self.video_path)
@@ -47,7 +47,8 @@ class FileHandler(Process):
             # print('---fileHandle process id----', os.getpid())
             while config.save.log and not self.log_queue.empty():
                 data = self.log_queue.get() 
-                self.log_fp.write(json.dumps(data) + '\n')
+                # self.log_fp.write(json.dumps(data) + '\n')
+                self.log_fp.write(data + '\n')
                 self.log_fp.flush()
  
             if config.save.alert:
@@ -71,7 +72,7 @@ class FileHandler(Process):
                             self.fourcc, 20.0, (1280, 720), True)
                 self.video_writer.write(data)
                 cnt += 1
-            time.sleep(0.02)
+            time.sleep(0.01)
  
     def insert_log(self, msg):
         self.log_queue.put(msg)
