@@ -6,8 +6,9 @@ import sys
 from etc import config as config_script
 print(sys.argv)
 config_script.load('fpga')
-if len(sys.argv) == 2:
-    config_script.load(sys.argv[1])
+if len(sys.argv) >= 2:
+    opt = sys.argv[1]
+    config_script.load(opt)
 from etc.config import config
 from client.pcview_client import PCView
 from absl import flags as gflags
@@ -18,10 +19,15 @@ gflags.DEFINE_string('case_path', '', 'RT')
 gflags.DEFINE_string('image_floder', '', 'RT')
 gflags.DEFINE_string('case_detail', '', 'RT')
 gflags.DEFINE_integer('drop_period', 4, 'RT')
-gflags.DEFINE_string('ip', '192.168.0.233', 'RT')
+gflags.DEFINE_string('ip', '', 'RT')
 
 def parse_flag(argv):
+    config.pic.raw_type = 'gray'
+    config.save.video = False
+    config.save.log = False
     Flags(argv)
+    if Flags.ip:
+        config.ip = Flags.ip
     pass
 
 if __name__ == "__main__":

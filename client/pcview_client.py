@@ -24,13 +24,6 @@ from .file_handler import FileHandler
 pack = os.path.join
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')  # logging.basicConfig函数对日志的输出格式及方式做相关配置
-''' logging usage
-logging.info('this is a loggging info message')
-logging.debug('this is a loggging debug message')
-logging.warning('this is loggging a warning message')
-logging.error('this is an loggging error message')
-logging.critical('this is a loggging critical message')
-'''
 
 def convert(data):
     '''
@@ -114,7 +107,11 @@ class Sink(Process):
 
 
 class CameraSink(Sink):
-
+    '''
+    YUYV = 0
+    RGB = 1
+    GREY = 2
+    '''
     def __init__(self, queue, ip, port, msg_type):
         Sink.__init__(self, queue, ip, port, msg_type)
         self.raw_type = config.pic.raw_type
@@ -123,12 +120,19 @@ class CameraSink(Sink):
         # print('c--process-id:', os.getpid())
         msg = memoryview(msg).tobytes()
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
-        if self.raw_type == 'color':
-            data = msg[24:]
-        else:
+        # color_type = int.from_bytes(msg[1:2], byteorder="little", signed=False)
+        # color_type = int.from_bytes(msg[2:4], byteorder="little", signed=False)
+        # print(msg[0:16])
+        # print('cccccccctttttttttttt', color_type)
+        if config.pic.raw_type == 'gray':
             data = msg[16:]
+            image = np.fromstring(data, dtype=np.uint8).reshape(720, 1280, 1)
+            image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+        if config.pic.raw_type == 'color':
+            data = msg[24:]
+            image = cv2.imdecode(np.fromstring(data, np.uint8), cv2.IMREAD_COLOR)
         logging.debug('cam id {}'.format(frame_id))
-        return frame_id, data
+        return frame_id, image
 
 class AlgorithmSink(Sink):
     
@@ -140,8 +144,6 @@ class AlgorithmSink(Sink):
         data = msgpack.loads(msg)
         res = convert(data)
         frame_id = res['frame_id']
-        print(self.msg_type, 'data', frame_id)
-        # logging.debug('lan id {}'.format(frame_id))
         return frame_id, res
 
 def fpga_handle(msg_types, msg_queue, ip):
@@ -161,6 +163,7 @@ def fpga_handle(msg_types, msg_queue, ip):
     if 'tsr' in msg_types:
         sink['tsr'] = AlgorithmSink(queue=msg_queue, ip=ip, port=1206, msg_type='tsr')
         sink['tsr'].start()
+    return sink
 
 
 class PCView():
@@ -182,7 +185,7 @@ class PCView():
         self.msg_queue = Queue()
         self.cam_queue = Queue()
         self.res_queue = Queue()
-        self.video_queue = Queue()
+        self.file_queue = Queue()
 
         self.sink = {}
         self.cache = {}
@@ -209,13 +212,11 @@ class PCView():
             self.camera_sink.start()
         
         if config.platform == 'fpga':
-            fpga_handle(msg_types, self.msg_queue, config.ip)
+            self.sink = fpga_handle(msg_types, self.msg_queue, config.ip)
         elif config.platform == 'arm':
-            arm_handle(msg_types, self.msg_queue, config.ip)
-        self.file_handler = None
+            self.sink = arm_handle(msg_types, self.msg_queue, config.ip)
 
         self.mobile_content = None
-
         if config.mobile.show:
             mobile_fp = open(config.mobile.path, 'r+')
             self.mobile_content = json.load(mobile_fp)
@@ -224,10 +225,10 @@ class PCView():
 
         self.file_handler = None
         if config.save.log or config.save.alert or config.save.video:
-            self.file_handler = FileHandler(self.video_queue)
+            self.file_handler = FileHandler(self.file_queue)
             self.file_handler.start()
 
-        self.pc_draw = PCDraw(self.res_queue, self.video_queue)
+        self.pc_draw = PCDraw(self.res_queue, self.file_queue)
         self.pc_draw.start()
 
     def gen_mobile_dict(self):
@@ -259,6 +260,9 @@ class PCView():
     def msg_async(self):
         while not self.msg_queue.empty():
             frame_id, msg_data, msg_type = self.msg_queue.get()
+            if config.save.log:
+                temp = json.dumps({msg_type: msg_data})
+                self.file_queue.put(('log', temp))
             logging.debug('queue id {}, type {}'.format(frame_id, msg_type))
             self.cache[msg_type].append((frame_id, msg_data))
             self.msg_cnt[msg_type]['rev'] += 1
@@ -293,7 +297,7 @@ class PCView():
         res['extra']['fps'] = self.fps_cnt['value']
 
         image_mark = res['extra'].get('image_mark')
-        if image_mark:
+        if config.mobile.show and image_mark:
             mobile_log = self.mobile_content.get(image_mark)
             res['extra']['mobile_log'] = mobile_log
 
@@ -305,23 +309,12 @@ class PCView():
                                                                res[msg_type],
                                                                msg_type,
                                                                frame_id)
-
-        if config.save.log:
-            temp_img = res['img']
-            res.pop('img')
-            temp = json.dumps(res)
-            self.file_handler.insert_log(temp)
-            res['img'] = temp_img
-
-        # cv2.imshow('test', res['img'])
-        # key = cv2.waitKey(100000)
         '''
         if config.save.alert:
             alert = self.get_alert(vehicle_data, lane_data, ped_data)
             self.fileHandler.insert_alert((frame_id, {frame_id: alert}))
             self.fileHandler.insert_image((frame_id, img))
         '''
-        # logging.info('msg state {}'.format(self.hub.msg_cnt))
 
         logging.info('msg state {}'.format(self.msg_cnt))
 
@@ -363,22 +356,15 @@ class PCView():
             }
             image_path = image_path.strip()
             img = cv2.imread(image_path)
-            print('image_path', image_path)
+            # print('image_path', image_path)
             if config.show.color == 'gray':
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
                 img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
             res['img'] = img
-            # cv2.imshow('debug', img)
-            # cv2.waitKey(10000)
         else:
             while True:
                 if not self.cam_queue.empty():
-                    frame_id, image_data, msg_type = self.cam_queue.get()
-                    if config.pic.raw_type == 'color':
-                        image = cv2.imdecode(np.fromstring(image_data, np.uint8), cv2.IMREAD_COLOR)
-                    else:
-                        image = np.fromstring(image_data, dtype=np.uint8).reshape(720, 1280, 1)
-                        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+                    frame_id, image, msg_type = self.cam_queue.get()
                     res['img'] = image
                     break
                 time.sleep(0.01)
@@ -411,12 +397,12 @@ class PCDraw(Process):
     """pc-viewer功能类，用于接收每一帧数据，并绘制
     """
     
-    def __init__(self, mess_queue, video_queue):
+    def __init__(self, mess_queue, file_queue):
         Process.__init__(self)
         self.daemon = True
         self.mess_queue = mess_queue
         self.player = Player()
-        self.video_queue = video_queue
+        self.file_queue = file_queue
 
     def run(self):
         while True: 
@@ -438,26 +424,13 @@ class PCDraw(Process):
         extra = mess['extra']
         mobile_log = extra.get('mobile_log')
 
-        '''
-        image_path = extra.get('image_path')
-        if image_path:
-            img = cv2.imread(image_path)
-            cv2.imshow('hello', img)
-            cv2.waitKey(1)
-        return
-        '''
-        '''
-        cv2.imshow('hello', img)
-        cv2.waitKey(10000)
-        '''
-
         if config.show.overlook:
             self.player.show_overlook_background(img)
 
         if config.mobile.show:
             bg_width = 120 * 6
         else:
-            bg_width = 120 * 4
+            bg_width = 120 * len(config.msg_types) + 50
         self.player.show_parameters_background(img, (0, 0, bg_width+20, 150))
         
         if config.show.vehicle:
@@ -492,12 +465,20 @@ class PCDraw(Process):
 
         self.player.show_env(img, speed, light_mode, fps, (0, 0))
 
+        if config.debug:
+            cv2.putText(img, str(frame_id), (180, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
 
-        self.video_queue.put((frame_id, img))
-        
+
+        if config.save.video:
+            self.file_queue.put(('video', (frame_id, img)))
+        '''
+        if config.save.alert:
+            alert = self.get_alert(vehicle_data, lane_data, ped_data)
+            self.fileHandler.insert_alert((frame_id, {frame_id: alert}))
+            self.fileHandler.insert_image((frame_id, img))
+        '''
         cv2.imshow('UI', img)
         key = cv2.waitKey(1)
-
         return
 
     # vehicle
@@ -584,6 +565,10 @@ class PCDraw(Process):
                 self.player.show_peds(img, position, color, 2)
                 if position[0] > 0:
                     self.player.show_peds_info(img, position, pedestrain['dist'])
+        if pcw_on:
+            pcw_on = 1
+        else:
+            pcw_on = 0
         parameters = [str(pcw_on)]
         self.player.show_ped_parameters(img, parameters, (450, 0))
     

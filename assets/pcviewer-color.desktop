@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=PCVIEWER-UNSAVE
-Exec=sh  /home/minieye/env/dist/pc-viewer-unsave.sh
+Name=PCVIEWER-COLOR
+Exec=sh /home/minieye/env/dist/pc-viewer-color.sh
 Icon=/home/minieye/env/dist/assets/pcviewer.png
 Info="pc-viewer"
 Terminal=false

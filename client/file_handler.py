@@ -11,23 +11,22 @@ from multiprocessing import Queue
 from etc.config import config
 
 class FileHandler(Process):
-    def __init__(self, video_queue):
+    def __init__(self, file_queue):
         Process.__init__(self)
         self.deamon = True
-        self.log_queue = Queue()
-        self.alert_queue = Queue()
-        self.image_queue = Queue()
-        self.video_queue = video_queue
-        self._max_cnt = 7000
+        self.file_queue = file_queue
+        self._max_cnt = 6000
  
         FORMAT = '%Y%m%d%H%M%S'
-        date = datetime.now().strftime(FORMAT)
-        self.path = os.path.join(config.save.path, date)
+        date_str = datetime.now().strftime(FORMAT)
+
+        self.path = os.path.join(config.save.path, date_str)
         if not os.path.exists(self.path):
             os.makedirs(self.path)
  
         if config.save.log:
             self.log_fp = open(os.path.join(self.path, 'log.json'), 'w+')
+
         if config.save.alert:
             self.alert_fp = open(os.path.join(self.path, 'alert.json'), 'w+')
             self.image_path = os.path.join(self.path, 'image')
@@ -36,6 +35,7 @@ class FileHandler(Process):
 
         if config.save.video:
             self.video_writer = None
+            self.video_log = None
             self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
             self.video_path = os.path.join(self.path, 'video')
             if not os.path.exists(self.video_path):
@@ -44,44 +44,42 @@ class FileHandler(Process):
     def run(self):
         cnt = 0
         while True:
-            # print('---fileHandle process id----', os.getpid())
-            while config.save.log and not self.log_queue.empty():
-                data = self.log_queue.get() 
-                # self.log_fp.write(json.dumps(data) + '\n')
-                self.log_fp.write(data + '\n')
-                self.log_fp.flush()
- 
-            if config.save.alert:
-                while not self.alert_queue.empty():
-                    frame_id, data = self.alert_queue.get()
-                    self.alert_fp.write(json.dumps(data) + '\n')
-                    self.alert_fp.flush()
- 
-                while not self.image_queue.empty():
-                    image_index, data = self.image_queue.get() 
-                    cv2.imwrite(os.path.join(self.image_path, str(image_index) +
-                        '.jpg'), data)
- 
-            while config.save.video and not self.video_queue.empty():
-                frame_id, data = self.video_queue.get() 
-                if cnt % self._max_cnt == 0:
-                    if self.video_writer:
-                        self.video_writer.release()
-                    self.video_writer = cv2.VideoWriter(os.path.join(self.video_path, 
-                        str(cnt)+'.avi'),
-                            self.fourcc, 20.0, (1280, 720), True)
-                self.video_writer.write(data)
-                cnt += 1
+            while not self.file_queue.empty():
+                file_type, file_data = self.file_queue.get()
+                if file_type == 'log':
+                    self.log_fp.write(file_data + '\n')
+                    if cnt % 100 == 0:
+                        self.log_fp.flush()
+
+                '''
+                if file_type == 'alert':
+                    while not self.alert_queue.empty():
+                        frame_id, data = self.alert_queue.get()
+                        self.alert_fp.write(json.dumps(data) + '\n')
+                        self.alert_fp.flush()
+    
+                    while not self.image_queue.empty():
+                        image_index, data = self.image_queue.get() 
+                        cv2.imwrite(os.path.join(self.image_path, str(image_index) +
+                            '.jpg'), data)
+                '''
+                
+                if file_type == 'video':
+                    frame_id, data = file_data 
+                    if cnt % self._max_cnt == 0:
+                        FORMAT = '%Y%m%d%H%M%S'
+                        date_str = datetime.now().strftime(FORMAT)
+                        if self.video_writer:
+                            self.video_writer.release()
+                        if self.video_log:
+                            self.video_log.close()
+                        self.video_writer = cv2.VideoWriter(os.path.join(self.video_path, date_str+'.avi'),
+                                                            self.fourcc, 20.0, (1280, 720), True)
+                        self.video_log = open(os.path.join(self.video_path, date_str+'.txt'), 'w+')
+                    self.video_writer.write(data)
+                    self.video_log.write(str(frame_id)+'\n')
+                    if cnt % 100 == 0:
+                        self.video_log.flush()
+                    cnt += 1
             time.sleep(0.01)
  
-    def insert_log(self, msg):
-        self.log_queue.put(msg)
-
-    def insert_alert(self, msg):
-        self.alert_queue.put(msg)
-
-    def insert_image(self, msg):
-        self.image_queue.put(msg)
-
-    def insert_video(self, msg):
-        self.video_queue.put(msg)

@@ -19,7 +19,7 @@ basic_cfg = {
         "path": "/home/minieye/pcviewer-data/",
         "video": True,
         "alert": False,  # 包括image和alert.log 主要用于演示平台
-        "log": False
+        "log": True
     },
     "msg_types": [
         "lane",
@@ -47,19 +47,36 @@ basic_cfg = {
     }
 }
 
-fpga_cfg = {
-    "pic": {
-        "raw_type": "gray"
+test_cfg = {
+    "save": {
+        "path": "/home/minieye/pcviewer-data/",
+        "video": True,
+        "alert": False,   # 包括image和alert.log 主要用于演示平台
+        "log": True
+    },
+    "msg_types": [
+        "lane",
+        "vehicle",
+        "ped",
+        "tsr"
+    ],
+    "show": {
+        "lane": True,
+        "lane_speed_limit": 0,
+        "vehicle": True,
+        "ped": True,
+        "tsr": True,
+        "color": "color"
+    },
+    "fix": {
+        "lane": 0,
+        "vehicle": 0,
+        "ped": 0,
+        "tsr": 0
     }
 }
 
-x1s_cfg = {
-    "pic": {
-        "raw_type": "color"
-    }
-}
-
-pm_cfg = {
+pro_cfg = {
     "save": {
         "path": "/home/minieye/pcviewer-data/",
         "video": True,
@@ -134,14 +151,15 @@ fpga_hil_cfg = {
 m3_hil_cfg = {
     "ip": "192.168.1.201",
     "platform": "arm",
+    "debug": True,
     "pic": {
         "use_local": True,
         "test_image": "/media/minieye/localdata1/TestImage",
-        "path": "/media/minieye/localdata1/TestCase/STRESS01/image_list.txt"
+        "path": "/media/minieye/localdata1/TestCase/DEBUG01/image_list.txt"
     },
     "mobile": {
-        "show": True,
-        "path": "/media/minieye/localdata1/TestCase/STRESS01/mobile_log.json"
+        "show": False,
+        "path": "/media/minieye/localdata1/TestCase/DEBUG01/mobile_log.json"
     },
     "save": {
         "path": "/home/minieye/pcviewer-data/",
@@ -212,14 +230,16 @@ config = None
 
 def load(usage):
     global config
+    cfg = None
     if usage == 'fpga':
-        cfg = merge(basic_cfg, fpga_cfg)
-    elif usage == 'x1s':
-        cfg = merge(basic_cfg, x1s_cfg)
+        cfg = basic_cfg
     elif usage == 'm3_hil':
         cfg = merge(basic_cfg, m3_hil_cfg)
     elif usage == 'fpga_hil':
         cfg = merge(basic_cfg, fpga_hil_cfg)
-    elif usage == 'pm':
-        cfg = merge(basic_cfg, pm_cfg)
-    config = toDict(cfg)
+    elif usage == 'pro':
+        cfg = merge(basic_cfg, pro_cfg)
+    elif usage == 'test':
+        cfg = merge(basic_cfg, test_cfg)
+    if cfg:
+        config = toDict(cfg)
