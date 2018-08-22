@@ -9,6 +9,7 @@ settings/
 cyrelease/
 dist/
 client/build/
+etc/build/
 try/
 
 # Executables
