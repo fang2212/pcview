@@ -13,7 +13,6 @@ from multiprocessing import Process, Queue, Value
 from threading import Thread
 
 import asyncio
-import websockets
 import numpy as np
 import cv2
 
@@ -36,50 +35,6 @@ def convert(data):
     if isinstance(data, list):       return list(map(convert, data))
     if isinstance(data, set):        return set(map(convert, data))
     return data
-
-async def arm_flow(uri, msg_queue, msg_types):
-
-    async with websockets.connect(uri) as websocket:
-        msg = {
-            'source': 'pcview-client',
-            'topic': 'subscribe',
-            'data': 'debug.hub.*',
-            # 'data': '*.*.*',
-        }
-        data = msgpack.packb(msg)
-        await websocket.send(data)
-        print('msg', msg_types)
-
-        while True:
-            try:
-                data = await websocket.recv()
-                # print('msg1')
-                msg = msgpack.unpackb(data, use_list=False)
-                for msg_type in msg_types:
-                    topic = msg[b'topic'].decode('ascii')
-                    if topic == 'debug.hub.'+msg_type:
-                        data = msgpack.unpackb(msg[b'data'], use_list=False)
-                        data = convert(data)
-                        msg_queue.put((data['frame_id'], data, msg_type))
-                        frame_id = data['frame_id']
-                        # print('frame_id', frame_id)
-                time.sleep(0.01)
-
-            except websockets.exceptions.ConnectionClosed as err:
-                print('Connection was closed')
-                break
-
-def arm_handle(msg_types, msg_queue, ip):
-    def msg_run(msg_queue, msg_types, ip):
-        uri = 'ws://'+ip+':24012'
-        logging.debug('uri {}'.format(uri))
-        asyncio.get_event_loop().run_until_complete(
-            arm_flow(uri, msg_queue, msg_types))
-    msg_process = Process(target=msg_run,
-                            args=(msg_queue, msg_types, ip, ))
-    msg_process.daemon = True
-    msg_process.start()
-    return msg_process
 
 class Sink(Process):
     def __init__(self, queue, ip, port, msg_type):
@@ -123,7 +78,6 @@ class CameraSink(Sink):
         # color_type = int.from_bytes(msg[1:2], byteorder="little", signed=False)
         # color_type = int.from_bytes(msg[2:4], byteorder="little", signed=False)
         # print(msg[0:16])
-        # print('cccccccctttttttttttt', color_type)
         if config.pic.raw_type == 'gray':
             data = msg[16:]
             image = np.fromstring(data, dtype=np.uint8).reshape(720, 1280, 1)
@@ -213,8 +167,8 @@ class PCView():
         
         if config.platform == 'fpga':
             self.sink = fpga_handle(msg_types, self.msg_queue, config.ip)
-        elif config.platform == 'arm':
-            self.sink = arm_handle(msg_types, self.msg_queue, config.ip)
+        # elif config.platform == 'arm':
+        #    self.sink = arm_handle(msg_types, self.msg_queue, config.ip)
 
         self.mobile_content = None
         if config.mobile.show:
@@ -285,7 +239,7 @@ class PCView():
 
     def update_extra(self, res):
         self.fps_cnt['inc'] += 1
-        fps_period  = 20
+        fps_period  = 100
         if not self.fps_cnt['start_time']:
             self.fps_cnt['start_time'] = datetime.now()
         if self.fps_cnt['inc'] % fps_period == 0:
@@ -393,6 +347,15 @@ class PCView():
         self.update_extra(res)
         return res         
 
+class ParaList(object):
+    def __init__(self, para_type):
+        self.type = para_type
+        self.para_list = []
+    def insert(self, para, value):
+        self.para_list.append(str(para) + ': ' + str(value))
+    def output(self):
+        return self.para_list
+
 class PCDraw(Process):
     """pc-viewer功能类，用于接收每一帧数据，并绘制
     """
@@ -463,20 +426,20 @@ class PCDraw(Process):
         if not fps:
             fps = 0
 
-        self.player.show_env(img, speed, light_mode, fps, (0, 0))
+        para_list = ParaList('env')
+        para_list.insert('speed', int(speed))
+        para_list.insert('light', light_mode)
+        para_list.insert('fps', fps)
+        para_list.insert('fid', frame_id)
+        # self.player.show_env(img, speed, light_mode, fps, (0, 0))
+        self.player.show_normal_parameters(img, para_list, (2, 0))
 
         if config.debug:
             cv2.putText(img, str(frame_id), (180, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
 
-
         if config.save.video:
             self.file_queue.put(('video', (frame_id, img)))
-        '''
-        if config.save.alert:
-            alert = self.get_alert(vehicle_data, lane_data, ped_data)
-            self.fileHandler.insert_alert((frame_id, {frame_id: alert}))
-            self.fileHandler.insert_image((frame_id, img))
-        '''
+
         cv2.imshow('UI', img)
         key = cv2.waitKey(1)
         return
@@ -522,7 +485,7 @@ class PCDraw(Process):
         if lane_data:
             speed = lane_data['speed']
             for lane in lane_data['lanelines']:
-                if int(lane['label']) in [1, 2] and speed >= config.show.lane_speed_limit:
+                if ((int(lane['label']) in [1, 2]) or config.show.all_laneline)and speed >= config.show.lane_speed_limit:
                     color = CVColor.Cyan
                     width = lane['width']
                     l_type = lane['type']
@@ -550,9 +513,14 @@ class PCDraw(Process):
 
     # ped
     def draw_ped(self, img, ped_data):
-        pcw_on = False
+        pcw_on = '-'
+        ped_on = '-'
+
         if ped_data:
-            pcw_on = ped_data['pcw_on']
+            if ped_data.get('pcw_on'):
+                pcw_on = 1
+            if ped_data.get('ped_on'):
+                ped_on = 1
             for pedestrain in ped_data['pedestrians']:
                 position = pedestrain['regressed_box']
                 position = position['x'], position['y'], position['width'], position['height']
@@ -560,17 +528,17 @@ class PCDraw(Process):
                 color = CVColor.Yellow
                 if pedestrain['is_key']:
                     color = CVColor.Pink
+                    # para_list.insert('is_key', 1)
                 if pedestrain['is_danger']:
                     color = CVColor.Pink
+                    # para_list.insert('is_danger', 1)
                 self.player.show_peds(img, position, color, 2)
                 if position[0] > 0:
                     self.player.show_peds_info(img, position, pedestrain['dist'])
-        if pcw_on:
-            pcw_on = 1
-        else:
-            pcw_on = 0
-        parameters = [str(pcw_on)]
-        self.player.show_ped_parameters(img, parameters, (450, 0))
+        para_list = ParaList('ped') #, 'is_key', 'is_danger'])
+        para_list.insert('pcw_on', pcw_on)
+        para_list.insert('pcw_on', pcw_on)
+        self.player.show_normal_parameters(img, para_list, (450, 0))
     
     def draw_tsr(self, img, tsr_data):
         focus_index, speed_limit, tsr_warning_level, tsr_warning_state = -1, 0, 0, 0

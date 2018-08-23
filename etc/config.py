@@ -8,7 +8,7 @@ basic_cfg = {
     "pic": {
         "use_local": False,
         "test_image": "",
-        "raw_type": "",
+        "raw_type": "gray",
         "path": ""
     },
     "mobile": {
@@ -28,6 +28,7 @@ basic_cfg = {
     "show": {
         "overlook": False,
         "lane": True,
+        "all_laneline": True,
         "lane_type": False,
         "lane_speed_limit": 50,
         "vehicle": True,
@@ -63,6 +64,7 @@ test_cfg = {
     "show": {
         "lane": True,
         "lane_speed_limit": 0,
+        "all_laneline": True,
         "vehicle": True,
         "ped": True,
         "tsr": True,
@@ -93,6 +95,7 @@ pro_cfg = {
         "overlook": True,
         "lane": True,
         "lane_speed_limit": 0,
+        "all_laneline": True,
         "vehicle": True,
         "ped": True,
         "tsr": True,
@@ -103,90 +106,6 @@ pro_cfg = {
         "vehicle": 0,
         "ped": 0,
         "tsr": 0
-    }
-}
-
-fpga_hil_cfg = {
-    "ip": "192.168.1.233",
-    "platform": "fpga",
-    "pic": {
-        "use_local": True,
-        "test_image": "/media/minieye/localdata1/TestImage",
-        "path": "/media/minieye/localdata1/TestCase/STRESS01/image_list.txt"
-    },
-    "mobile": {
-        "show": True,
-        "path": "/media/minieye/localdata1/TestCase/STRESS01/mobile_log.json"
-    },
-    "save": {
-        "path": "/home/minieye/pcviewer-data/",
-        "video": False,
-        "alert": False,   # 包括image和alert.log 主要用于演示平台
-        "log": True
-    },
-    "msg_types": [
-        "lane",
-        "vehicle",
-        "ped",
-        "tsr"
-    ],
-    "show": {
-        "overlook": True,
-        "lane": True,
-        "lane_speed_limit": 0,
-        "vehicle": True,
-        "ped": True,
-        "tsr": True,
-        "color": "color"
-    },
-    "fix": {
-        "lane": 1,
-        "vehicle": 1,
-        "ped": 1,
-        "tsr": 1
-    }
-}
-
-
-m3_hil_cfg = {
-    "ip": "192.168.1.201",
-    "platform": "arm",
-    "debug": True,
-    "pic": {
-        "use_local": True,
-        "test_image": "/media/minieye/localdata1/TestImage",
-        "path": "/media/minieye/localdata1/TestCase/DEBUG01/image_list.txt"
-    },
-    "mobile": {
-        "show": False,
-        "path": "/media/minieye/localdata1/TestCase/DEBUG01/mobile_log.json"
-    },
-    "save": {
-        "path": "/home/minieye/pcviewer-data/",
-        "video": True,
-        "alert": False,   # 包括image和alert.log 主要用于演示平台
-        "log": True
-    },
-    "msg_types": [
-        "lane",
-        "vehicle",
-        "ped",
-        "tsr"
-    ],
-    "show": {
-        "overlook": True,
-        "lane": True,
-        "lane_speed_limit": 0,
-        "vehicle": True,
-        "ped": True,
-        "tsr": True,
-        "color": "color"
-    },
-    "fix": {
-        "lane": 1,
-        "vehicle": 1,
-        "ped": 1,
-        "tsr": 1
     }
 }
 
@@ -233,10 +152,6 @@ def load(usage):
     cfg = None
     if usage == 'fpga':
         cfg = basic_cfg
-    elif usage == 'm3_hil':
-        cfg = merge(basic_cfg, m3_hil_cfg)
-    elif usage == 'fpga_hil':
-        cfg = merge(basic_cfg, fpga_hil_cfg)
     elif usage == 'pro':
         cfg = merge(basic_cfg, pro_cfg)
     elif usage == 'test':

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 mkdir dist/
+./clear.sh
 rm -r dist/*
 mkdir -p dist/client/draw
 mkdir -p dist/etc

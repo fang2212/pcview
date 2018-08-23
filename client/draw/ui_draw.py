@@ -364,6 +364,19 @@ class Player(object):
         BaseDraw.draw_text(img, str(max_speed), (x2 - 30, y2 + 5),
                           1, CVColor.Green, 1)
     
+    def show_normal_parameters(self, img, para_list, point):
+        """显示ped信息
+        Args:
+            img: 原始图片
+            parameters: List [index, TODO ]
+        """
+        origin_x, origin_y = point
+        gap_v = 20
+        size = 0.5
+        BaseDraw.draw_text(img, para_list.type, (origin_x, origin_y + gap_v), size, CVColor.Cyan, 1)
+        for index, para in enumerate(para_list.output()): 
+            BaseDraw.draw_text(img, para, (origin_x, origin_y + gap_v * (index+2)), size, CVColor.White, 1)
+
     def show_ped_parameters(self, img, parameters, point):
         """显示ped信息
         Args:
@@ -397,6 +410,7 @@ class Player(object):
         BaseDraw.draw_text(img, 'warning_level:' + warning_level, (origin_x, origin_y + gap_v*4), size, CVColor.White, 1)
         BaseDraw.draw_text(img, 'warning_state:' + warning_state, (origin_x, origin_y + gap_v*5), size, CVColor.White, 1)
     
+    '''
     def show_env(self,img, speed, light_mode, fps, point):
         """显示环境信息
         Args:
@@ -410,6 +424,7 @@ class Player(object):
         BaseDraw.draw_text(img, 'light:'+ str(light_mode), (origin_x, origin_y+40), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'speed:'+ str(int(speed)), (origin_x, origin_y+60), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'fps:'+ str(int(fps)), (origin_x, origin_y+80), 0.5, CVColor.White, 1)
+    '''
     
     def show_mobile_parameters(self, img, parameters, point):
         """显示关键车参数信息

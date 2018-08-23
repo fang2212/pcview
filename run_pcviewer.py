@@ -1,39 +1,45 @@
 #!/usr/bin/env python3
 #-*- coding:utf-8 -*-
 
+__author__ = 'muhongyun'
+__version__ = '1.0.1.'
+__progname__ = 'pcview'
+
 import sys
 
 from etc import config as config_script
 print(sys.argv)
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--ip", help="ip address",
+                    type=str)
+parser.add_argument("--video", help="是否保存视频，默认不保存",
+                    type=str)
+parser.add_argument("--alert", help="是否保存警报数据，包括警报日志，用于演示平台，默认不保存",type=str)
+parser.add_argument("--log", help="是否保存日志,默认不保存", type=str)
+parser.add_argument("--raw_type", help="设备发出图像数据类型", type=str)
+parser.add_argument("--lane_speed_limit", help="车道显示速度限制", type=int)
+parser.add_argument("--all_laneline", help="是否显示所有车道", type=str)
+parser.add_argument("--func", help="功能版本", type=str)
+args = parser.parse_args()
+
 config_script.load('fpga')
-if len(sys.argv) >= 2:
-    opt = sys.argv[1]
-    config_script.load(opt)
+if args.func:
+    config_script.load(args.func)
+
 from etc.config import config
 from client.pcview_client import PCView
-from absl import flags as gflags
-
-Flags = gflags.FLAGS
-
-gflags.DEFINE_string('case_path', '', 'RT')
-gflags.DEFINE_string('image_floder', '', 'RT')
-gflags.DEFINE_string('case_detail', '', 'RT')
-gflags.DEFINE_integer('drop_period', 4, 'RT')
-gflags.DEFINE_string('ip', '', 'RT')
-gflags.DEFINE_string('raw_type', 'gray', 'RT')
-
-def parse_flag(argv):
-    Flags(argv)
-    if Flags.ip:
-        config.ip = Flags.ip
-    config.pic.raw_type = Flags.raw_type
 
 if __name__ == "__main__":
-    parse_flag(sys.argv) 
-
+    print('raw_type', args.raw_type)
+    print(config.pic.raw_type)
+    if args.raw_type:
+        config.pic.raw_type = args.raw_type
+    if args.ip:
+        config.ip = args.ip
+    # config.show.lane_speed_limit = 0
     # config.pic.raw_type = 'color'
     # config.ip = '192.168.1.233'
-    config.show.lane_speed_limit = 0
     # config.pic.use = False
     print("debugviewer Begin")
     print("platform", config.platform)

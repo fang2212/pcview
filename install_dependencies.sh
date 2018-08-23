@@ -105,6 +105,7 @@ sudo apt install -y python3-pip
 sudo pip3 install nanomsg
 sudo pip3 install msgpack
 sudo pip3 install websockets
+sudo pip3 install absl-py
 echo "nanomsg msgpack has been successfully installed."
 
 #PyAVDir="/home/minieye/env/PyAV"
@@ -112,7 +113,7 @@ echo "nanomsg msgpack has been successfully installed."
 #python3 setup.py install
 #echo "PyAV has been successfully installed."
 
-DistDir="/home/minieye/env/dist"
+DistDir="/home/minieye/env/dist/assets"
 cd "$DistDir"
-chomd a+x dist/assets/pcviewer.desktop dist/assets/pcviewer-color.desktop
-cp dist/assets/pcviewer.desktop dist/assets/pcviewer-color.desktop /home/minieye/桌面/
+chomd a+x *.desktop
+cp *.desktop /home/minieye/桌面/
