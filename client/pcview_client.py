@@ -415,11 +415,9 @@ class PCDraw(Process):
         light_mode = -1
         if vehicle_data:
             light_mode = vehicle_data['light_mode']
-        if config.platform == 'arm':
-            speed = vehicle_data.get('speed')*3.6 if vehicle_data.get('speed') else 0
-            speed = lane_data.get('speed')*3.6 if lane_data.get('speed') else speed
-        else:
-            speed = vehicle_data.get('speed')*3.6 if vehicle_data.get('speed') else 0
+
+        speed = vehicle_data.get('speed')*3.6 if vehicle_data.get('speed') else 0
+        if not speed:
             speed = lane_data.get('speed') if lane_data.get('speed') else speed
 
         fps = extra.get('fps')
@@ -435,7 +433,7 @@ class PCDraw(Process):
         self.player.show_normal_parameters(img, para_list, (2, 0))
 
         if config.debug:
-            cv2.putText(img, str(frame_id), (180, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
+            cv2.putText(img, str(extra.get('image_path')), (20, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
 
         if config.save.video:
             self.file_queue.put(('video', (frame_id, img)))

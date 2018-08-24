@@ -37,7 +37,7 @@ basic_cfg = {
         "color": "color"
     },
     "fix": {
-        "lane": 1,
+        "lane": 2,
         "vehicle": 2,
         "ped": 2,
         "tsr": 2
@@ -71,10 +71,48 @@ test_cfg = {
         "color": "color"
     },
     "fix": {
-        "lane": 0,
-        "vehicle": 0,
-        "ped": 0,
-        "tsr": 0
+        "lane": 2,
+        "vehicle": 2,
+        "ped": 2,
+        "tsr": 2
+    }
+}
+
+show_cfg = {
+    "debug": True,
+    "save": {
+        "path": "/home/minieye/pcviewer-data/",
+        "video": True,
+        "alert": False,   # 包括image和alert.log 主要用于演示平台
+        "log": True
+    },
+    "pic": {
+        "use_local": True,
+        "test_image": "/media/minieye/localdata1/TestImage",
+        "raw_type": "gray",
+        "path": "/media/minieye/localdata1/TestCase/PCSHOW01/image_list.txt"
+    },
+    "msg_types": [
+        "lane",
+        "vehicle",
+        "ped",
+        "tsr"
+    ],
+    "show": {
+        "overlook": True,
+        "lane": True,
+        "lane_speed_limit": 0,
+        "all_laneline": True,
+        "vehicle": True,
+        "ped": True,
+        "tsr": True,
+        "color": "color"
+    },
+    "fix": {
+        "lane": 4,
+        "vehicle": 4,
+        "ped": 4,
+        "tsr": 4
     }
 }
 
@@ -102,10 +140,10 @@ pro_cfg = {
         "color": "color"
     },
     "fix": {
-        "lane": 0,
-        "vehicle": 0,
-        "ped": 0,
-        "tsr": 0
+        "lane": 4,
+        "vehicle": 4,
+        "ped": 4,
+        "tsr": 4
     }
 }
 
@@ -156,5 +194,7 @@ def load(usage):
         cfg = merge(basic_cfg, pro_cfg)
     elif usage == 'test':
         cfg = merge(basic_cfg, test_cfg)
+    elif usage == 'show':
+        cfg = merge(basic_cfg, show_cfg)
     if cfg:
         config = toDict(cfg)

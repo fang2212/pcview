@@ -2,7 +2,7 @@
 #-*- coding:utf-8 -*-
 
 __author__ = 'muhongyun'
-__version__ = '1.0.1.'
+__version__ = '1.0.1.faa786'
 __progname__ = 'pcview'
 
 import sys
@@ -37,6 +37,7 @@ if __name__ == "__main__":
         config.pic.raw_type = args.raw_type
     if args.ip:
         config.ip = args.ip
+
     # config.show.lane_speed_limit = 0
     # config.pic.raw_type = 'color'
     # config.ip = '192.168.1.233'
@@ -47,4 +48,3 @@ if __name__ == "__main__":
 
     pc_view = PCView()
     pc_view.go()
-
