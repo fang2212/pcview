@@ -1,9 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Name=PCVIEWER-COLOR
-Exec=sh /home/minieye/env/dist/pc-viewer-color.sh
-Icon=/home/minieye/env/dist/assets/pcviewer.png
-Info="pc-viewer"
-Terminal=false
-Type=Application
-StartupNotify=true

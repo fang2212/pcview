@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [ $# -ne 1 ]; then
+    echo "Usage Sample: self.sh 192.168.0.110"
+    exit 1
+fi
+
+target_ip=$1
+
 names=(`ls /sys/class/net -al`)
 intname="nothing"
 
@@ -20,7 +27,7 @@ iface lo inet loopback
 
 auto ${intname}
 iface ${intname} inet static
-address 192.168.0.110
+address ${target_ip}
 netmask 255.255.255.0" > output
 
 sudo mv output /etc/network/interfaces

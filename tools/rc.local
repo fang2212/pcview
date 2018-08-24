@@ -17,6 +17,6 @@
 #/root/Desktop/frp/frpc -c /root/Desktop/frp/frpc.ini &
 
 sleep 1
-/home/minieye/env/dist/assets/1.sh &
+/home/minieye/env/dist/assets/frp.sh &
 
 exit 0

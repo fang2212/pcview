@@ -1,0 +1,36 @@
+= pcview-client
+:toc:
+
+* 作者: mailto:muhongyun@minieye.cc[木洪运]
+* 版本: 1.4
+* 日期: 2018-08-24
+* © 2018 MINIEYE
+
+:numbered!:
+
+[abstract]
+== 概述
+
+pcview-client是一个实时显示车道线，车辆等ADAS算法结果及相关参数的工具。
+
+== 路线图
+. *基础功能版本*
+** 显示vehicle lane ped tsr识别框,主要参数[done] 
+** 存储渲染图像,pcview-server发送的算法结果数据[done] 
+. *采集器功能*
+** 采集传感器数据,格式同m3采集器,包含时间戳和数值[plan]
+
+:numbered:
+
+== 依赖库
+```shell
+sudo ./install_dependencies.sh
+```
+
+== 使用
+. 修改/etc/network/interfaces，设置电脑IP为静态地址与设备同一网段，
+[source,shell]
+sudo ./tools/getnetId.sh 192.168.0.110
+
+. 运行pc-viewer
+python run_pcviewer.py 

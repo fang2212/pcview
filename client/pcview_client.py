@@ -482,9 +482,11 @@ class PCDraw(Process):
         lw_dis, rw_dis, ldw, trend = '-', '-', '-', '-'
         if lane_data:
             speed = lane_data['speed']
+            deviate_state = lane_data['deviate_state']
             for lane in lane_data['lanelines']:
                 if ((int(lane['label']) in [1, 2]) or config.show.all_laneline)and speed >= config.show.lane_speed_limit:
-                    color = CVColor.Cyan
+                    # color = CVColor.Cyan
+                    color = CVColor.Blue
                     width = lane['width']
                     l_type = lane['type']
                     conf = lane['confidence']
@@ -493,6 +495,9 @@ class PCDraw(Process):
                                           0.2, color)
                     if config.show.overlook:
                         self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
+                    
+                    if (index in [1, 2]) and index == deviate_state:
+                        color = CVColor.Red
                     self.player.show_lane_info(img, lane['perspective_view_poly_coeff'],
                                                index, width, l_type, conf, color)
 
