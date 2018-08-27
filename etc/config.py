@@ -48,12 +48,54 @@ basic_cfg = {
     }
 }
 
+debug_cfg = {
+    "save": {
+        "path": "/home/minieye/pcviewer-data/",
+        "video": True,
+        "alert": False,   # 包括image和alert.log 主要用于演示平台
+        "log": True
+    },
+    "pic": {
+        "use_local": True,
+        "test_image": "/media/minieye/localdata1/TestImage",
+        "raw_type": "gray",
+        "path": "/media/minieye/localdata1/TestCase/STRESS01/image_list.txt"
+    },
+    "msg_types": [
+        "lane",
+        "vehicle",
+        "ped",
+        "tsr"
+    ],
+    "show": {
+        "lane": True,
+        "lane_speed_limit": 0,
+        "all_laneline": False,
+        "vehicle": True,
+        "ped": True,
+        "tsr": True,
+        "color": "color"
+    },
+    "fix": {
+        "lane": 2,
+        "vehicle": 2,
+        "ped": 2,
+        "tsr": 2
+    }
+}
+
 test_cfg = {
     "save": {
         "path": "/home/minieye/pcviewer-data/",
         "video": True,
         "alert": False,   # 包括image和alert.log 主要用于演示平台
         "log": True
+    },
+    "pic": {
+        "use_local": False,
+        "test_image": "/media/minieye/localdata1/TestImage",
+        "raw_type": "gray",
+        "path": "/media/minieye/localdata1/TestCase/STRESS01/image_list.txt"
     },
     "msg_types": [
         "lane",
