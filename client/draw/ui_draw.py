@@ -364,6 +364,23 @@ class Player(object):
         BaseDraw.draw_text(img, str(max_speed), (x2 - 30, y2 + 5),
                           1, CVColor.Green, 1)
     
+    def show_byd_can(self, img, can_data):
+        """显示can信息
+        Args:
+            img: 原始图片
+            can_data: can信息 
+        """
+        color_dict = {
+            0: CVColor.White,
+            1: CVColor.Green,
+            3: CVColor.Red,
+        }
+        print(can_data)
+        '''
+        BaseDraw.draw_line(img, (600, 20), (600, 80), color_dict[can_data['left_ldw']], 5)
+        BaseDraw.draw_line(img, (680, 20), (680, 80), color_dict[can_data['right_ldw']], 5)
+        '''
+
     def show_normal_parameters(self, img, para_list, point):
         """显示ped信息
         Args:

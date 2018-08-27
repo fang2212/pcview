@@ -45,6 +45,9 @@ basic_cfg = {
     "testview": {
         "on": False,
         "mobile_path": ""
+    },
+    "can": {
+        "use": False
     }
 }
 
@@ -81,6 +84,9 @@ debug_cfg = {
         "vehicle": 2,
         "ped": 2,
         "tsr": 2
+    },
+    "can": {
+        "use": True
     }
 }
 

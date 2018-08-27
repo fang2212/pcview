@@ -19,6 +19,7 @@ import cv2
 from .draw.base import BaseDraw, CVColor
 from .draw.ui_draw import Player
 from etc.config import config
+from CANAlyst.can_server import TRunner
 from .file_handler import FileHandler
 pack = os.path.join
 logging.basicConfig(level=logging.INFO,
@@ -60,6 +61,15 @@ class Sink(Process):
     def pkg_handler(self, msg_buf):
         pass
 
+
+class CanSink(Process):
+    def __init__(self, can_queue):
+        Process.__init__(self)
+        self.deamon = True
+        self.can_runner = TRunner('X1S', 500000, can_queue)
+
+    def run(self):
+        self.can_runner.run_test()
 
 class CameraSink(Sink):
     '''
@@ -140,6 +150,7 @@ class PCView():
         self.cam_queue = Queue()
         self.res_queue = Queue()
         self.file_queue = Queue()
+        self.can_queue = Queue()
 
         self.sink = {}
         self.cache = {}
@@ -164,6 +175,10 @@ class PCView():
         if not config.pic.use_local:
             self.camera_sink = CameraSink(queue=self.cam_queue, ip=config.ip, port=1200, msg_type='camera')
             self.camera_sink.start()
+
+        if not config.can.use:
+            self.can_sink = CameraSink(queue=self.can_queue, ip=config.ip, port=1200, msg_type='can')
+            self.can_sink.start()
         
         if config.platform == 'fpga':
             self.sink = fpga_handle(msg_types, self.msg_queue, config.ip)
@@ -181,6 +196,10 @@ class PCView():
         if config.save.log or config.save.alert or config.save.video:
             self.file_handler = FileHandler(self.file_queue)
             self.file_handler.start()
+
+        if config.can.use:
+            self.can_sink = CanSink(self.can_queue)
+            self.can_sink.start()
 
         self.pc_draw = PCDraw(self.res_queue, self.file_queue)
         self.pc_draw.start()
@@ -280,6 +299,7 @@ class PCView():
             'lane': {},
             'ped': {},
             'tsr':{},
+            'can': {},
             'extra': {}
         }
 
@@ -342,6 +362,14 @@ class PCView():
     
         self.msg_cnt['frame'] += 1
         # logging.debug('end res {}'.format(res))
+
+        
+        inc = 10
+        while not self.cam_queue.empty() and inc:
+            data = self.cam_queue.get()
+            res['can'] = data
+            inc -= 1
+
         logging.debug('end res ped{}'.format(res['ped']))
         logging.debug('end res tsr{}'.format(res['tsr']))
         self.update_extra(res)
@@ -385,6 +413,7 @@ class PCDraw(Process):
         ped_data = mess['ped']
         tsr_data = mess['tsr']
         extra = mess['extra']
+        can_data = mess.get('can')
         mobile_log = extra.get('mobile_log')
 
         if config.show.overlook:
@@ -431,6 +460,9 @@ class PCDraw(Process):
         para_list.insert('fid', frame_id)
         # self.player.show_env(img, speed, light_mode, fps, (0, 0))
         self.player.show_normal_parameters(img, para_list, (2, 0))
+
+        if config.can.use and can_data:
+            self.player.show_byd_can(img, can_data)
 
         if config.debug:
             cv2.putText(img, str(extra.get('image_path')), (20, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
