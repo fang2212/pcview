@@ -176,9 +176,6 @@ class PCView():
             self.camera_sink = CameraSink(queue=self.cam_queue, ip=config.ip, port=1200, msg_type='camera')
             self.camera_sink.start()
 
-        if not config.can.use:
-            self.can_sink = CameraSink(queue=self.can_queue, ip=config.ip, port=1200, msg_type='can')
-            self.can_sink.start()
         
         if config.platform == 'fpga':
             self.sink = fpga_handle(msg_types, self.msg_queue, config.ip)
@@ -198,8 +195,11 @@ class PCView():
             self.file_handler.start()
 
         if config.can.use:
-            self.can_sink = CanSink(self.can_queue)
-            self.can_sink.start()
+            try:
+                self.can_sink = CanSink(self.can_queue)
+                self.can_sink.start()
+            except Exception as E:
+                print(E)
 
         self.pc_draw = PCDraw(self.res_queue, self.file_queue)
         self.pc_draw.start()
@@ -364,9 +364,9 @@ class PCView():
         # logging.debug('end res {}'.format(res))
 
         
-        inc = 10
-        while not self.cam_queue.empty() and inc:
-            data = self.cam_queue.get()
+        inc = 100
+        while not self.can_queue.empty() and inc:
+            data = self.can_queue.get()
             res['can'] = data
             inc -= 1
 
@@ -421,6 +421,8 @@ class PCDraw(Process):
 
         if config.mobile.show:
             bg_width = 120 * 6
+        elif len(config.msg_types) == 1: 
+            bg_width = 120 * len(config.msg_types) + 300
         else:
             bg_width = 120 * len(config.msg_types) + 50
         self.player.show_parameters_background(img, (0, 0, bg_width+20, 150))
@@ -462,7 +464,7 @@ class PCDraw(Process):
         self.player.show_normal_parameters(img, para_list, (2, 0))
 
         if config.can.use and can_data:
-            self.player.show_byd_can(img, can_data)
+            self.player.show_byd_can(img, can_data, lane_data)
 
         if config.debug:
             cv2.putText(img, str(extra.get('image_path')), (20, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
@@ -523,13 +525,16 @@ class PCDraw(Process):
                     l_type = lane['type']
                     conf = lane['confidence']
                     index = lane['label']
+                    print('label', index, deviate_state)
+                    if (index in [1, 2]) and int(index) == int(deviate_state):
+                        color = CVColor.Red
+
                     self.player.show_lane(img, lane['perspective_view_poly_coeff'], 
                                           0.2, color)
+
                     if config.show.overlook:
                         self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
                     
-                    if (index in [1, 2]) and index == deviate_state:
-                        color = CVColor.Red
                     self.player.show_lane_info(img, lane['perspective_view_poly_coeff'],
                                                index, width, l_type, conf, color)
 

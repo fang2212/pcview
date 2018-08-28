@@ -29,7 +29,7 @@ from client.pcview_client import PCView
 
 if __name__ == "__main__":
     print('raw_type', args.raw_type)
-    print(config.pic.raw_type)
+    print('config raw_type', config.pic.raw_type)
     if args.raw_type:
         config.pic.raw_type = args.raw_type
     if args.ip:
@@ -42,6 +42,7 @@ if __name__ == "__main__":
     print("debugviewer Begin")
     print("platform", config.platform)
     print("ip", config.ip)
+    #config.can.use = 0
 
     pc_view = PCView()
     pc_view.go()

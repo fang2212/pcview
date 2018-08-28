@@ -214,7 +214,7 @@ class Player(object):
             y2 = y1 + 20
             x1 = (int)(a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1)
             x2 = (int)(a0 + a1 * y2 + a2 * y2 * y2 + a3 * y2 * y2 * y2)            
-            BaseDraw.draw_line(img, (x1, y1), (x2, y2), CVColor.Cyan, width)
+            BaseDraw.draw_line(img, (x1, y1), (x2, y2), color, width)
     
     def show_lane_info(self, img, ratios, index, width, type, conf, color):
         """绘制车道线信息
@@ -364,22 +364,38 @@ class Player(object):
         BaseDraw.draw_text(img, str(max_speed), (x2 - 30, y2 + 5),
                           1, CVColor.Green, 1)
     
-    def show_byd_can(self, img, can_data):
+    def show_byd_can(self, img, can_data, lane_data):
         """显示can信息
         Args:
             img: 原始图片
             can_data: can信息 
         """
+        print('recv can', can_data)
         color_dict = {
             0: CVColor.White,
             1: CVColor.Green,
+            2: CVColor.Blue,
             3: CVColor.Red,
         }
+        left_type = can_data.get('left_ldw')
+        if not left_type in [0,1,2,3]:
+            left_type = 0
+        right_type = can_data.get('right_ldw')
+        if not right_type in [0,1,2,3]:
+            right_type = 0
         print(can_data)
-        '''
-        BaseDraw.draw_line(img, (600, 20), (600, 80), color_dict[can_data['left_ldw']], 5)
-        BaseDraw.draw_line(img, (680, 20), (680, 80), color_dict[can_data['right_ldw']], 5)
-        '''
+        if lane_data.get('left_lamp'):
+            left_lamp = 3
+        else:
+            left_lamp = 1
+        if lane_data.get('right_lamp'):
+            right_lamp = 3
+        else:
+            right_lamp = 1
+        BaseDraw.draw_line(img, (600, 20), (600, 100), color_dict[left_type], 5)
+        BaseDraw.draw_line(img, (680, 20), (680, 100), color_dict[right_type], 5)
+        BaseDraw.draw_line(img, (600, 110), (600, 140), color_dict[left_lamp], 5)
+        BaseDraw.draw_line(img, (680, 110), (680, 140), color_dict[right_lamp], 5)
 
     def show_normal_parameters(self, img, para_list, point):
         """显示ped信息

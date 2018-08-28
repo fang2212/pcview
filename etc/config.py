@@ -59,24 +59,21 @@ debug_cfg = {
         "log": True
     },
     "pic": {
-        "use_local": True,
+        "use_local": False,
         "test_image": "/media/minieye/localdata1/TestImage",
-        "raw_type": "gray",
+        "raw_type": "color",
         "path": "/media/minieye/localdata1/TestCase/STRESS01/image_list.txt"
     },
     "msg_types": [
         "lane",
-        "vehicle",
-        "ped",
-        "tsr"
     ],
     "show": {
         "lane": True,
         "lane_speed_limit": 0,
         "all_laneline": False,
-        "vehicle": True,
-        "ped": True,
-        "tsr": True,
+        "vehicle": False,
+        "ped": False,
+        "tsr": False,
         "color": "color"
     },
     "fix": {
@@ -244,5 +241,7 @@ def load(usage):
         cfg = merge(basic_cfg, test_cfg)
     elif usage == 'show':
         cfg = merge(basic_cfg, show_cfg)
+    elif usage == 'debug':
+        cfg = merge(basic_cfg, debug_cfg)
     if cfg:
         config = toDict(cfg)
