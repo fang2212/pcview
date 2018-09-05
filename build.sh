@@ -5,7 +5,7 @@ mkdir dist/
 rm -r dist/*
 mkdir -p dist/client/draw
 mkdir -p dist/etc
-cp run_pcviewer.py dist/
+cp run_pcview.py dist/
 # cp -r etc dist/
 cp -r assets dist/
 cd client
