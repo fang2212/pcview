@@ -209,7 +209,7 @@ class Player(object):
         
         width = int(float(width) * 10 + 0.5)
 
-        for y in range(500, 720, 20):
+        for y in range(450, 720, 20):
             y1 = y
             y2 = y1 + 20
             x1 = (int)(a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1)

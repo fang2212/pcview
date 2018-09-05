@@ -56,7 +56,7 @@ class Sink(Process):
         while True:
             buf = nanomsg.wrapper.nn_recv(self._socket, 0)
             frame_id, data = self.pkg_handler(buf[1])
-            self.queue.put((frame_id, data, self.msg_type))
+            self.queue.put((int(time.time()*1000), frame_id, data, self.msg_type))
 
     def pkg_handler(self, msg_buf):
         pass
@@ -232,7 +232,8 @@ class PCView():
 
     def msg_async(self):
         while not self.msg_queue.empty():
-            frame_id, msg_data, msg_type = self.msg_queue.get()
+            ts, frame_id, msg_data, msg_type = self.msg_queue.get()
+            msg_data['recv_ts'] = ts
             if config.save.log:
                 temp = json.dumps({msg_type: msg_data})
                 self.file_queue.put(('log', temp))
@@ -338,8 +339,14 @@ class PCView():
         else:
             while True:
                 if not self.cam_queue.empty():
-                    frame_id, image, msg_type = self.cam_queue.get()
+                    ts, frame_id, image, msg_type = self.cam_queue.get()
                     res['img'] = image
+                    if config.save.log:
+                        temp = json.dumps({'cam': {
+                            'frame_id': frame_id,
+                            'recv_ts': ts
+                        }})
+                        self.file_queue.put(('log', temp))
                     break
                 time.sleep(0.01)
             logging.debug('show cam id {}'.format(frame_id))
@@ -367,6 +374,9 @@ class PCView():
         inc = 100
         while not self.can_queue.empty() and inc:
             data = self.can_queue.get()
+            if config.save.log:
+                temp = json.dumps({'can': data})
+                self.file_queue.put(('log', temp))
             res['can'] = data
             inc -= 1
 
@@ -443,7 +453,7 @@ class PCDraw(Process):
             self.draw_mobile(img, mobile_log)
         
         # show env info
-        light_mode = -1
+        light_mode = '-'
         if vehicle_data:
             light_mode = vehicle_data['light_mode']
 
@@ -577,7 +587,7 @@ class PCDraw(Process):
                     self.player.show_peds_info(img, position, pedestrain['dist'])
         para_list = ParaList('ped') #, 'is_key', 'is_danger'])
         para_list.insert('pcw_on', pcw_on)
-        para_list.insert('pcw_on', pcw_on)
+        #para_list.insert('ped_on', ped_on)
         self.player.show_normal_parameters(img, para_list, (450, 0))
     
     def draw_tsr(self, img, tsr_data):
@@ -596,9 +606,14 @@ class PCDraw(Process):
                 self.player.show_tsr(img, position, color, 2)
                 if tsr['max_speed'] != 0:
                     self.player.show_tsr_info(img, position, tsr['max_speed'])                
+
+        para_list = ParaList('tsr') #, 'is_key', 'is_danger'])
+        #para_list.insert('pcw_on', pcw_on)
+        para_list.insert('speed_limit', str(speed_limit))
+        self.player.show_normal_parameters(img, para_list, (300, 0))
                 
-        parameters = [str(focus_index), str(speed_limit), str(tsr_warning_level), str(tsr_warning_state)]
-        self.player.show_tsr_parameters(img, parameters, (300, 0))
+        # parameters = [str(focus_index), str(speed_limit), str(tsr_warning_level), str(tsr_warning_state)]
+        # self.player.show_tsr_parameters(img, parameters, (300, 0))
     
 
     def draw_mobile(self, img, mobile_log):

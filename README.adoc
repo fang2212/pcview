@@ -33,4 +33,14 @@ sudo ./install_dependencies.sh
 sudo ./tools/getnetId.sh 192.168.0.110
 
 . 运行pc-viewer
-python run_pcviewer.py 
+python run_pcview.py 
+
+== 参数说明
+
+=== 车道线
+[%header,cols="4,6,4"]
+|===
+|Name       |Mean     |Value 
+|`left_wheel_dist`  |左前轮距最近车道线距离  |浮点
+|`right_wheel_dist` |右前轮距最近车道线距离  |浮点
+|===

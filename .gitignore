@@ -11,6 +11,7 @@ dist/
 client/build/
 etc/build/
 try/
+fpga_camera_tz/
 
 # Executables
 *.swf
