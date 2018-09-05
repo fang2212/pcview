@@ -167,31 +167,6 @@ class Player(object):
         roi_img = img[y_begin: y_end, x_begin: x_end]
         cv2.addWeighted(car, 0.5, roi_img, 1.0, 0.0, roi_img)
     
-    def show_vehicle_parameters(self, img, parameters, point):
-        """显示关键车参数信息
-        Args:
-            img: 原始图片
-            parameters: List [type, index, ttc, fcw, hwm, hw, vb] 关键车参数
-        """
-        type = parameters[0]
-        index = parameters[1]
-        ttc = parameters[2]
-        fcw = parameters[3]
-        hwm = parameters[4]
-        hw = parameters[5]
-        vb = parameters[6]
-
-        origin_x, origin_y = point
-        gap_v = 20
-        BaseDraw.draw_text(img, 'vechicle', (origin_x, origin_y + gap_v), 0.5, CVColor.Cyan, 1)
-        BaseDraw.draw_text(img, 'type:' + type, (origin_x, origin_y + gap_v*2), 0.5, CVColor.White, 1)
-        # BaseDraw.draw_text(img, 'index:' + index, (origin_x, origin_y + gap_v*3), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'ttc:' + ttc, (origin_x, origin_y + gap_v*3), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v*4), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v*5), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v*6), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v*7), 0.5, CVColor.White, 1)
-    
     def show_lane(self, img, ratios, width, color):
         """绘制车道线
         Args:
@@ -267,25 +242,6 @@ class Player(object):
             y1 = 240 - y1 * 2
             y2 = 240 - y2 * 2
             BaseDraw.draw_line(img, (x1, y1), (x2, y2), CVColor.Cyan, 1)
-
-    def show_lane_parameters(self, img, parameters, point):
-        """显示车道线参数
-        Args:
-            img: 原始图像
-            parameters: List [lw_dis, rw_dis, ldw, trend] 车道线信息
-        """
-        lw_dis = parameters[0]
-        rw_dis = parameters[1]
-        ldw = parameters[2]
-        trend = parameters[3]
-
-        origin_x, origin_y = point
-        gap_v = 20
-        BaseDraw.draw_text(img, 'lane', (origin_x, origin_y+gap_v), 0.5, CVColor.Cyan, 1)
-        BaseDraw.draw_text(img, 'lw_dis:'+lw_dis, (origin_x, origin_y+gap_v*2), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'rw_dis:'+rw_dis, (origin_x, origin_y+gap_v*3), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'ldw:'+ldw, (origin_x, origin_y+gap_v*4), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'trend:'+trend, (origin_x, origin_y+gap_v*5), 0.5, CVColor.White, 1)
 
     def show_peds(self, img, position, color=CVColor.Cyan, thickness = 2):
         """绘制pedestrain
@@ -409,76 +365,3 @@ class Player(object):
         BaseDraw.draw_text(img, para_list.type, (origin_x, origin_y + gap_v), size, CVColor.Cyan, 1)
         for index, para in enumerate(para_list.output()): 
             BaseDraw.draw_text(img, para, (origin_x, origin_y + gap_v * (index+2)), size, CVColor.White, 1)
-
-    def show_ped_parameters(self, img, parameters, point):
-        """显示ped信息
-        Args:
-            img: 原始图片
-            parameters: List [index, TODO ]
-        """
-        pcw_on = parameters[0]
-        origin_x, origin_y = point
-        gap_v = 20
-        size = 0.5
-        BaseDraw.draw_text(img, 'ped', (origin_x, origin_y + gap_v), size, CVColor.Cyan, 1)
-        BaseDraw.draw_text(img, 'pcw_on:' + pcw_on, (origin_x, origin_y + gap_v * 2), size, CVColor.White, 1)
-
-    def show_tsr_parameters(self, img, parameters, point):
-        """显示tsr信息
-        Args:
-            img: 原始图片
-            parameters: List [index, TODO ]
-        """
-        index = parameters[0]
-        speed_limit = parameters[1]
-        warning_level = parameters[2]
-        warning_state = parameters[3]
-
-        origin_x, origin_y = point
-        gap_v = 20
-        size = 0.5
-        BaseDraw.draw_text(img, 'tsr', (origin_x, origin_y + gap_v), size, CVColor.Cyan, 1)
-        BaseDraw.draw_text(img, 'focus_index:' + index, (origin_x, origin_y + gap_v * 2), size, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'speed_limit:' + speed_limit, (origin_x, origin_y + gap_v*3), size, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'warning_level:' + warning_level, (origin_x, origin_y + gap_v*4), size, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'warning_state:' + warning_state, (origin_x, origin_y + gap_v*5), size, CVColor.White, 1)
-    
-    '''
-    def show_env(self,img, speed, light_mode, fps, point):
-        """显示环境信息
-        Args:
-            img: 原始图片
-            light_mode: 白天或夜间
-            fps: 帧率
-        """
-        origin_x, origin_y = point
-        origin_x += 10
-        BaseDraw.draw_text(img, 'env', (origin_x, origin_y+20), 0.5, CVColor.Cyan, 1)
-        BaseDraw.draw_text(img, 'light:'+ str(light_mode), (origin_x, origin_y+40), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'speed:'+ str(int(speed)), (origin_x, origin_y+60), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'fps:'+ str(int(fps)), (origin_x, origin_y+80), 0.5, CVColor.White, 1)
-    '''
-    
-    def show_mobile_parameters(self, img, parameters, point):
-        """显示关键车参数信息
-        Args:
-            img: 原始图片
-            parameters: List [type, index, ttc, fcw, hwm, hw, vb] 关键车参数
-        """
-        hwm = parameters[0]
-        hw = parameters[1]
-        fcw = parameters[2]
-        vb = parameters[3]
-        ldw = parameters[4]
-        pcw = parameters[5]
-
-        origin_x, origin_y = point
-        gap_v = 20
-        color = CVColor.Green
-        BaseDraw.draw_text(img, 'mobile', (origin_x, origin_y+20), 0.5, CVColor.Cyan, 1)
-        BaseDraw.draw_text(img, 'ldw:'+ldw, (origin_x, origin_y+gap_v*2), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v*3), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v*4), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v*5), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v*6), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'pcw:' + pcw, (origin_x, origin_y + gap_v*7), 0.5, color, 1)

@@ -282,12 +282,6 @@ class PCView():
                                                                res[msg_type],
                                                                msg_type,
                                                                frame_id)
-        '''
-        if config.save.alert:
-            alert = self.get_alert(vehicle_data, lane_data, ped_data)
-            self.fileHandler.insert_alert((frame_id, {frame_id: alert}))
-            self.fileHandler.insert_image((frame_id, img))
-        '''
 
         logging.info('msg state {}'.format(self.msg_cnt))
 
@@ -352,9 +346,7 @@ class PCView():
             while not self.all_over(frame_id) and self.list_len() < self.max_cache:
                 self.msg_async()
 
-        logging.debug('out')
         res['frame_id'] = frame_id
-        logging.debug('end0 res')
 
         for key in self.cache:
             while self.cache[key] and self.cache[key][0][0]<=frame_id:
@@ -367,8 +359,6 @@ class PCView():
                     self.cache[key].pop(0)
     
         self.msg_cnt['frame'] += 1
-        # logging.debug('end res {}'.format(res))
-
         
         if config.can.use:
             inc = 100
@@ -417,13 +407,12 @@ class PCDraw(Process):
     def draw(self, mess):
         img = mess['img']
         frame_id = mess['frame_id']
-        self.now_id = frame_id
         vehicle_data = mess['vehicle']
         lane_data = mess['lane']
         ped_data = mess['ped']
         tsr_data = mess['tsr']
-        extra = mess['extra']
         can_data = mess.get('can')
+        extra = mess['extra']
         mobile_log = extra.get('mobile_log')
 
         if config.show.overlook:
@@ -456,15 +445,12 @@ class PCDraw(Process):
         light_mode = '-'
         if vehicle_data:
             light_mode = vehicle_data['light_mode']
-
         speed = vehicle_data.get('speed')*3.6 if vehicle_data.get('speed') else 0
         if not speed:
             speed = lane_data.get('speed') if lane_data.get('speed') else speed
-
         fps = extra.get('fps')
         if not fps:
             fps = 0
-
         para_list = ParaList('env')
         para_list.insert('speed', int(speed))
         para_list.insert('light', light_mode)
@@ -483,7 +469,7 @@ class PCDraw(Process):
             self.file_queue.put(('video', (frame_id, img)))
 
         cv2.imshow('UI', img)
-        key = cv2.waitKey(1)
+        cv2.waitKey(1)
         return
 
     # vehicle
@@ -491,7 +477,6 @@ class PCDraw(Process):
         v_type, index, ttc, fcw ,hwm, hw, vb = '-','-','-','-','-','-','-'
         if vehicle_data:
             focus_index = vehicle_data['focus_index']
-            speed = vehicle_data['speed'] * 3.6
             for i, vehicle in enumerate(vehicle_data['dets']):
                 focus_vehicle = (i == focus_index)
                 position = vehicle['bounding_rect']
@@ -509,8 +494,8 @@ class PCDraw(Process):
                 
             if focus_index != -1:
                 vehicle = vehicle_data['dets'][focus_index]
-                v_type = vehicle['type']
-                index = vehicle['index']
+                # v_type = vehicle['type']
+                # index = vehicle['index']
                 ttc = '%.2f' % vehicle['rel_ttc']
                 fcw = vehicle_data['forward_collision_warning']
                 hw = vehicle_data['headway_warning']
@@ -518,8 +503,18 @@ class PCDraw(Process):
                 vb = vehicle_data['bumper_warning']
                 if ttc == '1000.00':
                     ttc = '-'
+        
+        para_list = ParaList('vehicle')
+        para_list.insert('ttc', ttc)
+        para_list.insert('fcw', fcw)
+        para_list.insert('hwm', hwm)
+        para_list.insert('hw', hw)
+        para_list.insert('vb', vb)
+        self.player.show_normal_parameters(img, para_list, (100, 0))
+        '''
         parameters = [str(v_type), str(index), str(ttc), str(fcw), str(hwm), str(hw), str(vb)]
         self.player.show_vehicle_parameters(img, parameters, (100, 0))
+        '''
  
     # lane
     def draw_lane(self, img, lane_data):
@@ -536,15 +531,12 @@ class PCDraw(Process):
                     conf = lane['confidence']
                     index = lane['label']
                     #print('label', index, deviate_state)
-                    if (index in [1, 2]) and int(index) == int(deviate_state):
+                    if int(index) == int(deviate_state):
                         color = CVColor.Red
-
                     self.player.show_lane(img, lane['perspective_view_poly_coeff'], 
                                           0.2, color)
-
                     if config.show.overlook:
                         self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
-                    
                     self.player.show_lane_info(img, lane['perspective_view_poly_coeff'],
                                                index, width, l_type, conf, color)
 
@@ -557,15 +549,20 @@ class PCDraw(Process):
             if rw_dis == '111.00':
                 rw_dis = '-'
 
+        para_list = ParaList('lane')
+        para_list.insert('lw_dis', lw_dis)
+        para_list.insert('rw_dis', rw_dis)
+        para_list.insert('ldw', ldw)
+        para_list.insert('trend', trend)
+        self.player.show_normal_parameters(img, para_list, (192, 0))
+        '''
         parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
         self.player.show_lane_parameters(img, parameters, (200, 0))
-
+        '''
 
     # ped
     def draw_ped(self, img, ped_data):
-        pcw_on = '-'
-        ped_on = '-'
-
+        pcw_on, ped_on = '-', '-'
         if ped_data:
             if ped_data.get('pcw_on'):
                 pcw_on = 1
@@ -574,44 +571,37 @@ class PCDraw(Process):
             for pedestrain in ped_data['pedestrians']:
                 position = pedestrain['regressed_box']
                 position = position['x'], position['y'], position['width'], position['height']
-                # print('position:', position)
                 color = CVColor.Yellow
                 if pedestrain['is_key']:
                     color = CVColor.Pink
-                    # para_list.insert('is_key', 1)
                 if pedestrain['is_danger']:
                     color = CVColor.Pink
-                    # para_list.insert('is_danger', 1)
                 self.player.show_peds(img, position, color, 2)
                 if position[0] > 0:
                     self.player.show_peds_info(img, position, pedestrain['dist'])
-        para_list = ParaList('ped') #, 'is_key', 'is_danger'])
+        para_list = ParaList('ped')
         para_list.insert('pcw_on', pcw_on)
         #para_list.insert('ped_on', ped_on)
-        self.player.show_normal_parameters(img, para_list, (450, 0))
+        self.player.show_normal_parameters(img, para_list, (430, 0))
     
     def draw_tsr(self, img, tsr_data):
         focus_index, speed_limit, tsr_warning_level, tsr_warning_state = -1, 0, 0, 0
         if tsr_data:
-            # logging.info('tsr data {}'.format(tsr_data))
             focus_index = tsr_data['focus_index']
             speed_limit = tsr_data['speed_limit']
             tsr_warning_level = tsr_data['tsr_warning_level']
             tsr_warning_state = tsr_data['tsr_warning_state']
             for i, tsr in enumerate(tsr_data['dets']):
                 position = tsr['position']
-                logging.info('tsrrrr {}'.format(position))
                 position = position['x'], position['y'], position['width'], position['height']
                 color = CVColor.Red
                 self.player.show_tsr(img, position, color, 2)
                 if tsr['max_speed'] != 0:
                     self.player.show_tsr_info(img, position, tsr['max_speed'])                
 
-        para_list = ParaList('tsr') #, 'is_key', 'is_danger'])
-        #para_list.insert('pcw_on', pcw_on)
-        para_list.insert('speed_limit', str(speed_limit))
-        self.player.show_normal_parameters(img, para_list, (300, 0))
-                
+        para_list = ParaList('tsr')
+        para_list.insert('speed_limit', speed_limit)
+        self.player.show_normal_parameters(img, para_list, (305, 0))
         # parameters = [str(focus_index), str(speed_limit), str(tsr_warning_level), str(tsr_warning_state)]
         # self.player.show_tsr_parameters(img, parameters, (300, 0))
     
@@ -626,5 +616,15 @@ class PCDraw(Process):
             mobile_pcw = 1 if mobile_log.get('sound_type') == 6 and mobile_log.get('peds_fcw') == 1 else 0
             mobile_vb = 1 if mobile_log.get('sound_type') == 5 else 0
             mobile_ldw = mobile_log['left_ldw'] * 2 + mobile_log['right_ldw'] if 'left_ldw' in mobile_log else 0
+            para_list = ParaList('mobile')
+            para_list.insert('hwm', mobile_hwm)
+            para_list.insert('hw', mobile_hw)
+            para_list.insert('fcw', mobile_fcw)
+            para_list.insert('vb', mobile_vb)
+            para_list.insert('ldw', mobile_ldw)
+            para_list.insert('pcw', mobile_pcw)
+            self.player.show_normal_parameters(img, para_list, (300, 0))
+            '''
             mobile_parameters = [str(mobile_hwm), str(mobile_hw), str(mobile_fcw), str(mobile_vb), str(mobile_ldw), str(mobile_pcw)]
             self.player.show_mobile_parameters(img, mobile_parameters, (600, 0))
+            '''
