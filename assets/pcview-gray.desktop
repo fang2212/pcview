@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=PCVIEW-GRAY
-Exec=sh /home/minieye/env/dist/assets/pcview.sh
+Exec=sh /home/minieye/env/dist/assets/pcview-gray.sh
 Icon=/home/minieye/env/dist/assets/pcview.png
 Info="pcview"
 Terminal=false

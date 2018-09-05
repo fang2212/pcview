@@ -10,7 +10,6 @@ import msgpack
 import json
 from datetime import datetime
 from multiprocessing import Process, Queue, Value
-from threading import Thread
 
 import asyncio
 import numpy as np
@@ -19,7 +18,7 @@ import cv2
 from .draw.base import BaseDraw, CVColor
 from .draw.ui_draw import Player
 from etc.config import config
-from CANAlyst.can_server import TRunner
+
 from .file_handler import FileHandler
 pack = os.path.join
 logging.basicConfig(level=logging.INFO,
@@ -62,6 +61,8 @@ class Sink(Process):
         pass
 
 
+if config.can.use:
+    from CANAlyst.can_server import TRunner
 class CanSink(Process):
     def __init__(self, can_queue):
         Process.__init__(self)
@@ -179,8 +180,6 @@ class PCView():
         
         if config.platform == 'fpga':
             self.sink = fpga_handle(msg_types, self.msg_queue, config.ip)
-        # elif config.platform == 'arm':
-        #    self.sink = arm_handle(msg_types, self.msg_queue, config.ip)
 
         self.mobile_content = None
         if config.mobile.show:
@@ -371,14 +370,15 @@ class PCView():
         # logging.debug('end res {}'.format(res))
 
         
-        inc = 100
-        while not self.can_queue.empty() and inc:
-            data = self.can_queue.get()
-            if config.save.log:
-                temp = json.dumps({'can': data})
-                self.file_queue.put(('log', temp))
-            res['can'] = data
-            inc -= 1
+        if config.can.use:
+            inc = 100
+            while not self.can_queue.empty() and inc:
+                data = self.can_queue.get()
+                if config.save.log:
+                    temp = json.dumps({'can': data})
+                    self.file_queue.put(('log', temp))
+                res['can'] = data
+                inc -= 1
 
         logging.debug('end res ped{}'.format(res['ped']))
         logging.debug('end res tsr{}'.format(res['tsr']))
@@ -535,7 +535,7 @@ class PCDraw(Process):
                     l_type = lane['type']
                     conf = lane['confidence']
                     index = lane['label']
-                    print('label', index, deviate_state)
+                    #print('label', index, deviate_state)
                     if (index in [1, 2]) and int(index) == int(deviate_state):
                         color = CVColor.Red
 
