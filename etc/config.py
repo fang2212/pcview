@@ -37,8 +37,8 @@ basic_cfg = {
         "color": "color"
     },
     "fix": {
-        "lane": 2,
-        "vehicle": 2,
+        "lane": 4,
+        "vehicle": 4,
         "ped": 2,
         "tsr": 2
     },

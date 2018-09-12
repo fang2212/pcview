@@ -24,23 +24,19 @@ pcview-client是一个实时显示车道线，车辆等ADAS算法结果及相关
 
 == 依赖库
 ```shell
-sudo ./install_dependencies.sh
+sudo apt install -y python3-pip # 如果没有安装pip3
+https://github.com/nanomsg/nanomsg # install nanomsg lib if need
+sudo pip3 install nanomsg
+sudo pip3 install msgpack
 ```
 
 == 使用
 . 修改/etc/network/interfaces，设置电脑IP为静态地址与设备同一网段，
-[source,shell]
-sudo ./tools/getnetId.sh 192.168.0.110
 
 . 运行pc-viewer
-python run_pcview.py 
-
-== 参数说明
-
-=== 车道线
-[%header,cols="4,6,4"]
-|===
-|Name       |Mean     |Value 
-|`left_wheel_dist`  |左前轮距最近车道线距离  |浮点
-|`right_wheel_dist` |右前轮距最近车道线距离  |浮点
-|===
+```shell
+python run_pcview.py --func test --ip 192.168.0.233
+                            test 测试功能版,所有算法结果都显示
+                            debug 比亚迪调试版,显示车道线和can
+                            pro 在test基础上显示俯视图
+```
