@@ -20,7 +20,12 @@ class FileHandler(Process):
         FORMAT = '%Y%m%d%H%M%S'
         date_str = datetime.now().strftime(FORMAT)
 
-        self.path = os.path.join(config.save.path, date_str)
+        if config.save.result_path:
+            self.path = config.save.result_path
+        else:
+            self.path = os.path.join(config.save.path, date_str)
+            #self.path = config.save.path + date_str
+
         if not os.path.exists(self.path):
             os.makedirs(self.path)
  

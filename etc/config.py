@@ -11,11 +11,13 @@ basic_cfg = {
         "raw_type": "gray",
         "path": ""
     },
+    "cache_size": 100,
     "mobile": {
         "show": False,
         "path": ""
     },
     "save": {
+        "result_path": "",
         "path": "/home/minieye/pcviewer-data/",
         "video": True,
         "alert": False,  # 包括image和alert.log 主要用于演示平台
@@ -28,6 +30,8 @@ basic_cfg = {
     "show": {
         "overlook": False,
         "lane": True,
+        "lane_begin": 460,
+        "lane_end": 720,
         "all_laneline": False,
         "lane_type": False,
         "lane_speed_limit": 50,

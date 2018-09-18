@@ -167,7 +167,7 @@ class Player(object):
         roi_img = img[y_begin: y_end, x_begin: x_end]
         cv2.addWeighted(car, 0.5, roi_img, 1.0, 0.0, roi_img)
     
-    def show_lane(self, img, ratios, width, color):
+    def show_lane(self, img, ratios, width, color, begin=450, end=720):
         """绘制车道线
         Args:
             img: 原始图片
@@ -184,7 +184,7 @@ class Player(object):
         
         width = int(float(width) * 10 + 0.5)
 
-        for y in range(480, 720, 20):
+        for y in range(begin, end, 20):
             y1 = y
             y2 = y1 + 20
             x1 = (int)(a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1)

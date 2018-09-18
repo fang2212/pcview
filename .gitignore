@@ -12,6 +12,7 @@ client/build/
 etc/build/
 try/
 fpga_camera_tz/
+.vscode/
 
 # Executables
 *.swf

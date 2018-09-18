@@ -145,7 +145,8 @@ class PCView():
             for index, item in enumerate(self.image_list):
                 self.image_list[index] = item.strip()
         
-        self.max_cache = len(msg_types)*20
+        # self.max_cache = len(msg_types)*20
+        self.max_cache = config.cache_size
 
         self.msg_queue = Queue()
         self.cam_queue = Queue()
@@ -530,11 +531,21 @@ class PCDraw(Process):
                     l_type = lane['type']
                     conf = lane['confidence']
                     index = lane['label']
+                    if config.show.lane_begin == -1:
+                        begin = int(lane['end'][1])
+                    else:
+                        begin = config.show.lane_begin
+                    if config.show.lane_end == -1:
+                        end = int(lane['start'][1])
+                    else:
+                        end = config.show.lane_end
                     #print('label', index, deviate_state)
                     if int(index) == int(deviate_state):
                         color = CVColor.Red
+                    #self.player.show_lane(img, lane['perspective_view_poly_coeff'], 
+                    #                      0.2, color, config.show.lane_begin, config.show.lane_end)
                     self.player.show_lane(img, lane['perspective_view_poly_coeff'], 
-                                          0.2, color)
+                                          0.2, color, begin, end) 
                     if config.show.overlook:
                         self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
                     self.player.show_lane_info(img, lane['perspective_view_poly_coeff'],
