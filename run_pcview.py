@@ -18,8 +18,8 @@ parser.add_argument("--log", help="是否保存日志,默认保存", type=str)
 parser.add_argument("--raw_type", help="设备发出图像数据类型[color or gray]", type=str)
 parser.add_argument("--lane_speed_limit", help="车道显示速度限制", type=int)
 parser.add_argument("--all_laneline", help="是否显示所有车道", type=str)
-parser.add_argument("--lane_begin", help="显示车道起点", type=str)
-parser.add_argument("--lane_end", help="显示车道终点", type=str)
+parser.add_argument("--lane_begin", help="显示车道起点", type=int)
+parser.add_argument("--lane_end", help="显示车道终点", type=int)
 parser.add_argument("--func", help="功能版本[debug,test,pro,fpga]", type=str)
 parser.add_argument("--result_path", help="保存地址", type=str)
 parser.add_argument("--save_path", help="保存目录", type=str)
@@ -59,7 +59,8 @@ if __name__ == "__main__":
     # config.pic.use = False
     print("ip", config.ip)
     #config.can.use = 0
-    config.save.path = '/home/minieye/pcview_data/'
+    
+    #config.save.path = '/home/zzp/pcview_data/'
 
     pc_view = PCView()
     pc_view.go()
