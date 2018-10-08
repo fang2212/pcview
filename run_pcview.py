@@ -60,7 +60,7 @@ if __name__ == "__main__":
     print("ip", config.ip)
     #config.can.use = 0
     
-    #config.save.path = '/home/zzp/pcview_data/'
+    config.save.path = '~/pcview_data/'
 
     pc_view = PCView()
     pc_view.go()
