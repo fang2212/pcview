@@ -549,7 +549,7 @@ class PCDraw(Process):
                     if config.show.overlook:
                         self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
                     #self.player.show_lane_info(img, lane['perspective_view_poly_coeff'],
-                                               index, width, l_type, conf, color)
+                    #                           index, width, l_type, conf, color)
 
             lw_dis = '%.2f' % (lane_data['left_wheel_dist'])
             rw_dis = '%.2f' % (lane_data['right_wheel_dist'])
