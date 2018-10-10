@@ -148,16 +148,16 @@ class PCView():
         # self.max_cache = len(msg_types)*20
         self.max_cache = config.cache_size
 
-        self.msg_queue = Queue()
-        self.cam_queue = Queue()
-        self.res_queue = Queue()
-        self.file_queue = Queue()
-        self.can_queue = Queue()
+        self.msg_queue = Queue()    #从nanomsg接收消息
+        self.cam_queue = Queue()    #从nanomsg接收图像
+        self.res_queue = Queue()    #处理结果，绘图数据队列
+        self.file_queue = Queue()   #结果保存到文件日志
+        self.can_queue = Queue()    #接收can数据
 
         self.sink = {}
-        self.cache = {}
+        self.cache = {}    #算法数据缓存，不同算法数据从不同进程读取，通过cache同步
         self.msg_cnt = {}
-        self.pre = {}
+        self.pre = {}       #上一帧非空的数据
 
         for msg_type in msg_types:
             self.cache[msg_type] = []
@@ -175,15 +175,15 @@ class PCView():
         }
 
         if not config.pic.use_local:
-            self.camera_sink = CameraSink(queue=self.cam_queue, ip=config.ip, port=1200, msg_type='camera')
+            self.camera_sink = CameraSink(queue=self.cam_queue, ip=config.ip, port=1200, msg_type='camera') #从nanomsg接收图像
             self.camera_sink.start()
 
         
         if config.platform == 'fpga':
-            self.sink = fpga_handle(msg_types, self.msg_queue, config.ip)
+            self.sink = fpga_handle(msg_types, self.msg_queue, config.ip) #启动接收nanomsg进程
 
         self.mobile_content = None
-        if config.mobile.show:
+        if config.mobile.show:  #显示mobile数据
             mobile_fp = open(config.mobile.path, 'r+')
             self.mobile_content = json.load(mobile_fp)
             mobile_fp.close()
@@ -191,38 +191,38 @@ class PCView():
 
         self.file_handler = None
         if config.save.log or config.save.alert or config.save.video:
-            self.file_handler = FileHandler(self.file_queue)
+            self.file_handler = FileHandler(self.file_queue)    #保存log和video进程
             self.file_handler.start()
 
         if config.can.use:
             try:
-                self.can_sink = CanSink(self.can_queue)
+                self.can_sink = CanSink(self.can_queue) #接收can数据进程
                 self.can_sink.start()
             except Exception as E:
                 print(E)
 
-        self.pc_draw = PCDraw(self.res_queue, self.file_queue)
+        self.pc_draw = PCDraw(self.res_queue, self.file_queue) #绘图进程
         self.pc_draw.start()
 
-    def gen_mobile_dict(self):
+    def gen_mobile_dict(self):  #读取mobile数据
         temp_dict = {}
         for mobile_log in self.mobile_content:
             temp_dict[mobile_log['image_mark']] = mobile_log
         self.mobile_content = temp_dict
 
-    def list_len(self):
+    def list_len(self): #cache缓存数据量
         length = 0
         for key in self.cache:
             length += len(self.cache[key])
         return length 
 
-    def all_has(self):
+    def all_has(self):  #每种类型的数据都有
         for key in self.cache:
             if not self.cache[key]:
                 return False
         return True 
 
-    def all_over(self, frame_id):
+    def all_over(self, frame_id):  #每种类型的数据都有，并且 达到或者超前 图像帧
         for key in self.cache:
             if not self.cache[key]:
                 return False
@@ -230,7 +230,7 @@ class PCView():
                 return False
         return True 
 
-    def msg_async(self):
+    def msg_async(self):    #把算法数据从 msg_queue 同步到cache
         while not self.msg_queue.empty():
             ts, frame_id, msg_data, msg_type = self.msg_queue.get()
             msg_data['recv_ts'] = ts
@@ -242,12 +242,12 @@ class PCView():
             self.msg_cnt[msg_type]['rev'] += 1
         time.sleep(0.01)
 
-    def go(self):
+    def go(self): #往绘图数据队列填数据
         while True:
             self.res_queue.put(self.pop())
             time.sleep(0.01)
 
-    def fix_frame(self, pre_, now_, msg_type, now_id):
+    def fix_frame(self, pre_, now_, msg_type, now_id):  #如果该帧数据为空，并且上一帧相隔不大，绘制上一帧的数据让图像连续
         fix_range = config.fix[msg_type]
         if now_.get('frame_id') or (not fix_range):
             return now_, now_
@@ -257,7 +257,7 @@ class PCView():
                 return pre_, pre_
         return {}, {}
 
-    def update_extra(self, res):
+    def update_extra(self, res):    #添加额外数据：计算帧率， mobile数据， 根据上一帧填充空的数据
         self.fps_cnt['inc'] += 1
         fps_period  = 100
         if not self.fps_cnt['start_time']:
@@ -286,7 +286,7 @@ class PCView():
 
         logging.info('msg state {}'.format(self.msg_cnt))
 
-    def pop(self):
+    def pop(self): #生成绘图数据
         res = {
             'frame_id': None,
             'img': None,
@@ -300,7 +300,7 @@ class PCView():
 
         frame_id = None
 
-        if config.pic.use_local:
+        if config.pic.use_local:    #用本地图片
             # print('len', self.list_len())
             while (not self.all_has()) and (self.list_len() < self.max_cache):
                 self.msg_async()
@@ -331,7 +331,7 @@ class PCView():
                 img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
             res['img'] = img
         else:
-            while True:
+            while True: #等待接收图片
                 if not self.cam_queue.empty():
                     ts, frame_id, image, msg_type = self.cam_queue.get()
                     res['img'] = image
@@ -344,13 +344,13 @@ class PCView():
                     break
                 time.sleep(0.01)
             logging.debug('show cam id {}'.format(frame_id))
-            while not self.all_over(frame_id) and self.list_len() < self.max_cache:
+            while not self.all_over(frame_id) and self.list_len() < self.max_cache: #等待接收算法数据
                 self.msg_async()
 
         res['frame_id'] = frame_id
 
         for key in self.cache:
-            while self.cache[key] and self.cache[key][0][0]<=frame_id:
+            while self.cache[key] and self.cache[key][0][0]<=frame_id: #从cache取出当前帧的算法数据，并把落后的帧抛弃掉
                 if self.cache[key][0][0] == frame_id:
                     res[key] = self.cache[key][0][1]
                     self.msg_cnt[key]['show'] += 1
@@ -363,7 +363,7 @@ class PCView():
         
         if config.can.use:
             inc = 100
-            while not self.can_queue.empty() and inc:
+            while not self.can_queue.empty() and inc:   #读取can数据，取最后一个，最多取第100个
                 data = self.can_queue.get()
                 if config.save.log:
                     temp = json.dumps({'can': data})
@@ -506,7 +506,7 @@ class PCDraw(Process):
                     ttc = '-'
         
         para_list = ParaList('vehicle')
-        para_list.insert('ttc', ttc)
+        #para_list.insert('ttc', ttc)
         para_list.insert('fcw', fcw)
         para_list.insert('hwm', hwm)
         para_list.insert('hw', hw)
@@ -548,7 +548,7 @@ class PCDraw(Process):
                                           0.2, color, begin, end) 
                     if config.show.overlook:
                         self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
-                    self.player.show_lane_info(img, lane['perspective_view_poly_coeff'],
+                    #self.player.show_lane_info(img, lane['perspective_view_poly_coeff'],
                                                index, width, l_type, conf, color)
 
             lw_dis = '%.2f' % (lane_data['left_wheel_dist'])
@@ -564,7 +564,7 @@ class PCDraw(Process):
         para_list.insert('lw_dis', lw_dis)
         para_list.insert('rw_dis', rw_dis)
         para_list.insert('ldw', ldw)
-        para_list.insert('trend', trend)
+        #para_list.insert('trend', trend)
         self.player.show_normal_parameters(img, para_list, (192, 0))
         '''
         parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
