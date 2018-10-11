@@ -23,7 +23,7 @@ parser.add_argument("--lane_begin", help="显示车道起点，默认460", type=
 parser.add_argument("--lane_end", help="显示车道终点，默认720", type=int)
 parser.add_argument("--result_path", help="保存地址", type=str)
 parser.add_argument("--save_path", help="保存目录，默认 ~/pcview_data/", type=str)
-parser.add_argument("--show_parameters", help="左上角的数据，默认不显示", type=str)
+parser.add_argument("--show_parameters", help="是否左上角的数据，默认不显示", type=str)
 args = parser.parse_args()
 config_script.load('fpga')
 
@@ -56,6 +56,9 @@ if __name__ == "__main__":
     config.save.path = '~/pcview_data/'
     if args.save_path:
         config.save.path = args.save_path
+    config.show_parameters = False
+    if args.show_parameters:
+        config.show_parameters = int(args.show_parameters)
 
     # config.show.lane_speed_limit = 0
     # config.pic.raw_type = 'color'
