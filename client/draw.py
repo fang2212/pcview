@@ -107,8 +107,9 @@ class BaseDraw(object):
 
     @classmethod
     def draw_polylines(cls, img, pts, color, thickness=2):
+        pts = [pts]
         pts = np.array(pts)
-        cv2.polylines(img, pts, color, thickness)
+        cv2.polylines(img, pts, False, color, thickness)
 
 class ParaList(object):
     def __init__(self, para_type):
