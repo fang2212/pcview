@@ -105,6 +105,11 @@ class BaseDraw(object):
         if line_width > 0:
             cv2.rectangle(image_content, (x, y), (x+w, y+h), color, line_width)
 
+    @classmethod
+    def draw_polylines(cls, img, pts, color, thickness=2):
+        pts = np.array(pts)
+        cv2.polylines(img, pts, color, thickness)
+
 class ParaList(object):
     def __init__(self, para_type):
         self.type = para_type
@@ -480,7 +485,11 @@ class DrawLane(object):
                         color = CVColor.Red
                     #self.player.show_lane(img, lane['perspective_view_poly_coeff'], 
                     #                      0.2, color, config.show.lane_begin, config.show.lane_end)
-                    self.draw_lane_line(img, lane['perspective_view_poly_coeff'], 
+                    perspective_view_fitpts = lane.get('perspective_view_fitpts')
+                    if perspective_view_fitpts is not None:
+                        BaseDraw.draw_polylines(img, perspective_view_fitpts, color, 0.2)
+                    else:
+                        self.draw_lane_line(img, lane['perspective_view_poly_coeff'], 
                                           0.2, color, begin, end) 
                     #self.draw_lane_info(img, lane['perspective_view_poly_coeff'],
                     #                           index, width, l_type, conf, color)
