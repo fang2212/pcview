@@ -16,7 +16,8 @@ import numpy as np
 import cv2
 
 from .draw.base import BaseDraw, CVColor
-from .draw.ui_draw import Player
+#from .draw.ui_draw import Player
+from .draw import Player
 from etc.config import config
 
 from .file_handler import FileHandler
@@ -397,6 +398,18 @@ class PCDraw(Process):
         self.file_queue = file_queue
 
     def run(self):
+        while True:
+            while not self.mess_queue.empty():
+                mess = self.mess_queue.get()
+                img = Player(mess).draw()
+                if config.save.video:
+                    frame_id = mess['frame_id']
+                    self.file_queue.put(('video', (frame_id, img)))
+                cv2.imshow('UI', img)
+                cv2.waitKey(1)
+            time.sleep(0.01)
+
+    def run1(self):
         while True: 
             while not self.mess_queue.empty():
                 # print('e qsize', self.mess_queue.qsize())
