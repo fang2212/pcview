@@ -10,18 +10,19 @@ img_dir_path = "/media/zzp/tempdisk1/pcshow0824/origin/"
 log_file_path = "/media/zzp/tempdisk1/pcshow0824/log.json"
 
 if __name__ == "__main__":
-
+    host = "tcp://127.0.0.1"
+    #host = "tcp://192.168.0.222"
     # 创建连接，5个端口
     send_lane = Socket(PUB)
-    send_lane.bind("tcp://127.0.0.1:1203")
+    send_lane.bind(host + ":1203")
     send_vehicle = Socket(PUB)
-    send_vehicle.bind("tcp://127.0.0.1:1204")
+    send_vehicle.bind(host + ":1204")
     send_ped = Socket(PUB)
-    send_ped.bind("tcp://127.0.0.1:1205")
+    send_ped.bind(host + ":1205")
     send_tsr = Socket(PUB)
-    send_tsr.bind("tcp://127.0.0.1:1206")
+    send_tsr.bind(host + ":1206")
     send_pic = Socket(PUB)
-    send_pic.bind("tcp://127.0.0.1:1200")
+    send_pic.bind(host + ":1200")
 
     #log 与 frame_id
     log_file = open(log_file_path)
