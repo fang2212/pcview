@@ -488,7 +488,7 @@ class DrawLane(object):
                     #                      0.2, color, config.show.lane_begin, config.show.lane_end)
                     perspective_view_fitpts = lane.get('perspective_view_fitpts')
                     if perspective_view_fitpts is not None:
-                        BaseDraw.draw_polylines(img, perspective_view_fitpts, color, 1)
+                        BaseDraw.draw_polylines(img, perspective_view_fitpts, color, 2)
                     else:
                         self.draw_lane_line(img, lane['perspective_view_poly_coeff'], 
                                           0.2, color, begin, end) 

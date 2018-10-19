@@ -11,7 +11,7 @@ basic_cfg = {
         "raw_type": "gray",
         "path": ""
     },
-    "cache_size": 100,
+    "cache_size": 40,
     "mobile": {
         "show": False,
         "path": ""

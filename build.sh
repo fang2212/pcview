@@ -3,7 +3,7 @@
 mkdir dist/
 ./clear.sh
 rm -r dist/*
-mkdir -p dist/client/draw
+mkdir -p dist/client
 mkdir -p dist/etc
 cp run_pcview.py dist/
 cp -r CANAlyst dist/
@@ -14,7 +14,6 @@ pwd
 python3 setup.py build_ext --inplace
 cp *.so ../dist/client
 # cp *.c ../dist/client
-cp draw/*.so ../dist/client/draw
 # cp draw/*.c ../dist/client/draw
 # mv build ../dist/
 # rm ../dist/client/*.c

@@ -3,8 +3,7 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 ext_modules = [
-        Extension("draw.base",  ["draw/base.py"]),
-        Extension("draw.ui_draw",  ["draw/ui_draw.py"]),
+        Extension("draw",  ["draw.py"]),
         Extension("file_handler",  ["file_handler.py"]),
         Extension("pcview_client",  ["pcview_client.py"]),
     #   ... all your modules that need be compiled ...
