@@ -6,6 +6,7 @@ __version__ = '1.0.1.faa786'
 __progname__ = 'pcview'
 
 import sys
+import os
 
 from etc import config as config_script
 print(sys.argv)
@@ -53,7 +54,7 @@ if __name__ == "__main__":
         config.show.lane_end = args.lane_end
     if args.result_path:
         config.save.result_path = args.result_path
-    config.save.path = '~/pcview_data/'
+    config.save.path = os.path.expanduser('~/pcview_data/')
     if args.save_path:
         config.save.path = args.save_path
     config.show_parameters = False

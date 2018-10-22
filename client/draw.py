@@ -75,28 +75,6 @@ class BaseDraw(object):
         cv2.line(img_content, p1, p2, color_type, thickness, type, 0)
 
     @classmethod
-    def draw_lane_line(cls, img_content, line,  color_type='',
-                       begin=420, end=650):
-        """
-        g = a0 + a1*x + a2*x*x + a3*x*x*x
-        a0 = -28.0362
-        a1 = 1.42638
-        a2 = -2.64114e-05
-        a3 = 0
-        """
-        a0 = float(line[0])
-        a1 = float(line[1])
-        a2 = float(line[2])
-        a3 = float(line[3])
-
-        for x in range(begin, end, 10):
-            y = int(a0 + a1*x + a2*x*x + a3*x*x*x)
-            x1 = x + 10
-            y1 = int(a0 + a1*x1 + a2*x1*x1 + a3*x1*x1*x1)
-            cv2.line(img_content, (y, x), (y1, x1), CVColor.White, 2,
-                     cv2.LINE_AA, 0)
-
-    @classmethod
     def draw_alpha_rect(cls, image_content, rect, alpha, color = CVColor.White, line_width = 0):
         x, y, w, h = rect
         img = np.zeros((h, w, 3), np.uint8)
@@ -107,6 +85,9 @@ class BaseDraw(object):
 
     @classmethod
     def draw_polylines(cls, img, pts, color, thickness=2):
+        '''
+        :param pts: 三维数组 [ line, ... ], line: [ point, ... ], point: [x,y]
+        '''
         pts = [pts]
         pts = np.array(pts)
         cv2.polylines(img, pts, False, color, thickness)
@@ -162,7 +143,6 @@ class Player(object):
 
         return img
 
-
 class DrawOverlook(object):
     '''
     画右上角的俯视图
@@ -178,9 +158,7 @@ class DrawOverlook(object):
     @classmethod
     def init(self, img):
         """绘制俯视图的背景，包括背景图，车背景图，光线图
-
-        Args:
-            img: 原始图片
+        :param img: 原始图片
         """
         y_background, x_background, _ = self.overlook_background_image.shape
         y_img, x_img, _ = img.shape
@@ -265,12 +243,7 @@ class DrawOverlook(object):
             ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
             color: CVColor 车道线颜色
         """
-        a0, a1, a2, a3 = ratios
-        a0 = float(a0)
-        a1 = float(a1)
-        a2 = float(a2)
-        a3 = float(a3)
-
+        a0, a1, a2, a3 = list(map(float, ratios))
         for y in range(0, 60, 2):
             y1 = y
             y2 = y1 + 2
@@ -296,8 +269,6 @@ class DrawParameters(object):
         else:
             bg_width = 120 * len(config.msg_types) + 50
         BaseDraw.draw_alpha_rect(img, (0, 0, bg_width+20, 150), 0.4)
-
-        
 
     @classmethod
     def draw_normal_parameters(self, img, para_list, point):
@@ -393,10 +364,6 @@ class DrawVehicle(object):
             para_list.insert('hw', hw)
             para_list.insert('vb', vb)
             DrawParameters.draw_normal_parameters(img, para_list, (100, 0))
-        '''
-        parameters = [str(v_type), str(index), str(ttc), str(fcw), str(hwm), str(hw), str(vb)]
-        self.player.show_vehicle_parameters(img, parameters, (100, 0))
-        '''
 
     @classmethod
     def draw_vehicle_rect(self, img, position, color=CVColor.Cyan, thickness = 2):
@@ -407,7 +374,6 @@ class DrawVehicle(object):
             color: CVColor 车辆颜色
             thickness: int 线粗
         """
-
         x, y, width, height = position
         x1 = int(x)
         y1 = int(y)
@@ -467,33 +433,20 @@ class DrawLane(object):
             deviate_state = lane_data['deviate_state']
             for lane in lane_data['lanelines']:
                 if ((int(lane['label']) in [1, 2]) or config.show.all_laneline) and speed >= config.show.lane_speed_limit:
-                    # color = CVColor.Cyan
-                    color = CVColor.Blue
                     width = lane['width']
                     l_type = lane['type']
                     conf = lane['confidence']
                     index = lane['label']
-                    if config.show.lane_begin == -1:
-                        begin = int(lane['end'][1])
-                    else:
-                        begin = config.show.lane_begin
-                    if config.show.lane_end == -1:
-                        end = int(lane['start'][1])
-                    else:
-                        end = config.show.lane_end
-                    #print('label', index, deviate_state)
-                    if int(index) == int(deviate_state):
-                        color = CVColor.Red
-                    #self.player.show_lane(img, lane['perspective_view_poly_coeff'], 
-                    #                      0.2, color, config.show.lane_begin, config.show.lane_end)
+                    begin = int(lane['end'][1]) if config.show.lane_begin == -1 else config.show.lane_begin
+                    end = int(lane['start'][1]) if config.show.lane_end == -1 else config.show.lane_end
+                    color = CVColor.Red if int(index) == int(deviate_state) else CVColor.Blue
+
                     perspective_view_fitpts = lane.get('perspective_view_fitpts')
                     if perspective_view_fitpts is not None:
                         BaseDraw.draw_polylines(img, perspective_view_fitpts, color, 2)
                     else:
                         self.draw_lane_line(img, lane['perspective_view_poly_coeff'], 
                                           0.2, color, begin, end) 
-                    #self.draw_lane_info(img, lane['perspective_view_poly_coeff'],
-                    #                           index, width, l_type, conf, color)
                     if config.show.overlook:
                         DrawOverlook.draw_lane(img, lane['bird_view_poly_coeff'], color)
                     
@@ -514,10 +467,7 @@ class DrawLane(object):
             para_list.insert('ldw', ldw)
             #para_list.insert('trend', trend)
             DrawParameters.draw_normal_parameters(img, para_list, (192, 0))
-        '''
-        parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
-        self.player.show_lane_parameters(img, parameters, (200, 0))
-        '''
+
     @classmethod
     def draw_lane_line(self, img, ratios, width, color, begin=450, end=720):
         """绘制车道线
@@ -527,15 +477,8 @@ class DrawLane(object):
             width: float 车道线宽度
             color: CVColor 车道线颜色
         """
-
-        a0, a1, a2, a3 = ratios
-        a0 = float(a0)
-        a1 = float(a1)
-        a2 = float(a2)
-        a3 = float(a3)
-        
+        a0, a1, a2, a3 = list(map(float, ratios))
         width = int(float(width) * 10 + 0.5)
-
         for y in range(begin, end, 20):
             y1 = y
             y2 = y1 + 20
@@ -555,22 +498,13 @@ class DrawLane(object):
             conf: 置信度
             color: CVColor 车道线颜色
         """
-        a0, a1, a2, a3 = ratios
-        a0 = float(a0)
-        a1 = float(a1)
-        a2 = float(a2)
-        a3 = float(a3)
-        
+        a0, a1, a2, a3 = list(map(float, ratios))
         color = CVColor.Cyan
         size = 1
         y1 = 500
         x1 = (int)(a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1)
-        # BaseDraw.draw_text(img, 'index:' + str(index), (x1, y1-45), 0.5, color, 1)
         width = '%.2f' % width
-        # BaseDraw.draw_text(img, 'width:' + str(width), (x1, y1-20), size, color, 1)
         BaseDraw.draw_text(img, 'width:' + str(width), (x1, y1), size, color, 1)
-        # BaseDraw.draw_text(img, 'type:' + str(type), (x1, y1), size, color, 1)
-        # BaseDraw.draw_text(img, 'conf:' + str(conf), (x1, y1), 0.5, color, 1)
 
 class DrawPed(object):
     @classmethod
@@ -607,15 +541,8 @@ class DrawPed(object):
             color: CVColor 颜色
             thickness: int 线粗
         """
-
-        x, y, width, height = position
-        x1 = int(x)
-        y1 = int(y)
-        width = int(width)
-        height = int(height)
-        x2 = x1 + width
-        y2 = y1 + height
-        BaseDraw.draw_rect(img, (x1, y1), (x2, y2), color, thickness)
+        x1, y1, width, height = list(map(int, position))
+        BaseDraw.draw_rect(img, (x1, y1), (x1+width, y1+height), color, thickness)
     
     @classmethod
     def draw_ped_info(self, img, position, distance):
@@ -625,11 +552,7 @@ class DrawPed(object):
             position: (x, y, width, height),车辆框的位置，大小
             max_speed: float 
         """
-        x, y, width, height = position
-        x1 = int(x)
-        y1 = int(y)
-        width = int(width)
-        height = int(height)
+        x1, y1, width, height = list(map(int, position))
         x2 = x1 + width
         y2 = y1 + height
         origin_x = max(0, x2 - 65)
@@ -671,11 +594,7 @@ class DrawTsr(object):
             thickness: int 线粗
         """
 
-        x, y, width, height = position
-        x1 = int(x)
-        y1 = int(y)
-        width = int(width)
-        height = int(height)
+        x1, y1, width, height = list(map(int, position))
         x2 = x1 + width
         y2 = y1 + height
         BaseDraw.draw_rect(img, (x1, y1), (x2, y2), color, thickness)
@@ -688,11 +607,7 @@ class DrawTsr(object):
             position: (x, y, width, height),车辆框的位置，大小
             max_speed: float 
         """
-        x, y, width, height = position
-        x1 = int(x)
-        y1 = int(y)
-        width = int(width)
-        height = int(height)
+        x1, y1, width, height = list(map(int, position))
         x2 = x1 + width
         y2 = y1 + height
         origin_x = max(0, x2 - 40)
@@ -727,15 +642,8 @@ class DrawExtra(object):
         right_type = can_data.get('right_ldw')
         if not right_type in [0,1,2,3]:
             right_type = 0
-        print(can_data)
-        if lane_data.get('left_lamp'):
-            left_lamp = 3
-        else:
-            left_lamp = 1
-        if lane_data.get('right_lamp'):
-            right_lamp = 3
-        else:
-            right_lamp = 1
+        left_lamp = 3 if lane_data.get('left_lamp') else 1
+        right_lamp = 3 if lane_data.get('right_lamp') else 1
         BaseDraw.draw_line(img, (600, 20), (600, 100), color_dict[left_type], 5)
         BaseDraw.draw_line(img, (680, 20), (680, 100), color_dict[right_type], 5)
         BaseDraw.draw_line(img, (600, 110), (600, 140), color_dict[left_lamp], 5)

@@ -146,6 +146,7 @@ class PCView():
         
         # self.max_cache = len(msg_types)*20
         self.max_cache = config.cache_size
+        self.show_frameid = 0
 
         self.msg_queue = Queue()    #从nanomsg接收消息
         self.cam_queue = Queue()    #从nanomsg接收图像
@@ -158,6 +159,7 @@ class PCView():
         self.msg_cnt = {}
         self.pre = {}       #上一帧非空的数据
 
+        self.cache['cam'] = []  #初始化cache
         for msg_type in msg_types:
             self.cache[msg_type] = []
             self.pre[msg_type] = {}
@@ -241,6 +243,43 @@ class PCView():
             self.msg_cnt[msg_type]['rev'] += 1
         time.sleep(0.01)
 
+    def over_frameid(self): #判断是否接收到完整数据或者缓存超过指定大小
+        #
+        min_frameid_list = []
+        max_frameid_list = []
+        for key in self.cache:
+            min_frameid = self.cache[key][0][0] if self.cache[key] else sys.maxsize
+            min_frameid_list.append(min_frameid)
+            max_frameid = self.cache[key][-1][0] if self.cache[key] else 0
+            max_frameid_list.append(max_frameid)
+        if self.cache['cam']:
+            min_min = min(min_frameid_list)
+            min_max = min(max_frameid_list)
+            max_max = max(max_frameid_list)
+            #print(min_min, min_max, max_max, len(self.cache['cam']), self.cache['cam'][0][0])
+            if min_max >= self.cache['cam'][0][0] or max_max - min_min > self.max_cache:
+                return True
+        return False
+
+    def frame_async(self):  #同步图片及算法数据
+        while not self.cam_queue.empty():
+            ts, frame_id, image, msg_type = self.cam_queue.get()
+            if config.save.log:
+                temp = json.dumps({'cam': {
+                    'frame_id': frame_id,
+                    'recv_ts': ts
+                }})
+                self.file_queue.put(('log', temp))
+                self.cache['cam'].append((frame_id, image))
+        while not self.msg_queue.empty():
+            ts, frame_id, msg_data, msg_type = self.msg_queue.get()
+            msg_data['recv_ts'] = ts
+            if config.save.log:
+                temp = json.dumps({msg_type: msg_data})
+                self.file_queue.put(('log', temp))
+            logging.debug('queue id {}, type {}'.format(frame_id, msg_type))
+            self.cache[msg_type].append((frame_id, msg_data))
+
     def go(self): #往绘图数据队列填数据
         while True:
             self.res_queue.put(self.pop())
@@ -282,7 +321,6 @@ class PCView():
                                                                res[msg_type],
                                                                msg_type,
                                                                frame_id)
-
         logging.info('msg state {}'.format(self.msg_cnt))
 
     def pop(self): #生成绘图数据
@@ -330,6 +368,7 @@ class PCView():
                 img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
             res['img'] = img
         else:
+            '''
             while True: #等待接收图片
                 if not self.cam_queue.empty():
                     ts, frame_id, image, msg_type = self.cam_queue.get()
@@ -345,7 +384,14 @@ class PCView():
             logging.debug('show cam id {}'.format(frame_id))
             while not self.all_over(frame_id) and self.list_len() < self.max_cache: #等待接收算法数据
                 self.msg_async()
-
+            '''
+            while not self.over_frameid():
+                time.sleep(0.01)
+                self.frame_async()
+            frame_id, image = self.cache['cam'].pop(0)
+            res['img'] = image
+            #print('########', len(self.cache['cam']), len(self.cache['lane']), self.fps_cnt['value'])
+            
         res['frame_id'] = frame_id
 
         for key in self.cache:
