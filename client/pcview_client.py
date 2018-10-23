@@ -271,6 +271,7 @@ class PCView():
                 }})
                 self.file_queue.put(('log', temp))
                 self.cache['cam'].append((frame_id, image))
+        time.sleep(0.01)
         while not self.msg_queue.empty():
             ts, frame_id, msg_data, msg_type = self.msg_queue.get()
             msg_data['recv_ts'] = ts
@@ -386,7 +387,6 @@ class PCView():
                 self.msg_async()
             '''
             while not self.over_frameid():
-                time.sleep(0.01)
                 self.frame_async()
             frame_id, image = self.cache['cam'].pop(0)
             res['img'] = image
