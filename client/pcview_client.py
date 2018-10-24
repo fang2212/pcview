@@ -258,7 +258,7 @@ class PCView():
             min_max = min(max_frameid_list)
             max_max = max(max_frameid_list)
             #print(min_min, min_max, max_max, len(self.cache['cam']), self.cache['cam'][0][0])
-            if min_max >= self.cache['cam'][0][0] or max_max - min_min > self.max_cache:
+            if min_max >= self.cache['cam'][0][0] or max_max - min_min >= self.max_cache:
                 return True
         return False
 
@@ -325,7 +325,7 @@ class PCView():
                                                                frame_id)
         logging.info('msg state {}'.format(self.msg_cnt))
 
-    def pop(self): #生成绘图数据
+    def pop(self, loop_time=None): #生成绘图数据
         res = {
             'frame_id': None,
             'img': None,
@@ -387,14 +387,17 @@ class PCView():
             while not self.all_over(frame_id) and self.list_len() < self.max_cache: #等待接收算法数据
                 self.msg_async()
             '''
+            loop = 0
             while not self.over_frameid():
+                loop += 1
+                if loop_time and loop > loop_time:
+                    return None
                 self.frame_async()
             frame_id, image = self.cache['cam'].pop(0)
             res['img'] = image
-            #print('########', len(self.cache['cam']), len(self.cache['lane']), self.fps_cnt['value'])
             
         res['frame_id'] = frame_id
-
+        
         for key in self.cache:
             while self.cache[key] and self.cache[key][0][0]<=frame_id: #从cache取出当前帧的算法数据，并把落后的帧抛弃掉
                 if self.cache[key][0][0] == frame_id:
@@ -404,7 +407,7 @@ class PCView():
                     break
                 else:
                     self.cache[key].pop(0)
-    
+        print(res)
         self.msg_cnt['frame'] += 1
         
         if config.can.use:
