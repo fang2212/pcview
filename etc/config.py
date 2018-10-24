@@ -1,5 +1,8 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+import os 
+home_path = os.path.expanduser('~')
+media_path = home_path.replace('home', 'media')
 
 basic_cfg = {
     "ip": "192.168.0.233",
@@ -18,7 +21,7 @@ basic_cfg = {
     },
     "save": {
         "result_path": "",
-        "path": "/home/minieye/pcviewer-data/",
+        "path": home_path + "/pcviewer-data/",
         "video": True,
         "alert": False,  # 包括image和alert.log 主要用于演示平台
         "log": True
@@ -57,16 +60,16 @@ basic_cfg = {
 
 debug_cfg = {
     "save": {
-        "path": "/home/minieye/pcviewer-data/",
+        "path": home_path + "/pcviewer-data/",
         "video": True,
         "alert": False,   # 包括image和alert.log 主要用于演示平台
         "log": True
     },
     "pic": {
         "use_local": False,
-        "test_image": "/media/minieye/localdata1/TestImage",
+        "test_image": media_path + "/localdata1/TestImage",
         "raw_type": "color",
-        "path": "/media/minieye/localdata1/TestCase/STRESS01/image_list.txt"
+        "path": media_path + "/localdata1/TestCase/STRESS01/image_list.txt"
     },
     "msg_types": [
         "lane",
@@ -93,16 +96,16 @@ debug_cfg = {
 
 test_cfg = {
     "save": {
-        "path": "/home/minieye/pcviewer-data/",
+        "path": home_path + "/pcviewer-data/",
         "video": True,
         "alert": False,   # 包括image和alert.log 主要用于演示平台
         "log": True
     },
     "pic": {
         "use_local": False,
-        "test_image": "/media/minieye/localdata1/TestImage",
+        "test_image": media_path + "/localdata1/TestImage",
         "raw_type": "gray",
-        "path": "/media/minieye/localdata1/TestCase/STRESS01/image_list.txt"
+        "path": media_path + "/localdata1/TestCase/STRESS01/image_list.txt"
     },
     "msg_types": [
         "lane",
@@ -130,16 +133,16 @@ test_cfg = {
 show_cfg = {
     "debug": True,
     "save": {
-        "path": "/home/minieye/pcviewer-data/",
+        "path": home_path + "/pcviewer-data/",
         "video": True,
         "alert": False,   # 包括image和alert.log 主要用于演示平台
         "log": True
     },
     "pic": {
         "use_local": True,
-        "test_image": "/media/minieye/localdata1/TestImage",
+        "test_image": media_path + "/localdata1/TestImage",
         "raw_type": "gray",
-        "path": "/media/minieye/localdata1/TestCase/PCSHOW01/image_list.txt"
+        "path": media_path + "/localdata1/TestCase/PCSHOW01/image_list.txt"
     },
     "msg_types": [
         "lane",
@@ -167,7 +170,7 @@ show_cfg = {
 
 pro_cfg = {
     "save": {
-        "path": "/home/minieye/pcviewer-data/",
+        "path": home_path + "/pcviewer-data/",
         "video": True,
         "alert": False,   # 包括image和alert.log 主要用于演示平台
         "log": True

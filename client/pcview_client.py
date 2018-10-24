@@ -159,7 +159,8 @@ class PCView():
         self.msg_cnt = {}
         self.pre = {}       #上一帧非空的数据
 
-        self.cache['cam'] = []  #初始化cache
+        if not config.pic.use_local:
+            self.cache['cam'] = []  #初始化cache
         for msg_type in msg_types:
             self.cache[msg_type] = []
             self.pre[msg_type] = {}
