@@ -1,6 +1,7 @@
 
 import os
 import cv2
+import datetime
 import numpy as np
 
 from etc.config import config
@@ -125,7 +126,7 @@ class Player(object):
         
         if config.show.vehicle:
             DrawVehicle.draw(img, vehicle_data)
-        
+
         if config.show.lane:
             DrawLane.draw(img, lane_data)
 

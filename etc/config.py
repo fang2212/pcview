@@ -31,6 +31,7 @@ basic_cfg = {
         "vehicle"
     ],
     "show": {
+        "parameters": True, # True内部版本，全部显示， False客户版本,只显示frameid和时间
         "overlook": False,
         "lane": True,
         "lane_begin": 460,
