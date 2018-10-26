@@ -265,7 +265,7 @@ class DrawParameters(object):
     def init(self, img):
         if not config.show.parameters:
             bg_width = 180
-            bg_height = 100
+            bg_height = 80
         else:
             bg_height = 150
             if config.mobile.show:
@@ -301,15 +301,19 @@ class DrawParameters(object):
         fps = extra.get('fps')
         if not fps:
             fps = 0
-        para_list = ParaList('env')
+        t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         if config.show.parameters:
+            para_list = ParaList('env')
             para_list.insert('speed', int(speed))
             para_list.insert('light', light_mode)
             para_list.insert('fps', fps)
-        para_list.insert('fid', frame_id)
-        para_list.insert('', '')
-        t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        para_list.insert('', t)
+            para_list.insert('fid', frame_id)
+            para_list.insert('', '')
+            para_list.insert('', t)
+        else:
+            para_list = ParaList('')
+            para_list.insert('fid', frame_id)
+            para_list.insert('', t)
         self.draw_normal_parameters(img, para_list, (2, 0))
 
     @classmethod
