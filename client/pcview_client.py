@@ -262,10 +262,10 @@ class PCView():
         return False
 
     def frame_async(self):  #同步图片及算法数据
-        #q_size = self.cam_queue.qsize()
-        #while q_size:     #中途push到queue的数据等下一次循环再取，避免数据发送太快导致卡在这里
-            #q_size -= 1
-        while not self.cam_queue.empty():
+        q_size = self.cam_queue.qsize()
+        while q_size>0:     #中途push到queue的数据等下一次循环再取，避免数据发送太快导致卡在这里
+            q_size -= 1
+        #while not self.cam_queue.empty():
             ts, frame_id, image, msg_type = self.cam_queue.get()
             if config.save.log:
                 temp = json.dumps({'cam': {
@@ -275,10 +275,10 @@ class PCView():
                 self.file_queue.put(('log', temp))
                 self.cache['cam'].append((frame_id, image))
         time.sleep(0.01)    #延时放在中间，使这一次循环得到的算法帧尽量不要落后于图片
-        #q_size = self.msg_queue.qsize()
-        #while q_size:
-            #q_size -= 1
-        while not self.msg_queue.empty():
+        q_size = self.msg_queue.qsize()
+        while q_size>0:
+            q_size -= 1
+        #while not self.msg_queue.empty():
             ts, frame_id, msg_data, msg_type = self.msg_queue.get()
             msg_data['recv_ts'] = ts
             if config.save.log:
@@ -290,7 +290,6 @@ class PCView():
     def go(self): #往绘图数据队列填数据
         while True:
             self.res_queue.put(self.pop())
-            print(22222222222222222)
             time.sleep(0.01)
 
     def fix_frame(self, pre_, now_, msg_type, now_id):  #如果该帧数据为空，并且上一帧相隔不大，绘制上一帧的数据让图像连续
@@ -424,7 +423,6 @@ class PCView():
         logging.debug('end res ped{}'.format(res['ped']))
         logging.debug('end res tsr{}'.format(res['tsr']))
         self.update_extra(res)
-        print(111111111111111111111)
         return res         
 
 class ParaList(object):
@@ -448,7 +446,6 @@ class PCDraw(Process):
         self.file_queue = file_queue
 
     def run(self):
-        print('#########################', os.getpid())
         while True:
             while not self.mess_queue.empty():
                 mess = self.mess_queue.get()

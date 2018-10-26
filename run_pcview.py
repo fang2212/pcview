@@ -57,9 +57,8 @@ if __name__ == "__main__":
     config.save.path = os.path.expanduser('~/pcview_data/')
     if args.save_path:
         config.save.path = args.save_path
-    config.show_parameters = False
     if args.show_parameters:
-        config.show_parameters = int(args.show_parameters)
+        config.show.parameters = int(args.show_parameters)
 
     # config.show.lane_speed_limit = 0
     # config.pic.raw_type = 'color'

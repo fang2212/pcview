@@ -98,7 +98,8 @@ class ParaList(object):
         self.type = para_type
         self.para_list = []
     def insert(self, para, value):
-        self.para_list.append(str(para) + ': ' + str(value))
+        item = str(para) + ': ' + str(value) if para else str(value)
+        self.para_list.append(item)
     def output(self):
         return self.para_list
 
@@ -118,11 +119,10 @@ class Player(object):
         if config.show.overlook:
             DrawOverlook.init(img)
 
-        if config.show_parameters:
-            DrawParameters.init(img)
-            DrawParameters.draw_env(img, frame_id, vehicle_data,lane_data, extra)
-            if config.mobile.show:
-                DrawParameters.draw_mobile(img, mobile_log)
+        DrawParameters.init(img)
+        DrawParameters.draw_env(img, frame_id, vehicle_data,lane_data, extra)
+        if config.mobile.show:
+            DrawParameters.draw_mobile(img, mobile_log)
         
         if config.show.vehicle:
             DrawVehicle.draw(img, vehicle_data)
@@ -263,13 +263,18 @@ class DrawParameters(object):
     '''
     @classmethod
     def init(self, img):
-        if config.mobile.show:
-            bg_width = 120 * 6
-        elif len(config.msg_types) == 1: 
-            bg_width = 120 * len(config.msg_types) + 300
+        if not config.show.parameters:
+            bg_width = 180
+            bg_height = 100
         else:
-            bg_width = 120 * len(config.msg_types) + 50
-        BaseDraw.draw_alpha_rect(img, (0, 0, bg_width+20, 150), 0.4)
+            bg_height = 150
+            if config.mobile.show:
+                bg_width = 120 * 6
+            elif len(config.msg_types) == 1: 
+                bg_width = 120 * len(config.msg_types) + 300
+            else:
+                bg_width = 120 * len(config.msg_types) + 50
+        BaseDraw.draw_alpha_rect(img, (0, 0, bg_width+20, bg_height), 0.4)
 
     @classmethod
     def draw_normal_parameters(self, img, para_list, point):
@@ -297,10 +302,14 @@ class DrawParameters(object):
         if not fps:
             fps = 0
         para_list = ParaList('env')
-        para_list.insert('speed', int(speed))
-        para_list.insert('light', light_mode)
-        para_list.insert('fps', fps)
+        if config.show.parameters:
+            para_list.insert('speed', int(speed))
+            para_list.insert('light', light_mode)
+            para_list.insert('fps', fps)
         para_list.insert('fid', frame_id)
+        para_list.insert('', '')
+        t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        para_list.insert('', t)
         self.draw_normal_parameters(img, para_list, (2, 0))
 
     @classmethod
@@ -357,7 +366,7 @@ class DrawVehicle(object):
                 if ttc == '1000.00':
                     ttc = '-'
         
-        if config.show_parameters:
+        if config.show.parameters:
             para_list = ParaList('vehicle')
             #para_list.insert('ttc', ttc)
             para_list.insert('fcw', fcw)
@@ -461,7 +470,7 @@ class DrawLane(object):
             if rw_dis == '111.00':
                 rw_dis = '-'
 
-        if config.show_parameters:
+        if config.show.parameters:
             para_list = ParaList('lane')
             para_list.insert('lw_dis', lw_dis)
             para_list.insert('rw_dis', rw_dis)
@@ -527,7 +536,7 @@ class DrawPed(object):
                 self.draw_ped_rect(img, position, color, 2)
                 if position[0] > 0:
                     self.draw_ped_info(img, position, pedestrain['dist'])
-        if config.show_parameters:
+        if config.show.parameters:
             para_list = ParaList('ped')
             para_list.insert('pcw_on', pcw_on)
             #para_list.insert('ped_on', ped_on)
@@ -580,7 +589,7 @@ class DrawTsr(object):
                 if tsr['max_speed'] != 0:
                     self.draw_tsr_info(img, position, tsr['max_speed'])                
 
-        if config.show_parameters:
+        if config.show.parameters:
             para_list = ParaList('tsr')
             para_list.insert('speed_limit', speed_limit)
             DrawParameters.draw_normal_parameters(img, para_list, (305, 0))
