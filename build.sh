@@ -13,10 +13,12 @@ cp -r assets dist
 # 把client目录下的.py文件编译成.so文件，并复制到 dist/client/ 目录下
 cd client
 python3 setup.py build_ext --inplace
-cp *.so ../dist/client
+mv *.so ../dist/client
+rm *.c
 cd ..
 # 把etc目录下的.py文件编译成.so文件，并复制到 dist/etc/ 目录下
 cd etc
 python3 setup.py build_ext --inplace
-cp *.so ../dist/etc
+mv *.so ../dist/etc
+rm *.c
 cd ..

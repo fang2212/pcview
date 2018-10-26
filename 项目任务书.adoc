@@ -218,5 +218,6 @@ python3 run_pcview.py --func test --ip 192.168.0.233
 bash assets/close.sh
 
 . 视频编码选择
+* 采用的fourcc码为'XVID'，属于MPEG-4编码
 
 
