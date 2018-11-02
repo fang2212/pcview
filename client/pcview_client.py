@@ -61,15 +61,22 @@ class Sink(Process):
 
 
 if config.can.use:
-    from CANAlyst.can_server import TRunner
+    from easy_can.base import CanBase, liuqi_p
 class CanSink(Process):
     def __init__(self, can_queue):
         Process.__init__(self)
-        self.deamon = True
-        self.can_runner = TRunner('X1S', 500000, can_queue)
+        self.can0 = CanBase('can0')  
+        self.can_queue = can_queue  
+        #os.system('pkexec ip link set can0 up type can bitrate 500000')
+
 
     def run(self):
-        self.can_runner.run_test()
+        while True:
+            tmp = self.can0.recv(7200)
+            #print(tmp)
+            tmp = self.can0.parse(tmp, liuqi_p)
+            if tmp and tmp.get('can_id') in liuqi_p.keys():
+                self.can_queue.put(tmp)
 
 class CameraSink(Sink):
     '''
@@ -156,8 +163,14 @@ class PCView():
 
         self.sink = {}
         self.cache = {}    #算法数据缓存，不同算法数据从不同进程读取，通过cache同步
+        
         self.msg_cnt = {}
         self.pre = {}       #上一帧非空的数据
+
+        if config.can.use:
+            self.can_cache = {}
+            for can_id in liuqi_p.keys():
+                self.can_cache[can_id] = []
 
         if not config.pic.use_local:
             self.cache['cam'] = []  #初始化cache
@@ -273,7 +286,7 @@ class PCView():
                     'recv_ts': ts
                 }})
                 self.file_queue.put(('log', temp))
-                self.cache['cam'].append((frame_id, image))
+                self.cache['cam'].append((frame_id, image, ts))
         time.sleep(0.01)    #延时放在中间，使这一次循环得到的算法帧尽量不要落后于图片
         q_size = self.msg_queue.qsize()
         while q_size>0:
@@ -285,7 +298,7 @@ class PCView():
                 temp = json.dumps({msg_type: msg_data})
                 self.file_queue.put(('log', temp))
             logging.debug('queue id {}, type {}'.format(frame_id, msg_type))
-            self.cache[msg_type].append((frame_id, msg_data))
+            self.cache[msg_type].append((frame_id, msg_data, ts))
 
     def go(self): #往绘图数据队列填数据
         while True:
@@ -394,8 +407,9 @@ class PCView():
                 if loop_time and loop > loop_time:
                     return None
                 self.frame_async()
-            frame_id, image = self.cache['cam'].pop(0)
+            frame_id, image, ts = self.cache['cam'].pop(0)
             res['img'] = image
+            res['recv_ts'] = ts
             
         res['frame_id'] = frame_id
         
@@ -403,6 +417,7 @@ class PCView():
             while self.cache[key] and self.cache[key][0][0]<=frame_id: #从cache取出当前帧的算法数据，并把落后的帧抛弃掉
                 if self.cache[key][0][0] == frame_id:
                     res[key] = self.cache[key][0][1]
+                    res['recv_ts'] = min(res['recv_ts'], self.cache[key][0][2]) #时间戳取最早的
                     self.msg_cnt[key]['show'] += 1
                     self.cache[key].pop(0)
                     break
@@ -411,19 +426,36 @@ class PCView():
         self.msg_cnt['frame'] += 1
         
         if config.can.use:
-            inc = 100
-            while not self.can_queue.empty() and inc:   #读取can数据，取最后一个，最多取第100个
-                data = self.can_queue.get()
-                if config.save.log:
-                    temp = json.dumps({'can': data})
-                    self.file_queue.put(('log', temp))
-                res['can'] = data
-                inc -= 1
+            qsize = self.can_queue.qsize()
+            while qsize > 0:
+                qsize -= 1
+                frdata = self.can_queue.get()
+                can_id = frdata['can_id']
+                if can_id in liuqi_p.keys():
+                    self.can_cache[can_id].append(frdata)
+                    if len(self.can_cache[can_id]) > 100:
+                        self.can_cache[can_id].pop(0)
+
+            res_can = {}
+            for can_id in liuqi_p.keys():
+                frdata = self.find_closest_can(self.can_cache[can_id], res['recv_ts']-20) #时间戳往前推20ms
+                if frdata:
+                    res_can.update(frdata['info'])
+            res['can'] = res_can
 
         logging.debug('end res ped{}'.format(res['ped']))
         logging.debug('end res tsr{}'.format(res['tsr']))
         self.update_extra(res)
-        return res         
+        return res   
+
+    def find_closest_can(self, frdata_list, timestamp):
+        ptr = len(frdata_list)
+        while ptr > 0:
+            ptr -= 1
+            if frdata_list[ptr]['recv_ts'] < timestamp:
+                return frdata_list[ptr]
+        return None
+        
 
 class ParaList(object):
     def __init__(self, para_type):

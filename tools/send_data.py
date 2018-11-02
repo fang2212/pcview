@@ -6,8 +6,8 @@ import msgpack
 #img_dir_path = "/media/minieye/data2/origin/"
 #log_file_path = "/media/minieye/data2/log.json"
 
-img_dir_path = "/media/zzp/tempdisk1/pcshow0824/origin/"
-log_file_path = "/media/zzp/tempdisk1/pcshow0824/log.json"
+img_dir_path = "/media/zzp/tempdisk1/pcshow/pcshow0824/origin/"
+log_file_path = "/media/zzp/tempdisk1/pcshow/pcshow0824/log.json"
 
 if __name__ == "__main__":
     host = "tcp://127.0.0.1"

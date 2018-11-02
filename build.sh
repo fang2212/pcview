@@ -5,6 +5,7 @@ mkdir dist/
 ./clear.sh
 rm -r dist/*
 mkdir -p dist/client
+mkdir -p dist/easy_can
 mkdir -p dist/etc
 # 把 run_pcview.py CANAlyst/ assets/ 复制到dist目录下
 cp run_pcview.py dist/
@@ -20,5 +21,11 @@ cd ..
 cd etc
 python3 setup.py build_ext --inplace
 mv *.so ../dist/etc
+rm *.c
+cd ..
+
+cd easy_can
+python3 setup.py build_ext --inplace
+mv *.so ../dist/easy_can
 rm *.c
 cd ..

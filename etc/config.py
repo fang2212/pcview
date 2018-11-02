@@ -55,7 +55,7 @@ basic_cfg = {
         "mobile_path": ""
     },
     "can": {
-        "use": False
+        "use": True
     }
 }
 
@@ -91,7 +91,7 @@ debug_cfg = {
         "tsr": 2
     },
     "can": {
-        "use": True
+        "use": False
     }
 }
 

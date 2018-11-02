@@ -90,3 +90,7 @@ parser.add_argument("--save_path", help="保存目录", type=str)
 
 * 升级
 pcview工作目录放在electron app同级目录下,升级时将老的pcview包重命名备份，新的zip安装包解压后替代
+
+== todo
+* 集成测试用例
+** 检查丢帧
