@@ -680,17 +680,14 @@ class DrawAlarm(object):
         ttc = "%.1f"%mess['vehicle'].get('ttc', 0) #if hwm > 0 else '--'
         sg = mess['vehicle'].get('stop_and_go_warning', 0)
         ldw = mess['lane'].get('deviate_state', 0)
-        lldw = int(ldw==1)
-        rldw = int(ldw==2)
-        hwm = int(hwm>1)
 
         alarms = [
-            ["FCW", 1, (0, 25), fcw],
-            ["HWM:"+ttc, 1, (0, 25), hwm],
-            ["UFCW", 1, (0, 25), ufcw],
-            ["SG", 1, (0, 25), sg],
-            ["|", 1, (0, 55), lldw],
-            ["|", 1, (50, 0), rldw],
+            ["FCW", 1, (0, 25), int(fcw>0)],
+            ["HWM:"+ttc, 1, (0, 25), int(hwm>1)],
+            ["UFCW", 1, (0, 25), int(ufcw>0)],
+            ["SG", 1, (0, 25), int(sg>0)],
+            ["|", 1, (0, 55), int(ldw==1)],
+            ["|", 1, (50, 0), int(ldw==2)],
         ]
 
         basex, basey, width, height = (580, 0, 150, 200)
@@ -726,27 +723,22 @@ class DrawAlarmCan(object):
         ttc, = dict2list(info, ['ttc'], float, 0)
         ldw_on, lld, rld, lldw, rldw = dict2list(info, ['ldw_on', 'lld', 'rld', 'lldw', 'rldw'], int, 0)
         tsr, = dict2list(info, ['overspeed'], int, 0)
-        alert, = dict2list(info, ['alert'], int, 0)
+        aw, = dict2list(info, ['alert'], int, 0)
 
         ttc = "%2.1f"%ttc #if hw > 0 else "--"
-        #hw = int(hw>1)
-        #tsrw = int(tsr>0)
-        #tsr = "%2d"%tsr #if tsr > 0 else "--"
-        aw = int(alert>0)
-        #alert = "%2d"%alert #if alert > 0 else "--"
-        alert = ["--", "lldw", "rldw", "hw", "tsr", "fcw", "pcw"][alert]
+        alert = ["--", "lldw", "rldw", "hw", "tsr", "fcw", "pcw"][aw]
         lldw = 2 if lld==0 else lldw
         rldw = 2 if rld==0 else rldw
 
         alarms = [
-            ["FCW:"+str(fcw), 1, (0, 25), fcw],
+            ["FCW:"+str(fcw), 1, (0, 25), int(fcw>0)],
             ["HWM:"+str(hw)+"  ttc:"+ttc+"  on:"+str(hw_on), 1, (0, 25), int(hw>1)],
-            ["PCW:"+str(pcw_on)+"  ped:"+str(ped_on), 1, (0, 25), ped_on],
+            ["PCW:"+str(pcw_on)+"  ped:"+str(ped_on), 1, (0, 25), int(pcw_on>0)],
             ["TSR: "+str(tsr), 1, (0, 25), int(tsr>0)],
-            ["AW :"+alert, 1, (0, 25), aw],
+            ["AW :"+alert, 1, (0, 25), int(aw>0)],
             ["|", 1, (0, 30), lldw],
             ["|", 1, (50, 0), rldw],
-            ["on:"+str(ldw_on), 1, (50, 0), ldw_on],
+            ["on:"+str(ldw_on), 1, (50, 0), int(ldw_on>0)],
         ]
         
         basex, basey, width, height = (750, 0, 300, 200)

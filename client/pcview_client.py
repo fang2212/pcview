@@ -286,7 +286,7 @@ class PCView():
                     'recv_ts': ts
                 }})
                 self.file_queue.put(('log', temp))
-                self.cache['cam'].append((frame_id, image, ts))
+            self.cache['cam'].append((frame_id, image, ts))
         time.sleep(0.01)    #延时放在中间，使这一次循环得到的算法帧尽量不要落后于图片
         q_size = self.msg_queue.qsize()
         while q_size>0:
