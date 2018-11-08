@@ -65,18 +65,17 @@ if config.can.use:
 class CanSink(Process):
     def __init__(self, can_queue):
         Process.__init__(self)
-        self.can0 = CanBase('can0')  
+        self.can0 = CanBase()  
         self.can_queue = can_queue  
-        #os.system('pkexec ip link set can0 up type can bitrate 500000')
-
 
     def run(self):
         while True:
-            tmp = self.can0.recv(7200)
-            #print(tmp)
-            tmp = self.can0.parse(tmp, liuqi_p)
-            if tmp and tmp.get('can_id') in liuqi_p.keys():
-                self.can_queue.put(tmp)
+            for tmp in self.can0.recv():
+                #print(tmp)
+                tmp = self.can0.parse(tmp, liuqi_p)
+                if tmp and tmp.get('can_id') in liuqi_p.keys():
+                    self.can_queue.put(tmp)
+            time.sleep(0.01) #serialcan 接收不会暂停，主动休眠 10ms
 
 class CameraSink(Sink):
     '''

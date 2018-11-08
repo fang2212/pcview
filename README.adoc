@@ -91,6 +91,13 @@ parser.add_argument("--save_path", help="保存目录", type=str)
 * 升级
 pcview工作目录放在electron app同级目录下,升级时将老的pcview包重命名备份，新的zip安装包解压后替代
 
+== changlog
+* release1109
+**
+
 == todo
-* 集成测试用例
-** 检查丢帧
+* 修改串口访问权限
+[source, hash]
+sudo cat>/etc/udev/rules.d/70-ttyusb.rules<<EOF
+KERNEL=="ttyUSB[0-9]*", MODE="0666"
+EOF
