@@ -113,6 +113,8 @@ class Player(object):
         ped_data = mess['ped']
         tsr_data = mess['tsr']
         can_data = mess.get('can')
+        cali_data = mess.get('cali')
+        print('cali', cali_data)
         extra = mess['extra']
         mobile_log = extra.get('mobile_log')
 
@@ -135,6 +137,9 @@ class Player(object):
 
         if config.show.tsr:
             DrawTsr.draw(img, tsr_data)
+
+        if config.show.cali:
+            DrawParameters.draw_cali(img, cali_data)
 
         if config.can.use and can_data:
             pass
@@ -339,7 +344,24 @@ class DrawParameters(object):
             para_list.insert('vb', mobile_vb)
             para_list.insert('ldw', mobile_ldw)
             para_list.insert('pcw', mobile_pcw)
-            DrawParameters.draw_normal_parameters(img, para_list, (300, 0))
+            self.draw_normal_parameters(img, para_list, (300, 0))
+
+    @classmethod
+    def draw_cali(self, img, cali_data):
+        if cali_data:
+            para_list = ParaList('cali')
+            para_list.insert('pitch', '%.2f'%cali_data["pitch"])
+            para_list.insert('yaw', '%.2f'%cali_data["yaw"])
+            para_list.insert('vp_x', '%.2f'%cali_data["vp_x"])
+            para_list.insert('vp_y', '%.2f'%cali_data["vp_y"])
+            para_list.insert('lane_pitch', '%.2f'%cali_data["lane_pitch"])
+            para_list.insert('lane_yaw', '%.2f'%cali_data["lane_yaw"])
+            vp_x = int(cali_data["vp_x"])
+            vp_y = int(cali_data["vp_y"])
+            BaseDraw.draw_line(img, (vp_x, vp_y-15), (vp_x, vp_y+15), CVColor.Green, 2)
+            BaseDraw.draw_line(img, (vp_x-15, vp_y), (vp_x+15, vp_y), CVColor.Green, 2)
+            self.draw_normal_parameters(img, para_list, (220, 0))
+
 
 class DrawVehicle(object):
     # vehicle

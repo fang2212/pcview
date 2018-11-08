@@ -93,7 +93,10 @@ pcview工作目录放在electron app同级目录下,升级时将老的pcview包�
 
 == changlog
 * release1109
-**
+** 改用串口can
+** 整合x1s、x1b的内容
+** 规范数据协议、配置参数
+
 
 == todo
 * 修改串口访问权限

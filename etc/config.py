@@ -42,13 +42,15 @@ basic_cfg = {
         "vehicle": True,
         "ped": False,
         "tsr": False,
+        "cali": False,
         "color": "color"
     },
     "fix": {
         "lane": 4,
         "vehicle": 4,
         "ped": 2,
-        "tsr": 2
+        "tsr": 2,
+        "cali": 0
     },
     "testview": {
         "on": False,
@@ -74,6 +76,7 @@ debug_cfg = {
     },
     "msg_types": [
         "lane",
+        "cali",
     ],
     "show": {
         "lane": True,
@@ -82,6 +85,7 @@ debug_cfg = {
         "vehicle": False,
         "ped": False,
         "tsr": False,
+        "cali": True,
         "color": "color"
     },
     "fix": {

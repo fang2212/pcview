@@ -23,6 +23,8 @@ if __name__ == "__main__":
     send_tsr.bind(host + ":1206")
     send_pic = Socket(PUB)
     send_pic.bind(host + ":1200")
+    send_cali = Socket(PUB)
+    send_cali.bind(host + ":1209")
 
     #log 与 frame_id
     log_file = open(log_file_path)
@@ -45,6 +47,8 @@ if __name__ == "__main__":
                 send_ped.send(msgpack.packb(data[key]))
             if key == 'tsr':
                 send_tsr.send(msgpack.packb(data[key]))
+            if key == 'cali':
+                send_cali.send(msgpack.packb(data[key]))
             
             # 判断frame
             if 'frame_id' in data[key]:

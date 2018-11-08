@@ -133,6 +133,11 @@ def fpga_handle(msg_types, msg_queue, ip):
     if 'tsr' in msg_types:
         sink['tsr'] = AlgorithmSink(queue=msg_queue, ip=ip, port=1206, msg_type='tsr')
         sink['tsr'].start()
+
+    if 'cali' in msg_types:
+        sink['cali'] = AlgorithmSink(queue=msg_queue, ip=ip, port=1209, msg_type='cali')
+        sink['cali'].start()
+
     return sink
 
 
@@ -350,6 +355,7 @@ class PCView():
             'lane': {},
             'ped': {},
             'tsr':{},
+            'cali':{},
             'can': {},
             'extra': {}
         }
