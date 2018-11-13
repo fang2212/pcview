@@ -24,7 +24,8 @@ basic_cfg = {
         "path": home_path + "/pcviewer-data/",
         "video": True,
         "alert": False,  # 包括image和alert.log 主要用于演示平台
-        "log": True
+        "log": True,
+        "can": False,
     },
     "msg_types": [
         "lane",

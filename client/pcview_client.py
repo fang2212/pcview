@@ -215,7 +215,7 @@ class PCView():
 
         if config.can.use:
             try:
-                self.can_sink = CanSink(self.can_queue) #接收can数据进程
+                self.can_sink = CanSink(self.can_queue, self.file_queue) #接收can数据进程
                 self.can_sink.start()
             except Exception as E:
                 print(E)
@@ -446,6 +446,9 @@ class PCView():
                 frdata = self.find_closest_can(self.can_cache[can_id], res['recv_ts']-20) #时间戳往前推20ms
                 if frdata:
                     res_can.update(frdata['info'])
+                    if config.save.can:
+                        temp = json.dumps(frdata)
+                        self.file_queue.put('can', temp)
             res['can'] = res_can
 
         logging.debug('end res ped{}'.format(res['ped']))

@@ -32,6 +32,9 @@ class FileHandler(Process):
         if config.save.log:
             self.log_fp = open(os.path.join(self.path, 'log.json'), 'w+')
 
+        if config.save.can:
+            self.can_fp = open(os.path.join(self.path, 'can.json'), 'w+')
+
         if config.save.alert:
             self.alert_fp = open(os.path.join(self.path, 'alert.json'), 'w+')
             self.image_path = os.path.join(self.path, 'image')
@@ -68,6 +71,10 @@ class FileHandler(Process):
                         cv2.imwrite(os.path.join(self.image_path, str(image_index) +
                             '.jpg'), data)
                 '''
+                if file_type == 'can':
+                    self.can_fp.write(file_data + '\n')
+                    if cnt % 100 == 0:
+                        self.can_fp.flush()
                 
                 if file_type == 'video':
                     frame_id, data = file_data 
