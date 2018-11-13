@@ -696,11 +696,19 @@ class DrawAlarm(object):
     '''
     @classmethod
     def draw(self, img, mess):
-        fcw = mess['vehicle'].get('forward_collision_warning', 0)
-        ufcw = mess['vehicle'].get('bumper_warning', 0)
-        hwm = mess['vehicle'].get('headway_warning', 0)
-        ttc = "%.1f"%mess['vehicle'].get('ttc', 0) #if hwm > 0 else '--'
-        sg = mess['vehicle'].get('stop_and_go_warning', 0)
+        focus_index = mess['vehicle'].get('focus_index', -1)
+        if focus_index == -1:
+            fcw = 0
+            ufcw = 0
+            hwm = 0
+            ttc  = '--'
+            sg = 0
+        else:
+            fcw = mess['vehicle'].get('forward_collision_warning', 0)
+            ufcw = mess['vehicle'].get('bumper_warning', 0)
+            hwm = mess['vehicle'].get('headway_warning', 0)
+            ttc = "%.1f"%mess['vehicle'].get('ttc', 0) #if hwm > 0 else '--'
+            sg = mess['vehicle'].get('stop_and_go_warning', 0)
         ldw = mess['lane'].get('deviate_state', 0)
 
         alarms = [
