@@ -4,21 +4,33 @@ import serial.tools.list_ports
 class SerialCan():
     MaxDataLen = 32
 
-    def __init__(self, port = None, baudrate = 460800, **kws):
+    def __init__(self, port = None, bitrate=250000, baudrate = 460800, **kws):
         '''
         :param: port: usb串口设备名, 默认选第一个设备
-        :param: baudrate: usb波特率，不是can的，can波特率固定为 500k
+        :param: bitrate: can波特率
+        :param: baudrate: 串口波特率
         '''
-        if not port:
+        if port:
+            ports = [port]
+        else:
             ports = self.listPort()
             print('valiable port: ', ports)
-            if not ports:
-                raise Exception("not serial-can device found")
-            port = ports[0]
-        kws.update(dict(port=port, baudrate=baudrate))
-        self.usbSerial = serial.Serial(**kws)
+        #尝试找到可用的usb串口设备
+        self.usbSerial = None
+        for port in ports:
+            try:
+                kws.update(dict(port=port, baudrate=baudrate))
+                self.usbSerial = serial.Serial(**kws)
+            except Exception as e:
+                self.usbSerial = None
+            else:
+                break
+        if not self.usbSerial:
+            raise Exception("not serial-can device found")
         if not self.usbSerial.isOpen():
             self.usbSerial.open()
+        if not self.setBitrate(bitrate):
+            raise Exception("set bitrate failed")
 
     def __del__(self):
         try:
@@ -26,12 +38,35 @@ class SerialCan():
         except Exception:
             pass
 
+    def setBitrate(self, bitrate):
+        #设置can波特率
+        def sendBitrate(bitrate):
+            cmd = self.int2bytes(0x12)
+            bitrate = self.int2bytes(bitrate // 5000, 1)
+            data = self.int2bytes(0x01) + bitrate
+            self.write(cmd, data)
+            time.sleep(0.1)
+
+        sendBitrate(bitrate)
+        for i in range(10):
+            print(i)
+            for cmd, data in self.read():
+                print(cmd, data)
+                if cmd == self.int2bytes(0x92):
+                    if data[0] == 00:
+                        return True
+                    else:
+                        return False
+            sendBitrate(bitrate)
+        return False
+
+
     def run(self):
         while True:
             for frameid, data in self.recv():
                 print(frameid, data)
 
-    def send(self, frameid, data, fixLen=None):
+    def send(self, frameid, data, fixLen=8):
         '''
         发送数据到can, 
         :param: frameid: 为int型 或 bytes
@@ -51,7 +86,7 @@ class SerialCan():
     def recv(self):
         '''
         生成器， 接收can数据
-        :return: frameid(str), data(bytes)
+        :return: frameid(hex-str), data(list)
         '''
         for cmd, msg in self.read():
             if cmd == self.int2bytes(0xB1):
@@ -93,8 +128,8 @@ class SerialCan():
                 #print(hex(self.bytes2int(buff)))
                 frames = self.parseBuf(buff)
                 #print(frames)
-                for frame in frames:
-                    yield frame
+                for cmd, data in frames:
+                    yield cmd, data
         except:
             print("Oops!  串口读取错误。")        
 

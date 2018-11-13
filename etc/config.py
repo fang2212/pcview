@@ -25,7 +25,7 @@ basic_cfg = {
         "video": True,
         "alert": False,  # 包括image和alert.log 主要用于演示平台
         "log": True,
-        "can": False,
+        "can": True,
     },
     "msg_types": [
         "lane",

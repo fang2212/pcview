@@ -20,7 +20,7 @@ from etc.config import config
 
 from .file_handler import FileHandler
 pack = os.path.join
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.INFO, stream=sys.stdout,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')  # logging.basicConfig函数对日志的输出格式及方式做相关配置
 
 def convert(data):
@@ -65,17 +65,15 @@ if config.can.use:
 class CanSink(Process):
     def __init__(self, can_queue):
         Process.__init__(self)
-        self.can0 = CanBase()  
+        self.can0 = CanBase(bitrate=250000)  
         self.can_queue = can_queue  
 
     def run(self):
         while True:
-            for tmp in self.can0.recv():
-                #print(tmp)
-                tmp = self.can0.parse(tmp, liuqi_p)
-                if tmp and tmp.get('can_id') in liuqi_p.keys():
-                    self.can_queue.put(tmp)
-            time.sleep(0.01) #serialcan 接收不会暂停，主动休眠 10ms
+            tmp = self.can0.recv()
+            tmp = self.can0.parse(tmp, liuqi_p)
+            if tmp and tmp.get('can_id') in liuqi_p.keys():
+                self.can_queue.put(tmp)
 
 class CameraSink(Sink):
     '''
@@ -215,7 +213,7 @@ class PCView():
 
         if config.can.use:
             try:
-                self.can_sink = CanSink(self.can_queue, self.file_queue) #接收can数据进程
+                self.can_sink = CanSink(self.can_queue) #接收can数据进程
                 self.can_sink.start()
             except Exception as E:
                 print(E)
@@ -448,7 +446,7 @@ class PCView():
                     res_can.update(frdata['info'])
                     if config.save.can:
                         temp = json.dumps(frdata)
-                        self.file_queue.put('can', temp)
+                        self.file_queue.put(('can', temp))
             res['can'] = res_can
 
         logging.debug('end res ped{}'.format(res['ped']))
@@ -493,6 +491,8 @@ class PCDraw(Process):
                 if config.save.video:
                     frame_id = mess['frame_id']
                     self.file_queue.put(('video', (frame_id, img)))
+
                 cv2.imshow('UI', img)
                 cv2.waitKey(1)
             time.sleep(0.01)
+        cv2.destroyAllWindows()

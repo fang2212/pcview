@@ -109,3 +109,4 @@ KERNEL=="ttyUSB[0-9]*", MODE="0666"
 EOF
 * 保留socket-can，根据设备选择驱动，没有can设备返回
 * 长时间运行死机问题
+* cv2.imshow一大堆错误信息的bug
