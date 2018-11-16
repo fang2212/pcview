@@ -63,9 +63,9 @@ class Sink(Process):
 if config.can.use:
     from easy_can.base import CanBase, liuqi_p
 class CanSink(Process):
-    def __init__(self, can_queue):
+    def __init__(self, can_queue, bitrate):
         Process.__init__(self)
-        self.can0 = CanBase(bitrate=250000)  
+        self.can0 = CanBase(bitrate=bitrate)  
         self.can_queue = can_queue  
 
     def run(self):
@@ -113,31 +113,6 @@ class AlgorithmSink(Sink):
         res = convert(data)
         frame_id = res['frame_id']
         return frame_id, res
-
-def fpga_handle(msg_types, msg_queue, ip):
-    sink = {}
-    if 'lane' in msg_types:
-        sink['lane'] = AlgorithmSink(queue=msg_queue, ip=ip, port=1203, msg_type='lane')
-        sink['lane'].start()
-
-    if 'vehicle' in msg_types:
-        sink['vehicle'] = AlgorithmSink(queue=msg_queue, ip=ip, port=1204, msg_type='vehicle')
-        sink['vehicle'].start()
-        
-    if 'ped' in msg_types:
-        sink['ped'] = AlgorithmSink(queue=msg_queue, ip=ip, port=1205, msg_type='ped')
-        sink['ped'].start()
-        
-    if 'tsr' in msg_types:
-        sink['tsr'] = AlgorithmSink(queue=msg_queue, ip=ip, port=1206, msg_type='tsr')
-        sink['tsr'].start()
-
-    if 'cali' in msg_types:
-        sink['cali'] = AlgorithmSink(queue=msg_queue, ip=ip, port=1209, msg_type='cali')
-        sink['cali'].start()
-
-    return sink
-
 
 class PCView():
     
@@ -191,12 +166,14 @@ class PCView():
         }
 
         if not config.pic.use_local:
-            self.camera_sink = CameraSink(queue=self.cam_queue, ip=config.ip, port=1200, msg_type='camera') #从nanomsg接收图像
+            self.camera_sink = CameraSink(queue=self.cam_queue, ip=config.ip, port=config.sink.camera, msg_type='camera') #从nanomsg接收图像
             self.camera_sink.start()
-
         
-        if config.platform == 'fpga':
-            self.sink = fpga_handle(msg_types, self.msg_queue, config.ip) #启动接收nanomsg进程
+        if config.platform == 'fpga':       #启动接收算法结果进程
+            for msg_type in msg_types:
+                port = config.sink[msg_type]
+                self.sink['lane'] = AlgorithmSink(queue=self.msg_queue, ip=config.ip, port=port, msg_type=msg_type)
+                self.sink['lane'].start()
 
         self.mobile_content = None
         if config.mobile.show:  #显示mobile数据
@@ -212,7 +189,7 @@ class PCView():
 
         if config.can.use:
             try:
-                self.can_sink = CanSink(self.can_queue) #接收can数据进程
+                self.can_sink = CanSink(self.can_queue, config.can.bitrate) #接收can数据进程
                 self.can_sink.start()
             except Exception as E:
                 print(E)

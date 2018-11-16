@@ -16,8 +16,8 @@ cfg_dict = {
             "path": "",         #图片列表
         },  
         "can": {            #can配置    
-            "use": True,        #启用can
-            "bitrate": 500000,  #波特率 500000 or 250000
+            "use": False,        #启用can
+            "bitrate": 250000,  #波特率 500000 or 250000
         },
         "mobile": {         #mobile
             "show": False,      #显示mobile 数据
@@ -58,6 +58,14 @@ cfg_dict = {
             "tsr": 2,
             "cali": 0
         },
+        "sink":{            #socket接收数据端口
+            "camera": 1200,
+            "lane": 1203,
+            "vehicle": 1204,
+            "ped": 1205,
+            "tsr": 1206,
+            "cali": 1209,
+        }
     },
     "debug":{
         "inhert": "fpga",
