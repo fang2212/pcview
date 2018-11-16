@@ -35,12 +35,6 @@ class FileHandler(Process):
         if config.save.can:
             self.can_fp = open(os.path.join(self.path, 'can.json'), 'w+')
 
-        if config.save.alert:
-            self.alert_fp = open(os.path.join(self.path, 'alert.json'), 'w+')
-            self.image_path = os.path.join(self.path, 'image')
-            if not os.path.exists(self.image_path):
-                os.makedirs(self.image_path)
-
         if config.save.video:
             self.video_writer = None
             self.video_log = None
@@ -59,18 +53,6 @@ class FileHandler(Process):
                     if cnt % 100 == 0:
                         self.log_fp.flush()
 
-                '''
-                if file_type == 'alert':
-                    while not self.alert_queue.empty():
-                        frame_id, data = self.alert_queue.get()
-                        self.alert_fp.write(json.dumps(data) + '\n')
-                        self.alert_fp.flush()
-    
-                    while not self.image_queue.empty():
-                        image_index, data = self.image_queue.get() 
-                        cv2.imwrite(os.path.join(self.image_path, str(image_index) +
-                            '.jpg'), data)
-                '''
                 if file_type == 'can':
                     self.can_fp.write(file_data + '\n')
                     if cnt % 100 == 0:

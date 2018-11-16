@@ -36,7 +36,6 @@ from etc.config import config
 from client.pcview_client import PCView
 
 if __name__ == "__main__":
-    config.pic.raw_type = 'color'
     if args.raw_type and args.raw_type == 'gray':
         config.pic.raw_type = args.raw_type
     if args.ip:
@@ -46,13 +45,13 @@ if __name__ == "__main__":
     if args.log:
         config.save.log = int(args.log)
     if args.all_laneline:
-        config.show.all_laneline = int(args.all_laneline)
+        config.lane.all_laneline = int(args.all_laneline)
     if args.lane_speed_limit:
-        config.show.lane_speed_limit = int(args.lane_speed_limit)
+        config.lane.lane_speed_limit = int(args.lane_speed_limit)
     if args.lane_begin:
-        config.show.lane_begin = int(args.lane_begin)
+        config.lane.lane_begin = int(args.lane_begin)
     if args.lane_end:
-        config.show.lane_end = int(args.lane_end)
+        config.lane.lane_end = int(args.lane_end)
     if args.result_path:
         config.save.result_path = args.result_path
     config.save.path = os.path.expanduser('~/pcview_data/')
@@ -63,7 +62,7 @@ if __name__ == "__main__":
     if args.use_can:
         config.can.use = int(args.use_can)
 
-    # config.show.lane_speed_limit = 0
+    # config.lane.lane_speed_limit = 0
     # config.pic.raw_type = 'color'
     # config.ip = '192.168.1.233'
     # config.pic.use = False

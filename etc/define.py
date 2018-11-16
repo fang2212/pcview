@@ -1,4 +1,4 @@
 #!/usr/bin/env python3
 #-*- coding:utf-8 -*-
 
-logodir = 'assets/logo'
+logodir = 'assets/src/logo'

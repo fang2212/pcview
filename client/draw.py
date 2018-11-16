@@ -145,7 +145,7 @@ class Player(object):
             pass
             #DrawExtra.draw_byd_can(img, can_data, lane_data)
 
-        if config.debug:
+        if config.show.debug:
             DrawExtra.draw_extra(img, extra)
 
         DrawAlarm.draw(img, mess)
@@ -473,13 +473,13 @@ class DrawLane(object):
             speed = lane_data['speed']
             deviate_state = lane_data['deviate_state']
             for lane in lane_data['lanelines']:
-                if ((int(lane['label']) in [1, 2]) or config.show.all_laneline) and speed >= config.show.lane_speed_limit:
+                if ((int(lane['label']) in [1, 2]) or config.lane.all_laneline) and speed >= config.lane.lane_speed_limit:
                     width = lane['width']
                     l_type = lane['type']
                     conf = lane['confidence']
                     index = lane['label']
-                    begin = int(lane['end'][1]) if config.show.lane_begin == -1 else config.show.lane_begin
-                    end = int(lane['start'][1]) if config.show.lane_end == -1 else config.show.lane_end
+                    begin = int(lane['end'][1]) if config.lane.lane_begin == -1 else config.lane.lane_begin
+                    end = int(lane['start'][1]) if config.lane.lane_end == -1 else config.lane.lane_end
                     color = CVColor.Red if int(index) == int(deviate_state) else CVColor.Blue
 
                     perspective_view_fitpts = lane.get('perspective_view_fitpts')
