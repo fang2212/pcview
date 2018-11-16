@@ -1,0 +1,37 @@
+
+=== 告警字段对照
+
+[]
+|==================
+| 未识别车辆    | 只显示中间圆点       | len(vehicle.dets) = 0
+| 驻车状态      | 中间显示两条横杆      | vehicle.speed < 1
+| 有目标车辆     | 白色车辆图标         | vehicle.focus_index != -1
+| fcw      | 红色车辆图标、闪烁        | vehicle.forward_collision_warning = 1
+| hmw      | 车辆图标,ttc数字        | vehicle.headway_warning = 1（白色） >=2（红色）
+| ufcw         | 红色车辆图标、闪烁    |  vehicle.bumper_warning = 1
+| stop&go   | 白色车辆图标、闪烁      | vehicle.stop_and_go_warning = 1
+| ldw          | 车道线图标           | lane.deviate_state = 1（左车道线）2（右车道线）
+|==================
+
+=== can解析
+[]
+|==================
+| | 帧id 字节 位 | 对应字段
+| 右侧车道线检测        | 18FE5BE8 1 3-4    | 
+| 左侧车道线检测        | 18FE5BE8 1 5-6    | 
+| 车道偏离指示启用状态   | 18FE5BE8 1 7      | 
+| 蜂鸣报警类别          | 18FE5BE8 2 1-3    | 
+| 跟车距离报警等级      | 18FE5BE8 2 6-7    | vehicle.headway_warning
+| 行人碰撞报警          | 18FE5BE8 3 1      | ped.pcw_on
+| 行人进入危险区域检测   | 18FE5BE8 3 2      | ped.ped_on
+| 跟车距离显示状态      | 18FE5BE8 4 1       | 
+| 跟车距离检测          | 18FE5BE8 4 2-8    | vehicle.ttc
+| 超速报警             | 18FE5BE8 6 5-7     | tsr.tsr_warning_level 
+
+| 右变道报警            | 10F007E8 1 5      | lane.deviate_state = 2
+| 左变道报警            | 10F007E8 1 7      | lane.deviate_state = 1
+| 前防撞报警            | 10F007E8 2 1      | vehicle.forward_collision_warning
+|==================
+
+
+

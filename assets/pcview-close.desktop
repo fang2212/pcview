@@ -1,9 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Name=CLOSE
-Exec=sh /home/minieye/env/dist/assets/close.sh
-Icon=/home/minieye/env/dist/assets/adas.jpg
-Info="close pcview"
-Terminal=false
-Type=Application
-StartupNotify=true

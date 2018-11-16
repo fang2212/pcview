@@ -1,0 +1,341 @@
+
+= ADAS算法检测结果字段说明
+:toc:
+
+* 作者: mailto:zhouzhuopeng@minieye.cc[周卓鹏]
+* 版本: 1.0 
+* 日期: 2018-09-06
+* © 2018 MINIEYE
+
+:numbered:
+
+[[explain_lane]]
+
+=== 车道算法（lane)
+<<example_lane,查看示例>>
+[cols="1,3,4,1,7"]
+|==============
+2+| 检测成功 | success | boolen |
+2+| 帧id | frame_id | int | 
+2+| 图像帧id | image_index | int |
+2+| 报警距离 | warning_dist | float | 单位：米
+2+| 轮子距左车道线距离 | left_wheel_dist | float | 单位：米
+2+| 轮子距右车道线距离 | right_wheel_dist | float | 单位：米
+2+| 最早报警线 | earliest_dist | float | 第一次触发报警位置，单位：米
+2+| 最晚报警线 | latest_dist | float |  最后一次触发报警位置，单位：米
+2+| 车辆速度 | speed | float | 
+2+| 横向速度 | lateral_speed | float | 拐弯转向产生的横向速度
+2+| 速度阈值 | speed_thresh | float | 超过阈值才会触发ldw报警
+2+| 左转向灯 | left_lamp | int | {0,1} 
+2+| 右转向灯 | right_lamp | int | {0,1} 
+2+| 频繁变道 | turn_frequently | boolen | 1 – 当前在频繁变道, 0 – 当前正常行驶
+2+| 偏离状态 | deviate_state | float | //0 没有偏移 1 向左 2 向右 3 抑制 4 回正
+2+| 偏离趋势 | deviate_trend | int | 0 – 没有偏离趋势 (默认) 1 – 向左偏离 2 – 向右偏离
+2+| 车道线曲率半径 | turn_radius | int | 距离最近的车道线在x=0处的转弯半径
+2+| 车道线 | lanelines | list |
+|| ldw报警 | warning | boolen | {0,1}, 车道线偏离报警
+|| 置信度 | confidence | int | 0 – 待定 1 – 低 2 – 中 3 – 高
+|| 车道线类型 | type | int | 0 – 待定, 1 - 单实线,  2 – 路沿 3 – 单虚线 4 – 双线 5 – 路钉 6 – 护栏  15 – 噪声线
+|| 识别范围起始位置 | start | point | 
+|| 识别范围终止位置|  end | point |
+|| 车道线颜色 | color | int | 0 – 白色 1 – 黄色 2 – 蓝色 3 – 绿色 4 – 不确定(默认)
+|| 车道宽度 | width | float |
+|| 标签 | label | int |
+|| 透视图车道线系数| perspective_view_poly_coeff | list | y=a0+a1*x+a2*x*x+a3*x*x*x 参数A保留精度10位以上
+|| 俯视图车道线系数 | bird_view_poly_coeff | list | y=a0+a1*x+a2*x*x+a3*x*x*x 参数A保留精度10位以上
+|| 俯视图控制点 | bird_view_pts | list |
+|==============
+
+[[explain_ped]]
+
+=== 行人（ped）
+<<example_ped,查看示例>>
+[cols="1,1,2,4,1,7"]
+|====================
+3+| 帧id | frame_id | int |
+3+| 图像帧id | image_index | int |
+3+| PCW告警 | pcw_on | boolen | 行人碰撞报警
+3+| 行人告警 | ped_on | boolen | 行人进入危险区域检测 
+3+| 行人 | pedestrians | list |
+| 2+| 行人编号 | roi_num | int |
+| 2+| 分类 | classify_type | int |
+| 2+| 分类置信度 | type_conf | float |
+| 2+| 距离 | dist | float |
+| 2+| TTC | ttc | float | 碰撞预警时间，单位：秒
+| 2+| 是否关键人 | is_key | boolen |
+| 2+| 是否危险 | is_danger | boolen |
+| 2+| 重复标注？ | work_overlap | int |
+| 2+| 重复pcw？ | pcw_overlap | int |
+| 2+| 俯视图x坐标 | world_x | float |
+| 2+| 俯视图y坐标 | world_y | float |
+| 2+| 检测框 | detect_box | dict |
+| | | x坐标 | x | float |
+| | | y坐标 | y | float |
+| | | 宽度 | width | float |
+| | | 高度 | height | float |
+| 2+| 回归框 | regressed_box | dict | 
+| | | x坐标 | x | float |
+| | | y坐标 | y | float |
+| | | 宽度 | width | float |
+| | | 高度 | height | float |
+|====================
+
+[[explain_tsr]]
+
+=== 交通标志牌识别（tsr）
+<<example_tsr,查看示例>>
+[cols="1,3,4,1,7"]
+|====================
+2+| 帧id | frame_id | int |
+2+| 图像帧id | image_index | int |
+2+| TSR报警状态 | tsr_warning_state | int | {0,1,2,3}
+2+| TSR报警级别 | tsr_warning_level | int | {0~7}, 数值越大越严重
+2+| 关键标志牌编号 | focus_index | int |
+2+| 当前限速 | speed_limit | int |
+2+| 标志牌 | dets | list |
+|| 标志牌编号 | index | int |
+|| 标志牌位置 | position | dict |
+|| 最大限速 | max_speed | int | 
+|====================
+
+[[explain_vehicle]]
+
+=== 车辆算法（vehicle）
+<<example_vehicle,查看示例>>
+[cols="1,1,2,4,1,7"]
+|====================
+3+| 帧id | frame_id | int |
+3+| 图像帧id | image_index | float |
+3+| vb正在运行 | bumper_running | float | 
+3+| vb状态 | bumper_state | int | {0,1,2,3}
+3+| vb报警 | bumper_warning | boolen | 同 mobile sound_type = 5
+3+| headway报警 | headway_warning | int | 0:不报警 1：显示白色图标 2：显示红色图标
+3+| stop&go状态 | stop_and_go_state | boolen |
+3+| stop&go报警 | stop_and_go_warning | boolen |
+3+| fcw报警 | forward_collision_warning | boolen | 前向碰撞报警
+3+| 报警级别 | warning_level | int | -1:没有车 0:不报警 1:车辆靠近 2:警报 3:危险
+3+| 报警车辆编号 | warning_vehicle_index | int |
+3+| 速度 | speed | float |
+3+| 半径 | radius | float |
+3+| 白天夜间 | light_mode | boolen |
+3+| 雨雾天 | weather | boolen |
+3+| 雨刮器 | wiper_on | boolen |
+3+| 关键车编号 | focus_index | float |
+3+| 关键车TTC | ttc | float | 碰撞时间,单位：秒
+3+| 检测结果 | dets | list |
+| 2+| 车辆类型 | type | int |
+| 2+| 车辆宽度 | vehicle_width | float |
+| 2+| 报警级别 | warning_level | int | -1:没有车 0:不报警 1:车辆靠近 2:警报 3:危险
+| 2+| 特征形状 | feature_shape | list | 特征点数组
+| 2+| 是否近车 | is_close | float | 是否距离比较近的车
+| 2+| 车辆直线距离 | vertical_dist | float | 
+| 2+| 车辆横向距离 | horizontal_dist | float | 
+| 2+| 跟踪置信度 | tracking_confidence | float |
+| 2+| 检测置信度 | det_confidence | float |
+| 2+| 绝对TTC | ttc | float |
+| 2+| 相对TTC | rel_ttc | float |
+| 2+| 相对速度 | rel_speed | float |
+| 2+| 是否在碰撞路线上 | on_route | float |
+| 2+| 宽度变化 | width_change | float | 跟上一帧对比
+| 2+| 车辆跟踪成功 | is_tracking_suc | boolen |
+| 2+| 车辆编号 | index | float |
+| 2+| 加速度 | speed_acc | float |
+| 2+| 检测次数 | count | float | 多个检测器中检测到该车次数, 值越大置信度越高
+| 2+| 检测框 | rect | dict | 
+| | | 横坐标 | x | int |
+| | | 纵坐标 | y | int |
+| | | 宽度 | width | int |
+| | | 高度 | height | int |
+| 2+| 回归框 | bounding_rect | dict |
+| | | 横坐标 | x | float |
+| | | 纵坐标 | y | float |
+| | | 宽度 | width | float |
+| | | 高度 | height | float |
+| 2+| 跟踪框 | tracking_rect | dict |
+| | | 横坐标 | x | float |
+| | | 纵坐标 | y | float |
+| | | 宽度 | width | float |
+| | | 高度 | height | float |
+|====================
+
+== 示例
+
+[[example_lane]]
+
+=== lane
+<<explain_lane,查看说明>>
+----
+{
+    left_lamp: 0,
+    warning_dist: 0.8212392926216125,
+    left_wheel_dist: 0.8212392926216125,
+    lateral_speed: 0.12796564400196075,
+    speed: 24,
+    right_wheel_dist: 1.2570645809173584,
+    turn_frequently: false,
+    speed_thresh: 13.88888931274414,
+    right_lamp: 0,
+    frame_id: 4572,
+    deviate_state: 0,
+    latest_dist: -0.4744068682193756,
+    turn_radius: 10000,
+    lanelines: [
+        {
+            start: [
+                -15,
+                1059.6356201171875
+            ],
+            bird_view_poly_coeff: [
+                -1.5970160961151123,
+                -0.016040554270148277,
+                -0.0015907174674794078,
+                -7.130141739253304e-7
+            ],
+            warning: true,
+            color: 4,
+            width: 0.1675347238779068,
+            label: 1,
+            confidence: 1,
+            type: 1,
+            perspective_view_poly_coeff: [
+                600.6670532226562,
+                0.12663985788822174,
+                -0.0008201497839763761,
+                0
+            ],
+            bird_view_pts: [],
+            end: [
+                53,
+                474.2303161621094
+            ]
+        },
+    ],
+    deviate_trend: 0,
+    success: true,
+    earliest_dist: -0.17440687119960785,
+    image_index: 6096
+};
+----
+
+[[example_ped]]
+
+=== ped
+<<explain_ped,查看说明>>
+----
+{
+    frame_id: 4572,
+    ped_on: false,
+    pedestrians: [
+        {
+            dist: -5.656931867381587e-11,
+            classify_type: -1367815340,
+            type_conf: 1.2570005957400476e-38,
+            regressed_box: {
+                y: -1,
+                x: -1,
+                height: 0,
+                width: 0
+            },
+            detect_box: {
+                y: -0.000006452202796936035,
+                x: NaN,
+                height: 1.2570140482053051e-38,
+                width: 1.401298464324817e-45
+            },
+            world_x: 1.2590823647386486e-38,
+            work_overlap: 0,
+            is_danger: true,
+            is_key: true,
+            roi_num: -17,
+            pcw_overlap: 1.2570140482053051e-38,
+            world_y: 1.2571777198659383e-38,
+            ttc: 1.25907956214172e-38
+        }
+    ],
+    pcw_on: false,
+    image_index: 6096
+}
+----
+
+[[example_tsr]]
+
+=== tsr
+<<explain_tsr,查看说明>>
+----
+{
+    tsr_warning_level: 0,
+    focus_index: -1,
+    speed_limit: 0,
+    tsr_warning_state: 0,
+    frame_id: 4316,
+    dets: [],
+    image_index: 5754
+}
+----
+
+[[example_vehicle]]
+
+=== vehicle
+<<explain_vehicle,查看说明>>
+----
+{
+    bumper_warning: 0,
+    bumper_state: 0,
+    radius: 0,
+    stop_and_go_warning: 0,
+    weather: 0,
+    frame_id: 4316,
+    dets: [
+        {
+            vehicle_width: 1.8270301818847656,
+            type: 2,
+            tracking_rect: {
+                y: 419.137451171875,
+                x: 548.0571899414062,
+                height: 400.0771484375,
+                width: 470.29290771484375
+            },
+            is_tracking_suc: true,
+            feature_shape: [],
+            is_close: true,
+            vertical_dist: 5.9270758628845215,
+            warning_level: 0,
+            tracking_confidence: 1.0042082071304321,
+            horizontal_dist: 0.4021279811859131,
+            on_route: true,
+            rect: {
+                y: 322,
+                x: 479,
+                height: 398,
+                width: 501
+            },
+            width_change: 12.4935302734375,
+            index: 101,
+            speed_acc: -1.589110016822815,
+            count: 21,
+            det_confidence: 0.5249999761581421,
+            rel_ttc: 1000,
+            bounding_rect: {
+                y: 411.152587890625,
+                x: 540.4256591796875,
+                height: 308.847412109375,
+                width: 463.95556640625
+            },
+            ttc: 1.399999976158142,
+            rel_speed: -0.6305322647094727
+        }
+    ],
+    speed: 3.6111111640930176,
+    warning_vehicle_index: 101,
+    warning_level: 0,
+    light_mode: 0,
+    forward_collision_warning: 0,
+    focus_index: 0,
+    headway_warning: 0,
+    wiper_on: 0,
+    stop_and_go_state: 0,
+    bumper_running: 0,
+    ttc: 1.399999976158142,
+    image_index: 5754
+}
+----

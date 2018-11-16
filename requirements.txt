@@ -1,0 +1,6 @@
+msgpack==0.5.6
+nanomsg==1.0
+numpy==1.15.2
+opencv-python==3.4.3.18
+python-can==3.0.0
+pyserial==3.4

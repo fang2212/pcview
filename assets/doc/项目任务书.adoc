@@ -1,0 +1,223 @@
+
+= pcview客户端项目任务书 =
+
+* 作者: mailto:zhouzhuopeng@minieye.cc[周卓鹏]
+* 版本: 1.0
+* 日期: 2018-10-23
+* © 2018 MINIEYE
+
+:numbered:
+
+== 项目需求
+
+* 提供一个实时显示车道线，车辆等ADAS算法结果及相关参数的客户端工具
+* 核心功能
+** 实时接收设备发送的图片、算法结果
+** 实时接收车载can信号
+** 绘制图像并渲染算法结果及can信号
+** 渲染内容详细(可配置)：
+*** 车道线
+*** 车辆显示回归框，关键车为红色区别显示，标出车辆信息:<车辆类型><TTC>
+*** 行人显示回归框，关键行人为红色区别显示
+*** 交通牌显示回归框，标出检测数字
+*** 详细算法数据及参数
+*** can信号
+*** 俯视缩略图
+** 保存视频和日志
+
+
+image::../src/pcview-show.jpg["示例图",width=500, align=center, title="渲染效果示例"]
+
+
+* gui客户端
+** 兼容两个版本：客户版本(C++）、测试版本(python）
+** 客户端基本功能
+*** ip配置
+*** 存储目录选择
+*** 显示信息选择
+
+** 内部使用版本额外功能
+*** 图像类型选择
+*** 日志保存内容选择
+*** 车道线显示配置
+*** 显示运行日志
+*** 在线升级
+
+== 核心模块及架构
+=== 核心模块
+* etc/config.py
+** 不同功能版本的默认参数配置
+** 通过功能版本选择来控制显示内容，参考: <<functional-config, 功能版本配置>>
+** 在run_pcview.py添加命令行参数可以对默认配置进行覆
+* client/pcview_client.py
+** 数据同步及处理
+** 数据源
+*** 设备作为nanomsg服务端，逐帧推送图像(cam)及算法结果数据(lane,vehicle,ped,tsr)
+*** 每种数据以独立的链路发送
+
+** 数据接收
+*** 每种数据启一个独立的进程，独立的nanomsg客户端接收
+*** 解析每一帧接收到的数据并放到对应的Queue
+
+** 数据同步
+*** 同步线程循环地从Queue读取所有的数据，并把每种数据分别缓存到一个数组
+*** 当收到某一帧的完整数据或者缓存的帧数超过限制值时，取出最早的一帧数据显示
+
+** 数据处理
+*** 把一帧数据转成合适的数据结构，方便绘图
+*** 进行算法结果补帧、添加额外信息等处理
+*** 把绘图数据放到mess_queue，日志信息放到file_queue,等待相应的线程进行处理
+
+* client/draw.py
+** 从mess_queue获取绘图数据，绘制图像并根据config的配置标注相应的算法结果
+
+* client/file_handler.py
+** 从file_queue获取内容，根据不同的类型保存到相应的文件
+
+* assets/
+** 包含图片、字体等资源文件，和运行、关闭脚本
+
+* tools/
+** 包含一些脚本工具：模拟发送数据、复制日志、修改ip等
+
+* cython编译
+** etc(配置文件)、client(核心模块)目录下的.py文件通过setup.py编译成.so文件
+
+=== 数据同步模型
+
+
+== 使用说明(内部版本)
+    
+    仅在ubuntu16.04下使用
+
+=== 软件包文件说明
+* dependencies：pcview运行依赖环境，包括nanomsg和python库
+* pcview: 编译的pcview应用程序
+* install.sh：安装脚本
+* run.sh: 运行脚本
+* pcview.Appimage：gui应用程序，依赖安装完成后即可双击运行
+* pcview_data: 默认视频存储目录
+
+=== 快速使用
+. 安装依赖，打开终端，进入到 pcview-gui 目录下，执行命令：
+[source,bash]	
+sudo bash install.sh
+
+. 等待安装完成后，会生成一个快捷方式 image:../src/pcview-icon.png["“pcview-gui”",align="center"] 到桌面 
+* 双击 pcview.AppImage 或者 pcview-gui 启动gui界面
+
+. 使用步骤：
+* 通过网线连接设备
+* 运行pcview-gui
+
+image::../src/pcview-gui.png[align="center"]
+
+* 在设备ip栏填入设备ip，一般是 192.168.0.233 或 192.168.1.233
+* 在本机ip栏点击刷新，检查有线网卡的ip地址是否与设备ip在同一个网段（即要求前3位一样，有线网卡是长得类似于 enp0s31f6  的那一个），不在同一网段的需要填写一个符合要求的本机ip并点击修改
+
+image::../src/pcview-ip.png[]
+* 设备ip和本机ip都设置完成后，点击设备ip后面的按钮，确保设备能ping通（绿色为ping通，红色为不能ping通，灰色为等待响应）
+* 选择正确的 "功能版本" 和 "图像类型"，其他选项可以保持默认
+* 点击 “运行” 按钮，启动pcview，如果一切正常，应该弹出窗口显示设备画面，并标注相应信息
+* 点击 “停止” 按钮停止pcview
+* 当pcview需要更新时，点击 “更新pcview ” 按钮，即会自动从微软云azure下载最新的更新包进行在线升级
+
+[[functional-config]]
+=== 功能版本配置
+
+[]
+|===================
+|                 | fpga  | test  | pro   | debug 
+| 标注车道线        | √     | √     | √     | √  
+| 标注车辆          | √     | √     | √     | ×  
+| 标注行人          | ×     | √     | √     | × 
+| 标注交通牌        | ×     | √     | √      | × 
+| 显示俯视图        | ×     | ×     | √      | × 
+| 显示mobile数据    | ×     | ×     | ×      | × 
+| 使用本地图片      | ×     | ×     | ×      | × 
+| 显示图片路径      | ×     | ×     | ×      | × 
+| 接收can数据       | ×     | ×     | ×      | √ 
+|===================
+
+
+=== 其他
+. pcview发布流程
+* 打包pcview
+[source,bash]
+bash build.sh
+# 打包过程如下，
+# cat build.sh
+# 初始化dist目录
+# mkdir dist/
+# ./clear.sh
+# rm -r dist/*
+# mkdir -p dist/client
+# mkdir -p dist/etc
+# 把 run_pcview.py CANAlyst/ assets/ 复制到dist目录下
+# cp run_pcview.py dist/
+# cp -r CANAlyst dist/
+# cp -r assets dist
+# 把client目录下的.py文件编译成.so文件，并复制到 dist/client/ 目录下
+# cd client
+# python3 setup.py build_ext --inplace
+# cp *.so ../dist/client
+# cd ..
+# 把etc目录下的.py文件编译成.so文件，并复制到 dist/etc/ 目录下
+# cd etc
+# python3 setup.py build_ext --inplace
+# cp *.so ../dist/etc
+# cd ..
+
+* 复制 dist 目录到需要的位置，并重命名为 pcview
+
+. 手动安装依赖
+
+* 源码安装nanomsg lib
+[source,bash]
+cd dependencies/nanomsg-master
+sudo bash install.sh
+* 安装python依赖库
+[source,bash]
+cd dependencies
+sudo pip3 install -r requirements.txt
+# 备注：默认依赖如下，可以根据本机情况调整
+# cat requirements.txt
+# msgpack==0.5.6
+# nanomsg==1.0
+# numpy==1.15.2
+# opencv-python==3.4.3.18
+
+. 通过命令行启动pcview
+[source,bash]
+cd pcview
+# 查看帮助
+python3 run_pcview.py --help
+#  optional arguments:
+#  -h, --help            show this help message and exit
+#  --func FUNC           功能版本[debug,test,pro,fpga],默认fpga
+#  --ip IP               设备ip address，默认192.168.0.233
+#  --video VIDEO         是否保存视频[0,1]，默认保存
+#  --log LOG             是否保存日志[0,1],默认保存
+#  --raw_type RAW_TYPE   设备发出图像数据类型[color or gray],默认color
+#  --lane_speed_limit LANE_SPEED_LIMIT
+#                        车道显示速度限制,默认50
+#  --all_laneline ALL_LANELINE
+#                        是否显示所有车道[0,1]，默认不显示
+#  --lane_begin LANE_BEGIN
+#                        显示车道起点，默认460
+#  --lane_end LANE_END   显示车道终点，默认720
+#  --result_path RESULT_PATH
+#                        保存地址
+#  --save_path SAVE_PATH
+#                        保存目录，默认 ~/pcview_data/
+#  --show_parameters SHOW_PARAMETERS
+#                        是否显示左上角的数据，默认不显示
+# 启动示例
+python3 run_pcview.py --func test --ip 192.168.0.233
+# 关闭pcview Ctrl-c或者
+bash assets/close.sh
+
+. 视频编码选择
+* 采用的fourcc码为'XVID'，属于MPEG-4编码
+
+
