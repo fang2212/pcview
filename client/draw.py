@@ -562,8 +562,8 @@ class DrawPed(object):
                 color = CVColor.Yellow
                 if pedestrain['is_key']:
                     color = CVColor.Pink
-                if pedestrain['is_danger']:
-                    color = CVColor.Pink
+                #if pedestrain['is_danger']:
+                #    color = CVColor.Pink
                 self.draw_ped_rect(img, position, color, 2)
                 if position[0] > 0:
                     self.draw_ped_info(img, position, pedestrain['dist'])
