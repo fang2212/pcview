@@ -17,6 +17,7 @@ import cv2
 
 from .draw import Player
 from etc.config import config
+from easy_can.base import CanBase, liuqi_p
 
 from .file_handler import FileHandler
 pack = os.path.join
@@ -59,9 +60,6 @@ class Sink(Process):
     def pkg_handler(self, msg_buf):
         pass
 
-
-if config.can.use:
-    from easy_can.base import CanBase, liuqi_p
 class CanSink(Process):
     def __init__(self, can_queue, bitrate):
         Process.__init__(self)

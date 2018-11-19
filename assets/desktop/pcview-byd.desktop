@@ -1,8 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=PCVIEW-BYD
-Exec=sh /home/minieye/env/dist/assets/pcview-byd.sh
-Icon=/home/minieye/env/dist/assets/pcview.png
+Exec=sh /home/minieye/env/dist/assets/desktop/pcview-byd.sh
+Icon=/home/minieye/env/dist/assets/src/pcview.png
 Info="pcview"
 Terminal=false
 Type=Application
