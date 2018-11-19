@@ -1,27 +1,24 @@
 
 == nanomsg
-=== 图片
-* 端口
-** 1200
-* 数据格式
-** 接收到的是bytes字节流数据
-** frame_id: byte4-byte8
-** 图像： 灰度图像从 byte16 起，彩色图像从 byte24 起
-
-=== 算法结果数据
-* 端口
-** lane:1203, vehicle:1204, ped:1205, tsr:1206, cali:1209
-* 数据格式
-** msgpack打包的json对象
-** 字段说明参考 ADAS算法检测结果字段说明.adoc
+* 图片和算法结果通过nanomsg接收
+* 通过nanomsg的socket连接到设备指定端口接收数据：tcp://<设备ip>:<端口号>
+* 其中端口对应关系为：
+** 图片：1200， lane:1203, vehicle:1204, ped:1205, tsr:1206, cali:1209
+* 图片数据格式
+** 图片尺寸：720 x 1280
+** 图像帧id: byte4-byte8
+** 图像数据： 灰度图像，从 byte16 起，彩色图像为3通道rgb格式，从 byte24 起
+* 算法数据格式
+** 算法数据为经过msgpack打包的json对象
+** 字段说明参考 ADAS算法检测结果字段说明.pdf
 
 == can
-* 端口
-** 兼容 serial-can 和 socket-can
-** socket-can默认为 can0
-** serial-can自动搜索可用的can设备
 * 比特率
-** 500000 或 250000(x1b设备)
+** 500000 或 250000(x1设备？)
 * 数据格式
-** 8字节长度
+** 数据协议见 liuqi.py
+** 解析示例：
+
+    int_val = (can_data[start_byte - 1]>>(start_bit-1)) & ((1<<size)-1)
+    target_val = target['offset'] + int_val * target['factor']
 
