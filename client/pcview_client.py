@@ -215,7 +215,7 @@ class PCView():
         if config.pic.use_local:
             if min_max > 0:
                 return True
-        elif self.cache['cam'] and min_max >= self.cache['cam'][0][0] or max_max - min_min >= self.max_cache:
+        elif self.cache['cam'] and (min_max >= self.cache['cam'][0][0] or max_max - min_min >= self.max_cache):
                 return True
         return False
 

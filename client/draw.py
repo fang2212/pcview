@@ -491,8 +491,7 @@ class DrawLane(object):
                     if config.show.overlook:
                         DrawOverlook.draw_lane(img, lane['bird_view_poly_coeff'], color)
 
-            print(lane.get('zebracross', []))
-            for zebracross in lane.get('zebracross', []):
+            for zebracross in lane_data.get('zebracross', []):
                 x1 = float(zebracross['left_line'])
                 y1 = float(zebracross['top_line'])
                 x2 = float(zebracross['right_line'])
@@ -630,6 +629,8 @@ class DrawTsr(object):
         if config.show.parameters:
             para_list = ParaList('tsr')
             para_list.insert('speed_limit', speed_limit)
+            over_speed = tsr_warning_level * 5
+            para_list.insert('over_speed', over_speed)
             DrawParameters.draw_normal_parameters(img, para_list, (305, 0))
 
     @classmethod
@@ -718,22 +719,22 @@ class DrawAlarm(object):
             sg = mess['vehicle'].get('stop_and_go_warning', 0)
         ldw = mess['lane'].get('deviate_state', 0)
 
-        alarms = [
-            ["FCW", 1, (0, 25), int(fcw>0)],
-            ["HWM:"+ttc, 1, (0, 25), int(hwm>1)],
-            ["UFCW", 1, (0, 25), int(ufcw>0)],
-            ["SG", 1, (0, 25), int(sg>0)],
-            ["|", 1, (0, 55), int(ldw==1)],
-            ["|", 1, (50, 0), int(ldw==2)],
-        ]
-
-        basex, basey, width, height = (580, 0, 150, 200)
-        size, thickness = (0.8, 2)
+        basex, basey, width, height = (580, 0, 120, 130)
+        size, thickness = (0.6, 1)
         color = [CVColor.Green, CVColor.Red]
+        alarms = [
+            ["FCW", 1, (0, 18), int(fcw>0), size, thickness],
+            ["HWM:"+ttc, 1, (0, 18), int(hwm>1), size, thickness],
+            ["UFCW", 1, (0, 18), int(ufcw>0), size, thickness],
+            ["SG", 1, (0, 18), int(sg>0), size, thickness],
+            ["|", 1, (0, 45), int(ldw==1), 1, 2],
+            ["|", 1, (50, 0), int(ldw==2), 1, 2],
+        ]
+        
         BaseDraw.draw_alpha_rect(img, (basex-10, basey, width, height), 0.4)
         x, y = (basex, basey)
         for alarm in alarms:
-            text, show, pos, value = alarm
+            text, show, pos, value, size, thickness = alarm
             if show:
                 x += pos[0]
                 y += pos[1]
@@ -767,30 +768,31 @@ class DrawAlarmCan(object):
         lldw = 2 if lld==0 else lldw
         rldw = 2 if rld==0 else rldw
 
+        basex, basey, width, height = (720, 0, 250, 150)
+        size, thickness = (0.6, 1)
         alarms = [
-            ["FCW:"+str(fcw), 1, (0, 25), int(fcw>0)],
-            ["HWM:"+str(hw)+"  ttc:"+ttc+"  on:"+str(hw_on), 1, (0, 25), int(hw>1)],
-            ["PCW:"+str(pcw_on)+"  ped:"+str(ped_on), 1, (0, 25), int(pcw_on>0)],
-            ["TSR: "+str(tsr), 1, (0, 25), int(tsr>0)],
-            ["AW :"+alert, 1, (0, 25), int(aw>0)],
-            ["|", 1, (0, 30), lldw],
-            ["|", 1, (50, 0), rldw],
-            ["on:"+str(ldw_on), 1, (50, 0), int(ldw_on>0)],
+            ["FCW:"+str(fcw), 1, (0, 18), int(fcw>0), size, thickness],
+            ["HWM:"+str(hw)+"  ttc:"+ttc+"  on:"+str(hw_on), 1, (0, 18), int(hw>1), size, thickness],
+            ["PCW:"+str(pcw_on)+"  ped:"+str(ped_on), 1, (0, 18), int(pcw_on>0), size, thickness],
+            ["TSR: "+str(tsr), 1, (0, 18), int(tsr>0), size, thickness],
+            ["AW :"+alert, 1, (0, 18), int(aw>0), size, thickness],
+            ["|", 1, (0, 30), lldw, 1, 2],
+            ["|", 1, (50, 0), rldw, 1, 2],
+            ["on:"+str(ldw_on), 1, (50, 0), int(ldw_on>0), size, thickness],
         ]
         
-        basex, basey, width, height = (750, 0, 300, 200)
-        size, thickness = (0.8, 2)
+        
         color = [CVColor.Green, CVColor.Red, CVColor.White] # 不报警 报警 没检测到
         BaseDraw.draw_alpha_rect(img, (basex-10, basey, width, height), 0.4)
         x, y = (basex, basey)
         for alarm in alarms:
-            text, show, pos, value = alarm
+            text, show, pos, value, size, thickness = alarm
             if show:
                 x += pos[0]
                 y += pos[1]
                 BaseDraw.draw_text(img, text, (x, y), size, color[value], thickness)
 
-        BaseDraw.draw_text(img, "(liuqi)", (basex, y+30), 0.5, CVColor.Yellow, 1)
+        BaseDraw.draw_text(img, "(liuqi)", (basex, y+25), 0.4, CVColor.Yellow, 1)
 
 def dict2list(d, keys, type=None, default=None):
     values = []
