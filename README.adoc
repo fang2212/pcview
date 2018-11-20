@@ -104,29 +104,30 @@ pcview工作目录放在electron app同级目录下,升级时将老的pcview包�
 
 * new
 ** 修复一些bug
+** 修复多个串口设备时查找can的问题
 ** 把报警显示区域改小
+** 添加显示over_speed
 
 == todo
-* 完善异常捕获，log日志
-* 整理log日志
-* cail位置不对
-* 添加提醒信息（没有can设备、网线断开）
-* 长时间运行死机问题
-* cv2.imshow一大堆错误信息的bug
-* can设备自动挂起
-* pcview-gui 依赖， pyserial, nanomsg判断， can状态
-* desktop
-* 发布流程
-* 查找can设备有问题
-* pcview挂掉，通过异常捕获
-* 不同版本配置文件
-* 集成测试
-* 低速没有车道线
-* 添加over_speed
-* 显示内容位置
+* 重要
+** 完善异常捕获，log日志，通过修饰器对主要进程函数进行异常捕获
+** cail位置不对
+** 添加提醒信息（没有can设备、网线断开）
+** 长时间运行死机问题
+* 次要
+** cv2.imshow一大堆错误信息的bug
+** can设备自动挂起
+** pcview-gui 依赖， pyserial, nanomsg判断， can状态
+** desktop
+** 发布流程
+** 不同版本配置文件
+** 集成测试
+** 低速没有车道线
 
 == issue
 * can报警数据不一致问题
 
     pcview的vehicle报警，有关键车的时候才有数据，can会把所有数据暴露出来
     can报警确实会有跳动的情况
+
+    python, c 互相调用
