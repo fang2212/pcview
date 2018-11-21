@@ -21,13 +21,14 @@ class SerialCan():
             try:
                 kws.update(dict(port=port, baudrate=baudrate))
                 self.usbSerial = serial.Serial(**kws)
-                if not self.usbSerial.isOpen():
-                    self.usbSerial.open()
+                self.usbSerial.open()
                 if not self.setBitrate(bitrate):
                     raise Exception("set bitrate failed")
             except Exception as e:
                 print(e)
                 self.usbSerial = None    
+            else:
+                break
         if not self.usbSerial:
             raise Exception("not serial-can device found")
 
