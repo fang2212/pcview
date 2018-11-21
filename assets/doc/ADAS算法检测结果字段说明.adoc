@@ -40,7 +40,7 @@
 || 识别范围终止位置|  end | point |
 || 车道线颜色 | color | int | 0 – 白色 1 – 黄色 2 – 蓝色 3 – 绿色 4 – 不确定(默认)
 || 车道宽度 | width | float |
-|| 标签 | label | int |
+|| 标签 | label | int | 0 左车道线左边的车道线， 1 左车道线， 2 右车道线， 3 右车道线右边的车道线
 || 透视图车道线系数| perspective_view_poly_coeff | list | y=a0+a1*x+a2*x*x+a3*x*x*x 参数A保留精度10位以上
 || 俯视图车道线系数 | bird_view_poly_coeff | list | y=a0+a1*x+a2*x*x+a3*x*x*x 参数A保留精度10位以上
 || 俯视图控制点 | bird_view_pts | list |
@@ -263,13 +263,25 @@
 <<explain_tsr,查看说明>>
 ----
 {
-    tsr_warning_level: 0,
-    focus_index: -1,
-    speed_limit: 0,
-    tsr_warning_state: 0,
-    frame_id: 4316,
-    dets: [],
-    image_index: 5754
+    "tsr": {
+        "frame_id": 13787,
+        "tsr_warning_state": 0,
+        "tsr_warning_level": 0,
+        "focus_index": -1,
+        "speed_limit": 0,
+        "dets": [
+            {
+                "position": {
+                    "width": 72.0,
+                    "x": 1034.0,
+                    "height": 72.0,
+                    "y": 286.0
+                },
+                "max_speed": 0,
+                "index": 0
+            }
+        ],
+    }
 }
 ----
 

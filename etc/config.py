@@ -17,7 +17,7 @@ cfg_dict = {
         },  
         "can": {            #can配置    
             "use": False,        #启用can
-            "bitrate": 250000,  #波特率 500000 or 250000
+            "bitrate": 500000,  #波特率 500000 or 250000
         },
         "mobile": {         #mobile
             "show": False,      #显示mobile 数据

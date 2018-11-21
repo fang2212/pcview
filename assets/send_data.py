@@ -2,12 +2,16 @@ from nanomsg import Socket, PUB
 import time 
 import json
 import msgpack
+import os
+
+home_path = os.path.expanduser('~')                 #home目录路径
+media_path = home_path.replace('home', 'media')     #外接硬盘路径
 
 #img_dir_path = "/media/minieye/data2/origin/"
 #log_file_path = "/media/minieye/data2/log.json"
 
-img_dir_path = "/media/zzp/tempdisk1/pcshow/pcshow0824/origin/"
-log_file_path = "/media/zzp/tempdisk1/pcshow/pcshow0824/log.json"
+img_dir_path = media_path + "/tempdisk1/pcshow/pcshow0824/origin/"
+log_file_path = media_path + "/tempdisk1/pcshow/pcshow0824/log.json"
 
 if __name__ == "__main__":
     host = "tcp://127.0.0.1"

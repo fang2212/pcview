@@ -1,30 +1,92 @@
 
 == nanomsg
-=== 图片
-* 端口
-** 1200
-* 数据格式
-** 接收到的是bytes字节流数据
-** frame_id: byte4-byte8
-** 图像： 灰度图像从 byte16 起，彩色图像从 byte24 起
-
-=== 算法结果数据
-* 端口
-** lane:1203, vehicle:1204, ped:1205, tsr:1206, cali:1209
-* 数据格式
-** msgpack打包的json对象
-** 字段说明参考 ADAS算法检测结果字段说明.adoc
+* 图片和算法结果通过nanomsg接收
+* 通过nanomsg的socket连接到设备指定端口接收数据：tcp://<设备ip>:<端口号>
+* 其中端口对应关系为：
+** 图片：1200， lane:1203, vehicle:1204, ped:1205, tsr:1206, cali:1209
+* 图片数据格式
+** 图片尺寸：720 x 1280
+** 图像帧id: byte4-byte8
+** 图像数据： 灰度图像，从 byte16 起，彩色图像为3通道rgb格式，从 byte24 起
+* 算法数据格式
+** 算法数据为经过msgpack打包的json对象
+** 字段说明参考 ADAS算法检测结果字段说明.pdf
+* 示例：
+[source, python]
+'''
+依赖：
+    python3.5
+    源码编译安装nanomsg, https://github.com/nanomsg/nanomsg
+    pip: msgpack==0.5.6, nanomsg==1.0, opencv-python==3.4.3.18
+'''
+def recv_msg(ip, port):
+    #nanomsg接收消息
+    socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
+    nanomsg.wrapper.nn_setsockopt(socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
+    nanomsg.wrapper.nn_connect(socket, "tcp://%s:%s" % (ip, port, ))
+    while True:
+        buf = nanomsg.wrapper.nn_recv(socket, 0)
+        msg = buf[1]
+        #parse(msg)
+#
+def parse_image(msg, raw_type):
+    #解析图像数据, raw_type 指定图像类型，灰度图像（gray) or 彩色图像（color)
+    msg = memoryview(msg).tobytes()
+    frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
+    if raw_type == 'gray':
+        data = msg[16:]
+        image = np.fromstring(data, dtype=np.uint8).reshape(720, 1280, 1)
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    if raw_type == 'color':
+        data = msg[24:]
+        image = cv2.imdecode(np.fromstring(data, np.uint8), cv2.IMREAD_COLOR)
+    return frame_id, image
+#
+def parse_algo(msg):
+    #解析算法结果数据
+    data = msgpack.loads(msg)
+    res = convert(data)
+    frame_id = res['frame_id']
+    return frame_id, res
+#
+def convert(data):
+    #msgpack解压nanomsg的数据后所有字符串都是bytes类型，转成str类型
+    if isinstance(data, bytes):      return data.decode('ascii')
+    if isinstance(data, dict):       return dict(map(convert, data.items()))
+    if isinstance(data, tuple):      return tuple(map(convert, data))
+    if isinstance(data, list):       return list(map(convert, data))
+    if isinstance(data, set):        return set(map(convert, data))
+    return data
 
 == can
-* 端口
-** 兼容 serial-can 和 socket-can
-** socket-can默认为 can0
-** serial-can自动搜索可用的can设备
+* can接收原始的报警数据，可以用任何can设备接收
 * 比特率
-** 500000 或 250000(x1b设备)
+** 500000 或 250000(x1b设备？)
 * 数据格式
-** 返回一个dict对象，字段如下：
-*** can_id  : 16进制字符串，如 '05F'
-*** recv_ts : 接收时间，int类型，单位 ms
-*** data    : 数据内容，整型数组， 如 [0x12, 0x34, ...]
-
+** 数据协议见 liuqi.py
+* 示例：
+[source, python]
+#导入liuqi.py的协议
+from liuqi import protocol 
+def parse(can_id, can_data):
+    #解析can数据，返回json对象，字段与 liuqi.py 一致
+    #can_id: 本帧数据的帧id，l6进制字符串，全部大写，如："18FE5BE8"
+    #can_data: can接收到的数据，int型数组，如：[0x12, 0x34, 0x56, ...]
+    targets = protocol.get(can_id)
+    if not targets:
+        return {}
+    res_data = {} 
+    for target in targets['info']:
+        start_byte = target['start_byte']
+        start_bit = target['start_bit']
+        size = target['size']
+        if len(can_data) < size:
+            continue
+        int_val = (can_data[start_byte - 1]>>(start_bit-1)) & ((1<<size)-1)
+        target_val = target['offset'] + int_val * target['factor']
+        if target_val >= target['min'] and target_val <= target['max']:
+            pass
+        else:
+            target_val = -1
+        res_data[target['name']] = target_val
+        return res_data
