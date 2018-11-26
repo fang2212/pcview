@@ -711,23 +711,29 @@ class DrawAlarm(object):
             hwm = 0
             ttc  = '--'
             sg = 0
+            tsr = 0
+            pcw = 0
         else:
             fcw = mess['vehicle'].get('forward_collision_warning', 0)
             ufcw = mess['vehicle'].get('bumper_warning', 0)
             hwm = mess['vehicle'].get('headway_warning', 0)
             ttc = "%.1f"%mess['vehicle'].get('ttc', 0) #if hwm > 0 else '--'
             sg = mess['vehicle'].get('stop_and_go_warning', 0)
+            tsr = mess['tsr'].get('tsr_warning_level', 0)
+            pcw = mess['ped'].get('pcw_on', 0)
         ldw = mess['lane'].get('deviate_state', 0)
 
-        basex, basey, width, height = (580, 0, 120, 130)
+        basex, basey, width, height = (580, 0, 120, 150)
         size, thickness = (0.6, 1)
         color = [CVColor.Green, CVColor.Red]
         alarms = [
             ["FCW", 1, (0, 18), int(fcw>0), size, thickness],
-            ["HWM:"+ttc, 1, (0, 18), int(hwm>1), size, thickness],
+            ["HWM: "+ttc, 1, (0, 18), int(hwm>1), size, thickness],
+            ["PCW", 1, (0, 18), int(pcw>0), size, thickness],
+            ["TSR: "+str(tsr), 1, (0, 18), int(tsr>0), size, thickness],
             ["UFCW", 1, (0, 18), int(ufcw>0), size, thickness],
             ["SG", 1, (0, 18), int(sg>0), size, thickness],
-            ["|", 1, (0, 45), int(ldw==1), 1, 2],
+            ["|", 1, (0, 35), int(ldw==1), 1, 2],
             ["|", 1, (50, 0), int(ldw==2), 1, 2],
         ]
         
