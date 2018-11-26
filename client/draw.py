@@ -492,10 +492,10 @@ class DrawLane(object):
                         DrawOverlook.draw_lane(img, lane['bird_view_poly_coeff'], color)
 
             for zebracross in lane_data.get('zebracross', []):
-                x1 = float(zebracross['left_line'])
-                y1 = float(zebracross['top_line'])
-                x2 = float(zebracross['right_line'])
-                y2 = float(zebracross['bottom_line'])
+                x1 = int(zebracross['left_line'])
+                y1 = int(zebracross['top_line'])
+                x2 = int(zebracross['right_line'])
+                y2 = int(zebracross['bottom_line'])
                 BaseDraw.draw_rect(img, (x1, y1), (x2, y2), CVColor.Red, 2)
 
             lw_dis = '%.2f' % (lane_data['left_wheel_dist'])
@@ -524,6 +524,8 @@ class DrawLane(object):
             width: float 车道线宽度
             color: CVColor 车道线颜色
         """
+        if np.NaN in ratios:
+            return
         a0, a1, a2, a3 = list(map(float, ratios))
         width = int(float(width) * 10 + 0.5)
         for y in range(begin, end, 20):
