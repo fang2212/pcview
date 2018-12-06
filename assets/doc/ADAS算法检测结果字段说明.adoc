@@ -17,7 +17,6 @@
 |==============
 2+| 检测成功 | success | boolen |
 2+| 帧id | frame_id | int | 
-2+| 图像帧id | image_index | int |
 2+| 报警距离 | warning_dist | float | 单位：米
 2+| 轮子距左车道线距离 | left_wheel_dist | float | 单位：米
 2+| 轮子距右车道线距离 | right_wheel_dist | float | 单位：米
@@ -53,19 +52,18 @@
 [cols="1,1,2,4,1,7"]
 |====================
 3+| 帧id | frame_id | int |
-3+| 图像帧id | image_index | int |
 3+| PCW告警 | pcw_on | boolen | 行人碰撞报警
 3+| 行人告警 | ped_on | boolen | 行人进入危险区域检测 
 3+| 行人 | pedestrians | list |
-| 2+| 行人编号 | roi_num | int |
+| 2+| 行人编号 | id | int |
 | 2+| 分类 | classify_type | int |
 | 2+| 分类置信度 | type_conf | float |
 | 2+| 距离 | dist | float |
 | 2+| TTC | ttc | float | 碰撞预警时间，单位：秒
 | 2+| 是否关键人 | is_key | boolen |
 | 2+| 是否危险 | is_danger | boolen |
-| 2+| 重复标注？ | work_overlap | int |
-| 2+| 重复pcw？ | pcw_overlap | int |
+| 2+| 横向速度 | lateral_velocity | float | 单位: m/s
+| 2+| 纵向速度 | longitudinal_velocity | float | 单位: m/s
 | 2+| 俯视图x坐标 | world_x | float |
 | 2+| 俯视图y坐标 | world_y | float |
 | 2+| 检测框 | detect_box | dict |
@@ -87,7 +85,6 @@
 [cols="1,3,4,1,7"]
 |====================
 2+| 帧id | frame_id | int |
-2+| 图像帧id | image_index | int |
 2+| TSR报警状态 | tsr_warning_state | int | {0,1,2,3}
 2+| TSR报警级别 | tsr_warning_level | int | {0~7}, 数值越大越严重
 2+| 关键标志牌编号 | focus_index | int |
@@ -105,7 +102,6 @@
 [cols="1,1,2,4,1,7"]
 |====================
 3+| 帧id | frame_id | int |
-3+| 图像帧id | image_index | float |
 3+| vb正在运行 | bumper_running | float | 
 3+| vb状态 | bumper_state | int | {0,1,2,3}
 3+| vb报警 | bumper_warning | boolen | 同 mobile sound_type = 5
