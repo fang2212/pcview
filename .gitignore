@@ -32,3 +32,4 @@ __pycache__
 # information for Eclipse / Flash Builder.
 
 test/
+sdk/

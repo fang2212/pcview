@@ -95,18 +95,12 @@ pcview工作目录放在electron app同级目录下,升级时将老的pcview包�
 * release1109
 ** 整合x1s、x1b的内容
 
-<<<<<<< HEAD
-* release v-20181119
-=======
 * release119
->>>>>>> dev
 ** 修复中间报警信息与左边can数据不一致的bug
 ** log保存can原始数据
 ** 兼容serial-can和socket-can
 ** 删除多余文件
 ** 规范数据协议、配置参数
-<<<<<<< HEAD
-=======
 
 * new
 ** 修复一些bug
@@ -129,12 +123,3 @@ pcview工作目录放在electron app同级目录下,升级时将老的pcview包�
 ** 不同版本配置文件
 ** 集成测试
 ** 低速没有车道线
-
-== issue
-* can报警数据不一致问题
-
-    pcview的vehicle报警，有关键车的时候才有数据，can会把所有数据暴露出来
-    can报警确实会有跳动的情况
-
-    python, c 互相调用
->>>>>>> dev
