@@ -13,6 +13,8 @@ etc/build/
 try/
 fpga_camera_tz/
 node_modules/
+log/
+video/
 .vscode/
 
 # Executables
