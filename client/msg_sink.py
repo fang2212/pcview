@@ -55,8 +55,8 @@ class FlowSink(object):
                     data = await websocket.recv()
                     msg = msgpack.unpackb(data, use_list=False)
                     topic = msg[b'topic'].decode('ascii')
-                    print(topic)
-                    print(type(msg[b'data']))
+                    # print(topic)
+                    # print(type(msg[b'data']))
                     try:
                         data = msgpack.unpackb(msg[b'data'], use_list=False)
                     except Exception as err:
@@ -87,7 +87,7 @@ class FlowSink(object):
                         }
 
                     frame_id = data['frame_id']
-                    print(frame_id)
+                    # print(frame_id)
                     if new_id != frame_id:
                         msg_queue.put(new_pack)
                         new_pack = data

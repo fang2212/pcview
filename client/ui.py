@@ -1,7 +1,7 @@
 
 import os
 import cv2
-import datetime
+from datetime import datetime
 import numpy as np
 
 class CVColor(object):
@@ -17,6 +17,27 @@ class CVColor(object):
     Black = (0, 0, 0)
     White = (255, 255, 255)
     Pink = (255, 0, 255)
+
+
+class FPSCnt(object):
+
+    def __init__(self, period, fps):
+        self.period = period
+        self.start_time = None
+        self.cnt = 0
+        self.fps = 0
+    
+    def inc(self, step=1):
+        if self.cnt % self.period == 0:
+            if not self.start_time:
+                self.start_time = datetime.now()
+            else:
+                temp = self.start_time
+                self.start_time = datetime.now()
+                delta = (self.start_time - temp).total_seconds()
+                print(self.period, delta)
+                self.fps = str("%.2f" % (self.period / delta))
+        self.cnt += 1
 
 class BaseDraw(object):
     """
@@ -90,20 +111,6 @@ class BaseDraw(object):
 
     @classmethod
     def draw_single_info(self, img, point, width, title, para_list):
-        """显示ped信息
-        Args:
-            img: 原始图片
-            parameters: List [index, TODO ]
-        """
-        '''
-        origin_x, origin_y = point
-        gap_v = 20
-        size = 0.5
-        BaseDraw.draw_text(img, para_list.type, (origin_x, origin_y + gap_v), size, CVColor.Cyan, 1)
-        for index, para in enumerate(para_list.output()): 
-            BaseDraw.draw_text(img, para, (origin_x, origin_y + gap_v * (index+2)), size, CVColor.White, 1)
-        '''
-
         """显示物体头部信息 for car & ped
         Args:
             img: 原始图片
@@ -130,12 +137,12 @@ class BaseDraw(object):
         """
         x, y = int(point[0]), int(point[1])
         num = len(para_list)
-        gap_v = 20
-        size = 0.6
+        gap_v = 18
+        size = 0.5
 
         rect = (x, y-num*gap_v-6, width, num*gap_v+6)
         BaseDraw.draw_alpha_rect(img, rect, 0.4)
-        BaseDraw.draw_para_list(img, (x+5, y-8), para_list, -gap_v, size)
+        BaseDraw.draw_para_list(img, (x+5, y-6), para_list, -gap_v, size)
 
     @classmethod
     def draw_para_list(cls, img, point, para_list, gap_v=20, size=0.5):
