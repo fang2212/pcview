@@ -81,10 +81,7 @@ class PCDraw(Process):
                 mess['env'] = {
                     'fps': fps_cnt.fps
                 }
-
                 # draw now id
-                print('frame_id', frame_id)
-
                 image = mess['camera']['image']
                 player.draw(mess, image)
                 cv2.imshow('UI', image)
@@ -93,6 +90,8 @@ class PCDraw(Process):
                 if self.save_video:
                     video_recorder.write(image)
                 del mess['camera']['image']
+                print('frame_id', frame_id)
+                print(mess)
                 if self.save_log:
                     text_recorder.write(json.dumps(mess)+'\n')
                 
@@ -135,5 +134,3 @@ if __name__ == '__main__':
     if args.path:
         file_cfg['path'] = args.path
     pcview = PCView(ip, file_cfg)
-    
-    

@@ -45,10 +45,10 @@ class FlowPlayer(object):
             BaseDraw.draw_single_info(img, (5, 0), 120, title, para_list)
             # DrawParameters.draw_normal_parameters(img, para_list, (100, 0))
 
-        print(mess)
+        #print(mess)
         if 'vehicle_trace_res_list' in mess:
             res_list = mess['vehicle_trace_res_list']
-            print(res_list)
+            # print(res_list)
             for rect in res_list:
                 DrawPed.draw_ped_rect(img, rect['det_rect'])
 

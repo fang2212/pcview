@@ -39,69 +39,71 @@ class FlowSink(object):
 
     @classmethod
     async def pcview_flow(cls, uri, msg_queue):
-        async with websockets.connect(uri) as websocket:
-            msg = {
-                'source': 'pcview-client',
-                'topic': 'subscribe',
-                'data': 'pcview',
-            }
-            data = msgpack.packb(msg)
-            await websocket.send(data)
+        while True:
+            async with websockets.connect(uri) as websocket:
+                msg = {
+                    'source': 'pcview-client',
+                    'topic': 'subscribe',
+                    'data': 'pcview',
+                }
+                data = msgpack.packb(msg)
+                await websocket.send(data)
 
-            new_pack = {}
-            new_id = -1
-            while True:
-                try:
-                    data = await websocket.recv()
-                    msg = msgpack.unpackb(data, use_list=False)
-                    topic = msg[b'topic'].decode('ascii')
-                    # print(topic)
-                    # print(type(msg[b'data']))
+                new_pack = {}
+                new_id = -1
+                while True:
                     try:
-                        data = msgpack.unpackb(msg[b'data'], use_list=False)
-                    except Exception as err:
-                        data = msg[b'data']
-                    # send_ts = int(time.time())*1000
-                    # print(topic)
-                    # print('get data')
-                    if b'image_frame_id' in data:
-                        image = cv2.imdecode(np.fromstring(data[b'image'], np.uint8), cv2.IMREAD_COLOR)
-                        data = {
-                            'camera': {
-                                'image': image,
-                                'create_ts': data[b'camera_time']
-                            },
-                            'frame_id': data[b'image_frame_id'],
-                        }
-                    elif b'frame_id' in data:
-                        data = convert(data)
-                    else:
-                        frame_id = int.from_bytes(data[4:8], byteorder="little", signed=False)
-                        data = data[24:]
-                        image = cv2.imdecode(np.fromstring(data, np.uint8), cv2.IMREAD_COLOR)
-                        data = {
-                            'camera': {
-                                'image': image,
-                            },
-                            'frame_id': frame_id
-                        }
+                        data = await websocket.recv()
+                        msg = msgpack.unpackb(data, use_list=False)
+                        topic = msg[b'topic'].decode('ascii')
+                        # print(topic)
+                        # print(type(msg[b'data']))
+                        try:
+                            data = msgpack.unpackb(msg[b'data'], use_list=False)
+                        except Exception as err:
+                            data = msg[b'data']
+                        # send_ts = int(time.time())*1000
+                        # print(topic)
+                        # print('get data')
+                        if b'image_frame_id' in data:
+                            image = cv2.imdecode(np.fromstring(data[b'image'], np.uint8), cv2.IMREAD_COLOR)
+                            data = {
+                                'camera': {
+                                    'image': image,
+                                    'create_ts': data[b'camera_time']
+                                },
+                                'frame_id': data[b'image_frame_id'],
+                            }
+                        elif b'frame_id' in data:
+                            data = convert(data)
+                        else:
+                            frame_id = int.from_bytes(data[4:8], byteorder="little", signed=False)
+                            data = data[24:]
+                            image = cv2.imdecode(np.fromstring(data, np.uint8), cv2.IMREAD_COLOR)
+                            data = {
+                                'camera': {
+                                    'image': image,
+                                },
+                                'frame_id': frame_id
+                            }
 
-                    frame_id = data['frame_id']
-                    # print(frame_id)
-                    if new_id != frame_id:
-                        msg_queue.put(new_pack)
-                        new_pack = data
-                        new_id = data['frame_id']
-                    elif new_id == data['frame_id']:
-                        for key in data:
-                            if key != 'frame_id':
-                                new_pack[key] = data[key]
-                    time.sleep(0.01)
-                except websockets.exceptions.ConnectionClosed as err:
-                    print('Connection was closed:', err)
-                    msg_queue.put(SinkError.Closed)
-                    time.sleep(2)
-                    break
+                        frame_id = data['frame_id']
+                        # print(frame_id)
+                        if new_id != frame_id:
+                            msg_queue.put(new_pack)
+                            new_pack = data
+                            new_id = data['frame_id']
+                        elif new_id == data['frame_id']:
+                            for key in data:
+                                if key != 'frame_id':
+                                    new_pack[key] = data[key]
+                        time.sleep(0.01)
+                    except websockets.exceptions.ConnectionClosed as err:
+                        # msg_queue.put(SinkError.Closed)
+                        time.sleep(1)
+                        print('Connection was closed:', err)
+                        # flow_bind()
+                        break
 
     @classmethod
     def open_libflow_sink(cls, ip, msg_queue):
