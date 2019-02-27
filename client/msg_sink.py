@@ -100,8 +100,8 @@ class FlowSink(object):
                         time.sleep(0.01)
                     except websockets.exceptions.ConnectionClosed as err:
                         # msg_queue.put(SinkError.Closed)
-                        time.sleep(1)
                         print('Connection was closed:', err)
+                        time.sleep(0.1)
                         # flow_bind()
                         break
 

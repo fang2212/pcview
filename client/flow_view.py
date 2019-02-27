@@ -81,21 +81,29 @@ class PCDraw(Process):
                 mess['env'] = {
                     'fps': fps_cnt.fps
                 }
+
                 # draw now id
                 image = mess['camera']['image']
-                player.draw(mess, image)
+                try:
+                    player.draw(mess, image)
+                except Exception as err:
+                    print(err)
+                    continue
+
                 cv2.imshow('UI', image)
                 cv2.waitKey(1)
 
                 if self.save_video:
                     video_recorder.write(image)
                 del mess['camera']['image']
+                '''
                 print('frame_id', frame_id)
                 print(mess)
+                '''
                 if self.save_log:
                     text_recorder.write(json.dumps(mess)+'\n')
                 
-                if cnt % 500 == 0:
+                if cnt % 2000 == 0:
                     if self.save_video:
                         video_recorder.release()
                         video_recorder.set_writer(get_data_str())
