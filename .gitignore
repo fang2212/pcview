@@ -15,6 +15,7 @@ fpga_camera_tz/
 node_modules/
 log/
 video/
+pcview_data/
 .vscode/
 
 # Executables

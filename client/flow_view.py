@@ -13,7 +13,7 @@ from datetime import datetime
 from multiprocessing import Process, Queue, Value
 
 from ui import DrawVehicle, DrawPed, CVColor, FPSCnt
-from msg_sink import FlowSink, SinkError
+from msg_sink import FlowSink, SinkError, TcpSink
 from recorder import VideoRecorder, TextRecorder
 from player import FlowPlayer
 
@@ -29,7 +29,11 @@ class PCView():
         self.pc_draw = PCDraw(self.msg_queue, file_cfg)
         self.pc_draw.start()
 
-        FlowSink.open_libflow_sink(ip, self.msg_queue)
+    
+    def run(self):
+        # FlowSink.open_libflow_sink(ip, self.msg_queue)
+        tcp_sink = TcpSink('127.0.0.1', 12032, self.msg_queue)
+        tcp_sink.run()
 
 
 class PCDraw(Process):
@@ -146,3 +150,4 @@ if __name__ == '__main__':
     if args.path:
         file_cfg['path'] = args.path
     pcview = PCView(ip, file_cfg)
+    pcview.run()
