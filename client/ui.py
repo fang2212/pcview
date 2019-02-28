@@ -140,6 +140,11 @@ class BaseDraw(object):
         gap_v = 18
         size = 0.5
 
+        if y-num*gap_v-6 < 0:
+            y = num*gap_v+6
+        if x+width > 720:
+            x = 720-width
+
         rect = (x, y-num*gap_v-6, width, num*gap_v+6)
         BaseDraw.draw_alpha_rect(img, rect, 0.4)
         BaseDraw.draw_para_list(img, (x+5, y-6), para_list, -gap_v, size)
