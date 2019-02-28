@@ -87,6 +87,10 @@ class PCDraw(Process):
                 try:
                     player.draw(mess, image)
                 except Exception as err:
+                    cv2.imwrite('error/error.jpg', img)
+                    del mess['camera']['image']
+                    with open('error/error.json', 'w+') as fp:
+                        fp.write(json.dumps(mess))
                     print(err)
                     continue
 

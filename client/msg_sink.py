@@ -97,7 +97,8 @@ class FlowSink(object):
                             for key in data:
                                 if key != 'frame_id':
                                     new_pack[key] = data[key]
-                        time.sleep(0.01)
+                        websocket.pong()
+                        # time.sleep(0.01)
                     except websockets.exceptions.ConnectionClosed as err:
                         # msg_queue.put(SinkError.Closed)
                         print('Connection was closed:', err)
