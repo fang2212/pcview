@@ -1,7 +1,6 @@
 /*
 */
 
-const nano = require("nanomsg");
 const WebSocket = require("ws");
 const msgpack = require("msgpack");
 const events = require('events');
@@ -73,7 +72,13 @@ class LibflowSink extends events.EventEmitter {
   }
 }
 
-const addr = 'ws://192.168.0.233:24011'
+let ip = '192.168.0.233' ;
+if (process.argv.length == 3) {
+  ip = process.argv[2];
+}
+
+// const addr = 'ws://192.168.0.233:24011'
+const addr = 'ws://'+ip+':24011'
 const topics = ['pcview']
 const tcpServer = new server.BlockServer('tcpServer', "0.0.0.0:12032");
 let sink = null
@@ -95,6 +100,7 @@ tcpServer.on('connection', conn => {
       })
     })
     sink.on('data', data => {
+      //console.log(data);
       if (tcpServer.clients.length) {
         sendBuf(data);
       } else if (sink) {

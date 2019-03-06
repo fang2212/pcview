@@ -30,6 +30,8 @@ pcview_data/
 __pycache__
 *.pyc
 *.swp
+*.spec
+*.exe
 
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
@@ -37,3 +39,5 @@ __pycache__
 
 test/
 sdk/
+build/
+dist/
