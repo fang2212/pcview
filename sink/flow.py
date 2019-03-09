@@ -16,6 +16,8 @@ import websockets
 import numpy as np
 import cv2
 
+from .sync import Sync
+
 pack = os.path.join
 
 
@@ -81,6 +83,7 @@ class TcpSink(object):
     def run(self):
         new_pack = {}
         new_id = -1
+        sync = Sync(4)
         while True:
             data = self.read_msg()
             msg = msgpack.unpackb(data, use_list=False)
@@ -112,17 +115,20 @@ class TcpSink(object):
                     },
                     'frame_id': frame_id
                 }
+            
+            pops = sync.append(data)
 
-            frame_id = data['frame_id']
-            # print(frame_id)
-            if new_id != frame_id:
-                self.msg_queue.put(new_pack)
-                new_pack = data
-                new_id = data['frame_id']
-            elif new_id == data['frame_id']:
-                for key in data:
-                    if key != 'frame_id':
-                        new_pack[key] = data[key]
+            for data in pops:
+                frame_id = data['frame_id']
+                # print(frame_id)
+                if new_id != frame_id:
+                    self.msg_queue.put(new_pack)
+                    new_pack = data
+                    new_id = data['frame_id']
+                elif new_id == data['frame_id']:
+                    for key in data:
+                        if key != 'frame_id':
+                            new_pack[key] = data[key]
 
 class FlowSink(object):
 

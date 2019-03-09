@@ -127,7 +127,7 @@ class PCView(object):
     def __init__(self):
         self.res_queue = Queue()    #处理结果，绘图数据队列
 
-        self.tcp_sink = TcpSink(ip='127.0.0.1', port=20001, mess_queue=self.res_queue) #从nanomsg接收图像
+        self.tcp_sink = TcpSink(ip='127.0.0.1', port=12032, mess_queue=self.res_queue) #从nanomsg接收图像
         
         self.pc_draw = PCDraw(mess_queue=self.res_queue) #绘图进程
 

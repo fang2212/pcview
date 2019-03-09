@@ -472,6 +472,7 @@ class DrawLane(object):
         if lane_data:
             speed = lane_data['speed']
             deviate_state = lane_data['deviate_state']
+            print(config.lane.lane_speed_limit)
             for lane in lane_data['lanelines']:
                 if ((int(lane['label']) in [1, 2]) or config.lane.all_laneline) and speed >= config.lane.lane_speed_limit:
                     width = lane['width']

@@ -3,9 +3,8 @@
 
 import os
 import sys
-import logging
+# import logging
 import time
-import msgpack
 import json
 import cv2
 import argparse
@@ -18,10 +17,9 @@ if sys.platform == 'win32':
 else:
     print('linux platform')
 
-from ui import DrawVehicle, DrawPed, CVColor, FPSCnt
-from msg_sink import FlowSink, SinkError, TcpSink
+from player import FPSCnt, ClientPlayer
+from sink import NanoSink
 from recorder import VideoRecorder, TextRecorder
-from player import FlowPlayer
 
 def get_data_str():
     FORMAT = '%Y%m%d%H%M%S'
@@ -55,7 +53,7 @@ class PCDraw(Process):
         self.save_path = file_cfg['path']
 
     def run(self):
-        player = FlowPlayer()
+        player = ClientPlayer()
         if self.save_log:
             text_recorder = TextRecorder(self.save_path)
             text_recorder.set_writer(get_data_str())
@@ -70,6 +68,7 @@ class PCDraw(Process):
             while not self.mess_queue.empty():
                 mess = self.mess_queue.get()
                 # print(mess)
+                '''
                 if mess == SinkError.Closed:
                     print('close')
                     if self.save_video:
@@ -78,6 +77,7 @@ class PCDraw(Process):
                         text_recorder.release()
                     cv2.destroyAllWindows()
                     return
+                '''
 
                 if 'frame_id' not in mess:
                     continue
@@ -127,7 +127,8 @@ class PCDraw(Process):
 
             time.sleep(0.01)
         cv2.destroyAllWindows()
-    
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--video", help="是否保存视频[0,1]，默认保存", type=str)

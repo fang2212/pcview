@@ -1,6 +1,3 @@
-/*
-*/
-
 const WebSocket = require("ws");
 const msgpack = require("msgpack");
 const events = require('events');

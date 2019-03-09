@@ -63,10 +63,11 @@ if __name__ == "__main__":
     if args.use_can:
         config.can.use = int(args.use_can)
 
-    # config.lane.lane_speed_limit = 0
+    config.lane.lane_speed_limit = 0
     # config.pic.raw_type = 'color'
     # config.ip = '192.168.1.233'
     # config.pic.use = False
+    print(sys.path)
     print("ip", config.ip)
     #config.can.use = 1
     

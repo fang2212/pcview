@@ -1,8 +1,16 @@
-
 import os
 import cv2
 from datetime import datetime
 import numpy as np
+
+def dict2list(d, keys, type=None, default=None):
+    values = []
+    for key in keys:
+        value = d.get(key, default)
+        if type:
+            value = type(value)
+        values.append(value)
+    return values
 
 class CVColor(object):
     '''
@@ -59,6 +67,18 @@ class BaseDraw(object):
         cv2.rectangle(img_content, point1, point2, color, thickness)
 
     @classmethod
+    def draw_obj_rect(self, img, position, color=CVColor.Cyan, thickness = 2):
+        """绘制pedestrain
+        Args:
+            img: 原始图片
+            position: (x, y, width, height),车辆框的位置，大小
+            color: CVColor 颜色
+            thickness: int 线粗
+        """
+        x1, y1, width, height = list(map(int, position))
+        BaseDraw.draw_rect(img, (x1, y1), (x1+width, y1+height), color, thickness)
+
+    @classmethod
     def draw_rect_corn(cls, img, point1, point2, color, thickness=2):
         """
             draw 8 lines at corns
@@ -86,10 +106,65 @@ class BaseDraw(object):
         cv2.line(img, (x2-suit_len,y2), (x2, y2), color, thickness, cv2.LINE_8, 0)
         cv2.line(img, (x2,y2-suit_len), (x2, y2), color, thickness, cv2.LINE_8, 0)
 
+    @classmethod
+    def draw_obj_rect_corn(cls, img, position, color=CVColor.Cyan, thickness=2):
+        """绘制车辆框
+        Args:
+            img: 原始图片
+            position: (x, y, width, height),车辆框的位置，大小
+            color: CVColor 车辆颜色
+            thickness: int 线粗
+        """
+        x, y, width, height = position
+        x1 = int(x)
+        y1 = int(y)
+        width = int(width)
+        height = int(height)
+        x2 = x1 + width
+        y2 = y1 + height
+        BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness)
 
     @classmethod
     def draw_line(cls, img_content, p1, p2,  color_type = CVColor.White, thickness=1, type=cv2.LINE_8):
         cv2.line(img_content, p1, p2, color_type, thickness, type, 0)
+
+    @classmethod
+    def draw_lane_line(cls, img, ratios, width, color, begin=450, end=720):
+        """绘制车道线
+        Args:
+            img: 原始图片
+            ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
+            width: float 车道线宽度
+            color: CVColor 车道线颜色
+        """
+        if np.NaN in ratios:
+            return
+        a0, a1, a2, a3 = list(map(float, ratios))
+        width = int(float(width) * 10 + 0.5)
+        for y in range(begin, end, 20):
+            y1 = y
+            y2 = y1 + 20
+            x1 = (int)(a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1)
+            x2 = (int)(a0 + a1 * y2 + a2 * y2 * y2 + a3 * y2 * y2 * y2)            
+            cls.draw_line(img, (x1, y1), (x2, y2), color, width)
+
+    @classmethod
+    def draw_lane_lines(cls, img, lanelines, speed, deviate_state, draw_all=False, speed_limit=30):
+        for lane in lanelines:
+            if ((int(lane['label']) in [1, 2]) or draw_all) and speed >= speed_limit:
+                # width = lane['width']
+                # l_type = lane['type']
+                # conf = lane['confidence']
+                index = lane['label']
+                begin = int(lane['end'][1])
+                end = int(lane['start'][1])
+                if end > 720:
+                    end = 720
+                if begin < 0:
+                    begin = 0
+                color = CVColor.Red if int(index) == int(deviate_state) else CVColor.Blue
+                cls.draw_lane_line(img, lane['perspective_view_poly_coeff'],
+                                   0.2, color, begin, end)
 
     @classmethod
     def draw_alpha_rect(cls, image_content, rect, alpha, color = CVColor.White, line_width = 0):
@@ -172,57 +247,6 @@ class ParaList(object):
         self.para_list.append(item)
     def output(self):
         return self.para_list
-
-class Player(object):
-    @classmethod
-    def draw(self, mess):
-        img = mess['img']
-        frame_id = mess['frame_id']
-        vehicle_data = mess['vehicle']
-        lane_data = mess['lane']
-        ped_data = mess['ped']
-        tsr_data = mess['tsr']
-        can_data = mess.get('can')
-        cali_data = mess.get('cali')
-        print('cali', cali_data)
-        extra = mess['extra']
-        mobile_log = extra.get('mobile_log')
-
-        if config.show.overlook:
-            DrawOverlook.init(img)
-
-        DrawParameters.init(img)
-        DrawParameters.draw_env(img, frame_id, vehicle_data,lane_data, extra)
-        if config.mobile.show:
-            DrawParameters.draw_mobile(img, mobile_log)
-        
-        if config.show.vehicle:
-            DrawVehicle.draw(img, vehicle_data)
-
-        if config.show.lane:
-            DrawLane.draw(img, lane_data)
-
-        if config.show.ped:
-            DrawPed.draw(img, ped_data)
-
-        if config.show.tsr:
-            DrawTsr.draw(img, tsr_data)
-
-        if config.show.cali:
-            DrawParameters.draw_cali(img, cali_data)
-
-        if config.can.use and can_data:
-            pass
-            #DrawExtra.draw_byd_can(img, can_data, lane_data)
-
-        if config.show.debug:
-            DrawExtra.draw_extra(img, extra)
-
-        DrawAlarm.draw(img, mess)
-        if config.can.use:
-            DrawAlarmCan.draw(img, mess['can'])
-
-        return img
 
 class DrawParameters(object):
     '''
@@ -758,15 +782,3 @@ class DrawAlarmCan(object):
                 BaseDraw.draw_text(img, text, (x, y), size, color[value], thickness)
 
         BaseDraw.draw_text(img, "(liuqi)", (basex, y+25), 0.4, CVColor.Yellow, 1)
-
-def dict2list(d, keys, type=None, default=None):
-    values = []
-    for key in keys:
-        value = d.get(key, default)
-        if type:
-            value = type(value)
-        values.append(value)
-    return values
-
-
-    

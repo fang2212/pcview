@@ -2,11 +2,38 @@ import os
 import cv2
 import datetime
 import numpy as np
-from ui import BaseDraw, CVColor, DrawParameters, DrawPed, DrawVehicle
-from ui import ParaList
+from .ui import BaseDraw, CVColor, DrawParameters, DrawPed, DrawVehicle
 from math import isnan
 
-class FlowPlayer(object):
+class ClientPlayer(object):
+    @classmethod
+    def draw(self, mess):
+        img = mess['img']
+        frame_id = mess['frame_id']
+        vehicle_data = mess['vehicle']
+        lane_data = mess['lane']
+        ped_data = mess['ped']
+        tsr_data = mess['tsr']
+        extra = mess['extra']
+
+        DrawParameters.init(img)
+        DrawParameters.draw_env(img, frame_id, vehicle_data, lane_data, extra)
+        
+        if config.show.vehicle:
+            DrawVehicle.draw(img, vehicle_data)
+
+        if config.show.lane:
+            DrawLane.draw(img, lane_data)
+
+        if config.show.ped:
+            DrawPed.draw(img, ped_data)
+
+        if config.show.tsr:
+            DrawTsr.draw(img, tsr_data)
+
+        return img
+
+class ClientPlayer(object):
     @classmethod
     def draw(cls, mess, img):
 
@@ -114,6 +141,23 @@ class FlowPlayer(object):
                 '''
                 BaseDraw.draw_head_info(img, pos[0:2], para_list, 80)
 
+        if 'lane' in mess:
+            data = mess['lane']
+            for lane in data:
+                # if (int(lane['label']) in [1, 2]):
+                if True:
+                    width = lane['width']
+                    l_type = lane['type']
+                    conf = lane['confidence']
+                    index = lane['label']
+                    begin = int(lane['end'][1])
+                    end = int(lane['start'][1])
+                    if end > 720:
+                        end = 720
+                    color = CVColor.Blue
+                    BaseDraw.draw_lane_line(img, lane['perspective_view_poly_coeff'],
+                                            0.2, color, begin, end) 
+   
         return img
 
     @classmethod
