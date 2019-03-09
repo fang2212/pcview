@@ -5,6 +5,8 @@ const path = require('path');
 const argv = require('yargs')
       .usage('Usage: $0 --ip [ip] --log-path [log-path] --event-log --print')
       .argv;
+const Sync = require('./sync');
+const sync = new Sync(5, 'loop_index');
 
 Date.prototype.format = function(fmt) { 
   var o = { 
@@ -92,29 +94,33 @@ ws.on('message', function incoming(data) {
 
     data = msgpack.unpack(obj.data)
     if (obj.topic == 'runtime.time_cost') {
-      const frame_id = data.loop_index;
-      if (new_id != frame_id) {
-        if (new_pack) {
-          if (is_ok) {
-            let temp = JSON.stringify(new_pack)
-            if (argv.print) {
-              console.log(temp);
+      const res = sync.push(data);
+      for (let i in res) {
+        data = res[i];
+        const frame_id = data.loop_index;
+        if (new_id != frame_id) {
+          if (new_pack) {
+            if (is_ok) {
+              let temp = JSON.stringify(new_pack)
+              if (argv.print) {
+                console.log(temp);
+              }
+              fs.writeSync(timeLog, temp+'\n');
+            } else {
+              is_ok = 1;
             }
-            fs.writeSync(timeLog, temp+'\n');
-          } else {
-            is_ok = 1;
           }
+          new_pack = {
+            "frame_id": frame_id,
+            "frame_time_cost": 0,
+            "node_time_cost": []
+          }
+          PackData(new_pack, data);
+          new_id = frame_id;
         }
-        new_pack = {
-          "frame_id": frame_id,
-          "frame_time_cost": 0,
-          "node_time_cost": []
+        else if (new_id == frame_id) {
+          PackData(new_pack, data);
         }
-        PackData(new_pack, data);
-        new_id = frame_id;
-      }
-      else if (new_id == frame_id) {
-        PackData(new_pack, data);
       }
     } else if (obj.topic == 'runtime.event') {
       let msgTime = obj.time;

@@ -7,7 +7,7 @@ from math import isnan
 
 class ClientPlayer(object):
     @classmethod
-    def draw(self, mess):
+    def draw(cls, mess):
         img = mess['img']
         frame_id = mess['frame_id']
         vehicle_data = mess['vehicle']
@@ -16,176 +16,67 @@ class ClientPlayer(object):
         tsr_data = mess['tsr']
         extra = mess['extra']
 
-        DrawParameters.init(img)
-        DrawParameters.draw_env(img, frame_id, vehicle_data, lane_data, extra)
+        cls.draw_vehicle(img, vehicle_data)
+
+        cls.draw_lane(img, lane_data)
+
+        cls.draw_ped(img, ped_data)
+
+        cls.draw_tsr(img, tsr_data)
+
+        return img
+    
+    @classmethod
+    def draw_vehicle(cls, img, data):
+        if not data:
+            return
+        focus_index = data['focus_index']
+        for i, vehicle in enumerate(data['dets']):
+            position = vehicle['bounding_rect']
+            position = position['x'], position['y'], position['width'], position['height']
+            color = CVColor.Red if focus_index == i else CVColor.Cyan
+            BaseDraw.draw_obj_rect_corn(img, position, color, 1, 8)
+
+    @classmethod
+    def draw_lane(cls, img, data):
+        if not data:
+            return
+        speed = data['speed']
+        deviate_state = data['deviate_state']
+        BaseDraw.draw_lane_lines(img, data['lanelines'], speed, deviate_state, False, 0)
+
+    @classmethod
+    def draw_ped(cls, img, data):
+        if not data:
+            return
+        for pedestrain in data['pedestrians']:
+            position = pedestrain['regressed_box']
+            position = position['x'], position['y'], position['width'], position['height']
+            color = CVColor.Yellow
+            if pedestrain['is_key']:
+                color = CVColor.Pink
+            #if pedestrain['is_danger']:
+            #    color = CVColor.Pink
+            BaseDraw.draw_obj_rect(img, position, color, 1)
+
+    @classmethod
+    def draw_tsr(cls, img, data):
+        if not data:
+            return
         
-        if config.show.vehicle:
-            DrawVehicle.draw(img, vehicle_data)
-
-        if config.show.lane:
-            DrawLane.draw(img, lane_data)
-
-        if config.show.ped:
-            DrawPed.draw(img, ped_data)
-
-        if config.show.tsr:
-            DrawTsr.draw(img, tsr_data)
-
-        return img
-
-class ClientPlayer(object):
-    @classmethod
-    def draw(cls, mess, img):
-
-        fps = '_'
-        if 'env' in mess:
-            title = 'env'
-            speed, fps = '-', '-'
-
-            if 'speed' in mess:
-                speed = "%.1f" % float(mess['speed'])
-
-            if 'fps' in mess['env']:
-                fps = mess['env']['fps']
-            para_list = [
-                'fps:' + str(fps),
-                'speed:' + str(speed),
-            ]
-            BaseDraw.draw_single_info(img, (130, 0), 120, title, para_list)
-
-        pcw_on, ped_on = '_', '_'
-        if 'pcw_on' in mess:
-            pcw_on = str(mess['pcw_on'])
-        if 'ped_on' in mess:
-            ped_on = str(mess['ped_on'])
-        para_list = [
-            'ped_on:' + ped_on,
-            'pcw_on:' + pcw_on
-        ]
-        BaseDraw.draw_single_info(img, (260, 0), 120, 'ped', para_list)
-
-        if 'pedestrians' in mess:
-            res_list = mess['pedestrians']
-            for i, obj in enumerate(res_list):
-                DrawPed.draw_ped_rect(img, obj['detect_box'])
-                pos= obj['regressed_box']
-                color = CVColor.Red if obj['is_key'] else CVColor.Blue
-                DrawVehicle.draw_vehicle_rect(img, pos, color, 2)
-                para_list = [
-                    'dist:'+"%.2f" % obj['dist'],
-                    'ttc:'+"%.2f" % obj['ttc'],
-                    'classify_type:'+str(obj['classify_type']),
-                    'type_conf:'+str(obj['type_conf']),
-                    'world_x:'+"%.2f" % obj['world_x'],
-                    'world_y:'+"%.2f" % obj['world_y'],
-                    'type_conf:'+str(obj['type_conf']),
-                    'is_danger:'+str(obj['is_danger']),
-                    'is_key:'+str(obj['is_key']),
-                    'predicted:'+str(obj['predicted']),
-                    'id:'+str(obj['id'])
-                ]
-                BaseDraw.draw_head_info(img, pos[0:2], para_list, 150)
-
-        if 'vehicle_warning' in mess:
-            data = mess['vehicle_warning']
-            vid, headway, fcw, hw, vb, ttc = '-','-','-','-','-', '-'
-
-            vid = data['vehicle_id']
-            headway = '%.2f' % data['headway']
-            fcw = data['fcw']
-            # ttc = data['ttc']
-            hw = data['headway_warning']
-            vb = data['vb_warning']
-            title = 'vehicle'
-            para_list = [
-                'vid:' + str(vid),
-                'headway:' + str(headway),
-                #'ttc:' + str(ttc),
-                'fcw:' + str(fcw),
-                'hw:' + str(hw),
-                'vb:' + str(vb)
-            ]
-            BaseDraw.draw_single_info(img, (5, 0), 120, title, para_list)
-            # DrawParameters.draw_normal_parameters(img, para_list, (100, 0))
-
-        if 'vehicle_measure_res_list' in mess:
-            res_list = mess['vehicle_measure_res_list']
-            for i, vehicle in enumerate(res_list):
-                DrawPed.draw_ped_rect(img, vehicle['det_rect'])
-                pos= vehicle['reg_rect']
-                color = CVColor.Red if vehicle['is_crucial'] else CVColor.Blue
-                DrawVehicle.draw_vehicle_rect(img, pos, color, 2)
-                
-                '''
-                cls.draw_vehicle_info(img, pos,
-                                      vehicle['longitude_dist'],
-                                      vehicle['lateral_dist'],
-                                      0, str(vehicle['vehicle_class']))
-                '''
-
-                vid = vehicle['vehicle_id']
-                d1 = vehicle['longitude_dist']
-                d2 = vehicle['lateral_dist']
-                d1 = 'nan' if isnan(d1) else int(float(d1) * 100) / 100
-                d2 = 'nan' if isnan(d2) else int(float(d2) * 100) / 100
-                para_list = [
-                    'v:'+str(d1),
-                    'h:'+str(d2),
-                    'type:'+str(vehicle['vehicle_class']),
-                    'vid:'+str(vid)
-                ]
-                '''
-                rect = (int(pos[0]), int(pos[1])-46, 120, 46)
-                BaseDraw.draw_alpha_rect(img, rect, 0.4)
-                BaseDraw.draw_para_list(img, pos[0:2], para_list, -1, 20, 0.6)
-                '''
-                BaseDraw.draw_head_info(img, pos[0:2], para_list, 80)
-
-        if 'lane' in mess:
-            data = mess['lane']
-            for lane in data:
-                # if (int(lane['label']) in [1, 2]):
-                if True:
-                    width = lane['width']
-                    l_type = lane['type']
-                    conf = lane['confidence']
-                    index = lane['label']
-                    begin = int(lane['end'][1])
-                    end = int(lane['start'][1])
-                    if end > 720:
-                        end = 720
-                    color = CVColor.Blue
-                    BaseDraw.draw_lane_line(img, lane['perspective_view_poly_coeff'],
-                                            0.2, color, begin, end) 
-   
-        return img
-
-    @classmethod
-    def draw_vehicle_info(cls, img, position, vertical_dis, horizontal_dis, vehicle_width, vehicle_type):
-        """绘制车辆信息
-        Args:
-            img: 原始图片
-            position: (x, y, width, height),车辆框的位置，大小
-            vertical_dis: float 与检测车辆的竖直距离
-            horizontal_dis: float 与检测车辆的水平距离
-            vehicle_width: float 检测车辆的宽度
-            vehicle: str 车辆类型，见const_type
-        """
-        x, y, width, height = position
-        x1 = int(x)
-        y1 = int(y)
-        width = int(width)
-        height = int(height)
-        x2 = x1 + width
-        y2 = y1 + height
-        origin_x = max(0, x2 - 150)
-        origin_y = max(0, y1 - 30)
-        BaseDraw.draw_alpha_rect(img, (origin_x, origin_y, 150, 30), 0.6)
-        size = 1
-        BaseDraw.draw_text(img, str(vehicle_type), (x2 - 150, y1 - 5),
-                           size, CVColor.White, 1)
-
-        d1 = 'nan' if isnan(vertical_dis) else int(float(vertical_dis) * 100) / 100
-        d2 = 'nan' if isnan(horizontal_dis) else int(float(horizontal_dis) * 100) / 100
-        data = str(d1) + ',' + str(d2)
-        BaseDraw.draw_text(img, data, (x2 - 120, y1 - 5), size, CVColor.White, 1)
+        def draw_tsr_info(img, position, max_speed):
+            x1, y1, width, height = list(map(int, position))
+            x2 = x1 + width
+            y2 = y1 + height
+            origin_x = max(0, x2 - 40)
+            origin_y = max(0, y2)
+            BaseDraw.draw_alpha_rect(img, (origin_x, origin_y, 40, 20), 0.6)
+            BaseDraw.draw_text(img, str(max_speed), (x2 - 30, y2 + 5),
+                               1, CVColor.Green, 1)
+        for i, tsr in enumerate(data['dets']):
+            position = tsr['position']
+            position = position['x'], position['y'], position['width'], position['height']
+            color = CVColor.Red
+            BaseDraw.draw_obj_rect(img, position, color, 1)
+            if tsr['max_speed'] != 0:
+                draw_tsr_info(img, position, tsr['max_speed'])                

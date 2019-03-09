@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "msgpack": "^1.0.2",
-    "ws": "^3.1.0",
+    "nanomsg": "^4.0.2",
     "yargs": "^13.2.1"
   }
 }

@@ -36,7 +36,7 @@ class PCView():
     
     def run(self):
         # FlowSink.open_libflow_sink(ip, self.msg_queue)
-        tcp_sink = TcpSink('127.0.0.1', 12032, self.msg_queue)
+        tcp_sink = NanoSink('127.0.0.1', 12032, self.msg_queue)
         tcp_sink.run()
 
 
@@ -54,14 +54,10 @@ class PCDraw(Process):
 
     def run(self):
         player = ClientPlayer()
-        if self.save_log:
-            text_recorder = TextRecorder(self.save_path)
-            text_recorder.set_writer(get_data_str())
         if self.save_video:
-            video_recorder = VideoRecorder(self.save_path)
+            video_recorder = VideoRecorder(self.save_path, 20)
             video_recorder.set_writer(get_data_str())
 
-        fps_cnt = FPSCnt(10, 0)
         cnt = 0
 
         while True:
@@ -81,27 +77,14 @@ class PCDraw(Process):
 
                 if 'frame_id' not in mess:
                     continue
-                if 'camera' not in mess:
+                if 'img' not in mess:
                     continue
 
                 cnt += 1
-                fps_cnt.inc()
-
-                frame_id = mess['frame_id']
-                mess['env'] = {
-                    'fps': fps_cnt.fps
-                }
-
-                # draw now id
-                image = mess['camera']['image']
                 try:
-                    player.draw(mess, image)
+                    image = player.draw(mess)
                 except Exception as err:
                     cv2.imwrite('error/error.jpg', img)
-                    del mess['camera']['image']
-                    with open('error/error.json', 'w+') as fp:
-                        fp.write(json.dumps(mess))
-                    print(err)
                     continue
 
                 cv2.imshow('UI', image)
@@ -109,21 +92,15 @@ class PCDraw(Process):
 
                 if self.save_video:
                     video_recorder.write(image)
-                del mess['camera']['image']
                 '''
                 print('frame_id', frame_id)
                 print(mess)
                 '''
-                if self.save_log:
-                    text_recorder.write(json.dumps(mess)+'\n')
                 
-                if cnt % 2000 == 0:
+                if cnt % 6000 == 0:
                     if self.save_video:
                         video_recorder.release()
                         video_recorder.set_writer(get_data_str())
-                    if self.save_log:
-                        text_recorder.release()
-                        text_recorder.set_writer(get_data_str())
 
             time.sleep(0.01)
         cv2.destroyAllWindows()

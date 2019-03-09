@@ -3,11 +3,11 @@ import time
 import json
 import msgpack
 
-#img_dir_path = "/media/minieye/data2/origin/"
-#log_file_path = "/media/minieye/data2/log.json"
-
-img_dir_path = "/media/minieye/testdisk1/PCSHOW/pcview/pcshow0824/origin/"
-log_file_path = "/media/minieye/testdisk1/PCSHOW/pcview/pcshow0824/log.json"
+img_dir_path = "/mnt/e/data/pcshow0925/origin/"
+log_file_path = "/mnt/e/data/pcshow0925/log.json"
+# log_file_path = "/media/minieye/data2/log.json"
+# img_dir_path = "/media/minieye/testdisk1/PCSHOW/pcview/pcshow0824/origin/"
+# log_file_path = "/media/minieye/testdisk1/PCSHOW/pcview/pcshow0824/log.json"
 
 if __name__ == "__main__":
 
@@ -31,33 +31,34 @@ if __name__ == "__main__":
     # 照片前24位
     pre = lambda frame: b'0123' + frame + b'8901234567891234'
 
-    send_set = set()
-    for data in log_data:
-        data = json.loads(data)
-        for key in data:
-            # 判断log发到哪个端口
-            if key == 'lane':
-                send_lane.send(msgpack.packb(data[key]))
-            if key == 'vehicle':
-                send_vehicle.send(msgpack.packb(data[key]))
-            if key == 'ped':
-                send_ped.send(msgpack.packb(data[key]))
-            if key == 'tsr':
-                send_tsr.send(msgpack.packb(data[key]))
-            
-            # 判断frame
-            if 'frame_id' in data[key]:
-                if frame_id < data[key]['frame_id']:
-                    frame_id = data[key]['frame_id']
-                    if frame_id not in send_set:
-                        send_set.add(frame_id)
-                        
-                        try:
-                            img_file = open(img_dir_path + str(frame_id) + '.jpg', 'rb')
-                            print('img_file', img_file)
-                            img_data = img_file.read()
-                            send_pic.send(pre((frame_id).to_bytes(4, byteorder='little')) + img_data)
-                        except:
-                            print("wrong")
+    while True:
+        send_set = set()
+        for data in log_data:
+            data = json.loads(data)
+            for key in data:
+                # 判断log发到哪个端口
+                if key == 'lane':
+                    send_lane.send(msgpack.packb(data[key]))
+                if key == 'vehicle':
+                    send_vehicle.send(msgpack.packb(data[key]))
+                if key == 'ped':
+                    send_ped.send(msgpack.packb(data[key]))
+                if key == 'tsr':
+                    send_tsr.send(msgpack.packb(data[key]))
+                
+                # 判断frame
+                if 'frame_id' in data[key]:
+                    if frame_id < data[key]['frame_id']:
+                        frame_id = data[key]['frame_id']
+                        if frame_id not in send_set:
+                            send_set.add(frame_id)
+                            
+                            try:
+                                img_file = open(img_dir_path + str(frame_id) + '.jpg', 'rb')
+                                print('img_file', img_file)
+                                img_data = img_file.read()
+                                send_pic.send(pre((frame_id).to_bytes(4, byteorder='little')) + img_data)
+                            except:
+                                print("wrong")
 
-        time.sleep(0.01) 
+            time.sleep(0.01) 

@@ -79,7 +79,7 @@ class BaseDraw(object):
         BaseDraw.draw_rect(img, (x1, y1), (x1+width, y1+height), color, thickness)
 
     @classmethod
-    def draw_rect_corn(cls, img, point1, point2, color, thickness=2):
+    def draw_rect_corn(cls, img, point1, point2, color, thickness=2, len_ratio=6):
         """
             draw 8 lines at corns
         """
@@ -88,7 +88,7 @@ class BaseDraw(object):
         width = abs(x2-x1)
         height = abs(y2-y1)
         suit_len = min(width, height)
-        suit_len = int(suit_len / 6)
+        suit_len = int(suit_len / len_ratio)
         
         # 左上角
         cv2.line(img, (x1,y1), (x1+suit_len, y1), color, thickness, cv2.LINE_8, 0)
@@ -107,7 +107,7 @@ class BaseDraw(object):
         cv2.line(img, (x2,y2-suit_len), (x2, y2), color, thickness, cv2.LINE_8, 0)
 
     @classmethod
-    def draw_obj_rect_corn(cls, img, position, color=CVColor.Cyan, thickness=2):
+    def draw_obj_rect_corn(cls, img, position, color=CVColor.Cyan, thickness=2, len_ratio=6):
         """绘制车辆框
         Args:
             img: 原始图片

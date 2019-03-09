@@ -83,7 +83,7 @@ class TcpSink(object):
     def run(self):
         new_pack = {}
         new_id = -1
-        sync = Sync(4)
+        sync = Sync(5)
         while True:
             data = self.read_msg()
             msg = msgpack.unpackb(data, use_list=False)

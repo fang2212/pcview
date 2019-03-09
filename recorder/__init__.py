@@ -31,13 +31,14 @@ class Recorder(object):
 
 
 class VideoRecorder(Recorder):
-    def __init__(self, path):
+    def __init__(self, path, fps=10):
         Recorder.__init__(self, path)
+        self.fps = fps
     
     def set_writer(self, file_name):
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         self._writer = cv2.VideoWriter(os.path.join(self._path, file_name+'.avi'),
-                                       fourcc, 10.0, (1280, 720), True)
+                                       fourcc, self.fps, (1280, 720), True)
     
     def release(self):
         self._writer.release()

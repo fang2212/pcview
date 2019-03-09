@@ -15,10 +15,8 @@ class Sync(object):
         self.id_set.add(one.get(key))
         self.id_cache.append(one)
         self.id_cache.sort(key=lambda o: o.get(key))
-        print('len', len(self.id_cache))
-        # print(self.id_cache)
-        # gap = self.id_cache[-1].get(key) - self.id_cache[0].get(key)
-        print('gap', len(self.id_set))
+        # print('len', len(self.id_cache))
+        # print('gap', len(self.id_set))
         res = []
         if len(self.id_set) > self.id_size:
             pop_id = self.id_cache[0].get(key)
