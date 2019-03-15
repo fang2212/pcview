@@ -89,6 +89,7 @@ class BaseDraw(object):
         height = abs(y2-y1)
         suit_len = min(width, height)
         suit_len = int(suit_len / len_ratio)
+        # print('suit_len', suit_len)
         
         # 左上角
         cv2.line(img, (x1,y1), (x1+suit_len, y1), color, thickness, cv2.LINE_8, 0)
@@ -122,7 +123,7 @@ class BaseDraw(object):
         height = int(height)
         x2 = x1 + width
         y2 = y1 + height
-        BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness)
+        BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness, len_ratio)
 
     @classmethod
     def draw_line(cls, img_content, p1, p2,  color_type = CVColor.White, thickness=1, type=cv2.LINE_8):

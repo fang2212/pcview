@@ -11,7 +11,6 @@ def get_data_str():
     FORMAT = '%Y%m%d%H%M%S'
     return datetime.now().strftime(FORMAT)
 
-
 class Recorder(object):
     def __init__(self, path=''):
         self._path = path

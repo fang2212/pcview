@@ -1,0 +1,695 @@
+VERSION "5"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:
+VAL_TABLE_ New_Radar_match_confidence 5 "high confidence match" 4 "radar match with bounded error" 3 "radar match with bounded error" 2 "radar match with bounded error" 1 "multi match." 0 "no match" ;
+
+
+BO_ 1879 ObstacleStatusC: 8 Vector__XXX
+ SG_ pedalConfusionGeneralObjTTC : 24|9@1+ (0.01,0) [0|5] "sec" Vector__XXX
+ SG_ pedalConfGenObjDistFromBumper : 16|8@1+ (0.05,0) [0|10] "meter" Vector__XXX
+ SG_ reserved_6 : 33|31@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ grabIndex : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+BO_ 1847 ObstacleStatusB: 8 Vector__XXX
+ SG_ timeStamp : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+ SG_ frameIndex : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+BO_ 1857 ObstacleDataC3: 8 Vector__XXX
+ SG_ reserved_5 : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ObstacleVelY : 16|8@1- (0.1,0) [-12.8|12.7] "m/s" Vector__XXX
+ SG_ reserved_3 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_2 : 42|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Accel_X : 32|10@1- (0.03,0) [-14.97|14.97] "m/s square" Vector__XXX
+ SG_ ObstacleAngle : 48|16@1- (0.01,0) [-327.68|327.68] "degree" Vector__XXX
+ SG_ ObstacleReplaced : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ObstacleAngleRate : 0|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
+
+BO_ 1878 ObstacleDataC10: 8 Vector__XXX
+ SG_ reserved_5 : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ObstacleVelY : 16|8@1- (0.1,0) [-12.8|12.7] "m/s" Vector__XXX
+ SG_ reserved_3 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_2 : 42|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Accel_X : 32|10@1- (0.03,0) [-14.97|14.97] "m/s square" Vector__XXX
+ SG_ ObstacleAngle : 48|16@1- (0.01,0) [-327.68|327.68] "degree" Vector__XXX
+ SG_ ObstacleReplaced : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ObstacleAngleRate : 0|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
+
+BO_ 1875 ObstacleDataC9: 8 Vector__XXX
+ SG_ reserved_5 : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ObstacleVelY : 16|8@1- (0.1,0) [-12.8|12.7] "m/s" Vector__XXX
+ SG_ reserved_3 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_2 : 42|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Accel_X : 32|10@1- (0.03,0) [-14.97|14.97] "m/s square" Vector__XXX
+ SG_ ObstacleAngle : 48|16@1- (0.01,0) [-327.68|327.68] "degree" Vector__XXX
+ SG_ ObstacleReplaced : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ObstacleAngleRate : 0|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
+
+BO_ 1872 ObstacleDataC8: 8 Vector__XXX
+ SG_ reserved_5 : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ObstacleVelY : 16|8@1- (0.1,0) [-12.8|12.7] "m/s" Vector__XXX
+ SG_ reserved_3 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_2 : 42|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Accel_X : 32|10@1- (0.03,0) [-14.97|14.97] "m/s square" Vector__XXX
+ SG_ ObstacleAngle : 48|16@1- (0.01,0) [-327.68|327.68] "degree" Vector__XXX
+ SG_ ObstacleReplaced : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ObstacleAngleRate : 0|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
+
+BO_ 1869 ObstacleDataC7: 8 Vector__XXX
+ SG_ reserved_5 : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ObstacleVelY : 16|8@1- (0.1,0) [-12.8|12.7] "m/s" Vector__XXX
+ SG_ reserved_3 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_2 : 42|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Accel_X : 32|10@1- (0.03,0) [-14.97|14.97] "m/s square" Vector__XXX
+ SG_ ObstacleAngle : 48|16@1- (0.01,0) [-327.68|327.68] "degree" Vector__XXX
+ SG_ ObstacleReplaced : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ObstacleAngleRate : 0|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
+
+BO_ 1866 ObstacleDataC6: 8 Vector__XXX
+ SG_ reserved_5 : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ObstacleVelY : 16|8@1- (0.1,0) [-12.8|12.7] "m/s" Vector__XXX
+ SG_ reserved_3 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_2 : 42|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Accel_X : 32|10@1- (0.03,0) [-14.97|14.97] "m/s square" Vector__XXX
+ SG_ ObstacleAngle : 48|16@1- (0.01,0) [-327.68|327.68] "degree" Vector__XXX
+ SG_ ObstacleReplaced : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ObstacleAngleRate : 0|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
+
+BO_ 1863 ObstacleDataC5: 8 Vector__XXX
+ SG_ reserved_5 : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ObstacleVelY : 16|8@1- (0.1,0) [-12.8|12.7] "m/s" Vector__XXX
+ SG_ reserved_3 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_2 : 42|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Accel_X : 32|10@1- (0.03,0) [-14.97|14.97] "m/s square" Vector__XXX
+ SG_ ObstacleAngle : 48|16@1- (0.01,0) [-327.68|327.68] "degree" Vector__XXX
+ SG_ ObstacleReplaced : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ObstacleAngleRate : 0|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
+
+BO_ 1860 ObstacleDataC4: 8 Vector__XXX
+ SG_ reserved_5 : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ObstacleVelY : 16|8@1- (0.1,0) [-12.8|12.7] "m/s" Vector__XXX
+ SG_ reserved_3 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_2 : 42|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Accel_X : 32|10@1- (0.03,0) [-14.97|14.97] "m/s square" Vector__XXX
+ SG_ ObstacleAngle : 48|16@1- (0.01,0) [-327.68|327.68] "degree" Vector__XXX
+ SG_ ObstacleReplaced : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ObstacleAngleRate : 0|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
+
+BO_ 1854 ObstacleDataC2: 8 Vector__XXX
+ SG_ reserved_5 : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ObstacleVelY : 16|8@1- (0.1,0) [-12.8|12.7] "m/s" Vector__XXX
+ SG_ reserved_3 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_2 : 42|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Accel_X : 32|10@1- (0.03,0) [-14.97|14.97] "m/s square" Vector__XXX
+ SG_ ObstacleAngle : 48|16@1- (0.01,0) [-327.68|327.68] "degree" Vector__XXX
+ SG_ ObstacleReplaced : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ObstacleAngleRate : 0|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
+
+BO_ 1862 ObstacleDataB5: 8 Vector__XXX
+ SG_ reserved_1_c : 63|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1_b : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 27|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MatchedRadarID : 56|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ RadarMatchConfidence : 52|3@1+ (1,0) [0|5] "enum" Vector__XXX
+ SG_ RadarVelX : 40|12@1- (0.0625,0) [-128|128] "m/sec" Vector__XXX
+ SG_ RadarPosX : 28|12@1+ (0.0625,0) [0|255.938] "m" Vector__XXX
+ SG_ CIPVFlag : 26|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleLane : 24|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ObstacleAge : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ObstacleWidth : 8|8@1+ (0.05,0) [0|12.5] "m" Vector__XXX
+ SG_ ObstacleLength : 0|8@1+ (0.5,0) [0|31.5] "m" Vector__XXX
+
+BO_ 1865 ObstacleDataB6: 8 Vector__XXX
+ SG_ reserved_1_c : 63|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1_b : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 27|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MatchedRadarID : 56|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ RadarMatchConfidence : 52|3@1+ (1,0) [0|5] "enum" Vector__XXX
+ SG_ RadarVelX : 40|12@1- (0.0625,0) [-128|128] "m/sec" Vector__XXX
+ SG_ RadarPosX : 28|12@1+ (0.0625,0) [0|255.938] "m" Vector__XXX
+ SG_ CIPVFlag : 26|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleLane : 24|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ObstacleAge : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ObstacleWidth : 8|8@1+ (0.05,0) [0|12.5] "m" Vector__XXX
+ SG_ ObstacleLength : 0|8@1+ (0.5,0) [0|31.5] "m" Vector__XXX
+
+BO_ 1868 ObstacleDataB7: 8 Vector__XXX
+ SG_ reserved_1_c : 63|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1_b : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 27|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MatchedRadarID : 56|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ RadarMatchConfidence : 52|3@1+ (1,0) [0|5] "enum" Vector__XXX
+ SG_ RadarVelX : 40|12@1- (0.0625,0) [-128|128] "m/sec" Vector__XXX
+ SG_ RadarPosX : 28|12@1+ (0.0625,0) [0|255.938] "m" Vector__XXX
+ SG_ CIPVFlag : 26|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleLane : 24|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ObstacleAge : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ObstacleWidth : 8|8@1+ (0.05,0) [0|12.5] "m" Vector__XXX
+ SG_ ObstacleLength : 0|8@1+ (0.5,0) [0|31.5] "m" Vector__XXX
+
+BO_ 1871 ObstacleDataB8: 8 Vector__XXX
+ SG_ reserved_1_c : 63|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1_b : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 27|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MatchedRadarID : 56|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ RadarMatchConfidence : 52|3@1+ (1,0) [0|5] "enum" Vector__XXX
+ SG_ RadarVelX : 40|12@1- (0.0625,0) [-128|128] "m/sec" Vector__XXX
+ SG_ RadarPosX : 28|12@1+ (0.0625,0) [0|255.938] "m" Vector__XXX
+ SG_ CIPVFlag : 26|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleLane : 24|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ObstacleAge : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ObstacleWidth : 8|8@1+ (0.05,0) [0|12.5] "m" Vector__XXX
+ SG_ ObstacleLength : 0|8@1+ (0.5,0) [0|31.5] "m" Vector__XXX
+
+BO_ 1874 ObstacleDataB9: 8 Vector__XXX
+ SG_ reserved_1_c : 63|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1_b : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 27|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MatchedRadarID : 56|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ RadarMatchConfidence : 52|3@1+ (1,0) [0|5] "enum" Vector__XXX
+ SG_ RadarVelX : 40|12@1- (0.0625,0) [-128|128] "m/sec" Vector__XXX
+ SG_ RadarPosX : 28|12@1+ (0.0625,0) [0|255.938] "m" Vector__XXX
+ SG_ CIPVFlag : 26|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleLane : 24|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ObstacleAge : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ObstacleWidth : 8|8@1+ (0.05,0) [0|12.5] "m" Vector__XXX
+ SG_ ObstacleLength : 0|8@1+ (0.5,0) [0|31.5] "m" Vector__XXX
+
+BO_ 1877 ObstacleDataB10: 8 Vector__XXX
+ SG_ reserved_1_c : 63|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1_b : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 27|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MatchedRadarID : 56|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ RadarMatchConfidence : 52|3@1+ (1,0) [0|5] "enum" Vector__XXX
+ SG_ RadarVelX : 40|12@1- (0.0625,0) [-128|128] "m/sec" Vector__XXX
+ SG_ RadarPosX : 28|12@1+ (0.0625,0) [0|255.938] "m" Vector__XXX
+ SG_ CIPVFlag : 26|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleLane : 24|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ObstacleAge : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ObstacleWidth : 8|8@1+ (0.05,0) [0|12.5] "m" Vector__XXX
+ SG_ ObstacleLength : 0|8@1+ (0.5,0) [0|31.5] "m" Vector__XXX
+
+BO_ 1859 ObstacleDataB4: 8 Vector__XXX
+ SG_ reserved_1_c : 63|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1_b : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 27|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MatchedRadarID : 56|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ RadarMatchConfidence : 52|3@1+ (1,0) [0|5] "enum" Vector__XXX
+ SG_ RadarVelX : 40|12@1- (0.0625,0) [-128|128] "m/sec" Vector__XXX
+ SG_ RadarPosX : 28|12@1+ (0.0625,0) [0|255.938] "m" Vector__XXX
+ SG_ CIPVFlag : 26|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleLane : 24|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ObstacleAge : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ObstacleWidth : 8|8@1+ (0.05,0) [0|12.5] "m" Vector__XXX
+ SG_ ObstacleLength : 0|8@1+ (0.5,0) [0|31.5] "m" Vector__XXX
+
+BO_ 1856 ObstacleDataB3: 8 Vector__XXX
+ SG_ reserved_1_c : 63|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1_b : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 27|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MatchedRadarID : 56|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ RadarMatchConfidence : 52|3@1+ (1,0) [0|5] "enum" Vector__XXX
+ SG_ RadarVelX : 40|12@1- (0.0625,0) [-128|128] "m/sec" Vector__XXX
+ SG_ RadarPosX : 28|12@1+ (0.0625,0) [0|255.938] "m" Vector__XXX
+ SG_ CIPVFlag : 26|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleLane : 24|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ObstacleAge : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ObstacleWidth : 8|8@1+ (0.05,0) [0|12.5] "m" Vector__XXX
+ SG_ ObstacleLength : 0|8@1+ (0.5,0) [0|31.5] "m" Vector__XXX
+
+BO_ 1853 ObstacleDataB2: 8 Vector__XXX
+ SG_ reserved_1_c : 63|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1_b : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 27|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MatchedRadarID : 56|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ RadarMatchConfidence : 52|3@1+ (1,0) [0|5] "enum" Vector__XXX
+ SG_ RadarVelX : 40|12@1- (0.0625,0) [-128|128] "m/sec" Vector__XXX
+ SG_ RadarPosX : 28|12@1+ (0.0625,0) [0|255.938] "m" Vector__XXX
+ SG_ CIPVFlag : 26|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleLane : 24|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ObstacleAge : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ObstacleWidth : 8|8@1+ (0.05,0) [0|12.5] "m" Vector__XXX
+ SG_ ObstacleLength : 0|8@1+ (0.5,0) [0|31.5] "m" Vector__XXX
+
+BO_ 1867 ObstacleDataA7: 8 Vector__XXX
+ SG_ reserved_2 : 60|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_4 : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Move_in_and_Out : 37|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ BlinkerInfo : 34|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ ObstacleValid : 62|2@1+ (1,0) [0|2] "bool" Vector__XXX
+ SG_ ObstacleBrakeLights : 59|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleStatus : 56|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleType : 52|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleVelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ ObstaclePosY : 24|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ ObstaclePosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|63] "" Vector__XXX
+
+BO_ 1870 ObstacleDataA8: 8 Vector__XXX
+ SG_ reserved_2 : 60|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_4 : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Move_in_and_Out : 37|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ BlinkerInfo : 34|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ ObstacleValid : 62|2@1+ (1,0) [0|2] "bool" Vector__XXX
+ SG_ ObstacleBrakeLights : 59|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleStatus : 56|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleType : 52|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleVelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ ObstaclePosY : 24|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ ObstaclePosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|63] "" Vector__XXX
+
+BO_ 1873 ObstacleDataA9: 8 Vector__XXX
+ SG_ reserved_2 : 60|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_4 : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Move_in_and_Out : 37|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ BlinkerInfo : 34|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ ObstacleValid : 62|2@1+ (1,0) [0|2] "bool" Vector__XXX
+ SG_ ObstacleBrakeLights : 59|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleStatus : 56|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleType : 52|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleVelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ ObstaclePosY : 24|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ ObstaclePosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|63] "" Vector__XXX
+
+BO_ 1876 ObstacleDataA10: 8 Vector__XXX
+ SG_ reserved_2 : 60|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_4 : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Move_in_and_Out : 37|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ BlinkerInfo : 34|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ ObstacleValid : 62|2@1+ (1,0) [0|2] "bool" Vector__XXX
+ SG_ ObstacleBrakeLights : 59|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleStatus : 56|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleType : 52|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleVelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ ObstaclePosY : 24|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ ObstaclePosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|63] "" Vector__XXX
+
+BO_ 1864 ObstacleDataA6: 8 Vector__XXX
+ SG_ reserved_2 : 60|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_4 : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Move_in_and_Out : 37|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ BlinkerInfo : 34|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ ObstacleValid : 62|2@1+ (1,0) [0|2] "bool" Vector__XXX
+ SG_ ObstacleBrakeLights : 59|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleStatus : 56|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleType : 52|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleVelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ ObstaclePosY : 24|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ ObstaclePosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|63] "" Vector__XXX
+
+BO_ 1861 ObstacleDataA5: 8 Vector__XXX
+ SG_ reserved_2 : 60|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_4 : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Move_in_and_Out : 37|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ BlinkerInfo : 34|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ ObstacleValid : 62|2@1+ (1,0) [0|2] "bool" Vector__XXX
+ SG_ ObstacleBrakeLights : 59|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleStatus : 56|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleType : 52|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleVelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ ObstaclePosY : 24|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ ObstaclePosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|63] "" Vector__XXX
+
+BO_ 1858 ObstacleDataA4: 8 Vector__XXX
+ SG_ reserved_2 : 60|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_4 : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Move_in_and_Out : 37|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ BlinkerInfo : 34|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ ObstacleValid : 62|2@1+ (1,0) [0|2] "bool" Vector__XXX
+ SG_ ObstacleBrakeLights : 59|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleStatus : 56|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleType : 52|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleVelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ ObstaclePosY : 24|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ ObstaclePosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|63] "" Vector__XXX
+
+BO_ 1855 ObstacleDataA3: 8 Vector__XXX
+ SG_ reserved_2 : 60|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_4 : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Move_in_and_Out : 37|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ BlinkerInfo : 34|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ ObstacleValid : 62|2@1+ (1,0) [0|2] "bool" Vector__XXX
+ SG_ ObstacleBrakeLights : 59|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleStatus : 56|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleType : 52|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleVelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ ObstaclePosY : 24|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ ObstaclePosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|63] "" Vector__XXX
+
+BO_ 1852 ObstacleDataA2: 8 Vector__XXX
+ SG_ reserved_2 : 60|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_4 : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Move_in_and_Out : 37|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ BlinkerInfo : 34|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ ObstacleValid : 62|2@1+ (1,0) [0|2] "bool" Vector__XXX
+ SG_ ObstacleBrakeLights : 59|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleStatus : 56|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleType : 52|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleVelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ ObstaclePosY : 24|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ ObstaclePosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|63] "" Vector__XXX
+
+BO_ 1851 ObstacleDataC1: 8 Vector__XXX
+ SG_ reserved_5 : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ObstacleVelY : 16|8@1- (0.1,0) [-12.8|12.7] "m/s" Vector__XXX
+ SG_ reserved_3 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_2 : 42|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Accel_X : 32|10@1- (0.03,0) [-14.97|14.97] "m/s square" Vector__XXX
+ SG_ ObstacleAngle : 48|16@1- (0.01,0) [-327.68|327.68] "degree" Vector__XXX
+ SG_ ObstacleReplaced : 44|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ObstacleAngleRate : 0|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
+
+BO_ 1850 ObstacleDataB1: 8 Vector__XXX
+ SG_ reserved_1_c : 63|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1_b : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 27|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MatchedRadarID : 56|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ RadarMatchConfidence : 52|3@1+ (1,0) [0|5] "enum" Vector__XXX
+ SG_ RadarVelX : 40|12@1- (0.0625,0) [-128|128] "m/sec" Vector__XXX
+ SG_ RadarPosX : 28|12@1+ (0.0625,0) [0|255.938] "m" Vector__XXX
+ SG_ CIPVFlag : 26|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleLane : 24|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ObstacleAge : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ ObstacleWidth : 8|8@1+ (0.05,0) [0|12.5] "m" Vector__XXX
+ SG_ ObstacleLength : 0|8@1+ (0.5,0) [0|31.5] "m" Vector__XXX
+
+BO_ 1849 ObstacleDataA1: 8 Vector__XXX
+ SG_ reserved_2 : 60|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_1 : 55|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ reserved_4 : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Move_in_and_Out : 37|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ BlinkerInfo : 34|3@1+ (1,0) [0|4] "enum" Vector__XXX
+ SG_ ObstacleValid : 62|2@1+ (1,0) [0|2] "bool" Vector__XXX
+ SG_ ObstacleBrakeLights : 59|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ObstacleStatus : 56|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleType : 52|3@1+ (1,0) [0|7] "enum" Vector__XXX
+ SG_ ObstacleVelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ ObstaclePosY : 24|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ ObstaclePosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|63] "" Vector__XXX
+
+BO_ 1848 ObstacleStatusA: 7 Vector__XXX
+ SG_ reserved_3 : 53|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ LeftCloseRangeCutIn : 39|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ RightCloseRangeCutIn : 38|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Go : 33|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Failsafe : 40|13@1+ (1,0) [0|8191] "" Vector__XXX
+ SG_ Close_Car : 37|1@1+ (1,0) [0|1] "bool" Vector__XXX
+ SG_ ProtocolVersion : 26|7@1+ (1,0) [0|127] "" Vector__XXX
+ SG_ ApplicationVersion_rc : 22|4@1+ (1,0) [0|9] "" Vector__XXX
+ SG_ ApplicationVersion_minor : 16|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ Timestamp : 8|8@1+ (1,0) [0|255] "mSec" Vector__XXX
+ SG_ NumObstacles : 0|8@1+ (1,0) [0|10] "" Vector__XXX
+
+
+
+CM_ SG_ 1857 Object_Accel_X "The longitude acceleration of the object. 
+Type: 10 bit, signed integer 
+Range: -14.97 : 14.97 [m/s2]
+Conversion: (HEX)* 0.03
+Invalid value: 200h";
+CM_ SG_ 1878 Object_Accel_X "The longitude acceleration of the object. 
+Type: 10 bit, signed integer 
+Range: -14.97 : 14.97 [m/s2]
+Conversion: (HEX)* 0.03
+Invalid value: 200h";
+CM_ SG_ 1875 Object_Accel_X "The longitude acceleration of the object. 
+Type: 10 bit, signed integer 
+Range: -14.97 : 14.97 [m/s2]
+Conversion: (HEX)* 0.03
+Invalid value: 200h";
+CM_ SG_ 1872 Object_Accel_X "The longitude acceleration of the object. 
+Type: 10 bit, signed integer 
+Range: -14.97 : 14.97 [m/s2]
+Conversion: (HEX)* 0.03
+Invalid value: 200h";
+CM_ SG_ 1869 Object_Accel_X "The longitude acceleration of the object. 
+Type: 10 bit, signed integer 
+Range: -14.97 : 14.97 [m/s2]
+Conversion: (HEX)* 0.03
+Invalid value: 200h";
+CM_ SG_ 1866 Object_Accel_X "The longitude acceleration of the object. 
+Type: 10 bit, signed integer 
+Range: -14.97 : 14.97 [m/s2]
+Conversion: (HEX)* 0.03
+Invalid value: 200h";
+CM_ SG_ 1863 Object_Accel_X "The longitude acceleration of the object. 
+Type: 10 bit, signed integer 
+Range: -14.97 : 14.97 [m/s2]
+Conversion: (HEX)* 0.03
+Invalid value: 200h";
+CM_ SG_ 1860 Object_Accel_X "The longitude acceleration of the object. 
+Type: 10 bit, signed integer 
+Range: -14.97 : 14.97 [m/s2]
+Conversion: (HEX)* 0.03
+Invalid value: 200h";
+CM_ SG_ 1854 Object_Accel_X "The longitude acceleration of the object. 
+Type: 10 bit, signed integer 
+Range: -14.97 : 14.97 [m/s2]
+Conversion: (HEX)* 0.03
+Invalid value: 200h";
+CM_ SG_ 1862 CIPVFlag "0 - not CIPV
+1 - CIPV";
+CM_ SG_ 1865 CIPVFlag "0 - not CIPV
+1 - CIPV";
+CM_ SG_ 1868 CIPVFlag "0 - not CIPV
+1 - CIPV";
+CM_ SG_ 1871 CIPVFlag "0 - not CIPV
+1 - CIPV";
+CM_ SG_ 1874 CIPVFlag "0 - not CIPV
+1 - CIPV";
+CM_ SG_ 1877 CIPVFlag "0 - not CIPV
+1 - CIPV";
+CM_ SG_ 1859 CIPVFlag "0 - not CIPV
+1 - CIPV";
+CM_ SG_ 1856 CIPVFlag "0 - not CIPV
+1 - CIPV";
+CM_ SG_ 1853 CIPVFlag "0 - not CIPV
+1 - CIPV";
+CM_ SG_ 1867 Move_in_and_Out "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.
+
+";
+CM_ SG_ 1867 ObstacleBrakeLights "0 = off or not identifined
+1 = on";
+CM_ SG_ 1867 ObstacleID "New obstacles are given the last used free ID";
+CM_ SG_ 1870 Move_in_and_Out "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.
+
+";
+CM_ SG_ 1870 ObstacleBrakeLights "0 = off or not identifined
+1 = on";
+CM_ SG_ 1870 ObstacleID "New obstacles are given the last used free ID";
+CM_ SG_ 1873 Move_in_and_Out "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.
+
+";
+CM_ SG_ 1873 ObstacleBrakeLights "0 = off or not identifined
+1 = on";
+CM_ SG_ 1873 ObstacleID "New obstacles are given the last used free ID";
+CM_ SG_ 1876 Move_in_and_Out "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.
+
+";
+CM_ SG_ 1876 ObstacleBrakeLights "0 = off or not identifined
+1 = on";
+CM_ SG_ 1876 ObstacleID "New obstacles are given the last used free ID";
+CM_ SG_ 1864 Move_in_and_Out "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.
+
+";
+CM_ SG_ 1864 ObstacleBrakeLights "0 = off or not identifined
+1 = on";
+CM_ SG_ 1864 ObstacleID "New obstacles are given the last used free ID";
+CM_ SG_ 1861 Move_in_and_Out "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.
+
+";
+CM_ SG_ 1861 ObstacleBrakeLights "0 = off or not identifined
+1 = on";
+CM_ SG_ 1861 ObstacleID "New obstacles are given the last used free ID";
+CM_ SG_ 1858 Move_in_and_Out "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.
+
+";
+CM_ SG_ 1858 ObstacleBrakeLights "0 = off or not identifined
+1 = on";
+CM_ SG_ 1858 ObstacleID "New obstacles are given the last used free ID";
+CM_ SG_ 1855 Move_in_and_Out "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.
+
+";
+CM_ SG_ 1855 ObstacleBrakeLights "0 = off or not identifined
+1 = on";
+CM_ SG_ 1855 ObstacleID "New obstacles are given the last used free ID";
+CM_ SG_ 1852 Move_in_and_Out "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.
+
+";
+CM_ SG_ 1852 ObstacleBrakeLights "0 = off or not identifined
+1 = on";
+CM_ SG_ 1852 ObstacleID "New obstacles are given the last used free ID";
+CM_ SG_ 1851 Object_Accel_X "The longitude acceleration of the object. 
+Type: 10 bit, signed integer 
+Range: -14.97 : 14.97 [m/s2]
+Conversion: (HEX)* 0.03
+Invalid value: 200h";
+CM_ SG_ 1850 CIPVFlag "0 - not CIPV
+1 - CIPV";
+CM_ SG_ 1849 Move_in_and_Out "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.
+
+";
+CM_ SG_ 1849 ObstacleBrakeLights "0 = off or not identifined
+1 = on";
+CM_ SG_ 1849 ObstacleID "New obstacles are given the last used free ID";
+CM_ SG_ 1848 Go "Currently this signal is implemented (Stop or Go are reported) only when the own vehicle is standing (having ego speed of less than 0.1 meters per second). Otherwise, the value 15 is reported.";
+CM_ SG_ 1848 Close_Car "Indication whether we detect a close car in front of the host vehicle or not.";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "BusType" "CAN";
+
+VAL_ 1857 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1878 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1875 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1872 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1869 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1866 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1863 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1860 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1854 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1862 RadarMatchConfidence 5 "high confidence match" 4 "radar match with bounded error" 3 "radar match with bounded error" 2 "radar match with bounded error" 1 "multi match." 0 "no match" ;
+VAL_ 1862 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1862 ObstacleLane 3 "invalid" 2 "next lane (left or right)" 1 "ego lane" 0 "not assigned" ;
+VAL_ 1865 RadarMatchConfidence 5 "high confidence match" 4 "radar match with bounded error" 3 "radar match with bounded error" 2 "radar match with bounded error" 1 "multi match." 0 "no match" ;
+VAL_ 1865 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1865 ObstacleLane 3 "invalid" 2 "next lane (left or right)" 1 "ego lane" 0 "not assigned" ;
+VAL_ 1868 RadarMatchConfidence 5 "high confidence match" 4 "radar match with bounded error" 3 "radar match with bounded error" 2 "radar match with bounded error" 1 "multi match." 0 "no match" ;
+VAL_ 1868 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1868 ObstacleLane 3 "invalid" 2 "next lane (left or right)" 1 "ego lane" 0 "not assigned" ;
+VAL_ 1871 RadarMatchConfidence 5 "high confidence match" 4 "radar match with bounded error" 3 "radar match with bounded error" 2 "radar match with bounded error" 1 "multi match." 0 "no match" ;
+VAL_ 1871 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1871 ObstacleLane 3 "invalid" 2 "next lane (left or right)" 1 "ego lane" 0 "not assigned" ;
+VAL_ 1874 RadarMatchConfidence 5 "high confidence match" 4 "radar match with bounded error" 3 "radar match with bounded error" 2 "radar match with bounded error" 1 "multi match." 0 "no match" ;
+VAL_ 1874 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1874 ObstacleLane 3 "invalid" 2 "next lane (left or right)" 1 "ego lane" 0 "not assigned" ;
+VAL_ 1877 RadarMatchConfidence 5 "high confidence match" 4 "radar match with bounded error" 3 "radar match with bounded error" 2 "radar match with bounded error" 1 "multi match." 0 "no match" ;
+VAL_ 1877 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1877 ObstacleLane 3 "invalid" 2 "next lane (left or right)" 1 "ego lane" 0 "not assigned" ;
+VAL_ 1859 RadarMatchConfidence 5 "high confidence match" 4 "radar match with bounded error" 3 "radar match with bounded error" 2 "radar match with bounded error" 1 "multi match." 0 "no match" ;
+VAL_ 1859 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1859 ObstacleLane 3 "invalid" 2 "next lane (left or right)" 1 "ego lane" 0 "not assigned" ;
+VAL_ 1856 RadarMatchConfidence 5 "high confidence match" 4 "radar match with bounded error" 3 "radar match with bounded error" 2 "radar match with bounded error" 1 "multi match." 0 "no match" ;
+VAL_ 1856 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1856 ObstacleLane 3 "invalid" 2 "next lane (left or right)" 1 "ego lane" 0 "not assigned" ;
+VAL_ 1853 RadarMatchConfidence 5 "high confidence match" 4 "radar match with bounded error" 3 "radar match with bounded error" 2 "radar match with bounded error" 1 "multi match." 0 "no match" ;
+VAL_ 1853 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1853 ObstacleLane 3 "invalid" 2 "next lane (left or right)" 1 "ego lane" 0 "not assigned" ;
+VAL_ 1867 Move_in_and_Out 4 "cut_out" 3 "cut_in" 2 "out_host_lane" 1 "in_host_lane" 0 "undefined" ;
+VAL_ 1867 BlinkerInfo 4 "both" 3 "right" 2 "left" 1 "off" 0 "unavailable" ;
+VAL_ 1867 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" ;
+VAL_ 1867 ObstacleBrakeLights 1 "object's brake lights are on" 0 "object's brake lights are off" ;
+VAL_ 1867 ObstacleStatus 6 "Unused" 5 "Parked never moved, BckLightsOff" 4 "Oncoming" 3 "moving" 2 "stopped (movable)" 1 "standing neverMoved bckLightsOn" 0 "not defined" ;
+VAL_ 1867 ObstacleType 7 "undefined" 4 "Bicycle" 3 "pedestrian" 2 "bike" 1 "truck" 0 "vehicle" ;
+VAL_ 1870 Move_in_and_Out 4 "cut_out" 3 "cut_in" 2 "out_host_lane" 1 "in_host_lane" 0 "undefined" ;
+VAL_ 1870 BlinkerInfo 4 "both" 3 "right" 2 "left" 1 "off" 0 "unavailable" ;
+VAL_ 1870 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" ;
+VAL_ 1870 ObstacleBrakeLights 1 "object's brake lights are on" 0 "object's brake lights are off" ;
+VAL_ 1870 ObstacleStatus 6 "Unused" 5 "Parked never moved, BckLightsOff" 4 "Oncoming" 3 "moving" 2 "stopped (movable)" 1 "standing neverMoved bckLightsOn" 0 "not defined" ;
+VAL_ 1870 ObstacleType 7 "undefined" 4 "Bicycle" 3 "pedestrian" 2 "bike" 1 "truck" 0 "vehicle" ;
+VAL_ 1873 Move_in_and_Out 4 "cut_out" 3 "cut_in" 2 "out_host_lane" 1 "in_host_lane" 0 "undefined" ;
+VAL_ 1873 BlinkerInfo 4 "both" 3 "right" 2 "left" 1 "off" 0 "unavailable" ;
+VAL_ 1873 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" ;
+VAL_ 1873 ObstacleBrakeLights 1 "object's brake lights are on" 0 "object's brake lights are off" ;
+VAL_ 1873 ObstacleStatus 6 "Unused" 5 "Parked never moved, BckLightsOff" 4 "Oncoming" 3 "moving" 2 "stopped (movable)" 1 "standing neverMoved bckLightsOn" 0 "not defined" ;
+VAL_ 1873 ObstacleType 7 "undefined" 4 "Bicycle" 3 "pedestrian" 2 "bike" 1 "truck" 0 "vehicle" ;
+VAL_ 1876 Move_in_and_Out 4 "cut_out" 3 "cut_in" 2 "out_host_lane" 1 "in_host_lane" 0 "undefined" ;
+VAL_ 1876 BlinkerInfo 4 "both" 3 "right" 2 "left" 1 "off" 0 "unavailable" ;
+VAL_ 1876 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" ;
+VAL_ 1876 ObstacleBrakeLights 1 "object's brake lights are on" 0 "object's brake lights are off" ;
+VAL_ 1876 ObstacleStatus 6 "Unused" 5 "Parked never moved, BckLightsOff" 4 "Oncoming" 3 "moving" 2 "stopped (movable)" 1 "standing neverMoved bckLightsOn" 0 "not defined" ;
+VAL_ 1876 ObstacleType 7 "undefined" 4 "Bicycle" 3 "pedestrian" 2 "bike" 1 "truck" 0 "vehicle" ;
+VAL_ 1864 Move_in_and_Out 4 "cut_out" 3 "cut_in" 2 "out_host_lane" 1 "in_host_lane" 0 "undefined" ;
+VAL_ 1864 BlinkerInfo 4 "both" 3 "right" 2 "left" 1 "off" 0 "unavailable" ;
+VAL_ 1864 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" ;
+VAL_ 1864 ObstacleBrakeLights 1 "object's brake lights are on" 0 "object's brake lights are off" ;
+VAL_ 1864 ObstacleStatus 6 "Unused" 5 "Parked never moved, BckLightsOff" 4 "Oncoming" 3 "moving" 2 "stopped (movable)" 1 "standing neverMoved bckLightsOn" 0 "not defined" ;
+VAL_ 1864 ObstacleType 7 "undefined" 4 "Bicycle" 3 "pedestrian" 2 "bike" 1 "truck" 0 "vehicle" ;
+VAL_ 1861 Move_in_and_Out 4 "cut_out" 3 "cut_in" 2 "out_host_lane" 1 "in_host_lane" 0 "undefined" ;
+VAL_ 1861 BlinkerInfo 4 "both" 3 "right" 2 "left" 1 "off" 0 "unavailable" ;
+VAL_ 1861 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" ;
+VAL_ 1861 ObstacleBrakeLights 1 "object's brake lights are on" 0 "object's brake lights are off" ;
+VAL_ 1861 ObstacleStatus 6 "Unused" 5 "Parked never moved, BckLightsOff" 4 "Oncoming" 3 "moving" 2 "stopped (movable)" 1 "standing neverMoved bckLightsOn" 0 "not defined" ;
+VAL_ 1861 ObstacleType 7 "undefined" 4 "Bicycle" 3 "pedestrian" 2 "bike" 1 "truck" 0 "vehicle" ;
+VAL_ 1858 Move_in_and_Out 4 "cut_out" 3 "cut_in" 2 "out_host_lane" 1 "in_host_lane" 0 "undefined" ;
+VAL_ 1858 BlinkerInfo 4 "both" 3 "right" 2 "left" 1 "off" 0 "unavailable" ;
+VAL_ 1858 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" ;
+VAL_ 1858 ObstacleBrakeLights 1 "object's brake lights are on" 0 "object's brake lights are off" ;
+VAL_ 1858 ObstacleStatus 6 "Unused" 5 "Parked never moved, BckLightsOff" 4 "Oncoming" 3 "moving" 2 "stopped (movable)" 1 "standing neverMoved bckLightsOn" 0 "not defined" ;
+VAL_ 1858 ObstacleType 7 "undefined" 4 "Bicycle" 3 "pedestrian" 2 "bike" 1 "truck" 0 "vehicle" ;
+VAL_ 1855 Move_in_and_Out 4 "cut_out" 3 "cut_in" 2 "out_host_lane" 1 "in_host_lane" 0 "undefined" ;
+VAL_ 1855 BlinkerInfo 4 "both" 3 "right" 2 "left" 1 "off" 0 "unavailable" ;
+VAL_ 1855 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" ;
+VAL_ 1855 ObstacleBrakeLights 1 "object's brake lights are on" 0 "object's brake lights are off" ;
+VAL_ 1855 ObstacleStatus 6 "Unused" 5 "Parked never moved, BckLightsOff" 4 "Oncoming" 3 "moving" 2 "stopped (movable)" 1 "standing neverMoved bckLightsOn" 0 "not defined" ;
+VAL_ 1855 ObstacleType 7 "undefined" 4 "Bicycle" 3 "pedestrian" 2 "bike" 1 "truck" 0 "vehicle" ;
+VAL_ 1852 Move_in_and_Out 4 "cut_out" 3 "cut_in" 2 "out_host_lane" 1 "in_host_lane" 0 "undefined" ;
+VAL_ 1852 BlinkerInfo 4 "both" 3 "right" 2 "left" 1 "off" 0 "unavailable" ;
+VAL_ 1852 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" ;
+VAL_ 1852 ObstacleBrakeLights 1 "object's brake lights are on" 0 "object's brake lights are off" ;
+VAL_ 1852 ObstacleStatus 6 "Unused" 5 "Parked never moved, BckLightsOff" 4 "Oncoming" 3 "moving" 2 "stopped (movable)" 1 "standing neverMoved bckLightsOn" 0 "not defined" ;
+VAL_ 1852 ObstacleType 7 "undefined" 4 "Bicycle" 3 "pedestrian" 2 "bike" 1 "truck" 0 "vehicle" ;
+VAL_ 1851 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1850 RadarMatchConfidence 5 "high confidence match" 4 "radar match with bounded error" 3 "radar match with bounded error" 2 "radar match with bounded error" 1 "multi match." 0 "no match" ;
+VAL_ 1850 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1850 ObstacleLane 3 "invalid" 2 "next lane (left or right)" 1 "ego lane" 0 "not assigned" ;
+VAL_ 1849 Move_in_and_Out 4 "cut_out" 3 "cut_in" 2 "out_host_lane" 1 "in_host_lane" 0 "undefined" ;
+VAL_ 1849 BlinkerInfo 4 "both" 3 "right" 2 "left" 1 "off" 0 "unavailable" ;
+VAL_ 1849 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" ;
+VAL_ 1849 ObstacleBrakeLights 1 "object's brake lights are on" 0 "object's brake lights are off" ;
+VAL_ 1849 ObstacleStatus 6 "Unused" 5 "Parked never moved, BckLightsOff" 4 "Oncoming" 3 "moving" 2 "stopped (movable)" 1 "standing neverMoved bckLightsOn" 0 "not defined" ;
+VAL_ 1849 ObstacleType 7 "undefined" 4 "Bicycle" 3 "pedestrian" 2 "bike" 1 "truck" 0 "vehicle" ;
+VAL_ 1848 LeftCloseRangeCutIn 1 "left cut in" 0 "no left cut in" ;
+VAL_ 1848 RightCloseRangeCutIn 1 "right cut in " 0 "no right cut in" ;
+VAL_ 1848 Go 15 "Not Calculated" 14 "currently unused" 13 "currently unused" 12 "currently unused" 11 "currently unused" 10 "currently unused" 9 "currently unused" 8 "currently unused" 7 "currently unused" 6 "currently unused" 5 "currently unused" 4 "currently unused" 3 "Driver decision is required" 2 "Undecided" 1 "Go!" 0 "Stop" ;
+VAL_ 1848 Failsafe 4096 "Sun Ray" 2048 "Foggy Spots" 1024 "Spot Halos/ Frozen windshield" 512 "Smeared spots" 256 "Calibration Misalignment" 128 "Out of Calibration (Autofix)" 16 "Partial Transparent Blockage" 64 "Splashes" 32 "Full Blockage" 8 "Smear Image" 4 "Blur Image" 2 "Low Sun" 1 "Impaired VD" 0 "No Failsafe" ;
+VAL_ 1848 Close_Car 1 "Close car exists" 0 "No close car" ;
+

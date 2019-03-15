@@ -41,3 +41,10 @@ test/
 sdk/
 build/
 dist/
+
+# node file
+package-lock.json
+
+# binary file
+msg_fd
+status2log
