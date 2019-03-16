@@ -12,6 +12,14 @@ def dict2list(d, keys, type=None, default=None):
         values.append(value)
     return values
 
+VehicleType = {
+    '1': 'car',
+    '2': 'minibus',
+    '3': 'bus',
+    '4': 'truck',
+    '5': 'ssp'
+}
+
 class CVColor(object):
     '''
     basic color RGB define
@@ -199,7 +207,7 @@ class BaseDraw(object):
         size = 0.5
 
         rect = (x, y, width, (num+1)*gap_v+6)
-        BaseDraw.draw_alpha_rect(img, rect, 0.6)
+        BaseDraw.draw_alpha_rect(img, rect, 0.2)
         BaseDraw.draw_text(img, title, (x+5, y+gap_v), size, CVColor.Cyan, 1)
         BaseDraw.draw_para_list(img, (x+5, y+gap_v*2), para_list, gap_v, size)
 

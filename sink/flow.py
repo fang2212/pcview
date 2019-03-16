@@ -99,7 +99,8 @@ class TcpSink(object):
                 data = {
                     'camera': {
                         'image': image,
-                        'create_ts': data[b'camera_time']
+                        'create_ts': data[b'camera_time'],
+                        'frame_id': data[b'image_frame_id']
                     },
                     'frame_id': data[b'image_frame_id'],
                 }
@@ -112,6 +113,7 @@ class TcpSink(object):
                 data = {
                     'camera': {
                         'image': image,
+                        'frame_id': frame_id
                     },
                     'frame_id': frame_id
                 }
@@ -127,6 +129,8 @@ class TcpSink(object):
                     new_id = data['frame_id']
                 elif new_id == data['frame_id']:
                     for key in data:
+                        if type(data[key]) == type({}):
+                            data[key]['frame_id'] = data['frame_id']
                         if key != 'frame_id':
                             new_pack[key] = data[key]
 

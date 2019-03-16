@@ -48,3 +48,5 @@ package-lock.json
 # binary file
 msg_fd
 status2log
+msg_fd.exe
+status2log.exe

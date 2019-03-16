@@ -30,6 +30,7 @@ class PCView():
     
     def __init__(self, ip, file_cfg):
         self.msg_queue = Queue()
+        self.ip = ip
 
         self.pc_draw = PCDraw(self.msg_queue, file_cfg)
         self.pc_draw.start()
@@ -37,7 +38,7 @@ class PCView():
     
     def run(self):
         # FlowSink.open_libflow_sink(ip, self.msg_queue)
-        tcp_sink = TcpSink('127.0.0.1', 12032, self.msg_queue)
+        tcp_sink = TcpSink(self.ip, 12032, self.msg_queue)
         tcp_sink.run()
 
 
@@ -134,6 +135,7 @@ if __name__ == '__main__':
     parser.add_argument("--video", help="是否保存视频[0,1]，默认保存", type=str)
     parser.add_argument("--log", help="是否保存日志[0,1],默认保存", type=str)
     parser.add_argument("--path", help="保存地址", type=str)
+    parser.add_argument("--ip", help="msg_fd地址", type=str)
     args = parser.parse_args()
     ip = '127.0.0.1'
     file_cfg = {
@@ -143,6 +145,8 @@ if __name__ == '__main__':
     }
     if args.video:
         file_cfg['video'] = int(args.video)
+    if args.ip:
+        ip = args.ip
     if args.log:
         file_cfg['log'] = int(args.log)
     if args.path:

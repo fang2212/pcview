@@ -3,10 +3,16 @@ const msgpack = require('msgpack');
 const fs = require('fs');
 const path = require('path');
 const argv = require('yargs')
-      .usage('Usage: $0 --ip [ip] --log-path [log-path] --event-log --print')
+      .usage('Usage: $0 --sync [loop_num] --ip [ip] --log-path [log-path] --event-log --print')
       .argv;
 const Sync = require('./sync');
-const sync = new Sync(5, 'loop_index');
+let sync = null;
+
+if (argv.sync) {
+  sync = new Sync(argv.sync, 'loop_index');
+} else {
+  sync = new Sync(20, 'loop_index');
+}
 
 Date.prototype.format = function(fmt) { 
   var o = { 
