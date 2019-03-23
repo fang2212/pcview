@@ -83,7 +83,7 @@ class TcpSink(object):
     def run(self):
         new_pack = {}
         new_id = -1
-        sync = Sync(5)
+        sync = Sync(8)
         while True:
             data = self.read_msg()
             msg = msgpack.unpackb(data, use_list=False)
@@ -108,12 +108,14 @@ class TcpSink(object):
                 data = convert(data)
             else:
                 frame_id = int.from_bytes(data[4:8], byteorder="little", signed=False)
+                ts = int.from_bytes(data[16:24], byteorder="little", signed=False)
                 data = data[24:]
                 image = cv2.imdecode(np.fromstring(data, np.uint8), cv2.IMREAD_COLOR)
                 data = {
                     'camera': {
                         'image': image,
-                        'frame_id': frame_id
+                        'frame_id': frame_id,
+                        'create_ts': ts
                     },
                     'frame_id': frame_id
                 }

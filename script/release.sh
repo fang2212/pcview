@@ -1,12 +1,10 @@
 #!/bin/bash
 
-rm -r release
-mkdir release
-cp flow_view.py release/
-cp -r sink release/
-cp -r recorder release/
-cp -r player release/
-cd release
+cp flow_view.py release/pcview
+cp -r sink release/pcview
+cp -r recorder release/pcview
+cp -r player release/pcview
+cd release/pcview
 rm -r player/__pycache__
 rm -r recorder/__pycache__
 rm -r sink/__pycache__

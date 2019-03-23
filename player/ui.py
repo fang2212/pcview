@@ -171,9 +171,16 @@ class BaseDraw(object):
                     end = 720
                 if begin < 0:
                     begin = 0
-                color = CVColor.Red if int(index) == int(deviate_state) else CVColor.Blue
-                cls.draw_lane_line(img, lane['perspective_view_poly_coeff'],
-                                   0.2, color, begin, end)
+                if int(index) == int(deviate_state) and int(deviate_state) in [1, 2]:
+                    color = CVColor.Red
+                else:
+                    color = CVColor.Blue
+                perspective_view_pts = lane.get('perspective_view_pts')
+                if perspective_view_pts:
+                    cls.draw_polylines(img, perspective_view_pts, color, 2)
+                else:
+                    cls.draw_lane_line(img, lane['perspective_view_poly_coeff'],
+                                       0.2, color, begin, end)
 
     @classmethod
     def draw_alpha_rect(cls, image_content, rect, alpha, color = CVColor.White, line_width = 0):
@@ -189,7 +196,11 @@ class BaseDraw(object):
         '''
         :param pts: 三维数组 [ line, ... ], line: [ point, ... ], point: [x,y]
         '''
-        pts = [pts]
+        nts = []
+        for i, pt in enumerate(pts):
+            p0, p1 = pt
+            nts.append([int(p0), int(p1)])
+        pts = [nts]
         pts = np.array(pts)
         cv2.polylines(img, pts, False, color, thickness)
 

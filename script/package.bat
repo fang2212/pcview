@@ -15,3 +15,4 @@ copy release\lib\win\msgpackBinding.node release\win\dist
 copy release\lib\win\opencv_ffmpeg330_64.dll release\win\dist\flow_view
 copy node\msg_fd.exe release\win\dist
 copy node\status2log.exe release\win\dist
+copy docs\releaseGuide.md release\linux\dist

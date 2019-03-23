@@ -51,7 +51,7 @@ class FlowPlayer(object):
         if 'pedestrians' in mess:
             res_list = mess['pedestrians']
             for i, obj in enumerate(res_list):
-                BaseDraw.draw_obj_rect(img, obj['detect_box'], CVColor.Cyan)
+                BaseDraw.draw_obj_rect(img, obj['detect_box'], CVColor.Cyan, 1)
                 pos = obj['regressed_box']
                 color = CVColor.Pink if obj['is_key'] else CVColor.Green
                 BaseDraw.draw_obj_rect_corn(img, pos, color, 2)
@@ -77,7 +77,7 @@ class FlowPlayer(object):
                 if key.find('deviate') != -1:
                     data[key] = str(data[key])
                 elif key.find('frame_id') == -1:
-                    data[key] = "%.2f" % data[key]
+                    data[key] = "%.2f" % float(data[key])
             para_list = [
                 "latest_dist:"+data["latest_dist"],
                 "lateral_speed:"+data["lateral_speed"],
@@ -111,10 +111,20 @@ class FlowPlayer(object):
             ]
             BaseDraw.draw_single_info(img, (140, 0), 130, title, para_list)
 
+        if 'vehicle_hit_list' in mess:
+            res_list = mess['vehicle_hit_list']
+            for i, obj in enumerate(res_list):
+                BaseDraw.draw_obj_rect(img, obj['det_rect'], CVColor.Red, 1)
+
+        if 'ped_hit_list' in mess:
+            res_list = mess['ped_hit_list']
+            for i, obj in enumerate(res_list):
+                BaseDraw.draw_obj_rect(img, obj['det_rect'], CVColor.Green, 1)
+
         if 'vehicle_measure_res_list' in mess:
             res_list = mess['vehicle_measure_res_list']
             for i, vehicle in enumerate(res_list):
-                BaseDraw.draw_obj_rect(img, vehicle['det_rect'], CVColor.Cyan)
+                BaseDraw.draw_obj_rect(img, vehicle['det_rect'], CVColor.Cyan, 1)
                 pos = vehicle['reg_rect']
                 color = CVColor.Red if vehicle['is_crucial'] else CVColor.Blue
                 BaseDraw.draw_obj_rect_corn(img, pos, color, 2)
@@ -135,7 +145,7 @@ class FlowPlayer(object):
 
         if 'lane' in mess:
             data = mess['lane']
-            BaseDraw.draw_lane_lines(img, data, 222, deviate_state, draw_all=False, speed_limit=0)
+            BaseDraw.draw_lane_lines(img, data, 222, deviate_state, draw_all=True, speed_limit=0)
             '''
             for lane in data:
                 if True:

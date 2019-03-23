@@ -9,6 +9,7 @@ import msgpack
 import json
 import cv2
 import argparse
+import numpy as np
 from datetime import datetime
 from multiprocessing import Process, Queue, Value
 
@@ -60,10 +61,10 @@ class PCDraw(Process):
             text_recorder = TextRecorder(self.save_path)
             text_recorder.set_writer(get_data_str())
         if self.save_video:
-            video_recorder = VideoRecorder(self.save_path)
+            video_recorder = VideoRecorder(self.save_path, fps=15)
             video_recorder.set_writer(get_data_str())
 
-        fps_cnt = FPSCnt(10, 0)
+        fps_cnt = FPSCnt(20, 0)
         cnt = 0
 
         while True:
@@ -84,7 +85,9 @@ class PCDraw(Process):
                 if 'frame_id' not in mess:
                     continue
                 if 'camera' not in mess:
-                    continue
+                    image = np.zeros((720, 1280, 3), np.uint8)
+                else:
+                    image = mess['camera']['image']
 
                 cnt += 1
                 fps_cnt.inc()
@@ -95,12 +98,12 @@ class PCDraw(Process):
                 }
 
                 # draw now id
-                image = mess['camera']['image']
                 try:
                     player.draw(mess, image)
                 except Exception as err:
                     cv2.imwrite('error/error.jpg', img)
-                    del mess['camera']['image']
+                    if 'camera' in mess:
+                        del mess['camera']['image']
                     with open('error/error.json', 'w+') as fp:
                         fp.write(json.dumps(mess))
                     print(err)
@@ -111,7 +114,8 @@ class PCDraw(Process):
 
                 if self.save_video:
                     video_recorder.write(image)
-                del mess['camera']['image']
+                if 'camera' in mess:
+                    del mess['camera']['image']
                 '''
                 print('frame_id', frame_id)
                 print(mess)
@@ -136,6 +140,7 @@ if __name__ == '__main__':
     parser.add_argument("--log", help="是否保存日志[0,1],默认保存", type=str)
     parser.add_argument("--path", help="保存地址", type=str)
     parser.add_argument("--ip", help="msg_fd地址", type=str)
+    parser.add_argument("--lane_pts", help="", type=str)
     args = parser.parse_args()
     ip = '127.0.0.1'
     file_cfg = {
@@ -143,6 +148,8 @@ if __name__ == '__main__':
         'log': 1,
         'path': 'pcview_data',
     }
+    if sys.platform == 'win32':
+        file_cfg['video'] = 0
     if args.video:
         file_cfg['video'] = int(args.video)
     if args.ip:

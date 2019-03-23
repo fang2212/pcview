@@ -63,7 +63,7 @@ class ClientPlayer(object):
                 pos = pos['x'], pos['y'], pos['width'], pos['height']
                 color = CVColor.Red if focus_index == i else CVColor.Cyan
                 if cfg.get('show_obj'):
-                    BaseDraw.draw_obj_rect(img, pos, color, 1)
+                    BaseDraw.draw_obj_rect(img, pos, color, cfg.get('thickness'))
                 if cfg.get('show_info'):
                     d1 = obj['vertical_dist']
                     d2 = obj['horizontal_dist']
@@ -126,7 +126,7 @@ class ClientPlayer(object):
                 if pedestrain['is_key']:
                     color = CVColor.Pink
                 if cfg.get('show_obj'):
-                    BaseDraw.draw_obj_rect(img, position, color, 1)
+                    BaseDraw.draw_obj_rect(img, position, color, cfg.get('thickness'))
         if cfg.get('show_warning'):
             if data.get('pcw_on'):
                 pcw_on = 1
@@ -155,7 +155,7 @@ class ClientPlayer(object):
                 position = position['x'], position['y'], position['width'], position['height']
                 color = CVColor.Red
                 if cfg.get('show_obj'):
-                    BaseDraw.draw_obj_rect(img, position, color, 1)
+                    BaseDraw.draw_obj_rect(img, position, color, cfg.get('thickness'))
                 if cfg.get('show_inf') and tsr['max_speed'] != 0:
                     draw_tsr_info(img, position, tsr['max_speed'])
         if cfg.get('show_warning'):

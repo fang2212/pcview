@@ -10,5 +10,6 @@ pyinstaller flow_view.py -F --distpath release/linux/dist --workpath release/lin
 
 echo "copy *.node"
 cp release/lib/linux/msgpackBinding.node release/linux/dist
-cp release/lib/linux/msg_fd release/linux/dist
-cp release/lib/linux/status2log release/linux/dist
+cp node/v2/msg_fd release/linux/dist
+cp node/v2/status2log release/linux/dist
+cp docs/releaseGuide.md release/linux/dist
