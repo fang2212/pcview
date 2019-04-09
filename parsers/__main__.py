@@ -58,7 +58,9 @@ def time_sort(file_name, sort_itv=8000):
 
 
 if __name__ == "__main__":
-    source = 'F:\\EyeQ3\\20190311160558\\log.txt'
+    # source = 'F:\\EyeQ3\\20190311160558\\log.txt'
+    # source = 'E:\\temp\\log.txt'
+    source = 'F:\\temp\\log.txt'
     # source = '/mnt/f/EyeQ3/20190311160558/log.txt'
     r_sort = os.path.join(os.path.dirname(source), 'log_sort.txt')
     if not os.path.exists(r_sort):

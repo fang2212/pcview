@@ -1,6 +1,5 @@
 #.!/usr/bin/python
 # -*- coding:utf8 -*-
-
 import os
 import sys
 import logging
@@ -9,9 +8,10 @@ import msgpack
 import json
 import cv2
 import argparse
-import numpy as np
 from datetime import datetime
 from multiprocessing import Process, Queue, Value
+from qt_view import VideoBox
+from PyQt5.QtWidgets import QWidget, QApplication
 
 if sys.platform == 'win32':
     from threading import Thread as Process
@@ -27,45 +27,51 @@ def get_data_str():
     FORMAT = '%Y%m%d%H%M%S'
     return datetime.now().strftime(FORMAT)
 
-class PCView():
+class PCView(Process):
     
-    def __init__(self, ip, cfg):
+    def __init__(self, ip, file_cfg):
+        Process.__init__(self)
+        self.daemon = True
         self.msg_queue = Queue()
+        self.show_queue = Queue()
         self.ip = ip
-        self.sync_size = cfg['sync']
 
-        self.pc_draw = PCDraw(self.msg_queue, cfg)
+        self.pc_draw = PCDraw(self.msg_queue, file_cfg, self.show_queue)
         self.pc_draw.start()
 
     
     def run(self):
         # FlowSink.open_libflow_sink(ip, self.msg_queue)
-        tcp_sink = TcpSink(self.ip, 12032, self.msg_queue, self.sync_size)
+        tcp_sink = TcpSink(self.ip, 12032, self.msg_queue)
         tcp_sink.run()
+    
+    def get(self):
+        return self.show_queue
 
 
 class PCDraw(Process):
     """pc-viewer功能类，用于接收每一帧数据，并绘制
     """
     
-    def __init__(self, mess_queue, file_cfg):
+    def __init__(self, mess_queue, file_cfg, show_queue):
         Process.__init__(self)
         self.daemon = True
         self.mess_queue = mess_queue
+        self.show_queue = show_queue
         self.save_log = file_cfg['log']
         self.save_video = file_cfg['video']
         self.save_path = file_cfg['path']
-    
+
     def run(self):
         player = FlowPlayer()
         if self.save_log:
             text_recorder = TextRecorder(self.save_path)
             text_recorder.set_writer(get_data_str())
         if self.save_video:
-            video_recorder = VideoRecorder(self.save_path, fps=15)
+            video_recorder = VideoRecorder(self.save_path)
             video_recorder.set_writer(get_data_str())
 
-        fps_cnt = FPSCnt(20, 20)
+        fps_cnt = FPSCnt(10, 0)
         cnt = 0
 
         while True:
@@ -86,13 +92,7 @@ class PCDraw(Process):
                 if 'frame_id' not in mess:
                     continue
                 if 'camera' not in mess:
-                    image = np.zeros((720, 1280, 3), np.uint8)
-                    temp = mess.get('camera_time')
-                    mess['camera'] = {
-                        'create_ts': temp
-                    }
-                else:
-                    image = mess['camera']['image']
+                    continue
 
                 cnt += 1
                 fps_cnt.inc()
@@ -102,15 +102,19 @@ class PCDraw(Process):
                     'fps': fps_cnt.fps
                 }
 
+                # draw now id
+                image = mess['camera']['image']
                 try:
                     player.draw(mess, image)
                 except Exception as err:
-                    cv2.imwrite('error.jpg', image)
-                    if 'camera' in mess:
-                        mess['camera'].pop('image', None)
-                    with open('error.json', 'w+') as fp:
-                        print('error json')
+                    cv2.imwrite('error/error.jpg', img)
+                    del mess['camera']['image']
+                    with open('error/error.json', 'w+') as fp:
                         fp.write(json.dumps(mess))
+                    print(err)
+                    continue
+                if self.show_queue:
+                    self.show_queue.put(image)
                     continue
 
                 cv2.imshow('UI', image)
@@ -118,9 +122,7 @@ class PCDraw(Process):
 
                 if self.save_video:
                     video_recorder.write(image)
-                if 'camera' in mess:
-                    # del mess['camera']['image']
-                    mess['camera'].pop('image', None)
+                del mess['camera']['image']
                 '''
                 print('frame_id', frame_id)
                 print(mess)
@@ -140,23 +142,19 @@ class PCDraw(Process):
         cv2.destroyAllWindows()
     
 if __name__ == '__main__':
+    mapp = QApplication(sys.argv)
     parser = argparse.ArgumentParser()
     parser.add_argument("--video", help="是否保存视频[0,1]，默认保存", type=str)
     parser.add_argument("--log", help="是否保存日志[0,1],默认保存", type=str)
     parser.add_argument("--path", help="保存地址", type=str)
     parser.add_argument("--ip", help="msg_fd地址", type=str)
-    parser.add_argument("--sync", help="sync cache size", type=str)
-    parser.add_argument("--lane_pts", help="", type=str)
     args = parser.parse_args()
     ip = '127.0.0.1'
     file_cfg = {
         'video': 1,
         'log': 1,
-        'sync': 12,
         'path': 'pcview_data',
     }
-    if sys.platform == 'win32':
-        file_cfg['video'] = 0
     if args.video:
         file_cfg['video'] = int(args.video)
     if args.ip:
@@ -166,16 +164,8 @@ if __name__ == '__main__':
     if args.path:
         file_cfg['path'] = args.path
     pcview = PCView(ip, file_cfg)
-    pcview.run()
-
-'''
-{
-    "camera_time": 1455208613969069,
-    "vehicle_start_time": 1455208613969069,
-    "vehicle_finish_time": 1455208613969069,
-    "lane_start_time": 1455208613969069,
-    "lane_finish_time": 1455208613969069,
-    "tsr_start_time": 1455208613969069,
-    "tsr_finish_time": 1455208613969069,
-}
-'''
+    queue = pcview.get()
+    
+    mw = VideoBox(queue)
+    pcview.start()
+    sys.exit(mapp.exec_())

@@ -41,6 +41,8 @@ test/
 sdk/
 build/
 dist/
+rotor_data/
+pubulish/
 
 # node file
 package-lock.json
@@ -50,3 +52,8 @@ msg_fd
 status2log
 msg_fd.exe
 status2log.exe
+error.jpg
+
+# extra file
+error.json
+dbc/*.ini

@@ -40,11 +40,12 @@ def convert(data):
     return data
 
 class TcpSink(object):
-    def __init__(self, ip, port, msg_queue):
+    def __init__(self, ip, port, msg_queue, sync_size=8):
         self.ip = ip
         self.port = port
         self.cache = []
         self.msg_queue = msg_queue
+        self.sync_size = sync_size
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.connect((self.ip, self.port))
@@ -83,12 +84,14 @@ class TcpSink(object):
     def run(self):
         new_pack = {}
         new_id = -1
-        sync = Sync(8)
+        sync = Sync(self.sync_size)
         while True:
             data = self.read_msg()
             msg = msgpack.unpackb(data, use_list=False)
             topic = msg[b'topic'].decode('ascii')
-            mp_header = (msg[b'data'][0:2] == b'\x82\xa8' or msg[b'data'][0:2] == b'\x83\xab')
+            mp_header = (msg[b'data'][0:2] == b'\x82\xa8' or msg[b'data'][0:2] == b'\x83\xab' or msg[b'data'][0:2] == b'\x82\xae')
+            if len(msg[b'data'])<1000 and (not mp_header):
+                mp_header = 1
             # print(mp_header, msg[b'data'][0:2])
             if mp_header:
                 data = msgpack.unpackb(msg[b'data'], use_list=False)
@@ -105,6 +108,7 @@ class TcpSink(object):
                     'frame_id': data[b'image_frame_id'],
                 }
             elif b'frame_id' in data:
+                # print(data)
                 data = convert(data)
             else:
                 frame_id = int.from_bytes(data[4:8], byteorder="little", signed=False)

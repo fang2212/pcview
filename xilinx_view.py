@@ -19,7 +19,8 @@ if sys.platform == 'win32':
 else:
     print('linux platform')
 
-from player import FPSCnt, FlowPlayer
+from player import FPSCnt
+from player.xilinx import FlowPlayer
 from sink import TcpSink
 from recorder import VideoRecorder, TextRecorder
 
@@ -55,7 +56,7 @@ class PCDraw(Process):
         self.save_log = file_cfg['log']
         self.save_video = file_cfg['video']
         self.save_path = file_cfg['path']
-    
+
     def run(self):
         player = FlowPlayer()
         if self.save_log:
@@ -65,7 +66,7 @@ class PCDraw(Process):
             video_recorder = VideoRecorder(self.save_path, fps=15)
             video_recorder.set_writer(get_data_str())
 
-        fps_cnt = FPSCnt(20, 20)
+        fps_cnt = FPSCnt(100, 20)
         cnt = 0
 
         while True:
@@ -86,13 +87,8 @@ class PCDraw(Process):
                 if 'frame_id' not in mess:
                     continue
                 if 'camera' not in mess:
-                    image = np.zeros((720, 1280, 3), np.uint8)
-                    temp = mess.get('camera_time')
-                    mess['camera'] = {
-                        'create_ts': temp
-                    }
-                else:
-                    image = mess['camera']['image']
+                    continue
+                image = mess['camera']['image']
 
                 cnt += 1
                 fps_cnt.inc()
@@ -102,15 +98,16 @@ class PCDraw(Process):
                     'fps': fps_cnt.fps
                 }
 
+                # draw now id
                 try:
                     player.draw(mess, image)
                 except Exception as err:
-                    cv2.imwrite('error.jpg', image)
+                    cv2.imwrite('error/error.jpg', img)
                     if 'camera' in mess:
-                        mess['camera'].pop('image', None)
-                    with open('error.json', 'w+') as fp:
-                        print('error json')
+                        del mess['camera']['image']
+                    with open('error/error.json', 'w+') as fp:
                         fp.write(json.dumps(mess))
+                    print(err)
                     continue
 
                 cv2.imshow('UI', image)
@@ -119,8 +116,7 @@ class PCDraw(Process):
                 if self.save_video:
                     video_recorder.write(image)
                 if 'camera' in mess:
-                    # del mess['camera']['image']
-                    mess['camera'].pop('image', None)
+                    del mess['camera']['image']
                 '''
                 print('frame_id', frame_id)
                 print(mess)
@@ -142,16 +138,14 @@ class PCDraw(Process):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--video", help="是否保存视频[0,1]，默认保存", type=str)
-    parser.add_argument("--log", help="是否保存日志[0,1],默认保存", type=str)
     parser.add_argument("--path", help="保存地址", type=str)
     parser.add_argument("--ip", help="msg_fd地址", type=str)
     parser.add_argument("--sync", help="sync cache size", type=str)
-    parser.add_argument("--lane_pts", help="", type=str)
     args = parser.parse_args()
     ip = '127.0.0.1'
     file_cfg = {
         'video': 1,
-        'log': 1,
+        'log': 0,
         'sync': 12,
         'path': 'pcview_data',
     }
@@ -161,21 +155,7 @@ if __name__ == '__main__':
         file_cfg['video'] = int(args.video)
     if args.ip:
         ip = args.ip
-    if args.log:
-        file_cfg['log'] = int(args.log)
     if args.path:
         file_cfg['path'] = args.path
     pcview = PCView(ip, file_cfg)
     pcview.run()
-
-'''
-{
-    "camera_time": 1455208613969069,
-    "vehicle_start_time": 1455208613969069,
-    "vehicle_finish_time": 1455208613969069,
-    "lane_start_time": 1455208613969069,
-    "lane_finish_time": 1455208613969069,
-    "tsr_start_time": 1455208613969069,
-    "tsr_finish_time": 1455208613969069,
-}
-'''

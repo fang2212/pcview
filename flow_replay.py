@@ -19,7 +19,7 @@ if sys.platform == 'win32':
 else:
     print('linux platform')
 
-from player import FlowPlayer
+from player import FlowPlayer, BaseDraw
 from sink import FlowReader 
 from recorder import VideoRecorder, TextRecorder
 
@@ -28,19 +28,36 @@ def get_data_str():
     return datetime.now().strftime(FORMAT)
 
 def main():
-    reader = FlowReader(r'E:\temp\20190322171339-Base02-CIZQ\pcview_data')
+    reader = FlowReader(r'E:\temp\lanebug0325')
     player = FlowPlayer()
     while True:
         success, image, mess = reader.output()
         if not success:
             continue
         player.draw(mess, image)
+        frame_id = mess.get('frame_id')
+        if frame_id >= 22720 and frame_id <= 22745:
+            pass
+        else:
+            continue
+        if 'lane' in mess:
+            data = mess['lane']
+            for lane in data:
+                index = lane['label']
+                begin = int(lane['end'][1])
+                ratios = lane['perspective_view_poly_coeff']
+                a0, a1, a2, a3 = list(map(float, ratios))
+                y1 = begin
+                x1 = (int)(a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1)
+                BaseDraw.draw_text(image, str(index), (x1, y1), 1, (255, 0, 0), 2)
+
         if 'frame_id' not in mess:
             print(image, mess)
         else:
             print(mess['frame_id'])
         cv2.imshow('hello', image)
-        cv2.waitKey(100)
+        key = cv2.waitKey(200)
+        print(key)
 
     
 if __name__ == '__main__':
@@ -51,6 +68,7 @@ if __name__ == '__main__':
     parser.add_argument("--ip", help="msg_fd地址", type=str)
     parser.add_argument("--lane_pts", help="", type=str)
     args = parser.parse_args()
+
     '''
     if sys.platform == 'win32':
         file_cfg['video'] = 0

@@ -3,16 +3,30 @@ const msgpack = require('msgpack');
 const fs = require('fs');
 const path = require('path');
 const argv = require('yargs')
-      .usage('Usage: $0 --sync [loop_num] --ip [ip] --log-path [log-path] --event-log --print')
+      .usage('Usage: $0 --sync [loop_num] --ip [ip] --graph-num [num] --log-path [log-path] --event-log --print')
       .argv;
 const Sync = require('./sync');
 let sync = null;
 
+// socket.io
+const express = require('express');
+const app = express();
+const httpServer = require('http').createServer(app);
+const io = require('socket.io')(httpServer);
+io.on('connection', (socket)=>{
+    console.log('new connetcion')
+});
+
+let syncSize = 20
 if (argv.sync) {
-  sync = new Sync(argv.sync, 'loop_index');
-} else {
-  sync = new Sync(20, 'loop_index');
+  syncSize = new Sync(argv.sync, 'loop_index');
 }
+
+let graphNum = 1
+if (argv.graphNum) {
+  graphNum = argv.graphNum
+}
+
 
 Date.prototype.format = function(fmt) { 
   var o = { 
@@ -43,6 +57,10 @@ let ip = '192.168.0.233';
 let logPath = 'rotor_data';
 const topics = ['runtime.time_cost']
 
+if (argv.eventLog) {
+    topics.push('runtime.event');
+}
+
 if (argv.logPath) {
     logPath = argv.logPath;
 }
@@ -51,12 +69,6 @@ if (!fs.existsSync(logPath)) {
     fs.mkdirSync(logPath);
 }
 
-let eventLog = null;
-if (argv.eventLog) {
-    topics.push('runtime.event');
-    eventLog = fs.openSync(path.join(logPath, 'event-'+getTime()+'.log'), 'w+');
-}
-const timeLog = fs.openSync(path.join(logPath, 'time-'+getTime()+'.log'), 'w+');
 
 if (argv.ip) {
     ip = argv.ip;
@@ -78,10 +90,6 @@ ws.on('open', function open() {
   })
 });
 
-let new_pack = null;
-let new_id = -1;
-let is_ok = 0;
-const eventMap = new Map();
 
 const PackData = (new_pack, data) => {
   if (data.message == 'LoopTime') {
@@ -91,65 +99,96 @@ const PackData = (new_pack, data) => {
   }
 }
 
-ws.on('message', function incoming(data) {
-  //console.log(data.toString('hex'));
-  if (data instanceof Buffer) {
-    const obj = msgpack.unpack(data);
-    //console.log(msgpack.unpack(obj.data))
-    //console.log(obj)
-
-    data = msgpack.unpack(obj.data)
-    if (obj.topic == 'runtime.time_cost') {
-      const res = sync.push(data);
-      for (let i in res) {
-        data = res[i];
-        const frame_id = data.loop_index;
-        if (new_id != frame_id) {
-          if (new_pack) {
-            if (is_ok) {
-              let temp = JSON.stringify(new_pack)
-              if (argv.print) {
-                console.log(temp);
-              }
-              fs.writeSync(timeLog, temp+'\n');
-            } else {
-              is_ok = 1;
-            }
-          }
-          new_pack = {
-            "frame_id": frame_id,
-            "frame_time_cost": 0,
-            "node_time_cost": []
-          }
-          PackData(new_pack, data);
-          new_id = frame_id;
-        }
-        else if (new_id == frame_id) {
-          PackData(new_pack, data);
-        }
-      }
-    } else if (obj.topic == 'runtime.event') {
-      let msgTime = obj.time;
-    
-      //console.log(obj);
-      //console.log(msgTime);
-      let data = msgpack.unpack(obj.data);
-      data['time'] = msgTime;
-      let key = data.graph_index.toString() + data.loop_index.toString() + data.node_name;
-      if (data.message == 'NodeBegin') {
-        eventMap.set(key, data);
-      } else if (data.message == 'NodeEnd') {
-        if (eventMap.get(key)) {
-          let temp = JSON.stringify([eventMap.get(key), data]);
-          if (argv.print) {
-            console.log(temp);
-          }
-          fs.writeSync(eventLog, temp+'\n');
-          eventMap.delete(key);
-        }
-      }
+class GraphCnt {
+  constructor(graph_index) {
+    // super();
+    this.new_pack = null;
+    this.new_id = -1;
+    this.is_ok = 0;
+    this.eventMap = new Map();
+    this.sync = new Sync(syncSize, 'loop_index')
+    this.eventLog = null;
+    if (argv.eventLog) {
+        this.eventLog = fs.openSync(path.join(logPath, 'event-'+getTime()+'-g'+graph_index+'.log'), 'w+');
     }
-  } else {
-    console.log('text:', data);
+    this.timeLog = fs.openSync(path.join(logPath, 'time-'+getTime()+'-g'+graph_index+'.log'), 'w+');
   }
+
+  push(data) {
+    if (data instanceof Buffer) {
+      const obj = msgpack.unpack(data);
+      //console.log(msgpack.unpack(obj.data))
+      //console.log(obj)
+      data = msgpack.unpack(obj.data)
+
+      if (obj.topic == 'runtime.time_cost') {
+        const res = this.sync.push(data);
+        for (let i in res) {
+          data = res[i];
+          const frame_id = data.loop_index;
+          if (this.new_id != frame_id) {
+            if (this.new_pack) {
+              if (this.is_ok) {
+                let temp = JSON.stringify(this.new_pack)
+                io.emit('log', temp)
+                if (argv.print) {
+                  console.log(temp);
+                }
+                fs.writeSync(this.timeLog, temp+'\n');
+              } else {
+                this.is_ok = 1;
+              }
+            }
+            this.new_pack = {
+              "frame_id": frame_id,
+              "frame_time_cost": 0,
+              "node_time_cost": []
+            }
+            PackData(this.new_pack, data);
+            this.new_id = frame_id;
+          }
+          else if (this.new_id == frame_id) {
+            PackData(this.new_pack, data);
+          }
+        }
+      } else if (obj.topic == 'runtime.event') {
+        let msgTime = obj.time;
+        data['time'] = msgTime;
+        let key = data.graph_index.toString() + data.loop_index.toString() + data.node_name;
+        if (data.message == 'NodeBegin') {
+          this.eventMap.set(key, data);
+        } else if (data.message == 'NodeEnd') {
+          if (this.eventMap.get(key)) {
+            let temp = JSON.stringify([this.eventMap.get(key), data]);
+            if (argv.print) {
+              console.log(temp);
+            }
+            fs.writeSync(this.eventLog, temp+'\n');
+            this.eventMap.delete(key);
+          }
+        }
+      }
+    } else {
+      console.log('text:', data);
+    }
+  }
+
+  end() {
+    this.emit('end');
+  }
+}
+
+const graphCnt ={
+} 
+
+for (let i=0; i<graphNum; i++) {
+  graphCnt[i] = new GraphCnt(i)
+}
+
+ws.on('message', function incoming(data) {
+  const obj = msgpack.unpack(data);
+  let temp = msgpack.unpack(obj.data);
+  graphCnt[temp.graph_index].push(data)
 });
+
+httpServer.listen(12033)

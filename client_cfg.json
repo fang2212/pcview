@@ -9,7 +9,7 @@
     },
     "vehicle": {
       "show_obj": true,
-      "thickness": 1,
+      "thickness": 2,
       "len_ratio": 50,
       "show_warning": true,
       "show_info": true

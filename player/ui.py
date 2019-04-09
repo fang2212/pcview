@@ -41,7 +41,7 @@ class FPSCnt(object):
         self.period = period
         self.start_time = None
         self.cnt = 0
-        self.fps = 0
+        self.fps = fps
     
     def inc(self, step=1):
         if self.cnt % self.period == 0:
@@ -53,7 +53,7 @@ class FPSCnt(object):
                 delta = (self.start_time - temp).total_seconds()
                 print(self.period, delta)
                 self.fps = str("%.2f" % (self.period / delta))
-        self.cnt += 1
+        self.cnt += step
 
 class BaseDraw(object):
     """
@@ -171,11 +171,12 @@ class BaseDraw(object):
                     end = 720
                 if begin < 0:
                     begin = 0
-                if int(index) == int(deviate_state) and int(deviate_state) in [1, 2]:
+                if int(index) == int(deviate_state) and (int(deviate_state) in [1, 2]):
                     color = CVColor.Red
                 else:
                     color = CVColor.Blue
-                perspective_view_pts = lane.get('perspective_view_pts')
+                # perspective_view_pts = lane.get('perspective_view_pts')
+                perspective_view_pts = None
                 if perspective_view_pts:
                     cls.draw_polylines(img, perspective_view_pts, color, 2)
                 else:
@@ -237,8 +238,13 @@ class BaseDraw(object):
 
         if y-num*gap_v-6 < 0:
             y = num*gap_v+6
-        if x+width > 1280:
+        elif y >= 720:
+            y = 720
+
+        if x+width >= 1280:
             x = 1280-width
+        if x < 0:
+            x = 0
 
         rect = (x, y-num*gap_v-6, width, num*gap_v+6)
         BaseDraw.draw_alpha_rect(img, rect, 0.4)

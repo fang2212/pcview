@@ -47,9 +47,7 @@ class FlowPlayer(object):
             t1 = datetime.datetime.now().strftime('%Y-%m-%d')
             t2 = datetime.datetime.now().strftime('%H:%M:%S')
             para_list = [
-                'fps:' + str(fps),
                 'speed:' + str(speed)+'km/h',
-                'fid:' + str(mess.get('frame_id')),
                 '' + str(t1),
                 '' + str(t2)
             ]
@@ -57,49 +55,10 @@ class FlowPlayer(object):
         # speed = float(mess['speed'])
         deviate_state = -1
 
-        title = 'system'
-        para_list = []
+        '''
         if 'system' in mess:
-            para_list += self.sys_info(img, mess.get('system'), self.cfg.get('system'))
-        if 'camera' in mess:
-            s_ts = mess['camera']['create_ts']
-            if 'finish_time_us' in mess:
-                
-                # print(mess['finish_time_us'])
-                f_ts = mess['finish_time_us']['time_us']
-
-                delay = "%.1f" % ((f_ts-s_ts)/1000)
-                para_list += [
-                    'total_delay:' + str(delay)
-                ]
-                # print(para_list)
-            else:
-                total_ts = -1
-                lane_ts = mess.get('lane_finish_time')
-                vehicle_ts = mess.get('vehicle_finish_time')
-                tsr_ts = mess.get('tsr_finish_time')
-                if lane_ts:
-                    total_ts = max(total_ts, (lane_ts-s_ts)/1000)
-                    para_list += [
-                        'lane_delay:' + str("%.1f" % total_ts)
-                    ]
-                if vehicle_ts:
-                    total_ts = max(total_ts, (vehicle_ts-s_ts)/1000)
-                    para_list += [
-                        'vehicle_delay:' + str("%.1f" % ((vehicle_ts-s_ts)/1000))
-                    ]
-                if tsr_ts:
-                    total_ts = max(total_ts, (tsr_ts-s_ts)/1000)
-                    para_list += [
-                        'tsr_delay:' + str("%.1f" % ((tsr_ts-s_ts)/1000))
-                    ]
-                if total_ts > 0:
-                    para_list += [
-                        'total_delay:' + str(total_ts)
-                    ]
-        # print('para', para_list)
-        BaseDraw.draw_single_info(img, (1120, 0), 160, 'system', para_list)
-        print(' '.join(para_list))
+            self.draw_sys(img, mess.get('system'), self.cfg.get('system'))
+        '''
 
         pcw_on, ped_on = '-', '-'
         ped_show = False
@@ -119,7 +78,7 @@ class FlowPlayer(object):
         if 'pedestrians' in mess:
             res_list = mess['pedestrians']
             for i, obj in enumerate(res_list):
-                BaseDraw.draw_obj_rect(img, obj['detect_box'], CVColor.Cyan, 1)
+                # BaseDraw.draw_obj_rect(img, obj['detect_box'], CVColor.Cyan, 1)
                 pos = obj['regressed_box']
                 color = CVColor.Pink if obj['is_key'] else CVColor.Green
                 BaseDraw.draw_obj_rect_corn(img, pos, color, 2)
@@ -179,6 +138,7 @@ class FlowPlayer(object):
             ]
             BaseDraw.draw_single_info(img, (140, 0), 130, title, para_list)
 
+        '''
         if 'vehicle_hit_list' in mess:
             res_list = mess['vehicle_hit_list']
             for i, obj in enumerate(res_list):
@@ -188,41 +148,12 @@ class FlowPlayer(object):
             res_list = mess['ped_hit_list']
             for i, obj in enumerate(res_list):
                 BaseDraw.draw_obj_rect(img, obj['det_rect'], CVColor.Green, 1)
-
-        if 'tsr_trace_res_list' in mess:
-            res_list = mess['tsr_trace_res_list']
-            for i, obj in enumerate(res_list):
-                BaseDraw.draw_obj_rect(img, obj['reg_rect'], CVColor.Red, 1)
-                pos = obj['reg_rect']
-                tsr_class = obj['tsr_class']
-                tsr_id = obj['tsr_id']
-                track_cnt = obj['track_cnt']
-                para_list = [
-                    'class:'+str(tsr_class),
-                    'id:'+str(tsr_id),
-                    'track_cnt:'+str(track_cnt)
-                ]
-                BaseDraw.draw_head_info(img, pos[0:2], para_list, 100)
-
-        if 'tsr_warning' in mess:
-            data = mess['tsr_warning']
-            height_limit = '%.2f' % data['height_limit']
-            weight_limit = '%.2f' % data['weight_limit']
-            speed_limit = data['speed_limit']
-            tsr_warning_level = data['tsr_warning_level']
-            title = 'tsr'
-            para_list = [
-                'height_limit:'+str(height_limit),
-                'weight_limit:'+str(weight_limit),
-                'speed_limit:'+str(speed_limit),
-                'warning_level:'+str(tsr_warning_level)
-            ]
-            BaseDraw.draw_single_info(img, (570, 0), 150, title, para_list)
+        '''
 
         if 'vehicle_measure_res_list' in mess:
             res_list = mess['vehicle_measure_res_list']
             for i, vehicle in enumerate(res_list):
-                BaseDraw.draw_obj_rect(img, vehicle['det_rect'], CVColor.Cyan, 1)
+                # BaseDraw.draw_obj_rect(img, vehicle['det_rect'], CVColor.Cyan, 1)
                 pos = vehicle['reg_rect']
                 color = CVColor.Red if vehicle['is_crucial'] else CVColor.Blue
                 BaseDraw.draw_obj_rect_corn(img, pos, color, 2)
@@ -246,8 +177,15 @@ class FlowPlayer(object):
             BaseDraw.draw_lane_lines(img, data, 222, deviate_state, draw_all=True, speed_limit=0)
         return img
 
-    def sys_info(self, img, data, cfg=None):
-        para_list = []
+    def draw_sys(self, img, data, cfg=None):
+        sys_cpu = '-'
+        rotor_cpu = '-'
+        sys_mem = '-'
+        rotor_mem = '-'
+        load_avg1 = '-'
+        load_avg5 = '-'
+        load_avg15 = '-'
+        loop_id = '-'
         if data:
             sys_cpu = data.get('system_cpu_utilization')
             rotor_cpu = data.get('rotor_cpu_utilization')
@@ -260,14 +198,14 @@ class FlowPlayer(object):
             load_avg1 = '%.2f' % data.get('load_average_1')
             load_avg5 = '%.2f' % data.get('load_average_5')
             load_avg15 = '%.2f' % data.get('load_average_15')
-            para_list = [
-                'sys_cpu:'+sys_cpu,
-                'rotor_cpu:'+rotor_cpu,
-                'sys_mem:'+sys_mem,
-                'rotor_mem:'+rotor_mem,
-                'load_avg1:'+load_avg1,
-                'load_avg5:'+load_avg5,
-                'load_avg15:'+load_avg15,
-                'loop_id:'+loop_id
-            ]
-        return para_list
+        para_list = [
+            'sys_cpu:'+sys_cpu,
+            'rotor_cpu:'+rotor_cpu,
+            'sys_mem:'+sys_mem,
+            'rotor_mem:'+rotor_mem,
+            'load_avg1:'+load_avg1,
+            'load_avg5:'+load_avg5,
+            'load_avg15:'+load_avg15,
+            'loop_id:'+loop_id
+        ]
+        BaseDraw.draw_single_info(img, (1120, 0), 160, 'system', para_list)
