@@ -149,6 +149,35 @@ class FlowPlayer(object):
             for i, obj in enumerate(res_list):
                 BaseDraw.draw_obj_rect(img, obj['det_rect'], CVColor.Green, 1)
         '''
+        if 'tsr_trace_res_list' in mess:
+            res_list = mess['tsr_trace_res_list']
+            for i, obj in enumerate(res_list):
+                BaseDraw.draw_obj_rect(img, obj['reg_rect'], CVColor.Red, 1)
+                pos = obj['reg_rect']
+                tsr_class = obj['tsr_class']
+                tsr_id = obj['tsr_id']
+                track_cnt = obj['track_cnt']
+                para_list = [
+                    'class:'+str(tsr_class),
+                    'id:'+str(tsr_id),
+                    'track_cnt:'+str(track_cnt)
+                ]
+                BaseDraw.draw_head_info(img, pos[0:2], para_list, 100)
+
+        if 'tsr_warning' in mess:
+            data = mess['tsr_warning']
+            height_limit = '%.2f' % data['height_limit']
+            weight_limit = '%.2f' % data['weight_limit']
+            speed_limit = data['speed_limit']
+            tsr_warning_level = data['tsr_warning_level']
+            title = 'tsr'
+            para_list = [
+                'height_limit:'+str(height_limit),
+                'weight_limit:'+str(weight_limit),
+                'speed_limit:'+str(speed_limit),
+                'warning_level:'+str(tsr_warning_level)
+            ]
+            BaseDraw.draw_single_info(img, (570, 0), 150, title, para_list)
 
         if 'vehicle_measure_res_list' in mess:
             res_list = mess['vehicle_measure_res_list']
