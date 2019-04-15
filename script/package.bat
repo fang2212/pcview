@@ -1,6 +1,6 @@
-:
-:npm install pkg --global
-:python3 -m pip install pyinstaller
+:: 
+:: npm install pkg --global
+:: python3 -m pip install pyinstaller
 
 echo "clear"
 del *.spec
@@ -11,8 +11,11 @@ echo "start pyinstaller"
 pyinstaller flow_view.py --distpath release\win\dist --workpath release\win\build
 
 echo "copy *.node"
-copy release\lib\win\msgpackBinding.node release\win\dist
-copy release\lib\win\opencv_ffmpeg330_64.dll release\win\dist\flow_view
-copy node\msg_fd.exe release\win\dist
-copy node\status2log.exe release\win\dist
-copy docs\releaseGuide.md release\linux\dist
+echo "make sure copy msgpackBinding.node from node to release\win\ " 
+echo "make sure copy opencv-ffmpeg*.dll from PYTHON_PATH\Lib\site-packages\cv2to release\win\ "
+copy release\win\msgpackBinding.node release\win\dist\flow_view
+copy release\win\opencv_ffmpeg*.dll release\win\dist\flow_view
+
+copy node\msg_fd.exe release\win\dist\flow_view
+copy node\status2log.exe release\win\dist\flow_view
+copy docs\releaseGuide.md release\win\dist\flow_view
