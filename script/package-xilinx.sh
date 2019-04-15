@@ -5,8 +5,8 @@ rm -r release/linux/build
 rm -r release/linux/dist
 
 echo "start pyinstaller"
-rm release/linux/dist/flow_view
-pyinstaller flow_view.py -F --distpath release/linux/dist --workpath release/linux/build
+rm release/linux/dist/xilinx_view
+pyinstaller xilinx_view.py -F --distpath release/linux/dist --workpath release/linux/build
 
 echo "copy *.node"
 cp release/linux/msgpackBinding.node release/linux/dist
