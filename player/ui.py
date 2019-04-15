@@ -171,10 +171,12 @@ class BaseDraw(object):
                     end = 720
                 if begin < 0:
                     begin = 0
-                if int(index) == int(deviate_state) and (int(deviate_state) in [1, 2]):
-                    color = CVColor.Red
-                else:
-                    color = CVColor.Blue
+                
+                color = CVColor.Blue
+                if 'warning' in lane:
+                    if lane['warning'] and int(index) == int(deviate_state):
+                        color = CVColor.Red
+
                 # perspective_view_pts = lane.get('perspective_view_pts')
                 perspective_view_pts = None
                 if perspective_view_pts:
@@ -226,7 +228,7 @@ class BaseDraw(object):
     @classmethod
     def draw_head_info(cls, img, point, para_list, width=120):
         """显示物体头部信息 for car & ped
-        Args:
+        Args:   
             img: 原始图片
             point: 左上角位置
             para_list: List [index, TODO ]
@@ -249,6 +251,23 @@ class BaseDraw(object):
         rect = (x, y-num*gap_v-6, width, num*gap_v+6)
         BaseDraw.draw_alpha_rect(img, rect, 0.4)
         BaseDraw.draw_para_list(img, (x+5, y-6), para_list, -gap_v, size)
+
+    @classmethod
+    def draw_lane_warnning(cls, img, point, warning):
+        """显示车道线报警
+        """
+        warning = int(warning)
+        left_color, right_color = CVColor.White, CVColor.White
+        if warning == 1:
+            left_color = CVColor.Red
+        if warning == 2:
+            right_color = CVColor.Red
+        if warning == 5:
+            left_color = CVColor.Yellow
+        if warning == 6:
+            right_color = CVColor.Yellow
+        BaseDraw.draw_text(img, '|', point, 2, left_color, 3)
+        BaseDraw.draw_text(img, '|', (point[0]+50, point[1]), 2, right_color, 3)
 
     @classmethod
     def draw_para_list(cls, img, point, para_list, gap_v=20, size=0.5):
