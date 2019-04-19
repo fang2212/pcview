@@ -21,7 +21,6 @@ class SerialCan():
             try:
                 kws.update(dict(port=port, baudrate=baudrate))
                 self.usbSerial = serial.Serial(**kws)
-                self.usbSerial.open()
                 if not self.setBitrate(bitrate):
                     raise Exception("set bitrate failed")
             except Exception as e:

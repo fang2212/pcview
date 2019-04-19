@@ -22,75 +22,6 @@ pcview-client是一个实时显示车道线，车辆等ADAS算法结果及相关
 
 :numbered:
 
-== 依赖库
-```shell
-sudo apt install -y python3-pip # 如果没有安装pip3
-https://github.com/nanomsg/nanomsg # install nanomsg lib if need
-sudo pip3 install nanomsg
-sudo pip3 install msgpack
-```
-
-== 使用
-. 修改/etc/network/interfaces，设置电脑IP为静态地址与设备同一网段，
-
-. 运行pc-viewer
-```shell
-python run_pcview.py --func test --ip 192.168.0.233
-                            test 测试功能版,所有算法结果都显示
-                            debug 比亚迪调试版,显示车道线和can
-                            pro 在test基础上显示俯视图
-```
-
-== GUI
-=== 选项说明
-* 内部测试
-[source,bash] 
-----
-parser.add_argument("--func", help="功能版本[debug,test,pro,fpga]", type=str)
-default-fpga
-pm-pro
-test-test
-x1s-debug
-
-parser.add_argument("--ip", help="ip address", type=str)
-
-parser.add_argument("--video", help="是否保存视频，默认保存", type=int)
-
-parser.add_argument("--log", help="是否保存日志,默认保存", type=int)
-
-parser.add_argument("--raw_type", help="设备发出图像数据类型[color or gray]", type=str)
-
-parser.add_argument("--lane_speed_limit", help="车道显示速度限制", type=int)
-
-parser.add_argument("--all_laneline", help="是否显示所有车道", type=int)
-
-parser.add_argument("--lane_begin", help="显示车道起点", type=int)
-
-parser.add_argument("--lane_end", help="显示车道终点", type=str)
-
-parser.add_argument("--result_path", help="保存地址", type=str)
-
-parser.add_argument("--save_path", help="保存目录", type=str)
-默认/home/minieye/pcview-data
-----
-
-* 客户使用版
-[source,bash] 
-----
-parser.add_argument("--func", help="功能版本[debug,test,pro,fpga]", type=str)
-不提供选项使用默认default-fpga
-
-parser.add_argument("--ip", help="ip address", type=str)
-
-parser.add_argument("--raw_type", help="设备发出图像数据类型[color or gray]", type=str)
-
-parser.add_argument("--save_path", help="保存目录", type=str)
-默认/home/minieye/pcview-data
-----
-
-* 升级
-pcview工作目录放在electron app同级目录下,升级时将老的pcview包重命名备份，新的zip安装包解压后替代
-
 == changlog
 * release1109
 ** 整合x1s、x1b的内容
@@ -102,24 +33,10 @@ pcview工作目录放在electron app同级目录下,升级时将老的pcview包�
 ** 删除多余文件
 ** 规范数据协议、配置参数
 
-* new
-** 修复一些bug
-** 修复多个串口设备时查找can的问题
-** 把报警显示区域改小
-** 添加显示over_speed
+* release20190419
+** add flow_view字段说明
+** add can报警数据显示
+
 
 == todo
-* 重要
-** 完善异常捕获，log日志，通过修饰器对主要进程函数进行异常捕获
-** cail位置不对
-** 添加提醒信息（没有can设备、网线断开）
-** 长时间运行死机问题
-* 次要
-** cv2.imshow一大堆错误信息的bug
-** can设备自动挂起
-** pcview-gui 依赖， pyserial, nanomsg判断， can状态
-** desktop
-** 发布流程
-** 不同版本配置文件
-** 集成测试
-** 低速没有车道线
+* can报警信息，兼容不同版本

@@ -25,7 +25,7 @@ class SerialCanBase(object):
                 frdata_recv['recv_ts'] = int(time.time()*1000)
                 frdata_recv['data'] = data
                 yield frdata_recv
-            time.sleep(0.01) #serialcan 接收不会暂停，主动休眠 10ms
+            time.sleep(0.001) #serialcan 接收不会暂停，主动休眠 10ms
 
     def recv(self):
         return next(self.reciver)

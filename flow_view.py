@@ -22,6 +22,8 @@ else:
 from player import FPSCnt, FlowPlayer
 from sink import TcpSink
 from recorder import VideoRecorder, TextRecorder
+from sensor.liuqi import parse_liuqi
+from easy_can.base import CanBase
 
 def get_data_str():
     FORMAT = '%Y%m%d%H%M%S'
@@ -31,11 +33,15 @@ class PCView():
     
     def __init__(self, ip, cfg):
         self.msg_queue = Queue()
+        self.can_queue = Queue()
         self.ip = ip
         self.sync_size = cfg['sync']
 
-        self.pc_draw = PCDraw(self.msg_queue, cfg)
+        self.pc_draw = PCDraw(self.msg_queue, self.can_queue, cfg)
         self.pc_draw.start()
+
+        self.can_sink = CanSink(self.can_queue)
+        self.can_sink.start()
 
     
     def run(self):
@@ -43,15 +49,33 @@ class PCView():
         tcp_sink = TcpSink(self.ip, 12032, self.msg_queue, self.sync_size)
         tcp_sink.run()
 
+class CanSink(Process):
+    def __init__(self, can_queue, bitrate=500000):
+        Process.__init__(self)
+        self.can0 = CanBase(bitrate=bitrate)  
+        self.can_queue = can_queue  
+
+    def run(self):
+        while True:
+            tmp = self.can0.recv()
+            #print(tmp)
+            ts = tmp['recv_ts']
+            can_id = int(tmp['can_id'], 16)
+            data = bytes(tmp['data'])
+            r = parse_liuqi(can_id, data)
+            if r:
+                self.can_queue.put([ts, r])
+
 
 class PCDraw(Process):
     """pc-viewer功能类，用于接收每一帧数据，并绘制
     """
     
-    def __init__(self, mess_queue, file_cfg):
+    def __init__(self, mess_queue, can_queue, file_cfg):
         Process.__init__(self)
         self.daemon = True
         self.mess_queue = mess_queue
+        self.can_queue = can_queue
         self.save_log = file_cfg['log']
         self.save_video = file_cfg['video']
         self.save_path = file_cfg['path']
@@ -68,20 +92,10 @@ class PCDraw(Process):
         fps_cnt = FPSCnt(20, 20)
         cnt = 0
 
+        can_cache = []
         while True:
             while not self.mess_queue.empty():
                 mess = self.mess_queue.get()
-                # print(mess)
-                '''
-                if mess == SinkError.Closed:
-                    print('close')
-                    if self.save_video:
-                        video_recorder.release()
-                    if self.save_log:
-                        text_recorder.release()
-                    cv2.destroyAllWindows()
-                    return
-                '''
 
                 if 'frame_id' not in mess:
                     continue
@@ -102,6 +116,14 @@ class PCDraw(Process):
                     'fps': fps_cnt.fps
                 }
 
+                can_data = {}
+                while not self.can_queue.empty():
+                    can_cache = self.can_queue.get()
+                    #if can_cache[0]+20 > time.time()*1000:
+                    #    break
+                    can_data.update(can_cache[1])
+                mess['can'] = can_data
+
                 try:
                     player.draw(mess, image)
                 except Exception as err:
@@ -109,7 +131,7 @@ class PCDraw(Process):
                     if 'camera' in mess:
                         mess['camera'].pop('image', None)
                     with open('error.json', 'w+') as fp:
-                        print('error json')
+                        print('error json', err)
                         fp.write(json.dumps(mess))
                     continue
 

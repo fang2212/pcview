@@ -242,6 +242,9 @@ class FlowPlayer(object):
                 ]
                 BaseDraw.draw_head_info(img, pos[0:2], para_list, 80)
 
+        if 'can' in mess:
+            DrawAlarmCan.draw(img, mess['can'])
+
         if 'lane' in mess:
             data = mess['lane']
             BaseDraw.draw_lane_lines(img, data, 222, deviate_state, draw_all=True, speed_limit=0)
@@ -272,3 +275,113 @@ class FlowPlayer(object):
                 'loop_id:'+loop_id
             ]
         return para_list
+
+class DrawAlarm(object):
+    '''
+    突出显示报警提示
+    '''
+    @classmethod
+    def draw(self, img, mess):
+        focus_index = mess['vehicle'].get('focus_index', -1)
+        if focus_index == -1:
+            fcw = 0
+            ufcw = 0
+            hwm = 0
+            ttc  = '--'
+            sg = 0
+            tsr = 0
+            pcw = 0
+        else:
+            fcw = mess['vehicle'].get('forward_collision_warning', 0)
+            ufcw = mess['vehicle'].get('bumper_warning', 0)
+            hwm = mess['vehicle'].get('headway_warning', 0)
+            ttc = "%.1f"%mess['vehicle'].get('ttc', 0) #if hwm > 0 else '--'
+            sg = mess['vehicle'].get('stop_and_go_warning', 0)
+            tsr = mess['tsr'].get('tsr_warning_level', 0)
+            pcw = mess['ped'].get('pcw_on', 0)
+        ldw = mess['lane'].get('deviate_state', 0)
+
+        basex, basey, width, height = (580, 0, 120, 150)
+        size, thickness = (0.6, 1)
+        color = [CVColor.Green, CVColor.Red]
+        alarms = [
+            ["FCW", 1, (0, 18), int(fcw>0), size, thickness],
+            ["HWM: "+ttc, 1, (0, 18), int(hwm>1), size, thickness],
+            ["PCW", 1, (0, 18), int(pcw>0), size, thickness],
+            ["TSR: "+str(tsr), 1, (0, 18), int(tsr>0), size, thickness],
+            ["UFCW", 1, (0, 18), int(ufcw>0), size, thickness],
+            ["SG", 1, (0, 18), int(sg>0), size, thickness],
+            ["|", 1, (0, 35), int(ldw==1), 1, 2],
+            ["|", 1, (50, 0), int(ldw==2), 1, 2],
+        ]
+        
+        BaseDraw.draw_alpha_rect(img, (basex-10, basey, width, height), 0.4)
+        x, y = (basex, basey)
+        for alarm in alarms:
+            text, show, pos, value, size, thickness = alarm
+            if show:
+                x += pos[0]
+                y += pos[1]
+                BaseDraw.draw_text(img, text, (x, y), size, color[value], thickness)
+
+
+class DrawAlarmCan(object):
+    '''
+    突出显示报警提示, can数据
+    '''
+    @classmethod
+    def draw(self, img, info):
+        #info = mess['info']
+        info1 = {
+            "hw_on": 1,
+            "ldw_on": 1,
+            "lld": 1,
+            "rld": 1,
+        }
+        fcw, = dict2list(info, ['fcw', ], int, 0)
+        ped_on, pcw_on = dict2list(info, ['ped_on', 'pcw_on'], int, 0)
+        hw_on, hw = dict2list(info, ['hw_on', 'hw'], int, 0)
+        ttc, = dict2list(info, ['ttc'], float, 0)
+        ldw_on, lld, rld, lldw, rldw = dict2list(info, ['ldw_on', 'lld', 'rld', 'lldw', 'rldw'], int, 0)
+        tsr, = dict2list(info, ['overspeed'], int, 0)
+        buzzing, = dict2list(info, ['buzzing'], str, '')
+        camera, = dict2list(info, ['camera',], int, 0)
+
+        ttc = "%2.1f"%ttc #if hw > 0 else "--"
+        lldw = 2 if lld==0 else lldw
+        rldw = 2 if rld==0 else rldw
+
+        basex, basey, width, height = (730, 0, 250, 150)
+        size, thickness = (0.6, 1)
+        alarms = [
+            ["CAM:"+str(camera), 1, (0,18), int(camera>0), size, thickness],
+            ["FCW:"+str(fcw), 1, (0, 18), int(fcw>0), size, thickness],
+            ["HWM:"+str(hw)+"  ttc:"+ttc+"  on:"+str(hw_on), 1, (0, 18), int(hw>1), size, thickness],
+            ["PCW:"+str(pcw_on)+"  ped:"+str(ped_on), 1, (0, 18), int(pcw_on>0), size, thickness],
+            ["TSR: "+str(tsr), 1, (0, 18), int(tsr>0), size, thickness],
+            ["AW :"+buzzing, 1, (0, 18), int(bool(buzzing)), size, thickness],
+            ["|", 1, (0, 30), lldw, 1, 2],
+            ["|", 1, (50, 0), rldw, 1, 2],
+            ["on:"+str(ldw_on), 1, (50, 0), int(ldw_on>0), size, thickness],
+        ]
+        
+        color = [CVColor.Green, CVColor.Red, CVColor.White] # 不报警 报警 
+        BaseDraw.draw_alpha_rect(img, (basex-10, basey, width, height), 0.4)
+        x, y = (basex, basey)
+        for alarm in alarms:
+            text, show, pos, value, size, thickness = alarm
+            if show:
+                x += pos[0]
+                y += pos[1]
+                BaseDraw.draw_text(img, text, (x, y), size, color[value], thickness)
+
+        BaseDraw.draw_text(img, "(can)", (basex, y+25), 0.4, CVColor.Yellow, 1)
+
+def dict2list(d, keys, type=None, default=None):
+    values = []
+    for key in keys:
+        value = d.get(key, default)
+        if type:
+            value = type(value)
+        values.append(value)
+    return values
