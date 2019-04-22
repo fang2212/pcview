@@ -4,6 +4,7 @@
 import os
 import sys
 import logging
+import traceback
 import time
 import msgpack
 import json
@@ -24,8 +25,7 @@ from sink import TcpSink
 from recorder import VideoRecorder, TextRecorder
 from sink.canSink import CanSink 
 
-
-def get_data_str():
+def get_date_str():
     FORMAT = '%Y%m%d%H%M%S'
     return datetime.now().strftime(FORMAT)
 
@@ -61,16 +61,16 @@ class PCDraw(Process):
         self.can_queue = can_queue
         self.save_log = file_cfg['log']
         self.save_video = file_cfg['video']
-        self.save_path = file_cfg['path']
+        self.save_path = os.path.join(file_cfg['path'], get_date_str())
     
     def run(self):
         player = FlowPlayer()
         if self.save_log:
             text_recorder = TextRecorder(self.save_path)
-            text_recorder.set_writer(get_data_str())
+            text_recorder.set_writer(get_date_str())
         if self.save_video:
             video_recorder = VideoRecorder(self.save_path, fps=15)
-            video_recorder.set_writer(get_data_str())
+            video_recorder.set_writer(get_date_str())
 
         fps_cnt = FPSCnt(20, 20)
         cnt = 0
@@ -108,12 +108,15 @@ class PCDraw(Process):
                 try:
                     player.draw(mess, image)
                 except Exception as err:
-                    cv2.imwrite('error.jpg', image)
+                    if not os.path.exists(self.save_path):
+                        os.makedirs(self.save_path)
+                    cv2.imwrite(os.path.join(self.save_path, 'error.jpg'), image)
                     if 'camera' in mess:
                         mess['camera'].pop('image', None)
-                    with open('error.json', 'w+') as fp:
+                    with open(os.path.join(self.save_path, 'error.json'), 'w+') as fp:
                         print('error json', err)
-                        fp.write(json.dumps(mess))
+                        fp.write(json.dumps(mess)+'\n')
+                        fp.write(traceback.format_exc())
                     continue
 
                 cv2.imshow('UI', image)
@@ -134,10 +137,10 @@ class PCDraw(Process):
                 if cnt % 2000 == 0:
                     if self.save_video:
                         video_recorder.release()
-                        video_recorder.set_writer(get_data_str())
+                        video_recorder.set_writer(get_date_str())
                     if self.save_log:
                         text_recorder.release()
-                        text_recorder.set_writer(get_data_str())
+                        text_recorder.set_writer(get_date_str())
 
             time.sleep(0.01)
         cv2.destroyAllWindows()
@@ -168,8 +171,13 @@ if __name__ == '__main__':
         file_cfg['log'] = int(args.log)
     if args.path:
         file_cfg['path'] = args.path
-    pcview = PCView(ip, file_cfg)
-    pcview.run()
+    try:
+        pcview = PCView(ip, file_cfg)
+        pcview.run()
+    except Exception as e:
+        exc = traceback.format_exc()
+        with open('error.log', 'w') as f:
+            f.write(exc)
 
 '''
 {

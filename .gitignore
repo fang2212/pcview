@@ -17,6 +17,7 @@ log/
 video/
 pcview_data/
 .vscode/
+error.log
 
 # Executables
 *.swf
