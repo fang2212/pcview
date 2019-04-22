@@ -22,8 +22,8 @@ else:
 from player import FPSCnt, FlowPlayer
 from sink import TcpSink
 from recorder import VideoRecorder, TextRecorder
-from sensor.liuqi import parse_liuqi
-from easy_can.base import CanBase
+from sink.canSink import CanSink 
+
 
 def get_data_str():
     FORMAT = '%Y%m%d%H%M%S'
@@ -48,23 +48,6 @@ class PCView():
         # FlowSink.open_libflow_sink(ip, self.msg_queue)
         tcp_sink = TcpSink(self.ip, 12032, self.msg_queue, self.sync_size)
         tcp_sink.run()
-
-class CanSink(Process):
-    def __init__(self, can_queue, bitrate=500000):
-        Process.__init__(self)
-        self.can0 = CanBase(bitrate=bitrate)  
-        self.can_queue = can_queue  
-
-    def run(self):
-        while True:
-            tmp = self.can0.recv()
-            #print(tmp)
-            ts = tmp['recv_ts']
-            can_id = int(tmp['can_id'], 16)
-            data = bytes(tmp['data'])
-            r = parse_liuqi(can_id, data)
-            if r:
-                self.can_queue.put([ts, r])
 
 
 class PCDraw(Process):
@@ -119,9 +102,7 @@ class PCDraw(Process):
                 can_data = {}
                 while not self.can_queue.empty():
                     can_cache = self.can_queue.get()
-                    #if can_cache[0]+20 > time.time()*1000:
-                    #    break
-                    can_data.update(can_cache[1])
+                    can_data.update(can_cache)
                 mess['can'] = can_data
 
                 try:

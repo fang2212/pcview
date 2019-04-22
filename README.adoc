@@ -40,3 +40,5 @@ pcview-client是一个实时显示车道线，车辆等ADAS算法结果及相关
 
 == todo
 * can报警信息，兼容不同版本
+* 转向车道线报警
+* crash log
