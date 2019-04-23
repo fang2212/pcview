@@ -157,7 +157,7 @@ class FlowPlayer(object):
                 "warning_dist:"+data["warning_dist"]
             ]
             BaseDraw.draw_single_info(img, (390, 0), 180, 'lane', para_list)
-            BaseDraw.draw_lane_warnning(img, (750, 60), deviate_state)
+            #BaseDraw.draw_lane_warnning(img, (750, 60), deviate_state)
 
         if 'vehicle_warning' in mess:
             data = mess['vehicle_warning']

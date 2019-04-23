@@ -16,7 +16,7 @@ def parse_liuqi(id, data):
     obs = {}
     for k in r:
         if k == 'Camera_State':
-            obs['camere'] = r[k]
+            obs['camera'] = r[k]
 
         if k == 'Rlane_Detect':
             obs['rld'] = r[k]
