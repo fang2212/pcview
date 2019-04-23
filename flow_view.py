@@ -40,8 +40,8 @@ class PCView():
         self.pc_draw = PCDraw(self.msg_queue, self.can_queue, cfg)
         self.pc_draw.start()
 
-        if cfg['can']:
-            self.can_sink = CanSink(cfg['can'], self.can_queue)
+        if cfg['can_proto']:
+            self.can_sink = CanSink(cfg['can_proto'], self.can_queue)
             self.can_sink.start()
 
     
@@ -60,18 +60,16 @@ class PCDraw(Process):
         self.daemon = True
         self.mess_queue = mess_queue
         self.can_queue = can_queue
-        self.save_log = file_cfg['log']
-        self.save_video = file_cfg['video']
-        self.use_can = file_cfg['can']
+        self.file_cfg = file_cfg
         self.save_path = os.path.join(file_cfg['path'], get_date_str())
         
     
     def run(self):
-        player = FlowPlayer()
-        if self.save_log:
+        player = FlowPlayer(self.file_cfg)
+        if self.file_cfg['log']:
             text_recorder = TextRecorder(self.save_path)
             text_recorder.set_writer(get_date_str())
-        if self.save_video:
+        if self.file_cfg['video']:
             video_recorder = VideoRecorder(self.save_path, fps=15)
             video_recorder.set_writer(get_date_str())
 
@@ -102,7 +100,7 @@ class PCDraw(Process):
                     'fps': fps_cnt.fps
                 }
 
-                if self.use_can:
+                if self.file_cfg['can_proto']:
                     can_data = {}
                     while not self.can_queue.empty():
                         can_cache = self.can_queue.get()
@@ -126,7 +124,7 @@ class PCDraw(Process):
                 cv2.imshow('UI', image)
                 cv2.waitKey(1)
 
-                if self.save_video:
+                if self.file_cfg['video']:
                     video_recorder.write(image)
                 if 'camera' in mess:
                     # del mess['camera']['image']
@@ -135,14 +133,14 @@ class PCDraw(Process):
                 print('frame_id', frame_id)
                 print(mess)
                 '''
-                if self.save_log:
+                if self.file_cfg['log']:
                     text_recorder.write(json.dumps(mess)+'\n')
                 
                 if cnt % 2000 == 0:
-                    if self.save_video:
+                    if self.file_cfg['video']:
                         video_recorder.release()
                         video_recorder.set_writer(get_date_str())
-                    if self.save_log:
+                    if self.file_cfg['log']:
                         text_recorder.release()
                         text_recorder.set_writer(get_date_str())
 
@@ -156,8 +154,8 @@ if __name__ == '__main__':
     parser.add_argument("--path", help="保存地址", type=str)
     parser.add_argument("--ip", help="msg_fd地址", type=str)
     parser.add_argument("--sync", help="sync cache size", type=str)
-    parser.add_argument("--lane_pts", help="车道线长度", type=str)
-    parser.add_argument("--can", help="can协议", type=str)
+    parser.add_argument("--lane_begin", help="车道线起点", type=str)
+    parser.add_argument("--can_proto", help="can协议", type=str)
     args = parser.parse_args()
     ip = '127.0.0.1'
     file_cfg = {
@@ -165,7 +163,8 @@ if __name__ == '__main__':
         'log': 1,
         'sync': 12,
         'path': 'pcview_data',
-        'can': '',
+        'lane_begin': 0,
+        'can_proto': '',
     }
     if sys.platform == 'win32':
         file_cfg['video'] = 0
@@ -177,8 +176,12 @@ if __name__ == '__main__':
         file_cfg['log'] = int(args.log)
     if args.path:
         file_cfg['path'] = args.path
-    if args.can:
-        file_cfg['can'] = args.can
+    if args.lane_begin:
+        file_cfg['lane_begin'] = int(args.lane_begin)
+    if args.can_proto:
+        file_cfg['can_proto'] = args.can_proto
+        if file_cfg['can_proto'] == 'no-can':
+            file_cfg['can_proto'] = ''
     try:
         pcview = PCView(ip, file_cfg)
         pcview.run()

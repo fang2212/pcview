@@ -142,7 +142,7 @@ class BaseDraw(object):
         """绘制车道线
         Args:
             img: 原始图片
-            ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
+            ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * x + a2 * x^2 * y1 + a3 * x^3
             width: float 车道线宽度
             color: CVColor 车道线颜色
         """
@@ -158,14 +158,14 @@ class BaseDraw(object):
             cls.draw_line(img, (x1, y1), (x2, y2), color, width)
 
     @classmethod
-    def draw_lane_lines(cls, img, lanelines, speed, deviate_state, draw_all=False, speed_limit=30):
+    def draw_lane_lines(cls, img, lanelines, speed, deviate_state, lane_begin=0, draw_all=False, speed_limit=30):
         for lane in lanelines:
             if ((int(lane['label']) in [1, 2]) or draw_all) and speed >= speed_limit:
                 # width = lane['width']
                 # l_type = lane['type']
                 # conf = lane['confidence']
                 index = lane['label']
-                begin = int(lane['end'][1])
+                begin = lane_begin or int(lane['end'][1])
                 end = int(lane['start'][1])
                 if end > 720:
                     end = 720
