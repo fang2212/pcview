@@ -6,6 +6,10 @@ if sys.platform == 'win32':
 from sensor.liuqi import parse_liuqi
 from easy_can.base import CanBase
 
+parser_dict = {
+    "liuqi": parse_liuqi
+}
+
 class CachePool():
     def __init__(self, cache_num=2):
         self.cache_num = cache_num
@@ -26,9 +30,10 @@ class CachePool():
         
 
 class CanSink(Process):
-    def __init__(self, can_queue, bitrate=500000):
+    def __init__(self, can_protocol, can_queue, bitrate=500000):
         Process.__init__(self)
-        self.can0 = CanBase(bitrate=bitrate)  
+        #print(globals())
+        self.parser = parser_dict['liuqi']
         self.can_queue = can_queue  
         self.cache = CachePool(2)
 
@@ -39,7 +44,7 @@ class CanSink(Process):
             ts = tmp['recv_ts']
             can_id = int(tmp['can_id'], 16)
             data = bytes(tmp['data'])
-            r = parse_liuqi(can_id, data)
+            r = self.parser(can_id, data)
             if r:
                 self.cache.update(can_id, r)
             if self.can_queue.empty():

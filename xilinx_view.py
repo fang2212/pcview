@@ -141,6 +141,7 @@ if __name__ == '__main__':
     parser.add_argument("--path", help="保存地址", type=str)
     parser.add_argument("--ip", help="msg_fd地址", type=str)
     parser.add_argument("--sync", help="sync cache size", type=str)
+    parser.add_argument("--can", help="can协议", type=str)
     args = parser.parse_args()
     ip = '127.0.0.1'
     file_cfg = {

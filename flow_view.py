@@ -40,8 +40,9 @@ class PCView():
         self.pc_draw = PCDraw(self.msg_queue, self.can_queue, cfg)
         self.pc_draw.start()
 
-        self.can_sink = CanSink(self.can_queue)
-        self.can_sink.start()
+        if cfg['can']:
+            self.can_sink = CanSink(cfg['can'], self.can_queue)
+            self.can_sink.start()
 
     
     def run(self):
@@ -61,7 +62,9 @@ class PCDraw(Process):
         self.can_queue = can_queue
         self.save_log = file_cfg['log']
         self.save_video = file_cfg['video']
+        self.use_can = file_cfg['can']
         self.save_path = os.path.join(file_cfg['path'], get_date_str())
+        
     
     def run(self):
         player = FlowPlayer()
@@ -99,11 +102,12 @@ class PCDraw(Process):
                     'fps': fps_cnt.fps
                 }
 
-                can_data = {}
-                while not self.can_queue.empty():
-                    can_cache = self.can_queue.get()
-                    can_data.update(can_cache)
-                mess['can'] = can_data
+                if self.use_can:
+                    can_data = {}
+                    while not self.can_queue.empty():
+                        can_cache = self.can_queue.get()
+                        can_data.update(can_cache)
+                    mess['can'] = can_data
 
                 try:
                     player.draw(mess, image)
@@ -152,7 +156,8 @@ if __name__ == '__main__':
     parser.add_argument("--path", help="保存地址", type=str)
     parser.add_argument("--ip", help="msg_fd地址", type=str)
     parser.add_argument("--sync", help="sync cache size", type=str)
-    parser.add_argument("--lane_pts", help="", type=str)
+    parser.add_argument("--lane_pts", help="车道线长度", type=str)
+    parser.add_argument("--can", help="can协议", type=str)
     args = parser.parse_args()
     ip = '127.0.0.1'
     file_cfg = {
@@ -160,6 +165,7 @@ if __name__ == '__main__':
         'log': 1,
         'sync': 12,
         'path': 'pcview_data',
+        'can': '',
     }
     if sys.platform == 'win32':
         file_cfg['video'] = 0
@@ -171,6 +177,8 @@ if __name__ == '__main__':
         file_cfg['log'] = int(args.log)
     if args.path:
         file_cfg['path'] = args.path
+    if args.can:
+        file_cfg['can'] = args.can
     try:
         pcview = PCView(ip, file_cfg)
         pcview.run()
