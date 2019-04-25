@@ -146,14 +146,16 @@ class FlowPlayer(object):
                     data[key] = str(data[key])
                 elif key.find('frame_id') == -1:
                     data[key] = "%.2f" % float(data[key])
+            ld = '--' if float(data["left_wheel_dist"])>= 111 else data["left_wheel_dist"]
+            rd = '--' if float(data["right_wheel_dist"])>= 111 else data["right_wheel_dist"]
             para_list = [
                 "latest_dist:"+data["latest_dist"],
                 "lateral_speed:"+data["lateral_speed"],
                 "earliest_dist:"+data["earliest_dist"],
                 "deviate_state:"+data["deviate_state"],
                 "deviate_trend:"+data["deviate_trend"],
-                "lt_wheel_dist:"+data["left_wheel_dist"],
-                "rt_wheel_dist:"+data["right_wheel_dist"],
+                "lt_wheel_dist:"+ld,
+                "rt_wheel_dist:"+rd,
                 "warning_dist:"+data["warning_dist"]
             ]
             BaseDraw.draw_single_info(img, (390, 0), 180, 'lane', para_list)
@@ -164,7 +166,8 @@ class FlowPlayer(object):
             vid, headway, fcw, hw, vb, ttc = '-', '-', '-', '-', '-', '-'
 
             vid = data['vehicle_id']
-            headway = '%.2f' % data['headway']
+            vid = '-' if int(vid) == -1 else vid
+            headway =  '--' if float(data['headway']) >= 999 else '%.2f' % data['headway']
             fcw = data['fcw']
             # ttc = data['ttc']
             hw = data['headway_warning']
@@ -216,7 +219,7 @@ class FlowPlayer(object):
                 'height_limit:'+str(height_limit),
                 'weight_limit:'+str(weight_limit),
                 'speed_limit:'+str(speed_limit),
-                'warning_level:'+str(tsr_warning_level)
+                #'warning_level:'+str(tsr_warning_level)
             ]
             BaseDraw.draw_single_info(img, (570, 0), 150, title, para_list)
 
