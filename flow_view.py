@@ -108,7 +108,8 @@ class PCDraw(Process):
                     mess['can'] = can_data
 
                 try:
-                    player.draw(mess, image)
+                    if 'pedestrians' in mess or 'ldwparams' in mess or 'vehicle_warning' in mess or 'tsr_warning' in mess:
+                        player.draw(mess, image)
                 except Exception as err:
                     if not os.path.exists(self.save_path):
                         os.makedirs(self.save_path)
