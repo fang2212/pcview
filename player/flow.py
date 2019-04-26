@@ -250,7 +250,10 @@ class FlowPlayer(object):
 
         if 'lane' in mess:
             data = mess['lane']
-            BaseDraw.draw_lane_lines(img, data, 222, deviate_state, lane_begin=self.cfg.get('lane_begin'), draw_all=True, speed_limit=0)
+            speed = float(mess.get('speed', 0))
+            lane_begin = self.cfg.get('lane_begin')
+            speed_limit = self.cfg.get('speed_limit')
+            BaseDraw.draw_lane_lines(img, data, speed, deviate_state, lane_begin=lane_begin, draw_all=True, speed_limit=speed_limit)
         return img
 
     def sys_info(self, img, data, cfg=None):
