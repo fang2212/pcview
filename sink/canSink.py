@@ -32,10 +32,10 @@ class CachePool():
 class CanSink(Process):
     def __init__(self, can_protocol, can_queue, bitrate=500000):
         Process.__init__(self)
-        self.parser = parser_dict['liuqi']
+        self.parser = parser_dict[can_protocol]
         self.can0 = CanBase(bitrate=bitrate)
         self.can_queue = can_queue  
-        self.cache = CachePool(2)
+        self.cache = CachePool(4)
 
     def run(self):
         while True:
