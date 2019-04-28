@@ -2,7 +2,7 @@ import os
 import cv2
 import datetime
 import numpy as np
-from .ui import BaseDraw, CVColor, DrawParameters, DrawPed, DrawVehicle
+from .ui import BaseDraw, CVColor
 from math import isnan
 
 class ClientPlayer(object):

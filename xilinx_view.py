@@ -12,6 +12,7 @@ import argparse
 import numpy as np
 from datetime import datetime
 from multiprocessing import Process, Queue, Value
+import traceback
 
 if sys.platform == 'win32':
     from threading import Thread as Process
@@ -24,7 +25,7 @@ from player.xilinx import FlowPlayer
 from sink import TcpSink
 from recorder import VideoRecorder, TextRecorder
 
-def get_data_str():
+def get_date_str():
     FORMAT = '%Y%m%d%H%M%S'
     return datetime.now().strftime(FORMAT)
 
@@ -55,16 +56,16 @@ class PCDraw(Process):
         self.mess_queue = mess_queue
         self.save_log = file_cfg['log']
         self.save_video = file_cfg['video']
-        self.save_path = file_cfg['path']
+        self.save_path = os.path.join(file_cfg['path'], get_date_str())
 
     def run(self):
         player = FlowPlayer()
         if self.save_log:
             text_recorder = TextRecorder(self.save_path)
-            text_recorder.set_writer(get_data_str())
+            text_recorder.set_writer(get_date_str())
         if self.save_video:
             video_recorder = VideoRecorder(self.save_path, fps=15)
-            video_recorder.set_writer(get_data_str())
+            video_recorder.set_writer(get_date_str())
 
         fps_cnt = FPSCnt(100, 20)
         cnt = 0
@@ -102,12 +103,15 @@ class PCDraw(Process):
                 try:
                     player.draw(mess, image)
                 except Exception as err:
-                    cv2.imwrite('error/error.jpg', img)
+                    if not os.path.exists(self.save_path):
+                        os.makedirs(self.save_path)
+                    cv2.imwrite(os.path.join(self.save_path, 'error.jpg'), image)
                     if 'camera' in mess:
-                        del mess['camera']['image']
-                    with open('error/error.json', 'w+') as fp:
-                        fp.write(json.dumps(mess))
-                    print(err)
+                        mess['camera'].pop('image', None)
+                    with open(os.path.join(self.save_path, 'error.json'), 'w+') as fp:
+                        print('error json', err)
+                        fp.write(json.dumps(mess)+'\n')
+                        fp.write(traceback.format_exc())
                     continue
 
                 cv2.imshow('UI', image)
@@ -127,10 +131,10 @@ class PCDraw(Process):
                 if cnt % 2000 == 0:
                     if self.save_video:
                         video_recorder.release()
-                        video_recorder.set_writer(get_data_str())
+                        video_recorder.set_writer(get_date_str())
                     if self.save_log:
                         text_recorder.release()
-                        text_recorder.set_writer(get_data_str())
+                        text_recorder.set_writer(get_date_str())
 
             time.sleep(0.01)
         cv2.destroyAllWindows()
@@ -143,6 +147,7 @@ if __name__ == '__main__':
     parser.add_argument("--sync", help="sync cache size", type=str)
     parser.add_argument("--lane_begin", help="车道线起点", type=str)
     parser.add_argument("--can_proto", help="can协议", type=str)
+    parser.add_argument("--lane_pts", help="用算法输出点画车道线", type=str)
     args = parser.parse_args()
     ip = '127.0.0.1'
     file_cfg = {
@@ -159,5 +164,7 @@ if __name__ == '__main__':
         ip = args.ip
     if args.path:
         file_cfg['path'] = args.path
+    if args.lane_pts:
+        file_cfg['lane_pts'] = int(args.lane_pts)
     pcview = PCView(ip, file_cfg)
     pcview.run()

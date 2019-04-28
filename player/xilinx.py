@@ -2,8 +2,7 @@ import os
 import cv2
 import datetime
 import numpy as np
-from .ui import BaseDraw, CVColor, DrawParameters, DrawPed, DrawVehicle, \
-                VehicleType
+from .ui import BaseDraw, CVColor
 from math import isnan
 
 
@@ -35,6 +34,7 @@ class FlowPlayer(object):
         self.rotor_cpu_avg = Avg(10)
 
     def draw(self, mess, img):
+        overlook = DrawOverlook(img)
         speed, fps = 0, '-'
         if 'env' in mess:
             title = 'env'
@@ -161,6 +161,8 @@ class FlowPlayer(object):
                 vid = vehicle['vehicle_id']
                 d1 = vehicle['longitude_dist']
                 d2 = vehicle['lateral_dist']
+                if not isnan(d1) and not isnan(d2):
+                    overlook.draw_vehicle(img, vehicle['is_crucial'], int(float(d2)), int(float(d1)))
                 d1 = 'nan' if isnan(d1) else int(float(d1) * 100) / 100
                 d2 = 'nan' if isnan(d2) else int(float(d2) * 100) / 100
                 tid = str(vehicle['vehicle_class'])
@@ -173,8 +175,29 @@ class FlowPlayer(object):
                 BaseDraw.draw_head_info(img, pos[0:2], para_list, 80)
 
         if 'lane' in mess:
-            data = mess['lane']
-            BaseDraw.draw_lane_lines(img, data, 222, deviate_state, draw_all=True, speed_limit=0)
+            speed = 3.6*float(mess['speed'])
+            speed_limit = self.cfg.get('lane_speed_limit', 0)
+            lane_begin = self.cfg.get('lane_begin', 0)
+            for lane in mess['lane']:
+                if ((int(lane['label']) in [1, 2]) or draw_all) and speed >= speed_limit:
+                    index = lane['label']
+                    begin = lane_begin or int(lane['end'][1])
+                    end = int(lane['start'][1])
+                    begin = max(begin, 0)
+                    end = min(end, 720)
+                    
+                    color = CVColor.Blue
+                    if 'warning' in lane:
+                        if lane['warning'] and int(index) == int(deviate_state):
+                            color = CVColor.Red
+
+                    if self.cfg.get('lane_pts'):
+                        BaseDraw.draw_polylines(img, lane['perspective_view_pts'], color, 2)
+                        overlook.draw_lane_pts(img, lane['bird_view_pts'])
+                    else:
+                        BaseDraw.draw_lane_line(img, lane['perspective_view_poly_coeff'],
+                                        0.2, color, begin, end)
+                        overlook.draw_lane(img, lane['bird_view_poly_coeff'], color)
         return img
 
     def draw_sys(self, img, data, cfg=None):
@@ -209,3 +232,126 @@ class FlowPlayer(object):
             'loop_id:'+loop_id
         ]
         BaseDraw.draw_single_info(img, (1120, 0), 160, 'system', para_list)
+
+
+pack = os.path.join
+logodir = "assets/overlook"
+class DrawOverlook(object):
+    '''
+    画右上角的俯视图
+    '''
+    overlook_background_image = cv2.imread(pack(logodir, 'back.png'))
+    circlesmall_image = cv2.imread(pack(logodir, 'circlesmall.tif'))
+    sectorwide_image = cv2.imread(pack(logodir, 'sectorwide.tif'))
+    sectorthin_image = cv2.imread(pack(logodir, 'sectorthin.tif'))
+    car_image = cv2.imread(pack(logodir, 'car.tif'))
+    overlook_othercar_image = cv2.imread(pack(logodir, 'othercar.tif'))
+    overlook_beforecar_image = cv2.imread(pack(logodir, 'before.tif'))
+
+    def __init__(self, img):
+        """绘制俯视图的背景，包括背景图，车背景图，光线图
+        :param img: 原始图片
+        """
+        y_background, x_background, _ = self.overlook_background_image.shape
+        y_img, x_img, _ = img.shape
+        roi_img = img[0 : y_background, x_img - x_background : x_img]
+        cv2.addWeighted(self.overlook_background_image, 1, roi_img, 0.4, 0.0, roi_img)
+
+        x_center, y_center = 1144, 240
+
+        data_r = int(1) % 20 + 120
+
+        draw_r = []
+        while data_r > 30:
+            draw_r.append(data_r)
+            data_r = data_r - 20
+        draw_r.append(140)
+
+        y_circle, x_circle, _ = self.circlesmall_image.shape
+        for R in draw_r:
+            x_new, y_new = int(R), int(y_circle * R / x_circle)
+            new_circle = cv2.resize(self.circlesmall_image, (y_new, x_new),
+                                    interpolation=cv2.INTER_CUBIC)
+            x_begin = x_center - x_new // 2
+            x_end = x_begin + x_new
+            y_begin = y_center - y_new // 2
+            y_end = y_begin + y_new
+            roi_img = img[y_begin : y_end, x_begin : x_end]
+            cv2.addWeighted(new_circle, 0.5, roi_img, 1.0, 0.0, roi_img)
+
+        
+        for sector_in in [self.sectorwide_image, self.sectorthin_image]:
+            y_sector, x_sector, _ = sector_in.shape
+            x_begin = 1145 - x_sector // 2
+            x_end = x_begin + x_sector
+            y_end = 219
+            y_begin = y_end - y_sector
+            roi_img = img[y_begin : y_end, x_begin : x_end]
+            cv2.addWeighted(sector_in, 0.5, roi_img, 1.0, 0.0, roi_img)
+        
+        y_car, x_car, _ = self.car_image.shape
+        x_begin = x_center - x_car // 2 -3
+        x_end = x_begin + x_car
+        y_begin = y_center - y_car // 2
+        y_end = y_begin + y_car
+        roi_img = img[y_begin : y_end, x_begin : x_end]
+        cv2.addWeighted(self.car_image, 1.0,
+                              roi_img, 1.0, 0.0, roi_img)
+
+    def draw_vehicle(self, img, type, y, x):
+        """在俯视图绘制车辆
+        Args:
+            img: 原始图片
+            type: 是否关键车
+            y: float 与检测车辆的竖直距离
+            x: float 与检测车辆的水平距离
+        """
+
+        d_y = int(float(y))
+        d_x = int(float(x))
+        y_car = max(20, 190 - d_y * 2)
+        typ = int(type)
+        if typ == 0:
+            car = self.overlook_othercar_image
+        else:
+            car = self.overlook_beforecar_image
+        x_car = 1144 + int(10 * d_x)
+
+        y_shape, x_shape, _ = car.shape
+        x_begin = x_car - x_shape // 2
+        x_end = x_begin + x_shape
+        y_begin = y_car - y_shape // 2
+        y_end = y_begin + y_shape
+
+        roi_img = img[y_begin: y_end, x_begin: x_end]
+        cv2.addWeighted(car, 0.5, roi_img, 1.0, 0.0, roi_img)
+
+    def draw_lane(self, img, ratios, color):
+        """在俯视图绘制车道线
+        Args:
+            img: 原始数据
+            ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
+            color: CVColor 车道线颜色
+        """
+        a0, a1, a2, a3 = list(map(float, ratios))
+        for y in range(0, 60, 2):
+            y1 = y
+            y2 = y1 + 2
+            x1 = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
+            x2 = a0 + a1 * y2 + a2 * y2 * y2 + a3 * y2 * y2 * y2
+            x1 = 1144 + int(x1 * 10)
+            x2 = 1144 + int(x2 * 10)
+            y1 = 240 - y1 * 2
+            y2 = 240 - y2 * 2
+            BaseDraw.draw_line(img, (x1, y1), (x2, y2), color, 1)
+
+    @classmethod
+    def draw_lane_pts(self, img, pts, color):
+        nps = []
+        for ts in pts:
+            x, y = list(map(int, pt))
+            x = 1144 + x*10
+            y = 240 - y*2
+            nps.append( (x,y) )
+        for i in range(1, len(nps)):
+            BaseDraw.draw_line(img, nps[i-1], nps[i], color, 1)
