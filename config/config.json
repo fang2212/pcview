@@ -1,3 +1,10 @@
 {
-    "lane_speed_limit": 30,
+    "ip": "127.0.0.1",
+    "video": 1,
+    "log": 1,
+    "sync": 12,
+    "path": "pcview_data",
+    "lane_begin": 0,
+    "can_proto": "",
+    "lane_speed_limit": 30
 }

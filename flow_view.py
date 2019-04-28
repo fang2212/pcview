@@ -31,10 +31,10 @@ def get_date_str():
 
 class PCView():
     
-    def __init__(self, ip, cfg):
+    def __init__(self, cfg):
         self.msg_queue = Queue()
         self.can_queue = Queue()
-        self.ip = ip
+        self.ip = cfg["ip"]
         self.sync_size = cfg['sync']
 
         self.pc_draw = PCDraw(self.msg_queue, self.can_queue, cfg)
@@ -157,25 +157,18 @@ if __name__ == '__main__':
     parser.add_argument("--lane_begin", help="车道线起点", type=str)
     parser.add_argument("--can_proto", help="can协议", type=str)
     args = parser.parse_args()
-    ip = '127.0.0.1'
-    file_cfg = {
-        'video': 1,
-        'log': 1,
-        'sync': 12,
-        'path': 'pcview_data',
-        'lane_begin': 0,
-        'can_proto': '',
-    }
+    file_cfg = {}
     cfg_file = 'config/config.json'
     if os.path.exists(cfg_file):
-        cfg = json.load(cfg_file)
-        file_cfg.update(cfg)
+        with open(cfg_file, 'r') as fp:
+            cfg = json.load(fp)
+            file_cfg.update(cfg)
     if sys.platform == 'win32':
         file_cfg['video'] = 0
     if args.video:
         file_cfg['video'] = int(args.video)
     if args.ip:
-        ip = args.ip
+        file_cfg["ip"] = args.ip
     if args.log:
         file_cfg['log'] = int(args.log)
     if args.path:
@@ -187,7 +180,7 @@ if __name__ == '__main__':
         if file_cfg['can_proto'] == 'no-can':
             file_cfg['can_proto'] = ''
     try:
-        pcview = PCView(ip, file_cfg)
+        pcview = PCView(file_cfg)
         pcview.run()
     except Exception as e:
         exc = traceback.format_exc()
