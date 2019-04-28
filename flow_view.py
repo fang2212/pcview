@@ -146,7 +146,7 @@ class PCDraw(Process):
 
             time.sleep(0.01)
         cv2.destroyAllWindows()
-    
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--video", help="是否保存视频[0,1]，默认保存", type=str)
@@ -166,6 +166,10 @@ if __name__ == '__main__':
         'lane_begin': 0,
         'can_proto': '',
     }
+    cfg_file = 'config/config.json'
+    if os.path.exists(cfg_file):
+        cfg = json.load(cfg_file)
+        file_cfg.update(cfg)
     if sys.platform == 'win32':
         file_cfg['video'] = 0
     if args.video:
