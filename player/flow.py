@@ -248,6 +248,7 @@ class FlowPlayer(object):
             DrawAlarmCan.draw(img, mess['can'])
 
         if 'lane' in mess:
+<<<<<<< HEAD
             speed = 3.6*float(mess['speed'])
             speed_limit = self.cfg.get('lane_speed_limit', 0)
             print('speed:', speed, speed_limit)
@@ -270,6 +271,13 @@ class FlowPlayer(object):
                     else:
                         BaseDraw.draw_lane_line(img, lane['perspective_view_poly_coeff'],
                                         0.2, color, begin, end)
+=======
+            data = mess['lane']
+            speed = float(mess.get('speed', 0))
+            lane_begin = self.cfg.get('lane_begin')
+            speed_limit = self.cfg.get('speed_limit')
+            BaseDraw.draw_lane_lines(img, data, speed, deviate_state, lane_begin=lane_begin, draw_all=True, speed_limit=speed_limit)
+>>>>>>> refs/remotes/origin/node
         return img
 
     def sys_info(self, img, data, cfg=None):

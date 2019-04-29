@@ -153,6 +153,7 @@ if __name__ == '__main__':
     parser.add_argument("--ip", help="msg_fd地址", type=str)
     parser.add_argument("--sync", help="sync cache size", type=str)
     parser.add_argument("--lane_begin", help="车道线起点", type=str)
+    parser.add_argument("--speed_limit", help="车道线速度限制", type=str)
     parser.add_argument("--can_proto", help="can协议", type=str)
     parser.add_argument("--lane_pts", help="用算法输出点画车道线", type=str)
     args = parser.parse_args()

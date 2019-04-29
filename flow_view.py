@@ -156,6 +156,7 @@ if __name__ == '__main__':
     parser.add_argument("--ip", help="msg_fd地址", type=str)
     parser.add_argument("--sync", help="sync cache size", type=str)
     parser.add_argument("--lane_begin", help="车道线起点", type=str)
+    parser.add_argument("--speed_limit", help="车道线速度限制", type=str)
     parser.add_argument("--can_proto", help="can协议", type=str)
     args = parser.parse_args()
     file_cfg = {}
@@ -176,6 +177,8 @@ if __name__ == '__main__':
         file_cfg['path'] = args.path
     if args.lane_begin:
         file_cfg['lane_begin'] = int(args.lane_begin)
+    if args.speed_limit:
+        file_cfg['speed_limit'] = int(args.speed_limit)
     if args.can_proto:
         file_cfg['can_proto'] = args.can_proto
         if file_cfg['can_proto'] == 'no-can':
@@ -187,15 +190,3 @@ if __name__ == '__main__':
         exc = traceback.format_exc()
         with open('error.log', 'w') as f:
             f.write(exc)
-
-'''
-{
-    "camera_time": 1455208613969069,
-    "vehicle_start_time": 1455208613969069,
-    "vehicle_finish_time": 1455208613969069,
-    "lane_start_time": 1455208613969069,
-    "lane_finish_time": 1455208613969069,
-    "tsr_start_time": 1455208613969069,
-    "tsr_finish_time": 1455208613969069,
-}
-'''
