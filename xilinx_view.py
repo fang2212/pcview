@@ -68,7 +68,7 @@ class PCDraw(Process):
             text_recorder.set_writer(get_date_str())
         if self.save_video:
             video_recorder = VideoRecorder(self.save_path, fps=15)
-            video_recorder.set_writer(get_date_str())
+            video_recorder.set_writer(get_date_str(), w=1280+500)
 
         fps_cnt = FPSCnt(100, 20)
         cnt = 0
@@ -125,7 +125,7 @@ class PCDraw(Process):
                     cv2.waitKey(1)
 
                     if self.save_video:
-                        video_recorder.write(image)
+                        video_recorder.write(img)
                     if 'camera' in mess:
                         del mess['camera']['image']
                     '''
@@ -138,7 +138,7 @@ class PCDraw(Process):
                     if cnt % 2000 == 0:
                         if self.save_video:
                             video_recorder.release()
-                            video_recorder.set_writer(get_date_str())
+                            video_recorder.set_writer(get_date_str(), w=1280+500)
                         if self.save_log:
                             text_recorder.release()
                             text_recorder.set_writer(get_date_str())
