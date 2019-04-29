@@ -22,6 +22,7 @@ else:
 
 from player import FPSCnt
 from player.xilinx import FlowPlayer
+from player.overlook import OverlookPlayer
 from sink import TcpSink
 from recorder import VideoRecorder, TextRecorder
 
@@ -59,6 +60,7 @@ class PCDraw(Process):
         self.save_path = os.path.join(file_cfg['path'], get_date_str())
 
     def run(self):
+        overlook = OverlookPlayer()
         player = FlowPlayer()
         if self.save_log:
             text_recorder = TextRecorder(self.save_path)
@@ -99,9 +101,10 @@ class PCDraw(Process):
                     'fps': fps_cnt.fps
                 }
 
-                # draw now id
+                ol = None
                 try:
                     player.draw(mess, image)
+                    ol = overlook.draw(mess)
                 except Exception as err:
                     if not os.path.exists(self.save_path):
                         os.makedirs(self.save_path)
@@ -114,7 +117,10 @@ class PCDraw(Process):
                         fp.write(traceback.format_exc())
                     continue
 
-                cv2.imshow('UI', image)
+                ol = cv2.resize(ol, (500, 720))
+                img = cv2.hconcat((ol,image))
+                cv2.imshow('UI', img)
+                #cv2.imshow('overlook', ol)
                 cv2.waitKey(1)
 
                 if self.save_video:
@@ -158,6 +164,8 @@ if __name__ == '__main__':
 
     if sys.platform == 'win32':
         file_cfg['video'] = 0
+    if args.ip:
+        file_cfg['ip'] = args.ip
     if args.video:
         file_cfg['video'] = int(args.video)
     if args.ip:

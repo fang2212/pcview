@@ -34,7 +34,6 @@ class FlowPlayer(object):
         self.rotor_cpu_avg = Avg(10)
 
     def draw(self, mess, img):
-        overlook = DrawOverlook(img)
         speed, fps = 0, '-'
         if 'env' in mess:
             title = 'env'
@@ -161,8 +160,6 @@ class FlowPlayer(object):
                 vid = vehicle['vehicle_id']
                 d1 = vehicle['longitude_dist']
                 d2 = vehicle['lateral_dist']
-                if not isnan(d1) and not isnan(d2):
-                    overlook.draw_vehicle(img, vehicle['is_crucial'], int(float(d1)), int(float(d2)))
                 d1 = 'nan' if isnan(d1) else int(float(d1) * 100) / 100
                 d2 = 'nan' if isnan(d2) else int(float(d2) * 100) / 100
                 tid = str(vehicle['vehicle_class'])
@@ -193,11 +190,9 @@ class FlowPlayer(object):
 
                     if self.cfg.get('lane_pts'):
                         BaseDraw.draw_polylines(img, lane['perspective_view_pts'], color, 2)
-                        overlook.draw_lane_pts(img, lane['bird_view_pts'])
                     else:
                         BaseDraw.draw_lane_line(img, lane['perspective_view_poly_coeff'],
                                         0.2, color, begin, end)
-                        overlook.draw_lane(img, lane['bird_view_poly_coeff'], color)
         return img
 
     def draw_sys(self, img, data, cfg=None):

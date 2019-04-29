@@ -90,14 +90,12 @@ class TcpSink(object):
             print(len(data))
             msg = msgpack.unpackb(data, use_list=False)
             topic = msg[b'topic'].decode('ascii')
-            mp_header = (msg[b'data'][0:2] == b'\x82\xa8' or msg[b'data'][0:2] == b'\x83\xab' or msg[b'data'][0:2] == b'\x82\xae')
-            if len(msg[b'data'])<3000 and (not mp_header):
-                mp_header = 1
-            print(mp_header, msg[b'data'][0:2])
-            if mp_header:
-                data = msgpack.unpackb(msg[b'data'], use_list=False)
-            else:
-                data = msg[b'data']
+            data = msg[b'data']
+            try:
+                data = msgpack.unpackb(data, use_list=False)
+            except Exception as e:
+                pass
+
             if b'image_frame_id' in data:
                 image = cv2.imdecode(np.fromstring(data[b'image'], np.uint8), cv2.IMREAD_COLOR)
                 print(image.shape)
@@ -110,7 +108,6 @@ class TcpSink(object):
                     'frame_id': data[b'image_frame_id'],
                 }
             elif b'frame_id' in data:
-                # print(data)
                 data = convert(data)
             else:
                 frame_id = int.from_bytes(data[4:8], byteorder="little", signed=False)
