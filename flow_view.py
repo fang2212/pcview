@@ -125,25 +125,25 @@ class PCDraw(Process):
                     cv2.imshow('UI', image)
                     cv2.waitKey(1)
 
-                if self.file_cfg['video']:
-                    video_recorder.write(image)
-                if 'camera' in mess:
-                    # del mess['camera']['image']
-                    mess['camera'].pop('image', None)
-                '''
-                print('frame_id', frame_id)
-                print(mess)
-                '''
-                if self.file_cfg['log']:
-                    text_recorder.write(json.dumps(mess)+'\n')
-                
-                if cnt % 2000 == 0:
                     if self.file_cfg['video']:
-                        video_recorder.release()
-                        video_recorder.set_writer(get_date_str())
+                        video_recorder.write(image)
+                    if 'camera' in mess:
+                        # del mess['camera']['image']
+                        mess['camera'].pop('image', None)
+                    '''
+                    print('frame_id', frame_id)
+                    print(mess)
+                    '''
                     if self.file_cfg['log']:
-                        text_recorder.release()
-                        text_recorder.set_writer(get_date_str())
+                        text_recorder.write(json.dumps(mess)+'\n')
+                    
+                    if cnt % 2000 == 0:
+                        if self.file_cfg['video']:
+                            video_recorder.release()
+                            video_recorder.set_writer(get_date_str())
+                        if self.file_cfg['log']:
+                            text_recorder.release()
+                            text_recorder.set_writer(get_date_str())
 
             time.sleep(0.01)
         cv2.destroyAllWindows()
