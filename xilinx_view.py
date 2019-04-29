@@ -31,9 +31,9 @@ def get_date_str():
 
 class PCView():
     
-    def __init__(self, ip, cfg):
+    def __init__(self, cfg):
         self.msg_queue = Queue()
-        self.ip = ip
+        self.ip = cfg['ip']
         self.sync_size = cfg['sync']
 
         self.pc_draw = PCDraw(self.msg_queue, cfg)
@@ -149,13 +149,13 @@ if __name__ == '__main__':
     parser.add_argument("--can_proto", help="can协议", type=str)
     parser.add_argument("--lane_pts", help="用算法输出点画车道线", type=str)
     args = parser.parse_args()
-    ip = '127.0.0.1'
-    file_cfg = {
-        'video': 1,
-        'log': 0,
-        'sync': 12,
-        'path': 'pcview_data',
-    }
+    file_cfg = {}
+    cfg_file = 'config/xilinx.json'
+    if os.path.exists(cfg_file):
+        with open(cfg_file, 'r') as fp:
+            cfg = json.load(fp)
+            file_cfg.update(cfg)
+
     if sys.platform == 'win32':
         file_cfg['video'] = 0
     if args.video:
@@ -166,5 +166,5 @@ if __name__ == '__main__':
         file_cfg['path'] = args.path
     if args.lane_pts:
         file_cfg['lane_pts'] = int(args.lane_pts)
-    pcview = PCView(ip, file_cfg)
+    pcview = PCView(file_cfg)
     pcview.run()
