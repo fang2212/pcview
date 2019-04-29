@@ -297,6 +297,9 @@ class FlowPlayer(object):
             ]
         return para_list
 
+def chr(d):
+    return str(d)[0]
+
 class DrawAlarmCan(object):
     '''
     突出显示报警提示, can数据
@@ -310,14 +313,14 @@ class DrawAlarmCan(object):
             "lld": 1,
             "rld": 1,
         }
-        fcw, = dict2list(info, ['fcw', ], int, 0)
-        ped_on, pcw_on = dict2list(info, ['ped_on', 'pcw_on'], int, 0)
-        hw_on, hw = dict2list(info, ['hw_on', 'hw'], int, 0)
-        ttc, = dict2list(info, ['ttc'], float, 0)
-        ldw_on, lld, rld, lldw, rldw = dict2list(info, ['ldw_on', 'lld', 'rld', 'lldw', 'rldw'], int, 0)
-        tsr, = dict2list(info, ['overspeed'], int, 0)
+        fcw, = dict2list(info, ['fcw', ], int, -1)
+        ped_on, pcw_on = dict2list(info, ['ped_on', 'pcw_on'], int, -1)
+        hw_on, hw = dict2list(info, ['hw_on', 'hw'], int, -1)
+        ttc, = dict2list(info, ['ttc'], float, -1)
+        ldw_on, lld, rld, lldw, rldw = dict2list(info, ['ldw_on', 'lld', 'rld', 'lldw', 'rldw'], int, -1)
+        tsr, = dict2list(info, ['overspeed'], int, -1)
         buzzing, = dict2list(info, ['buzzing'], str, '')
-        camera, = dict2list(info, ['camera',], int, 0)
+        camera, = dict2list(info, ['camera',], int, -1)
 
         ttc = "%2.1f"%ttc #if hw > 0 else "--"
         lldw = 2 if lld==0 else lldw
@@ -326,15 +329,15 @@ class DrawAlarmCan(object):
         basex, basey, width, height = (730, 0, 250, 150)
         size, thickness = (0.6, 1)
         alarms = [
-            ["CAM:"+str(camera), 1, (0,18), int(camera>0), size, thickness],
-            ["FCW:"+str(fcw), 1, (0, 18), int(fcw>0), size, thickness],
-            ["HWM:"+str(hw)+"  ttc:"+ttc+"  on:"+str(hw_on), 1, (0, 18), int(hw>1), size, thickness],
-            ["PCW:"+str(pcw_on)+"  ped:"+str(ped_on), 1, (0, 18), int(pcw_on>0), size, thickness],
-            ["TSR: "+str(tsr), 1, (0, 18), int(tsr>0), size, thickness],
+            ["CAM:"+chr(camera), 1, (0,18), int(camera>0), size, thickness],
+            ["FCW:"+chr(fcw), 1, (0, 18), int(fcw>0), size, thickness],
+            ["HWM:"+chr(hw)+"  ttc:"+ttc+"  on:"+chr(hw_on), 1, (0, 18), int(hw>1), size, thickness],
+            ["PCW:"+chr(pcw_on)+"  ped:"+chr(ped_on), 1, (0, 18), int(pcw_on>0), size, thickness],
+            ["TSR: "+chr(tsr), 1, (0, 18), int(tsr>0), size, thickness],
             ["AW :"+buzzing, 1, (0, 18), int(bool(buzzing)), size, thickness],
             ["|", 1, (0, 30), lldw, 1, 2],
             ["|", 1, (50, 0), rldw, 1, 2],
-            ["on:"+str(ldw_on), 1, (50, 0), int(ldw_on>0), size, thickness],
+            ["on:"+chr(ldw_on), 1, (50, 0), int(ldw_on>0), size, thickness],
         ]
         
         color = [CVColor.Green, CVColor.Red, CVColor.White] # 不报警 报警 

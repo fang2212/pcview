@@ -1,10 +1,12 @@
 import sys
+import json
 from multiprocessing import Process, Queue, Value
 if sys.platform == 'win32':
     from threading import Thread as Process
 
 from sensor.liuqi import parse_liuqi
 from easy_can.base import CanBase
+from recorder import TextRecorder
 
 parser_dict = {
     "liuqi": parse_liuqi
@@ -30,12 +32,14 @@ class CachePool():
         
 
 class CanSink(Process):
-    def __init__(self, can_protocol, can_queue, bitrate=500000):
+    def __init__(self, can_protocol, fix_num, save_path, can_queue, bitrate=500000):
         Process.__init__(self)
         self.parser = parser_dict[can_protocol]
         self.can0 = CanBase(bitrate=bitrate)
         self.can_queue = can_queue  
-        self.cache = CachePool(4)
+        self.cache = CachePool(fix_num)
+        self.writer = TextRecorder(save_path)
+        self.writer.set_writer('can')
 
     def run(self):
         while True:
@@ -45,6 +49,8 @@ class CanSink(Process):
             can_id = int(tmp['can_id'], 16)
             data = bytes(tmp['data'])
             r = self.parser(can_id, data)
+            self.save(tmp)
+            self.save(r)
             if r:
                 self.cache.update(can_id, r)
             if self.can_queue.empty():
@@ -53,3 +59,7 @@ class CanSink(Process):
                 for value in cache_data.values():
                     res.update(value)
                 self.can_queue.put(res)
+
+    def save(self, data):
+        content = json.dumps(data)
+        self.writer.write(content+'\n')

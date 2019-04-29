@@ -6,5 +6,6 @@
     "path": "pcview_data",
     "lane_begin": 0,
     "can_proto": "",
-    "lane_speed_limit": 30
+    "lane_speed_limit": 30,
+    "can_fix_num": 4
 }
