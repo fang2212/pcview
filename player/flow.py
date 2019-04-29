@@ -250,6 +250,7 @@ class FlowPlayer(object):
         if 'lane' in mess:
             speed = 3.6*float(mess['speed'])
             speed_limit = self.cfg.get('lane_speed_limit', 0)
+            print('speed:', speed, speed_limit)
             lane_begin = self.cfg.get('lane_begin', 0)
             for lane in mess['lane']:
                 if ((int(lane['label']) in [1, 2])) and speed >= speed_limit:

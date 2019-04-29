@@ -37,10 +37,8 @@ class FlowPlayer(object):
         speed, fps = 0, '-'
         if 'env' in mess:
             title = 'env'
-
             if 'speed' in mess:
                 speed = "%.1f" % (3.6*float(mess['speed']))
-
             if 'fps' in mess['env']:
                 fps = mess['env']['fps']
             t1 = datetime.datetime.now().strftime('%Y-%m-%d')

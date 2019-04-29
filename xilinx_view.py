@@ -58,10 +58,11 @@ class PCDraw(Process):
         self.save_log = file_cfg['log']
         self.save_video = file_cfg['video']
         self.save_path = os.path.join(file_cfg['path'], get_date_str())
+        self.cfg = file_cfg
 
     def run(self):
         overlook = OverlookPlayer()
-        player = FlowPlayer()
+        player = FlowPlayer(self.cfg)
         if self.save_log:
             text_recorder = TextRecorder(self.save_path)
             text_recorder.set_writer(get_date_str())

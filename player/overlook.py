@@ -12,7 +12,8 @@ class OverlookPlayer():
         self.reset()
 
     def draw(self, mess):
-        self.draw_vehicle(mess['vehicle_measure_res_list'])
+        if 'vehicle_measure_res_list' in mess:
+            self.draw_vehicle(mess['vehicle_measure_res_list'])
         return self.get()
 
     def __del__(self):
