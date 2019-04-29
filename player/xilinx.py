@@ -2,7 +2,7 @@ import os
 import cv2
 import datetime
 import numpy as np
-from .ui import BaseDraw, CVColor
+from .ui import BaseDraw, CVColor, VehicleType
 from math import isnan
 
 
@@ -162,7 +162,7 @@ class FlowPlayer(object):
                 d1 = vehicle['longitude_dist']
                 d2 = vehicle['lateral_dist']
                 if not isnan(d1) and not isnan(d2):
-                    overlook.draw_vehicle(img, vehicle['is_crucial'], int(float(d2)), int(float(d1)))
+                    overlook.draw_vehicle(img, vehicle['is_crucial'], int(float(d1)), int(float(d2)))
                 d1 = 'nan' if isnan(d1) else int(float(d1) * 100) / 100
                 d2 = 'nan' if isnan(d2) else int(float(d2) * 100) / 100
                 tid = str(vehicle['vehicle_class'])
@@ -179,7 +179,7 @@ class FlowPlayer(object):
             speed_limit = self.cfg.get('lane_speed_limit', 0)
             lane_begin = self.cfg.get('lane_begin', 0)
             for lane in mess['lane']:
-                if ((int(lane['label']) in [1, 2]) or draw_all) and speed >= speed_limit:
+                if ((int(lane['label']) in [1, 2])) and speed >= speed_limit:
                     index = lane['label']
                     begin = lane_begin or int(lane['end'][1])
                     end = int(lane['start'][1])
@@ -322,6 +322,7 @@ class DrawOverlook(object):
         x_end = x_begin + x_shape
         y_begin = y_car - y_shape // 2
         y_end = y_begin + y_shape
+        print(y_begin, x_end)
 
         roi_img = img[y_begin: y_end, x_begin: x_end]
         cv2.addWeighted(car, 0.5, roi_img, 1.0, 0.0, roi_img)

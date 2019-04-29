@@ -87,18 +87,20 @@ class TcpSink(object):
         sync = Sync(self.sync_size)
         while True:
             data = self.read_msg()
+            print(len(data))
             msg = msgpack.unpackb(data, use_list=False)
             topic = msg[b'topic'].decode('ascii')
             mp_header = (msg[b'data'][0:2] == b'\x82\xa8' or msg[b'data'][0:2] == b'\x83\xab' or msg[b'data'][0:2] == b'\x82\xae')
-            if len(msg[b'data'])<1000 and (not mp_header):
+            if len(msg[b'data'])<3000 and (not mp_header):
                 mp_header = 1
-            # print(mp_header, msg[b'data'][0:2])
+            print(mp_header, msg[b'data'][0:2])
             if mp_header:
                 data = msgpack.unpackb(msg[b'data'], use_list=False)
             else:
                 data = msg[b'data']
             if b'image_frame_id' in data:
                 image = cv2.imdecode(np.fromstring(data[b'image'], np.uint8), cv2.IMREAD_COLOR)
+                print(image.shape)
                 data = {
                     'camera': {
                         'image': image,
