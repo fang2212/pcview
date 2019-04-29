@@ -182,10 +182,9 @@ class FlowPlayer(object):
                     end = min(end, 720)
                     
                     color = CVColor.Blue
-                    if 'warning' in lane:
-                        if lane['warning'] and int(index) == int(deviate_state):
-                            color = CVColor.Red
-
+                    #if 'warning' in lane:
+                    #    if lane['warning'] and int(index) == int(deviate_state):
+                    #        color = CVColor.Red
                     if self.cfg.get('lane_pts'):
                         BaseDraw.draw_polylines(img, lane['perspective_view_pts'], color, 2)
                     else:
