@@ -18,4 +18,4 @@ cp -r dbc/ release/linux/dist/dbc/
 mkdir release/linux/dist/script/
 cp script/chmod-usb.sh release/linux/dist/script/
 mkdir release/linux/dist/config/
-cp config/config.json release/linux/dist/config/
+cp config/*.json release/linux/dist/config/
