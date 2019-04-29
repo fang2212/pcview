@@ -118,7 +118,7 @@ class PCDraw(Process):
                     continue
 
                 ol = cv2.resize(ol, (500, 720))
-                img = cv2.hconcat((ol,image))
+                img = cv2.hconcat((image, ol))
                 cv2.imshow('UI', img)
                 #cv2.imshow('overlook', ol)
                 cv2.waitKey(1)
