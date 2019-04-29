@@ -102,27 +102,27 @@ class PCDraw(Process):
                     'fps': fps_cnt.fps
                 }
 
-                ol = None
-                try:
-                    player.draw(mess, image)
-                    ol = overlook.draw(mess)
-                except Exception as err:
-                    if not os.path.exists(self.save_path):
-                        os.makedirs(self.save_path)
-                    cv2.imwrite(os.path.join(self.save_path, 'error.jpg'), image)
-                    if 'camera' in mess:
-                        mess['camera'].pop('image', None)
-                    with open(os.path.join(self.save_path, 'error.json'), 'w+') as fp:
-                        print('error json', err)
-                        fp.write(json.dumps(mess)+'\n')
-                        fp.write(traceback.format_exc())
-                    continue
+                if 'pedestrians' in mess or 'ldwparams' in mess or 'vehicle_warning' in mess or 'tsr_warning' in mess:
+                    ol = None
+                    try:
+                        player.draw(mess, image)
+                        ol = overlook.draw(mess)
+                    except Exception as err:
+                        if not os.path.exists(self.save_path):
+                            os.makedirs(self.save_path)
+                        cv2.imwrite(os.path.join(self.save_path, 'error.jpg'), image)
+                        if 'camera' in mess:
+                            mess['camera'].pop('image', None)
+                        with open(os.path.join(self.save_path, 'error.json'), 'w+') as fp:
+                            print('error json', err)
+                            fp.write(json.dumps(mess)+'\n')
+                            fp.write(traceback.format_exc())
+                        continue
 
-                ol = cv2.resize(ol, (500, 720))
-                img = cv2.hconcat((image, ol))
-                cv2.imshow('UI', img)
-                #cv2.imshow('overlook', ol)
-                cv2.waitKey(1)
+                    ol = cv2.resize(ol, (500, 720))
+                    img = cv2.hconcat((image, ol))
+                    cv2.imshow('UI', img)
+                    cv2.waitKey(1)
 
                 if self.save_video:
                     video_recorder.write(image)
