@@ -1,0 +1,254 @@
+:stylesheet:
+= flow_view字段说明
+:toc:
+:numbered:
+
+== 车辆参数 vehicle_warning
+[cols="1,2,3"]
+|====== 
+| frame_id      | 帧id      | 
+| vehicle_id    | 车辆id    | 
+| fcw           | 前向碰撞报警  | 
+| warning_level | 报警级别 |  
+| vb_warning    | 虚拟保险杠报警 |  
+| headway       | 跟车距离 |  单位：秒
+| headway_warning   | 跟车距离报警 | 
+|======
+
+== 车道线参数 ldwparams
+[cols="1,2,3"]
+|======
+| frame_id | 帧id | 
+| warning_dist | 报警距离 |  单位：米
+| right_wheel_dist  | 轮子距右车道线距离 |  单位：米
+| left_wheel_dist   | 轮子距左车道线距离 |  单位：米
+| deviate_state | 车道偏离状态  | 0没有偏离， 1向左偏离， 2向右偏离， 4抑制状态， 8回正
+| deviate_trend | 车道偏离趋势  | 
+| latest_dist   | 最后一次触发报警位置 |  单位：米
+| lateral_speed | 拐弯转向产生的横向速度  |  
+|======
+
+== 行人参数 
+[cols="1,2,3"]
+|======
+| ped_on    | 行人进入危险区域检测 | 
+| pcw_on    | 行人碰撞报警  | 
+|======
+
+== 交通牌参数 tsr_warning
+[cols="1,2,3"]
+|======
+| frame_id  | 帧id | 
+| height_limit  | 限高 | 
+| weight_limit  | 限重 | 
+| speed_limit   | 限速 |  单位：km/h
+| tsr_warning_level | 超速报警级别  | 
+|======
+
+== 车辆 vehicle_measure_res_list
+[cols="1,2,3"]
+|======
+| vehicle_id    | 车辆编号 | 
+| vehicle_class | 车辆类型 | 
+| hit_type  | |
+| confidence        | 置信度  | 
+| ttc       | 碰撞预警时间 | 
+| headway   | 跟车距离 | 
+| on_route  | 是否在碰撞路线上 | 
+| is_still          || 
+| is_crucial | 关键车 | 
+| is_second_crucial | 次关键车 | 
+| lateral_dist  | 横向距离 | 
+| longitude_dist    | 纵向距离 | 
+| rel_speed | 相对速度 | 
+| speed_acc | 加速度 | 
+| vehicle_width | 车辆宽度  | 
+| track_cnt | 检测次数 | 
+| det_rect      | 检测框 | [x, y, width, height]
+| smooth_rect   | 跟踪框 | [x, y, width, height]
+| reg_rect  | 回归框 | [x, y, width, height]
+|======
+
+== 车辆 vehicle_trace_res_list
+[cols="1,2,3"]
+|======
+| vehicle_id    | 车辆编号 |  
+| confidence    | 置信度 | 
+| vehicle_class | 车辆类型 | 
+| hit_type      | |
+| track_cnt     | 检测次数 | 
+| det_rect      | 检测框 |  [x, y, width, height]
+|======
+
+== 车道线 lane
+[cols="1,2,3"]
+|======
+| warning   | ldw报警 |
+| label | 标签 | 0左左车道线， 1左车道线， 2右车道线， 3右右车道线
+| type | 车道线类型 | -1未知， 0虚线， 1实线， 2双实线， 3虚实线， 4实虚线， 5减速线， 6噪声
+| color | 颜色 | 0白色， 1黄色， 2蓝色， 3绿色， 4未知
+| width | 车道线宽度 | 
+| start | 识别范围起始位置 | [x, y], 单位：pixel
+| end   | 识别范围终止位置 | [x, y], 单位：pixel
+| confidence | 置信度 | 
+| perspective_view_poly_coeff | 透视图车道线方程系数 | [a~0~, a~1~, a~2~, a~3~], y=a~0~+a~1~*x+a~2~*x^2^+a~3~*x^3^
+| bird_view_poly_coeff | 俯视图车道线方程系数 | [a~0~, a~1~, a~2~, a~3~], y=a~0~+a~1~*x+a~2~*x^2^+a~3~*x^3^
+| perspective_view_pts  | 透视图车道线 | [ [x, y], ...]
+| bird_view_pts | 俯视图车道线 | [ [x, y], ...]
+|======
+
+== 行人 pedestrians
+[cols="1,2,3"]
+|======
+| id    | 行人编号 |
+| classify_type | 行人分类 |
+| type_conf     | 分类置信度 |
+| is_key    | 是否关键行人 |
+| is_danger | 是否危险行人 |
+| could_be_tracked  ||
+| predicted | | 
+| tm    | 时间戳 |
+| ttc   | 碰撞预警时间 |
+| dist          | 距离 |
+| world_x       | 横向距离 |
+| world_y   | 纵向距离 |
+| lateral_velocity  | 横向速度 |  单位: m/s
+| longitudinal_velocity | 纵向速度 |  单位: m/s
+| detect_box    | 检测框 | [x, y, width, height]
+| regressed_box | 回归框 | [x, y, width, height]
+|======
+
+== 交通牌 tsr_trace_res_list
+[cols="1,2,3"]
+|======
+| tsr_id        | 交通牌编号 |
+| tsr_class     | 交通牌分类 |
+| confidence    | 置信度 |
+| track_cnt     | 检测次数 |
+| reg_rect      | 回归框 | [x, y, width, height]
+|======
+
+== 示例数据
+[source, json]
+
+{
+    "frame_id": 293,
+    "vehicle_warning": {
+        "warning_level": 2,
+        "vb_warning": 0,
+        "headway": 0.6000000238418579,
+        "vehicle_id": 1,
+        "frame_id": 293,
+        "fcw": 0,
+        "headway_warning": 0
+    },
+    "ldwparams": {
+        "frame_id": 293,
+        "warning_dist": "0.00",
+        "right_wheel_dist": "111.00",
+        "deviate_state": "0",
+        "deviate_trend": "0",
+        "left_wheel_dist": "111.00",
+        "earliest_dist": "0.00",
+        "latest_dist": "0.00",
+        "lateral_speed": "0.00"
+    },
+    "pcw_on": false,
+    "ped_on": false,
+    "tsr_warning": {
+        "frame_id": 293,
+        "height_limit": 0.0,
+        "tsr_warning_level": 0,
+        "weight_limit": 0.0,
+        "speed_limit": 0
+    },
+    "vehicle_measure_res_list": [
+        {
+            "rel_speed": 0.0,
+            "headway": 2.0,
+            "ttc": 7.0,
+            "longitude_dist": 42.23151779174805,
+            "confidence": 0.8807373046875,
+            "is_still": false,
+            "lateral_dist": 13.852851867675781,
+            "vehicle_width": 1.5,
+            "det_rect": [1066.953125, 453.90625, 70.4765625, 50.03472137451172],
+            "vehicle_class": 1,
+            "hit_type": 0,
+            "vehicle_id": 6,
+            "speed_acc": 0.0,
+            "on_route": false,
+            "track_cnt": 0,
+            "is_second_crucial": false,
+            "reg_rect": [1087.4609375, 456.33984375, 51.734375, 45.71875],
+            "is_crucial": false,
+            "smooth_rect": [0.0, 0.0, 0.0, 0.0]
+        },
+    ],
+    "vehicle_trace_res_list": [
+        {
+            "confidence": 0.8807373046875,
+            "vehicle_class": 1,
+            "vehicle_id": 6,
+            "det_rect": [1066.953125, 453.90625, 70.4765625, 50.03472137451172],
+            "track_cnt": 0,
+            "hit_type": 0
+        },
+    ],
+    "lane": [
+        {
+            "type": 1,
+            "perspective_view_pts": [
+                [6.745694637298584, 520.8117065429688],
+                [46.79523468017578, 511.2055969238281],
+                [81.6808853149414, 502.873779296875],
+                ...
+            ],
+            "width": 0.11999999731779099,
+            "start": [-6.0, 520.8117065429688],
+            "end": [47.7599983215332, 418.2877197265625],
+            "confidence": 0.9847350716590881,
+            "perspective_view_poly_coeff": [2325.809326171875, -4.467968463897705, 0.0, 0.0],
+            "bird_view_poly_coeff": [-4.901395797729492, -0.07936269044876099, 0.0007704439340159297, -6.120264828268773e-08],
+            "label": 0,
+            "warning": false,
+            "bird_view_pts": [
+                [14.319999694824219, -5.900000095367432],
+                [14.799999237060547, -5.980000019073486],
+                [15.28000259399414, -5.980000019073486],
+                ...
+            ],
+            "color": 4
+        },
+    "pedestrians": [
+        {
+            "classify_type": 1,
+            "could_be_tracked": false,
+            "tm": 1455208186573,
+            "ttc": 7.0,
+            "id": 4,
+            "is_key": false,
+            "world_y": -9.981905937194824,
+            "predicted": false,
+            "is_danger": false,
+            "lateral_velocity": -2.378009796142578,
+            "longitudinal_velocity": -13.131698608398438,
+            "regressed_box": [0.0, 0.0, 0.0, 0.0],
+            "detect_box": [497.0, 347.0, 38.0, 121.0],
+            "dist": 21.451656341552734,
+            "type_conf": -1.0,
+            "world_x": 22.22896957397461
+        },
+    "tsr_trace_res_list": [
+        {
+            "confidence": 0.9990889430046082,
+            "track_cnt": 0,
+            "reg_rect": [1110.6932373046875, 142.36341857910156, 47.420413970947266, 47.420413970947266],
+            "tsr_id": 0,
+            "tsr_class": 10
+        },
+    ],
+}
+
+
+
