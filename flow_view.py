@@ -42,7 +42,8 @@ class PCView():
         self.pc_draw.start()
 
         if cfg['can_proto']:
-            self.can_sink = CanSink(cfg['can_proto'], cfg['can_fix_num'], cfg['path'], self.can_queue)
+            bitrate = cfg.get('can_bitrate', 500000)
+            self.can_sink = CanSink(cfg['can_proto'], cfg['can_fix_num'], cfg['path'], self.can_queue, bitrate)
             self.can_sink.start()
 
     
@@ -158,6 +159,7 @@ if __name__ == '__main__':
     parser.add_argument("--lane_begin", help="车道线起点", type=str)
     parser.add_argument("--speed_limit", help="车道线速度限制", type=str)
     parser.add_argument("--can_proto", help="can协议", type=str)
+    parser.add_argument("--can_bitrate", help="串口can比特率", type=str)
     args = parser.parse_args()
     file_cfg = {}
     cfg_file = 'config/flow.json'
@@ -183,6 +185,8 @@ if __name__ == '__main__':
         file_cfg['can_proto'] = args.can_proto
         if file_cfg['can_proto'] == 'no-can':
             file_cfg['can_proto'] = ''
+    if args.can_bitrate:
+        file_cfg['can_bitrate'] = int(args.can_bitrate)
     try:
         pcview = PCView(file_cfg)
         pcview.run()
