@@ -299,7 +299,9 @@ class FlowPlayer(object):
         return para_list
 
 def chr(d):
-    return str(d)[0]
+    if d < 0:
+        return '-'
+    return str(d)
 
 class DrawAlarmCan(object):
     '''
@@ -323,7 +325,7 @@ class DrawAlarmCan(object):
         buzzing, = dict2list(info, ['buzzing'], str, '')
         camera, = dict2list(info, ['camera',], int, -1)
 
-        ttc = "%2.1f"%ttc #if hw > 0 else "--"
+        ttc = "%2.1f"%ttc if hw > 0 else "-"
         lldw = 2 if lld==0 else lldw
         rldw = 2 if rld==0 else rldw
 
@@ -334,7 +336,7 @@ class DrawAlarmCan(object):
             ["FCW:"+chr(fcw), 1, (0, 18), int(fcw>0), size, thickness],
             ["HWM:"+chr(hw)+"  ttc:"+ttc+"  on:"+chr(hw_on), 1, (0, 18), int(hw>1), size, thickness],
             ["PCW:"+chr(pcw_on)+"  ped:"+chr(ped_on), 1, (0, 18), int(pcw_on>0), size, thickness],
-            ["TSR: "+chr(tsr), 1, (0, 18), int(tsr>0), size, thickness],
+            ["TSR: "+chr(tsr), 1, (0, 18), int(tsr>10), size, thickness],
             ["AW :"+buzzing, 1, (0, 18), int(bool(buzzing)), size, thickness],
             ["|", 1, (0, 30), lldw, 1, 2],
             ["|", 1, (50, 0), rldw, 1, 2],
