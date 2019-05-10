@@ -97,9 +97,9 @@ class PCDraw(Process):
                 ]
                 BaseDraw.draw_single_info(image, (0, 0), 140, 'env', para_list)
                 '''
-
-                cv2.imshow('UI', image)
-                cv2.waitKey(1)
+                if 'pedestrians' in mess or 'vehicle_warning' in mess or 'lane_warning_res' in mess or 'tsr_warning' in mess:
+                    cv2.imshow('UI', image)
+                    cv2.waitKey(1)
 
                 
             time.sleep(0.01)
