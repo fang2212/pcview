@@ -27,7 +27,7 @@ class Avg(object):
         return self.avg
         
 
-class FlowPlayer(object):
+class X1DPlayer(object):
     def __init__(self, cfg={}):
         self.cfg = cfg
         self.sys_cpu_avg = Avg(10)
@@ -56,6 +56,7 @@ class FlowPlayer(object):
         # speed = float(mess['speed'])
         deviate_state = -1
 
+        '''
         title = 'system'
         para_list = []
         if 'system' in mess:
@@ -99,7 +100,9 @@ class FlowPlayer(object):
         # print('para', para_list)
         BaseDraw.draw_single_info(img, (1120, 0), 160, 'system', para_list)
         print(' '.join(para_list))
+        '''
 
+        '''
         pcw_on, ped_on = '-', '-'
         ped_show = False
         if 'pcw_on' in mess:
@@ -114,6 +117,7 @@ class FlowPlayer(object):
         ]
         if ped_show:
             BaseDraw.draw_single_info(img, (270, 0), 120, 'ped', para_list)
+        '''
 
         if 'pedestrians' in mess:
             res_list = mess['pedestrians']
@@ -137,8 +141,13 @@ class FlowPlayer(object):
                 ]
                 BaseDraw.draw_head_info(img, pos[0:2], para_list, 150)
 
+        '''
+        data = None
         if 'ldwparams' in mess:
             data = mess['ldwparams']
+        elif 'lane_warning_res' in mess: # 适配x1d
+            data = mess['lane_warning_res']['ldw_info']
+        if data is not None:
             deviate_state = int(data['deviate_state'])
             for key in data:
                 if key.find('deviate') != -1:
@@ -159,7 +168,9 @@ class FlowPlayer(object):
             ]
             BaseDraw.draw_single_info(img, (390, 0), 180, 'lane', para_list)
             #BaseDraw.draw_lane_warnning(img, (750, 60), deviate_state)
+        '''
 
+        '''
         if 'vehicle_warning' in mess:
             data = mess['vehicle_warning']
             vid, headway, fcw, hw, vb, ttc = '-', '-', '-', '-', '-', '-'
@@ -181,6 +192,7 @@ class FlowPlayer(object):
                 'vb:' + str(vb)
             ]
             BaseDraw.draw_single_info(img, (140, 0), 130, title, para_list)
+        '''
 
         if 'vehicle_hit_list' in mess:
             res_list = mess['vehicle_hit_list']
@@ -207,6 +219,7 @@ class FlowPlayer(object):
                 ]
                 BaseDraw.draw_head_info(img, pos[0:2], para_list, 100)
 
+        '''
         if 'tsr_warning' in mess:
             data = mess['tsr_warning']
             height_limit = '%.2f' % data['height_limit']
@@ -221,6 +234,7 @@ class FlowPlayer(object):
                 #'warning_level:'+str(tsr_warning_level)
             ]
             BaseDraw.draw_single_info(img, (570, 0), 150, title, para_list)
+        '''
 
         if 'vehicle_measure_res_list' in mess:
             res_list = mess['vehicle_measure_res_list']
@@ -247,8 +261,12 @@ class FlowPlayer(object):
         if 'can' in mess:
             DrawAlarmCan.draw(img, mess['can'])
 
+        lanelines = None
         if 'lane' in mess:
             lanelines = mess['lane']
+        elif 'lane_warning_res' in mess: # 适配x1d
+            lanelines = mess['lane_warning_res']['lanelines']
+        if lanelines is not None:
             speed = 3.6*float(mess['speed'])
             speed_limit = self.cfg.get('lane_speed_limit', 0)
             print('speed:', speed, speed_limit)
@@ -266,11 +284,7 @@ class FlowPlayer(object):
                         if lane['warning'] and int(index) == int(deviate_state):
                             color = CVColor.Red
 
-                    if self.cfg.get('lane_pts'):
-                        BaseDraw.draw_polylines(img, lane['perspective_view_pts'], color, 2)
-                    else:
-                        BaseDraw.draw_lane_line(img, lane['perspective_view_poly_coeff'],
-                                        0.2, color, begin, end)
+                    BaseDraw.draw_polylines(img, lane['perspective_view_pts'], color, 2)
         return img
 
     def sys_info(self, img, data, cfg=None):
