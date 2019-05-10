@@ -12,7 +12,7 @@ import argparse
 import numpy as np
 from datetime import datetime
 from multiprocessing import Process, Queue, Value
-from player import BaseDraw
+from player import BaseDraw, FlowPlayer
 
 if sys.platform == 'win32':
     from threading import Thread as Process
@@ -61,6 +61,7 @@ class PCDraw(Process):
         fps_cnt = FPSCnt(20, 0)
         cnt = 0
 
+        player = FlowPlayer()
         while True:
             while not self.mess_queue.empty():
                 mess = self.mess_queue.get()
@@ -73,6 +74,9 @@ class PCDraw(Process):
                 fps_cnt.inc()
 
                 image = mess['camera']['image']
+                #'''
+                player.draw(mess, image)
+                '''
                 fid = mess['frame_id']
                 # draw now id
                 speed, turnlamp = '-', '-'
@@ -92,6 +96,7 @@ class PCDraw(Process):
                     '' + str(t2)
                 ]
                 BaseDraw.draw_single_info(image, (0, 0), 140, 'env', para_list)
+                '''
 
                 cv2.imshow('UI', image)
                 cv2.waitKey(1)
