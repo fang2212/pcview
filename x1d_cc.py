@@ -54,7 +54,8 @@ class PCDraw(Process):
         self.save_path = file_cfg['path']
 
     def run(self):
-        collector = Collector(self.save_path, period=500, fps=20, w=1280, h=720)
+        #collector = Collector(self.save_path, period=500, fps=20, w=1280, h=720)
+        collector = Collector(self.save_path, period=500, fps=20, w=720, h=480)
         # collector = Collector(self.save_path)
 
         fps_cnt = FPSCnt(20, 0)

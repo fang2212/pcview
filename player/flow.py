@@ -137,8 +137,12 @@ class FlowPlayer(object):
                 ]
                 BaseDraw.draw_head_info(img, pos[0:2], para_list, 150)
 
+        data = None
         if 'ldwparams' in mess:
             data = mess['ldwparams']
+        elif 'lane_warning_res' in mess: # 适配x1d
+            data = mess['lane_warning_res']['ldw_info']
+        if data is not None:
             deviate_state = int(data['deviate_state'])
             for key in data:
                 if key.find('deviate') != -1:
@@ -247,12 +251,17 @@ class FlowPlayer(object):
         if 'can' in mess:
             DrawAlarmCan.draw(img, mess['can'])
 
+        lanelines = None
         if 'lane' in mess:
+            lanelines = mess['lane']
+        elif 'lane_warning_res' in mess: # 适配x1d
+            lane_warning_res = mess['lane_warning_res']
+        if lanelines is not None:
             speed = 3.6*float(mess['speed'])
             speed_limit = self.cfg.get('lane_speed_limit', 0)
             print('speed:', speed, speed_limit)
             lane_begin = self.cfg.get('lane_begin', 0)
-            for lane in mess['lane']:
+            for lane in lanelines:
                 if ((int(lane['label']) in [1, 2])) and speed >= speed_limit:
                     index = lane['label']
                     begin = lane_begin or int(lane['end'][1])
