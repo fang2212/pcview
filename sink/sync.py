@@ -2,8 +2,8 @@
 # -*- coding:utf8 -*-
 
 class Sync(object):
-    '''
-    '''
+    """msg sync class
+    """
     def __init__(self, id_size, key='frame_id'):
         self.id_size = id_size
         self.id_cache = []
