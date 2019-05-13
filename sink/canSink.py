@@ -4,7 +4,7 @@ from multiprocessing import Process, Queue, Value
 if sys.platform == 'win32':
     from threading import Thread as Process
 
-from sensor.liuqi import parse_liuqi
+from parsers.liuqi import parse_liuqi
 from easy_can.base import CanBase
 from recorder import TextRecorder
 
