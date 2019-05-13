@@ -1,4 +1,3 @@
-
 #.!/usr/bin/python
 # -*- coding:utf8 -*-
 
@@ -10,6 +9,7 @@ import time
 import msgpack
 import json
 from datetime import datetime
+from multiprocessing import Process, Queue
 
 import asyncio
 import websockets
@@ -38,6 +38,41 @@ def convert(data):
     if isinstance(data, list):   return list(map(convert, data))
     if isinstance(data, set):    return set(map(convert, data))
     return data
+
+class AioWs(Process):
+    """aiohttp ws bind with process
+    """
+    
+    def __init__(self, url, topic, mess_queue):
+        Process.__init__(self)
+        self.daemon = True
+        self.mess_queue = mess_queue
+        self.url = url
+        self.topic = topic
+
+    def run(self):
+        async def ws_recv(url, topic, mess_queue):
+            session = aiohttp.ClientSession()
+            async with session.ws_connect(url) as ws:
+
+                msg = {
+                    'source': 'pcview',
+                    'topic': 'subscribe',
+                    'data': topic,
+                }
+                data = msgpack.packb(msg)
+                await ws.send_bytes(data)
+                async for msg in ws:
+                    data = msgpack.unpackb(msg.data)
+                    data = data[b'data']
+                    mess_queue.put(data)
+
+                    if msg.type in (aiohttp.WSMsgType.CLOSED,
+                                    aiohttp.WSMsgType.ERROR):
+                        break
+                    
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(ws_recv(self.url, self.topic, self.mess_queue))
 
 class TcpSink(object):
     '''
