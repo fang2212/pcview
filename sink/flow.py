@@ -87,7 +87,6 @@ class TcpSink(object):
         sync = Sync(self.sync_size)
         while True:
             data = self.read_msg()
-            print(len(data))
             msg = msgpack.unpackb(data, use_list=False)
             topic = msg[b'topic'].decode('ascii')
             data = msg[b'data']
@@ -98,7 +97,6 @@ class TcpSink(object):
 
             if b'image_frame_id' in data:
                 image = cv2.imdecode(np.fromstring(data[b'image'], np.uint8), cv2.IMREAD_COLOR)
-                print(image.shape)
                 data = {
                     'camera': {
                         'image': image,
@@ -127,7 +125,6 @@ class TcpSink(object):
 
             for data in pops:
                 frame_id = data['frame_id']
-                # print(frame_id)
                 if new_id != frame_id:
                     self.msg_queue.put(new_pack)
                     new_pack = data

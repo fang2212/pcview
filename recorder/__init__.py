@@ -35,7 +35,7 @@ class Recorder(object):
 
 pack = os.path.join
 class Collector(object):
-    def __init__(self, path, period=2000, fps=30, w=720, h=480, type='.avi'):
+    def __init__(self, path, period=9000, fps=30, w=720, h=480, type='.avi'):
         self.fps = fps
         self.w = w
         self.h = h
@@ -73,8 +73,10 @@ class Collector(object):
             str_ = '{} {} cam_frame {} {}'.format(ta, tb, self.video_name,
                                                  self.inc % self.period)
             print(str_, file=self.log_fp)
+            print('--- write log ---')
             if self.inc % 100 == 0:
                 self.log_fp.flush()
+                print('****'*10, 'write log flush', '****'*10)
             self.video_fp.write(image)
             self.inc += 1
                 

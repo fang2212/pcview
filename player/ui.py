@@ -51,7 +51,7 @@ class FPSCnt(object):
                 temp = self.start_time
                 self.start_time = datetime.now()
                 delta = (self.start_time - temp).total_seconds()
-                print(self.period, delta)
+                print('fps period:', self.period, 'delta:', delta)
                 self.fps = str("%.2f" % (self.period / delta))
         self.cnt += step
 
