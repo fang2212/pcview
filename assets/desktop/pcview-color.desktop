@@ -1,9 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Name=PCVIEW-COLOR
-Exec=sh /home/minieye/env/dist/assets/desktop/pcview-color.sh
-Icon=/home/minieye/env/dist/assets/src/pcview.png
-Info="pcview-color"
-Terminal=false
-Type=Application
-StartupNotify=true
