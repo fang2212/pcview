@@ -1,12 +1,13 @@
 {
     "ip": "127.0.0.1",
     "video": 1,
+    "origin": 0,
     "log": 1,
     "sync": 12,
     "path": "pcview_data",
     "lane_begin": 0,
     "can_proto": "",
-    "lane_speed_limit": 30,
+    "lane_speed_limit": 0,
     "can_fix_num": 4,
     "can_bitrate": 500000
 }
