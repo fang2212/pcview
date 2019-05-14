@@ -114,7 +114,8 @@ class PCDraw(Process):
                 if self.file_cfg['origin']:
                     origin_recorder.write(image)
 
-                if 'pedestrians' in mess or 'ldwparams' in mess or 'vehicle_warning' in mess or 'tsr_warning' in mess:
+                mess_len = len(mess.keys())
+                if mess_len>3:
                     cnt += 1
                     try:
                             player.draw(mess, image)
