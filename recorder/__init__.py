@@ -10,6 +10,7 @@ from multiprocessing import Process, Queue
 def get_data_str():
     FORMAT = '%Y%m%d%H%M%S'
     return datetime.now().strftime(FORMAT)
+
 def get_video_str():
     now = datetime.now()
     FORMAT = 'rec_%Y%m%d%H%M_'

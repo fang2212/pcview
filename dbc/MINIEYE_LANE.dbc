@@ -1,0 +1,121 @@
+VERSION ""
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Minieye ADAS
+
+BO_ 1520 Lane1FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|128] "Meter" Vector__XXX
+ SG_ Curvature : 24|16@1+ (0.000000976563,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter" Vector__XXX
+ SG_ CurvatureDerivative : 40|16@1+ (0.00000000372529,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2" Vector__XXX
+ SG_ WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter" Vector__XXX
+
+BO_ 1521 Lane1FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ HeadingAngle : 0|16@1+ (0.0000108949,-0.357) [-0.357|0.357] "radian" Vector__XXX
+ SG_ ViewRangeStart : 16|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ ViewRangeEnd : 24|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ LineCrossing : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ LineMarkColor : 33|3@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ CanMsgEnd : 36|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1522 Lane2FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|128] "Meter" Vector__XXX
+ SG_ Curvature : 24|16@1+ (0.000000976563,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter" Vector__XXX
+ SG_ CurvatureDerivative : 40|16@1+ (0.00000000372529,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2" Vector__XXX
+ SG_ WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter" Vector__XXX
+
+BO_ 1523 Lane2FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ HeadingAngle : 0|16@1+ (0.0000108949,-0.357) [-0.357|0.357] "radian" Vector__XXX
+ SG_ ViewRangeStart : 16|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ ViewRangeEnd : 24|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ LineCrossing : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ LineMarkColor : 33|3@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ CanMsgEnd : 36|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1524 Lane3FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|128] "Meter" Vector__XXX
+ SG_ Curvature : 24|16@1+ (0.000000976563,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter" Vector__XXX
+ SG_ CurvatureDerivative : 40|16@1+ (0.00000000372529,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2" Vector__XXX
+ SG_ WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter" Vector__XXX
+
+BO_ 1525 Lane3FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ HeadingAngle : 0|16@1+ (0.0000108949,-0.357) [-0.357|0.357] "radian" Vector__XXX
+ SG_ ViewRangeStart : 16|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ ViewRangeEnd : 24|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ LineCrossing : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ LineMarkColor : 33|3@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ CanMsgEnd : 36|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1526 Lane3FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|128] "Meter" Vector__XXX
+ SG_ Curvature : 24|16@1+ (0.000000976563,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter" Vector__XXX
+ SG_ CurvatureDerivative : 40|16@1+ (0.00000000372529,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2" Vector__XXX
+ SG_ WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter" Vector__XXX
+
+BO_ 1527 Lane3FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ HeadingAngle : 0|16@1+ (0.0000108949,-0.357) [-0.357|0.357] "radian" Vector__XXX
+ SG_ ViewRangeStart : 16|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ ViewRangeEnd : 24|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ LineCrossing : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ LineMarkColor : 33|3@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ CanMsgEnd : 36|1@1+ (1,0) [0|1] "" Vector__XXX
+
+VAL_ 1520 Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1520 Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1522 Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1522 Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1524 Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1524 Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1526 Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1526 Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1521 LineCrossing 1 "Line crossing" 0 "No line cross" ;
+VAL_ 1521 LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1521 CanMsgEnd 1 "Finish" 0 "No finish" ;
+VAL_ 1523 LineCrossing 1 "Line crossing" 0 "No line cross" ;
+VAL_ 1523 LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1523 CanMsgEnd 1 "Finish" 0 "No finish" ;
+VAL_ 1525 LineCrossing 1 "Line crossing" 0 "No line cross" ;
+VAL_ 1525 LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1525 CanMsgEnd 1 "Finish" 0 "No finish" ;
+VAL_ 1527 LineCrossing 1 "Line crossing" 0 "No line cross" ;
+VAL_ 1527 LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1527 CanMsgEnd 1 "Finish" 0 "No finish" ;
+

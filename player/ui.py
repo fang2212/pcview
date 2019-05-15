@@ -3,6 +3,7 @@ import cv2
 from datetime import datetime
 import numpy as np
 
+
 def dict2list(d, keys, type=None, default=None):
     values = []
     for key in keys:
@@ -11,6 +12,7 @@ def dict2list(d, keys, type=None, default=None):
             value = type(value)
         values.append(value)
     return values
+
 
 VehicleType = {
     '1': 'car',
@@ -59,6 +61,11 @@ class BaseDraw(object):
     """
     基本的opencv绘图函数
     """
+
+    @classmethod
+    def draw_circle(cls, img, position, radius=4, color=CVColor.Black):
+        cv2.circle(img, position, radius, color)
+
 
     @classmethod
     def draw_text(cls, img_content, text, position, size, color, thickness, type=cv2.LINE_AA):
@@ -282,6 +289,8 @@ class BaseDraw(object):
             BaseDraw.draw_text(img, para,
                                (origin_x, origin_y + gap_v * index),
                                size, CVColor.White, 1)
+
+
 
 pack = os.path.join
 logodir = "assets/overlook"

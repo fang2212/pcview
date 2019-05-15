@@ -1,0 +1,1298 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:
+
+
+BO_ 1440 HET_LMR_ErrorStatus: 8 Vector__XXX
+ SG_ CANTX_InternalTemperatureLow : 1|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ CANTX_InternalTemperatureHigh : 2|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ CANTX_InputVoltageLow : 3|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ CANTX_InputVoltageHigh : 4|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ CANTX_CommunicationTimeout : 6|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ CANTX_CommunicationPackageLoss : 5|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ CANTX_CommunicationError : 7|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1353 HET_LMR_Supplementary_Data09: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance18 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance17 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance18 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance17 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1354 HET_LMR_Supplementary_Data10: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance20 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance19 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance20 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance19 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1356 HET_LMR_Supplementary_Data12: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance24 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance23 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance24 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance23 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1357 HET_LMR_Supplementary_Data13: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance26 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance25 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance26 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance25 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1358 HET_LMR_Supplementary_Data14: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance28 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance27 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance28 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance27 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1359 HET_LMR_Supplementary_Data15: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance30 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance29 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance30 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance29 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1360 HET_LMR_Supplementary_Data16: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance32 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance31 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance32 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance31 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1361 HET_LMR_Supplementary_Data17: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance34 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance33 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance34 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance33 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1362 HET_LMR_Supplementary_Data18: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance36 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance35 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance36 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance35 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1363 HET_LMR_Supplementary_Data19: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance38 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance37 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance38 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance37 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1364 HET_LMR_Supplementary_Data20: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance40 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance39 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance40 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance39 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1365 HET_LMR_Supplementary_Data21: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance42 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance41 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance42 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance41 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1367 HET_LMR_Supplementary_Data23: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance46 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance45 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance46 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance45 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1368 HET_LMR_Supplementary_Data24: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance48 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance47 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance48 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance47 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1369 HET_LMR_Supplementary_Data25: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance50 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance49 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance50 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance49 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1370 HET_LMR_Supplementary_Data26: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance52 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance51 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance52 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance51 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1371 HET_LMR_Supplementary_Data27: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance54 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance53 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance54 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance53 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1372 HET_LMR_Supplementary_Data28: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance56 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance55 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance56 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance55 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1373 HET_LMR_Supplementary_Data29: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance58 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance57 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance58 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance57 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1374 HET_LMR_Supplementary_Data30: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance60 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance59 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance60 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance59 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1375 HET_LMR_Supplementary_Data31: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance62 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance61 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance62 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance61 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1376 HET_LMR_Supplementary_Data32: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance64 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance63 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance64 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance63 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1347 HET_LMR_Supplementary_Data03: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance06 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance05 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance06 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance05 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1348 HET_LMR_Supplementary_Data04: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance08 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance07 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance08 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance07 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1349 HET_LMR_Supplementary_Data05: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance10 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance09 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance10 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance09 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1350 HET_LMR_Supplementary_Data06: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance12 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance11 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance12 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance11 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1351 HET_LMR_Supplementary_Data07: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance14 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance13 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance14 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance13 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1352 HET_LMR_Supplementary_Data08: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance16 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance15 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance16 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance15 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1355 HET_LMR_Supplementary_Data11: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance22 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance21 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance22 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance21 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1366 HET_LMR_Supplementary_Data22: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance44 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance43 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance44 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance43 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1346 HET_LMR_Supplementary_Data02: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance04 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance03 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance04 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance03 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1345 HET_LMR_Supplementary_Data01: 8 Vector__XXX
+ SG_ CANTX_TargetVerticalDistance02 : 32|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetVerticalDistance01 : 0|11@0+ (0.1,0) [0|160] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance02 : 39|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+ SG_ CANTX_TargetLateralDistance01 : 7|7@0+ (0.1,-4) [-4|4] "m" Vector__XXX
+
+BO_ 1336 HET_LMR_Track57: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1335 HET_LMR_Track56: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1334 HET_LMR_Track55: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1333 HET_LMR_Track54: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1331 HET_LMR_Track52: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1330 HET_LMR_Track51: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1329 HET_LMR_Track50: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1328 HET_LMR_Track49: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1327 HET_LMR_Track48: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1326 HET_LMR_Track47: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1325 HET_LMR_Track46: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1324 HET_LMR_Track45: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1323 HET_LMR_Track44: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1322 HET_LMR_Track43: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1343 HET_LMR_Track64: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1342 HET_LMR_Track63: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1341 HET_LMR_Track62: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1340 HET_LMR_Track61: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1339 HET_LMR_Track60: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1338 HET_LMR_Track59: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1337 HET_LMR_Track58: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1332 HET_LMR_Track53: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1321 HET_LMR_Track42: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1312 HET_LMR_Track33: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1311 HET_LMR_Track32: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1310 HET_LMR_Track31: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1309 HET_LMR_Track30: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1308 HET_LMR_Track29: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1307 HET_LMR_Track28: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1306 HET_LMR_Track27: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1320 HET_LMR_Track41: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1319 HET_LMR_Track40: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1318 HET_LMR_Track39: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1317 HET_LMR_Track38: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1316 HET_LMR_Track37: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1315 HET_LMR_Track36: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1314 HET_LMR_Track35: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1313 HET_LMR_Track34: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1305 HET_LMR_Track26: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1296 HET_LMR_Track17: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1295 HET_LMR_Track16: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1294 HET_LMR_Track15: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1293 HET_LMR_Track14: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1292 HET_LMR_Track13: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1291 HET_LMR_Track12: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1290 HET_LMR_Track11: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1289 HET_LMR_Track10: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1288 HET_LMR_Track09: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1304 HET_LMR_Track25: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1303 HET_LMR_Track24: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1302 HET_LMR_Track23: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1301 HET_LMR_Track22: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1300 HET_LMR_Track21: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1299 HET_LMR_Track20: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1298 HET_LMR_Track19: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1297 HET_LMR_Track18: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1287 HET_LMR_Track08: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1286 HET_LMR_Track07: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1285 HET_LMR_Track06: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1284 HET_LMR_Track05: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1283 HET_LMR_Track04: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1282 HET_LMR_Track03: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1281 HET_LMR_Track02: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+BO_ 1344 HET_LMR_Status01: 8 Vector__XXX
+ SG_ CANTX_VehicleSpeedEchoback : 23|8@0+ (1,0) [0|255] "km/h" Vector__XXX
+ SG_ CANTX_Counter : 7|16@0+ (1,0) [0|65535] "n/a" Vector__XXX
+
+BO_ 1280 HET_LMR_Track01: 8 Vector__XXX
+ SG_ CANTX_TargetMovingFlag : 8|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TargetLateralRate : 61|6@0+ (0.25,-8) [-8|7.75] "m/s" Vector__XXX
+ SG_ CANTX_TargetAzimuth : 55|10@0+ (0.1,-51.2) [-51.2|51.1] "deg" Vector__XXX
+ SG_ CANTX_TargetSNR : 45|6@0+ (1,0) [0|63] "dB" Vector__XXX
+ SG_ CANTX_TargetAcceleration : 39|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s/s" Vector__XXX
+ SG_ CANTX_TargetRangeRate : 23|14@0+ (0.036,-294.912) [-294.912|294.912] "km/h" Vector__XXX
+ SG_ CANTX_TargetUpdateMode : 25|2@0+ (1,0) [0|3] "n/a" Vector__XXX
+ SG_ CANTX_TargetBridgeIndicate : 9|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetOncomingFlag : 10|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetChangedStatus : 11|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+ SG_ CANTX_TragetRange : 6|11@0+ (0.1,0) [0|204.7] "m" Vector__XXX
+ SG_ CANTX_TragetTrackStatus : 7|1@0+ (1,0) [0|1] "n/a" Vector__XXX
+
+
+
+CM_ SG_ 1440 CANTX_InternalTemperatureLow "∞ÂŒ¬π˝µÕ¥ÌŒÛŒª";
+CM_ SG_ 1440 CANTX_InternalTemperatureHigh "∞ÂŒ¬π˝∏ﬂ¥ÌŒÛŒª";
+CM_ SG_ 1440 CANTX_InputVoltageLow " ‰»ÎµÁ—ππ˝µÕ¥ÌŒÛŒª";
+CM_ SG_ 1440 CANTX_InputVoltageHigh " ‰»ÎµÁ—ππ˝∏ﬂ¥ÌŒÛŒª";
+CM_ SG_ 1440 CANTX_CommunicationTimeout "Õ®—∂≥¨ ±±Í÷æŒª";
+CM_ SG_ 1440 CANTX_CommunicationPackageLoss " ˝æ›∂™∞¸±Í÷æŒª";
+CM_ SG_ 1440 CANTX_CommunicationError "Õ®—∂¥ÌŒÛ±Í÷æŒª";
+CM_ SG_ 1353 CANTX_TargetVerticalDistance18 "¥π÷±æ‡¿Î";
+CM_ SG_ 1353 CANTX_TargetVerticalDistance17 "¥π÷±æ‡¿Î";
+CM_ SG_ 1353 CANTX_TargetLateralDistance18 "∫·œÚæ‡¿Î";
+CM_ SG_ 1353 CANTX_TargetLateralDistance17 "∫·œÚæ‡¿Î";
+CM_ SG_ 1354 CANTX_TargetVerticalDistance20 "¥π÷±æ‡¿Î";
+CM_ SG_ 1354 CANTX_TargetVerticalDistance19 "¥π÷±æ‡¿Î";
+CM_ SG_ 1354 CANTX_TargetLateralDistance20 "∫·œÚæ‡¿Î";
+CM_ SG_ 1354 CANTX_TargetLateralDistance19 "∫·œÚæ‡¿Î";
+CM_ SG_ 1356 CANTX_TargetVerticalDistance24 "¥π÷±æ‡¿Î";
+CM_ SG_ 1356 CANTX_TargetVerticalDistance23 "¥π÷±æ‡¿Î";
+CM_ SG_ 1356 CANTX_TargetLateralDistance24 "∫·œÚæ‡¿Î";
+CM_ SG_ 1356 CANTX_TargetLateralDistance23 "∫·œÚæ‡¿Î";
+CM_ SG_ 1357 CANTX_TargetVerticalDistance26 "¥π÷±æ‡¿Î";
+CM_ SG_ 1357 CANTX_TargetVerticalDistance25 "¥π÷±æ‡¿Î";
+CM_ SG_ 1357 CANTX_TargetLateralDistance26 "∫·œÚæ‡¿Î";
+CM_ SG_ 1357 CANTX_TargetLateralDistance25 "∫·œÚæ‡¿Î";
+CM_ SG_ 1358 CANTX_TargetVerticalDistance28 "¥π÷±æ‡¿Î";
+CM_ SG_ 1358 CANTX_TargetVerticalDistance27 "¥π÷±æ‡¿Î";
+CM_ SG_ 1358 CANTX_TargetLateralDistance28 "∫·œÚæ‡¿Î";
+CM_ SG_ 1358 CANTX_TargetLateralDistance27 "∫·œÚæ‡¿Î";
+CM_ SG_ 1359 CANTX_TargetVerticalDistance30 "¥π÷±æ‡¿Î";
+CM_ SG_ 1359 CANTX_TargetVerticalDistance29 "¥π÷±æ‡¿Î";
+CM_ SG_ 1359 CANTX_TargetLateralDistance30 "∫·œÚæ‡¿Î";
+CM_ SG_ 1359 CANTX_TargetLateralDistance29 "∫·œÚæ‡¿Î";
+CM_ SG_ 1360 CANTX_TargetVerticalDistance32 "¥π÷±æ‡¿Î";
+CM_ SG_ 1360 CANTX_TargetVerticalDistance31 "¥π÷±æ‡¿Î";
+CM_ SG_ 1360 CANTX_TargetLateralDistance32 "∫·œÚæ‡¿Î";
+CM_ SG_ 1360 CANTX_TargetLateralDistance31 "∫·œÚæ‡¿Î";
+CM_ SG_ 1361 CANTX_TargetVerticalDistance34 "¥π÷±æ‡¿Î";
+CM_ SG_ 1361 CANTX_TargetVerticalDistance33 "¥π÷±æ‡¿Î";
+CM_ SG_ 1361 CANTX_TargetLateralDistance34 "∫·œÚæ‡¿Î";
+CM_ SG_ 1361 CANTX_TargetLateralDistance33 "∫·œÚæ‡¿Î";
+CM_ SG_ 1362 CANTX_TargetVerticalDistance36 "¥π÷±æ‡¿Î";
+CM_ SG_ 1362 CANTX_TargetVerticalDistance35 "¥π÷±æ‡¿Î";
+CM_ SG_ 1362 CANTX_TargetLateralDistance36 "∫·œÚæ‡¿Î";
+CM_ SG_ 1362 CANTX_TargetLateralDistance35 "∫·œÚæ‡¿Î";
+CM_ SG_ 1363 CANTX_TargetVerticalDistance38 "¥π÷±æ‡¿Î";
+CM_ SG_ 1363 CANTX_TargetVerticalDistance37 "¥π÷±æ‡¿Î";
+CM_ SG_ 1363 CANTX_TargetLateralDistance38 "∫·œÚæ‡¿Î";
+CM_ SG_ 1363 CANTX_TargetLateralDistance37 "∫·œÚæ‡¿Î";
+CM_ SG_ 1364 CANTX_TargetVerticalDistance40 "¥π÷±æ‡¿Î";
+CM_ SG_ 1364 CANTX_TargetVerticalDistance39 "¥π÷±æ‡¿Î";
+CM_ SG_ 1364 CANTX_TargetLateralDistance40 "∫·œÚæ‡¿Î";
+CM_ SG_ 1364 CANTX_TargetLateralDistance39 "∫·œÚæ‡¿Î";
+CM_ SG_ 1365 CANTX_TargetVerticalDistance42 "¥π÷±æ‡¿Î";
+CM_ SG_ 1365 CANTX_TargetVerticalDistance41 "¥π÷±æ‡¿Î";
+CM_ SG_ 1365 CANTX_TargetLateralDistance42 "∫·œÚæ‡¿Î";
+CM_ SG_ 1365 CANTX_TargetLateralDistance41 "∫·œÚæ‡¿Î";
+CM_ SG_ 1367 CANTX_TargetVerticalDistance46 "¥π÷±æ‡¿Î";
+CM_ SG_ 1367 CANTX_TargetVerticalDistance45 "¥π÷±æ‡¿Î";
+CM_ SG_ 1367 CANTX_TargetLateralDistance46 "∫·œÚæ‡¿Î";
+CM_ SG_ 1367 CANTX_TargetLateralDistance45 "∫·œÚæ‡¿Î";
+CM_ SG_ 1368 CANTX_TargetVerticalDistance48 "¥π÷±æ‡¿Î";
+CM_ SG_ 1368 CANTX_TargetVerticalDistance47 "¥π÷±æ‡¿Î";
+CM_ SG_ 1368 CANTX_TargetLateralDistance48 "∫·œÚæ‡¿Î";
+CM_ SG_ 1368 CANTX_TargetLateralDistance47 "∫·œÚæ‡¿Î";
+CM_ SG_ 1369 CANTX_TargetVerticalDistance50 "¥π÷±æ‡¿Î";
+CM_ SG_ 1369 CANTX_TargetVerticalDistance49 "¥π÷±æ‡¿Î";
+CM_ SG_ 1369 CANTX_TargetLateralDistance50 "∫·œÚæ‡¿Î";
+CM_ SG_ 1369 CANTX_TargetLateralDistance49 "∫·œÚæ‡¿Î";
+CM_ SG_ 1370 CANTX_TargetVerticalDistance52 "¥π÷±æ‡¿Î";
+CM_ SG_ 1370 CANTX_TargetVerticalDistance51 "¥π÷±æ‡¿Î";
+CM_ SG_ 1370 CANTX_TargetLateralDistance52 "∫·œÚæ‡¿Î";
+CM_ SG_ 1370 CANTX_TargetLateralDistance51 "∫·œÚæ‡¿Î";
+CM_ SG_ 1371 CANTX_TargetVerticalDistance54 "¥π÷±æ‡¿Î";
+CM_ SG_ 1371 CANTX_TargetVerticalDistance53 "¥π÷±æ‡¿Î";
+CM_ SG_ 1371 CANTX_TargetLateralDistance54 "∫·œÚæ‡¿Î";
+CM_ SG_ 1371 CANTX_TargetLateralDistance53 "∫·œÚæ‡¿Î";
+CM_ SG_ 1372 CANTX_TargetVerticalDistance56 "¥π÷±æ‡¿Î";
+CM_ SG_ 1372 CANTX_TargetVerticalDistance55 "¥π÷±æ‡¿Î";
+CM_ SG_ 1372 CANTX_TargetLateralDistance56 "∫·œÚæ‡¿Î";
+CM_ SG_ 1372 CANTX_TargetLateralDistance55 "∫·œÚæ‡¿Î";
+CM_ SG_ 1373 CANTX_TargetVerticalDistance58 "¥π÷±æ‡¿Î";
+CM_ SG_ 1373 CANTX_TargetVerticalDistance57 "¥π÷±æ‡¿Î";
+CM_ SG_ 1373 CANTX_TargetLateralDistance58 "∫·œÚæ‡¿Î";
+CM_ SG_ 1373 CANTX_TargetLateralDistance57 "∫·œÚæ‡¿Î";
+CM_ SG_ 1374 CANTX_TargetVerticalDistance60 "¥π÷±æ‡¿Î";
+CM_ SG_ 1374 CANTX_TargetVerticalDistance59 "¥π÷±æ‡¿Î";
+CM_ SG_ 1374 CANTX_TargetLateralDistance60 "∫·œÚæ‡¿Î";
+CM_ SG_ 1374 CANTX_TargetLateralDistance59 "∫·œÚæ‡¿Î";
+CM_ SG_ 1375 CANTX_TargetVerticalDistance62 "¥π÷±æ‡¿Î";
+CM_ SG_ 1375 CANTX_TargetVerticalDistance61 "¥π÷±æ‡¿Î";
+CM_ SG_ 1375 CANTX_TargetLateralDistance62 "∫·œÚæ‡¿Î";
+CM_ SG_ 1375 CANTX_TargetLateralDistance61 "∫·œÚæ‡¿Î";
+CM_ SG_ 1376 CANTX_TargetVerticalDistance64 "¥π÷±æ‡¿Î";
+CM_ SG_ 1376 CANTX_TargetVerticalDistance63 "¥π÷±æ‡¿Î";
+CM_ SG_ 1376 CANTX_TargetLateralDistance64 "∫·œÚæ‡¿Î";
+CM_ SG_ 1376 CANTX_TargetLateralDistance63 "∫·œÚæ‡¿Î";
+CM_ SG_ 1347 CANTX_TargetVerticalDistance06 "¥π÷±æ‡¿Î";
+CM_ SG_ 1347 CANTX_TargetVerticalDistance05 "¥π÷±æ‡¿Î";
+CM_ SG_ 1347 CANTX_TargetLateralDistance06 "∫·œÚæ‡¿Î";
+CM_ SG_ 1347 CANTX_TargetLateralDistance05 "∫·œÚæ‡¿Î";
+CM_ SG_ 1348 CANTX_TargetVerticalDistance08 "¥π÷±æ‡¿Î";
+CM_ SG_ 1348 CANTX_TargetVerticalDistance07 "¥π÷±æ‡¿Î";
+CM_ SG_ 1348 CANTX_TargetLateralDistance08 "∫·œÚæ‡¿Î";
+CM_ SG_ 1348 CANTX_TargetLateralDistance07 "∫·œÚæ‡¿Î";
+CM_ SG_ 1349 CANTX_TargetVerticalDistance10 "¥π÷±æ‡¿Î";
+CM_ SG_ 1349 CANTX_TargetVerticalDistance09 "¥π÷±æ‡¿Î";
+CM_ SG_ 1349 CANTX_TargetLateralDistance10 "∫·œÚæ‡¿Î";
+CM_ SG_ 1349 CANTX_TargetLateralDistance09 "∫·œÚæ‡¿Î";
+CM_ SG_ 1350 CANTX_TargetVerticalDistance12 "¥π÷±æ‡¿Î";
+CM_ SG_ 1350 CANTX_TargetVerticalDistance11 "¥π÷±æ‡¿Î";
+CM_ SG_ 1350 CANTX_TargetLateralDistance12 "∫·œÚæ‡¿Î";
+CM_ SG_ 1350 CANTX_TargetLateralDistance11 "∫·œÚæ‡¿Î";
+CM_ SG_ 1351 CANTX_TargetVerticalDistance14 "¥π÷±æ‡¿Î";
+CM_ SG_ 1351 CANTX_TargetVerticalDistance13 "¥π÷±æ‡¿Î";
+CM_ SG_ 1351 CANTX_TargetLateralDistance14 "∫·œÚæ‡¿Î";
+CM_ SG_ 1351 CANTX_TargetLateralDistance13 "∫·œÚæ‡¿Î";
+CM_ SG_ 1352 CANTX_TargetVerticalDistance16 "¥π÷±æ‡¿Î";
+CM_ SG_ 1352 CANTX_TargetVerticalDistance15 "¥π÷±æ‡¿Î";
+CM_ SG_ 1352 CANTX_TargetLateralDistance16 "∫·œÚæ‡¿Î";
+CM_ SG_ 1352 CANTX_TargetLateralDistance15 "∫·œÚæ‡¿Î";
+CM_ SG_ 1355 CANTX_TargetVerticalDistance22 "¥π÷±æ‡¿Î";
+CM_ SG_ 1355 CANTX_TargetVerticalDistance21 "¥π÷±æ‡¿Î";
+CM_ SG_ 1355 CANTX_TargetLateralDistance22 "∫·œÚæ‡¿Î";
+CM_ SG_ 1355 CANTX_TargetLateralDistance21 "∫·œÚæ‡¿Î";
+CM_ SG_ 1366 CANTX_TargetVerticalDistance44 "¥π÷±æ‡¿Î";
+CM_ SG_ 1366 CANTX_TargetVerticalDistance43 "¥π÷±æ‡¿Î";
+CM_ SG_ 1366 CANTX_TargetLateralDistance44 "∫·œÚæ‡¿Î";
+CM_ SG_ 1366 CANTX_TargetLateralDistance43 "∫·œÚæ‡¿Î";
+CM_ SG_ 1346 CANTX_TargetVerticalDistance04 "¥π÷±æ‡¿Î";
+CM_ SG_ 1346 CANTX_TargetVerticalDistance03 "¥π÷±æ‡¿Î";
+CM_ SG_ 1346 CANTX_TargetLateralDistance04 "∫·œÚæ‡¿Î";
+CM_ SG_ 1346 CANTX_TargetLateralDistance03 "∫·œÚæ‡¿Î";
+CM_ SG_ 1345 CANTX_TargetVerticalDistance02 "¥π÷±æ‡¿Î";
+CM_ SG_ 1345 CANTX_TargetVerticalDistance01 "¥π÷±æ‡¿Î";
+CM_ SG_ 1345 CANTX_TargetLateralDistance02 "∫·œÚæ‡¿Î";
+CM_ SG_ 1345 CANTX_TargetLateralDistance01 "∫·œÚæ‡¿Î";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+VAL_ 1440 CANTX_InternalTemperatureLow 1 "Error occurs" 0 "None" ;
+VAL_ 1440 CANTX_InternalTemperatureHigh 1 "overtemperature" 0 "not overtemperature" ;
+VAL_ 1440 CANTX_InputVoltageLow 1 "Error Occurs" 0 "None" ;
+VAL_ 1440 CANTX_InputVoltageHigh 1 "Error Occurs" 0 "None" ;
+VAL_ 1440 CANTX_CommunicationTimeout 1 "Error Occurs" 0 "None" ;
+VAL_ 1440 CANTX_CommunicationPackageLoss 1 "Error Occurs" 0 "None" ;
+VAL_ 1440 CANTX_CommunicationError 1 "Error Occurs" 0 "None" ;
+

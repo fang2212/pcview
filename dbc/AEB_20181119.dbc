@@ -1,0 +1,312 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Minieye ADAS MINIEYE_TRANSMITTER
+
+
+BO_ 1901 KeyCarFrameA1: 8 MINIEYE_TRANSMITTER
+ SG_ FCW : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ TargetID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ TargetVehiclePosX : 8|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ TargetVehiclePosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ TargetVehicleType : 48|3@1+ (1,0) [0|5] "" Vector__XXX
+
+BO_ 1902 KeyCarFrameA2: 8 MINIEYE_TRANSMITTER
+ SG_ TTC : 0|10@1+ (0.01,0) [0|10] "Second" Vector__XXX
+ SG_ TargetVehicleVelX : 16|12@1- (0.0625,0) [-127.93|127.93] "M/Sec" Vector__XXX
+ SG_ TargetVehicleAccelX : 32|10@1- (0.03,0) [-14.97|14.97] "M/Sec^2" Vector__XXX
+ SG_ TargetVehicleWidth : 48|8@1+ (0.05,0) [0|1.25] "M" Vector__XXX
+ SG_ TargetVehicleConfidence : 56|6@1+ (0.02,0) [0|1] "" Vector__XXX
+
+BO_ 1904 OtherCarFrame1: 8 MINIEYE_TRANSMITTER
+ SG_ AdditionTargetNumer : 0|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ TargetAID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleAPosX : 8|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleAPosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleAType : 30|3@1+ (1,0) [0|5] "" Vector__XXX
+ SG_ TargetBID : 33|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleBPosX : 39|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleBPosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleBType : 61|3@1+ (1,0) [0|5] "" Vector__XXX
+
+BO_ 1905 OtherCarFrame2: 8 MINIEYE_TRANSMITTER
+ SG_ AdditionTargetNumer : 0|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ TargetAID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleAPosX : 8|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleAPosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleAType : 30|3@1+ (1,0) [0|5] "" Vector__XXX
+ SG_ TargetBID : 33|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleBPosX : 39|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleBPosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleBType : 61|3@1+ (1,0) [0|5] "" Vector__XXX
+
+BO_ 1906 OtherCarFrame3: 8 MINIEYE_TRANSMITTER
+ SG_ AdditionTargetNumer : 0|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ TargetAID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleAPosX : 8|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleAPosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleAType : 30|3@1+ (1,0) [0|5] "" Vector__XXX
+ SG_ TargetBID : 33|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleBPosX : 39|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleBPosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleBType : 61|3@1+ (1,0) [0|5] "" Vector__XXX
+
+BO_ 1907 OtherCarFrame4: 8 MINIEYE_TRANSMITTER
+ SG_ AdditionTargetNumer : 0|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ TargetAID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleAPosX : 8|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleAPosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleAType : 30|3@1+ (1,0) [0|5] "" Vector__XXX
+ SG_ TargetBID : 33|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleBPosX : 39|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleBPosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleBType : 61|3@1+ (1,0) [0|5] "" Vector__XXX
+
+BO_ 1908 OtherCarFrame5: 8 MINIEYE_TRANSMITTER
+ SG_ AdditionTargetNumer : 0|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ TargetAID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleAPosX : 8|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleAPosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleAType : 30|3@1+ (1,0) [0|5] "" Vector__XXX
+ SG_ TargetBID : 33|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleBPosX : 39|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleBPosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleBType : 61|3@1+ (1,0) [0|5] "" Vector__XXX
+
+BO_ 1909 OtherCarFrame6: 8 MINIEYE_TRANSMITTER
+ SG_ AdditionTargetNumer : 0|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ TargetAID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleAPosX : 8|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleAPosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleAType : 30|3@1+ (1,0) [0|5] "" Vector__XXX
+ SG_ TargetBID : 33|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleBPosX : 39|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleBPosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleBType : 61|3@1+ (1,0) [0|5] "" Vector__XXX
+
+BO_ 1910 OtherCarFrame7: 8 MINIEYE_TRANSMITTER
+ SG_ AdditionTargetNumer : 0|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ TargetAID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleAPosX : 8|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleAPosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleAType : 30|3@1+ (1,0) [0|5] "" Vector__XXX
+ SG_ TargetBID : 33|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleBPosX : 39|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleBPosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleBType : 61|3@1+ (1,0) [0|5] "" Vector__XXX
+
+BO_ 1911 OtherCarFrame8: 8 MINIEYE_TRANSMITTER
+ SG_ AdditionTargetNumer : 0|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ TargetAID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleAPosX : 8|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleAPosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleAType : 30|3@1+ (1,0) [0|5] "" Vector__XXX
+ SG_ TargetBID : 33|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ AdditionVehicleBPosX : 39|12@1+ (0.0625,0) [0|250] "Meter" Vector__XXX
+ SG_ AdditionVehicleBPosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter" Vector__XXX
+ SG_ AdditionVehicleBType : 61|3@1+ (1,0) [0|5] "" Vector__XXX
+
+BO_ 1520 Lane1FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|128] "Meter" Vector__XXX
+ SG_ Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter" Vector__XXX
+ SG_ CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2" Vector__XXX
+ SG_ WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter" Vector__XXX
+
+BO_ 1521 Lane1FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian" Vector__XXX
+ SG_ ViewRangeStart : 16|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ ViewRangeEnd : 24|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ LineCrossing : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ LineMarkColor : 33|3@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ CanMsgEnd : 36|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1522 Lane2FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|128] "Meter" Vector__XXX
+ SG_ Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter" Vector__XXX
+ SG_ CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2" Vector__XXX
+ SG_ WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter" Vector__XXX
+
+BO_ 1523 Lane2FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian" Vector__XXX
+ SG_ ViewRangeStart : 16|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ ViewRangeEnd : 24|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ LineCrossing : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ LineMarkColor : 33|3@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ CanMsgEnd : 36|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1524 Lane3FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|128] "Meter" Vector__XXX
+ SG_ Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter" Vector__XXX
+ SG_ CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2" Vector__XXX
+ SG_ WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter" Vector__XXX
+
+BO_ 1525 Lane3FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian" Vector__XXX
+ SG_ ViewRangeStart : 16|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ ViewRangeEnd : 24|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ LineCrossing : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ LineMarkColor : 33|3@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ CanMsgEnd : 36|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1526 Lane4FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|128] "Meter" Vector__XXX
+ SG_ Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter" Vector__XXX
+ SG_ CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2" Vector__XXX
+ SG_ WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter" Vector__XXX
+
+BO_ 1527 Lane4FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian" Vector__XXX
+ SG_ ViewRangeStart : 16|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ ViewRangeEnd : 24|8@1+ (0.5,0) [0|55] "" Vector__XXX
+ SG_ LineCrossing : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ LineMarkColor : 33|3@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ CanMsgEnd : 36|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1914 PED_Frame_C: 8 MINIEYE_TRANSMITTER
+ SG_ Target_Pedestrian_ID : 0|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ Target_Pedestrian_PosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ Target_Pedestrian_PosY : 24|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ Target_Pedestrian_VelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ Target_Pedestrian_VelY : 52|8@1- (0.0625,0) [-16|16] "m/sec" Vector__XXX
+ SG_ Target_Pedestrian_Type : 60|3@1+ (1,0) [0|7] "" Vector__XXX
+
+BO_ 1915 PED1_Frame_D: 8 MINIEYE_TRANSMITTER
+ SG_ Addition_Pedestrian_Number : 0|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ Addition_Pedestrian_ID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ Addition_Pedestrian_A_PosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ Addition_Pedestrian_A_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ Target_Pedestrian_A_Type : 30|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ Addition_Pedestrian_ID : 33|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ Addition_Pedestrian_B_PosX : 39|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ Addition_Pedestrian_B_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ Target_Pedestrian_B_Type : 61|3@1+ (1,0) [0|7] "" Vector__XXX
+
+BO_ 1916 PED2_Frame_D: 8 MINIEYE_TRANSMITTER
+ SG_ Addition_Pedestrian_Number : 0|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ Addition_Pedestrian_ID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ Addition_Pedestrian_A_PosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ Addition_Pedestrian_A_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ Target_Pedestrian_A_Type : 30|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ Addition_Pedestrian_ID : 33|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ Addition_Pedestrian_B_PosX : 39|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ Addition_Pedestrian_B_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ Target_Pedestrian_B_Type : 61|3@1+ (1,0) [0|7] "" Vector__XXX
+
+BO_ 1917 PED3_Frame_D: 8 MINIEYE_TRANSMITTER
+ SG_ Addition_Pedestrian_Number : 0|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ Addition_Pedestrian_ID : 2|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ Addition_Pedestrian_A_PosX : 8|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ Addition_Pedestrian_A_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ Target_Pedestrian_A_Type : 30|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ Addition_Pedestrian_ID : 33|6@1+ (1,0) [0|63] "" Vector__XXX
+ SG_ Addition_Pedestrian_B_PosX : 39|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ Addition_Pedestrian_B_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ Target_Pedestrian_B_Type : 61|3@1+ (1,0) [0|7] "" Vector__XXX
+
+BO_ 1888 TSR_Frame_G: 8 MINIEYE_TRANSMITTER
+ SG_ Vision_only_Sign_Type : 0|8@1+ (1,0) [0|255] "km/h" Vector__XXX
+ SG_ Vision_only_Sign_Type : 40|8@1+ (1,0) [0|255] "km/h" Vector__XXX
+
+BO_ 1889 TSR1_Frame_H: 8 MINIEYE_TRANSMITTER
+ SG_ Vision_only_Sign_Type : 0|8@1+ (1,0) [0|255] "km/h" Vector__XXX
+ SG_ Can_Msg_Ender : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1890 TSR2_Frame_H: 8 MINIEYE_TRANSMITTER
+ SG_ Vision_only_Sign_Type : 0|8@1+ (1,0) [0|255] "km/h" Vector__XXX
+ SG_ Can_Msg_Ender : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1891 TSR3_Frame_H: 8 MINIEYE_TRANSMITTER
+ SG_ Vision_only_Sign_Type : 0|8@1+ (1,0) [0|255] "km/h" Vector__XXX
+ SG_ Can_Msg_Ender : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+
+
+
+VAL_ 1901 FCW 1 "FCW On" 0 "FCW Off" ;
+VAL_ 1901 TargetVehicleType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1904 AdditionVehicleAType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1904 AdditionVehicleBType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1905 AdditionVehicleAType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1905 AdditionVehicleBType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1906 AdditionVehicleAType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1906 AdditionVehicleBType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1907 AdditionVehicleAType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1907 AdditionVehicleBType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1908 AdditionVehicleAType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1908 AdditionVehicleBType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1909 AdditionVehicleAType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1909 AdditionVehicleBType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1910 AdditionVehicleAType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1910 AdditionVehicleBType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1911 AdditionVehicleAType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1911 AdditionVehicleBType 5 "Special Car" 4 "Box truck" 3 "Bus" 2 "Car" 1 "Resv1" 0 "No Vehicle" ;
+VAL_ 1520 Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1520 Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1521 LineCrossing 1 "Line crossing" 0 "No line cross" ;
+VAL_ 1521 LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1521 CanMsgEnd 1 "Finish" 0 "No finish" ;
+VAL_ 1522 Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1522 Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1523 LineCrossing 1 "Line crossing" 0 "No line cross" ;
+VAL_ 1523 LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1523 CanMsgEnd 1 "Finish" 0 "No finish" ;
+VAL_ 1524 Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1524 Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1525 LineCrossing 1 "Line crossing" 0 "No line cross" ;
+VAL_ 1525 LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1525 CanMsgEnd 1 "Finish" 0 "No finish" ;
+VAL_ 1526 Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1526 Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1527 LineCrossing 1 "Line crossing" 0 "No line cross" ;
+VAL_ 1527 LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1527 CanMsgEnd 1 "Finish" 0 "No finish" ;
+VAL_ 1914 Target_Pedestrian_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1915 Target_Pedestrian_A_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1916 Target_Pedestrian_A_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1917 Target_Pedestrian_A_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1915 Target_Pedestrian_B_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1916 Target_Pedestrian_B_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1917 Target_Pedestrian_B_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1889 Can_Msg_Ender 1 "finish" 0 "no finish" ;
+VAL_ 1890 Can_Msg_Ender 1 "finish" 0 "no finish" ;
+VAL_ 1891 Can_Msg_Ender 1 "finish" 0 "no finish" ;
+

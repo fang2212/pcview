@@ -1,0 +1,329 @@
+VERSION ""
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+
+BS_:
+
+BU_:
+
+
+BO_ 801 ADAS_Target_2_0x321: 8 Vector__XXX
+ SG_ Pnttg2_sv : 47|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Pntsv_tg2 : 39|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ YawRat_tg2 : 7|32@0- (1,0) [0|0] "Degrees/s" Vector__XXX
+
+BO_ 800 ADAS_Target_2_0x320: 8 Vector__XXX
+ SG_ Lngdif_tg2 : 39|32@0- (1,0) [0|0] "Minutes" Vector__XXX
+ SG_ Latdif_tg2 : 7|32@0- (1,0) [0|0] "Minutes" Vector__XXX
+
+BO_ 799 ADAS_Target_2_0x31F: 8 Vector__XXX
+ SG_ T2Ctg_tg2 : 39|32@0- (1,0) [0|0] "Seconds" Vector__XXX
+ SG_ SepTim_tg2 : 7|32@0- (1,0) [0|0] "Seconds" Vector__XXX
+
+BO_ 798 ADAS_Target_2_0x31E: 8 Vector__XXX
+ SG_ Accel_tg2_ms2 : 39|32@0- (9.80665,0) [0|0] "m/s2" Vector__XXX
+ SG_ Accel_tg2_g : 39|32@0- (1,0) [0|0] "g" Vector__XXX
+ SG_ LatRref_tg2 : 7|32@0- (1,0) [0|0] "Metres" Vector__XXX
+
+BO_ 797 ADAS_Target_2_0x31D: 8 Vector__XXX
+ SG_ T2C2sv_tg2 : 39|32@0- (1,0) [0|0] "Seconds" Vector__XXX
+ SG_ Spd_tg2_Knots : 7|32@0- (0.539957,0) [0|0] "Knots" Vector__XXX
+ SG_ Spd_tg2_mph : 7|32@0- (0.621371,0) [0|0] "mph" Vector__XXX
+ SG_ Spd_tg2_ms : 7|32@0- (0.277778,0) [0|0] "m/s" Vector__XXX
+ SG_ Spd_tg2_kmh : 7|32@0- (1,0) [0|0] "km/h" Vector__XXX
+
+BO_ 796 ADAS_Target_2_0x31C: 8 Vector__XXX
+ SG_ Yawdif_tg2 : 55|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Status_sv2 : 39|8@0+ (1,0) [0|0] "RTK" Vector__XXX
+ SG_ T2Csv_tg2 : 7|32@0- (1,0) [0|0] "Seconds" Vector__XXX
+
+BO_ 795 ADAS_Target_2_0x31B: 8 Vector__XXX
+ SG_ LatRtg_tg2 : 39|32@0- (1,0) [0|0] "Metres" Vector__XXX
+ SG_ LngRtg_tg2 : 7|32@0- (1,0) [0|0] "Metres" Vector__XXX
+
+BO_ 794 ADAS_Target_2_0x31A: 8 Vector__XXX
+ SG_ LKTime_tg2 : 47|24@0+ (0.01,0) [0|0] "Seconds" Vector__XXX
+ SG_ Status_tg2 : 39|8@0+ (1,0) [0|0] "RTK" Vector__XXX
+ SG_ Angle_tg2 : 7|32@0- (1,0) [0|0] "Degrees" Vector__XXX
+
+BO_ 793 ADAS_Target_2_0x319: 8 Vector__XXX
+ SG_ LatSsv_tg2_Knots : 39|32@0- (0.539957,0) [0|0] "Knots" Vector__XXX
+ SG_ LatSsv_tg2_mph : 39|32@0- (0.621371,0) [0|0] "mph" Vector__XXX
+ SG_ LatSsv_tg2_ms : 39|32@0- (0.277778,0) [0|0] "m/s" Vector__XXX
+ SG_ LatSsv_tg2_kmh : 39|32@0- (1,0) [0|0] "km/h" Vector__XXX
+ SG_ LngSsv_tg2_Knots : 7|32@0- (0.539957,0) [0|0] "Knots" Vector__XXX
+ SG_ LngSsv_tg2_mph : 7|32@0- (0.621371,0) [0|0] "mph" Vector__XXX
+ SG_ LngSsv_tg2_ms : 7|32@0- (0.277778,0) [0|0] "m/s" Vector__XXX
+ SG_ LngSsv_tg2_kmh : 7|32@0- (1,0) [0|0] "km/h" Vector__XXX
+
+BO_ 792 ADAS_Target_2_0x318: 8 Vector__XXX
+ SG_ LatRsv_tg2 : 39|32@0- (1,0) [0|0] "Metres" Vector__XXX
+ SG_ LngRsv_tg2 : 7|32@0- (1,0) [0|0] "Metres" Vector__XXX
+
+BO_ 791 ADAS_Target_2_0x317: 8 Vector__XXX
+ SG_ RelSpd_tg2_Knots : 39|32@0- (0.539957,0) [0|0] "Knots" Vector__XXX
+ SG_ RelSpd_tg2_mph : 39|32@0- (0.621371,0) [0|0] "mph" Vector__XXX
+ SG_ RelSpd_tg2_ms : 39|32@0- (0.277778,0) [0|0] "m/s" Vector__XXX
+ SG_ RelSpd_tg2_kmh : 39|32@0- (1,0) [0|0] "km/h" Vector__XXX
+ SG_ Range_tg2 : 7|32@0- (1,0) [0|0] "Metres" Vector__XXX
+
+BO_ 790 ADAS_Target_1_0x316: 8 Vector__XXX
+ SG_ Pnttg1_sv : 47|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Pntsv_tg1 : 39|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ YawRat_tg1 : 7|32@0- (1,0) [0|0] "Degrees/s" Vector__XXX
+
+BO_ 789 ADAS_Target_1_0x315: 8 Vector__XXX
+ SG_ Lngdif_tg1 : 39|32@0- (1,0) [0|0] "Minutes" Vector__XXX
+ SG_ Latdif_tg1 : 7|32@0- (1,0) [0|0] "Minutes" Vector__XXX
+
+BO_ 786 ADAS_Target_1_0x312: 8 Vector__XXX
+ SG_ T2Ctg_tg1 : 39|32@0- (1,0) [0|0] "Seconds" Vector__XXX
+ SG_ SepTim_tg1 : 7|32@0- (1,0) [0|0] "Seconds" Vector__XXX
+
+BO_ 785 ADAS_Target_1_0x311: 8 Vector__XXX
+ SG_ Accel_tg1_ms2 : 39|32@0- (9.80665,0) [0|0] "m/s2" Vector__XXX
+ SG_ Accel_tg1_g : 39|32@0- (1,0) [0|0] "g" Vector__XXX
+ SG_ LatRref_tg1 : 7|32@0- (1,0) [0|0] "Metres" Vector__XXX
+
+BO_ 784 ADAS_Target_1_0x310: 8 Vector__XXX
+ SG_ Spd_tg1_ms : 7|32@0- (0.277778,0) [0|0] "m/s" Vector__XXX
+ SG_ T2C2sv_tg1 : 39|32@0- (1,0) [0|0] "Seconds" Vector__XXX
+ SG_ Spd_tg1_Knots : 7|32@0- (0.539957,0) [0|0] "Knots" Vector__XXX
+ SG_ Spd_tg1_mph : 7|32@0- (0.621371,0) [0|0] "mph" Vector__XXX
+ SG_ Spd_tg1_kmh : 7|32@0- (1,0) [0|0] "km/h" Vector__XXX
+
+BO_ 783 ADAS_Target_1_0x30F: 8 Vector__XXX
+ SG_ Yawdif_tg1 : 55|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Status_sv : 39|8@0+ (1,0) [0|0] "RTK" Vector__XXX
+ SG_ T2Csv_tg1 : 7|32@0- (1,0) [0|0] "Seconds" Vector__XXX
+
+BO_ 782 ADAS_Target_1_0x30E: 8 Vector__XXX
+ SG_ LngRtg_tg1 : 7|32@0- (1,0) [0|0] "Metres" Vector__XXX
+ SG_ LatRtg_tg1 : 39|32@0- (1,0) [0|0] "Metres" Vector__XXX
+
+BO_ 781 ADAS_Target_1_0x30D: 8 Vector__XXX
+ SG_ LKTime_tg1 : 47|24@0+ (0.01,0) [0|0] "Seconds" Vector__XXX
+ SG_ Status_tg1 : 39|8@0+ (1,0) [0|0] "RTK" Vector__XXX
+ SG_ Angle_tg1 : 7|32@0- (1,0) [0|0] "Degrees" Vector__XXX
+
+BO_ 780 ADAS_Target_1_0x30C: 8 Vector__XXX
+ SG_ LngSsv_tg1_kmh : 7|32@0- (1,0) [0|0] "km/h" Vector__XXX
+ SG_ LngSsv_tg1_Knots : 7|32@0- (0.539957,0) [0|0] "Knots" Vector__XXX
+ SG_ LngSsv_tg1_mph : 7|32@0- (0.621371,0) [0|0] "mph" Vector__XXX
+ SG_ LngSsv_tg1_ms : 7|32@0- (0.277778,0) [0|0] "m/s" Vector__XXX
+ SG_ LatSsv_tg1_ms : 39|32@0- (0.277778,0) [0|0] "m/s" Vector__XXX
+ SG_ LatSsv_tg1_Knots : 39|32@0- (0.539957,0) [0|0] "Knots" Vector__XXX
+ SG_ LatSsv_tg1_mph : 39|32@0- (0.621371,0) [0|0] "mph" Vector__XXX
+ SG_ LatSsv_tg1_kmh : 39|32@0- (1,0) [0|0] "km/h" Vector__XXX
+
+BO_ 779 ADAS_Target_1_0x30B: 8 Vector__XXX
+ SG_ LatRsv_tg1 : 39|32@0- (1,0) [0|0] "Metres" Vector__XXX
+ SG_ LngRsv_tg1 : 7|32@0- (1,0) [0|0] "Metres" Vector__XXX
+
+BO_ 778 ADAS_Target_1_0x30A: 8 Vector__XXX
+ SG_ RelSpd_tg1_ms : 39|32@0- (0.277778,0) [0|0] "m/s" Vector__XXX
+ SG_ RelSpd_tg1_Knots : 39|32@0- (0.539957,0) [0|0] "Knots" Vector__XXX
+ SG_ RelSpd_tg1_mph : 39|32@0- (0.621371,0) [0|0] "mph" Vector__XXX
+ SG_ RelSpd_tg1_kmh : 39|32@0- (1,0) [0|0] "km/h" Vector__XXX
+ SG_ Range_tg1 : 7|32@0- (1,0) [0|0] "Metres" Vector__XXX
+
+BO_ 804 VBOX3i_0x324: 8 Vector__XXX
+ SG_ Firmware_Version_Build : 55|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Firmware_Version_Minor : 47|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Firmware_Version_Major : 39|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 803 VBOX3i_0x323: 8 Vector__XXX
+ SG_ Kalman_Filter_Pitch_Angle : 39|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Kalman_Filter_Roll_Angle : 23|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Kalman_Filter_Heading : 7|16@0+ (0.01,0) [0|0] "Degrees" Vector__XXX
+
+BO_ 802 VBOX3i_0x322: 8 Vector__XXX
+ SG_ Trigger_Event_UTC_Part_2 : 39|32@0+ (1,0) [0|0] "Nanoseconds" Vector__XXX
+ SG_ Trigger_Event_UTC_Part_1 : 7|32@0+ (1,0) [0|0] "Milliseconds" Vector__XXX
+
+BO_ 788 VBOX3i_0x314: 8 Vector__XXX
+ SG_ Robot_Nav_Satellites : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Robot_Nav_True_Heading_2 : 55|16@0+ (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Robot_Nav_Time_Since_Midnight : 31|24@0+ (0.01,0) [0|0] "Seconds" Vector__XXX
+ SG_ Slip_Angle_COG : 7|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+
+BO_ 787 VBOX3i_0x313: 8 Vector__XXX
+ SG_ Slip_Angle_Rear_Right : 55|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Slip_Angle_Rear_Left : 39|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Slip_Angle_Front_Right : 23|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Slip_Angle_Front_Left : 7|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+
+BO_ 777 VBOX3i_0x309: 8 Vector__XXX
+ SG_ Robot_Nav_Speed_ms : 55|16@0+ (0.005144444,0) [0|0] "m/s" Vector__XXX
+ SG_ Robot_Nav_Speed_mph : 55|16@0+ (0.0115078,0) [0|0] "mph" Vector__XXX
+ SG_ Robot_Nav_Speed_kmh : 55|16@0+ (0.01852,0) [0|0] "km/h" Vector__XXX
+ SG_ Robot_Nav_Speed_Knots : 55|16@0+ (0.01,0) [0|0] "Knots" Vector__XXX
+ SG_ Position_Longitude_48bit : 7|48@0- (1E-07,0) [0|0] "Minutes" Vector__XXX
+
+BO_ 776 VBOX3i_0x308: 8 Vector__XXX
+ SG_ Kalman_Filter_Status : 51|12@0+ (1,0) [0|0] "Status" Vector__XXX
+ SG_ Position_Latitude_48bit : 7|48@0- (1E-07,0) [0|0] "Minutes" Vector__XXX
+
+BO_ 775 VBOX3i_0x307: 8 Vector__XXX
+ SG_ Longitudinal_Velocity_mph : 55|16@0- (0.006213712,0) [0|0] "mph" Vector__XXX
+ SG_ Longitudinal_Velocity_Knots : 55|16@0- (0.005399568,0) [0|0] "Knots" Vector__XXX
+ SG_ Longitudinal_Velocity_ms : 55|16@0- (0.002777778,0) [0|0] "m/s" Vector__XXX
+ SG_ Lateral_Velocity_ms : 7|16@0- (0.002777778,0) [0|0] "m/s" Vector__XXX
+ SG_ Lateral_Velocity_Knots : 7|16@0- (0.005399568,0) [0|0] "Knots" Vector__XXX
+ SG_ Lateral_Velocity_mph : 7|16@0- (0.006213712,0) [0|0] "mph" Vector__XXX
+ SG_ Longitudinal_Velocity_kmh : 55|16@0- (0.01,0) [0|0] "km/h" Vector__XXX
+ SG_ Roll_Angle : 39|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Yaw_Rate : 23|16@0- (0.01,0) [0|0] "Degrees/s" Vector__XXX
+ SG_ Lateral_Velocity_kmh : 7|16@0- (0.01,0) [0|0] "km/h" Vector__XXX
+
+BO_ 774 VBOX3i_0x306: 8 Vector__XXX
+ SG_ Speed_Quality_ms : 7|16@0- (0.002777778,0) [0|0] "m/s" Vector__XXX
+ SG_ Speed_Quality_mph : 7|16@0- (0.006213712,0) [0|0] "mph" Vector__XXX
+ SG_ Speed_Quality_Knots : 7|16@0- (0.005399568,0) [0|0] "Knots" Vector__XXX
+ SG_ Pitch_Angle : 55|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Slip_Angle : 39|16@0- (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ True_Heading : 23|16@0+ (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Speed_Quality_kmh : 7|16@0- (0.01,0) [0|0] "km/h" Vector__XXX
+
+BO_ 773 VBOX3i_0x305: 8 Vector__XXX
+ SG_ Trigger_Speed_ms : 55|16@0+ (0.005144444,0) [0|0] "m/s" Vector__XXX
+ SG_ Trigger_Speed_mph : 55|16@0+ (0.0115078,0) [0|0] "mph" Vector__XXX
+ SG_ Trigger_Speed_kmh : 55|16@0+ (0.01852,0) [0|0] "km/h" Vector__XXX
+ SG_ Trigger_Speed_Knots : 55|16@0+ (1,0) [0|0] "Knots" Vector__XXX
+ SG_ Trigger_Time : 39|16@0+ (0.01,0) [0|0] "Seconds" Vector__XXX
+ SG_ Distance : 7|32@0+ (7.8125E-05,0) [0|0] "Metres" Vector__XXX
+
+BO_ 772 VBOX3i_0x304: 8 Vector__XXX
+ SG_ Lateral_Acceleration_ms2 : 55|16@0- (0.0980665,0) [0|0] "m/s2" Vector__XXX
+ SG_ Longitudinal_Acceleration_ms2 : 39|16@0- (0.0980665,0) [0|0] "m/s2" Vector__XXX
+ SG_ Lateral_Acceleration_g : 55|16@0- (0.01,0) [0|0] "g" Vector__XXX
+ SG_ Longitudinal_Acceleration_g : 39|16@0- (0.01,0) [0|0] "g" Vector__XXX
+ SG_ Trigger_Distance : 7|32@0+ (7.8125E-05,0) [0|0] "Metres" Vector__XXX
+
+BO_ 771 VBOX3i_0x303: 8 Vector__XXX
+ SG_ Vertical_Velocity_mph : 31|16@0- (0.02236936,0) [0|0] "mph" Vector__XXX
+ SG_ Vertical_Velocity_kmh : 31|16@0- (0.036,0) [0|0] "km/h" Vector__XXX
+ SG_ Vertical_Velocity_Knots : 31|16@0- (0.01943844,0) [0|0] "Knots" Vector__XXX
+ SG_ Logging_Status : 52|1@0+ (1,0) [0|0] "On/Off" Vector__XXX
+ SG_ Dual_Lock : 58|1@0+ (1,0) [0|0] "On/Off" Vector__XXX
+ SG_ DGPS : 61|1@0+ (1,0) [0|0] "On/Off" Vector__XXX
+ SG_ Brake_Trigger : 60|1@0+ (1,0) [0|0] "On/Off" Vector__XXX
+ SG_ Vertical_Velocity_ms : 31|16@0- (0.01,0) [0|0] "m/s" Vector__XXX
+ SG_ Altitude : 7|24@0- (0.01,0) [0|0] "Metres" Vector__XXX
+
+BO_ 770 VBOX3i_0x302: 8 Vector__XXX
+ SG_ Speed_ms : 39|16@0+ (0.00514444,0) [0|0] "m/s" Vector__XXX
+ SG_ Speed_mph : 39|16@0+ (0.0115078,0) [0|0] "mph" Vector__XXX
+ SG_ Speed_kmh : 39|16@0+ (0.01852,0) [0|0] "km/h" Vector__XXX
+ SG_ Heading : 55|16@0+ (0.01,0) [0|0] "Degrees" Vector__XXX
+ SG_ Speed_Knots : 39|16@0+ (0.01,0) [0|0] "Knots" Vector__XXX
+ SG_ Position_Longitude : 7|32@0- (1E-05,0) [0|0] "Minutes" Vector__XXX
+
+BO_ 769 VBOX3i_0x301: 8 Vector__XXX
+ SG_ Position_Latitude : 39|32@0- (1E-05,0) [0|0] "Minutes" Vector__XXX
+ SG_ Time_Since_Midnight_UTC : 15|24@0+ (0.01,0) [0|0] "Seconds" Vector__XXX
+ SG_ Satellites : 7|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 805 ADAS_Target_1_0x325: 8 Vector__XXX
+ SG_ LngRref_tg1 : 7|32@0- (1,0) [0|0] "Metres" Vector__XXX
+
+BO_ 806 ADAS_Target_2_0x326: 8 Vector__XXX
+ SG_ LngRref_tg2 : 7|32@0- (1,0) [0|0] "Metres" Vector__XXX
+
+
+
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "BusType" "CAN";
+SIG_VALTYPE_ 801 YawRat_tg2 : 1;
+SIG_VALTYPE_ 800 Lngdif_tg2 : 1;
+SIG_VALTYPE_ 800 Latdif_tg2 : 1;
+SIG_VALTYPE_ 799 T2Ctg_tg2 : 1;
+SIG_VALTYPE_ 799 SepTim_tg2 : 1;
+SIG_VALTYPE_ 798 Accel_tg2_ms2 : 1;
+SIG_VALTYPE_ 798 Accel_tg2_g : 1;
+SIG_VALTYPE_ 798 LatRref_tg2 : 1;
+SIG_VALTYPE_ 797 T2C2sv_tg2 : 1;
+SIG_VALTYPE_ 797 Spd_tg2_Knots : 1;
+SIG_VALTYPE_ 797 Spd_tg2_mph : 1;
+SIG_VALTYPE_ 797 Spd_tg2_ms : 1;
+SIG_VALTYPE_ 797 Spd_tg2_kmh : 1;
+SIG_VALTYPE_ 796 T2Csv_tg2 : 1;
+SIG_VALTYPE_ 795 LatRtg_tg2 : 1;
+SIG_VALTYPE_ 795 LngRtg_tg2 : 1;
+SIG_VALTYPE_ 794 Angle_tg2 : 1;
+SIG_VALTYPE_ 793 LatSsv_tg2_Knots : 1;
+SIG_VALTYPE_ 793 LatSsv_tg2_mph : 1;
+SIG_VALTYPE_ 793 LatSsv_tg2_ms : 1;
+SIG_VALTYPE_ 793 LatSsv_tg2_kmh : 1;
+SIG_VALTYPE_ 793 LngSsv_tg2_Knots : 1;
+SIG_VALTYPE_ 793 LngSsv_tg2_mph : 1;
+SIG_VALTYPE_ 793 LngSsv_tg2_ms : 1;
+SIG_VALTYPE_ 793 LngSsv_tg2_kmh : 1;
+SIG_VALTYPE_ 792 LatRsv_tg2 : 1;
+SIG_VALTYPE_ 792 LngRsv_tg2 : 1;
+SIG_VALTYPE_ 791 RelSpd_tg2_Knots : 1;
+SIG_VALTYPE_ 791 RelSpd_tg2_mph : 1;
+SIG_VALTYPE_ 791 RelSpd_tg2_ms : 1;
+SIG_VALTYPE_ 791 RelSpd_tg2_kmh : 1;
+SIG_VALTYPE_ 791 Range_tg2 : 1;
+SIG_VALTYPE_ 790 YawRat_tg1 : 1;
+SIG_VALTYPE_ 789 Lngdif_tg1 : 1;
+SIG_VALTYPE_ 789 Latdif_tg1 : 1;
+SIG_VALTYPE_ 786 T2Ctg_tg1 : 1;
+SIG_VALTYPE_ 786 SepTim_tg1 : 1;
+SIG_VALTYPE_ 785 Accel_tg1_ms2 : 1;
+SIG_VALTYPE_ 785 Accel_tg1_g : 1;
+SIG_VALTYPE_ 785 LatRref_tg1 : 1;
+SIG_VALTYPE_ 784 Spd_tg1_ms : 1;
+SIG_VALTYPE_ 784 T2C2sv_tg1 : 1;
+SIG_VALTYPE_ 784 Spd_tg1_Knots : 1;
+SIG_VALTYPE_ 784 Spd_tg1_mph : 1;
+SIG_VALTYPE_ 784 Spd_tg1_kmh : 1;
+SIG_VALTYPE_ 783 T2Csv_tg1 : 1;
+SIG_VALTYPE_ 782 LngRtg_tg1 : 1;
+SIG_VALTYPE_ 782 LatRtg_tg1 : 1;
+SIG_VALTYPE_ 781 Angle_tg1 : 1;
+SIG_VALTYPE_ 780 LngSsv_tg1_kmh : 1;
+SIG_VALTYPE_ 780 LngSsv_tg1_Knots : 1;
+SIG_VALTYPE_ 780 LngSsv_tg1_mph : 1;
+SIG_VALTYPE_ 780 LngSsv_tg1_ms : 1;
+SIG_VALTYPE_ 780 LatSsv_tg1_ms : 1;
+SIG_VALTYPE_ 780 LatSsv_tg1_Knots : 1;
+SIG_VALTYPE_ 780 LatSsv_tg1_mph : 1;
+SIG_VALTYPE_ 780 LatSsv_tg1_kmh : 1;
+SIG_VALTYPE_ 779 LatRsv_tg1 : 1;
+SIG_VALTYPE_ 779 LngRsv_tg1 : 1;
+SIG_VALTYPE_ 778 RelSpd_tg1_ms : 1;
+SIG_VALTYPE_ 778 RelSpd_tg1_Knots : 1;
+SIG_VALTYPE_ 778 RelSpd_tg1_mph : 1;
+SIG_VALTYPE_ 778 RelSpd_tg1_kmh : 1;
+SIG_VALTYPE_ 778 Range_tg1 : 1;
+SIG_VALTYPE_ 805 LngRref_tg1 : 1;
+SIG_VALTYPE_ 806 LngRref_tg2 : 1;

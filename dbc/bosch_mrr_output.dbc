@@ -1,0 +1,395 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: X_Bosch_RADAR
+
+
+BO_ 1664 X_Object_Satus: 5 X_Bosch_RADAR
+ SG_ OtherFail : 34|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ HWFail : 35|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ AligmentFail : 37|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ SGUFail : 38|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ SensorDirty : 39|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_timestamp : 7|27@0+ (0.00097,0) [0|65536] "s" Vector__XXX
+
+BO_ 1663 X_Object31_A: 8 X_Bosch_RADAR
+ SG_ X_Object31_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object31_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object31_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object31_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object31_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object31_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1662 X_Object30_A: 8 X_Bosch_RADAR
+ SG_ X_Object30_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object30_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object30_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object30_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object30_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object30_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1661 X_Object29_A: 8 X_Bosch_RADAR
+ SG_ X_Object29_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object29_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object29_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object29_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object29_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object29_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1660 X_Object28_A: 8 X_Bosch_RADAR
+ SG_ X_Object28_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object28_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object28_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object28_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object28_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object28_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1659 X_Object27_A: 8 X_Bosch_RADAR
+ SG_ X_Object27_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object27_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object27_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object27_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object27_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object27_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1658 X_Object26_A: 8 X_Bosch_RADAR
+ SG_ X_Object26_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object26_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object26_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object26_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object26_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object26_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1657 X_Object25_A: 8 X_Bosch_RADAR
+ SG_ X_Object25_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object25_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object25_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object25_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object25_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object25_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1656 X_Object24_A: 8 X_Bosch_RADAR
+ SG_ X_Object24_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object24_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object24_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object24_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object24_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object24_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1655 X_Object23_A: 8 X_Bosch_RADAR
+ SG_ X_Object23_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object23_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object23_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object23_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object23_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object23_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1654 X_Object22_A: 8 X_Bosch_RADAR
+ SG_ X_Object22_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object22_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object22_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object22_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object22_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object22_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1653 X_Object21_A: 8 X_Bosch_RADAR
+ SG_ X_Object21_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object21_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object21_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object21_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object21_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object21_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1652 X_Object20_A: 8 X_Bosch_RADAR
+ SG_ X_Object20_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object20_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object20_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object20_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object20_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object20_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1651 X_Object19_A: 8 X_Bosch_RADAR
+ SG_ X_Object19_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object19_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object19_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object19_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object19_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object19_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1650 X_Object18_A: 8 X_Bosch_RADAR
+ SG_ X_Object18_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object18_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object18_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object18_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object18_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object18_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1649 X_Object17_A: 8 X_Bosch_RADAR
+ SG_ X_Object17_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object17_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object17_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object17_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object17_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object17_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1648 X_Object16_A: 8 X_Bosch_RADAR
+ SG_ X_Object16_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object16_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object16_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object16_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object16_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object16_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1647 X_Object15_A: 8 X_Bosch_RADAR
+ SG_ X_Object15_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object15_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object15_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object15_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object15_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object15_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1646 X_Object14_A: 8 X_Bosch_RADAR
+ SG_ X_Object14_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object14_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object14_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object14_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object14_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object14_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1645 X_Object13_A: 8 X_Bosch_RADAR
+ SG_ X_Object13_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object13_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object13_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object13_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object13_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object13_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1644 X_Object12_A: 8 X_Bosch_RADAR
+ SG_ X_Object12_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object12_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object12_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object12_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object12_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object12_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1643 X_Object11_A: 8 X_Bosch_RADAR
+ SG_ X_Object11_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object11_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object11_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object11_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object11_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object11_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1642 X_Object10_A: 8 X_Bosch_RADAR
+ SG_ X_Object10_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object10_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object10_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object10_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object10_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object10_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1641 X_Object09_A: 8 X_Bosch_RADAR
+ SG_ X_Object09_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object09_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object09_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object09_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object09_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object09_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1640 X_Object08_A: 8 X_Bosch_RADAR
+ SG_ X_Object08_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object08_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object08_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object08_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object08_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object08_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1639 X_Object07_A: 8 X_Bosch_RADAR
+ SG_ X_Object07_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object07_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object07_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object07_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object07_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object07_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1638 X_Object06_A: 8 X_Bosch_RADAR
+ SG_ X_Object06_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object06_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object06_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object06_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object06_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object06_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1637 X_Object05_A: 8 X_Bosch_RADAR
+ SG_ X_Object05_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object05_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object05_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object05_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object05_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object05_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1636 X_Object04_A: 8 X_Bosch_RADAR
+ SG_ X_Object04_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object04_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object04_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object04_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object04_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object04_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1635 X_Object03_A: 8 X_Bosch_RADAR
+ SG_ X_Object03_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object03_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object03_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object03_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object03_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object03_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1634 X_Object02_A: 8 X_Bosch_RADAR
+ SG_ X_Object02_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object02_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object02_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object02_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object02_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object02_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1633 X_Object01_A: 8 X_Bosch_RADAR
+ SG_ X_Object01_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object01_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object01_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object01_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object01_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object01_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+BO_ 1632 X_Object00_A: 8 X_Bosch_RADAR
+ SG_ X_Object00_wObstacle : 9|5@0+ (0.03125,0) [0|0.96875] "" Vector__XXX
+ SG_ X_Object00_wExist : 15|6@0+ (0.015625,0) [0|0.984375] "" Vector__XXX
+ SG_ X_Object00_Vx : 55|12@0+ (0.0625,-128) [-128|127] "m/s" Vector__XXX
+ SG_ X_Object00_ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ X_Object00_dy : 39|14@0+ (0.015625,-128) [-128|127] "m" Vector__XXX
+ SG_ X_Object00_dx : 20|12@0+ (0.0625,-128) [-128|127] "m" Vector__XXX
+
+
+
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "cyclic","spontan","NoMsgSendType";
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "GenMsgCycleTime" 100;
+BA_DEF_DEF_  "GenMsgSendType" "cyclic";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_ "BusType" "CAN";
+BA_ "GenMsgCycleTime" BO_ 1664 100;
+BA_ "GenMsgSendType" BO_ 1664 0;
+BA_ "GenMsgSendType" BO_ 1663 0;
+BA_ "GenMsgCycleTime" BO_ 1663 100;
+BA_ "GenMsgSendType" BO_ 1662 0;
+BA_ "GenMsgCycleTime" BO_ 1662 100;
+BA_ "GenMsgSendType" BO_ 1661 0;
+BA_ "GenMsgCycleTime" BO_ 1661 100;
+BA_ "GenMsgSendType" BO_ 1660 0;
+BA_ "GenMsgCycleTime" BO_ 1660 100;
+BA_ "GenMsgSendType" BO_ 1659 0;
+BA_ "GenMsgCycleTime" BO_ 1659 100;
+BA_ "GenMsgSendType" BO_ 1658 0;
+BA_ "GenMsgCycleTime" BO_ 1658 100;
+BA_ "GenMsgSendType" BO_ 1657 0;
+BA_ "GenMsgCycleTime" BO_ 1657 100;
+BA_ "GenMsgSendType" BO_ 1656 0;
+BA_ "GenMsgCycleTime" BO_ 1656 100;
+BA_ "GenMsgSendType" BO_ 1655 0;
+BA_ "GenMsgCycleTime" BO_ 1655 100;
+BA_ "GenMsgSendType" BO_ 1654 0;
+BA_ "GenMsgCycleTime" BO_ 1654 100;
+BA_ "GenMsgSendType" BO_ 1653 0;
+BA_ "GenMsgCycleTime" BO_ 1653 100;
+BA_ "GenMsgSendType" BO_ 1652 0;
+BA_ "GenMsgCycleTime" BO_ 1652 100;
+BA_ "GenMsgSendType" BO_ 1651 0;
+BA_ "GenMsgCycleTime" BO_ 1651 100;
+BA_ "GenMsgSendType" BO_ 1650 0;
+BA_ "GenMsgCycleTime" BO_ 1650 100;
+BA_ "GenMsgSendType" BO_ 1649 0;
+BA_ "GenMsgCycleTime" BO_ 1649 100;
+BA_ "GenMsgSendType" BO_ 1648 0;
+BA_ "GenMsgCycleTime" BO_ 1648 100;
+BA_ "GenMsgSendType" BO_ 1647 0;
+BA_ "GenMsgCycleTime" BO_ 1647 100;
+BA_ "GenMsgSendType" BO_ 1646 0;
+BA_ "GenMsgCycleTime" BO_ 1646 100;
+BA_ "GenMsgSendType" BO_ 1645 0;
+BA_ "GenMsgCycleTime" BO_ 1645 100;
+BA_ "GenMsgSendType" BO_ 1644 0;
+BA_ "GenMsgCycleTime" BO_ 1644 100;
+BA_ "GenMsgSendType" BO_ 1643 0;
+BA_ "GenMsgCycleTime" BO_ 1643 100;
+BA_ "GenMsgSendType" BO_ 1642 0;
+BA_ "GenMsgCycleTime" BO_ 1642 100;
+BA_ "GenMsgSendType" BO_ 1641 0;
+BA_ "GenMsgCycleTime" BO_ 1641 100;
+BA_ "GenMsgSendType" BO_ 1640 0;
+BA_ "GenMsgCycleTime" BO_ 1640 100;
+BA_ "GenMsgSendType" BO_ 1639 0;
+BA_ "GenMsgCycleTime" BO_ 1639 100;
+BA_ "GenMsgSendType" BO_ 1638 0;
+BA_ "GenMsgCycleTime" BO_ 1638 100;
+BA_ "GenMsgSendType" BO_ 1637 0;
+BA_ "GenMsgCycleTime" BO_ 1637 100;
+BA_ "GenMsgSendType" BO_ 1636 0;
+BA_ "GenMsgCycleTime" BO_ 1636 100;
+BA_ "GenMsgSendType" BO_ 1635 0;
+BA_ "GenMsgCycleTime" BO_ 1635 100;
+BA_ "GenMsgSendType" BO_ 1634 0;
+BA_ "GenMsgCycleTime" BO_ 1634 100;
+BA_ "GenMsgSendType" BO_ 1633 0;
+BA_ "GenMsgCycleTime" BO_ 1633 100;
+BA_ "GenMsgSendType" BO_ 1632 0;
+BA_ "GenMsgCycleTime" BO_ 1632 100;
+VAL_ 1664 OtherFail 1 "FAIL" 0 "NO_FAIL" ;
+VAL_ 1664 HWFail 1 "FAIL" 0 "NO_FAIL" ;
+VAL_ 1664 AligmentFail 2 "ALIGNMENT_NOT_OK" 1 "ALIGNMENT_NEVER_DONE" 0 "NO_FAIL" ;
+VAL_ 1664 SGUFail 1 "failure" 0 "no failure" ;
+VAL_ 1664 SensorDirty 1 "blindness" 0 "no blindness" ;
+

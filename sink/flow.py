@@ -39,6 +39,7 @@ def convert(data):
     if isinstance(data, set):    return set(map(convert, data))
     return data
 
+
 class TcpSink(object):
     def __init__(self, ip, port, msg_queue, sync_size=8):
         self.ip = ip

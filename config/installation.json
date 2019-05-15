@@ -1,0 +1,54 @@
+{
+  "video":{
+    "height": 1.18,
+    "lat_offset": 0.3,
+    "lon_offset": -1.64,
+    "yaw": 2.8,
+    "pitch": 0.0,
+    "roll": 2.0,
+    "fu": 1458.0,
+    "fv": 1458.0,
+    "cu": 640.0,
+    "cv": 360.0
+  },
+  "esr":{
+    "height": 0.45,
+    "lat_offset": 0.3,
+    "lon_offset": 0.0,
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+  },
+  "lmr":{
+    "height": 0.45,
+    "lat_offset": -0.3,
+    "lon_offset": 0.0,
+    "yaw": -1.0,
+    "pitch": 0.0,
+    "roll": 0.0
+  },
+  "hmb":{
+    "height": 0.45,
+    "lat_offset": -0.3,
+    "lon_offset": 0.0,
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+  },
+  "ifv300":{
+    "height": 1.18,
+    "lat_offset": 0.0,
+    "lon_offset": -1.64,
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+  },
+  "x1":{
+    "height": 1.18,
+    "lat_offset": 0.0,
+    "lon_offset": -1.64,
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+  }
+}
