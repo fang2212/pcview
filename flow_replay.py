@@ -23,9 +23,11 @@ from player import FlowPlayer, BaseDraw
 from sink import FlowReader 
 from recorder import VideoRecorder, TextRecorder
 
+
 def get_data_str():
     FORMAT = '%Y%m%d%H%M%S'
     return datetime.now().strftime(FORMAT)
+
 
 def main():
     reader = FlowReader(r'E:\temp\lanebug0325')
