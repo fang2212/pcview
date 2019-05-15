@@ -74,6 +74,9 @@ class PCDraw(Process):
         if self.file_cfg['video']:
             video_recorder = VideoRecorder(self.save_path, fps=15)
             video_recorder.set_writer(get_date_str())
+        if self.file_cfg['origin']:
+            origin_recorder = VideoRecorder(self.save_path, fps=15)
+            origin_recorder.set_writer('origin_'+get_date_str())
 
         fps_cnt = FPSCnt(20, 20)
         cnt = 0
@@ -94,9 +97,8 @@ class PCDraw(Process):
                 else:
                     image = mess['camera']['image']
 
-                cnt += 1
+                
                 fps_cnt.inc()
-
                 frame_id = mess['frame_id']
                 mess['env'] = {
                     'fps': fps_cnt.fps
@@ -109,7 +111,12 @@ class PCDraw(Process):
                         can_data.update(can_cache)
                     mess['can'] = can_data
 
-                if 'pedestrians' in mess or 'ldwparams' in mess or 'vehicle_warning' in mess or 'tsr_warning' in mess:
+                if self.file_cfg['origin']:
+                    origin_recorder.write(image)
+
+                mess_len = len(mess.keys())
+                if mess_len>3:
+                    cnt += 1
                     try:
                             player.draw(mess, image)
                     except Exception as err:
@@ -131,10 +138,7 @@ class PCDraw(Process):
                     if 'camera' in mess:
                         # del mess['camera']['image']
                         mess['camera'].pop('image', None)
-                    '''
-                    print('frame_id', frame_id)
-                    print(mess)
-                    '''
+
                     if self.file_cfg['log']:
                         text_recorder.write(json.dumps(mess)+'\n')
                     
@@ -142,6 +146,9 @@ class PCDraw(Process):
                         if self.file_cfg['video']:
                             video_recorder.release()
                             video_recorder.set_writer(get_date_str())
+                        if self.file_cfg['origin']:
+                            origin_recorder.release()
+                            origin_recorder.set_writer('origin_'+get_date_str())
                         if self.file_cfg['log']:
                             text_recorder.release()
                             text_recorder.set_writer(get_date_str())
@@ -152,6 +159,7 @@ class PCDraw(Process):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--video", help="是否保存视频[0,1]，默认保存", type=str)
+    parser.add_argument("--origin", help="是否保存原始视频[0,1]，默认不保存", type=str)
     parser.add_argument("--log", help="是否保存日志[0,1],默认保存", type=str)
     parser.add_argument("--path", help="保存地址", type=str)
     parser.add_argument("--ip", help="msg_fd地址", type=str)
@@ -171,6 +179,8 @@ if __name__ == '__main__':
         file_cfg['video'] = 0
     if args.video:
         file_cfg['video'] = int(args.video)
+    if args.origin:
+        file_cfg['origin'] = int(args.origin)
     if args.ip:
         file_cfg["ip"] = args.ip
     if args.log:

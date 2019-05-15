@@ -1,9 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Name=PCVIEW-GRAY
-Exec=sh /home/minieye/env/dist/assets/desktop/pcview-gray.sh
-Icon=/home/minieye/env/dist/assets/src/pcview.png
-Info="pcview"
-Terminal=false
-Type=Application
-StartupNotify=true

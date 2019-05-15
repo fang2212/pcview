@@ -20,7 +20,61 @@ pcview-client是一个实时显示车道线，车辆等ADAS算法结果及相关
 . *采集器功能*
 ** 采集传感器数据,格式同m3采集器,包含时间戳和数值[plan]
 
-:numbered:
+== 项目说明
+=== lib列表
+==== easy_can
+* **功能** can设备驱动，兼容串口can和ecan
+* **负责人** zzp
+
+==== parsers
+* **功能** can数据解析,手写解析或者使用dbc,将can消息转换成公司定义的消息格式
+* **负责人** cfl
+
+==== player
+* **功能** opencv绘图
+* **负责人** zzp
+
+==== recorder
+* **功能** 数据存储,包含图像,视频,日志
+* **负责人** zzp
+
+=== app列表
+==== flow_view.py
+* **功能** 内部流图版本pcv
+
+==== xilinx_view.py
+* **功能** 赛灵思版本，没有tsr，有俯视图
+
+==== cv22_view.py
+* **功能** 接收cv22图像，保存图像
+
+==== x1d_view.py
+* **功能**  x1d版本，720*480分辨率，车道线字段为lane_warning_res
+
+==== aeb_view.py
+* **功能** aeb版本
+
+=== tools
+==== send_data.py
+* **功能** 模拟设备发送数据，老架构
+
+==== send_flow_data.py
+* **功能** 模拟设备发送数据，数据源为pcv保存的log和原始视频，新架构
+
+==== can_up.sh
+* **功能** 挂载ecan
+
+==== changeIp.sh
+* **功能** 修改电脑ip
+
+==== chmod-usb.sh
+* **功能** 修改串口can的端口权限
+
+=== others
+==== script
+* 打包发布脚本
+
+==== dbc
 
 == changlog
 * release1109
