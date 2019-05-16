@@ -9,8 +9,8 @@ class Player(object):
     def draw_front_camera_meas(self, img, item, color):
         rect = item['bounding_rect']
         x, y, w, h = rect['x'], rect['y'], rect['width'], rect['height']
-        ui.BaseDraw.draw_alpha_rect(img, (x, y, w, h), 0.5, color)
-        ui.BaseDraw.draw_text(img, str(item['id']), (x, y - 5), 0.5, color, 1)
+        ui.BaseDraw.draw_alpha_rect(img, (x, y, w, h), 0.8, color)
+        ui.BaseDraw.draw_text(img, str(item['id']), (x, y - 5), 0.8, color, 1)
         if item['cipv']:
             ui.BaseDraw.draw_rect_corn(img, (x, y), (x + w, y + h), ui.CVColor.Blue)
 

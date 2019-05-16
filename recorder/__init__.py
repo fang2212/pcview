@@ -109,7 +109,7 @@ class TextRecorder(Recorder):
     def write(self, data):
         self._writer.write(data)
         self._cnt += 1
-        if self._cnt % 100 == 0:
+        if self._cnt % 2 == 0:
             self._writer.flush()
 
     def release(self):

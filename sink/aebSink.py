@@ -2,6 +2,8 @@ from multiprocessing import Queue, Process
 import asyncio
 import msgpack
 import aiohttp
+from recorder import TextRecorder, get_data_str
+import json
 
 
 def convert(data):
@@ -28,8 +30,12 @@ class LibFlowSink(Process):
         self.mess_queue = mess_queue
         self.url = url
         self.topic = topic
+        self.recorder = TextRecorder("./aeb_log")
+
 
     def run(self):
+        self.recorder.set_writer(get_data_str())
+
         async def ws_recv(url, topic, mess_queue):
             session = aiohttp.ClientSession()
             async with session.ws_connect(url) as ws:
@@ -44,6 +50,7 @@ class LibFlowSink(Process):
                 async for msg in ws:
                     data = msgpack.unpackb(msg.data)
                     data = convert(msgpack.unpackb(data[b'data']))
+                    self.recorder.write(str(data) + "\n")
                     mess_queue.put(data)
                     if msg.type in (aiohttp.WSMsgType.CLOSED,
                                     aiohttp.WSMsgType.ERROR):
@@ -55,17 +62,21 @@ class LibFlowSink(Process):
 
 class Sync(object):
 
-    def __init__(self, mess_queue, max_cathe_size=10):
+    def __init__(self, mess_queue, max_cathe_size=5):
         self.queue = mess_queue
         self.cathe = {}
+        self.imgs = []
         self.max_cathe_size = max_cathe_size
 
     def pop_simple(self):
         if not self.queue.empty():
             data = self.queue.get()
-            if data['img_frame_id'] not in self.cathe:
-                self.cathe[data['img_frame_id']] = []
-            self.cathe[data['img_frame_id']].append(data)
+            if 'img_frame_id' in data:
+                if data['img_frame_id'] not in self.cathe:
+                    self.cathe[data['img_frame_id']] = []
+                self.cathe[data['img_frame_id']].append(data)
+            else:
+                self.imgs.append(data)
 
         if len(self.cathe) < self.max_cathe_size:
             return []
@@ -77,8 +88,9 @@ class Sync(object):
                 else:
                     data = self.cathe[mkey]
                     self.cathe.pop(mkey)
-                    return data
-
+                    img = self.imgs[0]
+                    self.imgs.pop(0)
+                    return img, data
 
 
 
