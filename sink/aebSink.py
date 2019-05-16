@@ -65,7 +65,6 @@ class Sync(object):
     def __init__(self, mess_queue, max_cathe_size=5):
         self.queue = mess_queue
         self.cathe = {}
-        self.imgs = []
         self.max_cathe_size = max_cathe_size
 
     def pop_simple(self):
@@ -75,24 +74,24 @@ class Sync(object):
                 if data['img_frame_id'] not in self.cathe:
                     self.cathe[data['img_frame_id']] = []
                 self.cathe[data['img_frame_id']].append(data)
-            else:
-                self.imgs.append(data)
 
         if len(self.cathe) < self.max_cathe_size:
-            return []
+            return None
         else:
             while len(self.cathe):
                 mkey = min(self.cathe)
-                if len(self.cathe[mkey]) != 2:
-                    self.cathe.pop(mkey)
-                else:
-                    data = self.cathe[mkey]
-                    self.cathe.pop(mkey)
-                    img = self.imgs[0]
-                    self.imgs.pop(0)
-                    return img, data
-
-
-
-
-
+                data_list = self.cathe[mkey]
+                data = {'camera': {}, 'mea': {}, 'fusion': {}}
+                flag = 0
+                for item in data_list:
+                    if 'image' in item:
+                        data['camera'] = item
+                        flag = 1
+                    if 'camera_meas' in item or 'radar_meas' in item:
+                        data['mea'] = item
+                    if 'fusion_tracks' in item:
+                        data['fusion'] = item
+                self.cathe.pop(mkey)
+                if flag:
+                    return data
+            return None
