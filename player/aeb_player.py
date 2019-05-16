@@ -33,12 +33,19 @@ class Player(object):
         ui.BaseDraw.draw_circle(img, (ix, iy), color=color)
         ui.BaseDraw.draw_text(img, str(id), (ix, iy - 5), 0.5, color, 1)
 
+    def draw_ipm_background(self, ipm):
+        for x in range(10, 210, 10):
+            ix, iy = transform.trans_gnd2ipm(x, 0)
+            ui.BaseDraw.draw_line(ipm, (10, iy), (500, iy), ui.CVColor.Magenta)
+            ui.BaseDraw.draw_text(ipm, "%dm"%x, (0, iy), 0.3, ui.CVColor.Magenta, 1)
+
     def draw(self, img, ipm, data):
         mea, fusion = data
         if 'new_tracks' not in fusion:
             mea, fusion = fusion, mea
         if 'new_tracks' not in fusion:
             return
+        self.draw_ipm_background(ipm)
 
         speed = 0
         if "ego_car" in mea and mea['ego_car']['is_speed_valid']:

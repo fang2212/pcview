@@ -33,7 +33,7 @@ def main(aeb_sink, mess_queue):
         if not data_list:
             continue
         ipm = np.zeros([720, 480, 3], np.uint8)
-        ipm[:, :] = [166, 166, 166]
+        ipm[:, :] = [200, 200, 200]
 
         img = np.array([[x] for x in data_list[0]['image']['data']], dtype=np.uint8)
         img = cv2.imdecode(img, cv2.IMREAD_COLOR)
@@ -52,8 +52,9 @@ if __name__ == '__main__':
     mess_queue = Queue()
 
     # 采集
-    # aeb_sink = aebSink.LibFlowSink(url, topic, mess_queue)
+    aeb_sink = aebSink.LibFlowSink(url, topic, mess_queue)
 
     # 回放
     aeb_sink = ReplaySink(mess_queue, logtxt)
+
     main(aeb_sink, mess_queue)
