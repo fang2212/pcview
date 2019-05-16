@@ -35,10 +35,10 @@ def main(aeb_sink, mess_queue):
         ipm = np.zeros([720, 480, 3], np.uint8)
         ipm[:, :] = [200, 200, 200]
 
-        img = np.array([[x] for x in data['camera']['image']['data']], dtype=np.uint8)
+        img = np.array([[x] for x in data['camera']['image']], dtype=np.uint8)
         img = cv2.imdecode(img, cv2.IMREAD_COLOR)
 
-        player.draw(img, ipm, [data['mea'], data['fusion']])
+        player.draw(img, ipm, [data['mea'], data['fusion'], data['camera']])
         # cv2.imshow(img)
         img = np.hstack((img, ipm))
         cv2.imshow("img", img)
@@ -46,7 +46,7 @@ def main(aeb_sink, mess_queue):
 
 
 if __name__ == '__main__':
-    url = "ws://127.0.0.1:1234"
+    url = "ws://192.168.0.233:24015"
     topic = "pcview"
     logtxt = "./aeb_log/20190516124844.txt"
     mess_queue = Queue()

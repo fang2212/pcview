@@ -8,7 +8,7 @@ class Player(object):
 
     def draw_front_camera_meas(self, img, item, color):
         rect = item['bounding_rect']
-        x, y, w, h = rect['x'], rect['y'], rect['width'], rect['height']
+        x, y, w, h = int(rect['x']), int(rect['y']), int(rect['width']), int(rect['height'])
         ui.BaseDraw.draw_alpha_rect(img, (x, y, w, h), 0.8, color)
         ui.BaseDraw.draw_text(img, str(item['id']), (x, y - 5), 0.8, color, 1)
         if item['cipv']:
@@ -17,12 +17,14 @@ class Player(object):
     def draw_front_radar_meas(self, img, item, color):
         x, y, id = item['vertical_dist'], item['horizontal_dist'], item['id']
         ix, iy = transform.trans_gnd2raw(x, y)
+        ix, iy = int(ix), int(iy)
         ui.BaseDraw.draw_circle(img, position=(ix, iy), color=color)
         ui.BaseDraw.draw_text(img, str(id), (ix, iy - 5), 0.5, color, 1)
 
     def draw_top_camera_meas(self, img, item, color):
         x, y, id = item['vertical_dist'], item['horizontal_dist'], item['id']
         ix, iy = transform.trans_gnd2ipm(x, y)
+        ix, iy = int(ix), int(iy)
         ui.BaseDraw.draw_line(img, (ix-4, iy-4), (ix+4, iy+4), color_type=color)
         ui.BaseDraw.draw_line(img, (ix+4, iy-4), (ix-4, iy+4), color_type=color)
         ui.BaseDraw.draw_text(img, str(id), (ix, iy), 0.5, color, 1)
@@ -30,6 +32,7 @@ class Player(object):
     def draw_top_radar_meas(self, img, item, color):
         x, y, id = item['vertical_dist'], item['horizontal_dist'], item['id']
         ix, iy = transform.trans_gnd2ipm(x, y)
+        ix, iy = int(ix), int(iy)
         ui.BaseDraw.draw_circle(img, (ix, iy), color=color)
         ui.BaseDraw.draw_text(img, str(id), (ix, iy - 5), 0.5, color, 1)
 
@@ -40,13 +43,14 @@ class Player(object):
             ui.BaseDraw.draw_text(ipm, "%dm"%x, (0, iy), 0.3, ui.CVColor.Magenta, 1)
 
     def draw(self, img, ipm, data):
-        mea, fusion = data
+        mea, fusion, img_data = data
         self.draw_ipm_background(ipm)
 
         speed = 0
         if "ego_car" in mea and mea['ego_car']['is_speed_valid']:
             speed = mea['ego_car']['speed']
-
+        
+        ui.BaseDraw.draw_text(img, "frame_no:%d" % img_data['img_frame_id'], (10, 50), 0.8, ui.CVColor.Red, 1)
         if mea:
             ui.BaseDraw.draw_text(img, "speed:%.2f km/h" % speed, (10, 25), 0.8, ui.CVColor.Red, 1)
             ui.BaseDraw.draw_text(img, "frame_no:%d" % mea['img_frame_id'], (10, 50), 0.8, ui.CVColor.Red, 1)
@@ -81,10 +85,12 @@ class Player(object):
                 color = self.color_list[id % 7]
                 x, y = fusion_tracks[i]['vertical_dist'], fusion_tracks[i]['horizontal_dist']
                 ix, iy = transform.trans_gnd2raw(x, y)
+                ix, iy = int(ix), int(iy)
                 ui.BaseDraw.draw_rect(img, (ix - 5, iy - 5), (ix + 5, iy + 5), color)
                 ui.BaseDraw.draw_text(img, str(id), (ix, iy), 0.5, color, 1)
 
                 ix, iy = transform.trans_gnd2ipm(x, y)
+                ix, iy = int(ix), int(iy)
                 ui.BaseDraw.draw_rect(ipm, (ix - 5, iy - 5), (ix + 5, iy + 5), color)
                 ui.BaseDraw.draw_text(ipm, str(id), (ix, iy), 0.5, color, 1)
 
@@ -102,9 +108,11 @@ class Player(object):
         if 'gt_data' in mea:
             x, y = mea['gt_data']['vertical_dist'], mea['gt_data']['horizontal_dist']
             ix, iy = transform.trans_gnd2raw(x, y)
+            ix, iy = int(ix), int(iy)
             ui.BaseDraw.draw_line(img, (ix-10, iy), (ix+10, iy), ui.CVColor.Green)
             ui.BaseDraw.draw_line(img, (ix, iy-10), (ix, iy+10), ui.CVColor.Green)
 
             ix, iy = transform.trans_gnd2ipm(x, y)
+            ix, iy = int(ix), int(iy)
             ui.BaseDraw.draw_line(ipm, (ix - 5, iy), (ix + 5, iy), ui.CVColor.Green)
             ui.BaseDraw.draw_line(ipm, (ix, iy - 5), (ix, iy + 5), ui.CVColor.Green)

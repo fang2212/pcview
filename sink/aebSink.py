@@ -4,7 +4,8 @@ import msgpack
 import aiohttp
 from recorder import TextRecorder, get_data_str
 import json
-
+import time
+import numpy as np
 
 def convert(data):
     '''
@@ -49,7 +50,18 @@ class LibFlowSink(Process):
                 await ws.send_bytes(data)
                 async for msg in ws:
                     data = msgpack.unpackb(msg.data)
-                    data = convert(msgpack.unpackb(data[b'data']))
+                    data = msgpack.unpackb(data[b'data'])
+                    if b'image' in data:
+                        data[b'image'] = np.fromstring(data[b'image'], np.uint8).tolist()
+                    data = convert(data)
+                    s = ''
+                    if 'image' in data:
+                        s = 'image'
+                    if 'fusion_tracks' in data:
+                        s = 'fusion_tracks'
+                    if 'camera_meas' in data or 'radar_meas' in data:
+                        s = 'meas'
+                    print('---'+s, data['img_frame_id'])
                     self.recorder.write(str(data) + "\n")
                     mess_queue.put(data)
                     if msg.type in (aiohttp.WSMsgType.CLOSED,
@@ -62,7 +74,7 @@ class LibFlowSink(Process):
 
 class Sync(object):
 
-    def __init__(self, mess_queue, max_cathe_size=5):
+    def __init__(self, mess_queue, max_cathe_size=20):
         self.queue = mess_queue
         self.cathe = {}
         self.max_cathe_size = max_cathe_size
@@ -74,24 +86,24 @@ class Sync(object):
                 if data['img_frame_id'] not in self.cathe:
                     self.cathe[data['img_frame_id']] = []
                 self.cathe[data['img_frame_id']].append(data)
-
-        if len(self.cathe) < self.max_cathe_size:
-            return None
-        else:
-            while len(self.cathe):
-                mkey = min(self.cathe)
-                data_list = self.cathe[mkey]
-                data = {'camera': {}, 'mea': {}, 'fusion': {}}
+            if 'fusion_tracks' not in data:
+                return None
+            if len(self.cathe) > 0:
+                frame_id = data['img_frame_id']
+                data_list = self.cathe[frame_id]
+                res = {'camera': {}, 'mea': {}, 'fusion': {}}
                 flag = 0
                 for item in data_list:
                     if 'image' in item:
-                        data['camera'] = item
+                        res['camera'] = item
                         flag = 1
                     if 'camera_meas' in item or 'radar_meas' in item:
-                        data['mea'] = item
+                        res['mea'] = item
                     if 'fusion_tracks' in item:
-                        data['fusion'] = item
-                self.cathe.pop(mkey)
+                        res['fusion'] = item
+                if len(self.cathe) > self.max_cathe_size:
+                    mkey = min(self.cathe)
+                    self.cathe.pop(mkey)
                 if flag:
-                    return data
+                    return res
             return None
