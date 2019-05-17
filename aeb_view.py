@@ -34,7 +34,7 @@ def main(aeb_sink, mess_queue):
             continue
         ipm = np.zeros([720, 480, 3], np.uint8)
         ipm[:, :] = [200, 200, 200]
-
+        print('!!!!', data['camera']['img_frame_id'])
         img = np.array([[x] for x in data['camera']['image']], dtype=np.uint8)
         img = cv2.imdecode(img, cv2.IMREAD_COLOR)
 

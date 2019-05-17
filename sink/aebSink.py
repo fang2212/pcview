@@ -101,9 +101,13 @@ class Sync(object):
                         res['mea'] = item
                     if 'fusion_tracks' in item:
                         res['fusion'] = item
-                if len(self.cathe) > self.max_cathe_size:
-                    mkey = min(self.cathe)
-                    self.cathe.pop(mkey)
+                
                 if flag:
+                    key_list = []     
+                    for key in self.cathe:
+                        if key <= data['img_frame_id']:
+                            key_list.append(key)
+                    for key in key_list:
+                        self.cathe.pop(key)
                     return res
             return None
