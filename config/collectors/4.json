@@ -1,0 +1,16 @@
+{
+ "mac": "b8:27:eb:21:ba:29",
+ "msg_types": [
+  "can0"
+ ],
+ "debug": true,
+ "platform": "fpga",
+ "work_mode": "collector",
+ "repeater": true,
+ "can_types": {
+  "can1": [],
+  "can0": [
+   "rtk"
+  ]
+ }
+}

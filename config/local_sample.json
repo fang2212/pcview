@@ -1,0 +1,9 @@
+{
+  "log_root": "/media/nan/860evo/data/pcviewer",
+  "save": {
+    "video": true,
+    "raw": true,
+    "alert": false,
+    "log": false
+  }
+}

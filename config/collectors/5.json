@@ -1,0 +1,31 @@
+{
+ "mac": "00:0c:18:ef:ff:d0",
+ "debug": true,
+ "show": {
+  "radar": true,
+  "q3": true,
+  "lane_speed_limit": 40,
+  "tsr": true,
+  "overlook": false,
+  "color": "color",
+  "vehicle": true,
+  "lane": true,
+  "ped": true
+ },
+ "repeater": true,
+ "can_types": {
+  "can1": [
+   "x1"
+  ],
+  "can0": [
+   "ifv300"
+  ]
+ },
+ "msg_types": [
+  "can0",
+  "can1",
+  "gsensor"
+ ],
+ "platform": "fpga",
+ "work_mode": "collector"
+}

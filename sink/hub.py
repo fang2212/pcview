@@ -1,33 +1,35 @@
-from multiprocessing import Queue, Process
-from sink.pcc_sink import *
-import sys
-import websockets
-import asyncio
+from multiprocessing.dummy import Process as Thread
+from multiprocessing import Queue
+from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink
 from recorder.FileHandler import FileHandler
-import numpy as np
-import cv2
+from config.config import configs, config, bcl, local_cfg
+import time
+from net.discover import CollectorFinder
+import logging
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')  # logging.basicConfig函数对日志的输出格式及方式做相关配置
 
 
-class Hub(Process):
+class Hub(Thread):
 
     def __init__(self):
 
         # msg_types = config.msg_types
-        image_list_path = config.pic.path
 
-        Process.__init__(self)
+        Thread.__init__(self)
         # self.use_camera = True
 
         self.msg_queue = Queue()
         self.cam_queue = Queue()
         # self.sink = {}
         self.cache = {}
-
+        self.time_aligned = True
         self.msg_cnt = {}
-        msg_types = []
         self.last_res = {}
+        self.collectors = {}
 
-        finder = ColletorFinder()
+        finder = CollectorFinder()
         finder.start()
         for i in range(3):
             # try:
@@ -36,66 +38,64 @@ class Hub(Process):
             #     pass
             time.sleep(0.2)
 
+        ts0 = finder.found[list(finder.found.keys())[0]]['ts']
         print('Devices found:')
         for dev in finder.found:
             print(dev, finder.found[dev])
+
+        for dev in finder.found:
+            print(bcl.OKGR+dev+bcl.ENDC, finder.found[dev])
+            self.collectors[dev] = finder.found[dev]
+            if finder.found[dev]['ts'] - ts0 > 1.0 or finder.found[dev]['ts'] - ts0 < -1.0:
+                self.time_aligned = False
 
         print('Connecting to device(s)...')
         # print('collector0 on {}, types:'.format(config.ip), config.msg_types)
         # print('collector1 on {}, types:'.format(config2.ip), config2.msg_types)
 
-        if config.save.log or config.save.alert or config.save.video:
+        if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
             self.fileHandler = FileHandler()
             self.fileHandler.start()
             self.fileHandler.start_rec()
 
-        self.rtk_sink = RTKSink(self.msg_queue, 0, 0, 'rtk', 0, self.fileHandler)
-        self.rtk_sink.start()
-
-        if config.platform == 'fpga':
-            if len(finder.found) > 1:
-                for ip in finder.found:
-                    if finder.found[ip]['mac'] == configs[0].mac:
-                        self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200,
-                                                      msg_type='camera', fileHandler=self.fileHandler)
-                        self.camera_sink.start()
-                        msg_types += self.fpga_handle(configs[0].msg_types, self.msg_queue, ip, index=0)
-                        print('Connected #0 on {}, types:'.format(ip), configs[0].msg_types)
-                    elif finder.found[ip]['mac'] == configs[1].mac:
-                        msg_types += self.fpga_handle(configs[1].msg_types, self.msg_queue, ip, index=1)
-                        print('Connected #1 on {}, types:'.format(ip), configs[1].msg_types)
+        for ip in finder.found:
+            self.collectors[ip]['sinks'] = {}
+            if finder.found[ip]['mac'] == configs[0]['mac']:
+                self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
+                                              fileHandler=self.fileHandler)
+                self.camera_sink.start()
+                self.collectors[ip]['sinks']['video'] = self.camera_sink
+            ndev = 0
+            for idx, c in enumerate(configs):
+                if c['mac'] == finder.found[ip]['mac']:
+                    if finder.found[ip].get('type') == 'pi_node':
+                        for name in finder.found[ip]['ports']:
+                            port = finder.found[ip]['ports'][name]
+                            self.collectors[ip]['idx'] = idx
+                            pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=name)
+                            pisink.start()
+                            self.collectors[ip]['sinks'][name] = pisink
                     else:
-                        msg_types += self.fpga_handle(configs[1].msg_types, self.msg_queue, ip, index=1)
+                        self.collectors[ip]['idx'] = idx
+                        self.collectors[ip]['sinks'].update(self.fpga_handle(c, self.msg_queue, ip, index=idx))
+                    ndev += 1
+                    print('Connected dev {} on {}, types:'.format(idx, ip), configs[0]['msg_types'])
 
-            elif len(finder.found) == 1:
-                ip = list(finder.found.keys())[0]
-                self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200,
-                                              msg_type='camera', fileHandler=self.fileHandler)
-                self.camera_sink.start()
-                msg_types += self.fpga_handle(config.msg_types, self.msg_queue, ip, index=0)
-                print('Connected #0 on {}, types:'.format(ip), config.msg_types)
-            else:
-                print('no device found. use default.')
-                msg_types += self.fpga_handle(config.msg_types, self.msg_queue, config.ip, index=0)
-                self.camera_sink = CameraSink(queue=self.cam_queue, ip=config.ip, port=1200,
-                                              msg_type='camera', fileHandler=self.fileHandler)
-                self.camera_sink.start()
-            print('msg_types:', msg_types)
+        msg_types = []
+        for ip in self.collectors:
+            # print(ip, collectors[ip]['sinks'])
+            for port in self.collectors[ip]['sinks']:
+                if 'can' in port:
+                    itype = configs[self.collectors[ip]['idx']]['can_types'][port]
+                    msg_types.append(itype[0] + '.{}'.format(self.collectors[ip]['idx']))
 
-        elif config.platform == 'arm':
-            logging.debug('arm platform')
-            self.arm_handle(config.msg_types, self.msg_queue, config.ip)
+        print(msg_types)
 
-        if config.pic.use:
-            image_fp = open(image_list_path, 'r+')
-            self.image_list = image_fp.readlines()
-            image_fp.close()
+        self.msg_types = msg_types
 
-        msg_types = ['can', 'gsensor', 'rtk']
+        self.max_cache = 40
 
-        self.max_cache = len(msg_types) * 10
-
-        for msg_type in msg_types:
+        for msg_type in ['can', 'gsensor', 'rtk']:
             self.cache[msg_type] = []
             self.msg_cnt[msg_type] = {
                 'rev': 0,
@@ -103,89 +103,30 @@ class Hub(Process):
                 'fix': 0,
             }
         self.msg_cnt['frame'] = 0
+        print('hub init done')
 
-        # if not config.pic.use:
-        #     self.camera_sink = CameraSink(queue=self.cam_queue, ip=config.ip, port=1200, msg_type='camera')
-        #     self.camera_sink.start()
-
-    async def arm_flow(self, uri, msg_queue, msg_types):
-        async with websockets.connect(uri) as websocket:
-            msg = {
-                'source': 'pcview-client',
-                'topic': 'subscribe',
-                'data': 'debug.hub.*',
-            }
-            data = msgpack.packb(msg)
-            await websocket.send(data)
-            # print('msg', msg_types)
-
-            while True:
-                try:
-                    data = await websocket.recv()
-                    # print('msg1')
-                    msg = msgpack.unpackb(data, use_list=False)
-                    for msg_type in msg_types:
-                        topic = msg[b'topic'].decode('ascii')
-                        if topic == 'debug.hub.' + msg_type:
-                            data = msgpack.unpackb(msg[b'data'], use_list=False)
-                            data = convert(data)
-                            msg_queue.put((data['frame_id'], data, msg_type))
-
-                except websockets.exceptions.ConnectionClosed as err:
-                    print('Connection was closed')
-                    break
-
-    def arm_handle(self, msg_types, msg_queue, ip):
-        def msg_run(msg_queue, msg_types, ip):
-            uri = 'ws://' + ip + ':24012'
-            logging.debug('uri {}'.format(uri))
-            asyncio.get_event_loop().run_until_complete(
-                self.arm_flow(uri, msg_queue, msg_types))
-
-        msg_process = Process(target=msg_run,
-                              args=(msg_queue, msg_types, ip,))
-        msg_process.daemon = True
-        msg_process.start()
-        return msg_process
-
-    def fpga_handle(self, msg_types, msg_queue, ip, index=0):
+    def fpga_handle(self, cfg, msg_queue, ip, index=0):
+        print('fpga handle:', index, cfg)
         sink = {}
-        if 'lane' in msg_types:
-            sink['lane'] = LaneSink(queue=msg_queue, ip=ip, port=1203, msg_type='lane')
-            sink['lane'].start()
 
-        if 'vehicle' in msg_types:
-            sink['vehicle'] = VehicleSink(queue=msg_queue, ip=ip, port=1204, msg_type='vehicle')
-            sink['vehicle'].start()
+        if 'can0' in cfg['msg_types'] and len(cfg['can_types']['can0']) != 0:
+            # typestr = 'can' + '{:01d}'.format(index * 2)
+            sink['can0'] = CANSink(queue=msg_queue, ip=ip, port=1207, channel='can0', type=cfg['can_types']['can0'],
+                                   index=index, fileHandler=self.fileHandler)
+            sink['can0'].start()
 
-        if 'ped' in msg_types:
-            sink['ped'] = PedSink(queue=msg_queue, ip=ip, port=1205, msg_type='ped')
-            sink['ped'].start()
+        if 'can1' in cfg['msg_types'] and len(cfg['can_types']['can1']) != 0:
+            # typestr = 'can' + '{:01d}'.format(index * 2 + 1)
+            sink['can1'] = CANSink(queue=msg_queue, ip=ip, port=1208, channel='can1', type=cfg['can_types']['can1'],
+                                   index=index, fileHandler=self.fileHandler)
+            sink['can1'].start()
 
-        if 'tsr' in msg_types:
-            sink['tsr'] = TsrSink(queue=msg_queue, ip=ip, port=1206, msg_type='tsr')
-            sink['tsr'].start()
-
-        if 'can0' in msg_types:
-            typestr = 'can' + '{:01d}'.format(index * 2)
-            sink[typestr] = CANSink(queue=msg_queue, ip=ip, port=1207, msg_type=typestr,
-                                    type=configs[index].can_types.can0,
-                                    index=index, fileHandler=self.fileHandler)
-            sink[typestr].start()
-
-        if 'can1' in msg_types:
-            typestr = 'can' + '{:01d}'.format(index * 2 + 1)
-            sink[typestr] = CANSink(queue=msg_queue, ip=ip, port=1208, msg_type=typestr,
-                                    type=configs[index].can_types.can1,
-                                    index=index, fileHandler=self.fileHandler)
-            sink[typestr].start()
-
-        if 'gsensor' in msg_types:
-            sink['gsensor'] = GsensorSink(queue=msg_queue, ip=ip, port=1209, msg_type='gsensor',
-                                          index=index, fileHandler=self.fileHandler)
+        if 'gsensor' in cfg['msg_types']:
+            sink['gsensor'] = GsensorSink(queue=msg_queue, ip=ip, port=1209, channel='gsensor', index=index,
+                                          fileHandler=self.fileHandler)
             sink['gsensor'].start()
 
-        return [i for i in sink]
+        return sink
 
     def list_len(self):
         length = 0
@@ -216,110 +157,40 @@ class Hub(Process):
             self.msg_cnt[msg_type]['rev'] += 1
         time.sleep(0.02)
 
-    def pop_simple(self):
+    def pop_simple(self, pause=False):
         res = {}
         if not self.cam_queue.empty():
             frame_id, data, msg_type = self.cam_queue.get()
-            res['img'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
+            # fileHandler.insert_raw((data['ts'], 'camera', '{}'.format(frame_id)))
+            res['ts'] = data['ts']
+            res['img'] = data['img']
             res['frame_id'] = frame_id
-            #for key in self.last_res:
-             #   res[key] = self.last_res[key]
+            # for key in self.last_res:
+            #   res[key] = self.last_res[key]
             for key in self.cache:
+                # print(key, len(self.cache[key]))
                 if len(self.cache[key]) > 0:
-                    #self.last_res[key] = self.cache[key]
+                    # self.last_res[key] = self.cache[key]
                     res[key] = self.cache[key]
                 self.cache[key] = []
             self.msg_cnt['frame'] += 1
             return res
         if not self.msg_queue.empty():
-            frame_id, msg_data, msg_type = self.msg_queue.get()
+            id, msg_data, channel = self.msg_queue.get()
+            # print(msg_type, msg_data)
             # res[msg_type] = msg_data
             # res['frame_id'] = frame_id
+            # if len(self.cache[channel]) > 2:
+            #     return
             if isinstance(msg_data, list):
                 # print('msg data list')
-                self.cache[msg_type].extend(msg_data)
+                self.cache[channel].extend(msg_data)
             elif isinstance(msg_data, dict):
-                self.cache[msg_type].append(msg_data)
-            self.msg_cnt[msg_type]['rev'] += 1
-            self.msg_cnt[msg_type]['show'] += 1
+                self.cache[channel].append(msg_data)
+            # for channel in self.cache:
+            #     if
+            self.msg_cnt[channel]['rev'] += 1
+            self.msg_cnt[channel]['show'] += 1
 
         # return res
 
-    def pop(self):
-        res = {
-            'frame_id': None,
-            'img': None,
-            'vehicle': {},
-            'lane': {},
-            'ped': {},
-            'tsr': {},
-            'can0': {},
-            'can1': {},
-            'extra': {}
-        }
-
-        if config.pic.use:
-            while not self.all_has() and self.list_len() <= self.max_cache:
-                self.msg_async()
-            frame_id = sys.maxsize
-            for key in self.cache:
-                if self.cache[key]:
-                    temp_id = self.cache[key][0][0]
-                    # logging.debug('temp id {}'.format(temp_id))
-                    frame_id = min(temp_id, frame_id)
-
-            logging.debug('frame_id {}'.format(frame_id))
-
-            index = ((frame_id // 3) * 4 + frame_id % 3) % len(self.image_list)
-            image_path = self.image_list[index]
-            res['extra'] = {
-                'image_path': image_path
-            }
-            image_path = image_path.strip()
-            img = cv2.imread(image_path)
-            if config.show.color == 'gray':
-                img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-                img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-            res['img'] = img
-        else:
-            while True:
-                if not self.cam_queue.empty():
-                    frame_id, image_data, msg_type = self.cam_queue.get()
-                    # image = np.fromstring(image_data, dtype=np.uint8).reshape(720, 1280, 1)
-                    # image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-                    image = cv2.imdecode(np.fromstring(image_data, np.uint8), cv2.IMREAD_COLOR)
-
-                    res['img'] = image
-
-                    break
-                time.sleep(0.02)
-            logging.debug('show cam id {}'.format(frame_id))
-            # while not self.all_over(frame_id) and self.list_len() < self.max_cache:
-            self.msg_async()
-            # print('msg_async')
-        # print(res)
-        logging.debug('out')
-        res['frame_id'] = frame_id
-        logging.debug('end0 res')
-
-        for key in self.cache:
-            if key == 'can0' or key == 'can1':
-                while self.cache[key]:
-                    res[key] = self.cache[key][0][1]
-                    self.msg_cnt[key]['show'] += 1
-                    self.cache[key].pop(0)
-            while self.cache[key] and self.cache[key][0][0] <= frame_id:
-                if self.cache[key][0][0] == frame_id:
-                    res[key] = self.cache[key][0][1]
-                    self.msg_cnt[key]['show'] += 1
-                    self.cache[key].pop(0)
-                    # print(frame_id)
-                    break
-                else:
-                    self.cache[key].pop(0)
-
-        self.msg_cnt['frame'] += 1
-        # logging.debug('end res {}'.format(res))
-        logging.debug('end res ped{}'.format(res['ped']))
-        logging.debug('end res tsr{}'.format(res['tsr']))
-        return res

@@ -1,10 +1,10 @@
 import socket
-from multiprocessing.dummy import Process, Queue
+from multiprocessing.dummy import Process
 from time import sleep
 import json
 
 
-class ColletorFinder(Process):
+class CollectorFinder(Process):
     def __init__(self):
         Process.__init__(self)
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

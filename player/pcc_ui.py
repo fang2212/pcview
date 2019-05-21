@@ -1,5 +1,5 @@
 from player.ui import BaseDraw, pack, logodir, CVColor
-from config.config import configs, config
+from config.config import install, config
 import cv2
 from tools.transform import trans_gnd2raw, trans_gnd2ipm, trans_polar2rcs
 from datetime import datetime
@@ -8,7 +8,6 @@ from tools.geo import gps_bearing, gps_distance
 import numpy as np
 import logging
 import json
-
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
 logging.basicConfig(level=logging.INFO,
@@ -25,50 +24,62 @@ class Player(object):
         self.car_image = cv2.imread(pack(logodir, 'car.tif'))
         self.overlook_othercar_image = cv2.imread(pack(logodir, 'othercar.tif'))
         self.overlook_beforecar_image = cv2.imread(pack(logodir, 'before.tif'))
-        columns = [['video'],
-                   ['rtk'],
-                   configs[0].can_types.can0,
-                   configs[0].can_types.can1,
-                   configs[1].can_types.can0,
-                   configs[1].can_types.can1]
 
-        indent = 0
+        self.indent = 140
+        self.columns = {'video': {'indent': 0}}
+        self.param_bg_width = 160
+        self.ts_now = 0
+        self.rtk = {}
+
         self.start_time = datetime.now()
         self.cipv = 0
-        self.columns = {}
 
-        CVColor.indigo = (0xb5, 0x51, 0x3f)
-        CVColor.Cpurple = (0xb0, 0x27, 0x9c)
-        CVColor.bluegrey = (0x8b, 0x7D, 0x60)
-        CVColor.deeporange = (0x22, 0x57, 0xff)
-        CVColor.purple = (0xb0, 0x27, 0x9c)
-        self.color_seq = [CVColor.White, CVColor.Red, CVColor.Green, CVColor.deeporange, CVColor.purple]
+        self.color_seq = [CVColor.White, CVColor.Red, CVColor.Green, CVColor.deeporange, CVColor.purple,
+                          CVColor.Blue, CVColor.LightBlue]
+        self.color_obs = {'ifv300': CVColor.White,
+                     'esr': CVColor.Red,
+                     'lmr': CVColor.Green,
+                     'x1': CVColor.purple,
+                     'rtk': CVColor.Green,
+                     'ars': CVColor.Blue}
 
-        if config.mobile.show:
-            mobile_fp = open(config.mobile.path, 'r+')
-            self.mobile_content = json.load(mobile_fp)
-            mobile_fp.close()
-
-        for i, col in enumerate(columns):
-            # print(col)
-            if len(col) == 0:
-                # self.columns.remove(col)
-                # del self.columns[i]
-                continue
-            else:
-                title = ' '.join(col)
-                self.columns[title] = {'indent': indent}
-                if title == 'rtk':
-                    indent += 300
-                else:
-                    indent += 140
-
-        self.param_bg_width = indent + 20
+        self.param_bg_width = 160
 
         # for col in self.columns:
         #     if len(col) == 0:
         #         del self.columns[col]
         print(self.columns)
+
+    def add_info_column(self, msg_type):
+        if len(msg_type) == 0:
+            # self.columns.remove(col)
+            # del self.columns[i]
+            return
+        else:
+            self.columns[msg_type] = {'indent': self.indent}
+            if 'rtk' in msg_type:
+                self.indent += 300
+            else:
+                self.indent += 140
+            for src_type in self.color_obs:
+                if msg_type.split('.')[0] in src_type:
+                    self.columns[msg_type]['color'] = self.color_obs[src_type]
+        self.param_bg_width = self.indent + 20
+
+    def get_indent(self, source):
+        if source in self.columns:
+            return self.columns[source]['indent']
+        else:
+            self.add_info_column(source)
+            return self.columns[source]['indent']
+
+    def show_dist_mark_ipm(self, img):
+        for i in range(5, 200, 1):
+            if i % 20 == 0 or i == 10:
+                p1 = trans_gnd2ipm(i, -10)
+                p2 = trans_gnd2ipm(i, 10)
+                BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
+                BaseDraw.draw_text(img, '{}m'.format(i), p2, 0.3, CVColor.White, 1)
 
     def show_overlook_background(self, img):
         """绘制俯视图的背景，包括背景图，车背景图，光线图
@@ -125,9 +136,13 @@ class Player(object):
         BaseDraw.draw_alpha_rect(img, rect, 0.4)
 
     def show_columns(self, img):
-        self.show_parameters_background(img, (0, 0, self.param_bg_width, 150))
+        w = self.param_bg_width
+        self.show_parameters_background(img, (0, 0, w if w <= 1280 else 1280, 150))
         for col in self.columns:
-            BaseDraw.draw_text(img, col, (self.columns[col]['indent'] + 2, 20), 0.5, CVColor.Cyan, 1)
+            indent = self.columns[col]['indent']
+            BaseDraw.draw_text(img, col, (indent + 12, 20), 0.5, CVColor.Cyan, 1)
+            if col is not 'video':
+                cv2.rectangle(img, (indent, 10), (indent + 10, 20), self.columns[col]['color'], -1)
 
     def show_vehicle(self, img, position, id=0, dist=0, color=CVColor.Cyan, thickness=2):
         """绘制车辆框
@@ -219,22 +234,43 @@ class Player(object):
         cv2.addWeighted(car, 0.5, roi_img, 1.0, 0.0, roi_img)
 
     def show_obs(self, img, obs, color=CVColor.Cyan, thickness=2):
-        if 'width' not in obs:
-            width = 0.3
+        indent = self.get_indent(obs['source'])
+        color = obs.get('color')
+        if color:
+            color = self.color_seq[color]
         else:
-            width = obs['width']
-        x = obs['pos_lon']
+            color = self.color_seq[0]
+
+        width = obs.get('width')
+        width = width if width else 0.3
+        height = obs.get('height')
+        # print(obs['source'], obs['class'])
+        height = height if height else width
+        if obs.get('class') == 'pedestrian':
+            height = 1.6
+        if 'pos_lon' in obs:
+            x = obs['pos_lon']
+            y = obs['pos_lat']
+        else:
+            # print(obs['source'].split('.')[0])
+            x, y = trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
         if x == 0:
             x = 0.1
-        y = obs['pos_lat']
+        if x < 0:
+            return
+
         w = 1200 * width / x
-        ux, uy = trans_gnd2raw(x, y)
+        if w > 600:
+            w = 600
+        x0, y0 = trans_gnd2raw(x, y)
 
         h = w
+        # if obs.get('class') == 'pedestrian':
+        h = 1200 * height / x
         # ux - 0.5 * w, uy - w, w, w
-
-        x1 = ux - 0.5 * w
-        y1 = uy - h
+        # print(obs.get('class'))
+        x1 = x0 - 0.5 * w
+        y1 = y0 - h
         # width = int(width)
         # height = int(height)
         x2 = x1 + w
@@ -244,23 +280,48 @@ class Player(object):
         x2 = int(x2)
         y1 = int(y1)
         y2 = int(y2)
-        if obs['source'] in ('esr', 'lmr', 'mrr'):
-            cv2.circle(img, (int(x1), int(y1)), int(w), color, 1)
+        if obs.get('sensor') == 'radar':
+            if w > 50:
+                w = 50
+            # print(int(x1), int(y1), int(w), width)
+            cv2.circle(img, (int(x0), int(y0)), int(w), color, 1)
+        elif obs.get('class') == 'pedestrian':
+            cv2.rectangle(img, (x1, y1), (x2, y2), color, thickness)
         else:
             BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness)
         # BaseDraw.draw_rect(img,  (x1, y1), (x1 + 70, y1 - 12), color,-1)
-        BaseDraw.draw_text(img, 'id:{} {:.1f}'.format(obs['id'], obs['pos_lon']), (x1, y1), 0.4, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'id:{} {:.1f}'.format(obs['id'], obs['pos_lon'] if 'pos_lon' in obs else obs['range']),
+                           (x1, y1), 0.4, CVColor.White, 1)
 
-    def show_ipm_obs(self, img, type, x, y, id=0):
+        if 'cipo' in obs and obs['cipo']:
+            # color = CVColor.Yellow
+            self.show_cipo_info(img, obs)
+            BaseDraw.draw_up_arrow(img, x0, y0+3, color)
+
+        # if 'TTC' in obs:
+        #     self.show_ttc(img, obs['TTC'], obs['source'])
+
+    def show_ipm_obs(self, img, obs):
+        id = obs['id']
+        if 'pos_lon' in obs:
+            x = obs['pos_lon']
+            y = obs['pos_lat']
+        else:
+            x, y = trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
         u, v = trans_gnd2ipm(x, y)
-        color = CVColor.Green
-        if type == 0:
-            color = CVColor.Green
-        elif type == 2:
-            color = CVColor.Red
+        # color = CVColor.Green
+        # if type == 0:
+        #     color = CVColor.Green
+        # elif type == 2:
+        #     color = CVColor.Red
+        color = self.color_seq[obs['color']]
 
-        cv2.circle(img, (u, v), 8, color, 2)
+        if obs.get('sensor') == 'radar':
+            cv2.circle(img, (u, v), 8, color, 2)
+        else:
+            cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
         BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v + 3), 0.4, color, 1)
+
 
     def show_vehicle_parameters(self, img, parameters, point):
         """显示关键车参数信息
@@ -286,6 +347,7 @@ class Player(object):
         BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v * 5), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v * 6), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v * 7), 0.5, CVColor.White, 1)
+
 
     def show_lane(self, img, ratios, r=60, color=CVColor.Cyan):
         """绘制车道线
@@ -542,23 +604,64 @@ class Player(object):
         BaseDraw.draw_text(img, 'Recording... ', (2, 700), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
 
+
     def show_cipo_info(self, img, obs):
-        indent = self.columns[obs['source']]['indent']
-        BaseDraw.draw_text(img, 'CIPO: {}'.format(obs['id']), (indent + 2, 120), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'range: {:.2f}'.format(obs['pos_lon']), (indent + 2, 140), 0.5, CVColor.White, 1)
+        indent = self.get_indent(obs['source'])
+        # print(obs['class'])
+        if obs.get('class') == 'pedestrian':
+            line = 40
+            BaseDraw.draw_text(img, 'CIPPed: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
+        elif obs.get('class') == 'object':
+            line = 100
+            BaseDraw.draw_text(img, 'CIPO: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
+        else:
+            line = 100
+            BaseDraw.draw_text(img, 'CIPVeh: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
 
-    def show_rtk(self, img, rtk):
-        indent = self.columns['rtk']['indent']
-        BaseDraw.draw_text(img, 'rtkSt: {}'.format(rtk['rtkst']), (indent + 142, 40), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'lat: {:.8f}'.format(rtk['lat']), (indent + 142, 60), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'lon:{:.8f}'.format(rtk['lon']), (indent + 142, 80), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'hgt: {:.3f}'.format(rtk['hgt']), (indent + 142, 100), 0.5, CVColor.White, 1)
+        if 'TTC' in obs:
+            BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line+20), 0.5, CVColor.White, 1)
+        dist = obs['pos_lon'] if 'pos_lon' in obs else obs['range']
+        BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
+        BaseDraw.draw_up_arrow(img, indent+8, line-12, self.color_seq[obs['color']], 6)
 
-        BaseDraw.draw_text(img, 'oriSt: {}'.format(rtk['orist']), (indent + 2, 40), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'yaw: {:.2f}'.format(rtk['yaw']), (indent + 2, 60), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'pitch: {:.2f}'.format(rtk['pitch']), (indent + 2, 80), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'len: {:.3f}'.format(rtk['length']), (indent + 2, 100), 0.5, CVColor.White, 1)
 
+    def _show_rtk(self, img, rtk):
+        # print(rtk)
+        indent = self.get_indent(rtk['source'])
+        if rtk['updated']:
+            color = CVColor.White
+        else:
+            color = CVColor.Grey
+        BaseDraw.draw_text(img, 'rtkSt: {}'.format(rtk['rtkst']), (indent + 142, 40), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'lat: {:.8f}'.format(rtk['lat']), (indent + 142, 60), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'lon:{:.8f}'.format(rtk['lon']), (indent + 142, 80), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'hgt: {:.3f}'.format(rtk['hgt']), (indent + 142, 100), 0.5, color, 1)
+
+        BaseDraw.draw_text(img, 'oriSt: {}'.format(rtk['orist']), (indent + 2, 40), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'yaw: {:.2f}'.format(rtk['yaw']), (indent + 2, 60), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'pitch: {:.2f}'.format(rtk['pitch']), (indent + 2, 80), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'len: {:.3f}'.format(rtk['length']), (indent + 2, 100), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'delay: {:.4f}'.format(rtk['ts']-rtk['ts_origin']), (indent + 2, 120), 0.5, color, 1)
+        vel = (rtk['velN'] ** 2 + rtk['velE'] ** 2) ** 0.5
+        BaseDraw.draw_text(img, '{:.2f}km/h'.format(vel*3.6), (indent + 142, 120), 0.5, color, 1)
+        if 'sat' in rtk:
+            BaseDraw.draw_text(img, '#rtk:{}/{} #ori:{}/{}'.format(rtk['sat'][1], rtk['sat'][0], rtk['sat'][5], rtk['sat'][4]), (indent + 50, 20), 0.5, color, 1)
+
+    def show_rtk(self, img, rtk=None):
+        if not rtk or rtk.get('rtkst') is None:
+            for s in self.rtk:
+                d = self.rtk[s]
+                dt = self.ts_now - d['ts']
+                # print(self.ts_now)
+                if dt > 0.25:
+                    d['updated'] = False
+                self._show_rtk(img, d)
+            return
+
+        self._show_rtk(img, rtk)
+        # rtk['updated'] = False
+        self.rtk[rtk['source']] = rtk
+        # self.show_target()
     def show_target(self, img, target, rtk):
         indent = self.columns['rtk']['indent']
         BaseDraw.draw_text(img, 'target: {:.8f} {:.8f} {:.3f}'.format(
@@ -848,6 +951,76 @@ class Player(object):
 
             mobile_parameters = [str(mobile_hwm), str(mobile_hw), str(mobile_fcw), str(mobile_vb), str(mobile_ldw)]
             self.show_mobile_parameters(img, mobile_parameters, (120 * 2, 0))
+
+    def show_intrinsic_para(self, img):
+        indent = self.get_indent('video')
+        BaseDraw.draw_text(img,
+                           'Yaw  Pitch  Roll',
+                           (1180, 700), 0.3, CVColor.White, 1)
+        BaseDraw.draw_text(img,
+                           '{:.2f} {:.2f}  {:.2f}'.format(install['video']['yaw'],
+                                                          install['video']['pitch'],
+                                                          install['video']['roll']),
+                           (1180, 710), 0.3, CVColor.White, 1)
+
+    def show_warning(self, img, title):
+        # print(title)
+        if isinstance(title, list):
+            for idx, t in enumerate(title):
+                # print(idx)
+                BaseDraw.draw_text(img, t, (10, 200 + idx*80), 2, CVColor.Red, 3)
+        else:
+            BaseDraw.draw_text(img, title, (10, 200), 2, CVColor.Red, 3)
+
+
+    def show_ub482_common(self, img, data):
+        indent = self.get_indent(data['source'])
+        # print(data['type'], data['ts'], data['sol_stat'], data['pos_type'])
+
+        color = CVColor.White
+        if data['type'] == 'bestpos':
+            BaseDraw.draw_text(img, '{}'.format(data['pos_type']), (indent + 142, 40), 0.5, color, 1)
+            BaseDraw.draw_text(img, 'lat: {:.8f}'.format(data['lat']), (indent + 142, 60), 0.5, color, 1)
+            BaseDraw.draw_text(img, 'lon:{:.8f}'.format(data['lon']), (indent + 142, 80), 0.5, color, 1)
+            BaseDraw.draw_text(img, 'hgt: {:.3f}'.format(data['hgt']), (indent + 142, 100), 0.5, color, 1)
+            # vel = (data['velN'] ** 2 + data['velE'] ** 2) ** 0.5
+            # BaseDraw.draw_text(img, '{:.2f}km/h'.format(vel * 3.6), (indent + 142, 120), 0.5, color, 1)
+        if data['type'] == 'heading':
+            BaseDraw.draw_text(img, '{}'.format(data['pos_type']), (indent + 2, 40), 0.5, color, 1)
+            BaseDraw.draw_text(img, 'yaw: {:.2f}'.format(data['yaw']), (indent + 2, 60), 0.5, color, 1)
+            BaseDraw.draw_text(img, 'pitch: {:.2f}'.format(data['pitch']), (indent + 2, 80), 0.5, color, 1)
+            BaseDraw.draw_text(img, 'len: {:.3f}'.format(data['length']), (indent + 2, 100), 0.5, color, 1)
+            # BaseDraw.draw_text(img, 'delay: {:.4f}'.format(data['ts'] - data['ts_origin']), (indent + 2, 120), 0.5, color, 1)
+
+        if data['type'] == 'rtcm':
+            BaseDraw.draw_text(img, 'rtcm rcv:{}'.format(data['len']), (indent + 82, 20), 0.5, color, 1)
+
+    def _calc_relatives(self, target, host):
+        range = gps_distance(target['lat'], target['lon'], host['lat'], host['lon'])
+        angle = gps_bearing(target['lat'], target['lon'], host['lat'], host['lon'])
+        angle = angle - host['yaw']
+        return range, angle
+
+    def show_ipm_target(self, img, target, host):
+        range, angle = self._calc_relatives(target, host)
+        x, y = trans_polar2rcs(angle, range)
+        ux, uy = trans_gnd2ipm(x, y)
+        color = CVColor.Green
+        # if type == 0:
+        #     color = CVColor.Green
+        # elif type == 2:
+        #     color = CVColor.Red
+
+        w = h = 30
+
+        p1 = int(ux - 0.5 * w), int(uy)
+        p2 = int(ux + 0.5 * w), int(uy)
+        p3 = int(ux), int(uy - 0.5 * h)
+        p4 = int(ux), int(uy + 0.5 * h)
+
+        cv2.line(img, p1, p2, CVColor.Green, 2)
+        cv2.line(img, p3, p4, CVColor.Green, 2)
+
 
     # def show_radar(self, img, position, color=CVColor.Cyan, thickness=2):
     #     """绘制pedestrain

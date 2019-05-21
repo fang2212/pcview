@@ -1,14 +1,13 @@
-from parsers.dji import *
-from parsers.drtk import *
-from config.config import config, configs
-from net.discover import *
+from parsers.drtk import V1_msg, v1_handlers
+from multiprocessing.dummy import Process as Thread
+from multiprocessing import Process
 import struct
-import msgpack
 import nanomsg
 import logging
 import can
 from parsers.parser import parsers_dict
-from tools.transform import convert
+import json
+import time
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
 logging.basicConfig(level=logging.INFO,
@@ -62,86 +61,40 @@ class Sink(Process):
         pass
 
 
-class CameraSink(Sink):
-
-    def __init__(self, queue, ip, port, msg_type, fileHandler):
-        Sink.__init__(self, queue, ip, port, msg_type)
-        self.last_fid = 0
-        self.fileHandler = fileHandler
+class PinodeSink(Sink):
+    def __init__(self, queue, ip, port, channel, index, resname):
+        super(PinodeSink, self).__init__(queue, ip, port, channel, index)
+        print('pi_node connected.', ip, port, channel, index)
+        self.source = 'rtk.{:d}'.format(index)
+        self.context = {'source': self.source}
+        self.resname = resname
 
     def pkg_handler(self, msg):
-        # print('cprocess-id:', os.getpid())
+        # print('hahahahha')
         msg = memoryview(msg).tobytes()
-        frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
-        if frame_id - self.last_fid != 1:
-            print("frame jump.", self.last_fid, frame_id)
-        self.last_fid = frame_id
-        timestamp, = struct.unpack('<d', msg[8:16])
-        data = msg[16:]
 
-        r = {'ts': timestamp, 'img': data}
+        data = self.decode_pinode_res(self.resname, msg)
+        if not data:
+            return
 
-        self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
+        if isinstance(data, list):
+            for r in data:
+                r['source'] = self.source
+        else:
+            data['source'] = self.source
+        # print(data)
+        return self.channel, data
 
-        return frame_id, r
-
-
-class LaneSink(Sink):
-
-    def __init__(self, queue, ip, port, msg_type):
-        Sink.__init__(self, queue, ip, port, msg_type)
-
-    def pkg_handler(self, msg):
-        # print('l--process-id:', os.getpid())
-        data = msgpack.loads(msg)
-        res = convert(data)
-        frame_id = res['frame_id']
-        logging.debug('lane id {}'.format(frame_id))
-        return frame_id, res
-
-
-class VehicleSink(Sink):
-
-    def __init__(self, queue, ip, port, msg_type):
-        Sink.__init__(self, queue, ip, port, msg_type)
-
-    def pkg_handler(self, msg):
-        data = msgpack.loads(msg)
-        res = convert(data)
-        frame_id = res['frame_id']
-        logging.debug('veh id {}'.format(frame_id))
-        return frame_id, res
-
-
-class PedSink(Sink):
-
-    def __init__(self, queue, ip, port, msg_type):
-        Sink.__init__(self, queue, ip, port, msg_type)
-
-    def pkg_handler(self, msg):
-        data = msgpack.loads(msg)
-        res = convert(data)
-        frame_id = res['frame_id']
-        logging.debug('ped id {}'.format(frame_id))
-        return frame_id, res
-
-
-class TsrSink(Sink):
-
-    def __init__(self, queue, ip, port, msg_type):
-        Sink.__init__(self, queue, ip, port, msg_type)
-
-    def pkg_handler(self, msg):
-        data = msgpack.loads(msg)
-        res = convert(data)
-        frame_id = res['frame_id']
-        logging.debug('tsr id {}'.format(frame_id))
-        return frame_id, res
+    def decode_pinode_res(self, resname, msg):
+        if resname == 'rtk':
+            return json.loads(msg.decode())
+        elif resname == 'rtcm':
+            return {'type': 'rtcm', 'len': len(msg)}
 
 
 class CANSink(Sink):
-    def __init__(self, queue, ip, port, msg_type, type, index, fileHandler):
-        Sink.__init__(self, queue, ip, port, msg_type, index)
+    def __init__(self, queue, ip, port, channel, type, index, fileHandler):
+        Sink.__init__(self, queue, ip, port, channel, index)
         self.fileHandler = fileHandler
         self.parser = []
         for ptype in parsers_dict:
@@ -153,12 +106,8 @@ class CANSink(Sink):
         print('CANSink initialized.', self.type, ip, port, self.parser)
 
         self.temp_ts = {'CAN1': 0, 'CAN2': 0}
-        self.can_types = {"can0": configs[0].can_types.can0,
-                     "can1": configs[0].can_types.can1,
-                     "can2": configs[1].can_types.can0,
-                     "can3": configs[1].can_types.can1}
-
-
+        self.source = '{}.{:d}'.format(type[0], index)
+        self.context = {'source': self.source}
 
     def read(self):
         msg = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
@@ -172,9 +121,16 @@ class CANSink(Sink):
         can_id, timestamp, data = msg
         id = '0x%x' % can_id
 
-        log_type = self.type.upper()
-        self.fileHandler.insert_raw((timestamp, log_type, id + ' %02X %02X %02X %02X %02X %02X %02X %02X' % (
-            data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7])))
+        # print('can', id)
+        if self.type == 'can0':
+            log_type = 'CAN' + '{:01d}'.format(self.index * 2)
+        else:
+            log_type = 'CAN' + '{:01d}'.format(self.index * 2 + 1)
+        log_bytes = ' '.join(['{:02X}'.format(d) for d in data])
+        # print('CAN sink save raw.', self.source)
+        self.fileHandler.insert_raw((timestamp, log_type, id + ' ' + log_bytes))
+        # if not self.raw_queue.full():
+        #     self.raw_queue.put((timestamp, log_type, id, log_bytes))
 
         if can_id == 0x7fe:
             # print(log_type, id, timestamp)
@@ -184,12 +140,16 @@ class CANSink(Sink):
                 self.temp_ts['CAN2'] = 0
                 self.temp_ts['CAN1'] = 0
                 print('dt: {:2.05f}s'.format(dt))
+        # elif can_id == 0xc6:
+        #     print(log_bytes)
+        r = None
 
         for parser in self.parser:
             # print(parser)
-            r = parser(can_id, data)
+            r = parser(can_id, data, self.context)
             if r is not None:
                 break
+
         # print(r)
         if r is None:
             return None
@@ -197,19 +157,20 @@ class CANSink(Sink):
             # print('r is list')
             for obs in r:
                 obs['ts'] = timestamp
-                obs['source'] = ' '.join(self.can_types[self.type])
+                obs['source'] = self.source
+                # print(obs)
         else:
             # print('r is not list')
             r['ts'] = timestamp
-            r['source'] = ' '.join(self.can_types[self.type])
+            r['source'] = self.source
+            # print(r['source'])
         # print(r)
-
         return can_id, r
 
 
 class GsensorSink(Sink):
-    def __init__(self, queue, ip, port, msg_type, index, fileHandler):
-        Sink.__init__(self, queue, ip, port, msg_type, index)
+    def __init__(self, queue, ip, port, channel, index, fileHandler):
+        Sink.__init__(self, queue, ip, port, channel, index)
         self.fileHandler = fileHandler
 
     def pkg_handler(self, msg):
@@ -225,6 +186,36 @@ class GsensorSink(Sink):
         self.fileHandler.insert_raw((timestamp, 'Gsensor',
                                 '{} {} {} {} {} {} {:.6f} {}'.format(accl[0], accl[1], accl[2], gyro[0], gyro[1],
                                                                      gyro[2], temp, sec, usec)))
+
+
+
+class CameraSink(Sink):
+
+    def __init__(self, queue, ip, port, channel, fileHandler):
+        Sink.__init__(self, queue, ip, port, channel)
+        self.last_fid = 0
+        self.fileHandler = fileHandler
+
+    def pkg_handler(self, msg):
+        # print('cprocess-id:', os.getpid())
+        msg = memoryview(msg).tobytes()
+        jpg = msg[16:]
+        frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
+        if frame_id - self.last_fid != 1:
+            print("frame jump.", self.last_fid, frame_id)
+        self.last_fid = frame_id
+        app1 = jpg.find(b'\xff\xe1')
+        frame_id_jfif = int.from_bytes(jpg[24:28], byteorder="little")
+        # print(app1, frame_id_jfif)
+        timestamp, = struct.unpack('<d', msg[8:16])
+
+        logging.debug('cam id {}'.format(frame_id))
+
+        r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id}
+
+        self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
+
+        return frame_id, r
 
 
 class RTKSink(Sink):

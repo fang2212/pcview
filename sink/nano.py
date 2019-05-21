@@ -2,8 +2,6 @@ import os
 import sys
 import time
 import nanomsg
-import msgpack
-import json
 import cv2
 import numpy as np
 import struct
@@ -43,6 +41,7 @@ class NanoClient(object):
             ts = int(time.time()*1000000)
             return ts, buf[1]
         return buf[1]
+
 
 class Pkg(object):
     """
@@ -199,6 +198,7 @@ def nano_client_test():
             cv2.imshow('hello', image)
             cv2.waitKey(1)
         time.sleep(0.02)
+
 
 if __name__ == '__main__':
     # nano_client_test()

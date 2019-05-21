@@ -1,5 +1,19 @@
-# from . import dji
+#!/usr/bin/env python
+# _*_ coding:utf-8 _*_
+#
+# @Version : 1.0
+# @Time    : 2018/07/15
+# @Author  : simon.xu
+# @File    : drtk.py
+# @Desc    :
+
 import struct
+import time
+from parsers.dji import V1_msg
+
+
+def dummy_callback(cata):
+    pass
 
 
 def parse_rtk_info(msg, callback=None):
@@ -26,25 +40,36 @@ def parse_rtk_info(msg, callback=None):
 def unpack_unicore(bytes):
     # logger = logging.getLogger('middle_solution')
     # uniSync,msgID,msgType,portAddr,msgLen,seq = struct.unpack("<IhBBhh",bytes[0:12])
-    uniSync, msgID, msgType, portAddr, msgLen, seq, idleTime, timeStt, week, ms, rsv2, timeOffset, rsv3 = struct.unpack(
-        "<IhBBhhBBhIIhh", bytes[0:28])
+    uniSync, msgID, msgType, portAddr, msgLen, seq, idleTime, timeStt, year, dummy, sec, timeOffset, rsv3 = struct.unpack(
+        "<IhBBhhBBhIfhh", bytes[0:28])
+    month, day, hour, minute = bytes[16:20]
+    dts = '{}-{}-{} {}:{}:{}'.format(year, month, day, hour, minute, int(sec))
+    try:
+        tarray = time.strptime(dts, "%Y-%m-%d %H:%M:%S")
+    except Exception as e:
+        print('rtk date error:', dts)
+        return
+    ts = int(time.mktime(tarray))
+    ts = ts + sec - int(sec) + 28800
+    # print(dts, ts)
+    # print('unicore', byte0, byte1, byte2, byte3)
     # print('{:x} {} {}'.format(uniSync, timeStt, rsv2))
-    # print("Unicore msgID:%d msgType:%d len:%d seq:%.4x week:%d s:%lf timevalid: %d rsv2:%d rsv3:%d" %
-    #       (msgID, msgType, msgLen, seq, week, ms/1000.0/60/60/24, timeStt, rsv2, rsv3))
+    # print("Unicore msgID:%d msgType:%d port:%d len:%d seq:%d idle:%d week:%d ms:%d timevalid: %d diff:%f timeoffs:%d rsv3:%d" %
+    #       (msgID, msgType, portAddr, msgLen, seq, idleTime, week, minute, timeStt, diffage, timeOffset,  rsv3))
     if msgID == 42:
         solStt, posType, lat, lon, hgt, undulation = struct.unpack("<IIdddf", bytes[28:64])
         trkSVs, solSVs = struct.unpack("<BB", bytes[92:94])
         seq = "[BestPos],%d,%d,%.8f,%.8f,%f,%d,%d,%d,%d" % (
-            solStt, posType, lat, lon, hgt, undulation, trkSVs, solSVs, ms)
+            solStt, posType, lat, lon, hgt, undulation, trkSVs, solSVs, dummy)
         print(seq)
         # logger.info(seq)
     if msgID == 283:
-        seq = "[BaseRange],%d,%d" % (week, ms)
+        seq = "[BaseRange],%d,%d" % (year, dummy)
         # logger.info(seq)
 
     if msgID == 1023:
-        rtkPosType, kHgt, kLat, kLon = struct.unpack('<Ifdd',bytes[28:52])
-        psrPosType, pHgt, pLat, pLon, undulation = struct.unpack('<Ifddf',bytes[52:80])
+        rtkPosType, kHgt, kLat, kLon = struct.unpack('<Ifdd', bytes[28:52])
+        psrPosType, pHgt, pLat, pLon, undulation = struct.unpack('<Ifddf', bytes[52:80])
         rtkTrk, rtkSln, psrTrk, psrSln = bytes[80:84]
         # rtkTrk = bytes[80]
         velN, velE, velD = struct.unpack('<ddd', bytes[84:108])
@@ -54,13 +79,18 @@ def unpack_unicore(bytes):
         speed = (velN**2 + velE**2)**0.5
         # print('state {} lat {:.08f} lon {:.08f} hgt {:.03f} speed:{:.2f}m/s #sat {},{},{},{} ori {} yaw {:.3f} len {:.1f} pitch {:.2f}'.format(
         #     rtkPosType, kLat, kLon, kHgt, speed, rtkTrk, rtkSln, psrTrk, psrSln, oriType, heading, length, pitch))
-        return {'type': 'rtk', 'rtkst': rtkPosType, 'orist': oriType, 'lat': kLat, 'lon': kLon, 'hgt': kHgt,
-                'speed': speed,'velN': velN, 'velE': velE, 'velD': velD, 'length': length, 'yaw': heading,
+        ret = {'type': 'rtk', 'rtkst': rtkPosType, 'orist': oriType, 'lat': kLat, 'lon': kLon, 'hgt': kHgt,
+                'velN': velN, 'velE': velE, 'velD': velD, 'length': length, 'yaw': heading,
                 'pitch': pitch, 'sat': [rtkTrk, rtkSln, psrTrk, psrSln, oriTrk, oriSln], 'gdop': gdop, 'pdop': pdop,
-                'hdop': hdop, 'htdop': htdop, 'tdop': tdop, 'cutoff': cutoff, 'trkSatn': trk_satnum, 'prn': prn}
+                'hdop': hdop, 'htdop': htdop, 'tdop': tdop, 'cutoff': cutoff, 'trkSatn': trk_satnum, 'prn': prn,
+                'sec': sec, 'ts_origin': ts}
+        vehstate = {'type': 'vehicle_state', 'speed': speed, 'pitch': pitch, 'yaw': heading, 'ts': ts}
+        # print(ret)
+        return [ret, vehstate]
 
 
 def parse_rtk_sol(msg, callback):  # 0x50
+    # print('rtk solution')
     return unpack_unicore(msg['data'])
 
 
@@ -82,6 +112,7 @@ def handle_debug(msg, callback):
 
 
 def handle_ping_mc(msg, callback):
+    print(', '.join(['0x{:02X}'.format(d) for d in msg['raw']]))
     # data = msg['data']
     msgid = msg['cmdSet'] << 8 | msg['cmdID']
     print('0x{:04x} RTK ping Flight control!'.format(msgid))
@@ -138,6 +169,24 @@ v1_handlers = {
     0x0000: handle_ping_mc,
     0x0058: parse_rtk_sol
 }
+
+
+def parse_rtk(id, data, ctx=None):
+    if ctx.get('rtk_handler') is None:
+        ctx['rtk_handler'] = V1_msg()
+    # print('0x{:x}'.format(id), data)
+    handler = ctx['rtk_handler']
+    if id == 0xc7:
+        handler.push(data)
+
+    while not handler.unpacked.empty():
+        msg = handler.unpacked.get()
+        msgid = msg['cmdSet'] << 8 | msg['cmdID']
+        if msgid in v1_handlers:
+
+            r = v1_handlers[msgid](msg, dummy_callback)
+            if r:
+                return r
 
 
 class RTKadapter:

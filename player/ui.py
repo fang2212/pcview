@@ -28,13 +28,21 @@ class CVColor(object):
     '''
     Red = (0, 0, 255)
     Green = (0, 255, 0)
+    Grass = (0x50, 0xaf, 0x4c)
     Blue = (255, 0, 0)
-    Cyan = (255, 255, 0)
+    LightBlue = (200, 20, 20)
+    Cyan = (0xd4, 0xbc, 0)
     Magenta = (255, 0, 255)
     Yellow = (0, 255, 255)
     Black = (0, 0, 0)
     White = (255, 255, 255)
+    Grey = (120, 120, 120)
+    Midgrey = (160, 160, 160)
     Pink = (255, 0, 255)
+    indigo = (0xb5, 0x51, 0x3f)
+    purple = (0xb0, 0x27, 0x9c)
+    bluegrey = (0x8b, 0x7D, 0x60)
+    deeporange = (0x22, 0x57, 0xff)
 
 
 class FPSCnt(object):
@@ -65,6 +73,13 @@ class BaseDraw(object):
     @classmethod
     def draw_circle(cls, img, position, radius=4, color=CVColor.Black):
         cv2.circle(img, position, radius, color)
+
+    @classmethod
+    def draw_up_arrow(cls, img, x, y, color=CVColor.White, w=8, thickness=2):
+
+        cv2.line(img, (x, y), (x - w, y + w), color, thickness, cv2.LINE_8, 0)
+        cv2.line(img, (x, y), (x + w, y + w), color, thickness, cv2.LINE_8, 0)
+        cv2.line(img, (x, y), (x, y + 2 * w), color, thickness, cv2.LINE_8, 0)
 
 
     @classmethod

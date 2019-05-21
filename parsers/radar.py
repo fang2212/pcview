@@ -1,65 +1,62 @@
+#!/usr/bin/env python
+# _*_ coding:utf-8 _*_
+#
+# @Version : 1.0
+# @Time    : 2018/07/15
+# @Author  : simon.xu
+# @File    : radar.py
+# @Desc    :
+
 import cantools
-from tools.transform import *
+
 from tools.match import *
+from math import pi
+
+# from utils.transform import *
 
 # M_PI = 3.141592653589793238462643383279503
 
 db_esr = cantools.database.load_file('dbc/ESR DV3_64Tgt.dbc', strict=False)
-db_ars = None
+# db_ars = cantools.database.load_file('dbc/ARS408.dbc', strict=False)
 # db_huayu = cantools.database.load_file('/home/nan/workshop/doc/华域/lrr10_1.dbc', strict=False)
 
 db_mrr = cantools.database.load_file('dbc/bosch_mrr_output.dbc', strict=False)
 db_lmr = cantools.database.load_file('dbc/HETLMR.dbc', strict=False)
 db_hmb = cantools.database.load_file('dbc/szhmb.dbc', strict=False)
+db_fusion_mrr = cantools.database.load_file('dbc/MRR_radar_CAN.dbc', strict=False)
 
 
-def parse_ars(id, buf):
-    result = {}
-    if id == 0x600:
-        result['type'] = 'cluster_info'
-        result['n_targets_near'] = buf[0]
-        result['n_targets_far'] = buf[1]
-        result['meas_cnt'] = buf[2] << 8 | buf[3]
-        result['if_ver'] = buf[4] >> 4
-
-    if id == 0x701:
-        result['type'] = 'cluster_general'
-        result['dist_lon'] = 0.2 * (buf[1] << 5 | buf[2] >> 3) - 500.0
-        result['dist_lat'] = 0.2 * ((buf[2] & 0x03) << 8 | buf[3]) - 102.3
-        result['vrel_lon'] = 0.25 * (buf[4] << 2 | buf[5] >> 6) - 128.0
-        result['vrel_lat'] = 0.25 * ((buf[5] & 0x3f) << 3 | buf[6] >> 5) - 64.0
-        result['dyn_prop'] = buf[6] & 0x07
-        result['rcs'] = 0.5 * buf[7] - 64.0
-
-    if id == 0x60A:
-        result['type'] = 'obj_info'
-        result['n_objs'] = buf[0]
-        result['meas_cnt'] = buf[1] << 8 | buf[2]
-        result['if_ver'] = buf[3] >> 4
-
-    if id == 0x60B:
-        result['type'] = 'obj_general'
-        result['id'] = buf[0]
-        result['dist_lon'] = 0.2 * (buf[1] << 5 | buf[2] >> 3) - 500.0
-        result['dist_lat'] = 0.2 * ((buf[2] & 0x07) << 8 | buf[3]) - 204.6
-        result['vrel_lon'] = 0.25 * (buf[4] << 2 | buf[5] >> 6) - 128.0
-        result['vrel_lat'] = 0.25 * ((buf[5] & 0x3F) << 3 | buf[6] >> 5) - 64.0
-        result['dyn_prop'] = buf[6] & 0x07
-        result['rcs'] = 0.5 * buf[7] - 64.0
-
-    return result
+# def parse_ars(id, buf, ctx=None):
+#     ids = [m.frame_id for m in db_ars.messages]
+#     if id not in ids:
+#         return None
+#     r = db_ars.decode_message(id, buf)
+#     # print('0x%x' % id, r)
+#     if id == 0x300:
+#         if ctx.get('radar_status') is None:
+#             pass
+#
+#     if id == 0x60b:
+#         tid = r['Obj_ID']
+#         x = r['Obj_DistLong']
+#         y = r['Obj_DistLat']
+#         ret = {'type': 'obstacle', 'sensor': 'radar', 'id': tid, 'pos_lon': x, 'pos_lat': y, 'color': 2}
+#         return ret
 
 
-esr_filter = CIPOFilter()
-esrobs = []
-
-
-def parse_esr(id, buf):
+def parse_esr(id, buf, ctx=None):
     global esrobs
     ids = [m.frame_id for m in db_esr.messages]
     if id not in ids:
         return None
     r = db_esr.decode_message(id, buf)
+    # print('hahaha', ctx)
+    if ctx is not None and not ctx.get('filter'):
+        ctx['filter'] = CIPOFilter()
+    if ctx is not None and not ctx.get('obs'):
+        ctx['obs'] = []
+    # esrobs = ctx['obs']
+    # esr_filter = ctx['filter']
     # print('0x%x' % id)
     tgt_status = r.get('CAN_TX_TRACK_STATUS')
     if tgt_status is not None:
@@ -70,10 +67,11 @@ def parse_esr(id, buf):
             tid = id - 0x500
             # x = cos(angle * pi / 180.0) * range + 1.64
             # y = sin(angle * pi / 180.0) * range - 0.4
-            x, y = trans_polar2rcs(angle, range, install['esr'])
+            # x, y = trans_polar2rcs(angle, range, install['esr'])
             # print('ESR 0x%x' % id, r)
-            ret = {'type': 'obstacle', 'id': tid, 'pos_lon': x, 'pos_lat': y, 'color': 1}
-            esrobs.append(ret)
+            ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
+                   'color': 1}
+            ctx['obs'].append(ret)
             # if esr_filter.update(ret):
             #     ret['cipo'] = True
             # return ret
@@ -85,16 +83,19 @@ def parse_esr(id, buf):
         pass
     elif id == 0x540:
         idx = r['CAN_TX_TRACK_CAN_ID_GROUP']
+        # print('esr 0x540')
         if idx == 0:
-            ret = esr_filter.add_cipo(esrobs)
-            esrobs = []
+            ret = ctx['filter'].add_cipo(ctx['obs'])
+            ctx['obs'] = []
+            # print('esr', ret)
             return ret
     elif id == 0x4e3:
         # print('0x%x' % id)
-        print('0x%x' % id, r)
+        # print('0x%x' % id, r)
+        pass
 
 
-def parse_bosch_mrr(id, buf):
+def parse_bosch_mrr(id, buf, ctx=None):
     ids = [m.frame_id for m in db_mrr.messages]
     if id not in ids:
         return None
@@ -108,7 +109,7 @@ def parse_bosch_mrr(id, buf):
         idx = id - 0x660
         if r['X_Object%02d_wExist' % idx] > 0.0:
             # print('0x%x' % id, r)
-            return {'type': 'obstacle', 'id': oid, 'pos_lon': x, 'pos_lat': y, 'color': 1}
+            return {'type': 'obstacle', 'sensor': 'radar', 'id': oid, 'pos_lon': x, 'pos_lat': y, 'color': 1}
     elif id == 0x680:
         r = db_mrr.decode_message(id, buf)
         # print('0x%x' % id, r)
@@ -117,7 +118,7 @@ def parse_bosch_mrr(id, buf):
     return None
 
 
-def parse_hawkeye_lmr(id, buf):
+def parse_hawkeye_lmr(id, buf, ctx=None):
     ids = [m.frame_id for m in db_lmr.messages]
     if id not in ids:
         return None
@@ -130,13 +131,13 @@ def parse_hawkeye_lmr(id, buf):
             angle = r.get('CANTX_TargetAzimuth')
             # x = cos(angle * pi / 180.0) * range
             # y = sin(angle * pi / 180.0) * range
-            x, y = trans_polar2rcs(angle, range, install['lmr'])
-            return {'type': 'obstacle', 'id': id - 0x500, 'pos_lon': x, 'pos_lat': y, 'color': 1}
+            # x, y = trans_polar2rcs(angle, range, install['lmr'])
+            return {'type': 'obstacle', 'sensor': 'radar', 'id': id - 0x500, 'range': range, 'angle': angle, 'color': 2}
 
     return None
 
 
-def parse_hmb(id, buf):
+def parse_hmb(id, buf, ctx=None):
     # print('0x%x' % id)
     ids = [m.frame_id for m in db_hmb.messages]
     if id not in ids:
@@ -151,9 +152,43 @@ def parse_hmb(id, buf):
     angle = -r.get('Angle')
     # x = cos(angle * pi / 180.0) * range
     # y = sin(angle * pi / 180.0) * range
-    x, y = trans_polar2rcs(angle, range, install['hmb'])
+    # x, y = trans_polar2rcs(angle, range, install['hmb'])
 
     # print("hmb radar frame")
-    result = {'type': 'obstacle', 'id': id - 0x500, 'pos_lon': x, 'pos_lat': y, 'color': 4}
+    result = {'type': 'obstacle', 'sensor': 'radar', 'id': id - 0x500, 'range': range, 'angle': angle, 'color': 4}
     print(result)
     return result
+
+
+def parse_fusion_mrr(id, buf, ctx=None):
+    # print('0x%x' % id)
+    ids = [m.frame_id for m in db_fusion_mrr.messages]
+    if id not in ids:
+        return None
+
+    r = db_fusion_mrr.decode_message(id, buf)
+    # print('0x%x' % id, r)
+
+    if 0x120 <= id <= 0x15f:
+        idx = id - 0x120
+        sf = '_{:02d}'.format(idx + 1)
+        angle = r['CAN_DET_AZIMUTH' + sf] * 180.0 / pi
+        range = r['CAN_DET_RANGE' + sf]
+        # x, y = trans_polar2rcs(angle, range)
+        snr = r['CAN_SNR_LEVEL'+sf]
+        scan_idx = r['CAN_SCAN_INDEX_2LSB'+sf]
+        amp = r['CAN_DET_AMPLITUDE'+sf]
+        valid = r['CAN_DET_VALID_LEVEL'+sf]
+        range_rate = r['CAN_DET_RANGE_RATE'+sf]
+        host_veh_clutter = r['CAN_DET_HOST_VEH_CLUTTER'+sf]
+        nd_target = r['CAN_DET_ND_TARGET'+sf]
+        spres_target = r['CAN_DET_SUPER_RES_TARGET'+sf]
+        # print(host_veh_clutter, nd_target, spres_target)
+
+        result = {'type': 'obstacle', 'sensor': 'radar', 'id': idx, 'range': range, 'angle': angle, 'color': 5,
+                  'snr': snr,
+                  'scan_idx': scan_idx, 'amp': amp, 'valid': valid, 'range_rate': range_rate, 'super_res': spres_target}
+        # if snr in ['High']:
+        # print(result)
+        if valid:
+            return result
