@@ -588,12 +588,12 @@ class Player(object):
         BaseDraw.draw_text(img, 'TTC:' + '{:.2f}s'.format(ttc), (indent + 2, 40), 0.5, CVColor.Cyan, 1)
 
     def show_veh_speed(self, img, speed, source):
-        indent = self.columns[source]['indent']
-        BaseDraw.draw_text(img, '{:.1f}km/h'.format(speed), (indent + 2, 80), 0.5, CVColor.White, 1)
+        indent = self.get_indent(source)
+        BaseDraw.draw_text(img, '{:.1f}km/h'.format(speed), (indent + 2, 60), 0.5, CVColor.White, 1)
 
     def show_yaw_rate(self, img, yr, source):
-        indent = self.columns[source]['indent']
-        BaseDraw.draw_text(img, 'yawr:' + '%.4f' % yr, (indent + 2, 100), 0.5, CVColor.White, 1)
+        indent = self.get_indent(source)
+        BaseDraw.draw_text(img, '%.4f' % yr + 'deg/s', (indent + 2, 80), 0.5, CVColor.White, 1)
 
     def show_q3_veh(self, img, speed, yr):
         BaseDraw.draw_text(img, 'q3spd: ' + str(int(speed * 3.6)), (2, 120), 0.5, CVColor.White, 1)
@@ -603,7 +603,6 @@ class Player(object):
         time_passed = time.time() - info
         BaseDraw.draw_text(img, 'Recording... ', (2, 700), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
-
 
     def show_cipo_info(self, img, obs):
         indent = self.get_indent(obs['source'])
@@ -619,10 +618,11 @@ class Player(object):
             BaseDraw.draw_text(img, 'CIPVeh: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
 
         if 'TTC' in obs:
-            BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line+20), 0.5, CVColor.White, 1)
+            BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line + 20), 0.5, CVColor.White,
+                               1)
         dist = obs['pos_lon'] if 'pos_lon' in obs else obs['range']
         BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
-        BaseDraw.draw_up_arrow(img, indent+8, line-12, self.color_seq[obs['color']], 6)
+        BaseDraw.draw_up_arrow(img, indent + 8, line - 12, self.color_seq[obs['color']], 6)
 
 
     def _show_rtk(self, img, rtk):
@@ -662,38 +662,43 @@ class Player(object):
         # rtk['updated'] = False
         self.rtk[rtk['source']] = rtk
         # self.show_target()
-    def show_target(self, img, target, rtk):
-        indent = self.columns['rtk']['indent']
-        BaseDraw.draw_text(img, 'target: {:.8f} {:.8f} {:.3f}'.format(
-            target['lat'], target['lon'], target['hgt']), (indent + 2, 120), 0.5, CVColor.White, 1)
-        ranges = gps_distance(target['lat'], target['lon'], rtk['lat'], rtk['lon'])
-        angle = gps_bearing(target['lat'], target['lon'], rtk['lat'], rtk['lon'])
-        angle = angle - 180.0 - rtk['yaw']
-        x, y = trans_polar2rcs(angle, ranges)
+
+    def show_target(self, img, target, host):
+        indent = self.get_indent(target['source'])
+
+        range, angle = self._calc_relatives(target, host)
+        x, y = trans_polar2rcs(angle, range, install['rtk'])
         if x == 0:
             x = 0.001
-        width = 1.5
-        height = 1.5
-        ux, uy = trans_gnd2raw(x, y)
+        width = 0.5
+        height = 0.5
+        ux, uy = trans_gnd2raw(x, y,
+                               host['hgt'] - target['hgt'] + install['video']['height'] - install['rtk']['height'])
         w = 1200 * width / x
+        if w > 50:
+            w = 50
 
         h = w
-        # ux - 0.5 * w, uy - w, w, w
 
-        x1 = ux - 0.5 * w
-        y1 = uy - w
-        # width = int(width)
-        # height = int(height)
-        x2 = x1 + w
-        y2 = y1 + h
-        # print(obs['source'], w, h)
-        x1 = int(x1)
-        x2 = int(x2)
-        y1 = int(y1)
-        y2 = int(y2)
-        cv2.rectangle(img, (x1, y1), (x2, y2), CVColor.Green, 2)
-        BaseDraw.draw_text(img, 'range: {:.3f} angle {:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
+        p1 = int(ux - 0.5 * w), int(uy)
+        p2 = int(ux + 0.5 * w), int(uy)
+        p3 = int(ux), int(uy - 0.5 * h)
+        p4 = int(ux), int(uy + 0.5 * h)
+
+        if angle > 90 or angle < -90:
+            BaseDraw.draw_text(img, 'RTK target on the back', (int(ux + 4), int(uy - 4)), 0.6, CVColor.White, 1)
+            return
+        # cv2.line(img, p1, p2, CVColor.Green if target['rtkst'] >= 48 else CVColor.Grey, 2)
+        # cv2.line(img, p3, p4, CVColor.Green if host['rtkst'] >= 48 else CVColor.Grey, 2)
+
+        cv2.line(img, p1, p2, CVColor.Green, 2)
+        cv2.line(img, p3, p4, CVColor.Green, 2)
+
+        BaseDraw.draw_text(img, 'R: {:.3f}'.format(range), (int(ux + 4), int(uy - 4)), 0.4, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (int(ux + 4), int(uy + 14)), 0.4, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
                            CVColor.White, 1)
+        return range, angle
 
     def show_mobile_parameters(self, img, parameters, point):
         """显示关键车参数信息
@@ -858,6 +863,32 @@ class Player(object):
             return
         # self.player.show_overlook_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
         self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
+
+
+    def show_lane_ipm(self, img, ratios, r=60, color=CVColor.Cyan):
+        """绘制车道线
+        Args:
+            img: 原始图片
+            ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
+            width: float 车道线宽度
+            color: CVColor 车道线颜色
+        """
+
+        a0, a1, a2, a3 = ratios
+        a0 = float(a0)
+        a1 = float(a1)
+        a2 = float(a2)
+        a3 = float(a3)
+
+        p = []
+
+        for x in range(int(r)):
+            y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
+            tx, ty = trans_gnd2ipm(x, y)
+            p.append((int(tx), int(ty)))
+
+        for i in range(1, len(p) - 1, 1):
+            BaseDraw.draw_line(img, p[i], p[i + 1], color, 1)
 
     def draw_vehicle_state(self, img, data):
         if len(data) == 0:

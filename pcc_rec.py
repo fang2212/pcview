@@ -15,7 +15,7 @@ from multiprocessing import Process, Queue, Value
 from player import BaseDraw
 
 from player import FPSCnt
-from sink.pcc import NanoGroup, Pkg
+from sink.nano import NanoGroup, Pkg
 from recorder.pcc import CanRecorder, GsensorRecorder, VideoRecorder
 
 pack = os.path.join

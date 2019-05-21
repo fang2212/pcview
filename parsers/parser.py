@@ -6,7 +6,7 @@ from parsers.radar import parse_esr, parse_hmb, parse_bosch_mrr, parse_hawkeye_l
 from parsers.drtk import parse_rtk
 
 
-def default_parser(id, data):
+def default_parser(id, data, type=None):
     return None
 
 

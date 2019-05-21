@@ -188,7 +188,9 @@ class PCC(object):
 
         fps = self.player.cal_fps(frame_cnt)
         self.player.show_fps(img, fps)
-        self.player.show_warning(img, self.supervisor.check())
+
+        if not self.replay:
+            self.player.show_warning(img, self.supervisor.check())
         self.player.show_intrinsic_para(img)
 
         if self.show_ipm:
@@ -249,7 +251,8 @@ class PCC(object):
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
         if data['type'] == 'bestpos':
-            self.hub.fileHandler.insert_raw((data['ts'], data['source'] + '.bestpos',
+            if not self.replay:
+                self.hub.fileHandler.insert_raw((data['ts'], data['source'] + '.bestpos',
                                     '{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
                                         data['sol_stat'], data['pos_type'], data['lat'], data['lon'], data['hgt'],
                                         data['undulation'], data['datum'], data['lat_sgm'], data['lon_sgm'],
@@ -258,7 +261,9 @@ class PCC(object):
                                         data['ext_sol_stat']
                                     )))
         elif data['type'] == 'heading':
-            self.hub.fileHandler.insert_raw((data['ts'], data['source'] + '.heading',
+
+            if not self.replay:
+                self.hub.fileHandler.insert_raw((data['ts'], data['source'] + '.heading',
                                     '{} {} {} {} {} {} {} {} {} {} {} {}'.format(
                                         data['sol_stat'], data['pos_type'], data['length'], data['yaw'], data['pitch'],
                                         data['hdgstddev'], data['ptchstddev'], data['#SVs'], data['#solSVs'],
@@ -323,7 +328,10 @@ class PCC(object):
         if data['type'] == 'obstacle':
             self.draw_obs(img, data)
         elif data['type'] == 'lane':
-            self.draw_lane_r(img, data)
+            self.player.draw_lane_r(img, data)
+            if self.show_ipm:
+                self.player.show_lane_ipm(self.ipm, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
+
         elif data['type'] == 'vehicle_state':
             self.draw_vehstate(img, data)
         elif data['type'] == 'CIPV':
