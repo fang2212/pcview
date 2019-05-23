@@ -609,7 +609,7 @@ class Player(object):
 
     def show_cipo_info(self, img, obs):
 
-        print('obs ---------', obs)
+        # print('obs ---------', obs)
         indent = self.get_indent(obs['source'])
         # print(obs['class'])
         if obs.get('class') == 'pedestrian':

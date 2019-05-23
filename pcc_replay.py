@@ -525,7 +525,7 @@ if __name__ == "__main__":
     from config.config import *
 
     freeze_support()
-    source = '/home/cao/桌面/20190412_ssae_aeb_test/pc_collect/CCR/20190412121015_CCRS_40kmh/log.txt'
+    source = '/home/yj/bak/data/AEB/AEB_X1_test/20190412121015_CCRS_40kmh/log.txt'
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
     r_sort = prep_replay(source)
 

@@ -80,7 +80,7 @@ def parse_data(file_name, parms, q3_can_port='CAN0', esr_can_port='CAN3'):
                     if 'TTC' in ret:
                         d['ttc'] = ret['TTC']
                     q3_data.append(d)
-                    print('q3', ret)
+                    # print('q3', ret)
 
             if esr_can_port in cols[2]:
                 can_id = int(cols[3], 16)
@@ -93,7 +93,7 @@ def parse_data(file_name, parms, q3_can_port='CAN0', esr_can_port='CAN3'):
                         continue
                     d = {'ts': ts, 'rng': item['range'], 'ttc': None}
                     esr_data.append(d)
-                print('esr', r)
+                # print('esr', r)
     return q3_data, esr_data
 
 def plot():
@@ -116,8 +116,8 @@ def plot():
 
 
 if __name__ == "__main__":
-    r = '/home/cao/桌面/20190330154611_CCRS_40kmh/log.txt'
-    parms = {'q3_id': 8, 'esr_id': 48}
+    r = '/home/yj/bak/data/AEB/AEB_X1_test/20190412121015_CCRS_40kmh/log.txt'
+    parms = {'q3_id': 1, 'esr_id': 6}
     q3, esr = parse_data(r, parms)
     plot()
 
