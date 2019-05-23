@@ -52,16 +52,24 @@ class JpegExtractor(object):
 
         jpg = self.buf[a:b + 2]
         self.buf = self.buf[b+2:]
+
         return jpg
 
 
 def jpeg_extractor(video_dir):
+    """
+    This generator extract jpg from each of the video files in the directory.
+    :param video_dir:
+    :return: frame_id: rolling counter of the frame from FPGA (if valid, synced with video name)
+             jpg: raw jpg bytes
+    """
     buf = b''
     buf_len = int(2 * 1024 * 1024)
     file_done = False
     video_files = sorted([x for x in os.listdir(video_dir) if x.endswith('.avi')])
     for file in video_files:
         file_done = False
+        fid = int(file.split('.')[0].split('_')[1])
         with open(os.path.join(video_dir, file), 'rb') as vf:
             while True:
                 a = buf.find(b'\xff\xd8')
@@ -78,15 +86,16 @@ def jpeg_extractor(video_dir):
                     break
                 jpg = buf[a:b + 2]
                 buf = buf[b + 2:]
-                fid = int.from_bytes(jpg[24:28], byteorder="little")
-
+                # fid = int.from_bytes(jpg[24:28], byteorder="little")
                 yield fid, jpg
+                if fid is not None:
+                    fid = None
 
 
 class LogPlayer(Process):
     def __init__(self, log_path, configs=None, start_frame=0, ratio=1.0):
         Process.__init__(self)
-        self.daemon = True
+        # self.daemon = False
         self.time_aligned = True
         self.log_path = log_path
         self.start_frame = start_frame
@@ -100,7 +109,7 @@ class LogPlayer(Process):
         # files = [x for x in files if x.endswith('.avi')]
         # self.video_files = sorted(files)
         # self.jpeg_extractor = JpegExtractor()
-        self.jpeg_extractor = jpeg_extractor(os.path.dirname(log_path)+'/video')
+        self.jpeg_extractor = jpeg_extractor(os.path.dirname(log_path) + '/video')
         self.base_dir = os.path.dirname(self.log_path)
         self.msg_queue = Queue()
         self.cam_queue = Queue()
@@ -119,7 +128,6 @@ class LogPlayer(Process):
         #                   "can2": configs[1]['can_types']['can0'],
         #                   "can3": configs[1]['can_types']['can1']}
         # print(self.can_types)
-        print('pcc-replay', len(configs))
         for idx, cfg in enumerate(configs):
             cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
             cantypes1 = ' '.join(cfg['can_types']['can1']) + '.{:01}'.format(idx)
@@ -130,7 +138,6 @@ class LogPlayer(Process):
             if len(cfg['can_types']['can1']) > 0:
                 self.msg_types.append([cantypes1])
         print('msgtypes:', self.msg_types)
-        print('cantypes', self.can_types)
 
         self.msg_types = [x if len(x) > 0 else '' for x in list(self.can_types.values()) if len(x) > 2]
 
@@ -192,7 +199,6 @@ class LogPlayer(Process):
                     res[key] = self.cache[key]
                     self.cache[key] = []
                 self.msg_cnt['frame'] += 1
-                time.sleep(0.01)
                 return res
             else:
                 print('error decode img', frame_id, len(data))
@@ -207,7 +213,8 @@ class LogPlayer(Process):
                 self.cache[msg_type].append(msg_data)
             # self.msg_cnt[msg_type]['rev'] += 1
             # self.msg_cnt[msg_type]['show'] += 1
-
+        else:
+            time.sleep(0.001)
 
     def pause(self, pause):
         if pause:
@@ -228,6 +235,7 @@ class LogPlayer(Process):
         # with open(self.log_path) as rf:
         forwarding = False
         stop_frame = 84000
+        frame_id = 0
 
         for line in rf:
             if not self.ctrl_q.empty():
@@ -260,7 +268,6 @@ class LogPlayer(Process):
                 # jpg = self.jpeg_extractor.read()
                 fid, jpg = next(self.jpeg_extractor)
                 dt = self.t0 + ts - time.time()
-
                 # print(len(jpg))
                 if jpg is None:
                     continue
@@ -273,12 +280,6 @@ class LogPlayer(Process):
                 else:
                     forwarding = False
 
-                # if dt > 0.05+0.01:
-                #     dt = 0.05
-                # nanomsg.wrapper.nn_send(self.sock_img, b'0' * 16 + jpg, 0)
-                # app1 = jpg.find(b'\xff\xe1')
-                # frame_id_jfif = int.from_bytes(jpg[24:28], byteorder="little")
-                # print(app1, frame_id_jfif)
                 r = {'ts': ts, 'img': jpg}
 
                 # msg = b'0' * 4 + frame_id.to_bytes(4, 'little', signed=False) + struct.pack('<d', ts) + jpg
@@ -304,7 +305,7 @@ class LogPlayer(Process):
                 print('sent img {} size {} dt {:.6f}'.format(cols[3].strip(), len(jpg), dt), self.cam_queue.qsize())
                 # time.sleep(0.01)
             if forwarding:
-                # print(forwarding)
+                print('\rnow frame {},forwarding to {}...'.format(frame_id, self.start_frame), end='')
                 continue
 
             if 'CAN' in cols[2]:
@@ -315,8 +316,6 @@ class LogPlayer(Process):
                 data = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
                 msg = b'0000' + can_id + struct.pack('<d', ts) + data
 
-                # print(self.parser)
-                # print(msg_type)
                 # print(cols[2], '0x{:03x}'.format(int(cols[3], 16)), ts)
                 for parser in self.parser[msg_type]:
                     # print("0x%x" % can_id, parser)
@@ -522,17 +521,13 @@ def prep_replay(source):
 
     return r_sort
 
-
 if __name__ == "__main__":
     from config.config import *
 
     freeze_support()
-    # source = '/media/nan/860evo/data/pc-collector_result/fcw_pass_01/pc-collector/20190507171108/log.txt'
-    r_sort = '/home/cao/桌面/20190412_ssae_aeb_test/pc_collect/CCR/20190412121015_CCRS_40kmh/log.txt'
-    # t_sort = time_sort(r_sort)
-    # shutil.copy(t_sort, r_sort)
-    # source = local_cfg.log_root
-    r_sort = prep_replay(r_sort)
+    source = '/home/cao/桌面/20190412_ssae_aeb_test/pc_collect/CCR/20190412121015_CCRS_40kmh/log.txt'
+    # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
+    r_sort = prep_replay(source)
 
     from pcc import PCC
     from parsers.parser import parsers_dict
