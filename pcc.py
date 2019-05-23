@@ -131,16 +131,18 @@ class PCC(object):
 
         while not self.exit:
             d = self.hub.pop_simple()
-            if d is None:
+            if d is None or not d.get('frame_id'):
+                # time.sleep(0.001)
                 continue
-            if not d.get('frame_id'):
-                continue
-            frame_cnt += 1
-            lst = time.time()
-            self.handle_keyboard()
-            self.draw(d, frame_cnt)
-            logging.info('draw-------- ' + str(time.time() - lst))
 
+            self.draw(d, frame_cnt)
+            while self.replay and self.pause:
+                self.draw(d, frame_cnt)
+                self.hub.pause(True)
+                time.sleep(0.05)
+            # cv2.waitKey(1)
+            self.hub.pause(False)
+            # self.draw(d, frame_cnt)
             if frame_cnt >= 200:
                 self.player.start_time = datetime.now()
                 frame_cnt = 0
@@ -214,6 +216,7 @@ class PCC(object):
         else:
             comb = img
         cv2.imshow('UI', comb)
+        self.handle_keyboard()
         # draw_corners(img)
         # cv2.imshow('UI', img)
         # cv2.imshow('IPM', self.ipm)
@@ -372,11 +375,7 @@ class PCC(object):
         elif key == 32:  # space
             self.pause = not self.pause
             print('Pause:', self.pause)
-            if self.pause:
-                while self.pause:
-                    key = cv2.waitKey(1) & 0xFF
-                    if key == 32:  # space
-                        self.pause = False
+
         elif key == 27:
             cv2.destroyAllWindows()
             self.exit = True

@@ -348,9 +348,9 @@ if __name__ == "__main__":
 
 else:
     # install = json.load(open('etc/installation.json'))
-    configs = json.load(open('config/skoda_spb.json'))['collectors']
-    install = json.load(open('config/skoda_spb.json'))['installation']
-    config = dic2obj(configs[0])
+    # configs = json.load(open('config/skoda_spb.json'))['collectors']
+    # install = json.load(open('config/skoda_spb.json'))['installation']
+    # config = dic2obj(configs[0])
 
     if not os.path.exists('config/local.json'):
         shutil.copy('config/local_sample.json', 'config/local.json')

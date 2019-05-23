@@ -35,13 +35,14 @@ class Player(object):
         self.cipv = 0
 
         self.color_seq = [CVColor.White, CVColor.Red, CVColor.Green, CVColor.deeporange, CVColor.purple,
-                          CVColor.Blue, CVColor.LightBlue]
-        self.color_obs = {'ifv300': CVColor.White,
-                     'esr': CVColor.Red,
-                     'lmr': CVColor.Green,
-                     'x1': CVColor.purple,
-                     'rtk': CVColor.Green,
-                     'ars': CVColor.Blue}
+             CVColor.Blue, CVColor.LightBlue]
+
+        self.color_obs = {'ifv300': CVColor.Blue,
+             'esr': CVColor.Red,
+             'lmr': CVColor.Green,
+             'x1': CVColor.purple,
+             'rtk': CVColor.Green,
+             'ars': CVColor.Green}
 
         self.param_bg_width = 160
 
@@ -247,10 +248,10 @@ class Player(object):
             color = self.color_seq[0]
 
         width = obs.get('width')
-        width = width if width else 0.3
+        width = width or 0.3
         height = obs.get('height')
         # print(obs['source'], obs['class'])
-        height = height if height else width
+        height = height or width
         if obs.get('class') == 'pedestrian':
             height = 1.6
         if 'pos_lon' in obs:
@@ -270,17 +271,11 @@ class Player(object):
         x0, y0 = trans_gnd2raw(x, y)
 
         h = w
-        # if obs.get('class') == 'pedestrian':
         h = 1200 * height / x
-        # ux - 0.5 * w, uy - w, w, w
-        # print(obs.get('class'))
         x1 = x0 - 0.5 * w
         y1 = y0 - h
-        # width = int(width)
-        # height = int(height)
         x2 = x1 + w
         y2 = y1 + h
-        # print(obs['source'], w, h)
         x1 = int(x1)
         x2 = int(x2)
         y1 = int(y1)
@@ -290,18 +285,21 @@ class Player(object):
                 w = 50
             # print(int(x1), int(y1), int(w), width)
             cv2.circle(img, (int(x0), int(y0)), int(w), color, 1)
+            BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), 0.45, color, 1)
         elif obs.get('class') == 'pedestrian':
+            # print(obs)
             cv2.rectangle(img, (x1, y1), (x2, y2), color, thickness)
+            BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), 0.45, color, 1)
         else:
             BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness)
+            BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), 0.45, color, 1)
         # BaseDraw.draw_rect(img,  (x1, y1), (x1 + 70, y1 - 12), color,-1)
-        BaseDraw.draw_text(img, 'id:{} {:.1f}'.format(obs['id'], obs['pos_lon'] if 'pos_lon' in obs else obs['range']),
-                           (x1, y1), 0.4, CVColor.White, 1)
+        # BaseDraw.draw_text(img, 'id:{} {:.1f}'.format(obs['id'], obs['pos_lon']), (x1, y1), 0.4, CVColor.Green, 1)
 
         if 'cipo' in obs and obs['cipo']:
             # color = CVColor.Yellow
             self.show_cipo_info(img, obs)
-            BaseDraw.draw_up_arrow(img, x0, y0+3, color)
+            BaseDraw.draw_up_arrow(img, x0, y0 + 3, color)
 
         # if 'TTC' in obs:
         #     self.show_ttc(img, obs['TTC'], obs['source'])
@@ -610,6 +608,8 @@ class Player(object):
         BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
 
     def show_cipo_info(self, img, obs):
+
+        print('obs ---------', obs)
         indent = self.get_indent(obs['source'])
         # print(obs['class'])
         if obs.get('class') == 'pedestrian':
@@ -625,7 +625,7 @@ class Player(object):
         if 'TTC' in obs:
             BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line + 20), 0.5, CVColor.White,
                                1)
-        dist = obs['pos_lon'] if 'pos_lon' in obs else obs['range']
+        dist = obs.get('pos_lon') or obs['range']
         BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
         BaseDraw.draw_up_arrow(img, indent + 8, line - 12, self.color_seq[obs['color']], 6)
 

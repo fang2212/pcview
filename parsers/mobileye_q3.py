@@ -118,7 +118,7 @@ def parse_ifv300(id, buf, ctx=None):
         obs['vel_lon'] = r['VIS_OBS_LONG_VEL_' + idx]  # + sin(yaw * pi / 180.0) * rg
         obs['pos_lat'] = r['VIS_OBS_LAT_POS_' + idx]
         obs['vel_lat'] = r['VIS_OBS_LAT_VEL_' + idx]
-        obs['color'] = 2 # green
+        obs['color'] = 5 # green
         send = obs.copy()
         # print(send)
         obs.clear()
@@ -134,11 +134,15 @@ numofobs = 0
 
 def parse_q3(id, buf, ctx=None):
     ids = [m.frame_id for m in db_q3.messages]
-    global numofobs
+    # global numofobs
     if id not in ids:
         return None
     r = db_q3.decode_message(id, buf)
     # print("0x%x" % id, r)
+    if not ctx.get('obs'):
+        ctx['obs'] = {}
+    if not ctx.get('obsnum'):
+        ctx['obsnum'] = {}
 
     if id == 0x760:
         speed = buf[2]
@@ -148,31 +152,32 @@ def parse_q3(id, buf, ctx=None):
         numofobs = r['NumObstacles']
         timestamp = r['Timestamp']
 
-    if 0x739+3*numofobs > id >= 0x739 and (id - 0x739) % 3 == 0:
+    if 0x739 + 3 * ctx['obsnum'] > id >= 0x739 and (id - 0x739) % 3 == 0:
         # print()
         # print("0x%x" % id, r)
-        obs1['type'] = 'obstacle'
-        obs1['id'] = r.get('ObstacleID')
-        obs1['pos_lon'] = r['ObstaclePosX']
-        obs1['pos_lat'] = r['ObstaclePosY']
-        obs1['turn_indic'] = r['BlinkerInfo']
-        obs1['cut_in_out'] = r['Move_in_and_Out']
-        obs1['vel_lon'] = r['ObstacleVelX']
-        obs1['class'] = r['ObstacleType']
-        obs1['status'] = r['ObstacleStatus']
-        obs1['brake_indic'] = r['ObstacleBrakeLights']
-        obs1['valid'] = r['ObstacleValid']
+        ctx['obs']['type'] = 'obstacle'
+        ctx['obs']['id'] = r.get('ObstacleID')
+        ctx['obs']['pos_lon'] = r['ObstaclePosX']
+        ctx['obs']['pos_lat'] = r['ObstaclePosY']
+        ctx['obs']['turn_indic'] = r['BlinkerInfo']
+        ctx['obs']['cut_in_out'] = r['Move_in_and_Out']
+        ctx['obs']['vel_lon'] = r['ObstacleVelX']
+        ctx['obs']['class'] = r['ObstacleType']
+        ctx['obs']['status'] = r['ObstacleStatus']
+        ctx['obs']['brake_indic'] = r['ObstacleBrakeLights']
+        ctx['obs']['valid'] = r['ObstacleValid']
 
-    if 0x739+3*numofobs  > id >= 0x739 and (id - 0x73a) % 3 == 0:
-        obs1['width'] = r['ObstacleWidth']
-        obs1['cipv'] = r['CIPVFlag']
+    if 0x739 + 3 * ctx['obsnum'] > id >= 0x739 and (id - 0x73a) % 3 == 0:
+        ctx['obs']['width'] = r['ObstacleWidth']
+        ctx['obs']['cipv'] = r['CIPVFlag']
 
-    if 0x739+3*numofobs  > id >= 0x739 and (id - 0x73b) % 3 == 0:
-        obs1['vel_lat'] = r['ObstacleVelY']
-        obs1['acc_lon'] = r['Object_Accel_X']
-        obs1['color'] = 0
-        send = obs1.copy()
+    if 0x739 + 3 * ctx['obsnum'] > id >= 0x739 and (id - 0x73b) % 3 == 0:
+        ctx['obs']['vel_lat'] = r['ObstacleVelY']
+        ctx['obs']['acc_lon'] = r['Object_Accel_X']
+        ctx['obs']['color'] = 2
+        send = ctx['obs'].copy()
         # print(send)
-        obs1.clear()
+        ctx['obs'].clear()
         # print(send)
         return send
+
