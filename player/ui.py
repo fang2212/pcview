@@ -309,6 +309,8 @@ class BaseDraw(object):
 
 pack = os.path.join
 logodir = "assets/overlook"
+
+
 class DrawOverlook(object):
     '''
     画右上角的俯视图

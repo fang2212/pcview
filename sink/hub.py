@@ -66,6 +66,8 @@ class Hub(Thread):
                 self.camera_sink.start()
                 self.collectors[ip]['sinks']['video'] = self.camera_sink
             ndev = 0
+
+            print('hub configs', len(configs))
             for idx, c in enumerate(configs):
                 if c['mac'] == finder.found[ip]['mac']:
                     if finder.found[ip].get('type') == 'pi_node':

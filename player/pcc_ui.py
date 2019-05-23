@@ -81,9 +81,14 @@ class Player(object):
                 BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
                 BaseDraw.draw_text(img, '{}m'.format(i), p2, 0.3, CVColor.White, 1)
 
+        for i in range(-10, 11, 5):
+            p1 = trans_gnd2ipm(-10, i)
+            p2 = trans_gnd2ipm(170, i)
+            BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
+            BaseDraw.draw_text(img, '{}m'.format(i), p2, 0.3, CVColor.White, 1)
+
     def show_overlook_background(self, img):
         """绘制俯视图的背景，包括背景图，车背景图，光线图
-
         Args:
             img: 原始图片
         """

@@ -12,7 +12,7 @@ x1_ped = {}
 x1_obs = {}
 
 
-def parse_x1(id, data):
+def parse_x1(id, data, ctx=None):
     ids = [m.frame_id for m in db_x1.messages]
     if id not in ids:
         return None

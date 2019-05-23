@@ -118,6 +118,9 @@ class CANSink(Sink):
         return can_id, timestamp, data
 
     def pkg_handler(self, msg):
+
+        lst = time.time()
+
         can_id, timestamp, data = msg
         id = '0x%x' % can_id
 
@@ -165,6 +168,8 @@ class CANSink(Sink):
             r['source'] = self.source
             # print(r['source'])
         # print(r)
+
+        logging.info('cansink ----' + str(time.time() - lst))
         return can_id, r
 
 

@@ -86,7 +86,7 @@ def jpeg_extractor(video_dir):
 class LogPlayer(Process):
     def __init__(self, log_path, configs=None, start_frame=0, ratio=1.0):
         Process.__init__(self)
-        # self.daemon = False
+        self.daemon = True
         self.time_aligned = True
         self.log_path = log_path
         self.start_frame = start_frame
@@ -119,6 +119,7 @@ class LogPlayer(Process):
         #                   "can2": configs[1]['can_types']['can0'],
         #                   "can3": configs[1]['can_types']['can1']}
         # print(self.can_types)
+        print('pcc-replay', len(configs))
         for idx, cfg in enumerate(configs):
             cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
             cantypes1 = ' '.join(cfg['can_types']['can1']) + '.{:01}'.format(idx)
@@ -129,6 +130,7 @@ class LogPlayer(Process):
             if len(cfg['can_types']['can1']) > 0:
                 self.msg_types.append([cantypes1])
         print('msgtypes:', self.msg_types)
+        print('cantypes', self.can_types)
 
         self.msg_types = [x if len(x) > 0 else '' for x in list(self.can_types.values()) if len(x) > 2]
 
@@ -190,6 +192,7 @@ class LogPlayer(Process):
                     res[key] = self.cache[key]
                     self.cache[key] = []
                 self.msg_cnt['frame'] += 1
+                time.sleep(0.01)
                 return res
             else:
                 print('error decode img', frame_id, len(data))
@@ -204,6 +207,7 @@ class LogPlayer(Process):
                 self.cache[msg_type].append(msg_data)
             # self.msg_cnt[msg_type]['rev'] += 1
             # self.msg_cnt[msg_type]['show'] += 1
+
 
     def pause(self, pause):
         if pause:
@@ -524,19 +528,21 @@ if __name__ == "__main__":
 
     freeze_support()
     # source = '/media/nan/860evo/data/pc-collector_result/fcw_pass_01/pc-collector/20190507171108/log.txt'
-    r_sort = '/home/cao/桌面/20190513_ub482/20190513172422/log.txt'
-    t_sort = time_sort(r_sort)
-    shutil.copy(t_sort, r_sort)
-    source = local_cfg.log_root
-    # r_sort = prep_replay(source)
+    r_sort = '/home/cao/桌面/20190412_ssae_aeb_test/pc_collect/CCR/20190412121015_CCRS_40kmh/log.txt'
+    # t_sort = time_sort(r_sort)
+    # shutil.copy(t_sort, r_sort)
+    # source = local_cfg.log_root
+    r_sort = prep_replay(r_sort)
 
     from pcc import PCC
     from parsers.parser import parsers_dict
 
     # print(install['video'])
     replayer = LogPlayer(r_sort, configs, start_frame=0, ratio=0.2)
+
     # replayer.start()
-    pc_viewer = PCC(replayer, replay=True, rlog=source, ipm=True)
+    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)
     pc_viewer.start()
+
     # while True:
     #     replayer.pop_simple()

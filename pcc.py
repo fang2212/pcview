@@ -17,6 +17,10 @@ from tools.vehicle import Vehicle
 import numpy as np
 from tools.match import is_near
 from math import fabs
+import logging
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 
 class OrientTuner(object):
@@ -106,6 +110,8 @@ class PCC(object):
         self.target = None
         self.rtk_pair = [{}, {}]
         self.ot = OrientTuner()
+        self.show_ipm_bg = False
+
         if not replay:
             self.supervisor = Supervisor([self.check_status, self.hub.fileHandler.check_file])
             self.supervisor.start()
@@ -130,11 +136,15 @@ class PCC(object):
             if not d.get('frame_id'):
                 continue
             frame_cnt += 1
+            lst = time.time()
+            self.handle_keyboard()
             self.draw(d, frame_cnt)
+            logging.info('draw-------- ' + str(time.time() - lst))
+
             if frame_cnt >= 200:
                 self.player.start_time = datetime.now()
                 frame_cnt = 0
-                time.sleep(0.05)
+                time.sleep(0.01)
 
     def draw(self, mess, frame_cnt):
         imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
@@ -154,7 +164,13 @@ class PCC(object):
         self.player.show_datetime(img, self.ts_now)
         if self.show_ipm:
             self.m_g2i = calc_g2i_matrix()
-            self.ipm = cv2.warpPerspective(img, self.m_g2i, (480, 720))
+
+            if self.show_ipm_bg:
+                self.ipm = cv2.warpPerspective(img, self.m_g2i, (480, 720))
+            else:
+                self.ipm = np.zeros([720, 480, 3], np.uint8)
+                self.ipm[:, :] = [180, 180, 180]
+
             self.player.show_dist_mark_ipm(self.ipm)
 
         cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
@@ -203,7 +219,6 @@ class PCC(object):
         # cv2.imshow('IPM', self.ipm)
         # if self.rlog is not None:
         #     fileHandler.insert_video((frame_id, img))
-        self.handle_keyboard()
 
     def draw_obs(self, img, data):
         if len(data) == 0:
@@ -357,6 +372,11 @@ class PCC(object):
         elif key == 32:  # space
             self.pause = not self.pause
             print('Pause:', self.pause)
+            if self.pause:
+                while self.pause:
+                    key = cv2.waitKey(1) & 0xFF
+                    if key == 32:  # space
+                        self.pause = False
         elif key == 27:
             cv2.destroyAllWindows()
             self.exit = True
@@ -376,6 +396,8 @@ class PCC(object):
             # print(self.set_target)
         elif key == ord('c'):
             self.calib_esr()
+        elif key == ord('b'):
+            self.show_ipm_bg = not self.show_ipm_bg
 
     def left_click(self, event, x, y, flags, param):
         # print(event, x, y, flags, param)
