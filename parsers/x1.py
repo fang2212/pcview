@@ -17,6 +17,7 @@ def parse_x1(id, data, ctx=None):
     if id not in ids:
         return None
     r = db_x1.decode_message(id, data)
+
     # print("0x%x" % id, r)
     if id == 0x76d:
         # print("0x%x" % id, r)
@@ -33,6 +34,7 @@ def parse_x1(id, data, ctx=None):
             # print('X %.1f', r['TargetVehicle_PosX'])
             cipv['color'] = 4
             cipv['class'] = r['TargetVehicle_Type']
+
             # return {'type': 'obstacle','id': r['TargetID'], 'pos_lat': r['TargetVehiclePosY'], 'pos_lon': r['TargetVehiclePosX'], 'color': 3}
     if id == 0x76e:
         if len(cipv) == 0:
