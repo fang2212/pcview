@@ -102,7 +102,6 @@ class LogPlayer(Process):
         # self.forwarding = False
         # self.pub_addr = pub_addr
         self.socks = {}
-        self.sched = sched.scheduler(time.time, time.sleep)
         self.t0 = 0
         self.last_frame = 0
         # files = os.listdir(os.path.dirname(log_path)+'/video')
@@ -122,12 +121,9 @@ class LogPlayer(Process):
         self.context = {}
         self.ratio = ratio
         self.ctrl_q = Queue()
-        # self.snapshot = {}
-        # self.can_types = {"can0": configs[0]['can_types']['can0'],
-        #                   "can1": configs[0]['can_types']['can1'],
-        #                   "can2": configs[1]['can_types']['can0'],
-        #                   "can3": configs[1]['can_types']['can1']}
-        # print(self.can_types)
+
+        self.buf = []
+
         for idx, cfg in enumerate(configs):
             cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
             cantypes1 = ' '.join(cfg['can_types']['can1']) + '.{:01}'.format(idx)
@@ -147,30 +143,11 @@ class LogPlayer(Process):
             self.context[can] = {}
             for type in parsers_dict:
                 if type in self.can_types[can]:
-                    print(can, type)
+                    print('----', can, type)
                     self.parser[can].append(parsers_dict[type])
             if len(self.parser[can]) == 0:
                 self.parser[can] = [parsers_dict['default']]
-        # print(self.parser)
-
-        # for msg_type in [x for x in self.can_types]:
-        #     self.cache[msg_type] = []
-        #     self.msg_cnt[msg_type] = {
-        #         'rev': 0,
-        #         'show': 0,
-        #         'fix': 0,
-        #     }
         self.cache['can'] = []
-
-    # def init_socket(self):
-    #     self.socks['camera'] = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.PUB)
-    #     nanomsg.wrapper.nn_bind(self.socks['camera'], "tcp://%s:1200" % self.pub_addr)
-    #     self.socks['CAN0'] = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.PUB)
-    #     nanomsg.wrapper.nn_bind(self.socks['CAN0'], "tcp://%s:1207" % self.pub_addr)
-    #     self.socks['CAN1'] = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.PUB)
-    #     nanomsg.wrapper.nn_bind(self.socks['CAN1'], "tcp://%s:1208" % self.pub_addr)
-    #     self.socks['Gsensor'] = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.PUB)
-    #     nanomsg.wrapper.nn_bind(self.socks['Gsensor'], "tcp://%s:1209" % self.pub_addr)
 
     def pop_simple(self, pause=False):
         res = {
@@ -189,32 +166,34 @@ class LogPlayer(Process):
         }
 
         if not self.cam_queue.empty():
-            frame_id, data, msg_type = self.cam_queue.get()
+            frame_id, data, msg_type, cache = self.cam_queue.get()
             # print(frame_id, msg_type)
             res['ts'] = data['ts']
             res['img'] = data['img']
             res['frame_id'] = frame_id
             if res['img'] is not None:
-                for key in list(self.cache):
-                    res[key] = self.cache[key]
-                    self.cache[key] = []
+                for key in list(cache):
+                    res[key] = cache[key].copy()
+                    print(key, cache[key])
+                    cache[key] = []
                 self.msg_cnt['frame'] += 1
+                print('res can', res['can'])
                 return res
             else:
                 print('error decode img', frame_id, len(data))
-        if not self.msg_queue.empty():
-            frame_id, msg_data, msg_type = self.msg_queue.get()
-            # res[msg_type] = msg_data
-            # res['frame_id'] = frame_id
-            if isinstance(msg_data, list):
-                # print('msg data list')
-                self.cache[msg_type].extend(msg_data)
-            elif isinstance(msg_data, dict):
-                self.cache[msg_type].append(msg_data)
-            # self.msg_cnt[msg_type]['rev'] += 1
-            # self.msg_cnt[msg_type]['show'] += 1
-        else:
-            time.sleep(0.001)
+        # if not self.msg_queue.empty():
+        #     frame_id, msg_data, msg_type = self.msg_queue.get()
+        #     # res[msg_type] = msg_data
+        #     # res['frame_id'] = frame_id
+        #     if isinstance(msg_data, list):
+        #         # print('msg data list')
+        #         self.cache[msg_type].extend(msg_data)
+        #     elif isinstance(msg_data, dict):
+        #         self.cache[msg_type].append(msg_data)
+        #     # self.msg_cnt[msg_type]['rev'] += 1
+        #     # self.msg_cnt[msg_type]['show'] += 1
+        # else:
+        #     time.sleep(0.001)
 
     def pause(self, pause):
         if pause:
@@ -232,11 +211,6 @@ class LogPlayer(Process):
         line0 = rf.readline().split(' ')
         self.t0 = int(line0[0]) + int(line0[1]) / 1000000
         self.t0 = time.time() - self.t0
-        # with open(self.log_path) as rf:
-        forwarding = False
-        stop_frame = 84000
-        frame_id = 0
-
         for line in rf:
             if not self.ctrl_q.empty():
                 ctrl = self.ctrl_q.get()
@@ -256,57 +230,15 @@ class LogPlayer(Process):
             ts = float(cols[0]) + float(cols[1]) / 1000000
             if cols[2] == 'camera':
                 frame_id = int(cols[3])
-                # if frame_id >= stop_frame:
-                #     break
-                # if self.jpeg_extractor.done:
-                #     if len(self.video_files) == 0:
-                #         print("End of video file(s).")
-                #         break
-                #     else:
-                #         video_dir = os.path.join(self.base_dir, 'video')
-                #         self.jpeg_extractor.open(os.path.join(video_dir, self.video_files.pop(0)))
-                # jpg = self.jpeg_extractor.read()
                 fid, jpg = next(self.jpeg_extractor)
-                dt = self.t0 + ts - time.time()
-                # print(len(jpg))
+
                 if jpg is None:
                     continue
-
-                if frame_id < self.start_frame:
-                    forwarding = True
-                    self.t0 = time.time() - ts
-                    # print('skipping frame', frame_id)
-                    continue
-                else:
-                    forwarding = False
-
                 r = {'ts': ts, 'img': jpg}
-
-                # msg = b'0' * 4 + frame_id.to_bytes(4, 'little', signed=False) + struct.pack('<d', ts) + jpg
-                if dt > 0.1:
-                    print('----dt {}----'.format(dt))
-
-                if dt <= 0.001:
-                    # nanomsg.wrapper.nn_send(self.socks['camera'], msg, 0)
-                    self.cam_queue.put((frame_id, r, 'camera'))
-                    # print('sent img {} size {} dt {}'.format(cols[3].strip(), len(jpg), dt), self.cam_queue.qsize())
-                elif dt > 0.2 * (frame_id - self.last_frame) or dt > 1.0:
-                    self.t0 += dt
-                    # nanomsg.wrapper.nn_send(self.socks['camera'], msg, 0)
-                    self.cam_queue.put((frame_id, r, 'camera'))
-                    # print('sent img {} size {} dt {}'.format(cols[3].strip(), len(jpg), dt), self.cam_queue.qsize())
-                else:
-                    # self.sched.enter(dt, 1, nanomsg.wrapper.nn_send,
-                    #                  argument=(self.socks['camera'], msg, 0))
-                    # print('sent img {} size {} dt {}'.format(cols[3].strip(), len(jpg), dt), self.cam_queue.qsize())
-                    self.sched.enter(dt, 1, self.cam_queue.put, argument=((frame_id, r, 'camera'),))
-                self.last_frame = frame_id
-
-                print('sent img {} size {} dt {:.6f}'.format(cols[3].strip(), len(jpg), dt), self.cam_queue.qsize())
-                # time.sleep(0.01)
-            if forwarding:
-                print('\rnow frame {},forwarding to {}...'.format(frame_id, self.start_frame), end='')
-                continue
+                self.cam_queue.put((frame_id, r, 'camera', self.cache.copy()))
+                self.cache.clear()
+                self.cache['can'] = []
+                print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
 
             if 'CAN' in cols[2]:
                 msg_type = cols[2]
@@ -330,35 +262,27 @@ class LogPlayer(Process):
                         obs['ts'] = ts
                         # obs['source'] = self.msg_types[int(msg_type[3])]
                         obs['source'] = self.can_types[msg_type]
+
                 else:
                     # print('r is not list')
                     r['ts'] = ts
                     # r['source'] = self.msg_types[int(msg_type[3])]
                     r['source'] = self.can_types[msg_type]
-                    # if 'rtk' in r['source']:
-                    #     print(r['source'])
-                # if self.can_types[msg_type] == 'rtk.3':
-                #     continue
+                if len(r) > 0:
+                    print('r', r)
 
-                # print(r['source'])
-                # print(r)
-                # self.msg_queue.put((can_id, r, msg_type))
-                # nanomsg.wrapper.nn_send(self.sock_can0, msg, 0)r
-                dt = self.t0 + ts - time.time()
-                # if dt <= 0.001:
-                # nanomsg.wrapper.nn_send(self.socks[cols[2]], msg, 0)
-                # else:
-                # self.msg_queue.put()
-                # self.sched.enter(dt, 1, nanomsg.wrapper.nn_send, argument=(self.socks[cols[2]], msg, 0))
-                self.sched.enter(dt, 1, self.msg_queue.put, argument=((can_id, r, 'can'),))
+                # self.msg_queue.put((can_id, r, 'can'))
+
+                if isinstance(r, list):
+                    # print('msg data list')
+                    self.cache['can'].extend(r.copy())
+                elif isinstance(r, dict):
+                    self.cache['can'].append(r.copy())
 
             if cols[2] == 'Gsensor':
                 data = [int(x) for x in cols[3:9]]
                 msg = struct.pack('<BBhIdhhhhhhhq', 0, 0, 0, 0, ts, data[3], data[4], data[5], data[0], data[1], data[2],
                                   int((float(cols[9]) - 36.53) * 340), 0)
-                dt = self.t0 + ts - time.time()
-                # self.sched.enter(dt, 1, nanomsg.wrapper.nn_send, argument=(self.socks[cols[2]], msg, 0))
-                # nanomsg.wrapper.nn_send(self.socks[cols[2]], msg, 0)
 
             if 'rtk' in cols[2] and 'sol' in cols[2]:
                 rtk_dec = True
@@ -374,20 +298,14 @@ class LogPlayer(Process):
                     vehstate = {'type': 'vehicle_state', 'pitch': r['pitch'], 'yaw': r['yaw'], 'ts': ts}
                 else:
                     vehstate = None
-
-                dt = self.t0 + ts - time.time()
-
-                self.sched.enter(dt, 1, self.msg_queue.put, argument=((0xc7, [r, vehstate], 'can'),))
+                self.msg_queue.put((0xc7, [r, vehstate], 'can'))
 
             if 'rtk.target' in cols[2]:
                 range = float(cols[3])
                 angle = float(cols[4])
                 height = float(cols[5])
                 r = {'source': cols[2], 'type': cols[2], 'ts': ts, 'range': range, 'angle': angle, 'height': height}
-
-                dt = self.t0 + ts - time.time()
-
-                self.sched.enter(dt, 1, self.msg_queue.put, argument=((0xc7, r, 'can'),))
+                self.msg_queue.put((0xc7, r, 'can'))
 
             if 'rtk' in cols[2] and 'bestpos' in cols[2]:
                 r = dict()
@@ -418,10 +336,7 @@ class LogPlayer(Process):
                 r['ext_sol_stat'] = int(fields[14], 16)
                 # r['rsv4'] = int(fields[19])
                 # r['sig_mask'] = int(fields[20], 16)
-
-                dt = self.t0 + ts - time.time()
-
-                self.sched.enter(dt, 1, self.msg_queue.put, argument=((0xc7, r, 'can'),))
+                self.msg_queue.put((0xc7, r, 'can'))
 
             if 'rtk' in cols[2] and 'heading' in cols[2]:
                 r = dict()
@@ -450,13 +365,7 @@ class LogPlayer(Process):
                 r['ext_sol_stat'] = int(fields[11], 16)
                 # r['rsv4'] = int(fields[15])
                 # r['sig_mask'] = int(fields[16], 16)
-
-                dt = self.t0 + ts - time.time()
-
-                self.sched.enter(dt, 1, self.msg_queue.put, argument=((0xc7, r, 'can'),))
-
-            self.sched.run()
-
+                self.msg_queue.put((0xc7, r, 'can'))
         rf.close()
         # cp.disable()
         # cp.print_stats()
@@ -525,7 +434,7 @@ if __name__ == "__main__":
     from config.config import *
 
     freeze_support()
-    source = '/home/cao/桌面/20190412_ssae_aeb_test/pc_collect/CCR/20190412121015_CCRS_40kmh/log.txt'
+    source = '/home/cao/桌面/江苏/20190524192445-case5/log.txt'
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
     r_sort = prep_replay(source)
 
