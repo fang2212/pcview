@@ -136,6 +136,7 @@ class PCC(object):
                 continue
 
             self.draw(d, frame_cnt)
+            time.sleep(0.01)
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
                 self.hub.pause(True)
@@ -177,6 +178,7 @@ class PCC(object):
 
         cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
 
+        # print('-----------mess', mess['can'])
         if can_data:
             # print('can0 data')
             for d in mess['can']:
@@ -186,10 +188,12 @@ class PCC(object):
                     cache[d['source']] = d
                 else:
                     self.draw_can_data(img, d)
+                # print('----------d', d)
 
         for type in cache:
             d = cache[type]
             self.draw_can_data(img, d)
+
 
         if 'rtk' in mess and mess['rtk']:  # usb pcan rtk
             for d in mess['rtk']:

@@ -1,4 +1,5 @@
-from math import fabs, sin, cos, pi
+# from math import fabs, sin, cos, pi
+from math import *
 
 class CIPOFilter(object):
     def __init__(self):

@@ -49,7 +49,7 @@ class Player(object):
         # for col in self.columns:
         #     if len(col) == 0:
         #         del self.columns[col]
-        print(self.columns)
+        # print(self.columns)
 
     def add_info_column(self, msg_type):
         if len(msg_type) == 0:
@@ -321,9 +321,22 @@ class Player(object):
 
         if obs.get('sensor') == 'radar':
             cv2.circle(img, (u, v), 8, color, 2)
+            # ESR
+            if 'TTC' in obs:
+                # for save space, only ttc<7 will be shown on the gui
+                if obs['TTC'] < 7:
+                    BaseDraw.draw_text(img, '{:.2f}'.format(obs['TTC']), (u - 40, v + 5), 0.4, color, 1)
         else:
             cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
-        BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v + 3), 0.4, color, 1)
+
+        if 'sensor' in obs:
+            # radar message show on the other side
+            if obs['sensor'] == 'radar':
+                BaseDraw.draw_text(img, '{}'.format(id), (u - 25, v - 8), 0.4, color, 1)
+                # dist = obs['pos_lon'] if 'pos_lon' in obs else obs['range']
+                # BaseDraw.draw_text(img, '{:.1f}'.format(dist), (u - 45, v + 5), 0.4, color, 1)
+        else:
+            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v + 3), 0.4, color, 1)
 
 
     def show_vehicle_parameters(self, img, parameters, point):
@@ -588,15 +601,15 @@ class Player(object):
 
     def show_ttc(self, img, ttc, source):
         indent = self.columns[source]['indent']
-        BaseDraw.draw_text(img, 'TTC:' + '{:.2f}s'.format(ttc), (indent + 2, 40), 0.5, CVColor.Cyan, 1)
+        BaseDraw.draw_text(img, 'TTC:' + '{:.2f} s'.format(ttc), (indent + 2, 40), 0.5, CVColor.Cyan, 1)
 
     def show_veh_speed(self, img, speed, source):
         indent = self.get_indent(source)
-        BaseDraw.draw_text(img, '{:.1f}km/h'.format(speed), (indent + 2, 60), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, '{:.1f} km/h'.format(speed), (indent + 2, 40), 0.5, CVColor.White, 1)
 
     def show_yaw_rate(self, img, yr, source):
         indent = self.get_indent(source)
-        BaseDraw.draw_text(img, '%.4f' % yr + 'deg/s', (indent + 2, 80), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, '%.4f' % yr + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
 
     def show_q3_veh(self, img, speed, yr):
         BaseDraw.draw_text(img, 'q3spd: ' + str(int(speed * 3.6)), (2, 120), 0.5, CVColor.White, 1)
@@ -608,10 +621,7 @@ class Player(object):
         BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
 
     def show_cipo_info(self, img, obs):
-
-        # print('obs ---------', obs)
         indent = self.get_indent(obs['source'])
-        # print(obs['class'])
         if obs.get('class') == 'pedestrian':
             line = 40
             BaseDraw.draw_text(img, 'CIPPed: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
@@ -918,8 +928,8 @@ class Player(object):
         if data['color'] == 1:
             otype = 2
 
-        if 'TTC' in data:
-            self.show_ttc(img, data['TTC'], data['source'])
+        # if 'TTC' in data:
+        #     self.show_ttc(img, data['TTC'], data['source'])
 
         if 'class' in data:
             width = data['width']

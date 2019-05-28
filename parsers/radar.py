@@ -10,9 +10,8 @@
 import cantools
 
 from tools.match import *
+from tools.transform import *
 from math import pi
-
-# from utils.transform import *
 
 # M_PI = 3.141592653589793238462643383279503
 
@@ -65,12 +64,43 @@ def parse_esr(id, buf, ctx=None):
             range = r.get('CAN_TX_TRACK_RANGE')
             angle = r.get('CAN_TX_TRACK_ANGLE')
             tid = id - 0x500
-            # x = cos(angle * pi / 180.0) * range + 1.64
-            # y = sin(angle * pi / 180.0) * range - 0.4
-            # x, y = trans_polar2rcs(angle, range, install['esr'])
+
+            range_rate = r.get('CAN_TX_TRACK_RANGE_RATE')
+            range_acc = r.get('CAN_TX_TRACK_RANGE_ACCEL')
+            x, y = trans_polar2rcs(angle, range, install['esr'])
+
+            # -YJ- new
+            angle_new = atan2(y, x)
+            v_x = range_rate * cos(angle_new)
+
+            # ttc_m
+            if v_x < -0.1:
+                ttc_m = -x / v_x
+                if ttc_m > 7:
+                    ttc_m = 7
+            else:
+                ttc_m = 7
+
+            # ttc_a
+            t1 = v_x * v_x - 2 * range_acc * range
+            if t1 > 0 and range_acc < 0:
+                # only use ttc_a when a < 0
+                ttc_a = (-v_x - sqrt(t1)) / range_acc
+                if ttc_a > 7:
+                    ttc_a = 7
+            else:
+                ttc_a = 7
+
+            if range_acc < 0:
+                ttc = ttc_a
+            else:
+                ttc = ttc_m
+
             # print('ESR 0x%x' % id, r)
+            # ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
+            #        'color': 1}
             ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
-                   'color': 1}
+                   'range_rate': range_rate, 'TTC': ttc, 'TTC_m': ttc_m, 'TTC_a': ttc_a, 'color': 1}
             ctx['obs'].append(ret)
             # if esr_filter.update(ret):
             #     ret['cipo'] = True
@@ -93,6 +123,13 @@ def parse_esr(id, buf, ctx=None):
         # print('0x%x' % id)
         # print('0x%x' % id, r)
         pass
+    elif id == 0x4E0:
+        # speed
+        if 'CAN_TX_VEHICLE_SPEED_CALC' in r:
+            speed_esr = r['CAN_TX_VEHICLE_SPEED_CALC'] * 3.6
+            yaw_rate_esr = r['CAN_TX_YAW_RATE_CALC'] /57.3
+            # print('speed: %.1f km/h %.4f' % (speed_esr, yaw_rate_esr))
+            return{'type': 'vehicle_state', 'speed': speed_esr, 'yaw_rate': yaw_rate_esr}
 
 
 def parse_bosch_mrr(id, buf, ctx=None):
