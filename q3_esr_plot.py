@@ -2,7 +2,9 @@ import os
 from collections import deque
 from parsers.mobileye_q3 import parse_ifv300
 from parsers.radar import parse_esr
+from parsers.x1 import parse_x1
 from matplotlib import pyplot as plt
+import plot_tmp as tmp
 
 
 def time_sort(file_name, sort_itv=8000):
@@ -16,10 +18,12 @@ def time_sort(file_name, sort_itv=8000):
     # rev_lines = []
     print('sorting...')
     past_lines = deque(maxlen=2 * sort_itv)
-    wf = open('log_sort.txt', 'w')
+    buf = os.path.dirname(file_name) + '/log_sort.txt'
+    wf = open(buf, 'w')
     idx = 0
     with open(file_name) as rf:
         for idx, line in enumerate(rf):
+            if line =='\n': continue
             cols = line.split(' ')
             tv_s = int(cols[0])
             tv_us = int(cols[1])
@@ -39,10 +43,10 @@ def time_sort(file_name, sort_itv=8000):
     wf.writelines([x[1] for x in past_lines[sort_itv - ((idx + 1) % sort_itv):]])
 
     wf.close()
-    return os.path.abspath('log_sort.txt')
+    return buf
 
 
-def parse_data(file_name, parms, q3_can_port='CAN0', esr_can_port='CAN3'):
+def parse_esr_q3_data(file_name, parms, q3_can_port='CAN0', esr_can_port='CAN3'):
     print('parsing q3 obj...')
     q_ctx = {}
     e_ctx = {}
@@ -80,10 +84,11 @@ def parse_data(file_name, parms, q3_can_port='CAN0', esr_can_port='CAN3'):
                     if 'TTC' in ret:
                         d['ttc'] = ret['TTC']
                     q3_data.append(d)
-                    # print('q3', ret)
+                    print('q3', ret)
 
             if esr_can_port in cols[2]:
                 can_id = int(cols[3], 16)
+
                 buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
                 r = parse_esr(can_id, buf, e_ctx)
                 # print(can_port, buf, r)
@@ -93,32 +98,115 @@ def parse_data(file_name, parms, q3_can_port='CAN0', esr_can_port='CAN3'):
                         continue
                     d = {'ts': ts, 'rng': item['range'], 'ttc': None}
                     esr_data.append(d)
-                # print('esr', r)
+                print('esr', r)
     return q3_data, esr_data
 
-def plot():
-    fig = plt.figure(figsize=(10,10))
+
+def parse_esr_x1_data(file_name, parms, x1_can_port='CAN0', esr_can_port='CAN1'):
+
+    file_name = time_sort(file_name)
+    print('parsing x1 obj...')
+    x_ctx = {}
+    e_ctx = {}
+    x1_data = []
+    esr_data = []
+    x1_id = parms['x1_id']
+    esr_id = parms['esr_id']
+    with open(file_name) as rf:
+        for line in rf:
+            line = line.strip()
+            if line == '': continue
+            cols = line.split(' ')
+            ts = float(cols[0]) + float(cols[1]) / 1000000
+            if x1_can_port in cols[2]:
+                can_id = int(cols[3], 16)
+                buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+                data = parse_x1(can_id, buf, x_ctx)
+                if data is None: continue
+                if isinstance(data, list):
+                    for item in data:
+                        if item['id'] != x1_id:
+                            continue
+                        d = {'ts': ts, 'rng': item['pos_lon'], 'ttc': None}
+                        if 'TTC' in item:
+                            d['ttc'] = item['TTC']
+                        x1_data.append(d)
+                else:
+                    if data['id'] != x1_id:
+                        continue
+                    d = {'ts': ts, 'rng': data['pos_lon'], 'ttc': None}
+                    if 'TTC' in data:
+                        d['ttc'] = data['TTC']
+                    x1_data.append(d)
+
+            if esr_can_port in cols[2]:
+                can_id = int(cols[3], 16)
+                buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+                r = parse_esr(can_id, buf, e_ctx)
+                # print(can_port, buf, r)
+                if r is None: continue
+
+                for item in r:
+                    if item['id'] not in esr_id:
+                        continue
+                    d = {'ts': ts, 'rng': item['range'], 'ttc': None}
+                    esr_data.append(d)
+
+        return x1_data, esr_data
+
+
+def plot(a, b, a_name, b_name, filepath):
+    fig = plt.figure(figsize=(10, 10))
     ax1 = plt.subplot(211)
-    ax1.plot([item['ts'] for item in q3], [item['rng'] for item in q3])
-    ax1.plot([item['ts'] for item in esr], [item['rng'] for item in esr])
-    ax1.legend(['q3', 'esr'])
+    ax1.plot([item['ts'] for item in a], [item['rng'] for item in a])
+    ax1.plot([item['ts'] for item in b], [item['rng'] for item in b], '.')
+    ax1.legend([a_name, b_name])
     ax1.set_ylabel('dist')
     ax1.grid()
 
+    ts, sp = tmp.main(pcc_dir, pcv_dir)
     ax2 = plt.subplot(212, sharex=ax1)
-    ax2.plot([item['ts'] for item in q3], [item['ttc'] for item in q3])
-    ax2.legend(['q3'])
-    ax2.set_ylabel('ttc')
+    ax2.plot([item['ts'] for item in a], [item['ttc'] for item in a])
+    ax2.plot(ts, sp)
+    ax2.legend([a_name, 'speed'])
+    ax2.set_ylabel('ttc & sp')
     ax2.grid()
     plt.tight_layout()
-    plt.savefig(r + '.png')
+    plt.savefig(filepath + '.png')
+    plt.show()
+
+
+def plot_speed(file_name):
+
+    x = []
+    y = []
+    with open(file_name) as rf:
+        for line in rf:
+            cols = line.strip().split()
+            if 'gps-speed' in cols[2]:
+                ts = float(cols[0]) + float(cols[1]) / 1000000
+                sp = float(cols[3])
+                x.append(ts)
+                y.append(sp)
+
+    fig = plt.figure(figsize=(10, 10))
+    ax1 = plt.subplot(111)
+    ax1.plot(x, y)
+    ax1.set_title('gps-speed')
+    plt.savefig(file_name+'.sp.png')
     plt.show()
 
 
 if __name__ == "__main__":
-    r = '/home/yj/bak/data/AEB/AEB_X1_test/20190412121015_CCRS_40kmh/log.txt'
-    parms = {'q3_id': 1, 'esr_id': 6}
-    q3, esr = parse_data(r, parms)
-    plot()
 
+    pcc_dir = '/home/cao/桌面/江苏/0527/pcc/20190527190216_CCs_80kmh'
+    pcv_dir = '/home/cao/桌面/江苏/0527/pcv/20190527190221_CCs_80kmh'
 
+    # parms = {'q3_id': 8, 'esr_id': 48}
+    # q3, esr = parse_esr_q3_data(r, parms)
+
+    parms = {'x1_id': 11, 'esr_id': [42]}
+    x1, esr = parse_esr_x1_data(pcc_dir + '/log.txt', parms)
+    plot(x1, esr, 'x1', 'esr', pcc_dir + '/log.txt')
+
+    # plot_speed(r)
