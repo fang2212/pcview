@@ -178,7 +178,7 @@ class PCC(object):
 
         cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
 
-        print('-----------mess', mess['can'])
+        # print('-----------mess', mess['can'])
         if can_data:
             # print('can0 data')
             for d in mess['can']:
@@ -188,7 +188,7 @@ class PCC(object):
                     cache[d['source']] = d
                 else:
                     self.draw_can_data(img, d)
-                print('----------d', d)
+                # print('----------d', d)
 
         for type in cache:
             d = cache[type]

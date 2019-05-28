@@ -58,3 +58,4 @@ error.jpg
 # extra file
 error.json
 dbc/*.ini
+.idea

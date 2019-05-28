@@ -32,7 +32,7 @@ async def run():
             data = msgpack.unpackb(msg.data)
             data = convert(msgpack.unpackb(data[b'data']))
             # data = convert(data)
-            print(data)
+            # print(data)
             if msg.type in (aiohttp.WSMsgType.CLOSED,
                                 aiohttp.WSMsgType.ERROR):
                 break
