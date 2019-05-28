@@ -385,6 +385,7 @@ def time_sort(file_name, sort_itv=8000):
     idx = 0
     with open(file_name) as rf:
         for idx, line in enumerate(rf):
+            if line == '\n': continue
             cols = line.split(' ')
             tv_s = int(cols[0])
             tv_us = int(cols[1])
@@ -430,11 +431,14 @@ def prep_replay(source):
 
     return r_sort
 
+
 if __name__ == "__main__":
     from config.config import *
-
+    import sys
+    sys.argv.append('/home/cao/桌面/江苏/0527/pcc/20190527190216_CCs_80kmh/log.txt')
     freeze_support()
-    source = '/home/cao/桌面/江苏/20190524192445-case5/log.txt'
+    source = sys.argv[1]
+    print(source)
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
     r_sort = prep_replay(source)
 
