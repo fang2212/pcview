@@ -208,22 +208,19 @@ class LogPlayer(Process):
         rtk_dec = False
         lcnt = 0
         rf = open(self.log_path)
-        line0 = rf.readline().split(' ')
-        self.t0 = int(line0[0]) + int(line0[1]) / 1000000
-        self.t0 = time.time() - self.t0
         for line in rf:
             if not self.ctrl_q.empty():
                 ctrl = self.ctrl_q.get()
                 if ctrl.get('action') == 'pause':
                     print('replay paused.')
-                    t_pause = time.time()
                     while True:
                         ctrl = self.ctrl_q.get()
                         if ctrl and ctrl.get('action') != 'pause':
-                            self.t0 += time.time() - t_pause
                             break
                         else:
                             time.sleep(0.05)
+            line = line.strip()
+            if line == '': continue
             lcnt += 1
             # print('line {}'.format(cnt))
             cols = line.split(' ')
@@ -371,7 +368,7 @@ class LogPlayer(Process):
         # cp.print_stats()
 
 
-def time_sort(file_name, sort_itv=8000):
+def time_sort(file_name, sort_itv=16000):
     """
     sort the log lines according to timestamp.
     :param file_name: path of the log file
@@ -384,26 +381,9 @@ def time_sort(file_name, sort_itv=8000):
     wf = open('log_sort.txt', 'w')
     idx = 0
     with open(file_name) as rf:
-        for idx, line in enumerate(rf):
-            if line == '\n': continue
-            cols = line.split(' ')
-            tv_s = int(cols[0])
-            tv_us = int(cols[1])
-            ts = tv_s * 1000000 + tv_us
-            past_lines.append([ts, line])
-            # print(len(past_lines))
-            if len(past_lines) < 2 * sort_itv:
-                continue
-            if (idx + 1) % sort_itv == 0:
-                # print(len(past_lines))
-                past_lines = sorted(past_lines, key=lambda x: x[0])
-                wf.writelines([x[1] for x in past_lines[:sort_itv]])
-                past_lines = deque(past_lines, maxlen=2 * sort_itv)
-            # if len(past_lines) > 300:  # max lines to search forward.
-            #     wf.write(past_lines.popleft()[1])
-    past_lines = sorted(past_lines, key=lambda x: x[0])
-    wf.writelines([x[1] for x in past_lines[sort_itv - ((idx + 1) % sort_itv):]])
-
+        lines = rf.readlines()
+        lines = sorted(lines)
+    wf.writelines(lines)
     wf.close()
     return os.path.abspath('log_sort.txt')
 
@@ -435,7 +415,7 @@ def prep_replay(source):
 if __name__ == "__main__":
     from config.config import *
     import sys
-    sys.argv.append('/home/cao/桌面/江苏/0527/pcc/20190527190216_CCs_80kmh/log.txt')
+    sys.argv.append('/home/cao/桌面/江苏/0527/pcc/20190527174736_CCs_80kmh/log.txt')
     freeze_support()
     source = sys.argv[1]
     print(source)
@@ -444,6 +424,7 @@ if __name__ == "__main__":
 
     from pcc import PCC
     from parsers.parser import parsers_dict
+
 
     # print(install['video'])
     replayer = LogPlayer(r_sort, configs, start_frame=0, ratio=0.2)
