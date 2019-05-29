@@ -32,7 +32,6 @@ def parse_x1_data(pcc_dir, x1_can_port='CAN0'):
 
 
 def find_sp_ts_from_pcv(pcv_dir, pcc_ids):
-
     ts = []
     speed = []
     assert os.path.exists(pcv_dir)
@@ -47,7 +46,6 @@ def find_sp_ts_from_pcv(pcv_dir, pcc_ids):
                 if line == '': continue
                 d = dict(json.loads(line))
                 if 'frame_id' in d['camera'] and d['camera']['frame_id'] in pcc_ids and 'speed' in d:
-                    print(d['speed'], pcc_ids[d['camera']['frame_id']])
                     ts.append(pcc_ids[d['camera']['frame_id']])
                     speed.append(d['speed']*3.6)
     return ts, speed

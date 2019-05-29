@@ -5,6 +5,7 @@ from parsers.radar import parse_esr
 from parsers.x1 import parse_x1
 from matplotlib import pyplot as plt
 import plot_tmp as tmp
+import shutil
 
 
 def time_sort(file_name, sort_itv=8000):
@@ -146,10 +147,17 @@ def parse_esr_x1_data(file_name, parms, x1_can_port='CAN0', esr_can_port='CAN1')
                 # print(can_port, buf, r)
                 if r is None: continue
 
-                for item in r:
-                    if item['id'] not in esr_id:
+                if isinstance(r, list):
+                    for item in r:
+                        print('--------', item)
+                        if item['id'] not in esr_id:
+                            continue
+                        d = {'ts': ts, 'rng': item['range'], 'ttc': None}
+                        esr_data.append(d)
+                else:
+                    if 'id' not in r or 'range' not in r or r['id'] not in esr_id:
                         continue
-                    d = {'ts': ts, 'rng': item['range'], 'ttc': None}
+                    d = {'ts': ts, 'rng': r['range'], 'ttc': None}
                     esr_data.append(d)
 
         return x1_data, esr_data
@@ -176,37 +184,56 @@ def plot(a, b, a_name, b_name, filepath):
     plt.show()
 
 
-def plot_speed(file_name):
+def insert_speed():
 
-    x = []
-    y = []
-    with open(file_name) as rf:
+    ts, sp = tmp.main(pcc_dir, pcv_dir)
+    tsp = dict(zip(ts, sp))
+    wf = open(pcc_dir + '/tmp.txt', 'w')
+    with open(pcc_dir + '/log.txt', 'r') as rf:
         for line in rf:
-            cols = line.strip().split()
-            if 'gps-speed' in cols[2]:
-                ts = float(cols[0]) + float(cols[1]) / 1000000
-                sp = float(cols[3])
-                x.append(ts)
-                y.append(sp)
-
-    fig = plt.figure(figsize=(10, 10))
-    ax1 = plt.subplot(111)
-    ax1.plot(x, y)
-    ax1.set_title('gps-speed')
-    plt.savefig(file_name+'.sp.png')
-    plt.show()
+            line = line.strip()
+            if line =='':continue
+            cols = line.split(' ')
+            wf.write(line + '\n')
+            now_ts = float(cols[0]) + float(cols[1]) / 1000000
+            if now_ts in tsp:
+                wf.write('%s %s speed %.2f\n' % (cols[0], cols[1], tsp[now_ts]))
+    wf.flush()
+    wf.close()
+    os.remove(pcc_dir + '/log.txt')
+    shutil.copy(pcc_dir+'/tmp.txt', pcc_dir+'/log.txt')
 
 
 if __name__ == "__main__":
-
     pcc_dir = '/home/cao/桌面/江苏/0527/pcc/20190527190216_CCs_80kmh'
     pcv_dir = '/home/cao/桌面/江苏/0527/pcv/20190527190221_CCs_80kmh'
 
     # parms = {'q3_id': 8, 'esr_id': 48}
     # q3, esr = parse_esr_q3_data(r, parms)
 
-    parms = {'x1_id': 11, 'esr_id': [42]}
-    x1, esr = parse_esr_x1_data(pcc_dir + '/log.txt', parms)
-    plot(x1, esr, 'x1', 'esr', pcc_dir + '/log.txt')
+    # parms = {'x1_id': 11, 'esr_id': [42]}
+    # x1, esr = parse_esr_x1_data(pcc_dir + '/log.txt', parms)
+    # plot(x1, esr, 'x1', 'esr', pcc_dir + '/log.txt')
 
     # plot_speed(r)
+
+    pcc = '/home/cao/桌面/江苏/20190528-J1242-x1-esr-suzhou/pcc'
+    pcv = '/home/cao/桌面/江苏/20190528-J1242-x1-esr-suzhou/pcv'
+    pcc_dirs = sorted(os.listdir(pcc))
+    pcv_dirs = sorted(os.listdir(pcv))
+
+    for i in pcc_dirs:
+        current_j = -1
+        for j in pcv_dirs:
+            if i[:12] == j[:12]:
+                current_j = j
+                break
+        if current_j == -1:
+            for j in pcv_dirs:
+                if i[:11] == j[:11]:
+                    current_j = j
+                    break
+        print(i, current_j)
+        pcc_dir = os.path.join(pcc, i)
+        pcv_dir = os.path.join(pcv, current_j)
+        insert_speed()

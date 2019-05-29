@@ -171,13 +171,16 @@ class LogPlayer(Process):
             res['ts'] = data['ts']
             res['img'] = data['img']
             res['frame_id'] = frame_id
+
             if res['img'] is not None:
                 for key in list(cache):
                     res[key] = cache[key].copy()
-                    print(key, cache[key])
+                    # print(key, cache[key])
                     cache[key] = []
                 self.msg_cnt['frame'] += 1
                 # print('res can', res['can'])
+                if self.start_frame > frame_id:
+                    return None
                 return res
             else:
                 print('error decode img', frame_id, len(data))
@@ -218,7 +221,7 @@ class LogPlayer(Process):
                         if ctrl and ctrl.get('action') != 'pause':
                             break
                         else:
-                            time.sleep(0.05)
+                            time.sleep(0.01)
             line = line.strip()
             if line == '': continue
             lcnt += 1
@@ -235,7 +238,7 @@ class LogPlayer(Process):
                 self.cam_queue.put((frame_id, r, 'camera', self.cache.copy()))
                 self.cache.clear()
                 self.cache['can'] = []
-                print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
+                # print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
 
             if 'CAN' in cols[2]:
                 msg_type = cols[2]
@@ -265,8 +268,6 @@ class LogPlayer(Process):
                     r['ts'] = ts
                     # r['source'] = self.msg_types[int(msg_type[3])]
                     r['source'] = self.can_types[msg_type]
-                if len(r) > 0:
-                    print('r', r)
 
                 # self.msg_queue.put((can_id, r, 'can'))
 
@@ -412,7 +413,7 @@ def prep_replay(source):
 if __name__ == "__main__":
     from config.config import *
     import sys
-    sys.argv.append('/home/cao/桌面/江苏/0527/pcc/20190527174736_CCs_80kmh/log.txt')
+    sys.argv.append('/home/cao/桌面/江苏/20190528-J1242-x1-esr-suzhou/pcc/20190528124750_CP_range_0m/log.txt')
 
     freeze_support()
     source = sys.argv[1]
@@ -425,7 +426,7 @@ if __name__ == "__main__":
 
 
     # print(install['video'])
-    replayer = LogPlayer(r_sort, configs, start_frame=29000, ratio=0.2)
+    replayer = LogPlayer(r_sort, configs, start_frame=140500, ratio=0.2)
 
     # replayer.start()
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)

@@ -29,6 +29,7 @@ class Hub(Thread):
         self.last_res = {}
         self.collectors = {}
 
+
         finder = CollectorFinder()
         finder.start()
         for i in range(3):

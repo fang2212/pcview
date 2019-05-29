@@ -757,7 +757,7 @@ class Player(object):
         corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
         d1 = np.linalg.norm(corners2[0] - corners2[6])
         d2 = np.linalg.norm(corners2[6] - corners2[48])
-        print(d1, d2)
+        # print(d1, d2)
         # 图上绘制检测到的角点
         cv2.drawChessboardCorners(img, (7, 7), corners2, ret)
 

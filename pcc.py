@@ -140,7 +140,7 @@ class PCC(object):
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
                 self.hub.pause(True)
-                time.sleep(0.05)
+                time.sleep(0.01)
             # cv2.waitKey(1)
             self.hub.pause(False)
             # self.draw(d, frame_cnt)
