@@ -412,7 +412,7 @@ def prep_replay(source):
 if __name__ == "__main__":
     from config.config import *
     import sys
-    sys.argv.append('/home/cao/桌面/江苏/0527/pcc/20190527174736_CCs_80kmh/log.txt')
+    sys.argv.append('/home/yj/bak/data/J1242/20190527-J1242-x1-esr-suzhou/pcc/20190527174451_CCs_40kmh/log.txt')
 
     freeze_support()
     source = sys.argv[1]
@@ -425,7 +425,7 @@ if __name__ == "__main__":
 
 
     # print(install['video'])
-    replayer = LogPlayer(r_sort, configs, start_frame=29000, ratio=0.2)
+    replayer = LogPlayer(r_sort, configs, start_frame=0, ratio=0.2)
 
     # replayer.start()
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)

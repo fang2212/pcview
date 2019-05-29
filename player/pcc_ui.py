@@ -259,7 +259,8 @@ class Player(object):
             y = obs['pos_lat']
         else:
             # print(obs['source'].split('.')[0])
-            x, y = trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
+            # x, y = trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
+            x, y = trans_polar2rcs(obs['angle'], obs['range'])
         if x == 0:
             x = 0.1
         if x < 0:
@@ -928,25 +929,15 @@ class Player(object):
         if data['color'] == 1:
             otype = 2
 
-        # if 'TTC' in data:
-        #     self.show_ttc(img, data['TTC'], data['source'])
-
         if 'class' in data:
             width = data['width']
             otype = data['class']
 
         if 'cipo' in data and data['cipo']:
             color = CVColor.Yellow
-            # self.player.show_ttc(img, data['TTC'], data['source'])
             self.show_cipo_info(img, data)
 
-        # if x == 0:
-        #     x = 0.1
-        # w = 1200 * width / x
-        # ux, uy = trans_gnd2raw(x, y)
-        # self.player.show_vehicle(img, (ux - 0.5 * w, uy - w, w, w), data['id'], x, color)
         self.show_obs(img, data, color)
-        # self.player.show_overlook_vehicle(img, otype, x, y)
         self.show_ipm_obs(ipm, otype, x, y, data['id'])
         # print('target {} pos_x {}'.format(data['id'], x))
 
