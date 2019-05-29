@@ -1,5 +1,5 @@
 import cantools
-
+from config.config import install
 
 # db_x1 = cantools.database.load_file('dbc/MINIEYE_CAR.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/MINIEYE_PED.dbc')
@@ -57,7 +57,7 @@ def parse_x1(id, data, ctx=None):
             x1_obs['type'] = 'obstacle'
             x1_obs['id'] = r['Vehicle' + str(2 * (index - 1) + i + 1) + '_ID']
             x1_obs['class'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_Type']
-            x1_obs['pos_lon'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_PosX']
+            x1_obs['pos_lon'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_PosX'] + install['x1']['lon_offset']
             x1_obs['pos_lat'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_PosY']
             x1_obs['ttc'] = 7
             x1_obs['vel_lon'] = 0

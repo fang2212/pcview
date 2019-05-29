@@ -1,5 +1,5 @@
 from player.ui import BaseDraw, pack, logodir, CVColor
-from config.config import install, config
+from config.config import install
 import cv2
 from tools.transform import trans_gnd2raw, trans_gnd2ipm, trans_polar2rcs
 from datetime import datetime
@@ -259,7 +259,8 @@ class Player(object):
             y = obs['pos_lat']
         else:
             # print(obs['source'].split('.')[0])
-            x, y = trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
+            # x, y = trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
+            x, y = trans_polar2rcs(obs['angle'], obs['range'])
         if x == 0:
             x = 0.1
         if x < 0:
@@ -761,125 +762,6 @@ class Player(object):
         # 图上绘制检测到的角点
         cv2.drawChessboardCorners(img, (7, 7), corners2, ret)
 
-        # vehicle
-
-    def draw_vehicle(self, img, vehicle_data):
-        v_type, index, ttc, fcw, hwm, hw, vb = '-', '-', '-', '-', '-', '-', '-'
-        if vehicle_data:
-            focus_index = vehicle_data['focus_index']
-            speed = vehicle_data['speed'] * 3.6
-            for i, vehicle in enumerate(vehicle_data['dets']):
-                focus_vehicle = (i == focus_index)
-                position = vehicle['bounding_rect']
-                position = position['x'], position['y'], position['width'], position['height']
-                color = CVColor.Red if focus_index == i else CVColor.Cyan
-                self.show_vehicle(img, position, color, 2)
-
-                self.show_vehicle_info(img, position,
-                                              vehicle['vertical_dist'], vehicle['horizontal_dist'],
-                                              vehicle['vehicle_width'], str(vehicle['type']))
-                if config.show.overlook:
-                    self.show_overlook_vehicle(img, focus_vehicle,
-                                                      vehicle['vertical_dist'],
-                                                      vehicle['horizontal_dist'])
-
-            if focus_index != -1:
-                vehicle = vehicle_data['dets'][focus_index]
-                v_type = vehicle['type']
-                index = vehicle['index']
-                ttc = '%.2f' % vehicle['rel_ttc']
-                fcw = vehicle_data['forward_collision_warning']
-                hw = vehicle_data['headway_warning']
-                hwm = '%.2f' % vehicle_data['ttc']
-                vb = vehicle_data['bumper_warning']
-                if ttc == '1000.00':
-                    ttc = '-'
-            parameters = [str(v_type), str(index), str(ttc), str(fcw), str(hwm), str(hw), str(vb)]
-            self.player.show_vehicle_parameters(img, parameters, (120, 0))
-
-        # lane
-
-    def draw_lane(self, img, lane_data):
-        lw_dis, rw_dis, ldw, trend = '-', '-', '-', '-'
-        if lane_data:
-            speed = lane_data['speed'] * 3.6
-            for lane in lane_data['lanelines']:
-                if int(lane['label']) in [1, 2]:  # and speed >= config.show.lane_speed_limit:
-                    color = CVColor.Cyan
-                    width = lane['width']
-                    l_type = lane['type']
-                    conf = lane['confidence']
-                    index = lane['label']
-                    self.player.show_lane(img, lane['perspective_view_poly_coeff'],
-                                          0.2, color)
-                    if config.show.overlook:
-                        self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
-                    self.player.show_lane_info(img, lane['perspective_view_poly_coeff'],
-                                               index, width, l_type, conf, color)
-
-            lw_dis = '%.2f' % (lane_data['left_wheel_dist'])
-            rw_dis = '%.2f' % (lane_data['right_wheel_dist'])
-            ldw = lane_data['deviate_state']
-            trend = lane_data['deviate_trend']
-            if lw_dis == '111.00':
-                lw_dis = '-'
-            if rw_dis == '111.00':
-                rw_dis = '-'
-
-            parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
-            if config.mobile.show:
-                lane_y = 120 * 3
-            else:
-                lane_y = 120 * 2
-            self.player.show_lane_parameters(img, parameters, (lane_y, 0))
-
-        # ped
-
-    def draw_ped(self, img, ped_data):
-        if ped_data:
-            for pedestrain in ped_data['pedestrians']:
-                position = pedestrain['regressed_box']
-                position = position['x'], position['y'], position['width'], position['height']
-                # print('position:', position)
-                color = CVColor.Yellow
-                if pedestrain['is_key']:
-                    color = CVColor.Pink
-                if pedestrain['is_danger']:
-                    color = CVColor.Pink
-                self.player.show_peds(img, position, color, 2)
-                if position[0] > 0:
-                    self.player.show_peds_info(img, position, pedestrain['dist'])
-
-    def draw_tsr(self, img, tsr_data):
-        focus_index, speed_limit, tsr_warning_level, tsr_warning_state = -1, 0, 0, 0
-        if tsr_data:
-            logging.info('tsr data {}'.format(tsr_data))
-            focus_index = tsr_data['focus_index']
-            speed_limit = tsr_data['speed_limit']
-            tsr_warning_level = tsr_data['tsr_warning_level']
-            tsr_warning_state = tsr_data['tsr_warning_state']
-            for i, tsr in enumerate(tsr_data['dets']):
-                position = tsr['position']
-                logging.info('tsrrrr {}'.format(position))
-                position = position['x'], position['y'], position['width'], position['height']
-                color = CVColor.Red
-                self.player.show_tsr(img, position, color, 2)
-                if tsr['max_speed'] != 0:
-                    self.player.show_tsr_info(img, position, tsr['max_speed'])
-
-            parameters = [str(focus_index), str(speed_limit), str(tsr_warning_level), str(tsr_warning_state)]
-            self.player.show_tsr_parameters(img, parameters, (369, 0))
-
-    def draw_lane_r(self, img, data):
-        if len(data) == 0:
-            return
-            # print(data)
-        if data['type'] != 'lane':
-            return
-        # self.player.show_overlook_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
-        self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
-
-
     def show_lane_ipm(self, img, ratios, r=60, color=CVColor.Cyan):
         """绘制车道线
         Args:
@@ -928,25 +810,15 @@ class Player(object):
         if data['color'] == 1:
             otype = 2
 
-        # if 'TTC' in data:
-        #     self.show_ttc(img, data['TTC'], data['source'])
-
         if 'class' in data:
             width = data['width']
             otype = data['class']
 
         if 'cipo' in data and data['cipo']:
             color = CVColor.Yellow
-            # self.player.show_ttc(img, data['TTC'], data['source'])
             self.show_cipo_info(img, data)
 
-        # if x == 0:
-        #     x = 0.1
-        # w = 1200 * width / x
-        # ux, uy = trans_gnd2raw(x, y)
-        # self.player.show_vehicle(img, (ux - 0.5 * w, uy - w, w, w), data['id'], x, color)
         self.show_obs(img, data, color)
-        # self.player.show_overlook_vehicle(img, otype, x, y)
         self.show_ipm_obs(ipm, otype, x, y, data['id'])
         # print('target {} pos_x {}'.format(data['id'], x))
 
@@ -982,21 +854,6 @@ class Player(object):
         duration = duration if duration > 0 else 1
         fps = frame_cnt / duration
         return fps
-
-    def draw_mobile(self, img, frame_id):
-        index = int(frame_id / 3) * 4 + frame_id % 3
-        if config.mobile.show:
-            mobile_ldw, mobile_hw, mobile_fcw, mobile_vb, mobile_hwm = '-', '-', '-', '-', '-'
-            mobile_log = self.mobile_content[index]
-            if mobile_log:
-                mobile_hwm = mobile_log.get('headway_measurement') if mobile_log.get('headway_measurement') else 0
-                mobile_hw = 1 if mobile_log.get('sound_type') == 3 else 0
-                mobile_fcw = 1 if mobile_log.get('sound_type') == 6 and mobile_log.get('fcw_on') == 1 else 0
-                mobile_vb = 1 if mobile_log.get('sound_type') == 5 else 0
-                mobile_ldw = mobile_log['left_ldw'] * 2 + mobile_log['right_ldw'] if 'left_ldw' in mobile_log else 0
-
-            mobile_parameters = [str(mobile_hwm), str(mobile_hw), str(mobile_fcw), str(mobile_vb), str(mobile_ldw)]
-            self.show_mobile_parameters(img, mobile_parameters, (120 * 2, 0))
 
     def show_intrinsic_para(self, img):
         indent = self.get_indent('video')

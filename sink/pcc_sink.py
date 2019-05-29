@@ -168,8 +168,6 @@ class CANSink(Sink):
             r['source'] = self.source
             # print(r['source'])
         # print(r)
-
-        logging.info('cansink ----' + str(time.time() - lst))
         return can_id, r
 
 

@@ -4,10 +4,13 @@
 __author__ = 'pengquanhua <pengquanhua@minieye.cc>'
 __version__ = '0.1.0'
 __progname__ = 'run'
+from config.config import load_cfg
 
+load_cfg('config/h7.json')
+
+from tools.transform import calc_g2i_matrix, update_m_r2i
 from config.config import local_cfg, install
 import cv2
-from tools.transform import calc_g2i_matrix, update_m_r2i
 from datetime import datetime
 from player.pcc_ui import Player
 from sink.hub import Hub
@@ -135,14 +138,17 @@ class PCC(object):
                 # time.sleep(0.001)
                 continue
 
+
             self.draw(d, frame_cnt)
+
             time.sleep(0.01)
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
                 self.hub.pause(True)
                 time.sleep(0.01)
             # cv2.waitKey(1)
-            self.hub.pause(False)
+            if self.replay:
+                self.hub.pause(False)
             # self.draw(d, frame_cnt)
             if frame_cnt >= 200:
                 self.player.start_time = datetime.now()
@@ -193,7 +199,6 @@ class PCC(object):
         for type in cache:
             d = cache[type]
             self.draw_can_data(img, d)
-
 
         if 'rtk' in mess and mess['rtk']:  # usb pcan rtk
             for d in mess['rtk']:
@@ -476,8 +481,6 @@ class PCC(object):
 
 
 if __name__ == "__main__":
-    from config.config import load_cfg
-    load_cfg('config/cfg_superb.json')
     hub = Hub()
     pcc = PCC(hub, ipm=True, replay=False)
     pcc.start()

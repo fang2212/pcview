@@ -2,7 +2,7 @@ from multiprocessing.dummy import Process as Thread
 from multiprocessing import Queue
 from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink
 from recorder.FileHandler import FileHandler
-from config.config import configs, config, bcl, local_cfg
+from config.config import configs, bcl, local_cfg
 import time
 from net.discover import CollectorFinder
 import logging
@@ -57,7 +57,7 @@ class Hub(Thread):
         if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
             self.fileHandler = FileHandler()
             self.fileHandler.start()
-            self.fileHandler.start_rec()
+            # self.fileHandler.start_rec()
 
         for ip in finder.found:
             self.collectors[ip]['sinks'] = {}
@@ -130,6 +130,7 @@ class Hub(Thread):
             sink['gsensor'].start()
 
         return sink
+
 
     def list_len(self):
         length = 0

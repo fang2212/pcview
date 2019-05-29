@@ -12,7 +12,9 @@ import cantools
 from tools.match import *
 from tools.transform import *
 from math import pi
+from config.config import install
 
+R2D = 180.8/3.1416
 # M_PI = 3.141592653589793238462643383279503
 
 db_esr = cantools.database.load_file('dbc/ESR DV3_64Tgt.dbc', strict=False)
@@ -61,17 +63,18 @@ def parse_esr(id, buf, ctx=None):
     if tgt_status is not None:
         if tgt_status == 'Updated_Target' or tgt_status == 'Coasted_Target' \
                 or tgt_status == 'New_Target' or tgt_status == 'New_Updated_Target':
-            range = r.get('CAN_TX_TRACK_RANGE')
-            angle = r.get('CAN_TX_TRACK_ANGLE')
+            range_raw = r.get('CAN_TX_TRACK_RANGE')
+            angle_raw = r.get('CAN_TX_TRACK_ANGLE')
             tid = id - 0x500
 
             range_rate = r.get('CAN_TX_TRACK_RANGE_RATE')
             range_acc = r.get('CAN_TX_TRACK_RANGE_ACCEL')
-            x, y = trans_polar2rcs(angle, range, install['esr'])
+            x, y = trans_polar2rcs(angle_raw, range_raw, install['esr'])
+            angle_new = atan2(y, x)*R2D
+            range_new = sqrt(x * x + y * y)
 
             # -YJ- new
-            angle_new = atan2(y, x)
-            v_x = range_rate * cos(angle_new)
+            v_x = range_rate * cos(angle_new/R2D)
 
             # ttc_m
             if v_x < -0.1:
@@ -82,7 +85,7 @@ def parse_esr(id, buf, ctx=None):
                 ttc_m = 7
 
             # ttc_a
-            t1 = v_x * v_x - 2 * range_acc * range
+            t1 = v_x * v_x - 2 * range_acc * range_new
             if t1 > 0 and range_acc < 0:
                 # only use ttc_a when a < 0
                 ttc_a = (-v_x - sqrt(t1)) / range_acc
@@ -96,10 +99,14 @@ def parse_esr(id, buf, ctx=None):
             else:
                 ttc = ttc_m
 
+            # only show ego-lane and next-lane ttc
+            if fabs(y) > 6.0:
+                ttc = 7
+
             # print('ESR 0x%x' % id, r)
             # ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
             #        'color': 1}
-            ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
+            ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range_new, 'angle': angle_new,
                    'range_rate': range_rate, 'TTC': ttc, 'TTC_m': ttc_m, 'TTC_a': ttc_a, 'color': 1}
             ctx['obs'].append(ret)
             # if esr_filter.update(ret):
