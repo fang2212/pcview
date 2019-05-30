@@ -7,14 +7,10 @@
 # @File    : replay.py
 # @Desc    : log replayer for collected data
 
-import os
-import sched
 import struct
-from multiprocessing import Process, Queue, freeze_support, Value
-from collections import deque
+from multiprocessing import Process, Queue, freeze_support
 import time
-import shutil
-import cProfile
+from tools import mytools
 
 
 class JpegExtractor(object):
@@ -122,6 +118,9 @@ class LogPlayer(Process):
         self.ratio = ratio
         self.ctrl_q = Queue()
 
+        self.last_time = 0
+        self.hz = 20
+
         self.buf = []
 
         for idx, cfg in enumerate(configs):
@@ -181,6 +180,11 @@ class LogPlayer(Process):
                 # print('res can', res['can'])
                 if self.start_frame > frame_id:
                     return None
+                now = time.time()
+                if now - self.last_time < 1.0 / self.hz:
+                    time.sleep(1.0/self.hz + self.last_time - now)
+                print(now - self.last_time)
+                self.last_time = now
                 return res
             else:
                 print('error decode img', frame_id, len(data))
@@ -369,23 +373,6 @@ class LogPlayer(Process):
         # cp.print_stats()
 
 
-def time_sort(file_name, sort_itv=16000):
-    """
-    sort the log lines according to timestamp.
-    :param file_name: path of the log file
-    :param sort_itv:
-    :return: sorted file path
-
-    """
-    wf = open('log_sort.txt', 'w')
-    with open(file_name) as rf:
-        lines = rf.readlines()
-        lines = sorted(lines)
-    wf.writelines(lines)
-    wf.close()
-    return os.path.abspath('log_sort.txt')
-
-
 def prep_replay(source):
     if os.path.isdir(source):
         loglist = sorted(os.listdir(source), reverse=True)
@@ -393,9 +380,7 @@ def prep_replay(source):
 
     r_sort = os.path.join(os.path.dirname(source), 'log_sort.txt')
     if not os.path.exists(r_sort):
-        sort_src = time_sort(source)
-        shutil.copy2(sort_src, os.path.dirname(source))
-        os.remove(sort_src)
+        r_sort = mytools.sort_big_file(source)
 
     config_path = os.path.join(os.path.dirname(source), 'config.json')
     install_path = os.path.join(os.path.dirname(source), 'installation.json')
@@ -406,7 +391,6 @@ def prep_replay(source):
     if os.path.exists(install_path):
         print("using installation:", install_path)
         load_installation(install_path)
-
     return r_sort
 
 
@@ -425,15 +409,8 @@ if __name__ == "__main__":
     from pcc import PCC
     from parsers.parser import parsers_dict
 
-
-    # print(install['video'])
-
     replayer = LogPlayer(r_sort, configs, start_frame=140500, ratio=0.2)
-
 
     # replayer.start()
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)
     pc_viewer.start()
-
-    # while True:
-    #     replayer.pop_simple()

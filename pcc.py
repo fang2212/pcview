@@ -8,14 +8,13 @@ from config.config import load_cfg
 
 load_cfg('config/h7.json')
 
-from tools.transform import calc_g2i_matrix, update_m_r2i
-from config.config import local_cfg, install
+from tools.mytools import Supervisor, OrientTuner
+from tools.transform import calc_g2i_matrix
+from config.config import local_cfg
 import cv2
 from datetime import datetime
 from player.pcc_ui import Player
 from sink.hub import Hub
-from multiprocessing.dummy import Process as Thread
-import time
 from tools.vehicle import Vehicle
 import numpy as np
 from tools.match import is_near
@@ -24,70 +23,6 @@ import logging
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
-
-
-class OrientTuner(object):
-    def __init__(self, y=install['video']['yaw'], p=install['video']['pitch'], r=install['video']['roll'],  ey=install['esr']['yaw']):
-        self.yaw = y
-        self.pitch = p
-        self.roll = r
-        self.esr_yaw = ey
-
-    def update_yaw(self, x):
-        self.yaw = install['video']['yaw'] - 0.01 * (x - 500)
-        # self.pitch = install['video']['pitch']
-        # self.roll = install['video']['roll']
-
-        update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def update_pitch(self, x):
-        # self.yaw = install['video']['yaw']
-        self.pitch = install['video']['pitch'] - 0.01 * (x - 500)
-        # self.roll = install['video']['roll']
-
-        update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def update_roll(self, x):
-        # self.yaw = install['video']['yaw']
-        self.roll = install['video']['roll'] - 0.01 * (x - 500)
-        # self.roll = install['video']['roll']
-
-        update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def update_esr_yaw(self, x):
-        self.esr_yaw = install['esr']['yaw'] - 0.01 * (x - 500)
-        # self.pitch = install['video']['pitch']
-        # self.roll = install['video']['roll']
-
-        update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def save_para(self):
-        install['video']['yaw'] = self.yaw
-        install['video']['pitch'] = self.pitch
-        install['video']['roll'] = self.roll
-
-
-class Supervisor(Thread):
-    def __init__(self, checkers=[]):
-        super(Supervisor, self).__init__()
-        self.checkers = checkers
-        self.result = []
-
-    def run(self):
-        while True:
-            self.result.clear()
-            for checker in self.checkers:
-                ret = checker()
-                if ret.get('status') is not 'ok':
-                    self.result.append(ret.get('info'))
-            time.sleep(1)
-
-    def check(self):
-        return self.result
 
 
 class PCC(object):
@@ -135,17 +70,12 @@ class PCC(object):
         while not self.exit:
             d = self.hub.pop_simple()
             if d is None or not d.get('frame_id'):
-                # time.sleep(0.001)
                 continue
 
-
             self.draw(d, frame_cnt)
-
-            time.sleep(0.01)
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
                 self.hub.pause(True)
-                time.sleep(0.01)
             # cv2.waitKey(1)
             if self.replay:
                 self.hub.pause(False)
@@ -153,7 +83,6 @@ class PCC(object):
             if frame_cnt >= 200:
                 self.player.start_time = datetime.now()
                 frame_cnt = 0
-                time.sleep(0.01)
 
     def draw(self, mess, frame_cnt):
         imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
