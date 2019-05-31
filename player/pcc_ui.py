@@ -790,10 +790,11 @@ class Player(object):
     def draw_vehicle_state(self, img, data):
         if len(data) == 0:
             return
-        if data['type'] == 'vehicle_state':
-            self.show_veh_speed(img, data['speed'])
-        elif data['type'] == 'q3_vehicle':
+        if 'speed' in data:
             self.show_veh_speed(img, data['speed'], data['source'])
+        if 'yaw_rate' in data:
+            self.show_yaw_rate(img, data['yaw_rate'], data['source'])
+
 
     def draw_obs(self, img, data, ipm):
         if len(data) == 0:
@@ -820,21 +821,12 @@ class Player(object):
 
         self.show_obs(img, data, color)
         self.show_ipm_obs(ipm, otype, x, y, data['id'])
-        # print('target {} pos_x {}'.format(data['id'], x))
-
-        # for obj_id in list(self.vis_pos):
-        #     if self.ts_now - self.vis_pos[obj_id]['ts'] > 0.2:
-        #         self.vis_pos.pop(obj_id)
-        #         continue
-        #     self.player.show_overlook_vehicle(img, 2, self.vis_pos[obj_id]['x'], self.vis_pos[obj_id]['y'])
 
     def draw_can_data(self, img, data, ipm):
         if data['type'] == 'obstacle':
             self.draw_obs(img, data, ipm)
         elif data['type'] == 'lane':
             self.draw_lane_r(img, data)
-        # elif data['type'] == 'q3_vehicle':
-        #     self.draw_vehicle_state(img, data)
         elif data['type'] == 'vehicle_state':
             self.show_veh_speed(img, data['speed'], data['source'])
         elif data['type'] == 'CIPV':
@@ -924,6 +916,45 @@ class Player(object):
         cv2.line(img, p1, p2, CVColor.Green, 2)
         cv2.line(img, p3, p4, CVColor.Green, 2)
 
+    def get_alert(self, vehicle_data, lane_data, ped_data):
+        alert = {}
+        warning_level, alert_ttc, hw_state, fcw_state, vb_state, sg_state = 0, 0, 0, 0, 0, 0
+        if vehicle_data:
+            speed = vehicle_data['speed']
+            focus_index = vehicle_data['focus_index']
+            if focus_index != -1:
+                fcw_state = vehicle_data['forward_collision_warning']
+                alert_ttc = '%.2f' % vehicle_data['ttc']
+                vb_state = vehicle_data['bumper_state']
+                sg_state = vehicle_data['stop_and_go_state']
+                alert_ttc = '%.2f' % vehicle_data['ttc']
+                warning_level = vehicle_data['warning_level']
+                hw_state = vehicle_data['headway_warning']
+        alert['ttc'] = float(alert_ttc)
+        alert['warning_level'] = int(warning_level)
+        alert['hw_state'] = int(hw_state)
+        alert['fcw_state'] = int(fcw_state)
+        alert['vb_state'] = int(vb_state)
+        alert['sg_state'] = int(sg_state)
+
+        lane_warning = 0
+        speed = 0
+        if lane_data:
+            lane_warning = lane_data['deviate_state']
+            speed = lane_data['speed'] * 3.6
+        alert['lane_warning'] = lane_warning
+        alert['speed'] = float('%.2f' % speed)
+
+        return alert
+
+    def draw_lane_r(self, img, data):
+        if len(data) == 0:
+            return
+            # print(data)
+        if data['type'] != 'lane':
+            return
+        # self.player.show_overlook_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
+        self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
 
     # def show_radar(self, img, position, color=CVColor.Cyan, thickness=2):
     #     """绘制pedestrain

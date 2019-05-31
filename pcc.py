@@ -71,15 +71,14 @@ class PCC(object):
             d = self.hub.pop_simple()
             if d is None or not d.get('frame_id'):
                 continue
-
             self.draw(d, frame_cnt)
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
                 self.hub.pause(True)
-            # cv2.waitKey(1)
             if self.replay:
                 self.hub.pause(False)
             # self.draw(d, frame_cnt)
+            frame_cnt += 1
             if frame_cnt >= 200:
                 self.player.start_time = datetime.now()
                 frame_cnt = 0
@@ -123,7 +122,6 @@ class PCC(object):
                     cache[d['source']] = d
                 else:
                     self.draw_can_data(img, d)
-                # print('----------d', d)
 
         for type in cache:
             d = cache[type]
@@ -155,11 +153,6 @@ class PCC(object):
             comb = img
         cv2.imshow('UI', comb)
         self.handle_keyboard()
-        # draw_corners(img)
-        # cv2.imshow('UI', img)
-        # cv2.imshow('IPM', self.ipm)
-        # if self.rlog is not None:
-        #     fileHandler.insert_video((frame_id, img))
 
     def draw_obs(self, img, data):
         if len(data) == 0:
@@ -200,10 +193,6 @@ class PCC(object):
             if self.show_ipm:
                 self.player.show_ipm_target(self.ipm, self.rtk_pair[1], self.rtk_pair[0])
 
-        # if self.target:
-        #     # print(self.set_target)
-        #     self.player.show_target(img, self.target, data)
-
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
         if data['type'] == 'bestpos':
@@ -243,19 +232,6 @@ class PCC(object):
             if self.show_ipm:
                 self.player.show_ipm_target(self.ipm, self.rtk_pair[1], self.rtk_pair[0])
 
-    def draw_vehstate(self, img, data):
-        if len(data) == 0:
-            return
-        if 'speed' in data:
-            self.player.show_veh_speed(img, data['speed'], data['source'])
-        # self.ego_car.update_dynamics(data)
-        if 'yaw_rate' in data:
-            self.player.show_yaw_rate(img, data['yaw_rate'], data['source'])
-            # self.rtkplot.update('yawr', data['ts'], data['yaw_rate'])
-            # self.player.show_host_path(img, data['speed'], data['yaw_rate'])
-            # if self.show_ipm:
-            #     self.player.show_host_path_ipm(self.ipm, data['speed'], data['yaw_rate'])
-
     def specific_handle(self, img, data):
         src = data.get('source')
         if not src:
@@ -289,7 +265,7 @@ class PCC(object):
                 self.player.show_lane_ipm(self.ipm, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
 
         elif data['type'] == 'vehicle_state':
-            self.draw_vehstate(img, data)
+            self.player.draw_vehicle_state(img, data)
         elif data['type'] == 'CIPV':
             self.cipv = data['id']
         elif data['type'] == 'rtk':
@@ -344,7 +320,6 @@ class PCC(object):
     def check_status(self):
         if not self.hub.time_aligned:
             return {'status': 'fail', 'info': 'collectorss\' time not aligned!'}
-
         return {'status': 'ok', 'info': 'oj8k'}
 
     def calib_esr(self, ofile='esr_clb.txt'):
@@ -376,37 +351,6 @@ class PCC(object):
             data = '{} {} {} {} {}'.format(self.now_id, d_azu, azu_rtk, azu_esr, dt)
             log_line = "%.10d %.6d " % (tv_s, tv_us) + 'esr.calib' + ' ' + data + "\n"
             cf.write(log_line)
-
-    def get_alert(self, vehicle_data, lane_data, ped_data):
-        alert = {}
-        warning_level, alert_ttc, hw_state, fcw_state, vb_state, sg_state = 0, 0, 0, 0, 0, 0
-        if vehicle_data:
-            speed = vehicle_data['speed']
-            focus_index = vehicle_data['focus_index']
-            if focus_index != -1:
-                fcw_state = vehicle_data['forward_collision_warning']
-                alert_ttc = '%.2f' % vehicle_data['ttc']
-                vb_state = vehicle_data['bumper_state']
-                sg_state = vehicle_data['stop_and_go_state']
-                alert_ttc = '%.2f' % vehicle_data['ttc']
-                warning_level = vehicle_data['warning_level']
-                hw_state = vehicle_data['headway_warning']
-        alert['ttc'] = float(alert_ttc)
-        alert['warning_level'] = int(warning_level)
-        alert['hw_state'] = int(hw_state)
-        alert['fcw_state'] = int(fcw_state)
-        alert['vb_state'] = int(vb_state)
-        alert['sg_state'] = int(sg_state)
-
-        lane_warning = 0
-        speed = 0
-        if lane_data:
-            lane_warning = lane_data['deviate_state']
-            speed = lane_data['speed'] * 3.6
-        alert['lane_warning'] = lane_warning
-        alert['speed'] = float('%.2f' % speed)
-
-        return alert
 
 
 if __name__ == "__main__":

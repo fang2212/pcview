@@ -29,7 +29,6 @@ class Hub(Thread):
         self.last_res = {}
         self.collectors = {}
 
-
         finder = CollectorFinder()
         finder.start()
         for i in range(3):
@@ -131,36 +130,6 @@ class Hub(Thread):
 
         return sink
 
-
-    def list_len(self):
-        length = 0
-        for key in self.cache:
-            length += len(self.cache[key])
-        return length
-
-    def all_has(self):
-        for key in self.cache:
-            if not self.cache[key]:
-                return False
-        return True
-
-    def all_over(self, frame_id):
-        for key in self.cache:
-            if not self.cache[key]:
-                # print(self.cache)
-                return False
-            if self.cache[key][-1][0] < frame_id:
-                return False
-        return True
-
-    def msg_async(self):
-        while not self.msg_queue.empty():
-            frame_id, msg_data, msg_type = self.msg_queue.get()
-            logging.debug('queue id {}, type {}'.format(frame_id, msg_type))
-            self.cache[msg_type].append((frame_id, msg_data))
-            self.msg_cnt[msg_type]['rev'] += 1
-        time.sleep(0.02)
-
     def pop_simple(self, pause=False):
         res = {}
         if not self.cam_queue.empty():
@@ -181,20 +150,12 @@ class Hub(Thread):
             return res
         if not self.msg_queue.empty():
             id, msg_data, channel = self.msg_queue.get()
-            # print(msg_type, msg_data)
-            # res[msg_type] = msg_data
-            # res['frame_id'] = frame_id
-            # if len(self.cache[channel]) > 2:
-            #     return
             if isinstance(msg_data, list):
                 # print('msg data list')
                 self.cache[channel].extend(msg_data)
             elif isinstance(msg_data, dict):
                 self.cache[channel].append(msg_data)
-            # for channel in self.cache:
-            #     if
             self.msg_cnt[channel]['rev'] += 1
             self.msg_cnt[channel]['show'] += 1
 
-        # return res
 

@@ -5,6 +5,7 @@ from multiprocessing.dummy import Process as Thread
 from config.config import install
 from tools.transform import update_m_r2i
 
+
 class Supervisor(Thread):
     def __init__(self, checkers=[]):
         super(Supervisor, self).__init__()

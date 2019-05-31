@@ -132,21 +132,15 @@ class CANSink(Sink):
         log_bytes = ' '.join(['{:02X}'.format(d) for d in data])
         # print('CAN sink save raw.', self.source)
         self.fileHandler.insert_raw((timestamp, log_type, id + ' ' + log_bytes))
-        # if not self.raw_queue.full():
-        #     self.raw_queue.put((timestamp, log_type, id, log_bytes))
-
         if can_id == 0x7fe:
-            # print(log_type, id, timestamp)
             self.temp_ts[log_type] = timestamp
             if self.temp_ts['CAN2'] != 0 and self.temp_ts['CAN1'] != 0:
                 dt = self.temp_ts['CAN1'] - self.temp_ts['CAN2']
                 self.temp_ts['CAN2'] = 0
                 self.temp_ts['CAN1'] = 0
                 print('dt: {:2.05f}s'.format(dt))
-        # elif can_id == 0xc6:
-        #     print(log_bytes)
-        r = None
 
+        r = None
         for parser in self.parser:
             # print(parser)
             r = parser(can_id, data, self.context)

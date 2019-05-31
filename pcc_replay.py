@@ -183,7 +183,6 @@ class LogPlayer(Process):
                 now = time.time()
                 if now - self.last_time < 1.0 / self.hz:
                     time.sleep(1.0/self.hz + self.last_time - now)
-                print(now - self.last_time)
                 self.last_time = now
                 return res
             else:
