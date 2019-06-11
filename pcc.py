@@ -20,6 +20,7 @@ import numpy as np
 from tools.match import is_near
 from math import fabs
 import logging
+from multiprocessing import Manager
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
@@ -50,9 +51,6 @@ class PCC(object):
         self.ot = OrientTuner()
         self.show_ipm_bg = False
 
-        if not replay:
-            self.supervisor = Supervisor([self.check_status, self.hub.fileHandler.check_file])
-            self.supervisor.start()
         self.ego_car = Vehicle()
         self.calib_data = dict()
         cv2.namedWindow('UI')
@@ -60,6 +58,16 @@ class PCC(object):
         cv2.createTrackbar('Pitch', 'UI', 500, 1000, self.ot.update_pitch)
         cv2.createTrackbar('Roll', 'UI', 500, 1000, self.ot.update_roll)
         cv2.createTrackbar('ESR_Yaw', 'UI', 500, 1000, self.ot.update_esr_yaw)
+        if not replay:
+            self.supervisor = Supervisor([self.check_status, self.hub.fileHandler.check_file])
+            self.supervisor.start()
+        else:
+            self.hub.d = Manager().dict()
+            def update_speed(x):
+                self.hub.d['replay_speed'] = 1 if x//10 < 1 else x//10
+                print('replay-speed is', self.hub.d['replay_speed'])
+            cv2.createTrackbar('replay-speed', 'UI', 10, 50, update_speed)
+
         cv2.setMouseCallback('UI', self.left_click, '1234')
 
     def start(self):

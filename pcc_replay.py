@@ -122,6 +122,7 @@ class LogPlayer(Process):
         self.hz = 20
 
         self.buf = []
+        self.replay_speed = 1
 
         for idx, cfg in enumerate(configs):
             cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
@@ -226,22 +227,30 @@ class LogPlayer(Process):
                         else:
                             time.sleep(0.01)
             line = line.strip()
-            if line == '': continue
-            lcnt += 1
+            if line == '':
+                continue
+
+            if 'replay_speed' in self.d:
+                self.replay_speed = self.d['replay_speed']
+
             # print('line {}'.format(cnt))
             cols = line.split(' ')
             ts = float(cols[0]) + float(cols[1]) / 1000000
             if cols[2] == 'camera':
                 frame_id = int(cols[3])
                 fid, jpg = next(self.jpeg_extractor)
-
-                if jpg is None:
+                lcnt += 1
+                if jpg is None or lcnt%self.replay_speed != 0:
                     continue
+                # print(lcnt, frame_id, self.replay_speed)
                 r = {'ts': ts, 'img': jpg}
                 self.cam_queue.put((frame_id, r, 'camera', self.cache.copy()))
                 self.cache.clear()
                 self.cache['can'] = []
                 # print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
+
+            if lcnt%self.replay_speed != 0:
+                continue
 
             if 'CAN' in cols[2]:
                 msg_type = cols[2]
@@ -371,6 +380,12 @@ class LogPlayer(Process):
         # cp.disable()
         # cp.print_stats()
 
+    def update_replay_speed(self, x):
+        if not x:
+            x = 1
+        self.replay_speed = x
+        print('---------', self.replay_speed)
+
 
 def prep_replay(source):
     if os.path.isdir(source):
@@ -408,7 +423,7 @@ if __name__ == "__main__":
     from pcc import PCC
     from parsers.parser import parsers_dict
 
-    replayer = LogPlayer(r_sort, configs, start_frame=140500, ratio=0.2)
+    replayer = LogPlayer(r_sort, configs, ratio=0.2)
 
     # replayer.start()
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)
