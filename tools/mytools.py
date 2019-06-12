@@ -4,6 +4,7 @@ import functools
 from multiprocessing.dummy import Process as Thread
 from config.config import install
 from tools.transform import update_m_r2i
+import time
 
 
 class Supervisor(Thread):
@@ -158,7 +159,6 @@ def __judge(filename):
 
 
 if __name__ == "__main__":
-    import time
     a = time.time()
     sort_big_file('/home/cao/桌面/江苏/20190528-J1242-x1-esr-suzhou/pcc/20190528181932_CC_range_5kmh/tmp.txt')
     ex = __judge('/home/cao/桌面/江苏/20190528-J1242-x1-esr-suzhou/pcc/20190528181932_CC_range_5kmh/t_log_sort.txt')

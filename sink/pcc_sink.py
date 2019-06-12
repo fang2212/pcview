@@ -8,6 +8,10 @@ import can
 from parsers.parser import parsers_dict
 import json
 import time
+import aiohttp
+import msgpack
+import asyncio
+
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
 logging.basicConfig(level=logging.INFO,
@@ -212,6 +216,54 @@ class CameraSink(Sink):
 
         self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
 
+        return frame_id, r
+
+
+class X1CameraSink(Sink):
+
+    def __init__(self, queue, ip, port, channel, fileHandler):
+        Sink.__init__(self, queue, ip, port, channel)
+        self.last_fid = 0
+        self.fileHandler = fileHandler
+        self.ip = ip
+        self.port = port
+
+    async def _run(self):
+        session = aiohttp.ClientSession()
+        URL = 'ws://' + str(self.ip) + ':' + str(self.port)
+        async with session.ws_connect(URL) as ws:
+            msg = {
+                'source': 'pcview',
+                'topic': 'subscribe',
+                'data': 'pcview',
+            }
+            data = msgpack.packb(msg)
+            await ws.send_bytes(data)
+            async for msg in ws:
+                r = self.pkg_handler(msg)
+                if r is not None:
+                    self.queue.put((*r, self.cls))
+
+    def run(self):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self._run())
+
+    def pkg_handler(self, msg):
+        data = msgpack.unpackb(msg.data)[b'data']
+        if b'frame_id' in data:
+            return None
+        frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
+        if frame_id - self.last_fid != 1:
+            print("frame jump.", self.last_fid, frame_id)
+        self.last_fid = frame_id
+        ts = int.from_bytes(data[16:24], byteorder='little', signed=False)
+        jpg = data[24:]
+        if msg.type in (aiohttp.WSMsgType.CLOSED,
+                        aiohttp.WSMsgType.ERROR):
+            return None
+
+        r = {'ts': ts, 'img': jpg, 'frame_id': frame_id}
+        self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
         return frame_id, r
 
 

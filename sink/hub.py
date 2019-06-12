@@ -1,6 +1,6 @@
 from multiprocessing.dummy import Process as Thread
 from multiprocessing import Queue
-from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink
+from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, X1CameraSink
 from recorder.FileHandler import FileHandler
 from config.config import configs, bcl, local_cfg
 import time
@@ -38,7 +38,23 @@ class Hub(Thread):
             #     pass
             time.sleep(0.2)
 
-        ts0 = finder.found[list(finder.found.keys())[0]]['ts']
+        if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
+            self.fileHandler = FileHandler()
+            self.fileHandler.start()
+            # self.fileHandler.start_rec()
+
+        if len(finder.found) > 0:
+            ts0 = finder.found[list(finder.found.keys())[0]]['ts']
+        else:
+            print('no devices...')
+
+        ip = '192.168.98.106'
+        port = 24011
+        self.camera_sink = X1CameraSink(queue=self.cam_queue, ip=ip, port=port, channel='camera',
+                                        fileHandler=self.fileHandler)
+        self.camera_sink.start()
+        # self.collectors[ip]['sinks']['video'] = self.camera_sink
+
         print('Devices found:')
         for dev in finder.found:
             print(dev, finder.found[dev])
@@ -52,11 +68,6 @@ class Hub(Thread):
         print('Connecting to device(s)...')
         # print('collector0 on {}, types:'.format(config.ip), config.msg_types)
         # print('collector1 on {}, types:'.format(config2.ip), config2.msg_types)
-
-        if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
-            self.fileHandler = FileHandler()
-            self.fileHandler.start()
-            # self.fileHandler.start_rec()
 
         for ip in finder.found:
             self.collectors[ip]['sinks'] = {}
