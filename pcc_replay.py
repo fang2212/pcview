@@ -123,6 +123,7 @@ class LogPlayer(Process):
 
         self.buf = []
         self.replay_speed = 1
+        self.now_frame_id = 0
 
         for idx, cfg in enumerate(configs):
             cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
@@ -179,8 +180,6 @@ class LogPlayer(Process):
                     cache[key] = []
                 self.msg_cnt['frame'] += 1
                 # print('res can', res['can'])
-                if self.start_frame > frame_id:
-                    return None
                 now = time.time()
                 if now - self.last_time < 1.0 / self.hz:
                     time.sleep(1.0/self.hz + self.last_time - now)
@@ -240,8 +239,10 @@ class LogPlayer(Process):
                 frame_id = int(cols[3])
                 fid, jpg = next(self.jpeg_extractor)
                 lcnt += 1
-                if jpg is None or lcnt%self.replay_speed != 0:
+                if jpg is None or lcnt%self.replay_speed != 0 or self.now_frame_id < self.start_frame:
+                    self.now_frame_id = frame_id
                     continue
+                self.now_frame_id = frame_id
                 # print(lcnt, frame_id, self.replay_speed)
                 r = {'ts': ts, 'img': jpg}
                 self.cam_queue.put((frame_id, r, 'camera', self.cache.copy()))
@@ -249,7 +250,7 @@ class LogPlayer(Process):
                 self.cache['can'] = []
                 # print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
 
-            if lcnt%self.replay_speed != 0:
+            if lcnt%self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                 continue
 
             if 'CAN' in cols[2]:
@@ -423,7 +424,7 @@ if __name__ == "__main__":
     from pcc import PCC
     from parsers.parser import parsers_dict
 
-    replayer = LogPlayer(r_sort, configs, ratio=0.2)
+    replayer = LogPlayer(r_sort, configs, ratio=0.2, start_frame=10086)
 
     # replayer.start()
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)
