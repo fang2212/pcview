@@ -8,9 +8,8 @@
 # @Desc    :
 
 import cantools
-
 from tools.match import *
-from tools.transform import *
+from tools.transform import Transform
 from math import pi
 from config.config import install
 
@@ -26,23 +25,7 @@ db_lmr = cantools.database.load_file('dbc/HETLMR.dbc', strict=False)
 db_hmb = cantools.database.load_file('dbc/szhmb.dbc', strict=False)
 db_fusion_mrr = cantools.database.load_file('dbc/MRR_radar_CAN.dbc', strict=False)
 
-
-# def parse_ars(id, buf, ctx=None):
-#     ids = [m.frame_id for m in db_ars.messages]
-#     if id not in ids:
-#         return None
-#     r = db_ars.decode_message(id, buf)
-#     # print('0x%x' % id, r)
-#     if id == 0x300:
-#         if ctx.get('radar_status') is None:
-#             pass
-#
-#     if id == 0x60b:
-#         tid = r['Obj_ID']
-#         x = r['Obj_DistLong']
-#         y = r['Obj_DistLat']
-#         ret = {'type': 'obstacle', 'sensor': 'radar', 'id': tid, 'pos_lon': x, 'pos_lat': y, 'color': 2}
-#         return ret
+trans_polar2rcs = Transform().trans_polar2rcs
 
 
 def parse_esr(id, buf, ctx=None):
@@ -177,7 +160,6 @@ def parse_hawkeye_lmr(id, buf, ctx=None):
             # y = sin(angle * pi / 180.0) * range
             # x, y = trans_polar2rcs(angle, range, install['lmr'])
             return {'type': 'obstacle', 'sensor': 'radar', 'id': id - 0x500, 'range': range, 'angle': angle, 'color': 2}
-
     return None
 
 
@@ -188,19 +170,13 @@ def parse_hmb(id, buf, ctx=None):
         return None
 
     r = db_hmb.decode_message(id, buf)
-
-    # if r['Range'] :
-    #     return
-
     range = r.get('Range')
     angle = -r.get('Angle')
     # x = cos(angle * pi / 180.0) * range
     # y = sin(angle * pi / 180.0) * range
     # x, y = trans_polar2rcs(angle, range, install['hmb'])
-
     # print("hmb radar frame")
     result = {'type': 'obstacle', 'sensor': 'radar', 'id': id - 0x500, 'range': range, 'angle': angle, 'color': 4}
-    print(result)
     return result
 
 

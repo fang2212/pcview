@@ -326,6 +326,7 @@ class bcl:
 configs = []
 install = {}
 
+__test = []
 
 if __name__ == "__main__":
     config = dic2obj(collector0)

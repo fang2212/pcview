@@ -3,7 +3,7 @@ import threading
 import functools
 from multiprocessing.dummy import Process as Thread
 from config.config import install
-from tools.transform import update_m_r2i
+from tools.transform import Transform
 import time
 
 
@@ -33,13 +33,14 @@ class OrientTuner(object):
         self.pitch = p
         self.roll = r
         self.esr_yaw = ey
+        self.transform = Transform()
 
     def update_yaw(self, x):
         self.yaw = install['video']['yaw'] - 0.01 * (x - 500)
         # self.pitch = install['video']['pitch']
         # self.roll = install['video']['roll']
 
-        update_m_r2i(self.yaw, self.pitch, self.roll)
+        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
         print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
 
     def update_pitch(self, x):
@@ -47,7 +48,7 @@ class OrientTuner(object):
         self.pitch = install['video']['pitch'] - 0.01 * (x - 500)
         # self.roll = install['video']['roll']
 
-        update_m_r2i(self.yaw, self.pitch, self.roll)
+        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
         print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
 
     def update_roll(self, x):
@@ -55,7 +56,7 @@ class OrientTuner(object):
         self.roll = install['video']['roll'] - 0.01 * (x - 500)
         # self.roll = install['video']['roll']
 
-        update_m_r2i(self.yaw, self.pitch, self.roll)
+        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
         print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
 
     def update_esr_yaw(self, x):
@@ -63,7 +64,7 @@ class OrientTuner(object):
         # self.pitch = install['video']['pitch']
         # self.roll = install['video']['roll']
 
-        update_m_r2i(self.yaw, self.pitch, self.roll)
+        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
         print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
 
     def save_para(self):

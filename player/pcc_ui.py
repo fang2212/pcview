@@ -1,13 +1,12 @@
 from player.ui import BaseDraw, pack, logodir, CVColor
 from config.config import install
 import cv2
-from tools.transform import trans_gnd2raw, trans_gnd2ipm, trans_polar2rcs
+from tools.transform import Transform
 from datetime import datetime
 import time
 from tools.geo import gps_bearing, gps_distance
 import numpy as np
 import logging
-import json
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
 logging.basicConfig(level=logging.INFO,
@@ -24,6 +23,7 @@ class Player(object):
         self.car_image = cv2.imread(pack(logodir, 'car.tif'))
         self.overlook_othercar_image = cv2.imread(pack(logodir, 'othercar.tif'))
         self.overlook_beforecar_image = cv2.imread(pack(logodir, 'before.tif'))
+        self.transform = Transform()
 
         self.indent = 140
         self.columns = {'video': {'indent': 0}}
@@ -77,14 +77,14 @@ class Player(object):
     def show_dist_mark_ipm(self, img):
         for i in range(5, 200, 1):
             if i % 20 == 0 or i == 10:
-                p1 = trans_gnd2ipm(i, -10)
-                p2 = trans_gnd2ipm(i, 10)
+                p1 = self.transform.trans_gnd2ipm(i, -10)
+                p2 = self.transform.trans_gnd2ipm(i, 10)
                 BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
                 BaseDraw.draw_text(img, '{}m'.format(i), p2, 0.3, CVColor.White, 1)
 
         for i in range(-10, 11, 5):
-            p1 = trans_gnd2ipm(-10, i)
-            p2 = trans_gnd2ipm(170, i)
+            p1 = self.transform.trans_gnd2ipm(-10, i)
+            p2 = self.transform.trans_gnd2ipm(170, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
             BaseDraw.draw_text(img, '{}m'.format(i), p2, 0.3, CVColor.White, 1)
 
@@ -259,8 +259,8 @@ class Player(object):
             y = obs['pos_lat']
         else:
             # print(obs['source'].split('.')[0])
-            # x, y = trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
-            x, y = trans_polar2rcs(obs['angle'], obs['range'])
+            # x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
+            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'])
         if x == 0:
             x = 0.1
         if x < 0:
@@ -269,7 +269,7 @@ class Player(object):
         w = 1200 * width / x
         if w > 600:
             w = 600
-        x0, y0 = trans_gnd2raw(x, y)
+        x0, y0 = self.transform.trans_gnd2raw(x, y)
 
         h = w
         h = 1200 * height / x
@@ -311,8 +311,8 @@ class Player(object):
             x = obs['pos_lon']
             y = obs['pos_lat']
         else:
-            x, y = trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
-        u, v = trans_gnd2ipm(x, y)
+            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
+        u, v = self.transform.trans_gnd2ipm(x, y)
         # color = CVColor.Green
         # if type == 0:
         #     color = CVColor.Green
@@ -388,8 +388,8 @@ class Player(object):
             # x2 = x1 + 1
             y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
             # y2 = a0 + a1 * x2 + a2 * x2 ** 2 + a3 * x2 ** 3
-            tx, ty = trans_gnd2raw(x, y)
-            # tx2, ty2 = trans_gnd2raw(x2, y2)
+            tx, ty = self.transform.trans_gnd2raw(x, y)
+            # tx2, ty2 = self.transform.trans_gnd2raw(x2, y2)
             p.append((int(tx), int(ty)))
 
         for i in range(1, len(p) - 1, 1):
@@ -683,12 +683,12 @@ class Player(object):
         indent = self.get_indent(target['source'])
 
         range, angle = self._calc_relatives(target, host)
-        x, y = trans_polar2rcs(angle, range, install['rtk'])
+        x, y = self.transform.trans_polar2rcs(angle, range, install['rtk'])
         if x == 0:
             x = 0.001
         width = 0.5
         height = 0.5
-        ux, uy = trans_gnd2raw(x, y,
+        ux, uy = self.transform.trans_gnd2raw(x, y,
                                host['hgt'] - target['hgt'] + install['video']['height'] - install['rtk']['height'])
         w = 1200 * width / x
         if w > 50:
@@ -781,7 +781,7 @@ class Player(object):
 
         for x in range(int(r)):
             y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
-            tx, ty = trans_gnd2ipm(x, y)
+            tx, ty = self.transform.trans_gnd2ipm(x, y)
             p.append((int(tx), int(ty)))
 
         for i in range(1, len(p) - 1, 1):
@@ -898,8 +898,8 @@ class Player(object):
 
     def show_ipm_target(self, img, target, host):
         range, angle = self._calc_relatives(target, host)
-        x, y = trans_polar2rcs(angle, range)
-        ux, uy = trans_gnd2ipm(x, y)
+        x, y = self.transform.trans_polar2rcs(angle, range)
+        ux, uy = self.transform.trans_gnd2ipm(x, y)
         color = CVColor.Green
         # if type == 0:
         #     color = CVColor.Green

@@ -11,7 +11,7 @@ from multiprocessing import Manager
 import cv2
 from datetime import datetime
 from tools.mytools import Supervisor, OrientTuner
-from tools.transform import calc_g2i_matrix
+from tools.transform import Transform
 from config.config import local_cfg
 from player.pcc_ui import Player
 from sink.hub import Hub
@@ -39,7 +39,8 @@ class PCC(object):
         self.ts_now = 0
         self.cipv = 0
         self.msg_cnt = {}
-        self.m_g2i = calc_g2i_matrix()
+        self.transform = Transform()
+        self.m_g2i = self.transform.calc_g2i_matrix()
         self.ipm = None
         self.show_ipm = ipm
         self.set_target = False
@@ -105,7 +106,7 @@ class PCC(object):
         self.player.show_frame_id(img, frame_id)
         self.player.show_datetime(img, self.ts_now)
         if self.show_ipm:
-            self.m_g2i = calc_g2i_matrix()
+            self.m_g2i = self.transform.calc_g2i_matrix()
 
             if self.show_ipm_bg:
                 self.ipm = cv2.warpPerspective(img, self.m_g2i, (480, 720))
