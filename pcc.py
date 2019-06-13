@@ -4,23 +4,20 @@
 __author__ = 'pengquanhua <pengquanhua@minieye.cc>'
 __version__ = '0.1.0'
 __progname__ = 'run'
-from config.config import load_cfg
 
-load_cfg('config/h7.json')
-
-from tools.mytools import Supervisor, OrientTuner
-from tools.transform import calc_g2i_matrix
-from config.config import local_cfg
-import cv2
-from datetime import datetime
-from player.pcc_ui import Player
-from sink.hub import Hub
-from tools.vehicle import Vehicle
-import numpy as np
-from tools.match import is_near
 from math import fabs
 import logging
 from multiprocessing import Manager
+import cv2
+from datetime import datetime
+from tools.mytools import Supervisor, OrientTuner
+from tools.transform import calc_g2i_matrix
+from config.config import local_cfg
+from player.pcc_ui import Player
+from sink.hub import Hub
+from tools.vehicle import Vehicle
+from tools.match import is_near
+import numpy as np
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
@@ -311,7 +308,8 @@ class PCC(object):
             print('toggle recording status. {}'.format(self.hub.fileHandler.recording))
         elif key == ord('s'):
             self.ot.save_para()
-            self.hub.fileHandler.save_param()
+            if not self.replay:
+                self.hub.fileHandler.save_param()
         elif key == ord('d'):
             self.set_target = True
             # print(self.set_target)
@@ -362,6 +360,8 @@ class PCC(object):
 
 
 if __name__ == "__main__":
+    from config.config import load_cfg
+    load_cfg('config/h7.json')
     hub = Hub()
     pcc = PCC(hub, ipm=True, replay=False)
     pcc.start()

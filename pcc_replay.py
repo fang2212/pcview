@@ -10,7 +10,6 @@
 import struct
 from multiprocessing import Process, Queue, freeze_support
 import time
-from tools import mytools
 
 
 class JpegExtractor(object):
@@ -244,7 +243,7 @@ class LogPlayer(Process):
                     continue
                 self.now_frame_id = frame_id
                 # print(lcnt, frame_id, self.replay_speed)
-                r = {'ts': ts, 'img': jpg}
+                r = {'ts': ts, 'img': jpg }
                 self.cam_queue.put((frame_id, r, 'camera', self.cache.copy()))
                 self.cache.clear()
                 self.cache['can'] = []
@@ -413,7 +412,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/桌面/江苏/20190528-J1242-x1-esr-suzhou/pcc/20190528124750_CP_range_0m/log.txt')
+    sys.argv.append('/home/cao/桌面/20190327_t5_Ped_manualAEB/pc_collect/20190327130901_P_60kmh/log.txt')
 
     freeze_support()
     source = sys.argv[1]
@@ -423,8 +422,9 @@ if __name__ == "__main__":
 
     from pcc import PCC
     from parsers.parser import parsers_dict
+    from tools import mytools
 
-    replayer = LogPlayer(r_sort, configs, ratio=0.2, start_frame=10086)
+    replayer = LogPlayer(r_sort, configs, ratio=0.2, start_frame=0)
 
     # replayer.start()
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)

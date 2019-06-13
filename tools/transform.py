@@ -58,7 +58,7 @@ def calc_m_w2i(y, p, r):
 
 
 m_R_w2i = calc_m_w2i(install['video']['yaw'], install['video']['pitch'], install['video']['roll'])
-
+print(install['video'])
 
 def update_m_r2i(y, p, r):
     global m_R_w2i

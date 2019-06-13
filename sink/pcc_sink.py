@@ -257,6 +257,7 @@ class X1CameraSink(Sink):
             print("frame jump.", self.last_fid, frame_id)
         self.last_fid = frame_id
         ts = int.from_bytes(data[16:24], byteorder='little', signed=False)
+        ts = ts / 1000000
         jpg = data[24:]
         if msg.type in (aiohttp.WSMsgType.CLOSED,
                         aiohttp.WSMsgType.ERROR):
