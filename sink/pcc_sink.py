@@ -214,7 +214,7 @@ class CameraSink(Sink):
 
         r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id}
 
-        self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
+        # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
 
         return frame_id, r
 
@@ -264,7 +264,7 @@ class X1CameraSink(Sink):
             return None
 
         r = {'ts': ts, 'img': jpg, 'frame_id': frame_id}
-        self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
+        # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
         return frame_id, r
 
 

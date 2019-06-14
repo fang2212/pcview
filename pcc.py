@@ -18,7 +18,7 @@ from sink.hub import Hub
 from tools.vehicle import Vehicle
 from tools.match import is_near
 import numpy as np
-import matplotlib.pyplot as plt
+
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
@@ -160,17 +160,6 @@ class PCC(object):
 
         self.handle_keyboard()
 
-
-    def draw_obs(self, img, data):
-        if len(data) == 0:
-            return
-        if data['type'] != 'obstacle':
-            return
-
-        self.player.show_obs(img, data)
-        if self.show_ipm:
-            self.player.show_ipm_obs(self.ipm, data)
-
     def draw_rtk(self, img, data):
         self.player.show_rtk(img, data)
         if len(data) == 0 or data.get('source') is None:
@@ -265,7 +254,10 @@ class PCC(object):
 
     def draw_can_data(self, img, data):
         if data['type'] == 'obstacle':
-            self.draw_obs(img, data)
+            self.player.show_obs(img, data)
+            if self.show_ipm:
+                self.player.show_ipm_obs(self.ipm, data)
+
         elif data['type'] == 'lane':
             self.player.draw_lane_r(img, data)
             if self.show_ipm:
@@ -367,7 +359,8 @@ class PCC(object):
 
 if __name__ == "__main__":
     from config.config import load_cfg
-    load_cfg('config/h7.json')
+
+    load_cfg('config/cfg_superb.json')
     hub = Hub()
     pcc = PCC(hub, ipm=True, replay=False)
     pcc.start()

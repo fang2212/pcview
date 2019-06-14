@@ -48,12 +48,12 @@ class Hub(Thread):
         else:
             print('no devices...')
 
-        ip = '192.168.98.106'
-        port = 24011
-        self.camera_sink = X1CameraSink(queue=self.cam_queue, ip=ip, port=port, channel='camera',
-                                        fileHandler=self.fileHandler)
-        self.camera_sink.start()
-        # self.collectors[ip]['sinks']['video'] = self.camera_sink
+        # ip = '192.168.98.106'
+        # port = 24011
+        # self.camera_sink = X1CameraSink(queue=self.cam_queue, ip=ip, port=port, channel='camera',
+        #                                 fileHandler=self.fileHandler)
+        # self.camera_sink.start()
+        # # self.collectors[ip]['sinks']['video'] = self.camera_sink
 
         print('Devices found:')
         for dev in finder.found:

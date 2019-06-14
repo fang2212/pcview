@@ -347,7 +347,6 @@ class LogPlayer(Process):
                 r['ts'] = ts
                 r['type'] = 'heading'
                 r['source'] = '.'.join(cols[2].split('.')[:2])
-
                 fields = cols[3:]
                 # r = dict()
                 r['ts'] = ts
@@ -402,7 +401,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/桌面/20190513_ub482/20190513170442/log.txt')
+    sys.argv.append('/home/cao/pc-collect/20190614173513/log.txt')
 
     freeze_support()
     source = sys.argv[1]

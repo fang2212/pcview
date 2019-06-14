@@ -18,7 +18,7 @@
  "repeater": true,
  "work_mode": "collector",
  "can_types": {
-  "can1": [],
+  "can1": ["x1"],
   "can0": [
    "ifv300"
   ]
