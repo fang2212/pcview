@@ -94,15 +94,9 @@ class LogPlayer(Process):
         self.time_aligned = True
         self.log_path = log_path
         self.start_frame = start_frame
-        # self.forwarding = False
-        # self.pub_addr = pub_addr
         self.socks = {}
         self.t0 = 0
         self.last_frame = 0
-        # files = os.listdir(os.path.dirname(log_path)+'/video')
-        # files = [x for x in files if x.endswith('.avi')]
-        # self.video_files = sorted(files)
-        # self.jpeg_extractor = JpegExtractor()
         self.jpeg_extractor = jpeg_extractor(os.path.dirname(log_path) + '/video')
         self.base_dir = os.path.dirname(self.log_path)
         self.msg_queue = Queue()
@@ -158,10 +152,6 @@ class LogPlayer(Process):
             'ped': {},
             'tsr': {},
             'can': {},
-            # 'can0': {},
-            # 'can1': {},
-            # 'can2': {},
-            # 'can3': {},
             'extra': {}
         }
 
@@ -295,6 +285,7 @@ class LogPlayer(Process):
                                   int((float(cols[9]) - 36.53) * 340), 0)
 
             if 'rtk' in cols[2] and 'sol' in cols[2]:
+
                 rtk_dec = True
                 source = '.'.join(cols[2].split('.')[0:2])
                 r = {'type': 'rtk', 'source': source, 'ts': ts, 'ts_origin': ts}
@@ -308,7 +299,8 @@ class LogPlayer(Process):
                     vehstate = {'type': 'vehicle_state', 'pitch': r['pitch'], 'yaw': r['yaw'], 'ts': ts}
                 else:
                     vehstate = None
-                self.msg_queue.put((0xc7, [r, vehstate], 'can'))
+                self.cache['can'].extend([r, vehstate])
+                # self.msg_queue.put((0xc7, [r, vehstate], 'can'))
 
             if 'rtk.target' in cols[2]:
                 range = float(cols[3])
@@ -318,6 +310,7 @@ class LogPlayer(Process):
                 self.msg_queue.put((0xc7, r, 'can'))
 
             if 'rtk' in cols[2] and 'bestpos' in cols[2]:
+                # print('----------------rtk best pos')
                 r = dict()
                 r['ts'] = ts
                 r['type'] = 'bestpos'
@@ -346,7 +339,8 @@ class LogPlayer(Process):
                 r['ext_sol_stat'] = int(fields[14], 16)
                 # r['rsv4'] = int(fields[19])
                 # r['sig_mask'] = int(fields[20], 16)
-                self.msg_queue.put((0xc7, r, 'can'))
+                # self.msg_queue.put((0xc7, r, 'can'))
+                self.cache['can'].append(r.copy())
 
             if 'rtk' in cols[2] and 'heading' in cols[2]:
                 r = dict()
@@ -375,16 +369,12 @@ class LogPlayer(Process):
                 r['ext_sol_stat'] = int(fields[11], 16)
                 # r['rsv4'] = int(fields[15])
                 # r['sig_mask'] = int(fields[16], 16)
-                self.msg_queue.put((0xc7, r, 'can'))
+                # self.msg_queue.put((0xc7, r, 'can'))
+                self.cache['can'].append(r.copy())
         rf.close()
         # cp.disable()
         # cp.print_stats()
 
-    def update_replay_speed(self, x):
-        if not x:
-            x = 1
-        self.replay_speed = x
-        print('---------', self.replay_speed)
 
 
 def prep_replay(source):
@@ -412,20 +402,19 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/桌面/20190327_t5_Ped_manualAEB/pc_collect/20190327130901_P_60kmh/log.txt')
+    sys.argv.append('/home/cao/桌面/20190513_ub482/20190513170442/log.txt')
 
     freeze_support()
     source = sys.argv[1]
     print(source)
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
+    from tools import mytools
     r_sort = prep_replay(source)
 
     from pcc import PCC
     from parsers.parser import parsers_dict
-    from tools import mytools
 
     replayer = LogPlayer(r_sort, configs, ratio=0.2, start_frame=0)
-
     # replayer.start()
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)
     pc_viewer.start()

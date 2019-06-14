@@ -18,6 +18,7 @@ from sink.hub import Hub
 from tools.vehicle import Vehicle
 from tools.match import is_near
 import numpy as np
+import matplotlib.pyplot as plt
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
@@ -117,8 +118,6 @@ class PCC(object):
             self.player.show_dist_mark_ipm(self.ipm)
 
         cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
-
-        # print('-----------mess', mess['can'])
         if can_data:
             # print('can0 data')
             for d in mess['can']:
@@ -135,7 +134,7 @@ class PCC(object):
 
         if 'rtk' in mess and mess['rtk']:  # usb pcan rtk
             for d in mess['rtk']:
-                # print('rtk')
+                # print('----------- rtk')
                 self.draw_rtk(img, d)
                 if self.set_target:
                     self.target = {'lat': d['lat'], 'lon': d['lon'], 'hgt': d['hgt'], 'rtkst': d['rtkst']}
@@ -158,7 +157,9 @@ class PCC(object):
         else:
             comb = img
         cv2.imshow('UI', comb)
+
         self.handle_keyboard()
+
 
     def draw_obs(self, img, data):
         if len(data) == 0:
@@ -275,13 +276,17 @@ class PCC(object):
         elif data['type'] == 'CIPV':
             self.cipv = data['id']
         elif data['type'] == 'rtk':
+            # print('------------', data['type'])
             data['updated'] = True
             self.draw_rtk(img, data)
         elif data['type'] == 'bestpos':
+            # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
         elif data['type'] == 'heading':
+            # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
         elif data['type'] == 'rtcm':
+            # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
 
         self.specific_handle(img, data)
