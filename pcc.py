@@ -360,7 +360,7 @@ class PCC(object):
 if __name__ == "__main__":
     from config.config import load_cfg
 
-    load_cfg('config/cfg_superb.json')
+    load_cfg('config/cfg_t5.json')
     hub = Hub()
     pcc = PCC(hub, ipm=True, replay=False)
     pcc.start()

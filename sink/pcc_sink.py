@@ -203,7 +203,7 @@ class CameraSink(Sink):
         jpg = msg[16:]
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         if frame_id - self.last_fid != 1:
-            print("frame jump.", self.last_fid, frame_id)
+            print("camera sink frame jump.", self.last_fid, frame_id)
         self.last_fid = frame_id
         app1 = jpg.find(b'\xff\xe1')
         frame_id_jfif = int.from_bytes(jpg[24:28], byteorder="little")
