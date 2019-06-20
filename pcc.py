@@ -202,7 +202,6 @@ class PCC(object):
                                         data['ext_sol_stat']
                                     )))
         elif data['type'] == 'heading':
-
             if not self.replay:
                 self.hub.fileHandler.insert_raw((data['ts'], data['source'] + '.heading',
                                     '{} {} {} {} {} {} {} {} {} {} {} {}'.format(
