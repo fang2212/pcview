@@ -84,9 +84,12 @@ class PCC(object):
                 self.hub.pause(True)
             if self.replay:
                 self.hub.pause(False)
+                if self.hub.d:
+                    frame_cnt += self.hub.d['replay_speed'] - 1
+                    # print(frame_cnt)
             # self.draw(d, frame_cnt)
             frame_cnt += 1
-            if frame_cnt >= 200:
+            if frame_cnt >= 20000000:
                 self.player.start_time = datetime.now()
                 frame_cnt = 0
 

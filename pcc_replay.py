@@ -77,6 +77,7 @@ def jpeg_extractor(video_dir):
                     buf += read
                     a = buf.find(b'\xff\xd8')
                     b = buf.find(b'\xff\xd9')
+
                 if file_done:
                     break
                 jpg = buf[a:b + 2]
@@ -172,7 +173,7 @@ class LogPlayer(Process):
                 now = time.time()
                 if now - self.last_time < 1.0 / self.hz:
                     time.sleep(1.0/self.hz + self.last_time - now)
-                self.last_time = now
+                self.last_time = time.time()
                 return res
             else:
                 print('error decode img', frame_id, len(data))
@@ -401,7 +402,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/pc-collect/20190618152958/log.txt')
+    sys.argv.append('/home/cao/桌面/20190411201635-夜晚近车跟踪（各种卡车车灯+前车转弯路口+包括晴天雨天）/log.txt')
 
     freeze_support()
     source = sys.argv[1]
