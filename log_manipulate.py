@@ -560,7 +560,7 @@ def parse_esr_line(line, ctx):
         ctx['esr_obs_ep'] = r
         ctx['esr_obs_ep_ts'] = ts
         for item in r:
-            print(type(item), item)
+            # print(type(item), item)
             # print(item['cipo'])
             # if item.get('cipo'):
             y = sin(item['angle'] * pi / 180.0) * item['range']
@@ -1017,11 +1017,14 @@ def batch_process(dir_name, parsers):
                 ctx['radar_target'] = radar_target
                 ctx['x1_target'] = x1_target
 
+                ctx['can_port'] = {'esr': 'CAN1', 'x1': 'CAN0'}
+
                 r = process_log(log, parsers, ctx, start_frame, end_frame)
                 r = time_sort(r)
                 rfile = shutil.copy2(r, data_dir)
                 ts0 = ctx.get('ts0') or 0
                 r = process_log(rfile, [pair_x1_esr], ctx)
+
                 sts = ctx.get('start_ts')
                 ets = ctx.get('end_ts')
 
@@ -1065,7 +1068,8 @@ def batch_process_1(dir_name, parsers):
     for d in dirs:
         if not os.path.isdir(os.path.join(dir_name, d)):
             continue
-        log = os.path.join(dir_name, d, 'pcc_data', 'log.txt')
+        log = os.path.join(dir_name, d, 'log.txt')
+        # log = os.path.join(dir_name, d, 'pcc_data', 'log.txt')
         print(bcl.BOLD + bcl.HDR + 'Entering dir: ' + d + bcl.ENDC)
         single_process(log, parsers, False)
 
@@ -1194,7 +1198,7 @@ if __name__ == "__main__":
     from tools import visual
 
     # r = '/media/nan/860evo/data/x1_aeb_noflow_201906061506/20190610161130-20190527181040-CC_range_5kmh-env1/pcc_data/log.txt'
-    r = '/home/cao/桌面/江苏/0527/pcc/20190527183144_CCs_80kmh/log.txt'
+    r = '/home/cao/桌面/江苏/0527/pcc'
     # r = '/media/nan/860evo/data/x1_aeb_noflow_201906061506'
 
     if len(sys.argv) > 1:
@@ -1212,15 +1216,16 @@ if __name__ == "__main__":
         parse_x1_line,
     ]
 
-    if r.endswith('log.txt'):
-        print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
-        single_process(r, parsers, False)
-        # single_process(r, parsers, False, x1tgt=[6, 51], rdrtgt=[44])
-    else:
-        # batch_process(r, parsers)
-        print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
-        batch_process_2(r, parsers)
+    # if r.endswith('log.txt'):
+    #     print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
+    #     single_process(r, parsers, False)
+    #     # single_process(r, parsers, False, x1tgt=[6, 51], rdrtgt=[44])
+    # else:
+    #     # batch_process(r, parsers)
+    #     print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
+    #     batch_process_2(r, parsers)
 
+    batch_process_1(r, parsers)
     dt = time.time() - ts
     print(bcl.WARN + 'Processing done. Time cost: {}s'.format(dt) + bcl.ENDC)
     # test_sort(r)
