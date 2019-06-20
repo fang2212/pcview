@@ -89,9 +89,7 @@ class PCC(object):
                     # print(frame_cnt)
             # self.draw(d, frame_cnt)
             frame_cnt += 1
-            if frame_cnt >= 20000000:
-                self.player.start_time = datetime.now()
-                frame_cnt = 0
+           
 
     def draw(self, mess, frame_cnt):
         imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
