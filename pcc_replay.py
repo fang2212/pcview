@@ -402,7 +402,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/桌面/20190411201635-夜晚近车跟踪（各种卡车车灯+前车转弯路口+包括晴天雨天）/log.txt')
+    sys.argv.append('/home/cao/桌面/20190330154611_CCRS_40kmh/log.txt')
 
     freeze_support()
     source = sys.argv[1]

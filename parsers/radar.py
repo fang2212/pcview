@@ -89,7 +89,7 @@ def parse_esr(id, buf, ctx=None):
             # print('ESR 0x%x' % id, r)
             # ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
             #        'color': 1}
-            ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range_new, 'angle': angle_new,
+            ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range_raw, 'angle': angle_raw,
                    'range_rate': range_rate, 'TTC': ttc, 'TTC_m': ttc_m, 'TTC_a': ttc_a, 'color': 1}
             ctx['obs'].append(ret)
             # if esr_filter.update(ret):
