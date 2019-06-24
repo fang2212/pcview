@@ -321,7 +321,8 @@ class Player(object):
         color = self.color_seq[obs['color']]
 
         if obs.get('sensor') == 'radar':
-            cv2.circle(img, (u, v), 8, color, 2)
+            cv2.circle(img, (u-9, v-8), 8, color, 2)
+            BaseDraw.draw_text(img, '{}'.format(id), (u - 28, v - 8), 0.4, color, 1)
             # ESR
             if 'TTC' in obs:
                 # for save space, only ttc<7 will be shown on the gui
@@ -329,15 +330,16 @@ class Player(object):
                     BaseDraw.draw_text(img, '{:.2f}'.format(obs['TTC']), (u - 40, v + 5), 0.4, color, 1)
         else:
             cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
+            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v + 3), 0.4, color, 1)
 
-        if 'sensor' in obs:
-            # radar message show on the other side
-            if obs['sensor'] == 'radar':
-                BaseDraw.draw_text(img, '{}'.format(id), (u - 25, v - 8), 0.4, color, 1)
+        # if 'sensor' in obs:
+        #     # radar message show on the other side
+        #     if obs['sensor'] == 'radar':
+
                 # dist = obs['pos_lon'] if 'pos_lon' in obs else obs['range']
                 # BaseDraw.draw_text(img, '{:.1f}'.format(dist), (u - 45, v + 5), 0.4, color, 1)
-        else:
-            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v + 3), 0.4, color, 1)
+        # else:
+
 
 
     def show_vehicle_parameters(self, img, parameters, point):

@@ -13,8 +13,7 @@ from tools.transform import Transform
 from math import pi
 from config.config import install
 
-R2D = 180.8/3.1416
-# M_PI = 3.141592653589793238462643383279503
+R2D = 180.0/pi
 
 db_esr = cantools.database.load_file('dbc/ESR DV3_64Tgt.dbc', strict=False)
 # db_ars = cantools.database.load_file('dbc/ARS408.dbc', strict=False)
