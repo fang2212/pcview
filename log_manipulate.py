@@ -9,7 +9,6 @@ from math import *
 import cantools
 import numpy as np
 
-
 class bcl:
     HDR = '\033[95m'
     OKBL = '\033[94m'
@@ -91,24 +90,27 @@ def process_log(file_name, parsers, ctx, startf=None, endf=None, output=None):
 
             if line == '\n':
                 continue
-            log_type = line.split(' ')[2]
-            if log_type == 'camera':
-                fid = int(line.split(' ')[3])
-                # print('fid', fid)
-                if startf and endf and startf <= fid <= endf:
-                    pstate = True
+            try:
+                log_type = line.split(' ')[2]
+                if log_type == 'camera':
+                    fid = int(line.split(' ')[3])
+                    # print('fid', fid)
+                    if startf and endf and startf <= fid <= endf:
+                        pstate = True
 
-            if not pstate:
-                # print('not pstate')
-                continue
-            for func in parsers:
-                # print(line)
-                ret_line = func(line, ctx)
-                # print(can_port, buf, r)
-                if ret_line and len(ret_line) > 0:
-                    # print(ret_line)
-                    wf.write(ret_line)
-                    break
+                if not pstate:
+                    # print('not pstate')
+                    continue
+                for func in parsers:
+                    # print(line)
+                    ret_line = func(line, ctx)
+                    # print(can_port, buf, r)
+                    if ret_line and len(ret_line) > 0:
+                        # print(ret_line)
+                        wf.write(ret_line)
+                        break
+            except Exception as e:
+                print(e)
 
             # wf.write(line)
     wf.close()
@@ -1068,8 +1070,7 @@ def batch_process_1(dir_name, parsers):
     for d in dirs:
         if not os.path.isdir(os.path.join(dir_name, d)):
             continue
-        log = os.path.join(dir_name, d, 'log.txt')
-        # log = os.path.join(dir_name, d, 'pcc_data', 'log.txt')
+        log = os.path.join(dir_name, d, 'pcc_data', 'log.txt')
         print(bcl.BOLD + bcl.HDR + 'Entering dir: ' + d + bcl.ENDC)
         single_process(log, parsers, False)
 
@@ -1084,6 +1085,31 @@ def batch_process_2(dir_name, parsers):
         single_process(log, parsers, False)
 
 
+def batch_process_3(dir_name, parsers):
+    for root, dirs, files in os.walk(dir_name):
+        for f in files:
+            if f == 'log.txt':
+                log = os.path.join(root, f)
+                print(bcl.BOLD + bcl.HDR + 'Entering dir: ' + root + bcl.ENDC)
+                single_process(log, parsers, False)
+
+
+def merge_result(dir_name):
+    dirs = os.listdir(dir_name)
+    analysis_dir = os.path.join(dir_name, 'analysis')
+    if not os.path.exists(analysis_dir):
+        os.mkdir(analysis_dir)
+    for d in dirs:
+        if not os.path.isdir(os.path.join(dir_name, d)):
+            continue
+        src_dir = os.path.join(dir_name, d, 'pcc_data', 'analysis')
+        new_dir = os.path.join(analysis_dir, d)
+        if os.path.exists(src_dir) and not os.path.exists(new_dir):
+            shutil.copytree(src_dir, new_dir)
+        else:
+            print('dir not found:', src_dir)
+
+
 def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
     import pickle
     # log = os.path.join(dir_name, 'log.txt')
@@ -1092,8 +1118,8 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
         return
 
     ctx = dict()
-    ctx['can_port'] = {'x1': 'CAN0',
-                       'esr': 'CAN1'
+    ctx['can_port'] = {'x1': 'CAN1',
+                       'esr': 'CAN0'
                        }
     if rdrtgt is not None:
         ctx['radar_target'] = rdrtgt
@@ -1197,9 +1223,13 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
 if __name__ == "__main__":
     from tools import visual
 
-    # r = '/media/nan/860evo/data/x1_aeb_noflow_201906061506/20190610161130-20190527181040-CC_range_5kmh-env1/pcc_data/log.txt'
-    r = '/home/cao/桌面/江苏/0527/pcc'
-    # r = '/media/nan/860evo/data/x1_aeb_noflow_201906061506'
+    local_path = os.path.split(os.path.realpath(__file__))[0]
+    os.chdir(local_path)
+    # print('local_path:', local_path)
+
+    # r = '/media/nan/860evo/data/x1_aeb_noflow_201906181552/20190618161306-20190527181852_CC_left_10kmh-env1/pcc_data/log.txt'
+    # r = '/media/nan/860evo/data/20190527-J1242-x1-esr-suzhou/pcc'
+    r = '/media/nan/860evo/data/x1_aeb_noflow_201906181552'
 
     if len(sys.argv) > 1:
         r = sys.argv[1]
@@ -1216,16 +1246,15 @@ if __name__ == "__main__":
         parse_x1_line,
     ]
 
-    # if r.endswith('log.txt'):
-    #     print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
-    #     single_process(r, parsers, False)
-    #     # single_process(r, parsers, False, x1tgt=[6, 51], rdrtgt=[44])
-    # else:
-    #     # batch_process(r, parsers)
-    #     print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
-    #     batch_process_2(r, parsers)
+    if r.endswith('log.txt'):
+        print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
+        single_process(r, parsers, True)
+        # single_process(r, parsers, False, x1tgt=[6, 51], rdrtgt=[44])
+    else:
+        # batch_process(r, parsers)
+        print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
+        batch_process_3(r, parsers)
 
-    batch_process_1(r, parsers)
     dt = time.time() - ts
     print(bcl.WARN + 'Processing done. Time cost: {}s'.format(dt) + bcl.ENDC)
     # test_sort(r)
