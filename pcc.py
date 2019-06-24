@@ -90,7 +90,6 @@ class PCC(object):
             # self.draw(d, frame_cnt)
             frame_cnt += 1
 
-
     def draw(self, mess, frame_cnt):
         imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
         img = imgraw.copy()

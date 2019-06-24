@@ -11,6 +11,7 @@ import time
 import aiohttp
 import msgpack
 import asyncio
+from parsers import ublox
 
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
@@ -66,12 +67,13 @@ class Sink(Process):
 
 
 class PinodeSink(Sink):
-    def __init__(self, queue, ip, port, channel, index, resname):
+    def __init__(self, queue, ip, port, channel, index, resname, fileHandler):
         super(PinodeSink, self).__init__(queue, ip, port, channel, index)
         print('pi_node connected.', ip, port, channel, index)
         self.source = 'rtk.{:d}'.format(index)
         self.context = {'source': self.source}
         self.resname = resname
+        self.fileHandler = fileHandler
 
     def pkg_handler(self, msg):
         # print('hahahahha')
@@ -94,6 +96,11 @@ class PinodeSink(Sink):
             return json.loads(msg.decode())
         elif resname == 'rtcm':
             return {'type': 'rtcm', 'len': len(msg)}
+        elif resname == 'gps':
+            data = ublox.decode_nmea(msg)
+            if data:
+                self.fileHandler.insert_raw((time.time(), 'NMEA', msg.strip()))
+            return data
 
 
 class CANSink(Sink):

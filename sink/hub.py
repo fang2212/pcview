@@ -85,7 +85,8 @@ class Hub(Thread):
                         for name in finder.found[ip]['ports']:
                             port = finder.found[ip]['ports'][name]
                             self.collectors[ip]['idx'] = idx
-                            pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=name)
+                            pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=name,
+                                                fileHandler=self.fileHandler)
                             pisink.start()
                             self.collectors[ip]['sinks'][name] = pisink
                     else:
