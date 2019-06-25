@@ -1,5 +1,4 @@
 from parsers.drtk import V1_msg, v1_handlers
-from multiprocessing.dummy import Process as Thread
 from multiprocessing import Process
 import struct
 import nanomsg
@@ -12,9 +11,7 @@ import aiohttp
 import msgpack
 import asyncio
 from parsers import ublox
-import cv2
-import numpy as np
-
+from tools import mytools
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
 logging.basicConfig(level=logging.INFO,
@@ -228,9 +225,7 @@ class GsensorSink(Sink):
                                                                      gyro[2], temp, sec, usec)))
 
 
-
 class CameraSink(Sink):
-
     def __init__(self, queue, ip, port, channel, fileHandler):
         Sink.__init__(self, queue, ip, port, channel)
         self.last_fid = 0
@@ -292,6 +287,8 @@ class X1CameraSink(Sink):
     def pkg_handler(self, msg):
         data = msgpack.unpackb(msg.data)[b'data']
         if b'frame_id' in data:
+            data = mytools.convert(data)
+            self.fileHandler.insert_pcv_raw(data)
             return None
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
         if frame_id - self.last_fid != 1:

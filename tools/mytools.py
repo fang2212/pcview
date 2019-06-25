@@ -73,6 +73,18 @@ class OrientTuner(object):
         install['video']['roll'] = self.roll
 
 
+def convert(data):
+    '''
+    msgpack dict type value convert
+    delete b'
+    '''
+    if isinstance(data, bytes):  return data.decode('ascii')
+    if isinstance(data, dict):   return dict(map(convert, data.items()))
+    if isinstance(data, tuple):  return tuple(map(convert, data))
+    if isinstance(data, list):   return list(map(convert, data))
+    if isinstance(data, set):    return set(map(convert, data))
+    return data
+
 def sort_big_file(filename, file_splits=10, my_cmp=None):
     idx = 0
     buf_file = []
