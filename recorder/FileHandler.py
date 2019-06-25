@@ -29,7 +29,7 @@ class FileHandler(Thread):
         self.alert_fp = None
         self.video_writer = None
         self.video_path = None
-        self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
         self.recording = False
         self.start_time = None
         self.frame_cnt = 0
