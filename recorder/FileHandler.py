@@ -9,6 +9,7 @@ from multiprocessing import Queue
 from config.config import local_cfg, configs, install
 import sys
 import json
+import numpy as np
 
 
 class FileHandler(Thread):
@@ -101,7 +102,8 @@ class FileHandler(Thread):
 
                     video_writer = cv2.VideoWriter(vpath,
                                                    self.fourcc, 20.0, (1280, 720), True)
-                video_writer.write(data)
+                img = cv2.imdecode(np.fromstring(data, np.uint8), cv2.IMREAD_COLOR)
+                video_writer.write(img)
                 tv_s = int(ts)
                 tv_us = (ts - tv_s) * 1000000
                 log_line = "%.10d %.6d " % (tv_s, tv_us) + 'camera' + ' ' + '{}'.format(frame_id) + "\n"

@@ -10,6 +10,8 @@
 import struct
 from multiprocessing import Process, Queue, freeze_support
 import time
+import cv2
+import numpy as np
 
 
 class JpegExtractor(object):
@@ -232,6 +234,9 @@ class LogPlayer(Process):
                 if jpg is None or lcnt%self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                     self.now_frame_id = frame_id
                     continue
+
+
+
                 self.now_frame_id = frame_id
                 # print(lcnt, frame_id, self.replay_speed)
                 r = {'ts': ts, 'img': jpg }
@@ -401,7 +406,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/桌面/江苏/20190528-J1242-x1-esr-suzhou/pcc/20190528181458_CC_range_5kmh/log.txt')
+    sys.argv.append('/home/cao/桌面/20190513_ub482/20190513170442/log.txt')
 
     freeze_support()
     source = sys.argv[1]

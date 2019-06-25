@@ -12,6 +12,8 @@ import aiohttp
 import msgpack
 import asyncio
 from parsers import ublox
+import cv2
+import numpy as np
 
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
@@ -248,6 +250,8 @@ class CameraSink(Sink):
         timestamp, = struct.unpack('<d', msg[8:16])
 
         logging.debug('cam id {}'.format(frame_id))
+
+        self.fileHandler.insert_video((timestamp, frame_id, jpg))
 
         r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id}
 

@@ -99,9 +99,6 @@ class PCC(object):
         # print(mess)
         can_data = mess.get('can')
 
-        if local_cfg.save.video and not self.replay:
-            self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
-
         self.player.show_columns(img)
 
         self.player.show_frame_id(img, frame_id)
