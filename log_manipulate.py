@@ -840,7 +840,7 @@ def find_esr_by_x1(line, ctx):
         ts = ctx['x1_obs_ep_ts']
         pair = {'x1': x1_sel, 'esr': eid}
         ctx['matched_ep'][ts] = pair
-        print('matched:', pair)
+        # print('matched:', pair)
 
 
 # deprecated
