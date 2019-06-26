@@ -423,7 +423,6 @@ if __name__ == "__main__":
     from pcc import PCC
     from parsers.parser import parsers_dict
 
-
     # print(install['video'])
     replayer = LogPlayer(r_sort, configs, start_frame=0, ratio=0.2)
 
