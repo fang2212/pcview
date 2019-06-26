@@ -48,7 +48,7 @@ def is_near(data0, data1):
     else:
         x0 = data0.get('pos_lon')
         y0 = data0.get('pos_lat')
-        angle0 = atan2(y0, x0)
+        angle0 = atan2(y0, x0) * 180.0 / pi
         range0 = (x0 ** 2 + y0 ** 2) ** 0.5
 
     if 'range' in data1 and 'angle' in data1:
@@ -59,7 +59,7 @@ def is_near(data0, data1):
     else:
         x1 = data1.get('pos_lon')
         y1 = data1.get('pos_lat')
-        angle1 = atan2(y1, x1)
+        angle1 = atan2(y1, x1) * 180.0 / pi
         range1 = (x1 ** 2 + y1 ** 2) ** 0.5
 
     if 'range_rate' in data0:
@@ -78,10 +78,10 @@ def is_near(data0, data1):
 
     # return y0 - 3.6 < y1 < y0 + 3.6 and x0 - 2.8 < x1 < x0 + 2.8
     if fabs(range0 - range1) > 18:
-        # print('range too large', fabs(range0 - range1))
+        # print('range too large', data0['id'], data1['id'], fabs(range0 - range1))
         return False
     if fabs(angle0 - angle1) > 2:
-        # print('angle too large', fabs(angle0 - angle1))
+        # print('angle too large', data0['id'], data1['id'], fabs(angle0 - angle1))
         return False
     # if fabs(ts0 - ts1) > 0.2:
     # print('time diff too large', fabs(ts0 - ts1))
