@@ -1,5 +1,4 @@
 from parsers.drtk import V1_msg, v1_handlers
-from multiprocessing.dummy import Process as Thread
 from multiprocessing import Process
 import struct
 import nanomsg
@@ -11,7 +10,8 @@ import time
 import aiohttp
 import msgpack
 import asyncio
-
+from parsers import ublox
+from tools import mytools
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
 logging.basicConfig(level=logging.INFO,
@@ -66,12 +66,13 @@ class Sink(Process):
 
 
 class PinodeSink(Sink):
-    def __init__(self, queue, ip, port, channel, index, resname):
+    def __init__(self, queue, ip, port, channel, index, resname, fileHandler):
         super(PinodeSink, self).__init__(queue, ip, port, channel, index)
         print('pi_node connected.', ip, port, channel, index)
         self.source = 'rtk.{:d}'.format(index)
         self.context = {'source': self.source}
         self.resname = resname
+        self.fileHandler = fileHandler
 
     def pkg_handler(self, msg):
         # print('hahahahha')
@@ -81,12 +82,44 @@ class PinodeSink(Sink):
         if not data:
             return
 
-        if isinstance(data, list):
-            for r in data:
-                r['source'] = self.source
-        else:
-            data['source'] = self.source
-        # print(data)
+        if not isinstance(data, list):
+            data = [data]
+        for r in data:
+            r['source'] = self.source
+            if r['type'] == 'bestpos':
+                self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestpos',
+                                             '{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
+                                                         r['sol_stat'], r['pos_type'], r['lat'], r['lon'],
+                                                         r['hgt'],
+                                                         r['undulation'], r['datum'], r['lat_sgm'],
+                                                         r['lon_sgm'],
+                                                         r['hgt_sgm'],
+                                                         r['diff_age'], r['sol_age'], r['#SVs'],
+                                                         r['#solSVs'],
+                                                         r['ext_sol_stat']
+                                                     )))
+            elif r['type'] == 'heading':
+                self.fileHandler.insert_raw((r['ts'], r['source'] + '.heading',
+                                             '{} {} {} {} {} {} {} {} {} {} {} {}'.format(
+                                                         r['sol_stat'], r['pos_type'], r['length'],
+                                                         r['yaw'], r['pitch'],
+                                                         r['hdgstddev'], r['ptchstddev'], r['#SVs'],
+                                                         r['#solSVs'],
+                                                         r['#obs'], r['#multi'], r['ext_sol_stat']
+                                                     )))
+            elif r['type'] == 'rtk':
+                timestamp = r['ts_origin']
+                self.fileHandler.insert_raw((timestamp, r['source'] + '.sol',
+                                             '{} {} {:.8f} {:.8f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}'.format(
+                                                     r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'],
+                                                     r['velE'], r['velD'], r['yaw'], r['pitch'], r['length'])))
+                self.fileHandler.insert_raw((timestamp, r['source'] + '.dop',
+                                             '{} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
+                        r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4], r['sat'][5], r['gdop'],
+                        r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'], r['prn'])))
+            elif r['type'] == 'vehicle_state':
+                self.fileHandler.insert_raw((time.time(), 'NMEA', msg.strip()))
+
         return self.channel, data
 
     def decode_pinode_res(self, resname, msg):
@@ -94,6 +127,9 @@ class PinodeSink(Sink):
             return json.loads(msg.decode())
         elif resname == 'rtcm':
             return {'type': 'rtcm', 'len': len(msg)}
+        elif resname == 'gps':
+            data = ublox.decode_nmea(msg)
+            return data
 
 
 class CANSink(Sink):
@@ -189,9 +225,7 @@ class GsensorSink(Sink):
                                                                      gyro[2], temp, sec, usec)))
 
 
-
 class CameraSink(Sink):
-
     def __init__(self, queue, ip, port, channel, fileHandler):
         Sink.__init__(self, queue, ip, port, channel)
         self.last_fid = 0
@@ -211,6 +245,8 @@ class CameraSink(Sink):
         timestamp, = struct.unpack('<d', msg[8:16])
 
         logging.debug('cam id {}'.format(frame_id))
+
+        self.fileHandler.insert_video((timestamp, frame_id, jpg))
 
         r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id}
 
@@ -251,6 +287,8 @@ class X1CameraSink(Sink):
     def pkg_handler(self, msg):
         data = msgpack.unpackb(msg.data)[b'data']
         if b'frame_id' in data:
+            data = mytools.convert(data)
+            self.fileHandler.insert_pcv_raw(data)
             return None
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
         if frame_id - self.last_fid != 1:

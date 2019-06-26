@@ -90,7 +90,6 @@ class PCC(object):
             # self.draw(d, frame_cnt)
             frame_cnt += 1
 
-
     def draw(self, mess, frame_cnt):
         imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
         img = imgraw.copy()
@@ -99,9 +98,6 @@ class PCC(object):
         self.ts_now = mess['ts']
         # print(mess)
         can_data = mess.get('can')
-
-        if local_cfg.save.video and not self.replay:
-            self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
 
         self.player.show_columns(img)
 
@@ -165,17 +161,7 @@ class PCC(object):
         self.player.show_rtk(img, data)
         if len(data) == 0 or data.get('source') is None:
             return
-        timestamp = data['ts_origin']
-        r = data
-        if not self.replay:
-            self.hub.fileHandler.insert_raw((timestamp, data['source'] + '.sol',
-                                    '{} {} {:.8f} {:.8f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}'.format(
-                                        r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'],
-                                        r['velE'], r['velD'], r['yaw'], r['pitch'], r['length'])))
-            self.hub.fileHandler.insert_raw(
-                (timestamp, data['source'] + '.dop', '{} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                    r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4], r['sat'][5], r['gdop'],
-                    r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'], r['prn'])))
+
         if data['source'] == 'rtk.2':
             dt0 = data['ts'] - data['ts_origin']
             # self.rtkplot.update('rtk0', data['ts_origin'], dt0)
@@ -192,25 +178,6 @@ class PCC(object):
 
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
-        if data['type'] == 'bestpos':
-            if not self.replay:
-                self.hub.fileHandler.insert_raw((data['ts'], data['source'] + '.bestpos',
-                                    '{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                                        data['sol_stat'], data['pos_type'], data['lat'], data['lon'], data['hgt'],
-                                        data['undulation'], data['datum'], data['lat_sgm'], data['lon_sgm'],
-                                        data['hgt_sgm'],
-                                        data['diff_age'], data['sol_age'], data['#SVs'], data['#solSVs'],
-                                        data['ext_sol_stat']
-                                    )))
-        elif data['type'] == 'heading':
-            if not self.replay:
-                self.hub.fileHandler.insert_raw((data['ts'], data['source'] + '.heading',
-                                    '{} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                                        data['sol_stat'], data['pos_type'], data['length'], data['yaw'], data['pitch'],
-                                        data['hdgstddev'], data['ptchstddev'], data['#SVs'], data['#solSVs'],
-                                        data['#obs'], data['#multi'], data['ext_sol_stat']
-                                    )))
-
         if data['source'] == 'rtk.5':
             if 'lat' in data:
                 self.rtk_pair[0] = data

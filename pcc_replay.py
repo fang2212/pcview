@@ -10,6 +10,8 @@
 import struct
 from multiprocessing import Process, Queue, freeze_support
 import time
+import cv2
+import numpy as np
 
 
 class JpegExtractor(object):
@@ -232,6 +234,9 @@ class LogPlayer(Process):
                 if jpg is None or lcnt%self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                     self.now_frame_id = frame_id
                     continue
+
+
+
                 self.now_frame_id = frame_id
                 # print(lcnt, frame_id, self.replay_speed)
                 r = {'ts': ts, 'img': jpg }
@@ -286,7 +291,6 @@ class LogPlayer(Process):
                                   int((float(cols[9]) - 36.53) * 340), 0)
 
             if 'rtk' in cols[2] and 'sol' in cols[2]:
-
                 rtk_dec = True
                 source = '.'.join(cols[2].split('.')[0:2])
                 r = {'type': 'rtk', 'source': source, 'ts': ts, 'ts_origin': ts}
@@ -308,7 +312,7 @@ class LogPlayer(Process):
                 angle = float(cols[4])
                 height = float(cols[5])
                 r = {'source': cols[2], 'type': cols[2], 'ts': ts, 'range': range, 'angle': angle, 'height': height}
-                self.msg_queue.put((0xc7, r, 'can'))
+                self.cache['can'].append(r.copy())
 
             if 'rtk' in cols[2] and 'bestpos' in cols[2]:
                 # print('----------------rtk best pos')
@@ -402,7 +406,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/桌面/20190330154611_CCRS_40kmh/log.txt')
+    sys.argv.append('/home/cao/桌面/20190513_ub482/20190513170442/log.txt')
 
     freeze_support()
     source = sys.argv[1]
