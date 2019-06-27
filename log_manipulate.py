@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 import shutil
 import time
 from collections import deque
@@ -8,6 +7,7 @@ from math import *
 
 import cantools
 import numpy as np
+
 
 class bcl:
     HDR = '\033[95m'
@@ -110,7 +110,7 @@ def process_log(file_name, parsers, ctx, startf=None, endf=None, output=None):
                         wf.write(ret_line)
                         break
             except Exception as e:
-                print(bcl.FAIL+'[Error]'+bcl.ENDC ,e)
+                print(bcl.FAIL + '[Error]' + bcl.ENDC, e)
 
             # wf.write(line)
     wf.close()
@@ -123,6 +123,7 @@ def strip_log(file_name):
             return None
         else:
             return line
+
     r = process_log(file_name, [strip], None)
     return r
 
@@ -1136,17 +1137,29 @@ def merge_result(dir_name):
 def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
     import pickle
     # log = os.path.join(dir_name, 'log.txt')
+    ctx = dict()
     if not os.path.exists(log):
         print(bcl.FAIL + 'Invalid data path. {} does not exist.'.format(log) + bcl.ENDC)
         return
     conf_path = os.path.join(os.path.dirname(log), 'config.json')
-    # if os.path.exists(conf_path):
-    #     conf = json.load(open())
+    if os.path.exists(conf_path):
+        conf = json.load(open(conf_path))
+        canports = dict()
+        for idx, collector in enumerate(conf):
+            type0 = collector['can_types']['can0']
+            if type0 and type0[0] not in canports:
+                canports[type0[0]] = 'CAN{}'.format(idx * 2)
+            type1 = collector['can_types']['can1']
+            if type1 and type1[0] not in canports:
+                canports[type1[0]] = 'CAN{}'.format(idx * 2 + 1)
+        ctx['can_port'] = canports
+        print(canports)
+        # time.sleep(10)
+    else:
+        ctx['can_port'] = {'x1': 'CAN1',
+                           'esr': 'CAN0'
+                           }
 
-    ctx = dict()
-    ctx['can_port'] = {'x1': 'CAN3',
-                       'esr': 'CAN1'
-                       }
     if rdrtgt is not None:
         ctx['radar_target'] = rdrtgt
     if x1tgt is not None:
@@ -1249,11 +1262,12 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
 
 if __name__ == "__main__":
     from tools import visual
+    import sys
 
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190622-T5_problem/no_brake/20190622140858-fcw未触发，aeb制动无效/log.txt'
+    r = '/media/nan/860evo/data/20190527-J1242-x1-esr-suzhou/pcc/20190527173749_CC_left_10kmh/log.txt'
     # r = '/media/nan/860evo/data/20190527-J1242-x1-esr-suzhou/pcc'
     # r = '/media/nan/860evo/data/x1_aeb_noflow_201906181552'
 

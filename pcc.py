@@ -221,8 +221,14 @@ class PCC(object):
 
     def draw_can_data(self, img, data):
         if data['type'] == 'obstacle':
+            # dummy0 = {'type': 'obstacle', 'id': 20, 'source': 'x1.1', 'pos_lat': 0, 'pos_lon': 60, 'color': 1}
+            # dummy1 = {'type': 'obstacle', 'id': 20, 'source': 'esr.0', 'sensor': 'radar', 'pos_lat': 0, 'pos_lon': 60, 'color': 2}
+            # self.player.show_obs(img, dummy0)
+            # self.player.show_obs(img, dummy1)
             self.player.show_obs(img, data)
             if self.show_ipm:
+                # self.player.show_ipm_obs(self.ipm, dummy0)
+                # self.player.show_ipm_obs(self.ipm, dummy1)
                 self.player.show_ipm_obs(self.ipm, data)
 
         elif data['type'] == 'lane':
