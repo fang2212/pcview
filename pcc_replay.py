@@ -8,10 +8,8 @@
 # @Desc    : log replayer for collected data
 
 import struct
-from multiprocessing import Process, Queue, freeze_support
 import time
-import cv2
-import numpy as np
+from multiprocessing import Process, Queue, freeze_support
 
 
 class JpegExtractor(object):
@@ -48,7 +46,7 @@ class JpegExtractor(object):
             b = self.buf.find(b'\xff\xd9')
 
         jpg = self.buf[a:b + 2]
-        self.buf = self.buf[b+2:]
+        self.buf = self.buf[b + 2:]
 
         return jpg
 
@@ -174,7 +172,7 @@ class LogPlayer(Process):
                 # print('res can', res['can'])
                 now = time.time()
                 if now - self.last_time < 1.0 / self.hz:
-                    time.sleep(1.0/self.hz + self.last_time - now)
+                    time.sleep(1.0 / self.hz + self.last_time - now)
                 self.last_time = time.time()
                 return res
             else:
@@ -231,21 +229,19 @@ class LogPlayer(Process):
                 frame_id = int(cols[3])
                 fid, jpg = next(self.jpeg_extractor)
                 lcnt += 1
-                if jpg is None or lcnt%self.replay_speed != 0 or self.now_frame_id < self.start_frame:
+                if jpg is None or lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                     self.now_frame_id = frame_id
                     continue
 
-
-
                 self.now_frame_id = frame_id
                 # print(lcnt, frame_id, self.replay_speed)
-                r = {'ts': ts, 'img': jpg }
+                r = {'ts': ts, 'img': jpg}
                 self.cam_queue.put((frame_id, r, 'camera', self.cache.copy()))
                 self.cache.clear()
                 self.cache['can'] = []
                 # print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
 
-            if lcnt%self.replay_speed != 0 or self.now_frame_id < self.start_frame:
+            if lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                 continue
 
             if 'CAN' in cols[2]:
@@ -287,7 +283,8 @@ class LogPlayer(Process):
 
             if cols[2] == 'Gsensor':
                 data = [int(x) for x in cols[3:9]]
-                msg = struct.pack('<BBhIdhhhhhhhq', 0, 0, 0, 0, ts, data[3], data[4], data[5], data[0], data[1], data[2],
+                msg = struct.pack('<BBhIdhhhhhhhq', 0, 0, 0, 0, ts, data[3], data[4], data[5], data[0], data[1],
+                                  data[2],
                                   int((float(cols[9]) - 36.53) * 340), 0)
 
             if 'rtk' in cols[2] and 'sol' in cols[2]:
@@ -296,7 +293,7 @@ class LogPlayer(Process):
                 r = {'type': 'rtk', 'source': source, 'ts': ts, 'ts_origin': ts}
                 r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'], r['velE'], \
                 r['velD'], r['yaw'], r['pitch'], r['length'] = \
-                (float(x) for x in cols[3:14])
+                    (float(x) for x in cols[3:14])
                 r['rtkst'] = int(r['rtkst'])
                 r['orist'] = int(r['orist'])
 
@@ -380,7 +377,6 @@ class LogPlayer(Process):
         # cp.print_stats()
 
 
-
 def prep_replay(source):
     if os.path.isdir(source):
         loglist = sorted(os.listdir(source), reverse=True)
@@ -406,13 +402,14 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/桌面/20190513_ub482/20190513170442/log.txt')
+    sys.argv.append('/media/nan/860evo/data/20190622-T5_problem/pcc_probelm/20190622115618/log.txt')
 
     freeze_support()
     source = sys.argv[1]
     print(source)
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
     from tools import mytools
+
     r_sort = prep_replay(source)
 
     from pcc import PCC

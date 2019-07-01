@@ -638,10 +638,9 @@ class Player(object):
         if 'TTC' in obs:
             BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line + 20), 0.5, CVColor.White,
                                1)
-        dist = obs.get('pos_lon') or obs['range']
+        dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
         BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
         BaseDraw.draw_up_arrow(img, indent + 8, line - 12, self.color_seq[obs['color']], 6)
-
 
     def _show_rtk(self, img, rtk):
         # print(rtk)
