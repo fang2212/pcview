@@ -5,86 +5,23 @@ __author__ = 'pengquanhua <pengquanhua@minieye.cc>'
 __version__ = '0.1.0'
 __progname__ = 'run'
 
-from config.config import local_cfg, install
-import cv2
-from tools.transform import calc_g2i_matrix, update_m_r2i
-from datetime import datetime
-from player.pcc_ui import Player
-from sink.hub import Hub
-from multiprocessing.dummy import Process as Thread
-import time
-from tools.vehicle import Vehicle
-import numpy as np
-from tools.match import is_near
 from math import fabs
 import logging
+from multiprocessing import Manager
+import cv2
+from datetime import datetime
+from tools.mytools import Supervisor, OrientTuner
+from tools.transform import Transform
+from config.config import local_cfg
+from player.pcc_ui import Player
+from sink.hub import Hub
+from tools.vehicle import Vehicle
+from tools.match import is_near
+import numpy as np
+
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
-
-
-class OrientTuner(object):
-    def __init__(self, y=install['video']['yaw'], p=install['video']['pitch'], r=install['video']['roll'],  ey=install['esr']['yaw']):
-        self.yaw = y
-        self.pitch = p
-        self.roll = r
-        self.esr_yaw = ey
-
-    def update_yaw(self, x):
-        self.yaw = install['video']['yaw'] - 0.01 * (x - 500)
-        # self.pitch = install['video']['pitch']
-        # self.roll = install['video']['roll']
-
-        update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def update_pitch(self, x):
-        # self.yaw = install['video']['yaw']
-        self.pitch = install['video']['pitch'] - 0.01 * (x - 500)
-        # self.roll = install['video']['roll']
-
-        update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def update_roll(self, x):
-        # self.yaw = install['video']['yaw']
-        self.roll = install['video']['roll'] - 0.01 * (x - 500)
-        # self.roll = install['video']['roll']
-
-        update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def update_esr_yaw(self, x):
-        self.esr_yaw = install['esr']['yaw'] - 0.01 * (x - 500)
-        # self.pitch = install['video']['pitch']
-        # self.roll = install['video']['roll']
-
-        update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def save_para(self):
-        install['video']['yaw'] = self.yaw
-        install['video']['pitch'] = self.pitch
-        install['video']['roll'] = self.roll
-
-
-class Supervisor(Thread):
-    def __init__(self, checkers=[]):
-        super(Supervisor, self).__init__()
-        self.checkers = checkers
-        self.result = []
-
-    def run(self):
-        while True:
-            self.result.clear()
-            for checker in self.checkers:
-                ret = checker()
-                if ret.get('status') is not 'ok':
-                    self.result.append(ret.get('info'))
-            time.sleep(1)
-
-    def check(self):
-        return self.result
 
 
 class PCC(object):
@@ -103,7 +40,8 @@ class PCC(object):
         self.ts_now = 0
         self.cipv = 0
         self.msg_cnt = {}
-        self.m_g2i = calc_g2i_matrix()
+        self.transform = Transform()
+        self.m_g2i = self.transform.calc_g2i_matrix()
         self.ipm = None
         self.show_ipm = ipm
         self.set_target = False
@@ -112,9 +50,6 @@ class PCC(object):
         self.ot = OrientTuner()
         self.show_ipm_bg = False
 
-        if not replay:
-            self.supervisor = Supervisor([self.check_status, self.hub.fileHandler.check_file])
-            self.supervisor.start()
         self.ego_car = Vehicle()
         self.calib_data = dict()
         cv2.namedWindow('UI')
@@ -122,6 +57,16 @@ class PCC(object):
         cv2.createTrackbar('Pitch', 'UI', 500, 1000, self.ot.update_pitch)
         cv2.createTrackbar('Roll', 'UI', 500, 1000, self.ot.update_roll)
         cv2.createTrackbar('ESR_Yaw', 'UI', 500, 1000, self.ot.update_esr_yaw)
+        if not replay:
+            self.supervisor = Supervisor([self.check_status, self.hub.fileHandler.check_file])
+            self.supervisor.start()
+        else:
+            self.hub.d = Manager().dict()
+            def update_speed(x):
+                self.hub.d['replay_speed'] = 1 if x//10 < 1 else x//10
+                print('replay-speed is', self.hub.d['replay_speed'])
+            cv2.createTrackbar('replay-speed', 'UI', 10, 50, update_speed)
+
         cv2.setMouseCallback('UI', self.left_click, '1234')
 
     def start(self):
@@ -132,22 +77,18 @@ class PCC(object):
         while not self.exit:
             d = self.hub.pop_simple()
             if d is None or not d.get('frame_id'):
-                # time.sleep(0.001)
                 continue
-
             self.draw(d, frame_cnt)
-            time.sleep(0.01)
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
                 self.hub.pause(True)
-                time.sleep(0.05)
-            # cv2.waitKey(1)
-            self.hub.pause(False)
+            if self.replay:
+                self.hub.pause(False)
+                if self.hub.d:
+                    frame_cnt += self.hub.d['replay_speed'] - 1
+                    # print(frame_cnt)
             # self.draw(d, frame_cnt)
-            if frame_cnt >= 200:
-                self.player.start_time = datetime.now()
-                frame_cnt = 0
-                time.sleep(0.01)
+            frame_cnt += 1
 
     def draw(self, mess, frame_cnt):
         imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
@@ -158,15 +99,12 @@ class PCC(object):
         # print(mess)
         can_data = mess.get('can')
 
-        if local_cfg.save.video and not self.replay:
-            self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
-
         self.player.show_columns(img)
 
         self.player.show_frame_id(img, frame_id)
         self.player.show_datetime(img, self.ts_now)
         if self.show_ipm:
-            self.m_g2i = calc_g2i_matrix()
+            self.m_g2i = self.transform.calc_g2i_matrix()
 
             if self.show_ipm_bg:
                 self.ipm = cv2.warpPerspective(img, self.m_g2i, (480, 720))
@@ -177,8 +115,6 @@ class PCC(object):
             self.player.show_dist_mark_ipm(self.ipm)
 
         cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
-
-        # print('-----------mess', mess['can'])
         if can_data:
             # print('can0 data')
             for d in mess['can']:
@@ -188,16 +124,14 @@ class PCC(object):
                     cache[d['source']] = d
                 else:
                     self.draw_can_data(img, d)
-                # print('----------d', d)
 
         for type in cache:
             d = cache[type]
             self.draw_can_data(img, d)
 
-
         if 'rtk' in mess and mess['rtk']:  # usb pcan rtk
             for d in mess['rtk']:
-                # print('rtk')
+                # print('----------- rtk')
                 self.draw_rtk(img, d)
                 if self.set_target:
                     self.target = {'lat': d['lat'], 'lon': d['lon'], 'hgt': d['hgt'], 'rtkst': d['rtkst']}
@@ -220,38 +154,14 @@ class PCC(object):
         else:
             comb = img
         cv2.imshow('UI', comb)
+
         self.handle_keyboard()
-        # draw_corners(img)
-        # cv2.imshow('UI', img)
-        # cv2.imshow('IPM', self.ipm)
-        # if self.rlog is not None:
-        #     fileHandler.insert_video((frame_id, img))
-
-    def draw_obs(self, img, data):
-        if len(data) == 0:
-            return
-        if data['type'] != 'obstacle':
-            return
-
-        self.player.show_obs(img, data)
-        if self.show_ipm:
-            self.player.show_ipm_obs(self.ipm, data)
 
     def draw_rtk(self, img, data):
         self.player.show_rtk(img, data)
         if len(data) == 0 or data.get('source') is None:
             return
-        timestamp = data['ts_origin']
-        r = data
-        if not self.replay:
-            self.hub.fileHandler.insert_raw((timestamp, data['source'] + '.sol',
-                                    '{} {} {:.8f} {:.8f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}'.format(
-                                        r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'],
-                                        r['velE'], r['velD'], r['yaw'], r['pitch'], r['length'])))
-            self.hub.fileHandler.insert_raw(
-                (timestamp, data['source'] + '.dop', '{} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                    r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4], r['sat'][5], r['gdop'],
-                    r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'], r['prn'])))
+
         if data['source'] == 'rtk.2':
             dt0 = data['ts'] - data['ts_origin']
             # self.rtkplot.update('rtk0', data['ts_origin'], dt0)
@@ -266,32 +176,8 @@ class PCC(object):
             if self.show_ipm:
                 self.player.show_ipm_target(self.ipm, self.rtk_pair[1], self.rtk_pair[0])
 
-        # if self.target:
-        #     # print(self.set_target)
-        #     self.player.show_target(img, self.target, data)
-
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
-        if data['type'] == 'bestpos':
-            if not self.replay:
-                self.hub.fileHandler.insert_raw((data['ts'], data['source'] + '.bestpos',
-                                    '{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                                        data['sol_stat'], data['pos_type'], data['lat'], data['lon'], data['hgt'],
-                                        data['undulation'], data['datum'], data['lat_sgm'], data['lon_sgm'],
-                                        data['hgt_sgm'],
-                                        data['diff_age'], data['sol_age'], data['#SVs'], data['#solSVs'],
-                                        data['ext_sol_stat']
-                                    )))
-        elif data['type'] == 'heading':
-
-            if not self.replay:
-                self.hub.fileHandler.insert_raw((data['ts'], data['source'] + '.heading',
-                                    '{} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                                        data['sol_stat'], data['pos_type'], data['length'], data['yaw'], data['pitch'],
-                                        data['hdgstddev'], data['ptchstddev'], data['#SVs'], data['#solSVs'],
-                                        data['#obs'], data['#multi'], data['ext_sol_stat']
-                                    )))
-
         if data['source'] == 'rtk.5':
             if 'lat' in data:
                 self.rtk_pair[0] = data
@@ -308,19 +194,6 @@ class PCC(object):
             self.player.show_target(img, self.rtk_pair[1], self.rtk_pair[0])
             if self.show_ipm:
                 self.player.show_ipm_target(self.ipm, self.rtk_pair[1], self.rtk_pair[0])
-
-    def draw_vehstate(self, img, data):
-        if len(data) == 0:
-            return
-        if 'speed' in data:
-            self.player.show_veh_speed(img, data['speed'], data['source'])
-        # self.ego_car.update_dynamics(data)
-        if 'yaw_rate' in data:
-            self.player.show_yaw_rate(img, data['yaw_rate'], data['source'])
-            # self.rtkplot.update('yawr', data['ts'], data['yaw_rate'])
-            # self.player.show_host_path(img, data['speed'], data['yaw_rate'])
-            # if self.show_ipm:
-            #     self.player.show_host_path_ipm(self.ipm, data['speed'], data['yaw_rate'])
 
     def specific_handle(self, img, data):
         src = data.get('source')
@@ -348,24 +221,31 @@ class PCC(object):
 
     def draw_can_data(self, img, data):
         if data['type'] == 'obstacle':
-            self.draw_obs(img, data)
+            self.player.show_obs(img, data)
+            if self.show_ipm:
+                self.player.show_ipm_obs(self.ipm, data)
+
         elif data['type'] == 'lane':
             self.player.draw_lane_r(img, data)
             if self.show_ipm:
                 self.player.show_lane_ipm(self.ipm, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
 
         elif data['type'] == 'vehicle_state':
-            self.draw_vehstate(img, data)
+            self.player.draw_vehicle_state(img, data)
         elif data['type'] == 'CIPV':
             self.cipv = data['id']
         elif data['type'] == 'rtk':
+            # print('------------', data['type'])
             data['updated'] = True
             self.draw_rtk(img, data)
         elif data['type'] == 'bestpos':
+            # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
         elif data['type'] == 'heading':
+            # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
         elif data['type'] == 'rtcm':
+            # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
 
         self.specific_handle(img, data)
@@ -393,7 +273,8 @@ class PCC(object):
             print('toggle recording status. {}'.format(self.hub.fileHandler.recording))
         elif key == ord('s'):
             self.ot.save_para()
-            self.hub.fileHandler.save_param()
+            if not self.replay:
+                self.hub.fileHandler.save_param()
         elif key == ord('d'):
             self.set_target = True
             # print(self.set_target)
@@ -410,7 +291,6 @@ class PCC(object):
     def check_status(self):
         if not self.hub.time_aligned:
             return {'status': 'fail', 'info': 'collectorss\' time not aligned!'}
-
         return {'status': 'ok', 'info': 'oj8k'}
 
     def calib_esr(self, ofile='esr_clb.txt'):
@@ -443,41 +323,11 @@ class PCC(object):
             log_line = "%.10d %.6d " % (tv_s, tv_us) + 'esr.calib' + ' ' + data + "\n"
             cf.write(log_line)
 
-    def get_alert(self, vehicle_data, lane_data, ped_data):
-        alert = {}
-        warning_level, alert_ttc, hw_state, fcw_state, vb_state, sg_state = 0, 0, 0, 0, 0, 0
-        if vehicle_data:
-            speed = vehicle_data['speed']
-            focus_index = vehicle_data['focus_index']
-            if focus_index != -1:
-                fcw_state = vehicle_data['forward_collision_warning']
-                alert_ttc = '%.2f' % vehicle_data['ttc']
-                vb_state = vehicle_data['bumper_state']
-                sg_state = vehicle_data['stop_and_go_state']
-                alert_ttc = '%.2f' % vehicle_data['ttc']
-                warning_level = vehicle_data['warning_level']
-                hw_state = vehicle_data['headway_warning']
-        alert['ttc'] = float(alert_ttc)
-        alert['warning_level'] = int(warning_level)
-        alert['hw_state'] = int(hw_state)
-        alert['fcw_state'] = int(fcw_state)
-        alert['vb_state'] = int(vb_state)
-        alert['sg_state'] = int(sg_state)
-
-        lane_warning = 0
-        speed = 0
-        if lane_data:
-            lane_warning = lane_data['deviate_state']
-            speed = lane_data['speed'] * 3.6
-        alert['lane_warning'] = lane_warning
-        alert['speed'] = float('%.2f' % speed)
-
-        return alert
-
 
 if __name__ == "__main__":
     from config.config import load_cfg
-    load_cfg('config/cfg_superb.json')
+
+    load_cfg('config/cfg_t5.json')
     hub = Hub()
     pcc = PCC(hub, ipm=True, replay=False)
     pcc.start()

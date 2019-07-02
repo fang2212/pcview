@@ -1,5 +1,15 @@
+#!/usr/bin/env python
+# _*_ coding:utf-8 _*_
+#
+# @Version : 1.0
+# @Time    : 2018/10/10
+# @Author  : Janker
+# @File    : x1.py
+# @Desc    :
+
+# import time
 import cantools
-from config.config import install
+
 
 # db_x1 = cantools.database.load_file('dbc/MINIEYE_CAR.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/MINIEYE_PED.dbc')
@@ -8,8 +18,7 @@ db_x1 = cantools.database.load_file('dbc/MINIEYE_AEB_20190123.dbc', strict=False
 # db_x1.add_dbc_file('dbc/ESR DV3_64Tgt.dbc')
 
 cipv = {}
-x1_ped = {}
-x1_obs = {}
+cipp = {}
 
 
 def parse_x1(id, data, ctx=None):
@@ -17,13 +26,24 @@ def parse_x1(id, data, ctx=None):
     if id not in ids:
         return None
     r = db_x1.decode_message(id, data)
-
     # print("0x%x" % id, r)
-    if id == 0x76d:
+    if not ctx.get('x1_obs'):
+        ctx['x1_obs'] = list()
+    if id == 0x76f:  # start of epoch
+        # print(r)
+
+        # print(ctx['x1_obs'])
+        ctx['x1_obs'].clear()
+        # x1_obs.clear()
+        cipv.clear()
+        cipp.clear()
+
+    elif id == 0x76d:
         # print("0x%x" % id, r)
         if r['TargetVehicle_Type'] == 'No Vehicle':
             return None
         else:
+
             # print("0x%x" % id, r)
             cipv['type'] = 'obstacle'
             cipv['cipo'] = True
@@ -34,64 +54,66 @@ def parse_x1(id, data, ctx=None):
             # print('X %.1f', r['TargetVehicle_PosX'])
             cipv['color'] = 4
             cipv['class'] = r['TargetVehicle_Type']
-
             # return {'type': 'obstacle','id': r['TargetID'], 'pos_lat': r['TargetVehiclePosY'], 'pos_lon': r['TargetVehiclePosX'], 'color': 3}
-    if id == 0x76e:
+    elif id == 0x76e:
         if len(cipv) == 0:
             return None
         cipv['width'] = r['TargetVehicle_Width']
         # print('width %.1f', r['TargetVehicle_Width'])
         cipv['confi'] = r['TargetVehicle_Confidence']
+        cipv['acc_lon'] = r['TargetVehicle_AccelX']
         cipv['vel_lon'] = r['TargetVehicle_VelX']
         cipv['TTC'] = r['TargetVehicle_TTC']
-        obs = cipv.copy()
-        cipv.clear()
 
-        return obs
+        ctx['x1_obs'].append(cipv.copy())
+        # return cipv
 
-    if 0x770 <= id <= 0x777:
+    elif 0x770 <= id <= 0x777:
         index = id - 0x770 + 1
         obs_num = r['AdditionVehicleNumber' + str(index)]
         x1_obs_list = []
+        x1_obs = {}
         for i in range(obs_num):
             x1_obs['type'] = 'obstacle'
             x1_obs['id'] = r['Vehicle' + str(2 * (index - 1) + i + 1) + '_ID']
             x1_obs['class'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_Type']
-            x1_obs['pos_lon'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_PosX'] + install['x1']['lon_offset']
+            x1_obs['pos_lon'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_PosX']
             x1_obs['pos_lat'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_PosY']
             x1_obs['ttc'] = 7
             x1_obs['vel_lon'] = 0
             x1_obs['cipv'] = False
             x1_obs['color'] = 4
             x1_obs['width'] = 2
-            x1_obs_list.append(x1_obs.copy())
-            x1_obs.clear()
+            x1_obs_list.append(x1_obs)
+            ctx['x1_obs'].append(x1_obs.copy())
 
-        return x1_obs_list
+        # return x1_obs_list
 
-    if id == 0x77a:
+    elif id == 0x77a:
         ped = None
-        cipv['width'] = 0.3
-        cipv['type'] = 'obstacle'
-        cipv['cipo'] = True
-        cipv['id'] = r['TargetPedestrian_ID']
-        cipv['vel_lon'] = r['TargetPedestrian_VelX']
-        cipv['pos_lat'] = r['TargetPedestrian_PosY']
-        cipv['pos_lon'] = r['TargetPedestrian_PosX']
-        cipv['color'] = 4
-        cipv['class'] = 'pedestrian'
-        cipv['TTC'] = r['TargetPedestrian_TTC']
+        cipp['width'] = 0.3
+        cipp['type'] = 'obstacle'
+        cipp['cipo'] = True
+        cipp['id'] = r['TargetPedestrian_ID']
+        cipp['vel_lon'] = r['TargetPedestrian_VelX']
+        cipp['pos_lat'] = r['TargetPedestrian_PosY']
+        cipp['pos_lon'] = r['TargetPedestrian_PosX']
+        cipp['color'] = 4
+        cipp['class'] = 'pedestrian'
+        cipp['TTC'] = r['TargetPedestrian_TTC']
         # cipv['height'] = 1.6
         # cipv['TTC'] = r['TTC']
-        if cipv['pos_lon'] > 0.0:
-            ped = cipv.copy()
-        cipv.clear()
-        return ped
+        if cipp['pos_lon'] > 0.0:
+            # ped = cipp.copy()
+            ctx['x1_obs'].append(cipp.copy())
+        # cipv.clear()
+        #     return cipp
 
-    if 0x77b <= id <= 0x77d:
+    elif 0x77b <= id <= 0x77d:
         index = id - 0x77a
         ped_num = r['AdditionPedestrianNumber' + str(index)]
         x1_ped_list = []
+        x1_ped = {}
         for i in range(ped_num):
             x1_ped['width'] = 0.3
             x1_ped['cipo'] = False
@@ -106,8 +128,11 @@ def parse_x1(id, data, ctx=None):
             # x1_ped['height'] = 1.6
             if x1_ped['pos_lon'] > 0:
                 x1_ped_list.append(x1_ped.copy())
-            x1_ped.clear()
-        return x1_ped_list
-
-
-
+                ctx['x1_obs'].append(x1_ped.copy())
+            # x1_ped.clear()
+        if id == 0x77d:
+            # pass
+            # print(len(ctx['x1_obs']), ctx['x1_obs'])
+            if ctx.get('x1_obs'):
+                return ctx.get('x1_obs').copy()
+        # return x1_ped_list

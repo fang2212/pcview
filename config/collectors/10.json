@@ -1,0 +1,19 @@
+{
+  "mac": "00:0c:18:ef:ff:ee",
+  "debug": true,
+  "repeater": true,
+  "can_types": {
+    "can1": ["esr"],
+    "can0": [
+      "x1"
+    ]
+  },
+  "msg_types": [
+  "can0",
+  "can1",
+  "gsensor"
+ ],
+  "type": "x1",
+  "platform": "pi",
+  "work_mode": "collector"
+}

@@ -1,0 +1,61 @@
+{
+ "version": 0.1,
+ "vehicle_name": "truck",
+ "installation": {
+  "video": {
+   "fu": 1458.0,
+   "cv": 360.0,
+   "lon_offset": -1.67,
+   "fv": 1458.0,
+   "yaw": 0.05,
+   "cu": 640.0,
+   "pitch": 0.09,
+   "lat_offset": 0.10,
+   "height": 1.38,
+   "roll": -0.11
+  },
+  "x1": {
+   "lon_offset": -1.64,
+   "yaw": 0.0,
+   "pitch": 0.0,
+   "roll": 0.0,
+   "height": 1.18,
+   "lat_offset": 0.0
+  },
+  "ifv300": {
+   "lon_offset": -1.64,
+   "yaw": 0.0,
+   "pitch": 0.0,
+   "roll": 0.0,
+   "height": 1.18,
+   "lat_offset": 0.0
+  },
+  "esr": {
+   "lon_offset": 0.0,
+   "yaw": 0.0,
+   "pitch": 0.0,
+   "roll": 0.0,
+   "height": 0.45,
+   "lat_offset": 0.0
+  },
+  "lmr": {
+   "lon_offset": 0.0,
+   "yaw": -1.0,
+   "pitch": 0.0,
+   "roll": 0.0,
+   "height": 0.45,
+   "lat_offset": -0.3
+  },
+  "rtk": {
+   "lon_offset": -0.21,
+   "yaw": 0.0,
+   "pitch": -2.0,
+   "roll": 0.0,
+   "height": 0.86,
+   "lat_offset": 0.0
+  }
+ },
+ "collectors": [
+  10,11
+ ]
+}

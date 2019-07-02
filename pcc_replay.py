@@ -7,14 +7,11 @@
 # @File    : replay.py
 # @Desc    : log replayer for collected data
 
-import os
-import sched
 import struct
-from multiprocessing import Process, Queue, freeze_support, Value
-from collections import deque
+from multiprocessing import Process, Queue, freeze_support
 import time
-import shutil
-import cProfile
+import cv2
+import numpy as np
 
 
 class JpegExtractor(object):
@@ -82,6 +79,7 @@ def jpeg_extractor(video_dir):
                     buf += read
                     a = buf.find(b'\xff\xd8')
                     b = buf.find(b'\xff\xd9')
+
                 if file_done:
                     break
                 jpg = buf[a:b + 2]
@@ -99,15 +97,9 @@ class LogPlayer(Process):
         self.time_aligned = True
         self.log_path = log_path
         self.start_frame = start_frame
-        # self.forwarding = False
-        # self.pub_addr = pub_addr
         self.socks = {}
         self.t0 = 0
         self.last_frame = 0
-        # files = os.listdir(os.path.dirname(log_path)+'/video')
-        # files = [x for x in files if x.endswith('.avi')]
-        # self.video_files = sorted(files)
-        # self.jpeg_extractor = JpegExtractor()
         self.jpeg_extractor = jpeg_extractor(os.path.dirname(log_path) + '/video')
         self.base_dir = os.path.dirname(self.log_path)
         self.msg_queue = Queue()
@@ -122,7 +114,12 @@ class LogPlayer(Process):
         self.ratio = ratio
         self.ctrl_q = Queue()
 
+        self.last_time = 0
+        self.hz = 20
+
         self.buf = []
+        self.replay_speed = 1
+        self.now_frame_id = 0
 
         for idx, cfg in enumerate(configs):
             cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
@@ -158,10 +155,6 @@ class LogPlayer(Process):
             'ped': {},
             'tsr': {},
             'can': {},
-            # 'can0': {},
-            # 'can1': {},
-            # 'can2': {},
-            # 'can3': {},
             'extra': {}
         }
 
@@ -171,13 +164,18 @@ class LogPlayer(Process):
             res['ts'] = data['ts']
             res['img'] = data['img']
             res['frame_id'] = frame_id
+
             if res['img'] is not None:
                 for key in list(cache):
                     res[key] = cache[key].copy()
-                    print(key, cache[key])
+                    # print(key, cache[key])
                     cache[key] = []
                 self.msg_cnt['frame'] += 1
                 # print('res can', res['can'])
+                now = time.time()
+                if now - self.last_time < 1.0 / self.hz:
+                    time.sleep(1.0/self.hz + self.last_time - now)
+                self.last_time = time.time()
                 return res
             else:
                 print('error decode img', frame_id, len(data))
@@ -218,24 +216,37 @@ class LogPlayer(Process):
                         if ctrl and ctrl.get('action') != 'pause':
                             break
                         else:
-                            time.sleep(0.05)
+                            time.sleep(0.01)
             line = line.strip()
-            if line == '': continue
-            lcnt += 1
+            if line == '':
+                continue
+
+            if 'replay_speed' in self.d:
+                self.replay_speed = self.d['replay_speed']
+
             # print('line {}'.format(cnt))
             cols = line.split(' ')
             ts = float(cols[0]) + float(cols[1]) / 1000000
             if cols[2] == 'camera':
                 frame_id = int(cols[3])
                 fid, jpg = next(self.jpeg_extractor)
-
-                if jpg is None:
+                lcnt += 1
+                if jpg is None or lcnt%self.replay_speed != 0 or self.now_frame_id < self.start_frame:
+                    self.now_frame_id = frame_id
                     continue
-                r = {'ts': ts, 'img': jpg}
+
+
+
+                self.now_frame_id = frame_id
+                # print(lcnt, frame_id, self.replay_speed)
+                r = {'ts': ts, 'img': jpg }
                 self.cam_queue.put((frame_id, r, 'camera', self.cache.copy()))
                 self.cache.clear()
                 self.cache['can'] = []
-                print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
+                # print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
+
+            if lcnt%self.replay_speed != 0 or self.now_frame_id < self.start_frame:
+                continue
 
             if 'CAN' in cols[2]:
                 msg_type = cols[2]
@@ -265,8 +276,6 @@ class LogPlayer(Process):
                     r['ts'] = ts
                     # r['source'] = self.msg_types[int(msg_type[3])]
                     r['source'] = self.can_types[msg_type]
-                if len(r) > 0:
-                    print('r', r)
 
                 # self.msg_queue.put((can_id, r, 'can'))
 
@@ -295,16 +304,18 @@ class LogPlayer(Process):
                     vehstate = {'type': 'vehicle_state', 'pitch': r['pitch'], 'yaw': r['yaw'], 'ts': ts}
                 else:
                     vehstate = None
-                self.msg_queue.put((0xc7, [r, vehstate], 'can'))
+                self.cache['can'].extend([r, vehstate])
+                # self.msg_queue.put((0xc7, [r, vehstate], 'can'))
 
             if 'rtk.target' in cols[2]:
                 range = float(cols[3])
                 angle = float(cols[4])
                 height = float(cols[5])
                 r = {'source': cols[2], 'type': cols[2], 'ts': ts, 'range': range, 'angle': angle, 'height': height}
-                self.msg_queue.put((0xc7, r, 'can'))
+                self.cache['can'].append(r.copy())
 
             if 'rtk' in cols[2] and 'bestpos' in cols[2]:
+                # print('----------------rtk best pos')
                 r = dict()
                 r['ts'] = ts
                 r['type'] = 'bestpos'
@@ -333,14 +344,14 @@ class LogPlayer(Process):
                 r['ext_sol_stat'] = int(fields[14], 16)
                 # r['rsv4'] = int(fields[19])
                 # r['sig_mask'] = int(fields[20], 16)
-                self.msg_queue.put((0xc7, r, 'can'))
+                # self.msg_queue.put((0xc7, r, 'can'))
+                self.cache['can'].append(r.copy())
 
             if 'rtk' in cols[2] and 'heading' in cols[2]:
                 r = dict()
                 r['ts'] = ts
                 r['type'] = 'heading'
                 r['source'] = '.'.join(cols[2].split('.')[:2])
-
                 fields = cols[3:]
                 # r = dict()
                 r['ts'] = ts
@@ -362,27 +373,12 @@ class LogPlayer(Process):
                 r['ext_sol_stat'] = int(fields[11], 16)
                 # r['rsv4'] = int(fields[15])
                 # r['sig_mask'] = int(fields[16], 16)
-                self.msg_queue.put((0xc7, r, 'can'))
+                # self.msg_queue.put((0xc7, r, 'can'))
+                self.cache['can'].append(r.copy())
         rf.close()
         # cp.disable()
         # cp.print_stats()
 
-
-def time_sort(file_name, sort_itv=16000):
-    """
-    sort the log lines according to timestamp.
-    :param file_name: path of the log file
-    :param sort_itv:
-    :return: sorted file path
-
-    """
-    wf = open('log_sort.txt', 'w')
-    with open(file_name) as rf:
-        lines = rf.readlines()
-        lines = sorted(lines)
-    wf.writelines(lines)
-    wf.close()
-    return os.path.abspath('log_sort.txt')
 
 
 def prep_replay(source):
@@ -392,9 +388,7 @@ def prep_replay(source):
 
     r_sort = os.path.join(os.path.dirname(source), 'log_sort.txt')
     if not os.path.exists(r_sort):
-        sort_src = time_sort(source)
-        shutil.copy2(sort_src, os.path.dirname(source))
-        os.remove(sort_src)
+        r_sort = mytools.sort_big_file(source)
 
     config_path = os.path.join(os.path.dirname(source), 'config.json')
     install_path = os.path.join(os.path.dirname(source), 'installation.json')
@@ -405,30 +399,26 @@ def prep_replay(source):
     if os.path.exists(install_path):
         print("using installation:", install_path)
         load_installation(install_path)
-
     return r_sort
 
 
 if __name__ == "__main__":
     from config.config import *
     import sys
-    sys.argv.append('/home/yj/bak/data/J1242/20190527-J1242-x1-esr-suzhou/pcc/20190527174451_CCs_40kmh/log.txt')
+
+    sys.argv.append('/home/yj/bak/data/AEB/20190627-t5-q3-esr-x1-test/pc_collector/CCR/20190627152105_CCRB_40kmh_12m/log.txt')
 
     freeze_support()
     source = sys.argv[1]
     print(source)
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
+    from tools import mytools
     r_sort = prep_replay(source)
 
     from pcc import PCC
     from parsers.parser import parsers_dict
 
-    # print(install['video'])
-    replayer = LogPlayer(r_sort, configs, start_frame=0, ratio=0.2)
-
+    replayer = LogPlayer(r_sort, configs, ratio=0.2, start_frame=0)
     # replayer.start()
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)
     pc_viewer.start()
-
-    # while True:
-    #     replayer.pop_simple()

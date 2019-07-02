@@ -9,6 +9,7 @@ from multiprocessing import Queue
 from config.config import local_cfg, configs, install
 import sys
 import json
+import numpy as np
 
 
 class FileHandler(Thread):
@@ -20,6 +21,8 @@ class FileHandler(Thread):
         # self.image_queue = Queue()
         self.video_queue = Queue(maxsize=40)
         self.raw_queue = Queue(maxsize=5000)
+        self.pcv_queue = Queue(maxsize=5000)
+
         # self.can_raw_queue = kqueue(maxsize=100)
         self._max_cnt = 6000
         self.path = None
@@ -40,6 +43,8 @@ class FileHandler(Thread):
     def run(self):
         # cnt = 0
         raw_fp = None
+        pcv_fp = None
+
         path = None
         video_path = None
         frame_cnt = 0
@@ -57,16 +62,26 @@ class FileHandler(Thread):
                     path = ctrl['path']
                     video_path = ctrl['video_path']
                     raw_fp = open(os.path.join(path, 'log.txt'), 'w+')
+                    pcv_fp = open(os.path.join(path, 'pcv_log.txt'), 'w+')
+
                     stdout_fp = open(os.path.join(path, 'stdout.txt'), 'w+')
                     sys.stdout = stdout_fp
                     state = 'start'
                     while not self.raw_queue.empty():
                         self.raw_queue.get()
 
+                    while not self.pcv_queue.empty():
+                        self.pcv_queue.get()
+
                 elif ctrl['act'] == 'stop':
                     raw_fp.flush()
                     raw_fp.close()
                     raw_fp = None
+
+                    pcv_fp.flush()
+                    pcv_fp.close()
+                    pcv_fp = None
+
                     frame_reset = True
                     sys.stdout = origin_stdout
                     state = 'stop'
@@ -74,6 +89,10 @@ class FileHandler(Thread):
                         self.video_queue.get()
                     while not self.raw_queue.empty():
                         self.raw_queue.get()
+
+                    while not self.pcv_queue.empty():
+                        self.pcv_queue.get()
+
             # print(self.video_path)
             # print('---fileHandle process id----', os.getpid())
             # print(config.save.raw, raw_fp)
@@ -88,6 +107,11 @@ class FileHandler(Thread):
                     raw_fp.write(log_line)
                     raw_fp.flush()
 
+                while not self.pcv_queue.empty():
+                    data = self.pcv_queue.get()
+                    pcv_fp.write(data)
+                    pcv_fp.flush()
+
             while local_cfg.save.video and not self.video_queue.empty() and video_path:
                 ts, frame_id, data = self.video_queue.get()
                 # print(self.frame_cnt)
@@ -101,7 +125,8 @@ class FileHandler(Thread):
 
                     video_writer = cv2.VideoWriter(vpath,
                                                    self.fourcc, 20.0, (1280, 720), True)
-                video_writer.write(data)
+                img = cv2.imdecode(np.fromstring(data, np.uint8), cv2.IMREAD_COLOR)
+                video_writer.write(img)
                 tv_s = int(ts)
                 tv_us = (ts - tv_s) * 1000000
                 log_line = "%.10d %.6d " % (tv_s, tv_us) + 'camera' + ' ' + '{}'.format(frame_id) + "\n"
@@ -179,6 +204,10 @@ class FileHandler(Thread):
             self.raw_queue.put(msg)
         # else:
         #     print('discard raw:', log_type)
+
+    def insert_pcv_raw(self, msg):
+        if not self.pcv_queue.full():
+            self.pcv_queue.put(msg)
 
     def insert_can(self, msg):
         if not self.can_raw_queue.full():

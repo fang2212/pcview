@@ -1,13 +1,12 @@
 from player.ui import BaseDraw, pack, logodir, CVColor
-from config.config import install, config
+from config.config import install
 import cv2
-from tools.transform import trans_gnd2raw, trans_gnd2ipm, trans_polar2rcs
+from tools.transform import Transform
 from datetime import datetime
 import time
 from tools.geo import gps_bearing, gps_distance
 import numpy as np
 import logging
-import json
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
 logging.basicConfig(level=logging.INFO,
@@ -24,6 +23,7 @@ class Player(object):
         self.car_image = cv2.imread(pack(logodir, 'car.tif'))
         self.overlook_othercar_image = cv2.imread(pack(logodir, 'othercar.tif'))
         self.overlook_beforecar_image = cv2.imread(pack(logodir, 'before.tif'))
+        self.transform = Transform()
 
         self.indent = 140
         self.columns = {'video': {'indent': 0}}
@@ -77,14 +77,14 @@ class Player(object):
     def show_dist_mark_ipm(self, img):
         for i in range(5, 200, 1):
             if i % 20 == 0 or i == 10:
-                p1 = trans_gnd2ipm(i, -10)
-                p2 = trans_gnd2ipm(i, 10)
+                p1 = self.transform.trans_gnd2ipm(i, -10)
+                p2 = self.transform.trans_gnd2ipm(i, 10)
                 BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
                 BaseDraw.draw_text(img, '{}m'.format(i), p2, 0.3, CVColor.White, 1)
 
         for i in range(-10, 11, 5):
-            p1 = trans_gnd2ipm(-10, i)
-            p2 = trans_gnd2ipm(170, i)
+            p1 = self.transform.trans_gnd2ipm(-10, i)
+            p2 = self.transform.trans_gnd2ipm(170, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
             BaseDraw.draw_text(img, '{}m'.format(i), p2, 0.3, CVColor.White, 1)
 
@@ -259,8 +259,8 @@ class Player(object):
             y = obs['pos_lat']
         else:
             # print(obs['source'].split('.')[0])
-            # x, y = trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
-            x, y = trans_polar2rcs(obs['angle'], obs['range'])
+            # x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
+            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'])
         if x == 0:
             x = 0.1
         if x < 0:
@@ -269,7 +269,7 @@ class Player(object):
         w = 1200 * width / x
         if w > 600:
             w = 600
-        x0, y0 = trans_gnd2raw(x, y)
+        x0, y0 = self.transform.trans_gnd2raw(x, y)
 
         h = w
         h = 1200 * height / x
@@ -311,8 +311,8 @@ class Player(object):
             x = obs['pos_lon']
             y = obs['pos_lat']
         else:
-            x, y = trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
-        u, v = trans_gnd2ipm(x, y)
+            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
+        u, v = self.transform.trans_gnd2ipm(x, y)
         # color = CVColor.Green
         # if type == 0:
         #     color = CVColor.Green
@@ -321,7 +321,8 @@ class Player(object):
         color = self.color_seq[obs['color']]
 
         if obs.get('sensor') == 'radar':
-            cv2.circle(img, (u, v), 8, color, 2)
+            cv2.circle(img, (u-9, v-8), 8, color, 2)
+            BaseDraw.draw_text(img, '{}'.format(id), (u - 28, v - 8), 0.4, color, 1)
             # ESR
             if 'TTC' in obs:
                 # for save space, only ttc<7 will be shown on the gui
@@ -329,15 +330,16 @@ class Player(object):
                     BaseDraw.draw_text(img, '{:.2f}'.format(obs['TTC']), (u - 40, v + 5), 0.4, color, 1)
         else:
             cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
+            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v + 3), 0.4, color, 1)
 
-        if 'sensor' in obs:
-            # radar message show on the other side
-            if obs['sensor'] == 'radar':
-                BaseDraw.draw_text(img, '{}'.format(id), (u - 25, v - 8), 0.4, color, 1)
+        # if 'sensor' in obs:
+        #     # radar message show on the other side
+        #     if obs['sensor'] == 'radar':
+
                 # dist = obs['pos_lon'] if 'pos_lon' in obs else obs['range']
                 # BaseDraw.draw_text(img, '{:.1f}'.format(dist), (u - 45, v + 5), 0.4, color, 1)
-        else:
-            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v + 3), 0.4, color, 1)
+        # else:
+
 
 
     def show_vehicle_parameters(self, img, parameters, point):
@@ -388,8 +390,8 @@ class Player(object):
             # x2 = x1 + 1
             y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
             # y2 = a0 + a1 * x2 + a2 * x2 ** 2 + a3 * x2 ** 3
-            tx, ty = trans_gnd2raw(x, y)
-            # tx2, ty2 = trans_gnd2raw(x2, y2)
+            tx, ty = self.transform.trans_gnd2raw(x, y)
+            # tx2, ty2 = self.transform.trans_gnd2raw(x2, y2)
             p.append((int(tx), int(ty)))
 
         for i in range(1, len(p) - 1, 1):
@@ -683,12 +685,12 @@ class Player(object):
         indent = self.get_indent(target['source'])
 
         range, angle = self._calc_relatives(target, host)
-        x, y = trans_polar2rcs(angle, range, install['rtk'])
+        x, y = self.transform.trans_polar2rcs(angle, range, install['rtk'])
         if x == 0:
             x = 0.001
         width = 0.5
         height = 0.5
-        ux, uy = trans_gnd2raw(x, y,
+        ux, uy = self.transform.trans_gnd2raw(x, y,
                                host['hgt'] - target['hgt'] + install['video']['height'] - install['rtk']['height'])
         w = 1200 * width / x
         if w > 50:
@@ -758,128 +760,9 @@ class Player(object):
         corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
         d1 = np.linalg.norm(corners2[0] - corners2[6])
         d2 = np.linalg.norm(corners2[6] - corners2[48])
-        print(d1, d2)
+        # print(d1, d2)
         # 图上绘制检测到的角点
         cv2.drawChessboardCorners(img, (7, 7), corners2, ret)
-
-        # vehicle
-
-    def draw_vehicle(self, img, vehicle_data):
-        v_type, index, ttc, fcw, hwm, hw, vb = '-', '-', '-', '-', '-', '-', '-'
-        if vehicle_data:
-            focus_index = vehicle_data['focus_index']
-            speed = vehicle_data['speed'] * 3.6
-            for i, vehicle in enumerate(vehicle_data['dets']):
-                focus_vehicle = (i == focus_index)
-                position = vehicle['bounding_rect']
-                position = position['x'], position['y'], position['width'], position['height']
-                color = CVColor.Red if focus_index == i else CVColor.Cyan
-                self.show_vehicle(img, position, color, 2)
-
-                self.show_vehicle_info(img, position,
-                                              vehicle['vertical_dist'], vehicle['horizontal_dist'],
-                                              vehicle['vehicle_width'], str(vehicle['type']))
-                if config.show.overlook:
-                    self.show_overlook_vehicle(img, focus_vehicle,
-                                                      vehicle['vertical_dist'],
-                                                      vehicle['horizontal_dist'])
-
-            if focus_index != -1:
-                vehicle = vehicle_data['dets'][focus_index]
-                v_type = vehicle['type']
-                index = vehicle['index']
-                ttc = '%.2f' % vehicle['rel_ttc']
-                fcw = vehicle_data['forward_collision_warning']
-                hw = vehicle_data['headway_warning']
-                hwm = '%.2f' % vehicle_data['ttc']
-                vb = vehicle_data['bumper_warning']
-                if ttc == '1000.00':
-                    ttc = '-'
-            parameters = [str(v_type), str(index), str(ttc), str(fcw), str(hwm), str(hw), str(vb)]
-            self.player.show_vehicle_parameters(img, parameters, (120, 0))
-
-        # lane
-
-    def draw_lane(self, img, lane_data):
-        lw_dis, rw_dis, ldw, trend = '-', '-', '-', '-'
-        if lane_data:
-            speed = lane_data['speed'] * 3.6
-            for lane in lane_data['lanelines']:
-                if int(lane['label']) in [1, 2]:  # and speed >= config.show.lane_speed_limit:
-                    color = CVColor.Cyan
-                    width = lane['width']
-                    l_type = lane['type']
-                    conf = lane['confidence']
-                    index = lane['label']
-                    self.player.show_lane(img, lane['perspective_view_poly_coeff'],
-                                          0.2, color)
-                    if config.show.overlook:
-                        self.player.show_overlook_lane(img, lane['bird_view_poly_coeff'], color)
-                    self.player.show_lane_info(img, lane['perspective_view_poly_coeff'],
-                                               index, width, l_type, conf, color)
-
-            lw_dis = '%.2f' % (lane_data['left_wheel_dist'])
-            rw_dis = '%.2f' % (lane_data['right_wheel_dist'])
-            ldw = lane_data['deviate_state']
-            trend = lane_data['deviate_trend']
-            if lw_dis == '111.00':
-                lw_dis = '-'
-            if rw_dis == '111.00':
-                rw_dis = '-'
-
-            parameters = [str(lw_dis), str(rw_dis), str(ldw), str(trend)]
-            if config.mobile.show:
-                lane_y = 120 * 3
-            else:
-                lane_y = 120 * 2
-            self.player.show_lane_parameters(img, parameters, (lane_y, 0))
-
-        # ped
-
-    def draw_ped(self, img, ped_data):
-        if ped_data:
-            for pedestrain in ped_data['pedestrians']:
-                position = pedestrain['regressed_box']
-                position = position['x'], position['y'], position['width'], position['height']
-                # print('position:', position)
-                color = CVColor.Yellow
-                if pedestrain['is_key']:
-                    color = CVColor.Pink
-                if pedestrain['is_danger']:
-                    color = CVColor.Pink
-                self.player.show_peds(img, position, color, 2)
-                if position[0] > 0:
-                    self.player.show_peds_info(img, position, pedestrain['dist'])
-
-    def draw_tsr(self, img, tsr_data):
-        focus_index, speed_limit, tsr_warning_level, tsr_warning_state = -1, 0, 0, 0
-        if tsr_data:
-            logging.info('tsr data {}'.format(tsr_data))
-            focus_index = tsr_data['focus_index']
-            speed_limit = tsr_data['speed_limit']
-            tsr_warning_level = tsr_data['tsr_warning_level']
-            tsr_warning_state = tsr_data['tsr_warning_state']
-            for i, tsr in enumerate(tsr_data['dets']):
-                position = tsr['position']
-                logging.info('tsrrrr {}'.format(position))
-                position = position['x'], position['y'], position['width'], position['height']
-                color = CVColor.Red
-                self.player.show_tsr(img, position, color, 2)
-                if tsr['max_speed'] != 0:
-                    self.player.show_tsr_info(img, position, tsr['max_speed'])
-
-            parameters = [str(focus_index), str(speed_limit), str(tsr_warning_level), str(tsr_warning_state)]
-            self.player.show_tsr_parameters(img, parameters, (369, 0))
-
-    def draw_lane_r(self, img, data):
-        if len(data) == 0:
-            return
-            # print(data)
-        if data['type'] != 'lane':
-            return
-        # self.player.show_overlook_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
-        self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
-
 
     def show_lane_ipm(self, img, ratios, r=60, color=CVColor.Cyan):
         """绘制车道线
@@ -900,7 +783,7 @@ class Player(object):
 
         for x in range(int(r)):
             y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
-            tx, ty = trans_gnd2ipm(x, y)
+            tx, ty = self.transform.trans_gnd2ipm(x, y)
             p.append((int(tx), int(ty)))
 
         for i in range(1, len(p) - 1, 1):
@@ -909,10 +792,11 @@ class Player(object):
     def draw_vehicle_state(self, img, data):
         if len(data) == 0:
             return
-        if data['type'] == 'vehicle_state':
-            self.show_veh_speed(img, data['speed'])
-        elif data['type'] == 'q3_vehicle':
+        if 'speed' in data:
             self.show_veh_speed(img, data['speed'], data['source'])
+        if 'yaw_rate' in data:
+            self.show_yaw_rate(img, data['yaw_rate'], data['source'])
+
 
     def draw_obs(self, img, data, ipm):
         if len(data) == 0:
@@ -939,21 +823,12 @@ class Player(object):
 
         self.show_obs(img, data, color)
         self.show_ipm_obs(ipm, otype, x, y, data['id'])
-        # print('target {} pos_x {}'.format(data['id'], x))
-
-        # for obj_id in list(self.vis_pos):
-        #     if self.ts_now - self.vis_pos[obj_id]['ts'] > 0.2:
-        #         self.vis_pos.pop(obj_id)
-        #         continue
-        #     self.player.show_overlook_vehicle(img, 2, self.vis_pos[obj_id]['x'], self.vis_pos[obj_id]['y'])
 
     def draw_can_data(self, img, data, ipm):
         if data['type'] == 'obstacle':
             self.draw_obs(img, data, ipm)
         elif data['type'] == 'lane':
             self.draw_lane_r(img, data)
-        # elif data['type'] == 'q3_vehicle':
-        #     self.draw_vehicle_state(img, data)
         elif data['type'] == 'vehicle_state':
             self.show_veh_speed(img, data['speed'], data['source'])
         elif data['type'] == 'CIPV':
@@ -973,21 +848,6 @@ class Player(object):
         duration = duration if duration > 0 else 1
         fps = frame_cnt / duration
         return fps
-
-    def draw_mobile(self, img, frame_id):
-        index = int(frame_id / 3) * 4 + frame_id % 3
-        if config.mobile.show:
-            mobile_ldw, mobile_hw, mobile_fcw, mobile_vb, mobile_hwm = '-', '-', '-', '-', '-'
-            mobile_log = self.mobile_content[index]
-            if mobile_log:
-                mobile_hwm = mobile_log.get('headway_measurement') if mobile_log.get('headway_measurement') else 0
-                mobile_hw = 1 if mobile_log.get('sound_type') == 3 else 0
-                mobile_fcw = 1 if mobile_log.get('sound_type') == 6 and mobile_log.get('fcw_on') == 1 else 0
-                mobile_vb = 1 if mobile_log.get('sound_type') == 5 else 0
-                mobile_ldw = mobile_log['left_ldw'] * 2 + mobile_log['right_ldw'] if 'left_ldw' in mobile_log else 0
-
-            mobile_parameters = [str(mobile_hwm), str(mobile_hw), str(mobile_fcw), str(mobile_vb), str(mobile_ldw)]
-            self.show_mobile_parameters(img, mobile_parameters, (120 * 2, 0))
 
     def show_intrinsic_para(self, img):
         indent = self.get_indent('video')
@@ -1040,8 +900,8 @@ class Player(object):
 
     def show_ipm_target(self, img, target, host):
         range, angle = self._calc_relatives(target, host)
-        x, y = trans_polar2rcs(angle, range)
-        ux, uy = trans_gnd2ipm(x, y)
+        x, y = self.transform.trans_polar2rcs(angle, range)
+        ux, uy = self.transform.trans_gnd2ipm(x, y)
         color = CVColor.Green
         # if type == 0:
         #     color = CVColor.Green
@@ -1058,6 +918,45 @@ class Player(object):
         cv2.line(img, p1, p2, CVColor.Green, 2)
         cv2.line(img, p3, p4, CVColor.Green, 2)
 
+    def get_alert(self, vehicle_data, lane_data, ped_data):
+        alert = {}
+        warning_level, alert_ttc, hw_state, fcw_state, vb_state, sg_state = 0, 0, 0, 0, 0, 0
+        if vehicle_data:
+            speed = vehicle_data['speed']
+            focus_index = vehicle_data['focus_index']
+            if focus_index != -1:
+                fcw_state = vehicle_data['forward_collision_warning']
+                alert_ttc = '%.2f' % vehicle_data['ttc']
+                vb_state = vehicle_data['bumper_state']
+                sg_state = vehicle_data['stop_and_go_state']
+                alert_ttc = '%.2f' % vehicle_data['ttc']
+                warning_level = vehicle_data['warning_level']
+                hw_state = vehicle_data['headway_warning']
+        alert['ttc'] = float(alert_ttc)
+        alert['warning_level'] = int(warning_level)
+        alert['hw_state'] = int(hw_state)
+        alert['fcw_state'] = int(fcw_state)
+        alert['vb_state'] = int(vb_state)
+        alert['sg_state'] = int(sg_state)
+
+        lane_warning = 0
+        speed = 0
+        if lane_data:
+            lane_warning = lane_data['deviate_state']
+            speed = lane_data['speed'] * 3.6
+        alert['lane_warning'] = lane_warning
+        alert['speed'] = float('%.2f' % speed)
+
+        return alert
+
+    def draw_lane_r(self, img, data):
+        if len(data) == 0:
+            return
+            # print(data)
+        if data['type'] != 'lane':
+            return
+        # self.player.show_overlook_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
+        self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
 
     # def show_radar(self, img, position, color=CVColor.Cyan, thickness=2):
     #     """绘制pedestrain
