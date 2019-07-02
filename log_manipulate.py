@@ -9,7 +9,6 @@ from math import *
 import cantools
 import numpy as np
 
-
 class bcl:
     HDR = '\033[95m'
     OKBL = '\033[94m'
@@ -91,24 +90,27 @@ def process_log(file_name, parsers, ctx, startf=None, endf=None, output=None):
 
             if line == '\n':
                 continue
-            log_type = line.split(' ')[2]
-            if log_type == 'camera':
-                fid = int(line.split(' ')[3])
-                # print('fid', fid)
-                if startf and endf and startf <= fid <= endf:
-                    pstate = True
+            try:
+                log_type = line.split(' ')[2]
+                if log_type == 'camera':
+                    fid = int(line.split(' ')[3])
+                    # print('fid', fid)
+                    if startf and endf and startf <= fid <= endf:
+                        pstate = True
 
-            if not pstate:
-                # print('not pstate')
-                continue
-            for func in parsers:
-                # print(line)
-                ret_line = func(line, ctx)
-                # print(can_port, buf, r)
-                if ret_line and len(ret_line) > 0:
-                    # print(ret_line)
-                    wf.write(ret_line)
-                    break
+                if not pstate:
+                    # print('not pstate')
+                    continue
+                for func in parsers:
+                    # print(line)
+                    ret_line = func(line, ctx)
+                    # print(can_port, buf, r)
+                    if ret_line and len(ret_line) > 0:
+                        # print(ret_line)
+                        wf.write(ret_line)
+                        break
+            except Exception as e:
+                print(bcl.FAIL+'[Error]'+bcl.ENDC ,e)
 
             # wf.write(line)
     wf.close()
@@ -665,14 +667,14 @@ def parse_x1_line(line, ctx):
             ctx['x1_obs_ep_ts'] = ts
             for r in ret:
                 lines += compose_log(ts, 'x1.{}.{}'.format(r['class'], r['id']),
-                                     '{} {} {} {}'.format(r['pos_lat'], r['pos_lon'], (speed - r['vel_lon']),
+                                     '{} {} {} {}'.format(r['pos_lat'], r['pos_lon'], (r['vel_lon']),
                                                           r.get('TTC')))
                 ctx['x1_ids'].add(r['id'])
             return lines
         else:
             ctx['x1_ids'].add(ret['id'])
             return compose_log(ts, 'x1.{}.{}'.format(ret['class'], ret['id']),
-                               '{} {} {} {}'.format(ret['pos_lat'], ret['pos_lon'], (speed - ret['vel_lon']),
+                               '{} {} {} {}'.format(ret['pos_lat'], ret['pos_lon'], (ret['vel_lon']),
                                                     ret.get('TTC')))
 
 
@@ -792,9 +794,20 @@ def get_distance(t1, t2):
 
 
 def find_esr_by_x1(line, ctx):
-    from tools.match import is_near
+    # from tools.match import is_near
     if not ctx.get('matched_ep'):
         ctx['matched_ep'] = dict()
+    if 'x1_obs_ep_ts' not in ctx or 'esr_obs_ep_ts' not in ctx:
+        return
+    if ctx.get('esr_obs_ep_ts') == ctx.get('esr_obs_ep_ts_last') \
+            and ctx.get('x1_obs_ep_ts') == ctx.get('x1_obs_ep_ts_last'):
+        return
+    x1_dt = ctx['x1_obs_ep_ts'] - ctx['x1_obs_ep_ts_last'] if 'x1_obs_ep_ts_last' in ctx else None
+    esr_dt = ctx['esr_obs_ep_ts'] - ctx['esr_obs_ep_ts_last'] if 'esr_obs_ep_ts_last' in ctx else None
+    # print(ctx['x1_obs_ep_ts'], 'x1 dt:', x1_dt, 'esr dt:', esr_dt)
+    # print('ok')
+    ctx['esr_obs_ep_ts_last'] = ctx['esr_obs_ep_ts']
+    ctx['x1_obs_ep_ts_last'] = ctx['x1_obs_ep_ts']
     esr = ctx.get('esr_obs_ep')
     x1 = ctx.get('x1_obs_ep')
     if not x1 or not esr:
@@ -806,11 +819,18 @@ def find_esr_by_x1(line, ctx):
         if len(esr) > 0:
             esr_list = sorted(esr, key=lambda x: get_distance(x1item, x))
             esr_t = esr_list[0]
-            if is_near(x1item, esr_t) and fabs(ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts']) < 0.2:
+            # if x1item['id'] == 2:
+            #     print(x1item['id'], esr_t['id'], get_distance(x1item, esr_t),
+            #           ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'],
+            #           len(x1), len(esr))
+            #     print(x1item, esr_t)
+            # print(get_distance(x1item, esr_t))
+            if get_distance(x1item, esr_t) < 5.0 and fabs(ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts']) < 0.2:
                 if esr_t['id'] not in esr_cdt:
                     esr_cdt[esr_t['id']] = dict()
                 esr_cdt[esr_t['id']][x1item['id']] = get_distance(x1item, esr_t)
     for eid in esr_cdt:
+        # print(eid)
         dist = 99
         x1_sel = 0
         for x1id in esr_cdt[eid]:
@@ -820,8 +840,10 @@ def find_esr_by_x1(line, ctx):
         ts = ctx['x1_obs_ep_ts']
         pair = {'x1': x1_sel, 'esr': eid}
         ctx['matched_ep'][ts] = pair
+        # print('matched:', pair)
 
 
+# deprecated
 def pair_x1_esr(line, ctx):
     from tools.match import is_near
     cols = line.split(' ')
@@ -979,6 +1001,7 @@ def calc_delta_x1_esr(line, ctx):
             pass
 
 
+# deprecated
 def batch_process(dir_name, parsers):
     import pickle
     dirs = os.listdir(dir_name)
@@ -1063,17 +1086,18 @@ def batch_process(dir_name, parsers):
                     wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
 
 
+# deprecated
 def batch_process_1(dir_name, parsers):
     dirs = os.listdir(dir_name)
     for d in dirs:
         if not os.path.isdir(os.path.join(dir_name, d)):
             continue
-        log = os.path.join(dir_name, d, 'log.txt')
-        # log = os.path.join(dir_name, d, 'pcc_data', 'log.txt')
+        log = os.path.join(dir_name, d, 'pcc_data', 'log.txt')
         print(bcl.BOLD + bcl.HDR + 'Entering dir: ' + d + bcl.ENDC)
         single_process(log, parsers, False)
 
 
+# deprecated
 def batch_process_2(dir_name, parsers):
     dirs = os.listdir(dir_name)
     for d in dirs:
@@ -1084,15 +1108,43 @@ def batch_process_2(dir_name, parsers):
         single_process(log, parsers, False)
 
 
+def batch_process_3(dir_name, parsers):
+    for root, dirs, files in os.walk(dir_name):
+        for f in files:
+            if f == 'log.txt':
+                log = os.path.join(root, f)
+                print(bcl.BOLD + bcl.HDR + 'Entering dir: ' + root + bcl.ENDC)
+                single_process(log, parsers, False)
+
+
+def merge_result(dir_name):
+    dirs = os.listdir(dir_name)
+    analysis_dir = os.path.join(dir_name, 'analysis')
+    if not os.path.exists(analysis_dir):
+        os.mkdir(analysis_dir)
+    for d in dirs:
+        if not os.path.isdir(os.path.join(dir_name, d)):
+            continue
+        src_dir = os.path.join(dir_name, d, 'pcc_data', 'analysis')
+        new_dir = os.path.join(analysis_dir, d)
+        if os.path.exists(src_dir) and not os.path.exists(new_dir):
+            shutil.copytree(src_dir, new_dir)
+        else:
+            print('dir not found:', src_dir)
+
+
 def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
     import pickle
     # log = os.path.join(dir_name, 'log.txt')
     if not os.path.exists(log):
         print(bcl.FAIL + 'Invalid data path. {} does not exist.'.format(log) + bcl.ENDC)
         return
+    conf_path = os.path.join(os.path.dirname(log), 'config.json')
+    # if os.path.exists(conf_path):
+    #     conf = json.load(open())
 
     ctx = dict()
-    ctx['can_port'] = {'x1': 'CAN0',
+    ctx['can_port'] = {'x1': 'CAN3',
                        'esr': 'CAN1'
                        }
     if rdrtgt is not None:
@@ -1105,8 +1157,9 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
     if not os.path.exists(analysis_dir):
         os.mkdir(analysis_dir)
 
-    r = process_log(log, parsers, ctx, output=os.path.join(analysis_dir, 'log_p0.txt'))
-    r0 = time_sort(r, output=os.path.join(analysis_dir, 'log_p0_sort.txt'))
+    r = time_sort(log, output=os.path.join(analysis_dir, 'log_sort.txt'))
+    r0 = process_log(r, parsers, ctx, output=os.path.join(analysis_dir, 'log_p0.txt'))
+
     # rfile = shutil.copy2(r, os.path.join(data_dir, 'log_process0.txt'))
     ts0 = ctx.get('ts0') or 0
     print('x1_ids:', ctx['x1_ids'])
@@ -1131,7 +1184,7 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
             matches[x1id][esrid]['count'] = 0
         matches[x1id][esrid]['count'] += 1
     ctx['match_tree'] = matches
-    r1 = process_log(r, [calc_delta_x1_esr], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
+    r1 = process_log(r0, [calc_delta_x1_esr], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
     # print('x1_targets:', x1_target)
     # print('radar_targets:', radar_target)
     # if len(x1_target) == 0:
@@ -1197,9 +1250,12 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
 if __name__ == "__main__":
     from tools import visual
 
-    # r = '/media/nan/860evo/data/x1_aeb_noflow_201906061506/20190610161130-20190527181040-CC_range_5kmh-env1/pcc_data/log.txt'
-    r = '/home/cao/桌面/江苏/0527/pcc'
-    # r = '/media/nan/860evo/data/x1_aeb_noflow_201906061506'
+    local_path = os.path.split(os.path.realpath(__file__))[0]
+    os.chdir(local_path)
+    # print('local_path:', local_path)
+    r = '/media/nan/860evo/data/20190622-T5_problem/no_brake/20190622140858-fcw未触发，aeb制动无效/log.txt'
+    # r = '/media/nan/860evo/data/20190527-J1242-x1-esr-suzhou/pcc'
+    # r = '/media/nan/860evo/data/x1_aeb_noflow_201906181552'
 
     if len(sys.argv) > 1:
         r = sys.argv[1]
@@ -1216,16 +1272,15 @@ if __name__ == "__main__":
         parse_x1_line,
     ]
 
-    # if r.endswith('log.txt'):
-    #     print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
-    #     single_process(r, parsers, False)
-    #     # single_process(r, parsers, False, x1tgt=[6, 51], rdrtgt=[44])
-    # else:
-    #     # batch_process(r, parsers)
-    #     print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
-    #     batch_process_2(r, parsers)
+    if r.endswith('log.txt'):
+        print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
+        single_process(r, parsers, False)
+        # single_process(r, parsers, False, x1tgt=[6, 51], rdrtgt=[44])
+    else:
+        # batch_process(r, parsers)
+        print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
+        batch_process_3(r, parsers)
 
-    batch_process_1(r, parsers)
     dt = time.time() - ts
     print(bcl.WARN + 'Processing done. Time cost: {}s'.format(dt) + bcl.ENDC)
     # test_sort(r)
