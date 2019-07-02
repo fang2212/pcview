@@ -38,6 +38,8 @@ class FileHandler(Thread):
         self.frame_cnt = 0
         self.frame_reset = True
         self.redirect = redirect
+
+
         print('outer id:', os.getpid())
 
     def run(self):
@@ -55,10 +57,17 @@ class FileHandler(Thread):
         state = 'stop'
         origin_stdout = sys.stdout
 
+
         while True:
+            now_time = time.time()
+            if self.recording and now_time - self.start_time > 20:
+                self.stop_rec()
+                self.start_rec()
+
             if not self.ctrl_queue.empty():
                 ctrl = self.ctrl_queue.get()
                 if ctrl['act'] == 'start':
+
                     path = ctrl['path']
                     video_path = ctrl['video_path']
                     raw_fp = open(os.path.join(path, 'log.txt'), 'w+')
@@ -67,8 +76,12 @@ class FileHandler(Thread):
                     stdout_fp = open(os.path.join(path, 'stdout.txt'), 'w+')
                     sys.stdout = stdout_fp
                     state = 'start'
+
                     while not self.raw_queue.empty():
                         self.raw_queue.get()
+
+                    while not self.video_queue.empty():
+                        self.video_queue.get()
 
                     while not self.pcv_queue.empty():
                         self.pcv_queue.get()
@@ -87,11 +100,13 @@ class FileHandler(Thread):
                     state = 'stop'
                     while not self.video_queue.empty():
                         self.video_queue.get()
+
                     while not self.raw_queue.empty():
                         self.raw_queue.get()
 
                     while not self.pcv_queue.empty():
                         self.pcv_queue.get()
+
 
             # print(self.video_path)
             # print('---fileHandle process id----', os.getpid())
@@ -106,12 +121,15 @@ class FileHandler(Thread):
                     # print(log_line)
                     raw_fp.write(log_line)
                     raw_fp.flush()
+                    # print('end ............')
 
                 while not self.pcv_queue.empty():
                     data = self.pcv_queue.get()
                     pcv_fp.write(data)
                     pcv_fp.flush()
 
+
+            # print('filehandler...', video_path, self.video_queue.qsize())
             while local_cfg.save.video and not self.video_queue.empty() and video_path:
                 ts, frame_id, data = self.video_queue.get()
                 # print(self.frame_cnt)
@@ -134,6 +152,7 @@ class FileHandler(Thread):
 
                 frame_cnt += 1
             time.sleep(0.01)
+
 
     def start_rec(self, rlog=None):
         FORMAT = '%Y%m%d%H%M%S'
@@ -192,10 +211,12 @@ class FileHandler(Thread):
         return {'status': 'ok'}
 
     def insert_video(self, msg):
-        if local_cfg.save.video and self.recording:
+        # print(self.recording, 'video recording----')
+        if local_cfg.save.video and not self.video_queue.full():
             self.video_queue.put(msg)
 
     def insert_raw(self, msg):
+        # print(self.recording, 'log recording----')
         # print(self.recording)
         timestamp, log_type, data = msg
         if local_cfg.save.raw and not self.raw_queue.full():

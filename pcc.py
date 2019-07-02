@@ -325,9 +325,49 @@ class PCC(object):
 
 
 if __name__ == "__main__":
+    import sys
     from config.config import load_cfg
+    load_cfg('config/cfg_superb.json')
 
-    load_cfg('config/cfg_t5.json')
     hub = Hub()
-    pcc = PCC(hub, ipm=True, replay=False)
-    pcc.start()
+    if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
+        hub.start()
+        import json
+        from tornado.web import Application, RequestHandler
+        from tornado.ioloop import IOLoop
+        class IndexHandler(RequestHandler):
+            def post(self):
+                action = self.get_body_argument('action')
+                if action:
+                    if 'start' in action:
+                        if not hub.fileHandler.recording:
+                            hub.fileHandler.start_rec()
+                            print(hub.fileHandler.recording)
+                            self.write(json.dumps({'status': 'ok', 'action': action, 'message': 'start recording'}))
+                        else:
+                            self.write(json.dumps({'status': 'ok', 'message': 'already recording', 'action': action}))
+                    elif 'stop' in action:
+                        if not hub.fileHandler.recording:
+                            self.write(json.dumps({'status': 'ok', 'message': 'not recording', 'action': action}))
+                        else:
+                            hub.fileHandler.stop_rec()
+                            print(hub.fileHandler.recording)
+                            self.write(json.dumps({'status': 'ok', 'action': action, 'message': 'stop recording'}))
+                    elif 'check' in action:
+                        mess = 'recording' if hub.fileHandler.recording else 'not recording'
+                        self.write(json.dumps({'status': 'ok', 'action': action, 'message': mess}))
+                    else:
+                        self.write(json.dumps({'status': 'ok', 'message': 'unrecognized action', 'action': action}))
+                else:
+                    # self.hub.fileHandler.stop_rec()
+                    self.write(json.dumps({'status': 'error', 'message': 'not action', 'action': None}))
+        app = Application([(r'/', IndexHandler)])
+        app.listen(9999)
+        IOLoop.instance().start()
+
+    else:
+        pcc = PCC(hub, ipm=True, replay=False)
+        pcc.start()
+
+    # pcc = PCC(hub, ipm=True, replay=False)
+    # pcc.start()
