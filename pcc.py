@@ -329,12 +329,13 @@ if __name__ == "__main__":
     from config.config import load_cfg
     load_cfg('config/cfg_superb.json')
 
-    hub = Hub()
     if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
+        hub = Hub(headless=True)
         hub.start()
-        import json
+
         from tornado.web import Application, RequestHandler
         from tornado.ioloop import IOLoop
+
         class IndexHandler(RequestHandler):
             def post(self):
                 action = self.get_body_argument('action')
@@ -343,29 +344,33 @@ if __name__ == "__main__":
                         if not hub.fileHandler.recording:
                             hub.fileHandler.start_rec()
                             print(hub.fileHandler.recording)
-                            self.write(json.dumps({'status': 'ok', 'action': action, 'message': 'start recording'}))
+                            self.write({'status': 'ok', 'action': action, 'message': 'start recording'})
                         else:
-                            self.write(json.dumps({'status': 'ok', 'message': 'already recording', 'action': action}))
+                            self.write({'status': 'ok', 'message': 'already recording', 'action': action})
                     elif 'stop' in action:
                         if not hub.fileHandler.recording:
-                            self.write(json.dumps({'status': 'ok', 'message': 'not recording', 'action': action}))
+                            self.write({'status': 'ok', 'message': 'not recording', 'action': action})
                         else:
                             hub.fileHandler.stop_rec()
                             print(hub.fileHandler.recording)
-                            self.write(json.dumps({'status': 'ok', 'action': action, 'message': 'stop recording'}))
+                            self.write({'status': 'ok', 'action': action, 'message': 'stop recording'})
                     elif 'check' in action:
                         mess = 'recording' if hub.fileHandler.recording else 'not recording'
-                        self.write(json.dumps({'status': 'ok', 'action': action, 'message': mess}))
+                        self.write({'status': 'ok', 'action': action, 'message': mess})
+                    elif 'image' in action:
+                        img = hub.fileHandler.get_last_image()
+                        self.write({'status': 'ok', 'action': action, 'message': 'get image', 'data': img})
                     else:
-                        self.write(json.dumps({'status': 'ok', 'message': 'unrecognized action', 'action': action}))
+                        self.write({'status': 'ok', 'message': 'unrecognized action', 'action': action})
                 else:
                     # self.hub.fileHandler.stop_rec()
-                    self.write(json.dumps({'status': 'error', 'message': 'not action', 'action': None}))
+                    self.write({'status': 'error', 'message': 'not action', 'action': None})
         app = Application([(r'/', IndexHandler)])
         app.listen(9999)
         IOLoop.instance().start()
 
     else:
+        hub = Hub()
         pcc = PCC(hub, ipm=True, replay=False)
         pcc.start()
 

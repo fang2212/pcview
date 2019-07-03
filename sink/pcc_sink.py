@@ -226,10 +226,11 @@ class GsensorSink(Sink):
 
 
 class CameraSink(Sink):
-    def __init__(self, queue, ip, port, channel, fileHandler):
+    def __init__(self, queue, ip, port, channel, fileHandler, headless=False):
         Sink.__init__(self, queue, ip, port, channel)
         self.last_fid = 0
         self.fileHandler = fileHandler
+        self.headless = headless
 
     def pkg_handler(self, msg):
         # print('cprocess-id:', os.getpid())
@@ -251,6 +252,9 @@ class CameraSink(Sink):
         r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id}
         print('frame id', frame_id)
         # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
+
+        if self.headless:
+            return None
 
         return frame_id, r
 

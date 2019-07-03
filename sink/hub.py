@@ -13,12 +13,12 @@ logging.basicConfig(level=logging.INFO,
 
 class Hub(Thread):
 
-    def __init__(self):
+    def __init__(self, headless=False):
 
         # msg_types = config.msg_types
 
         Thread.__init__(self)
-        # self.use_camera = True
+        self.headless = headless
 
         self.msg_queue = Queue()
         self.cam_queue = Queue()
@@ -73,7 +73,7 @@ class Hub(Thread):
             self.collectors[ip]['sinks'] = {}
             if finder.found[ip]['mac'] == configs[0]['mac']:
                 self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
-                                              fileHandler=self.fileHandler)
+                                              fileHandler=self.fileHandler, headless=self.headless)
                 self.camera_sink.start()
                 self.collectors[ip]['sinks']['video'] = self.camera_sink
             ndev = 0
@@ -125,13 +125,23 @@ class Hub(Thread):
 
         if 'can0' in cfg['msg_types'] and len(cfg['can_types']['can0']) != 0:
             # typestr = 'can' + '{:01d}'.format(index * 2)
-            sink['can0'] = CANSink(queue=msg_queue, ip=ip, port=1207, channel='can0', type=cfg['can_types']['can0'],
+
+            types = cfg['can_types']['can0']
+            if self.headless:
+                types = []
+
+            sink['can0'] = CANSink(queue=msg_queue, ip=ip, port=1207, channel='can0', type=types,
                                    index=index, fileHandler=self.fileHandler)
             sink['can0'].start()
 
         if 'can1' in cfg['msg_types'] and len(cfg['can_types']['can1']) != 0:
             # typestr = 'can' + '{:01d}'.format(index * 2 + 1)
-            sink['can1'] = CANSink(queue=msg_queue, ip=ip, port=1208, channel='can1', type=cfg['can_types']['can1'],
+
+            types = cfg['can_types']['can1']
+            if self.headless:
+                types = []
+
+            sink['can1'] = CANSink(queue=msg_queue, ip=ip, port=1208, channel='can1', type=types,
                                    index=index, fileHandler=self.fileHandler)
             sink['can1'].start()
 
