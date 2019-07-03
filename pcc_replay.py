@@ -283,8 +283,7 @@ class LogPlayer(Process):
 
             if cols[2] == 'Gsensor':
                 data = [int(x) for x in cols[3:9]]
-                msg = struct.pack('<BBhIdhhhhhhhq', 0, 0, 0, 0, ts, data[3], data[4], data[5], data[0], data[1],
-                                  data[2],
+                msg = struct.pack('<BBhIdhhhhhhhq', 0, 0, 0, 0, ts, data[3], data[4], data[5], data[0], data[1], data[2],
                                   int((float(cols[9]) - 36.53) * 340), 0)
 
             if 'rtk' in cols[2] and 'sol' in cols[2]:
@@ -409,7 +408,6 @@ if __name__ == "__main__":
     print(source)
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
     from tools import mytools
-
     r_sort = prep_replay(source)
 
     from pcc import PCC
