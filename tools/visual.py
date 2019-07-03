@@ -43,7 +43,7 @@ def scatter(fig, file_name, labels=None, ytag=None, ts0=0, start_ts=None, end_ts
 
     # print(fig.axes)
     print('plotting', file_name, labels)
-    fig.set_size_inches(12, 10)
+    fig.set_size_inches(12, (n+1)*3+1)
     last_ts = 0
     # deltas = []
     data = {}
@@ -97,7 +97,8 @@ def scatter(fig, file_name, labels=None, ytag=None, ts0=0, start_ts=None, end_ts
 
     ax.legend(sorted(data.keys()))
     dur = end_ts - start_ts
-    plt.xlim(start_ts - ts0 - 0.2 * dur, end_ts - ts0 + 0.2 * dur)
+    if 'TTC' not in labels:
+        plt.xlim(start_ts - ts0 - 0.2 * dur, end_ts - ts0 + 0.2 * dur)
     plt.xlabel("time(s)")
     if ytag:
         plt.ylabel(ytag)
