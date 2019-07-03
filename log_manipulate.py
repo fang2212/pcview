@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 import shutil
 import time
 from collections import deque
@@ -8,6 +7,7 @@ from math import *
 
 import cantools
 import numpy as np
+
 
 class bcl:
     HDR = '\033[95m'
@@ -90,27 +90,27 @@ def process_log(file_name, parsers, ctx, startf=None, endf=None, output=None):
 
             if line == '\n':
                 continue
-            try:
-                log_type = line.split(' ')[2]
-                if log_type == 'camera':
-                    fid = int(line.split(' ')[3])
-                    # print('fid', fid)
-                    if startf and endf and startf <= fid <= endf:
-                        pstate = True
+            # try:
+            log_type = line.split(' ')[2]
+            if log_type == 'camera':
+                fid = int(line.split(' ')[3])
+                # print('fid', fid)
+                if startf and endf and startf <= fid <= endf:
+                    pstate = True
 
-                if not pstate:
-                    # print('not pstate')
-                    continue
-                for func in parsers:
-                    # print(line)
-                    ret_line = func(line, ctx)
-                    # print(can_port, buf, r)
-                    if ret_line and len(ret_line) > 0:
-                        # print(ret_line)
-                        wf.write(ret_line)
-                        break
-            except Exception as e:
-                print(bcl.FAIL+'[Error]'+bcl.ENDC ,e)
+            if not pstate:
+                # print('not pstate')
+                continue
+            for func in parsers:
+                # print(line)
+                ret_line = func(line, ctx)
+                # print(can_port, buf, r)
+                if ret_line and len(ret_line) > 0:
+                    # print(ret_line)
+                    wf.write(ret_line)
+                    break
+            # except Exception as e:
+            #     print(bcl.FAIL + '[Error]' + bcl.ENDC, e)
 
             # wf.write(line)
     wf.close()
@@ -123,6 +123,7 @@ def strip_log(file_name):
             return None
         else:
             return line
+
     r = process_log(file_name, [strip], None)
     return r
 
@@ -567,7 +568,7 @@ def parse_esr_line(line, ctx):
             # if item.get('cipo'):
             y = sin(item['angle'] * pi / 180.0) * item['range']
             lines += compose_log(ts, 'esr.obj.{}'.format(item['id']),
-                                 '{} {} {} {}'.format(item['range'], item['angle'], item['range_rate'] * -1, y))
+                                 '{} {} {} {} {}'.format(item['range'], item['angle'], item['range_rate'] * -1, y, item['TTC_m']))
             ctx['esr_ids'].add(item['id'])
         # print(lines)
         return lines
@@ -660,22 +661,23 @@ def parse_x1_line(line, ctx):
         if not ret:
             return
         # print(ret)
-        if isinstance(ret, list):
-
-            lines = ''
-            ctx['x1_obs_ep'] = ret
-            ctx['x1_obs_ep_ts'] = ts
-            for r in ret:
-                lines += compose_log(ts, 'x1.{}.{}'.format(r['class'], r['id']),
-                                     '{} {} {} {}'.format(r['pos_lat'], r['pos_lon'], (r['vel_lon']),
-                                                          r.get('TTC')))
-                ctx['x1_ids'].add(r['id'])
-            return lines
-        else:
-            ctx['x1_ids'].add(ret['id'])
-            return compose_log(ts, 'x1.{}.{}'.format(ret['class'], ret['id']),
-                               '{} {} {} {}'.format(ret['pos_lat'], ret['pos_lon'], (ret['vel_lon']),
-                                                    ret.get('TTC')))
+        lines = ''
+        ctx['x1_obs_ep'] = ret
+        ctx['x1_obs_ep_ts'] = ts
+        for r in ret:
+            lines += compose_log(ts, 'x1.{}.{}'.format(r['class'], r['id']),
+                                 '{} {} {} {}'.format(r['pos_lat'], r['pos_lon'], (r['vel_lon']),
+                                                      r.get('TTC') or 7.0))
+            ctx['x1_ids'].add(r['id'])
+        return lines
+        # if isinstance(ret, list):
+        #
+        #
+        # else:
+        #     ctx['x1_ids'].add(ret['id'])
+        #     return compose_log(ts, 'x1.{}.{}'.format(ret['class'], ret['id']),
+        #                        '{} {} {} {}'.format(ret['pos_lat'], ret['pos_lon'], (ret['vel_lon']),
+        #                                             ret.get('TTC')))
 
 
 # def parse_q3_line(file_name, can_port='CAN0'):
@@ -802,8 +804,8 @@ def find_esr_by_x1(line, ctx):
     if ctx.get('esr_obs_ep_ts') == ctx.get('esr_obs_ep_ts_last') \
             and ctx.get('x1_obs_ep_ts') == ctx.get('x1_obs_ep_ts_last'):
         return
-    x1_dt = ctx['x1_obs_ep_ts'] - ctx['x1_obs_ep_ts_last'] if 'x1_obs_ep_ts_last' in ctx else None
-    esr_dt = ctx['esr_obs_ep_ts'] - ctx['esr_obs_ep_ts_last'] if 'esr_obs_ep_ts_last' in ctx else None
+    # x1_dt = ctx['x1_obs_ep_ts'] - ctx['x1_obs_ep_ts_last'] if 'x1_obs_ep_ts_last' in ctx else None
+    # esr_dt = ctx['esr_obs_ep_ts'] - ctx['esr_obs_ep_ts_last'] if 'esr_obs_ep_ts_last' in ctx else None
     # print(ctx['x1_obs_ep_ts'], 'x1 dt:', x1_dt, 'esr dt:', esr_dt)
     # print('ok')
     ctx['esr_obs_ep_ts_last'] = ctx['esr_obs_ep_ts']
@@ -825,20 +827,26 @@ def find_esr_by_x1(line, ctx):
             #           len(x1), len(esr))
             #     print(x1item, esr_t)
             # print(get_distance(x1item, esr_t))
-            if get_distance(x1item, esr_t) < 5.0 and fabs(ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts']) < 0.2:
-                if esr_t['id'] not in esr_cdt:
-                    esr_cdt[esr_t['id']] = dict()
-                esr_cdt[esr_t['id']][x1item['id']] = get_distance(x1item, esr_t)
+            if get_distance(x1item, esr_t) > 5.0:
+                # print('dist too large.', x1item['id'], esr_t['id'], get_distance(x1item, esr_t))
+                continue
+            if fabs(ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts']) > 0.2:
+                # print('time diff too large.', x1item['id'], esr_t['id'], ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'])
+                continue
+            if esr_t['id'] not in esr_cdt:
+                esr_cdt[esr_t['id']] = dict()
+            esr_cdt[esr_t['id']][x1item['id']] = {'dist': get_distance(x1item, esr_t)}
     for eid in esr_cdt:
         # print(eid)
         dist = 99
         x1_sel = 0
         for x1id in esr_cdt[eid]:
-            if esr_cdt[eid][x1id] < dist:
-                dist = esr_cdt[eid][x1id]
+            if esr_cdt[eid][x1id]['dist'] < dist:
+                dist = esr_cdt[eid][x1id]['dist']
                 x1_sel = x1id
         ts = ctx['x1_obs_ep_ts']
         pair = {'x1': x1_sel, 'esr': eid}
+        pair.update(esr_cdt[eid][x1_sel])
         ctx['matched_ep'][ts] = pair
         # print('matched:', pair)
 
@@ -959,10 +967,19 @@ def calc_delta_x1_esr(line, ctx):
         return
 
     if 'x1_obj' in ctx and 'esr_obj' in ctx:
+        x1_id = ctx['x1_obj']['id']
+        esr_id = ctx['esr_obj']['id']
+        if esr_id not in ctx['match_tree'][x1_id]:
+            return
+        if ctx['match_tree'][x1_id][esr_id]['count'] <= 1:
+            return
+        if ts > ctx['match_tree'][x1_id][esr_id]['end_ts']:
+            return
+        if ts < ctx['match_tree'][x1_id][esr_id]['start_ts']:
+            return
         # print(ctx['x1_obj'], ctx['esr_obj'])
-        if fabs(ctx['x1_obj']['ts'] - ctx['esr_obj']['ts']) < 0.2:
-            x1_id = ctx['x1_obj']['id']
-            esr_id = ctx['esr_obj']['id']
+        if fabs(ctx['x1_obj']['ts'] - ctx['esr_obj']['ts']) < 100:
+
             # if x1_id not in ctx['matched']:
             #     ctx['matched'][x1_id] = list()
             # ctx['matched'][x1_id].append(esr_id)
@@ -996,7 +1013,7 @@ def calc_delta_x1_esr(line, ctx):
             if not ctx.get('start_ts'):
                 ctx['start_ts'] = ts
             return compose_log(ts, 'match.x1_esr.{}.{}'.format(x1_id, esr_id), '{} {} {} {} {} {}'.format(
-                dx, dy, dvx, dx_ratio, dy_ratio, dvx_ratio))
+                dx, dy, dvx, dx_ratio * 100, dy_ratio * 100, dvx_ratio * 100))
         else:
             pass
 
@@ -1136,17 +1153,29 @@ def merge_result(dir_name):
 def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
     import pickle
     # log = os.path.join(dir_name, 'log.txt')
+    ctx = dict()
     if not os.path.exists(log):
         print(bcl.FAIL + 'Invalid data path. {} does not exist.'.format(log) + bcl.ENDC)
         return
     conf_path = os.path.join(os.path.dirname(log), 'config.json')
-    # if os.path.exists(conf_path):
-    #     conf = json.load(open())
+    if os.path.exists(conf_path):
+        conf = json.load(open(conf_path))
+        canports = dict()
+        for idx, collector in enumerate(conf):
+            type0 = collector['can_types']['can0']
+            if type0 and type0[0] not in canports:
+                canports[type0[0]] = 'CAN{}'.format(idx * 2)
+            type1 = collector['can_types']['can1']
+            if type1 and type1[0] not in canports:
+                canports[type1[0]] = 'CAN{}'.format(idx * 2 + 1)
+        ctx['can_port'] = canports
+        print(canports)
+        # time.sleep(10)
+    else:
+        ctx['can_port'] = {'x1': 'CAN1',
+                           'esr': 'CAN0'
+                           }
 
-    ctx = dict()
-    ctx['can_port'] = {'x1': 'CAN3',
-                       'esr': 'CAN1'
-                       }
     if rdrtgt is not None:
         ctx['radar_target'] = rdrtgt
     if x1tgt is not None:
@@ -1212,6 +1241,9 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
             samples = {'esr.obj.{}'.format(esrid): {'Vx': 2}, 'x1.*.{}'.format(x1id): {'Vx': 2}}
             jlist.append(samples)
             visual.scatter(fig, r0, samples, 'Vx(m/s)', ts0, sts, ets, vis)
+            samples = {'esr.obj.{}'.format(esrid): {'TTC_m': 4}, 'x1.*.{}'.format(x1id): {'TTC': 3}}
+            visual.scatter(fig, r0, samples, 'TTC(s)', ts0, sts, ets, False)
+            jlist.append(samples)
             pickle.dump(fig, open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_xyvx.pyfig'.format(x1id, esrid)), 'wb'))
             json.dump(jlist, open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_xyvx.json'.format(x1id, esrid)), 'w+'),
                       indent=True)
@@ -1249,11 +1281,12 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
 
 if __name__ == "__main__":
     from tools import visual
+    import sys
 
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190622-T5_problem/no_brake/20190622140858-fcw未触发，aeb制动无效/log.txt'
+    r = '/media/nan/860evo/data/20190627-t5-q3-esr-x1-test/pc_collector/PED/20190627173822_CPFA_20kmh/log.txt'
     # r = '/media/nan/860evo/data/20190527-J1242-x1-esr-suzhou/pcc'
     # r = '/media/nan/860evo/data/x1_aeb_noflow_201906181552'
 

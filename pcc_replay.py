@@ -8,10 +8,8 @@
 # @Desc    : log replayer for collected data
 
 import struct
-from multiprocessing import Process, Queue, freeze_support
 import time
-import cv2
-import numpy as np
+from multiprocessing import Process, Queue, freeze_support
 
 
 class JpegExtractor(object):
@@ -48,7 +46,7 @@ class JpegExtractor(object):
             b = self.buf.find(b'\xff\xd9')
 
         jpg = self.buf[a:b + 2]
-        self.buf = self.buf[b+2:]
+        self.buf = self.buf[b + 2:]
 
         return jpg
 
@@ -174,7 +172,7 @@ class LogPlayer(Process):
                 # print('res can', res['can'])
                 now = time.time()
                 if now - self.last_time < 1.0 / self.hz:
-                    time.sleep(1.0/self.hz + self.last_time - now)
+                    time.sleep(1.0 / self.hz + self.last_time - now)
                 self.last_time = time.time()
                 return res
             else:
@@ -231,21 +229,19 @@ class LogPlayer(Process):
                 frame_id = int(cols[3])
                 fid, jpg = next(self.jpeg_extractor)
                 lcnt += 1
-                if jpg is None or lcnt%self.replay_speed != 0 or self.now_frame_id < self.start_frame:
+                if jpg is None or lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                     self.now_frame_id = frame_id
                     continue
 
-
-
                 self.now_frame_id = frame_id
                 # print(lcnt, frame_id, self.replay_speed)
-                r = {'ts': ts, 'img': jpg }
+                r = {'ts': ts, 'img': jpg}
                 self.cam_queue.put((frame_id, r, 'camera', self.cache.copy()))
                 self.cache.clear()
                 self.cache['can'] = []
                 # print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
 
-            if lcnt%self.replay_speed != 0 or self.now_frame_id < self.start_frame:
+            if lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                 continue
 
             if 'CAN' in cols[2]:
@@ -296,7 +292,7 @@ class LogPlayer(Process):
                 r = {'type': 'rtk', 'source': source, 'ts': ts, 'ts_origin': ts}
                 r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'], r['velE'], \
                 r['velD'], r['yaw'], r['pitch'], r['length'] = \
-                (float(x) for x in cols[3:14])
+                    (float(x) for x in cols[3:14])
                 r['rtkst'] = int(r['rtkst'])
                 r['orist'] = int(r['orist'])
 
@@ -405,7 +401,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/pc-collect/20190701202341/log.txt')
+    sys.argv.append('/media/nan/860evo/data/20190622-T5_problem/pcc_probelm/20190622115618/log.txt')
 
     freeze_support()
     source = sys.argv[1]
