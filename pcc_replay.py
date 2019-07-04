@@ -401,7 +401,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/media/nan/860evo/data/20190622-T5_problem/pcc_probelm/20190622115618/log.txt')
+    sys.argv.append('/home/cao/pc-collect/20190614173921/log.txt')
 
     freeze_support()
     source = sys.argv[1]

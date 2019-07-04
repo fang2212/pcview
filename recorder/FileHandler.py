@@ -39,7 +39,7 @@ class FileHandler(Thread):
         self.frame_reset = True
         self.redirect = redirect
 
-        self.last_image = None
+        self.last_image_q = Queue(maxsize=2)
 
 
         print('outer id:', os.getpid())
@@ -62,9 +62,10 @@ class FileHandler(Thread):
 
         while True:
             now_time = time.time()
-            if self.recording and now_time - self.start_time > 20:
+            if self.recording and now_time - self.start_time > 600:
                 self.stop_rec()
                 self.start_rec()
+                self.start_time = now_time
 
             if not self.ctrl_queue.empty():
                 ctrl = self.ctrl_queue.get()
@@ -214,7 +215,12 @@ class FileHandler(Thread):
 
     def insert_video(self, msg):
         # print(self.recording, 'video recording----')
-        self.last_image = msg[-1]
+
+        if self.last_image_q.full():
+            self.last_image_q.get()
+        self.last_image_q.put(msg[-1])
+
+        # print('insert', self.last_image)
         if local_cfg.save.video and not self.video_queue.full():
             self.video_queue.put(msg)
 
@@ -238,7 +244,10 @@ class FileHandler(Thread):
             self.can_raw_queue.put(msg)
 
     def get_last_image(self):
-        return self.last_image
+        # print('last', self.last_image)
+        if self.last_image_q.empty():
+            return None
+        return self.last_image_q.get()
 
     # def insert_resolved(self, r):
     #     if config.save.raw and self.recording:

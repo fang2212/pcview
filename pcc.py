@@ -18,6 +18,7 @@ from sink.hub import Hub
 from tools.vehicle import Vehicle
 from tools.match import is_near
 import numpy as np
+import base64
 
 
 logging.basicConfig(level=logging.INFO,
@@ -339,7 +340,7 @@ if __name__ == "__main__":
         hub = Hub(headless=True)
         hub.start()
 
-        from tornado.web import Application, RequestHandler
+        from tornado.web import Application, RequestHandler, StaticFileHandler
         from tornado.ioloop import IOLoop
 
         class IndexHandler(RequestHandler):
@@ -365,13 +366,29 @@ if __name__ == "__main__":
                         self.write({'status': 'ok', 'action': action, 'message': mess})
                     elif 'image' in action:
                         img = hub.fileHandler.get_last_image()
-                        self.write({'status': 'ok', 'action': action, 'message': 'get image', 'data': img})
+                        if img is None:
+                            # print('pcc', img)
+                            # img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
+                            img = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
+                        else:
+                            img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
+                        base64_str = cv2.imencode('.jpg', img)[1].tostring()
+                        base64_str = base64.b64encode(base64_str).decode()
+                        self.write({'status': 'ok', 'action': action, 'message': 'get image', 'data': base64_str})
                     else:
                         self.write({'status': 'ok', 'message': 'unrecognized action', 'action': action})
                 else:
                     # self.hub.fileHandler.stop_rec()
                     self.write({'status': 'error', 'message': 'not action', 'action': None})
-        app = Application([(r'/', IndexHandler)])
+
+            def get(self):
+                self.render("web/index.html")
+
+
+        app = Application([
+            (r'/', IndexHandler),
+            (r"/static/(.*)", StaticFileHandler, {"path": "web/statics"}),
+        ], debug=True)
         app.listen(9999)
         IOLoop.instance().start()
 

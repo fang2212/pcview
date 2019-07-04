@@ -5,6 +5,8 @@ import tkinter as tk
 import requests
 from PIL import Image, ImageTk
 import numpy as np
+import cv2
+import base64
 
 
 def read_jpg(filepath):
@@ -50,6 +52,7 @@ def test_mini_cv():
 
 def test_post(action):
     data = requests.post('http://localhost:9999', action)
+
     return data.json()
 
 
@@ -64,6 +67,7 @@ def test_tkinter():
 
     img = Image.open(open('/home/cao/图片/Wallpapers/160158-1541059318e139.jpg', 'rb'))
     img = ImageTk.PhotoImage(image=img)
+    # print(img)
     panel.config(image=img)
 
     is_record = False
@@ -82,9 +86,15 @@ def test_tkinter():
     def refresh():
         action = {'action': 'image'}
         data = test_post(action)
-        img = Image.fromarray(np.fromstring(data['data']))
+        # print('refresh', data)
+        img = cv2.imdecode(np.fromstring(base64.b64decode(data['data']), np.uint8), cv2.IMREAD_COLOR)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGBA)
+        img = Image.fromarray(img)
+        # print('ref', img)
         img = ImageTk.PhotoImage(image=img)
+        panel.imgtk = img
         panel.config(image=img)
+
 
     bt1 = tk.Button(window, textvariable=bt1_var, command=record)
     bt1.pack(fill='x')

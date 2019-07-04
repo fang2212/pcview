@@ -128,7 +128,7 @@ class Hub(Thread):
 
             types = cfg['can_types']['can0']
             if self.headless:
-                types = []
+                types = ['none']
 
             sink['can0'] = CANSink(queue=msg_queue, ip=ip, port=1207, channel='can0', type=types,
                                    index=index, fileHandler=self.fileHandler)
@@ -139,7 +139,7 @@ class Hub(Thread):
 
             types = cfg['can_types']['can1']
             if self.headless:
-                types = []
+                types = ['none']
 
             sink['can1'] = CANSink(queue=msg_queue, ip=ip, port=1208, channel='can1', type=types,
                                    index=index, fileHandler=self.fileHandler)
