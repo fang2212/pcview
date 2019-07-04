@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO,
 
 
 class Sink(Process):
-    def __init__(self, queue, ip, port, msg_type, index=0):
+    def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
         Process.__init__(self)
         self.deamon = True
         self.dev = ip
@@ -28,6 +28,7 @@ class Sink(Process):
         self.type = msg_type
         self.index = index
         self.cls = msg_type
+        self.isheadless = isheadless
         if 'can' in msg_type:
             self.cls = 'can'
             print(self.type, 'start.')
@@ -58,7 +59,7 @@ class Sink(Process):
                 time.sleep(0.01)
                 continue
             r = self.pkg_handler(buf)
-            if r is not None:
+            if r is not None and not self.isheadless:
                 self.queue.put((*r, self.cls))
 
     def pkg_handler(self, msg_buf):
@@ -66,8 +67,8 @@ class Sink(Process):
 
 
 class PinodeSink(Sink):
-    def __init__(self, queue, ip, port, channel, index, resname, fileHandler):
-        super(PinodeSink, self).__init__(queue, ip, port, channel, index)
+    def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
+        super(PinodeSink, self).__init__(queue, ip, port, channel, index, isheadless)
         print('pi_node connected.', ip, port, channel, index)
         self.source = 'rtk.{:d}'.format(index)
         self.context = {'source': self.source}
@@ -133,13 +134,17 @@ class PinodeSink(Sink):
 
 
 class CANSink(Sink):
-    def __init__(self, queue, ip, port, channel, type, index, fileHandler):
-        Sink.__init__(self, queue, ip, port, channel, index)
+    def __init__(self, queue, ip, port, channel, type, index, fileHandler, isheadless=False):
+        Sink.__init__(self, queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
         self.parser = []
         for ptype in parsers_dict:
             if ptype in type:
                 self.parser.append(parsers_dict[ptype])
+
+        if self.isheadless:
+            self.parser = []
+
         if len(self.parser) == 0:
             self.parser = [parsers_dict["default"]]
         self.stat = {}
@@ -206,8 +211,8 @@ class CANSink(Sink):
 
 
 class GsensorSink(Sink):
-    def __init__(self, queue, ip, port, channel, index, fileHandler):
-        Sink.__init__(self, queue, ip, port, channel, index)
+    def __init__(self, queue, ip, port, channel, index, fileHandler, isheadless=False):
+        Sink.__init__(self, queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
 
     def pkg_handler(self, msg):
@@ -227,7 +232,7 @@ class GsensorSink(Sink):
 
 class CameraSink(Sink):
     def __init__(self, queue, ip, port, channel, fileHandler, headless=False):
-        Sink.__init__(self, queue, ip, port, channel)
+        Sink.__init__(self, queue, ip, port, channel, headless)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.headless = headless
@@ -253,16 +258,13 @@ class CameraSink(Sink):
         # print('frame id', frame_id)
         # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
 
-        if self.headless:
-            return None
-
         return frame_id, r
 
 
 class X1CameraSink(Sink):
 
-    def __init__(self, queue, ip, port, channel, fileHandler):
-        Sink.__init__(self, queue, ip, port, channel)
+    def __init__(self, queue, ip, port, channel, fileHandler, isheadless=False):
+        Sink.__init__(self, queue, ip, port, channel, isheadless)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.ip = ip
@@ -312,8 +314,8 @@ class X1CameraSink(Sink):
 
 class RTKSink(Sink):
 
-    def __init__(self, queue, ip, port, msg_type, index, fileHandler):
-        Sink.__init__(self, queue, ip, port, msg_type, index)
+    def __init__(self, queue, ip, port, msg_type, index, fileHandler, isheadless=False):
+        Sink.__init__(self, queue, ip, port, msg_type, index, isheadless)
         self.fileHandler = fileHandler
 
     def _init_port(self):

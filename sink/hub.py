@@ -86,7 +86,7 @@ class Hub(Thread):
                             port = finder.found[ip]['ports'][name]
                             self.collectors[ip]['idx'] = idx
                             pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=name,
-                                                fileHandler=self.fileHandler)
+                                                fileHandler=self.fileHandler, isheadless=self.headless)
                             pisink.start()
                             self.collectors[ip]['sinks'][name] = pisink
                     else:
@@ -127,27 +127,21 @@ class Hub(Thread):
             # typestr = 'can' + '{:01d}'.format(index * 2)
 
             types = cfg['can_types']['can0']
-            if self.headless:
-                types = ['none']
-
             sink['can0'] = CANSink(queue=msg_queue, ip=ip, port=1207, channel='can0', type=types,
-                                   index=index, fileHandler=self.fileHandler)
+                                   index=index, fileHandler=self.fileHandler, isheadless=self.headless)
             sink['can0'].start()
 
         if 'can1' in cfg['msg_types'] and len(cfg['can_types']['can1']) != 0:
             # typestr = 'can' + '{:01d}'.format(index * 2 + 1)
 
             types = cfg['can_types']['can1']
-            if self.headless:
-                types = ['none']
-
             sink['can1'] = CANSink(queue=msg_queue, ip=ip, port=1208, channel='can1', type=types,
-                                   index=index, fileHandler=self.fileHandler)
+                                   index=index, fileHandler=self.fileHandler, isheadless=self.headless)
             sink['can1'].start()
 
         if 'gsensor' in cfg['msg_types']:
             sink['gsensor'] = GsensorSink(queue=msg_queue, ip=ip, port=1209, channel='gsensor', index=index,
-                                          fileHandler=self.fileHandler)
+                                          fileHandler=self.fileHandler, isheadless=self.headless)
             sink['gsensor'].start()
 
         return sink
