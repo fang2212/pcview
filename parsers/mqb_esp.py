@@ -12,7 +12,7 @@ def parse_mqb(id, buf):
             # return
             # print("speed: {}".format(r['ESP_v_Signal']))
 
-            return {'type': 'vehicle_state', 'speed': r['ESP_v_Signal']}
+            return {'type': 'vehicle_state', 'sensor': 'mqb', 'speed': r['ESP_v_Signal']}
 
         if 'ESP_Gierrate' in r:
             if r['ESP_VZ_Gierrate'] == 'negative':

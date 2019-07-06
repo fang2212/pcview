@@ -93,7 +93,9 @@ def scatter(fig, file_name, labels=None, ytag=None, ts0=0, start_ts=None, end_ts
                         ts[key].append(ts_now - ts0)
     # print(ax[fig_idx, 0])
     for item in sorted(data.keys()):
-        ax.plot(ts[item], data[item], '.')
+        # ax.plot(ts[item], data[item])
+        ax.plot(ts[item], data[item], '.-', alpha=0.8)
+
 
     ax.legend(sorted(data.keys()))
     dur = end_ts - start_ts

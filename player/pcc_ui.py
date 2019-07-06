@@ -281,7 +281,7 @@ class Player(object):
         x2 = int(x2)
         y1 = int(y1)
         y2 = int(y2)
-        if obs.get('sensor') == 'radar':
+        if obs.get('sensor_type') == 'radar':
             if w > 50:
                 w = 50
             # print(int(x1), int(y1), int(w), width)
@@ -320,7 +320,7 @@ class Player(object):
         #     color = CVColor.Red
         color = self.color_seq[obs['color']]
 
-        if obs.get('sensor') == 'radar':
+        if obs.get('sensor_type') == 'radar':
             cv2.circle(img, (u, v-8), 8, color, 2)
             BaseDraw.draw_text(img, '{}'.format(id), (u - 28, v - 8), 0.4, color, 1)
             # ESR

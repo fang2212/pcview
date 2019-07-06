@@ -85,6 +85,7 @@ def parse_ifv300(id, buf, ctx=None):
         else:
             obs['cipo'] = False
         obs['type'] = 'obstacle'
+        obs['sensor'] = 'ifv300'
         obs['class'] = r['VIS_OBS_CLASSIFICATION_'+idx]
         obs['height'] = r['VIS_OBS_HEIGHT_'+idx]
         obs['ped_waist_up'] = r['VIS_OBS_PED_WAIST_UP_'+idx]
@@ -157,6 +158,7 @@ def parse_q3(id, buf, ctx=None):
         # print()
         # print("0x%x" % id, r)
         ctx['obs']['type'] = 'obstacle'
+        ctx['obs']['sensor'] = 'q3'
         ctx['obs']['id'] = r.get('ObstacleID')
         ctx['obs']['pos_lon'] = r['ObstaclePosX']
         ctx['obs']['pos_lat'] = r['ObstaclePosY']

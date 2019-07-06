@@ -20,6 +20,8 @@ class bcl:
     UNDERLINE = '\033[4m'
 
 
+obs_meas_order = ['pos_lat', 'pos_lon', 'vel_lon', 'TTC']
+
 def compose_log(ts, log_type, data):
     tv_s = int(ts)
     tv_us = (ts - tv_s) * 1000000
@@ -514,36 +516,6 @@ def parse_esr_cipo(file_name, can_port='CAN3'):
     return os.path.abspath(out_file)
 
 
-# def parse_esr(file_name, can_port='CAN3'):
-#     from client.sensor.radar import parse_esr
-#     print('parsing esr obj...')
-#     ctx = {}
-#     out_file = '/tmp/log_esr.txt'
-#     wf = open(out_file, 'w')
-#     with open(file_name) as rf:
-#         for line in rf:
-#             cols = line.split(' ')
-#             ts = float(cols[0]) + float(cols[1]) / 1000000
-#             if can_port in cols[2]:
-#                 can_id = int(cols[3], 16)
-#                 buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
-#                 r = parse_esr(can_id, buf, ctx)
-#                 # print(can_port, buf, r)
-#                 if not r:
-#                     wf.write(' '.join(cols))
-#                     continue
-#                 for item in r:
-#                     print(item)
-#                     # print(item['cipo'])
-#                     # if item.get('cipo'):
-#                     wf.write(
-#                         compose_log(ts, 'esr.obj.{}'.format(item['id']),
-#                                     '{} {} {}'.format(item['range'], item['angle'], item['range_rate'] * -3.6)))
-#             wf.write(' '.join(cols))
-#     wf.close()
-#     return os.path.abspath(out_file)
-
-
 def parse_esr_line(line, ctx):
     from parsers.radar import parse_esr
     from math import sin, pi
@@ -560,42 +532,25 @@ def parse_esr_line(line, ctx):
         if not r or isinstance(r, dict):
             return
         lines = ''
-        ctx['esr_obs_ep'] = r
-        ctx['esr_obs_ep_ts'] = ts
+
         for item in r:
             # print(type(item), item)
             # print(item['cipo'])
             # if item.get('cipo'):
-            y = sin(item['angle'] * pi / 180.0) * item['range']
+            angle_rad = item['angle'] * pi / 180.0
+            x = cos(angle_rad) * item['range']
+            y = sin(angle_rad) * item['range']
+            # lines += compose_log(ts, 'esr.obj.{}'.format(item['id']),
+            #                      '{} {} {} {} {}'.format(item['range'], item['angle'], item['range_rate'], y, item['TTC_m']))
             lines += compose_log(ts, 'esr.obj.{}'.format(item['id']),
-                                 '{} {} {} {} {}'.format(item['range'], item['angle'], item['range_rate'] * -1, y, item['TTC_m']))
+                                 '{} {} {} {}'.format(y, x, item['range_rate'], item['TTC_m']))
             ctx['esr_ids'].add(item['id'])
+            item['pos_lat'] = y
+            item['pos_lon'] = x
+        ctx['esr_obs_ep'] = r
+        ctx['esr_obs_ep_ts'] = ts
         # print(lines)
         return lines
-
-
-# def parse_lmr(file_name, can_port='CAN2'):
-#     from client.sensor.radar import parse_hawkeye_lmr
-#     print('parsing lmr obj...')
-#     ctx = {}
-#     out_file = '/tmp/log_lmr.txt'
-#     wf = open(out_file, 'w')
-#     with open(file_name) as rf:
-#         for line in rf:
-#             cols = line.split(' ')
-#             ts = float(cols[0]) + float(cols[1]) / 1000000
-#             if can_port in cols[2]:
-#                 can_id = int(cols[3], 16)
-#                 buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
-#                 r = parse_hawkeye_lmr(can_id, buf, ctx)
-#                 # print(can_port, buf, r)
-#                 if not r:
-#                     wf.write(' '.join(cols))
-#                     continue
-#                 wf.write(compose_log(ts, 'lmr.obj.{}'.format(r['id']), '{} {}'.format(r['range'], r['angle'])))
-#             wf.write(' '.join(cols))
-#     wf.close()
-#     return os.path.abspath(out_file)
 
 
 def parse_lmr_line(line, ctx, can_port='CAN2'):
@@ -610,38 +565,6 @@ def parse_lmr_line(line, ctx, can_port='CAN2'):
         if not r:
             return
         return compose_log(ts, 'lmr.obj.{}'.format(r['id']), '{} {}'.format(r['range'], r['angle']))
-
-
-# def parse_x1_line(file_name, can_port='CAN1'):
-#     from client.sensor.x1 import parse_x1
-#     print('parsing x1 obj...')
-#     ctx = {}
-#     out_file = '/tmp/log_x1.txt'
-#     wf = open(out_file, 'w')
-#     with open(file_name) as rf:
-#         for line in rf:
-#             cols = line.split(' ')
-#             ts = float(cols[0]) + float(cols[1]) / 1000000
-#             if can_port in cols[2]:
-#                 can_id = int(cols[3], 16)
-#                 buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
-#                 ret = parse_x1(can_id, buf, ctx)
-#                 # print(can_port, buf, r)
-#                 if not ret:
-#                     wf.write(' '.join(cols))
-#                     continue
-#                 if isinstance(ret, list):
-#                     for r in ret:
-#                         wf.write(compose_log(ts, 'x1.{}.{}'.format(r['class'], r['id']),
-#                                              '{} {}'.format(r['pos_lat'], r['pos_lon'])))
-#                 else:
-#                     wf.write(compose_log(ts, 'x1.{}.{}'.format(ret['class'], ret['id']),
-#                                          '{} {}'.format(ret['pos_lat'], ret['pos_lon'])))
-#                     print(ret)
-#
-#             wf.write(' '.join(cols))
-#     wf.close()
-#     return os.path.abspath(out_file)
 
 
 def parse_x1_line(line, ctx):
@@ -678,41 +601,6 @@ def parse_x1_line(line, ctx):
         #     return compose_log(ts, 'x1.{}.{}'.format(ret['class'], ret['id']),
         #                        '{} {} {} {}'.format(ret['pos_lat'], ret['pos_lon'], (ret['vel_lon']),
         #                                             ret.get('TTC')))
-
-
-# def parse_q3_line(file_name, can_port='CAN0'):
-#     from client.sensor.mobileye_q3 import parse_ifv300
-#     print('parsing q3 obj...')
-#     ctx = {}
-#     out_file = '/tmp/log_q3.txt'
-#     wf = open(out_file, 'w')
-#     with open(file_name) as rf:
-#         for line in rf:
-#             cols = line.split(' ')
-#             ts = float(cols[0]) + float(cols[1]) / 1000000
-#             if can_port in cols[2]:
-#                 can_id = int(cols[3], 16)
-#                 buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
-#                 ret = parse_ifv300(can_id, buf, ctx)
-#                 # print(can_port, buf, r)
-#
-#                 if not ret or ret['type'] not in ['obstacle', 'vehicle_state']:
-#                     wf.write(' '.join(cols))
-#                     continue
-#                 if ret['type'] == 'vehicle_state':
-#                     wf.write(compose_log(ts, 'q3.vehstate',
-#                                          '{} {}'.format(ret['speed'], ret['yaw_rate'])))
-#                     continue
-#                 if isinstance(ret, list):
-#                     for r in ret:
-#                         wf.write(compose_log(ts, 'q3.{}.{}'.format(r['class'], r['id']),
-#                                              '{} {}'.format(r['pos_lat'], r['pos_lon'])))
-#                 else:
-#                     wf.write(compose_log(ts, 'q3.{}.{}'.format(ret['class'], ret['id']),
-#                                          '{} {}'.format(ret['pos_lat'], ret['pos_lon'])))
-#             wf.write(' '.join(cols))
-#     wf.close()
-#     return os.path.abspath(out_file)
 
 
 def parse_q3_line(line, ctx, can_port='CAN0'):
@@ -768,6 +656,16 @@ def adj_timestamp(line, ctx, log_type='NMEA'):
         return ' '.join(cols) + '\n'
 
 
+def merge_log(log1, log2, outfile=None):
+    out = outfile or '/tmp/log_merged.txt'
+    out_cat = '/tmp/log_cat.txt'
+    with open(out_cat, 'w') as wf:
+        with open(log1) as f1, open(log2) as f2:
+            wf.write(f1.read())
+            wf.write(f2.read())
+    return time_sort(out_cat, output=out)
+
+
 # def find_esr_by_x1(line, ctx):
 #     cols = line.split(' ')
 #     ts = float(cols[0]) + float(cols[1]) / 1000000
@@ -793,6 +691,45 @@ def get_distance(t1, t2):
 
     dist = ((t1x - t2x) ** 2 + (t1y - t2y) ** 2) ** 0.5
     return dist
+
+
+def spatial_match_obs(obs1, obs2):
+    obs2_cdt = dict()
+    for obs1item in obs1:
+        if len(obs2) > 0:
+            obs2list = sorted(obs2, key=lambda x: get_distance(obs1item, x))
+            obs2t = obs2list[0]
+            # if x1item['id'] == 2:
+            #     print(x1item['id'], esr_t['id'], get_distance(x1item, esr_t),
+            #           ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'],
+            #           len(x1), len(esr))
+            #     print(x1item, esr_t)
+            # print(get_distance(x1item, esr_t))
+            if get_distance(obs1item, obs2t) > 6.0:
+                # print('dist too large.', x1item['id'], esr_t['id'], get_distance(x1item, esr_t))
+                continue
+            # if fabs(esr_ts - x1_ts) > 0.2:
+                # print('time diff too large.', x1item['id'], esr_t['id'], ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'])
+                # continue
+            if obs2t['id'] not in obs2_cdt:
+                obs2_cdt[obs2t['id']] = dict()
+                obs2_cdt[obs2t['id']][obs1item['id']] = {'dist': get_distance(obs1item, obs2t)}
+    for o2id in obs2_cdt:
+        # print(eid)
+        dist = 99
+        o1sel = 0
+        for o1id in obs2_cdt[o2id]:
+            if obs2_cdt[o2id][o1id]['dist'] < dist:
+                dist = obs2_cdt[o2id][o1id]['dist']
+                o1sel = o1id
+        # ts = x1_ts
+        # pair = {'x1': o1sel, 'esr': o2id}
+        for o1 in obs1:
+            for o2 in obs2:
+                if o1['id'] == o1sel and o2['id'] == o2id:
+                    return o1, o2
+        # pair.update(esr_cdt[eid][x1_sel])
+        # return pair
 
 
 def find_esr_by_x1(line, ctx):
@@ -851,88 +788,173 @@ def find_esr_by_x1(line, ctx):
         # print('matched:', pair)
 
 
-# deprecated
-def pair_x1_esr(line, ctx):
-    from tools.match import is_near
-    cols = line.split(' ')
-    ts = float(cols[0]) + float(cols[1]) / 1000000
-    id = int(cols[2].split('.')[-1])
-    if not ctx.get('matched'):
-        ctx['matched'] = dict()
-        # ctx['matched']['x1'] = set()
-        # ctx['matched']['esr'] = set()
-    # print(line)
-    if 'x1.' in cols[2]:
-        if ctx.get('x1_target') and id not in ctx['x1_target']:
-            return
-
-        y = float(cols[3])
-        x = float(cols[4])
-        vlon_rel = float(cols[5])
-        # ttc = float(cols[6])
-        # range_rate =
-        ctx['x1_obj'] = {'ts': ts, 'id': id, 'pos_lat': y, 'pos_lon': x, 'vel_lon': vlon_rel}
-    elif 'esr.' in cols[2]:
-        if ctx.get('radar_target') and id not in ctx['radar_target']:
-            return
-
-        r = float(cols[3])
-        a = float(cols[4])
-        range_rate = float(cols[5])
-        y = float(cols[6])
-        ctx['esr_obj'] = {'ts': ts, 'id': id, 'range': r, 'angle': a, 'range_rate': range_rate, 'pos_lat': y}
-    else:
+def match_x1_esr(line, ctx):
+    if 'x1_obs_ep_ts' not in ctx or 'esr_obs_ep_ts' not in ctx:
+        return
+    if not ctx.get('matched_ep'):
+        ctx['matched_ep'] = dict()
+    if ctx.get('esr_obs_ep_ts') == ctx.get('esr_obs_ep_ts_last') and \
+            ctx.get('x1_obs_ep_ts') == ctx.get('x1_obs_ep_ts_last'):
         return
 
-    if 'x1_obj' in ctx and 'esr_obj' in ctx:
-        # print(ctx['x1_obj'], ctx['esr_obj'])
-        if fabs(ctx['x1_obj']['ts'] - ctx['esr_obj']['ts']) < 0.2:
-            if not is_near(ctx['x1_obj'], ctx['esr_obj']):
-                # print('not matched.', ctx['x1_obj']['id'], ctx['esr_obj']['id'])
-                return
-            # print('matched.', ctx['x1_obj']['id'], ctx['esr_obj']['id'])
-            x1_id = ctx['x1_obj']['id']
-            esr_id = ctx['esr_obj']['id']
-            if x1_id not in ctx['matched']:
-                ctx['matched'][x1_id] = list()
-            ctx['matched'][x1_id].append(esr_id)
-            # ctx['matched']['esr'].add(ctx['esr_obj']['id'])
-            if not ctx.get('dx'):
-                ctx['dx'] = []
-            if not ctx.get('dy'):
-                ctx['dy'] = []
-            if not ctx.get('dvx'):
-                ctx['dvx'] = []
-            if not ctx.get('pct_dx'):
-                ctx['pct_dx'] = []
-            if not ctx.get('pct_dy'):
-                ctx['pct_dy'] = []
-            if not ctx.get('pct_dvx'):
-                ctx['pct_dvx'] = []
-            # print('matched.', ctx['x1_obj'], ctx['esr_obj'])
-            dx = ctx['x1_obj']['pos_lon'] - ctx['esr_obj']['range']
-            dx_ratio = fabs(dx / ctx['esr_obj']['range']) if ctx['esr_obj']['range'] != 0 else 0
-            dy = ctx['x1_obj']['pos_lat'] - ctx['esr_obj']['pos_lat']
-            dy_ratio = fabs(dy / ctx['esr_obj']['pos_lat']) if ctx['esr_obj']['pos_lat'] != 0 else 0
-            dvx = ctx['x1_obj']['vel_lon'] - ctx['esr_obj']['range_rate']
-            dvx_ratio = fabs(dvx / ctx['esr_obj']['range_rate']) if ctx['esr_obj']['range_rate'] != 0 else 0
-            ctx['dx'].append(dx)
-            ctx['dy'].append(dy)
-            ctx['dvx'].append(dvx)
-            ctx['pct_dx'].append(dx_ratio * 100)
-            ctx['pct_dy'].append(dy_ratio * 100)
-            ctx['pct_dvx'].append(dvx_ratio * 100)
-            ctx['end_ts'] = ts
-            if not ctx.get('start_ts'):
-                ctx['start_ts'] = ts
-            return compose_log(ts, 'match.x1_esr.{}.{}'.format(x1_id, esr_id), '{} {} {} {} {} {}'.format(
-                dx, dy, dvx, dx_ratio, dy_ratio, dvx_ratio))
-        else:
-            pass
-            # print('time diff too large', ctx['x1_obj']['ts'], ctx['esr_obj']['ts'])
+    if ctx.get('esr_obs_ep_ts') != ctx.get('esr_obs_ep_ts_last'):
+        if 'esr_buff' not in ctx:
+            ctx['esr_buff'] = deque(maxlen=10)
+        esr = ctx.get('esr_obs_ep')
+        ctx['esr_buff'].append((ctx['esr_obs_ep_ts'], esr))
+        ctx['esr_obs_ep_ts_last'] = ctx['esr_obs_ep_ts']
+
+    if ctx.get('x1_obs_ep_ts') != ctx.get('x1_obs_ep_ts_last'):
+        if 'x1_buff' not in ctx:
+            ctx['x1_buff'] = deque(maxlen=10)
+        x1 = ctx.get('x1_obs_ep')
+        ctx['x1_buff'].append((ctx['x1_obs_ep_ts'], x1))
+        ctx['x1_obs_ep_ts_last'] = ctx['x1_obs_ep_ts']
+
+    done = False
+    for i in range(len(ctx['x1_buff']) - 1, 0, -1):
+        for j in range(len(ctx['esr_buff']) - 1, 0, -1):
+            ts = ctx['x1_buff'][i][0]
+            ts0 = ctx['esr_buff'][j-1][0]
+            ts1 = ctx['esr_buff'][j][0]
+            if ts0 < ts <= ts1:
+                x1_obs_t = ctx['x1_buff'][i][1]
+                # print(len(ctx['x1_buff'][i][1]), len(ctx['esr_buff'][j][1]))
+                if ts - ts0 > ts1 - ts:
+                    dt = ts1 - ts
+                    esr_obs_t = ctx['esr_buff'][j][1]
+                else:
+                    dt = ts - ts0
+                    esr_obs_t = ctx['esr_buff'][j-1][1]
+
+                if dt > 0.1:
+                    done = True
+                    break
+
+                ret = spatial_match_obs(x1_obs_t, esr_obs_t)
+                if not ret:
+                    done = True
+                    # print('no spatial match', len(x1_obs_t), len(esr_obs_t), ts - ts0, ts1 - ts)
+                    break
+                x1sel, esrsel = ret
+                pair = {'x1': x1sel['id'], 'esr': esrsel['id']}
+                # ctx['matched_ep'][ts] = pair
+                ctx['matched_ep'][ts] = (x1sel, esrsel,)
+                done = True
+                break
+        if done:
+            break
+    # x1_dt = ctx['x1_obs_ep_ts'] - ctx['x1_obs_ep_ts_last'] if 'x1_obs_ep_ts_last' in ctx else None
+    # esr_dt = ctx['esr_obs_ep_ts'] - ctx['esr_obs_ep_ts_last'] if 'esr_obs_ep_ts_last' in ctx else None
+    # print(ctx['x1_obs_ep_ts'], 'x1 dt:', x1_dt, 'esr dt:', esr_dt)
+    # print('ok')
 
 
-# def calc_error(line)
+
+
+# deprecated
+# def pair_x1_esr(line, ctx):
+#     from tools.match import is_near
+#     cols = line.split(' ')
+#     ts = float(cols[0]) + float(cols[1]) / 1000000
+#     id = int(cols[2].split('.')[-1])
+#     if not ctx.get('matched'):
+#         ctx['matched'] = dict()
+#         # ctx['matched']['x1'] = set()
+#         # ctx['matched']['esr'] = set()
+#     # print(line)
+#     if 'x1.' in cols[2]:
+#         if ctx.get('x1_target') and id not in ctx['x1_target']:
+#             return
+#
+#         y = float(cols[3])
+#         x = float(cols[4])
+#         vlon_rel = float(cols[5])
+#         # ttc = float(cols[6])
+#         # range_rate =
+#         ctx['x1_obj'] = {'ts': ts, 'id': id, 'pos_lat': y, 'pos_lon': x, 'vel_lon': vlon_rel}
+#     elif 'esr.' in cols[2]:
+#         if ctx.get('radar_target') and id not in ctx['radar_target']:
+#             return
+#
+#         r = float(cols[3])
+#         a = float(cols[4])
+#         range_rate = float(cols[5])
+#         y = float(cols[6])
+#         ctx['esr_obj'] = {'ts': ts, 'id': id, 'range': r, 'angle': a, 'range_rate': range_rate, 'pos_lat': y}
+#     else:
+#         return
+#
+#     if 'x1_obj' in ctx and 'esr_obj' in ctx:
+#         # print(ctx['x1_obj'], ctx['esr_obj'])
+#         if fabs(ctx['x1_obj']['ts'] - ctx['esr_obj']['ts']) < 0.2:
+#             if not is_near(ctx['x1_obj'], ctx['esr_obj']):
+#                 # print('not matched.', ctx['x1_obj']['id'], ctx['esr_obj']['id'])
+#                 return
+#             # print('matched.', ctx['x1_obj']['id'], ctx['esr_obj']['id'])
+#             x1_id = ctx['x1_obj']['id']
+#             esr_id = ctx['esr_obj']['id']
+#             if x1_id not in ctx['matched']:
+#                 ctx['matched'][x1_id] = list()
+#             ctx['matched'][x1_id].append(esr_id)
+#             # ctx['matched']['esr'].add(ctx['esr_obj']['id'])
+#             if not ctx.get('dx'):
+#                 ctx['dx'] = []
+#             if not ctx.get('dy'):
+#                 ctx['dy'] = []
+#             if not ctx.get('dvx'):
+#                 ctx['dvx'] = []
+#             if not ctx.get('pct_dx'):
+#                 ctx['pct_dx'] = []
+#             if not ctx.get('pct_dy'):
+#                 ctx['pct_dy'] = []
+#             if not ctx.get('pct_dvx'):
+#                 ctx['pct_dvx'] = []
+#             # print('matched.', ctx['x1_obj'], ctx['esr_obj'])
+#             dx = ctx['x1_obj']['pos_lon'] - ctx['esr_obj']['range']
+#             dx_ratio = fabs(dx / ctx['esr_obj']['range']) if ctx['esr_obj']['range'] != 0 else 0
+#             dy = ctx['x1_obj']['pos_lat'] - ctx['esr_obj']['pos_lat']
+#             dy_ratio = fabs(dy / ctx['esr_obj']['pos_lat']) if ctx['esr_obj']['pos_lat'] != 0 else 0
+#             dvx = ctx['x1_obj']['vel_lon'] - ctx['esr_obj']['range_rate']
+#             dvx_ratio = fabs(dvx / ctx['esr_obj']['range_rate']) if ctx['esr_obj']['range_rate'] != 0 else 0
+#             ctx['dx'].append(dx)
+#             ctx['dy'].append(dy)
+#             ctx['dvx'].append(dvx)
+#             ctx['pct_dx'].append(dx_ratio * 100)
+#             ctx['pct_dy'].append(dy_ratio * 100)
+#             ctx['pct_dvx'].append(dvx_ratio * 100)
+#             ctx['end_ts'] = ts
+#             if not ctx.get('start_ts'):
+#                 ctx['start_ts'] = ts
+#             return compose_log(ts, 'match.x1_esr.{}.{}'.format(x1_id, esr_id), '{} {} {} {} {} {}'.format(
+#                 dx, dy, dvx, dx_ratio, dy_ratio, dvx_ratio))
+#         else:
+#             pass
+#             # print('time diff too large', ctx['x1_obj']['ts'], ctx['esr_obj']['ts'])
+
+
+def calc_delta_x1_esr_1(matched_ep, out_dir):
+    diff = os.path.join(out_dir, 'log_diff.txt')
+    with open(diff, 'w') as of:
+        for ts in sorted(matched_ep):
+            obs1 = matched_ep[ts][0]
+            obs2 = matched_ep[ts][1]
+            dx = obs1['pos_lon'] - obs2['pos_lon']
+            dy = obs1['pos_lat'] - obs2['pos_lat']
+            vx1 = obs1['vel_lon'] if 'vel_lon' in obs1 else obs1['range_rate']
+            vx2 = obs2['vel_lon'] if 'vel_lon' in obs2 else obs2['range_rate']
+            dvx = vx1 - vx2
+
+            dx_ratio = fabs(dx / obs2['pos_lon']) if obs2['pos_lon'] != 0 else 1
+            dy_ratio = fabs(dy / obs2['pos_lat']) if obs2['pos_lat'] != 0 else 1
+            dvx_ratio = fabs(dvx / vx2) if vx2 != 0 else 1
+
+            line = compose_log(ts, 'match.{}_{}.{}.{}'.format(obs1['sensor'], obs2['sensor'], obs1['id'], obs2['id']), '{} {} {} {} {} {}'.format(
+                dx, dy, dvx, dx_ratio * 100, dy_ratio * 100, dvx_ratio * 100))
+            of.write(line)
+
+    return diff
+
 
 def calc_delta_x1_esr(line, ctx):
     cols = line.split(' ')
@@ -1018,89 +1040,271 @@ def calc_delta_x1_esr(line, ctx):
             pass
 
 
+def calc_delta_x1_esr_2(line, ctx):
+    cols = line.split(' ')
+    ts = float(cols[0]) + float(cols[1]) / 1000000
+    if 'x1_obj' not in ctx:
+        ctx['x1_obj'] = dict()
+    if 'esr_obj' not in ctx:
+        ctx['esr_obj'] = dict()
+
+    if 'x1.' in cols[2]:
+        id = int(cols[2].split('.')[-1])
+        if id not in ctx['match_tree']:
+            return
+
+        y = float(cols[3])
+        x = float(cols[4])
+        vlon_rel = float(cols[5])
+        # ttc = float(cols[6])
+        # range_rate =
+        ctx['x1_obj'][id] = {'ts': ts, 'pos_lat': y, 'pos_lon': x, 'vel_lon': vlon_rel}
+    elif 'esr.' in cols[2]:
+        id = int(cols[2].split('.')[-1])
+        find = False
+        for x in ctx['match_tree']:
+            if id in ctx['match_tree'][x]:
+                find = True
+                break
+        if not find:
+            return
+
+        r = float(cols[3])
+        a = float(cols[4])
+        range_rate = float(cols[5])
+        y = float(cols[6])
+        ctx['esr_obj'][id] = {'ts': ts, 'range': r, 'angle': a, 'range_rate': range_rate, 'pos_lat': y}
+    else:
+        return
+
+    lines = ''
+    # print(ctx['x1_obj'], ctx['esr_obj'])
+    for x1_id in ctx['x1_obj']:
+        for esr_id in ctx['esr_obj']:
+            esr_obs = ctx['esr_obj'][esr_id]
+            x1_obs = ctx['x1_obj'][x1_id]
+            ts = esr_obs['ts']
+            if esr_id not in ctx['match_tree'][x1_id]:
+                # print('invalid 1')
+                return
+            if ctx['match_tree'][x1_id][esr_id]['count'] <= 1:
+                # print('invalid 2', x1_id, esr_id)
+                return
+            if ts > ctx['match_tree'][x1_id][esr_id]['end_ts']:
+                # print('invalid 3', ts, ctx['match_tree'][x1_id][esr_id]['end_ts'])
+                return
+            if ts < ctx['match_tree'][x1_id][esr_id]['start_ts']:
+                # print('invalid 4', ts, ctx['match_tree'][x1_id][esr_id]['start_ts'])
+                return
+            # print(ctx['x1_obj'], ctx['esr_obj'])
+            if fabs(x1_obs['ts'] - esr_obs['ts']) > 0.2:
+                # print('invalid 5')
+                return
+
+
+
+            # if x1_id not in ctx['matched']:
+            #     ctx['matched'][x1_id] = list()
+            # ctx['matched'][x1_id].append(esr_id)
+            # ctx['matched']['esr'].add(ctx['esr_obj']['id'])
+            if not ctx.get('dx'):
+                ctx['dx'] = []
+            if not ctx.get('dy'):
+                ctx['dy'] = []
+            if not ctx.get('dvx'):
+                ctx['dvx'] = []
+            if not ctx.get('pct_dx'):
+                ctx['pct_dx'] = []
+            if not ctx.get('pct_dy'):
+                ctx['pct_dy'] = []
+            if not ctx.get('pct_dvx'):
+                ctx['pct_dvx'] = []
+            # print('matched.', ctx['x1_obj'], ctx['esr_obj'])
+            dx = x1_obs['pos_lon'] - esr_obs['range']
+            dx_ratio = fabs(dx / esr_obs['range']) if esr_obs['range'] != 0 else 0
+            dy = x1_obs['pos_lat'] - esr_obs['pos_lat']
+            dy_ratio = fabs(dy / esr_obs['pos_lat']) if esr_obs['pos_lat'] != 0 else 0
+            dvx = x1_obs['vel_lon'] - esr_obs['range_rate']
+            dvx_ratio = fabs(dvx / esr_obs['range_rate']) if esr_obs['range_rate'] != 0 else 0
+            ctx['dx'].append(dx)
+            ctx['dy'].append(dy)
+            ctx['dvx'].append(dvx)
+            ctx['pct_dx'].append(dx_ratio * 100)
+            ctx['pct_dy'].append(dy_ratio * 100)
+            ctx['pct_dvx'].append(dvx_ratio * 100)
+            # ctx['end_ts'] = ts
+            # if not ctx.get('start_ts'):
+            #     ctx['start_ts'] = ts
+            print('delta calculating', x1_id, esr_id)
+            line = compose_log(ts, 'match.x1_esr.{}.{}'.format(x1_id, esr_id), '{} {} {} {} {} {}'.format(
+                dx, dy, dvx, dx_ratio * 100, dy_ratio * 100, dvx_ratio * 100))
+            print(line)
+            lines += line
+
+    # print(lines)
+    return lines
+
+
+def calc_delta_x1_esr_3(line, ctx):
+    cols = line.split(' ')
+    ts = float(cols[0]) + float(cols[1]) / 1000000
+    if 'x1.' in cols[2]:
+        id = int(cols[2].split('.')[-1])
+        if id != ctx.get('x1_tgt'):
+            return
+
+        y = float(cols[3])
+        x = float(cols[4])
+        vlon_rel = float(cols[5])
+        ttc = float(cols[6])
+        # range_rate =
+        ctx['x1_obj'] = {'ts': ts, 'id': id, 'pos_lat': y, 'pos_lon': x, 'vel_lon': vlon_rel, 'ttc': ttc}
+    elif 'esr.' in cols[2]:
+        id = int(cols[2].split('.')[-1])
+        if id != ctx.get('esr_tgt'):
+            return
+
+        y = float(cols[3])
+        x = float(cols[4])
+        range_rate = float(cols[5])
+        ttc = float(cols[6])
+        ctx['esr_obj'] = {'ts': ts, 'id': id, 'pos_lat': y, 'pos_lon': x, 'range_rate': range_rate, 'ttc': ttc}
+    else:
+        return
+
+    if 'x1_obj' in ctx and 'esr_obj' in ctx:
+        x1_id = ctx['x1_obj']['id']
+        esr_id = ctx['esr_obj']['id']
+        if esr_id not in ctx['match_tree'][x1_id]:
+            return
+        if ctx['match_tree'][x1_id][esr_id]['count'] <= 1:
+            return
+        if ts > ctx['match_tree'][x1_id][esr_id]['end_ts']:
+            return
+        if ts < ctx['match_tree'][x1_id][esr_id]['start_ts']:
+            return
+        # print(ctx['x1_obj'], ctx['esr_obj'])
+        if fabs(ctx['x1_obj']['ts'] - ctx['esr_obj']['ts']) > 0.2:
+            return
+
+        # if x1_id not in ctx['matched']:
+        #     ctx['matched'][x1_id] = list()
+        # ctx['matched'][x1_id].append(esr_id)
+        # ctx['matched']['esr'].add(ctx['esr_obj']['id'])
+        if not ctx.get('dx'):
+            ctx['dx'] = []
+        if not ctx.get('dy'):
+            ctx['dy'] = []
+        if not ctx.get('dvx'):
+            ctx['dvx'] = []
+        if not ctx.get('pct_dx'):
+            ctx['pct_dx'] = []
+        if not ctx.get('pct_dy'):
+            ctx['pct_dy'] = []
+        if not ctx.get('pct_dvx'):
+            ctx['pct_dvx'] = []
+        # print('matched.', ctx['x1_obj'], ctx['esr_obj'])
+        dx = ctx['x1_obj']['pos_lon'] - ctx['esr_obj']['pos_lon']
+        dx_ratio = fabs(dx / ctx['esr_obj']['pos_lon']) if ctx['esr_obj']['pos_lon'] != 0 else 0
+        dy = ctx['x1_obj']['pos_lat'] - ctx['esr_obj']['pos_lat']
+        dy_ratio = fabs(dy / ctx['esr_obj']['pos_lat']) if ctx['esr_obj']['pos_lat'] != 0 else 0
+        dvx = ctx['x1_obj']['vel_lon'] - ctx['esr_obj']['range_rate']
+        dvx_ratio = fabs(dvx / ctx['esr_obj']['range_rate']) if ctx['esr_obj']['range_rate'] != 0 else 0
+        ctx['dx'].append(dx)
+        ctx['dy'].append(dy)
+        ctx['dvx'].append(dvx)
+        ctx['pct_dx'].append(dx_ratio * 100)
+        ctx['pct_dy'].append(dy_ratio * 100)
+        ctx['pct_dvx'].append(dvx_ratio * 100)
+        ctx['end_ts'] = ts
+        if not ctx.get('start_ts'):
+            ctx['start_ts'] = ts
+        return compose_log(ts, 'match.x1_esr.{}.{}'.format(x1_id, esr_id), '{} {} {} {} {} {}'.format(
+            dx, dy, dvx, dx_ratio * 100, dy_ratio * 100, dvx_ratio * 100))
+
 # deprecated
-def batch_process(dir_name, parsers):
-    import pickle
-    dirs = os.listdir(dir_name)
-    analysis_dir = os.path.join(dir_name, 'analysis')
-    if not os.path.exists(analysis_dir):
-        os.mkdir(analysis_dir)
-
-    print('entering dir', dir_name)
-    targets = os.path.join(dir_name, 'targets.txt')
-    print('targets file:', targets)
-
-    with open(targets) as rf:
-        for line in rf:
-            # print(line)
-            cols = line.split('\t')
-            d = cols[0]
-            if d in dirs:
-                print('entering data dir', d)
-                try:
-                    if ',' in cols[1]:
-                        x1_target = [int(x) for x in cols[1].split(',')]
-                    else:
-                        x1_target = [int(cols[1])]
-                    if ',' in cols[2]:
-                        radar_target = [int(x) for x in cols[2].split(',')]
-                    else:
-                        radar_target = [int(cols[2])]
-                    start_frame = int(cols[3])
-                    end_frame = int(cols[4])
-                except Exception as e:
-                    print(e)
-                    continue
-                ctx = dict()
-                data_dir = os.path.join(dir_name, d)
-                log = os.path.join(data_dir, 'log.txt')
-                ctx['radar_target'] = radar_target
-                ctx['x1_target'] = x1_target
-
-                ctx['can_port'] = {'esr': 'CAN1', 'x1': 'CAN0'}
-
-                r = process_log(log, parsers, ctx, start_frame, end_frame)
-                r = time_sort(r)
-                rfile = shutil.copy2(r, data_dir)
-                ts0 = ctx.get('ts0') or 0
-                r = process_log(rfile, [pair_x1_esr], ctx)
-
-                sts = ctx.get('start_ts')
-                ets = ctx.get('end_ts')
-
-                fig = visual.get_fig()
-                samples = {'esr.obj.{}'.format(radar_target): {'x': 0}, 'x1.*.{}'.format(x1_target): {'x': 1}}
-                visual.scatter(fig, rfile, samples, 'x(m)', ts0, sts, ets, False)
-                samples = {'esr.obj.{}'.format(radar_target): {'y': 3}, 'x1.*.{}'.format(x1_target): {'y': 0}}
-                visual.scatter(fig, rfile, samples, 'y(m)', ts0, sts, ets, False)
-                samples = {'esr.obj.{}'.format(radar_target): {'Vx': 2}, 'x1.*.{}'.format(x1_target): {'Vx': 2}}
-                visual.scatter(fig, rfile, samples, 'Vx(m/s)', ts0, sts, ets, False)
-                pickle.dump(fig, open(os.path.join(analysis_dir, '{}_xyvx.pyfig'.format(d)), 'wb'))
-                fig.savefig(os.path.join(analysis_dir, '{}_xyvx.png'.format(d)), dpi=300)
-                # fig.savefig(os.path.join(analysis_dir, '{}_xyvx.svg'.format(d)), dpi=300)
-                visual.close_fig(fig)
-
-                fig = visual.get_fig()
-                samples = {'match.x1_esr': {'dx': 0, 'dy': 1, 'dvx': 2}}
-                visual.scatter(fig, r, samples, 'error', ts0, sts, ets, False)
-                samples = {'match.x1_esr': {'dx_ratio': 3, 'dy_ratio': 4, 'dvx_ratio': 5}}
-                visual.scatter(fig, r, samples, 'error(percent)', ts0, sts, ets, False)
-
-                pickle.dump(fig, open(os.path.join(analysis_dir, '{}_error.pyfig'.format(d)), 'wb'))
-                fig.savefig(os.path.join(analysis_dir, '{}_error.png'.format(d)), dpi=300)
-                # fig.savefig(os.path.join(analysis_dir, '{}_error.svg'.format(d)), dpi=300)
-                visual.close_fig(fig)
-                rmse_x = np.sqrt(((np.array(ctx['dx'])) ** 2).mean())
-                pct_dx = np.mean(ctx['pct_dx'])
-                rmse_y = np.sqrt(((np.array(ctx['dy'])) ** 2).mean())
-                pct_dy = np.mean(ctx['pct_dy'])
-                rmse_vx = np.sqrt(((np.array(ctx['dvx'])) ** 2).mean())
-                pct_dvx = np.mean(ctx['pct_dvx'])
-                with open(os.path.join(analysis_dir, '{}_error.csv'.format(d)), 'w+') as wf:
-                    wf.write('Param\tRMSE\tError_percent\n')
-                    wf.write('x(m)\t{}\t{:.2f}%\n'.format(rmse_x, pct_dx))
-                    wf.write('y(m)\t{}\t{:.2f}%\n'.format(rmse_y, pct_dy))
-                    wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
+# def batch_process(dir_name, parsers):
+#     import pickle
+#     dirs = os.listdir(dir_name)
+#     analysis_dir = os.path.join(dir_name, 'analysis')
+#     if not os.path.exists(analysis_dir):
+#         os.mkdir(analysis_dir)
+#
+#     print('entering dir', dir_name)
+#     targets = os.path.join(dir_name, 'targets.txt')
+#     print('targets file:', targets)
+#
+#     with open(targets) as rf:
+#         for line in rf:
+#             # print(line)
+#             cols = line.split('\t')
+#             d = cols[0]
+#             if d in dirs:
+#                 print('entering data dir', d)
+#                 try:
+#                     if ',' in cols[1]:
+#                         x1_target = [int(x) for x in cols[1].split(',')]
+#                     else:
+#                         x1_target = [int(cols[1])]
+#                     if ',' in cols[2]:
+#                         radar_target = [int(x) for x in cols[2].split(',')]
+#                     else:
+#                         radar_target = [int(cols[2])]
+#                     start_frame = int(cols[3])
+#                     end_frame = int(cols[4])
+#                 except Exception as e:
+#                     print(e)
+#                     continue
+#                 ctx = dict()
+#                 data_dir = os.path.join(dir_name, d)
+#                 log = os.path.join(data_dir, 'log.txt')
+#                 ctx['radar_target'] = radar_target
+#                 ctx['x1_target'] = x1_target
+#
+#                 ctx['can_port'] = {'esr': 'CAN1', 'x1': 'CAN0'}
+#
+#                 r = process_log(log, parsers, ctx, start_frame, end_frame)
+#                 r = time_sort(r)
+#                 rfile = shutil.copy2(r, data_dir)
+#                 ts0 = ctx.get('ts0') or 0
+#                 r = process_log(rfile, [pair_x1_esr], ctx)
+#
+#                 sts = ctx.get('start_ts')
+#                 ets = ctx.get('end_ts')
+#
+#                 fig = visual.get_fig()
+#                 samples = {'esr.obj.{}'.format(radar_target): {'x': 0}, 'x1.*.{}'.format(x1_target): {'x': 1}}
+#                 visual.scatter(fig, rfile, samples, 'x(m)', ts0, sts, ets, False)
+#                 samples = {'esr.obj.{}'.format(radar_target): {'y': 3}, 'x1.*.{}'.format(x1_target): {'y': 0}}
+#                 visual.scatter(fig, rfile, samples, 'y(m)', ts0, sts, ets, False)
+#                 samples = {'esr.obj.{}'.format(radar_target): {'Vx': 2}, 'x1.*.{}'.format(x1_target): {'Vx': 2}}
+#                 visual.scatter(fig, rfile, samples, 'Vx(m/s)', ts0, sts, ets, False)
+#                 pickle.dump(fig, open(os.path.join(analysis_dir, '{}_xyvx.pyfig'.format(d)), 'wb'))
+#                 fig.savefig(os.path.join(analysis_dir, '{}_xyvx.png'.format(d)), dpi=300)
+#                 # fig.savefig(os.path.join(analysis_dir, '{}_xyvx.svg'.format(d)), dpi=300)
+#                 visual.close_fig(fig)
+#
+#                 fig = visual.get_fig()
+#                 samples = {'match.x1_esr': {'dx': 0, 'dy': 1, 'dvx': 2}}
+#                 visual.scatter(fig, r, samples, 'error', ts0, sts, ets, False)
+#                 samples = {'match.x1_esr': {'dx_ratio': 3, 'dy_ratio': 4, 'dvx_ratio': 5}}
+#                 visual.scatter(fig, r, samples, 'error(percent)', ts0, sts, ets, False)
+#
+#                 pickle.dump(fig, open(os.path.join(analysis_dir, '{}_error.pyfig'.format(d)), 'wb'))
+#                 fig.savefig(os.path.join(analysis_dir, '{}_error.png'.format(d)), dpi=300)
+#                 # fig.savefig(os.path.join(analysis_dir, '{}_error.svg'.format(d)), dpi=300)
+#                 visual.close_fig(fig)
+#                 rmse_x = np.sqrt(((np.array(ctx['dx'])) ** 2).mean())
+#                 pct_dx = np.mean(ctx['pct_dx'])
+#                 rmse_y = np.sqrt(((np.array(ctx['dy'])) ** 2).mean())
+#                 pct_dy = np.mean(ctx['pct_dy'])
+#                 rmse_vx = np.sqrt(((np.array(ctx['dvx'])) ** 2).mean())
+#                 pct_dvx = np.mean(ctx['pct_dvx'])
+#                 with open(os.path.join(analysis_dir, '{}_error.csv'.format(d)), 'w+') as wf:
+#                     wf.write('Param\tRMSE\tError_percent\n')
+#                     wf.write('x(m)\t{}\t{:.2f}%\n'.format(rmse_x, pct_dx))
+#                     wf.write('y(m)\t{}\t{:.2f}%\n'.format(rmse_y, pct_dy))
+#                     wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
 
 
 # deprecated
@@ -1134,7 +1338,7 @@ def batch_process_3(dir_name, parsers):
                 single_process(log, parsers, False)
 
 
-def merge_result(dir_name):
+def collect_result(dir_name):
     dirs = os.listdir(dir_name)
     analysis_dir = os.path.join(dir_name, 'analysis')
     if not os.path.exists(analysis_dir):
@@ -1199,8 +1403,8 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
     # match_file = open(os.path.join(analysis_dir, 'log_match.txt'), 'w')
     for ts in sorted(ctx['matched_ep']):
         # print(m, ctx['matched_ep'][m])
-        x1id = ctx['matched_ep'][ts]['x1']
-        esrid = ctx['matched_ep'][ts]['esr']
+        x1id = ctx['matched_ep'][ts][0]['id']
+        esrid = ctx['matched_ep'][ts][1]['id']
         if x1id not in matches:
             matches[x1id] = dict()
         if esrid not in matches[x1id]:
@@ -1213,7 +1417,8 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
             matches[x1id][esrid]['count'] = 0
         matches[x1id][esrid]['count'] += 1
     ctx['match_tree'] = matches
-    r1 = process_log(r0, [calc_delta_x1_esr], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
+    # r1 = process_log(r0, [calc_delta_x1_esr], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
+    # r1 = calc_delta_x1_esr_1(ctx['matched_ep'], analysis_dir)
     # print('x1_targets:', x1_target)
     # print('radar_targets:', radar_target)
     # if len(x1_target) == 0:
@@ -1221,6 +1426,9 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
     #     return
     for x1id in matches:
         for esrid in matches[x1id]:
+            ctx['x1_tgt'] = x1id
+            ctx['esr_tgt'] = esrid
+            r1 = process_log(r0, [calc_delta_x1_esr_3], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
             sts = matches[x1id][esrid].get('start_ts')
             ets = matches[x1id][esrid].get('end_ts')
             cnt = matches[x1id][esrid].get('count')
@@ -1232,16 +1440,16 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
             print(bcl.OKBL + 'matched(x1/esr):' + bcl.ENDC, x1id, esrid, matches[x1id][esrid])
             fig = visual.get_fig()
             jlist = []
-            samples = {'esr.obj.{}'.format(esrid): {'x': 0}, 'x1.*.{}'.format(x1id): {'x': 1}}
+            samples = {'esr.obj.{}'.format(esrid): {'x': 1}, 'x1.*.{}'.format(x1id): {'x': 1}}
             jlist.append(samples)
             visual.scatter(fig, r0, samples, 'x(m)', ts0, sts, ets, vis)
-            samples = {'esr.obj.{}'.format(esrid): {'y': 3}, 'x1.*.{}'.format(x1id): {'y': 0}}
+            samples = {'esr.obj.{}'.format(esrid): {'y': 0}, 'x1.*.{}'.format(x1id): {'y': 0}}
             jlist.append(samples)
             visual.scatter(fig, r0, samples, 'y(m)', ts0, sts, ets, vis)
             samples = {'esr.obj.{}'.format(esrid): {'Vx': 2}, 'x1.*.{}'.format(x1id): {'Vx': 2}}
             jlist.append(samples)
             visual.scatter(fig, r0, samples, 'Vx(m/s)', ts0, sts, ets, vis)
-            samples = {'esr.obj.{}'.format(esrid): {'TTC_m': 4}, 'x1.*.{}'.format(x1id): {'TTC': 3}}
+            samples = {'esr.obj.{}'.format(esrid): {'TTC_m': 3}, 'x1.*.{}'.format(x1id): {'TTC': 3}}
             visual.scatter(fig, r0, samples, 'TTC(s)', ts0, sts, ets, False)
             jlist.append(samples)
             pickle.dump(fig, open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_xyvx.pyfig'.format(x1id, esrid)), 'wb'))
@@ -1251,9 +1459,9 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
             # fig.savefig(os.path.join(analysis_dir, '{}_xyvx.svg'.format(d)), dpi=300)
             visual.close_fig(fig)
 
-            if 'dx' not in ctx:
-                print('error analysis not calculated. Abort plotting.')
-                return
+            # if 'dx' not in ctx:
+            #     print('error analysis not calculated. Abort plotting.')
+            #     return
 
             fig = visual.get_fig()
             samples = {'match.x1_esr.{}.{}'.format(x1id, esrid): {'dx': 0, 'dy': 1, 'dvx': 2}}
@@ -1266,17 +1474,17 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
             fig.savefig(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_error.png'.format(x1id, esrid)), dpi=300)
             # fig.savefig(os.path.join(analysis_dir, '{}_error.svg'.format(d)), dpi=300)
             visual.close_fig(fig)
-            rmse_x = np.sqrt(((np.array(ctx['dx'])) ** 2).mean())
-            pct_dx = np.mean(ctx['pct_dx'])
-            rmse_y = np.sqrt(((np.array(ctx['dy'])) ** 2).mean())
-            pct_dy = np.mean(ctx['pct_dy'])
-            rmse_vx = np.sqrt(((np.array(ctx['dvx'])) ** 2).mean())
-            pct_dvx = np.mean(ctx['pct_dvx'])
-            with open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_error.csv'.format(x1id, esrid)), 'w+') as wf:
-                wf.write('Param\tRMSE\tError_percent\n')
-                wf.write('x(m)\t{}\t{:.2f}%\n'.format(rmse_x, pct_dx))
-                wf.write('y(m)\t{}\t{:.2f}%\n'.format(rmse_y, pct_dy))
-                wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
+            # rmse_x = np.sqrt(((np.array(ctx['dx'])) ** 2).mean())
+            # pct_dx = np.mean(ctx['pct_dx'])
+            # rmse_y = np.sqrt(((np.array(ctx['dy'])) ** 2).mean())
+            # pct_dy = np.mean(ctx['pct_dy'])
+            # rmse_vx = np.sqrt(((np.array(ctx['dvx'])) ** 2).mean())
+            # pct_dvx = np.mean(ctx['pct_dvx'])
+            # with open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_error.csv'.format(x1id, esrid)), 'w+') as wf:
+            #     wf.write('Param\tRMSE\tError_percent\n')
+            #     wf.write('x(m)\t{}\t{:.2f}%\n'.format(rmse_x, pct_dx))
+            #     wf.write('y(m)\t{}\t{:.2f}%\n'.format(rmse_y, pct_dy))
+            #     wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
 
 
 if __name__ == "__main__":
@@ -1286,9 +1494,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190627-t5-q3-esr-x1-test/pc_collector/PED/20190627173822_CPFA_20kmh/log.txt'
-    # r = '/media/nan/860evo/data/20190527-J1242-x1-esr-suzhou/pcc'
-    # r = '/media/nan/860evo/data/x1_aeb_noflow_201906181552'
+    r = '/media/nan/860evo/data/20190704-t5-q3-esr-x1-test/pc_colletor'
 
     if len(sys.argv) > 1:
         r = sys.argv[1]
@@ -1298,7 +1504,7 @@ if __name__ == "__main__":
 
     parsers = [
         dummy_parser,
-        find_esr_by_x1,
+        match_x1_esr,
         parse_nmea_line,
         parse_esr_line,
         # parse_q3_line,

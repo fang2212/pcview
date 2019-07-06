@@ -46,6 +46,7 @@ def parse_x1(id, data, ctx=None):
 
             # print("0x%x" % id, r)
             cipv['type'] = 'obstacle'
+            cipv['sensor'] = 'x1'
             cipv['cipo'] = True
             cipv['id'] = r['Vehicle_ID']
             cipv['pos_lat'] = r['TargetVehicle_PosY']
@@ -75,6 +76,7 @@ def parse_x1(id, data, ctx=None):
         x1_obs = {}
         for i in range(obs_num):
             x1_obs['type'] = 'obstacle'
+            x1_obs['sensor'] = 'x1'
             x1_obs['id'] = r['Vehicle' + str(2 * (index - 1) + i + 1) + '_ID']
             x1_obs['class'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_Type']
             x1_obs['pos_lon'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_PosX']
@@ -93,6 +95,7 @@ def parse_x1(id, data, ctx=None):
         ped = None
         cipp['width'] = 0.3
         cipp['type'] = 'obstacle'
+        cipp['sensor'] = 'x1'
         cipp['cipo'] = True
         cipp['id'] = r['TargetPedestrian_ID']
         cipp['vel_lon'] = r['TargetPedestrian_VelX']
@@ -122,6 +125,7 @@ def parse_x1(id, data, ctx=None):
             x1_ped['pos_lon'] = r['AdditionPedestrian' + str(2 * (index - 1) + i + 1) + '_PosX']
             x1_ped['pos_lat'] = r['AdditionPedestrian' + str(2 * (index - 1) + i + 1) + '_PosY']
             x1_ped['type'] = 'obstacle'
+            x1_ped['sensor'] = 'x1'
             x1_ped['class'] = 'pedestrian'
             x1_ped['color'] = 4
             x1_ped['vel_lon'] = 0

@@ -88,7 +88,7 @@ def parse_esr(id, buf, ctx=None):
             # print('ESR 0x%x' % id, r)
             # ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
             #        'color': 1}
-            ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range_raw, 'angle': angle_raw,
+            ret = {'type': 'obstacle', 'sensor': 'esr', 'sensor_type': 'radar', 'class': 'object', 'id': tid, 'range': range_raw, 'angle': angle_raw,
                    'range_rate': range_rate, 'TTC': ttc, 'TTC_m': ttc_m, 'TTC_a': ttc_a, 'color': 1}
             ctx['obs'].append(ret)
             # if esr_filter.update(ret):
@@ -135,7 +135,7 @@ def parse_bosch_mrr(id, buf, ctx=None):
         idx = id - 0x660
         if r['X_Object%02d_wExist' % idx] > 0.0:
             # print('0x%x' % id, r)
-            return {'type': 'obstacle', 'sensor': 'radar', 'id': oid, 'pos_lon': x, 'pos_lat': y, 'color': 1}
+            return {'type': 'obstacle', 'sensor': 'mrr', 'sensor_type': 'radar', 'id': oid, 'pos_lon': x, 'pos_lat': y, 'color': 1}
     elif id == 0x680:
         r = db_mrr.decode_message(id, buf)
         # print('0x%x' % id, r)
@@ -158,7 +158,7 @@ def parse_hawkeye_lmr(id, buf, ctx=None):
             # x = cos(angle * pi / 180.0) * range
             # y = sin(angle * pi / 180.0) * range
             # x, y = trans_polar2rcs(angle, range, install['lmr'])
-            return {'type': 'obstacle', 'sensor': 'radar', 'id': id - 0x500, 'range': range, 'angle': angle, 'color': 2}
+            return {'type': 'obstacle', 'sensor': 'lmr', 'sensor_type':'radar', 'id': id - 0x500, 'range': range, 'angle': angle, 'color': 2}
     return None
 
 
@@ -175,7 +175,7 @@ def parse_hmb(id, buf, ctx=None):
     # y = sin(angle * pi / 180.0) * range
     # x, y = trans_polar2rcs(angle, range, install['hmb'])
     # print("hmb radar frame")
-    result = {'type': 'obstacle', 'sensor': 'radar', 'id': id - 0x500, 'range': range, 'angle': angle, 'color': 4}
+    result = {'type': 'obstacle', 'sensor': 'hmb', 'sensor_type': 'radar', 'id': id - 0x500, 'range': range, 'angle': angle, 'color': 4}
     return result
 
 
@@ -204,7 +204,7 @@ def parse_fusion_mrr(id, buf, ctx=None):
         spres_target = r['CAN_DET_SUPER_RES_TARGET'+sf]
         # print(host_veh_clutter, nd_target, spres_target)
 
-        result = {'type': 'obstacle', 'sensor': 'radar', 'id': idx, 'range': range, 'angle': angle, 'color': 5,
+        result = {'type': 'obstacle', 'sensor': 'mrr_fusion', 'sensor_type': 'radar', 'id': idx, 'range': range, 'angle': angle, 'color': 5,
                   'snr': snr,
                   'scan_idx': scan_idx, 'amp': amp, 'valid': valid, 'range_rate': range_rate, 'super_res': spres_target}
         # if snr in ['High']:
