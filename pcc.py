@@ -101,6 +101,9 @@ class PCC(object):
         # print(mess)
         can_data = mess.get('can')
 
+        if local_cfg.save.video and not self.replay:
+            self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
+
         self.player.show_columns(img)
 
         self.player.show_frame_id(img, frame_id)
@@ -155,6 +158,8 @@ class PCC(object):
             comb = np.hstack((img, self.ipm))
         else:
             comb = img
+
+
         cv2.imshow('UI', comb)
 
         self.handle_keyboard()
@@ -332,6 +337,22 @@ class PCC(object):
             cf.write(log_line)
 
 
+class HeadlessPCC:
+    def __init__(self, hub):
+        self.hub = hub
+
+    def start(self):
+        # self.hub.start()
+        while True:
+            mess = self.hub.pop_simple()
+
+            if mess is None or not mess.get('frame_id'):
+                continue
+            imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
+            frame_id = mess['frame_id']
+            if local_cfg.save.video:
+                self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
+
 
 if __name__ == "__main__":
     import sys
@@ -341,9 +362,10 @@ if __name__ == "__main__":
     if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
         hub = Hub(headless=True)
         hub.start()
-        t = Thread(target=hub.fileHandler.insert_video_main)
-        t.start()
+        pcc = HeadlessPCC(hub)
 
+        t = Thread(target=pcc.start)
+        t.start()
 
         from tornado.web import Application, RequestHandler, StaticFileHandler
         from tornado.ioloop import IOLoop
@@ -375,8 +397,7 @@ if __name__ == "__main__":
                             # print('pcc', img)
                             # img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
                             img = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
-                        else:
-                            img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
+
                         base64_str = cv2.imencode('.jpg', img)[1].tostring()
                         base64_str = base64.b64encode(base64_str).decode()
                         self.write({'status': 'ok', 'action': action, 'message': 'get image', 'data': base64_str})
@@ -399,10 +420,6 @@ if __name__ == "__main__":
 
     else:
         hub = Hub()
-        t = Thread(target=hub.fileHandler.insert_video_main)
-        t.start()
-
-        # hub.fileHandler.insert_video_main()
         pcc = PCC(hub, ipm=True, replay=False)
         pcc.start()
 

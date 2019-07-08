@@ -20,7 +20,7 @@ class FileHandler(Thread):
         self.ctrl_queue = Queue()
         # self.image_queue = Queue()
         self.video_queue = Queue(maxsize=40)
-        self.raw_queue = Queue(maxsize=5000)
+        self.raw_queue = Queue(maxsize=7000)
         self.pcv_queue = Queue(maxsize=5000)
 
         # self.can_raw_queue = kqueue(maxsize=100)
@@ -39,7 +39,7 @@ class FileHandler(Thread):
         self.frame_reset = True
         self.redirect = redirect
 
-        self.last_image_q = Queue(maxsize=5)
+        self.last_image = None
 
 
         print('outer id:', os.getpid())
@@ -146,8 +146,8 @@ class FileHandler(Thread):
 
                     video_writer = cv2.VideoWriter(vpath,
                                                    self.fourcc, 20.0, (1280, 720), True)
-                img = cv2.imdecode(np.fromstring(data, np.uint8), cv2.IMREAD_COLOR)
-                video_writer.write(img)
+
+                video_writer.write(data)
                 tv_s = int(ts)
                 tv_us = (ts - tv_s) * 1000000
                 log_line = "%.10d %.6d " % (tv_s, tv_us) + 'camera' + ' ' + '{}'.format(frame_id) + "\n"
@@ -217,9 +217,8 @@ class FileHandler(Thread):
     def insert_video(self, msg):
         # print(self.recording, 'video recording----')
 
-        if self.last_image_q.full():
-            self.last_image_q.get()
-        self.last_image_q.put(msg)
+        self.last_image = msg
+        # print('data img ', msg)
 
         # if self.video_queue.full():
         #     self.video_queue.get()
@@ -227,14 +226,9 @@ class FileHandler(Thread):
         # # print('insert', self.last_image)
         # if local_cfg.save.video:
         #     self.video_queue.put(msg)
-
-    def insert_video_main(self):
-        while True:
-            while not self.last_image_q.empty():
-                if local_cfg.save.video and self.recording:
-                    msg = self.last_image_q.get()
-                    self.video_queue.put(msg)
-            time.sleep(0.1)
+        # print('------------------')
+        if local_cfg.save.video and self.recording:
+            self.video_queue.put(msg)
 
     def insert_raw(self, msg):
         # print(self.recording, 'log recording----')
@@ -261,9 +255,8 @@ class FileHandler(Thread):
 
     def get_last_image(self):
         # print('last', self.last_image)
-        if self.last_image_q.empty():
-            return None
-        return self.last_image_q.get()[-1]
+        if self.last_image:
+            return self.last_image[-1]
 
     # def insert_resolved(self, r):
     #     if config.save.raw and self.recording:

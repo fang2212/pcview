@@ -253,8 +253,6 @@ class CameraSink(Sink):
         logging.debug('cam id {}'.format(frame_id))
         # print('frame id', frame_id)
 
-        self.fileHandler.insert_video((timestamp, frame_id, jpg))
-
         r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id}
         # print('frame id', frame_id)
         # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))

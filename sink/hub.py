@@ -73,7 +73,7 @@ class Hub(Thread):
             self.collectors[ip]['sinks'] = {}
             if finder.found[ip]['mac'] == configs[0]['mac']:
                 self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
-                                              fileHandler=self.fileHandler, headless=self.headless)
+                                              fileHandler=self.fileHandler)
                 self.camera_sink.start()
                 self.collectors[ip]['sinks']['video'] = self.camera_sink
             ndev = 0
