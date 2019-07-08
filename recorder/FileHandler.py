@@ -5,7 +5,7 @@ import cv2
 import time
 from datetime import datetime
 from multiprocessing.dummy import Process as Thread
-from multiprocessing import Queue
+from multiprocessing import Queue, Process
 from config.config import local_cfg, configs, install
 import sys
 import json
@@ -39,7 +39,7 @@ class FileHandler(Thread):
         self.frame_reset = True
         self.redirect = redirect
 
-        self.last_image_q = Queue(maxsize=2)
+        self.last_image_q = Queue(maxsize=5)
 
 
         print('outer id:', os.getpid())
@@ -151,7 +151,8 @@ class FileHandler(Thread):
                 tv_s = int(ts)
                 tv_us = (ts - tv_s) * 1000000
                 log_line = "%.10d %.6d " % (tv_s, tv_us) + 'camera' + ' ' + '{}'.format(frame_id) + "\n"
-                raw_fp.write(log_line)
+                if raw_fp:
+                    raw_fp.write(log_line)
 
                 frame_cnt += 1
             time.sleep(0.01)
@@ -218,16 +219,31 @@ class FileHandler(Thread):
 
         if self.last_image_q.full():
             self.last_image_q.get()
-        self.last_image_q.put(msg[-1])
+        self.last_image_q.put(msg)
 
-        # print('insert', self.last_image)
-        if local_cfg.save.video and not self.video_queue.full():
-            self.video_queue.put(msg)
+        # if self.video_queue.full():
+        #     self.video_queue.get()
+        #
+        # # print('insert', self.last_image)
+        # if local_cfg.save.video:
+        #     self.video_queue.put(msg)
+
+    def insert_video_main(self):
+        while True:
+            while not self.last_image_q.empty():
+                if local_cfg.save.video and self.recording:
+                    msg = self.last_image_q.get()
+                    self.video_queue.put(msg)
+            time.sleep(0.1)
 
     def insert_raw(self, msg):
         # print(self.recording, 'log recording----')
         # print(self.recording)
         timestamp, log_type, data = msg
+
+        # if self.raw_queue.full():
+        #     self.raw_queue.get()
+
         if local_cfg.save.raw and not self.raw_queue.full():
             # print('hahaha222')
             # print(log_type)
@@ -247,7 +263,7 @@ class FileHandler(Thread):
         # print('last', self.last_image)
         if self.last_image_q.empty():
             return None
-        return self.last_image_q.get()
+        return self.last_image_q.get()[-1]
 
     # def insert_resolved(self, r):
     #     if config.save.raw and self.recording:

@@ -19,6 +19,7 @@ from tools.vehicle import Vehicle
 from tools.match import is_near
 import numpy as np
 import base64
+from multiprocessing.dummy import Process as Thread
 
 
 logging.basicConfig(level=logging.INFO,
@@ -331,6 +332,7 @@ class PCC(object):
             cf.write(log_line)
 
 
+
 if __name__ == "__main__":
     import sys
     from config.config import load_cfg
@@ -339,6 +341,9 @@ if __name__ == "__main__":
     if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
         hub = Hub(headless=True)
         hub.start()
+        t = Thread(target=hub.fileHandler.insert_video_main)
+        t.start()
+
 
         from tornado.web import Application, RequestHandler, StaticFileHandler
         from tornado.ioloop import IOLoop
@@ -394,6 +399,10 @@ if __name__ == "__main__":
 
     else:
         hub = Hub()
+        t = Thread(target=hub.fileHandler.insert_video_main)
+        t.start()
+
+        # hub.fileHandler.insert_video_main()
         pcc = PCC(hub, ipm=True, replay=False)
         pcc.start()
 

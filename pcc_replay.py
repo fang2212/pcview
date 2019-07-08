@@ -401,8 +401,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/pc-collect/20190614173921/log.txt')
-
+    sys.argv.append('/home/cao/pc-collect/20190706195424/log.txt')
     freeze_support()
     source = sys.argv[1]
     print(source)
