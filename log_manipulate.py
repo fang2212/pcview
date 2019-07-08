@@ -613,21 +613,26 @@ def parse_q3_line(line, ctx, can_port='CAN0'):
         ret = parse_ifv300(can_id, buf, ctx)
         # print(can_port, buf, r)
 
-        if not ret or ret['type'] not in ['obstacle', 'vehicle_state']:
+        if not ret:
             return
-
-        if ret['type'] == 'vehicle_state':
-            return compose_log(ts, 'q3.vehstate', '{} {}'.format(ret['speed'], ret['yaw_rate']))
-
+        # print(ret)
         if isinstance(ret, list):
             lines = ''
             for r in ret:
+                # print('0x{:x}'.format(r['id']), ts)
+                # print(r)
                 lines += compose_log(ts, 'q3.{}.{}'.format(r['class'], r['id']),
-                                     '{} {}'.format(r['pos_lat'], r['pos_lon']))
+                                     '{} {}'.format(r['pos_lat'], r['pos_lon'], r['vel_lon'], r['TTC']))
+            ctx['q3_obs_ep'] = ret
+            ctx['q3_obs_ep_ts'] = ts
             return lines
         else:
-            return compose_log(ts, 'q3.{}.{}'.format(ret['class'], ret['id']),
-                               '{} {}'.format(ret['pos_lat'], ret['pos_lon']))
+            if ret['type'] not in ['obstacle', 'vehicle_state']:
+                return
+            if ret['type'] == 'vehicle_state':
+                return compose_log(ts, 'q3.vehstate', '{} {}'.format(ret['speed'], ret['yaw_rate']))
+            # return compose_log(ts, 'q3.{}.{}'.format(ret['class'], ret['id']),
+            #                    '{} {}'.format(ret['pos_lat'], ret['pos_lon']))
 
 
 def parse_nmea_line(line, ctx):
@@ -857,6 +862,69 @@ def match_x1_esr(line, ctx):
     # print(ctx['x1_obs_ep_ts'], 'x1 dt:', x1_dt, 'esr dt:', esr_dt)
     # print('ok')
 
+
+def match_obs(line, ctx):
+    if 'x1_obs_ep_ts' not in ctx or 'esr_obs_ep_ts' not in ctx:
+        return
+    if not ctx.get('matched_ep'):
+        ctx['matched_ep'] = dict()
+
+    updated = False
+
+    if ctx.get('esr_obs_ep_ts') != ctx.get('esr_obs_ep_ts_last'):
+        if 'esr_buff' not in ctx:
+            ctx['esr_buff'] = deque(maxlen=10)
+        esr = ctx.get('esr_obs_ep')
+        ctx['esr_buff'].append((ctx['esr_obs_ep_ts'], esr))
+        ctx['esr_obs_ep_ts_last'] = ctx['esr_obs_ep_ts']
+        updated = True
+
+    if ctx.get('x1_obs_ep_ts') != ctx.get('x1_obs_ep_ts_last'):
+        if 'x1_buff' not in ctx:
+            ctx['x1_buff'] = deque(maxlen=10)
+        x1 = ctx.get('x1_obs_ep')
+        ctx['x1_buff'].append((ctx['x1_obs_ep_ts'], x1))
+        ctx['x1_obs_ep_ts_last'] = ctx['x1_obs_ep_ts']
+        updated = True
+
+    if not updated:
+        return
+    done = False
+    for i in range(len(ctx['x1_buff']) - 1, 0, -1):
+        for j in range(len(ctx['esr_buff']) - 1, 0, -1):
+            ts = ctx['x1_buff'][i][0]
+            ts0 = ctx['esr_buff'][j-1][0]
+            ts1 = ctx['esr_buff'][j][0]
+
+            if ts0 < ts <= ts1:
+                x1_obs_t = ctx['x1_buff'][i][1]
+                # print(len(ctx['x1_buff'][i][1]), len(ctx['esr_buff'][j][1]))
+                if ts - ts0 > ts1 - ts:
+                    dt = ts1 - ts
+                    esr_obs_t = ctx['esr_buff'][j][1]
+                else:
+                    dt = ts - ts0
+                    esr_obs_t = ctx['esr_buff'][j-1][1]
+
+                if dt > 0.1:
+                    done = True
+                    break
+                # ret = spatial_match_obs(x1_obs_t, esr_obs_t)
+                # if not ret:
+                #     done = True
+                    # print('no spatial match', len(x1_obs_t), len(esr_obs_t), ts - ts0, ts1 - ts)
+                    # break
+                for ret in spatial_match_obs(x1_obs_t, esr_obs_t):
+                    x1sel, esrsel = ret
+                    pair = {'x1': x1sel['id'], 'esr': esrsel['id']}
+                    # ctx['matched_ep'][ts] = pair
+                    if ts not in ctx['matched_ep']:
+                        ctx['matched_ep'][ts] = list()
+                    ctx['matched_ep'][ts].append((x1sel, esrsel))
+                done = True
+                break
+        if done:
+            break
 
 
 
@@ -1525,7 +1593,7 @@ if __name__ == "__main__":
         match_x1_esr,
         parse_nmea_line,
         parse_esr_line,
-        # parse_q3_line,
+        parse_q3_line,
         parse_x1_line,
     ]
 

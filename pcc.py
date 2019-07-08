@@ -333,7 +333,7 @@ class PCC(object):
 if __name__ == "__main__":
     import sys
     from config.config import load_cfg
-    load_cfg('config/cfg_superb.json')
+    load_cfg('config/cfg_superb_shenzhen.json')
 
     if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
         hub = Hub(headless=True)
