@@ -698,6 +698,8 @@ def spatial_match_obs(obs1, obs2):
     for obs1item in obs1:
         if len(obs2) > 0:
             obs2list = sorted(obs2, key=lambda x: get_distance(obs1item, x))
+            # if obs1item['id'] == 43:
+            #     print([x['id'] for x in obs2list])
             obs2t = obs2list[0]
             # if x1item['id'] == 2:
             #     print(x1item['id'], esr_t['id'], get_distance(x1item, esr_t),
@@ -708,16 +710,19 @@ def spatial_match_obs(obs1, obs2):
             if get_distance(obs1item, obs2t) > 6.0:
                 # print('dist too large.', x1item['id'], esr_t['id'], get_distance(x1item, esr_t))
                 continue
-            # if fabs(esr_ts - x1_ts) > 0.2:
-                # print('time diff too large.', x1item['id'], esr_t['id'], ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'])
-                # continue
             if obs2t['id'] not in obs2_cdt:
                 obs2_cdt[obs2t['id']] = dict()
-                obs2_cdt[obs2t['id']][obs1item['id']] = {'dist': get_distance(obs1item, obs2t)}
+            obs2_cdt[obs2t['id']][obs1item['id']] = {'dist': get_distance(obs1item, obs2t)}
+            # if obs1item['id'] == 43:
+            #     print(obs2t['id'], obs2_cdt[obs2t['id']][obs1item['id']])
+    # print(obs2_cdt)
+    ret = list()
     for o2id in obs2_cdt:
         # print(eid)
         dist = 99
         o1sel = 0
+        # if o2id == 7:
+        #     print(obs2_cdt[o2id])
         for o1id in obs2_cdt[o2id]:
             if obs2_cdt[o2id][o1id]['dist'] < dist:
                 dist = obs2_cdt[o2id][o1id]['dist']
@@ -727,7 +732,7 @@ def spatial_match_obs(obs1, obs2):
         for o1 in obs1:
             for o2 in obs2:
                 if o1['id'] == o1sel and o2['id'] == o2id:
-                    return o1, o2
+                    yield (o1, o2)
         # pair.update(esr_cdt[eid][x1_sel])
         # return pair
 
@@ -817,6 +822,7 @@ def match_x1_esr(line, ctx):
             ts = ctx['x1_buff'][i][0]
             ts0 = ctx['esr_buff'][j-1][0]
             ts1 = ctx['esr_buff'][j][0]
+
             if ts0 < ts <= ts1:
                 x1_obs_t = ctx['x1_buff'][i][1]
                 # print(len(ctx['x1_buff'][i][1]), len(ctx['esr_buff'][j][1]))
@@ -830,16 +836,18 @@ def match_x1_esr(line, ctx):
                 if dt > 0.1:
                     done = True
                     break
-
-                ret = spatial_match_obs(x1_obs_t, esr_obs_t)
-                if not ret:
-                    done = True
+                # ret = spatial_match_obs(x1_obs_t, esr_obs_t)
+                # if not ret:
+                #     done = True
                     # print('no spatial match', len(x1_obs_t), len(esr_obs_t), ts - ts0, ts1 - ts)
-                    break
-                x1sel, esrsel = ret
-                pair = {'x1': x1sel['id'], 'esr': esrsel['id']}
-                # ctx['matched_ep'][ts] = pair
-                ctx['matched_ep'][ts] = (x1sel, esrsel,)
+                    # break
+                for ret in spatial_match_obs(x1_obs_t, esr_obs_t):
+                    x1sel, esrsel = ret
+                    pair = {'x1': x1sel['id'], 'esr': esrsel['id']}
+                    # ctx['matched_ep'][ts] = pair
+                    if ts not in ctx['matched_ep']:
+                        ctx['matched_ep'][ts] = list()
+                    ctx['matched_ep'][ts].append((x1sel, esrsel))
                 done = True
                 break
         if done:
@@ -937,21 +945,22 @@ def calc_delta_x1_esr_1(matched_ep, out_dir):
     diff = os.path.join(out_dir, 'log_diff.txt')
     with open(diff, 'w') as of:
         for ts in sorted(matched_ep):
-            obs1 = matched_ep[ts][0]
-            obs2 = matched_ep[ts][1]
-            dx = obs1['pos_lon'] - obs2['pos_lon']
-            dy = obs1['pos_lat'] - obs2['pos_lat']
-            vx1 = obs1['vel_lon'] if 'vel_lon' in obs1 else obs1['range_rate']
-            vx2 = obs2['vel_lon'] if 'vel_lon' in obs2 else obs2['range_rate']
-            dvx = vx1 - vx2
+            for pair in matched_ep[ts]:
+                obs1 = pair[0]
+                obs2 = pair[1]
+                dx = obs1['pos_lon'] - obs2['pos_lon']
+                dy = obs1['pos_lat'] - obs2['pos_lat']
+                vx1 = obs1['vel_lon'] if 'vel_lon' in obs1 else obs1['range_rate']
+                vx2 = obs2['vel_lon'] if 'vel_lon' in obs2 else obs2['range_rate']
+                dvx = vx1 - vx2
 
-            dx_ratio = fabs(dx / obs2['pos_lon']) if obs2['pos_lon'] != 0 else 1
-            dy_ratio = fabs(dy / obs2['pos_lat']) if obs2['pos_lat'] != 0 else 1
-            dvx_ratio = fabs(dvx / vx2) if vx2 != 0 else 1
+                dx_ratio = fabs(dx / obs2['pos_lon']) if obs2['pos_lon'] != 0 else 1
+                dy_ratio = fabs(dy / obs2['pos_lat']) if obs2['pos_lat'] != 0 else 1
+                dvx_ratio = fabs(dvx / vx2) if vx2 != 0 else 1
 
-            line = compose_log(ts, 'match.{}_{}.{}.{}'.format(obs1['sensor'], obs2['sensor'], obs1['id'], obs2['id']), '{} {} {} {} {} {}'.format(
-                dx, dy, dvx, dx_ratio * 100, dy_ratio * 100, dvx_ratio * 100))
-            of.write(line)
+                line = compose_log(ts, 'match.{}_{}.{}.{}'.format(obs1['sensor'], obs2['sensor'], obs1['id'], obs2['id']), '{} {} {} {} {} {}'.format(
+                    dx, dy, dvx, dx_ratio * 100, dy_ratio * 100, dvx_ratio * 100))
+                of.write(line)
 
     return diff
 
@@ -1403,19 +1412,20 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
     # match_file = open(os.path.join(analysis_dir, 'log_match.txt'), 'w')
     for ts in sorted(ctx['matched_ep']):
         # print(m, ctx['matched_ep'][m])
-        x1id = ctx['matched_ep'][ts][0]['id']
-        esrid = ctx['matched_ep'][ts][1]['id']
-        if x1id not in matches:
-            matches[x1id] = dict()
-        if esrid not in matches[x1id]:
-            matches[x1id][esrid] = dict()
-        if 'start_ts' not in matches[x1id][esrid]:
-            matches[x1id][esrid]['start_ts'] = ts
-        else:
-            matches[x1id][esrid]['end_ts'] = ts
-        if 'count' not in matches[x1id][esrid]:
-            matches[x1id][esrid]['count'] = 0
-        matches[x1id][esrid]['count'] += 1
+        for pair in ctx['matched_ep'][ts]:
+            x1id = pair[0]['id']
+            esrid = pair[1]['id']
+            if x1id not in matches:
+                matches[x1id] = dict()
+            if esrid not in matches[x1id]:
+                matches[x1id][esrid] = dict()
+            if 'start_ts' not in matches[x1id][esrid]:
+                matches[x1id][esrid]['start_ts'] = ts
+            else:
+                matches[x1id][esrid]['end_ts'] = ts
+            if 'count' not in matches[x1id][esrid]:
+                matches[x1id][esrid]['count'] = 0
+            matches[x1id][esrid]['count'] += 1
     ctx['match_tree'] = matches
     # r1 = process_log(r0, [calc_delta_x1_esr], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
     # r1 = calc_delta_x1_esr_1(ctx['matched_ep'], analysis_dir)
@@ -1494,7 +1504,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190704-t5-q3-esr-x1-test/pc_colletor'
+    r = '/media/nan/860evo/data/20190704-t5-q3-esr-x1-test/pc_colletor/20190704114204_P_40kmh/log.txt'
 
     if len(sys.argv) > 1:
         r = sys.argv[1]

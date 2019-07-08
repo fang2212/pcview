@@ -40,7 +40,7 @@ def parse_x1(id, data, ctx=None):
 
     elif id == 0x76d:
         # print("0x%x" % id, r)
-        if r['TargetVehicle_Type'] == 'No Vehicle':
+        if r['TargetVehicle_Type'] == 'NoVehicle':
             return None
         else:
 
