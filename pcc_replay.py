@@ -260,6 +260,7 @@ class LogPlayer(Process):
                         break
                 if r is None:
                     continue
+
                 if isinstance(r, list):
                     # print('r is list')
                     for obs in r:
@@ -402,7 +403,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/pc-collect/20190708181545/log.txt')
+    sys.argv.append('/home/cao/下载/fusion_pcc/pcc/log.txt')
     freeze_support()
     source = sys.argv[1]
     print(source)

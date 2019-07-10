@@ -159,7 +159,6 @@ class PCC(object):
         else:
             comb = img
 
-
         cv2.imshow('UI', comb)
 
         self.handle_keyboard()
