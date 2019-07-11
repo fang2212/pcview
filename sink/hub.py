@@ -53,7 +53,7 @@ class Hub(Thread):
         # self.camera_sink = X1CameraSink(queue=self.cam_queue, ip=ip, port=port, channel='camera',
         #                                 fileHandler=self.fileHandler)
         # self.camera_sink.start()
-        # # self.collectors[ip]['sinks']['video'] = self.camera_sink
+        # self.collectors[ip]['sinks']['video'] = self.camera_sink
 
         print('Devices found:')
         for dev in finder.found:
@@ -76,6 +76,8 @@ class Hub(Thread):
                                               fileHandler=self.fileHandler)
                 self.camera_sink.start()
                 self.collectors[ip]['sinks']['video'] = self.camera_sink
+                pass
+
             ndev = 0
 
             print('hub configs', len(configs))

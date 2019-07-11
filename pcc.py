@@ -20,6 +20,7 @@ from tools.match import is_near
 import numpy as np
 import base64
 from multiprocessing.dummy import Process as Thread
+import time
 
 
 logging.basicConfig(level=logging.INFO,
@@ -93,8 +94,14 @@ class PCC(object):
             frame_cnt += 1
 
     def draw(self, mess, frame_cnt):
-        imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
-        img = imgraw.copy()
+        # print(mess[''])
+        try:
+            imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
+            img = imgraw.copy()
+        except Exception as e:
+            print(e)
+            return
+
         frame_id = mess['frame_id']
         self.now_id = frame_id
         self.ts_now = mess['ts']
@@ -351,6 +358,7 @@ class HeadlessPCC:
             frame_id = mess['frame_id']
             if local_cfg.save.video:
                 self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
+            time.sleep(0.02)
 
 
 if __name__ == "__main__":
@@ -363,8 +371,11 @@ if __name__ == "__main__":
         hub.start()
         pcc = HeadlessPCC(hub)
 
+
         t = Thread(target=pcc.start)
         t.start()
+        # hub.fileHandler.start_rec()
+        # pcc.start()
 
         from tornado.web import Application, RequestHandler, StaticFileHandler
         from tornado.ioloop import IOLoop
@@ -413,7 +424,7 @@ if __name__ == "__main__":
         app = Application([
             (r'/', IndexHandler),
             (r"/static/(.*)", StaticFileHandler, {"path": "web/statics"}),
-        ], debug=True)
+        ], debug=False)
         app.listen(9999)
         IOLoop.instance().start()
 

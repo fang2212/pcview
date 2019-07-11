@@ -128,7 +128,7 @@ class FileHandler(Thread):
 
                 while not self.pcv_queue.empty():
                     data = self.pcv_queue.get()
-                    pcv_fp.write(data)
+                    pcv_fp.write(data + "\n")
                     pcv_fp.flush()
 
 
@@ -153,6 +153,9 @@ class FileHandler(Thread):
                 log_line = "%.10d %.6d " % (tv_s, tv_us) + 'camera' + ' ' + '{}'.format(frame_id) + "\n"
                 if raw_fp:
                     raw_fp.write(log_line)
+
+                if pcv_fp:
+                    pcv_fp.write(json.dumps({"camera": {"frame_id": frame_id, "create_ts": ts*1000000}}))
 
                 frame_cnt += 1
             time.sleep(0.01)

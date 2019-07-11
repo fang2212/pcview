@@ -292,7 +292,9 @@ class X1CameraSink(Sink):
     def pkg_handler(self, msg):
         data = msgpack.unpackb(msg.data)[b'data']
         if b'frame_id' in data:
+            data = msgpack.unpackb(data)
             data = mytools.convert(data)
+            data = json.dumps(data)
             self.fileHandler.insert_pcv_raw(data)
             return None
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
