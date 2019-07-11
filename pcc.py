@@ -21,6 +21,7 @@ import numpy as np
 import base64
 from multiprocessing.dummy import Process as Thread
 import time
+from player import FPSCnt, FlowPlayer
 
 
 logging.basicConfig(level=logging.INFO,
@@ -71,6 +72,8 @@ class PCC(object):
             cv2.createTrackbar('replay-speed', 'UI', 10, 50, update_speed)
 
         cv2.setMouseCallback('UI', self.left_click, '1234')
+
+        self.flow_player = FlowPlayer()
 
     def start(self):
         self.hub.start()
@@ -125,6 +128,12 @@ class PCC(object):
                 self.ipm[:, :] = [180, 180, 180]
 
             self.player.show_dist_mark_ipm(self.ipm)
+
+        if 'pcv_data' in mess:
+            # print('------', mess['pcv_data'])
+            for data in mess['pcv_data']:
+                self.flow_player.draw(data, img)
+            pass
 
         cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
         if can_data:

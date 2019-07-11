@@ -48,11 +48,11 @@ class Hub(Thread):
         else:
             print('no devices...')
 
-        # ip = '192.168.98.106'
-        # port = 24011
-        # self.camera_sink = X1CameraSink(queue=self.cam_queue, ip=ip, port=port, channel='camera',
-        #                                 fileHandler=self.fileHandler)
-        # self.camera_sink.start()
+        ip = '192.168.98.106'
+        port = 24011
+        self.camera_sink = X1CameraSink(msg_queue=self.msg_queue, cam_queue=self.cam_queue, ip=ip, port=port, channel='camera',
+                                        fileHandler=self.fileHandler)
+        self.camera_sink.start()
         # self.collectors[ip]['sinks']['video'] = self.camera_sink
 
         print('Devices found:')
@@ -72,10 +72,10 @@ class Hub(Thread):
         for ip in finder.found:
             self.collectors[ip]['sinks'] = {}
             if finder.found[ip]['mac'] == configs[0]['mac']:
-                self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
-                                              fileHandler=self.fileHandler)
-                self.camera_sink.start()
-                self.collectors[ip]['sinks']['video'] = self.camera_sink
+                # self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
+                #                               fileHandler=self.fileHandler)
+                # self.camera_sink.start()
+                # self.collectors[ip]['sinks']['video'] = self.camera_sink
                 pass
 
             ndev = 0
@@ -111,7 +111,7 @@ class Hub(Thread):
 
         self.max_cache = 40
 
-        for msg_type in ['can', 'gsensor', 'rtk']:
+        for msg_type in ['can', 'gsensor', 'rtk', 'pcv_data']:
             self.cache[msg_type] = []
             self.msg_cnt[msg_type] = {
                 'rev': 0,

@@ -262,12 +262,15 @@ class CameraSink(Sink):
 
 class X1CameraSink(Sink):
 
-    def __init__(self, queue, ip, port, channel, fileHandler, isheadless=False):
-        Sink.__init__(self, queue, ip, port, channel, isheadless)
+    def __init__(self, cam_queue, msg_queue, ip, port, channel, fileHandler, isheadless=False):
+        Sink.__init__(self, cam_queue, ip, port, channel, isheadless)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.ip = ip
         self.port = port
+        self.cam_queue = cam_queue
+        self.msg_queue = msg_queue
+
 
     async def _run(self):
         session = aiohttp.ClientSession()
@@ -283,7 +286,10 @@ class X1CameraSink(Sink):
             async for msg in ws:
                 r = self.pkg_handler(msg)
                 if r is not None:
-                    self.queue.put((*r, self.cls))
+                    if type(r[0]) == type(""):
+                        self.msg_queue.put((r[1]['frame_id'], r[1], r[0]))
+                    else:
+                        self.cam_queue.put((*r, self.cls))
 
     def run(self):
         loop = asyncio.get_event_loop()
@@ -293,10 +299,11 @@ class X1CameraSink(Sink):
         data = msgpack.unpackb(msg.data)[b'data']
         if b'frame_id' in data:
             data = msgpack.unpackb(data)
-            data = mytools.convert(data)
-            data = json.dumps(data)
+            pcv = mytools.convert(data)
+            data = json.dumps(pcv)
             self.fileHandler.insert_pcv_raw(data)
-            return None
+            return 'pcv_data', pcv
+
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
         if frame_id - self.last_fid != 1:
             print("frame jump.", self.last_fid, frame_id)
