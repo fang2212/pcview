@@ -10,45 +10,7 @@
 import struct
 import time
 from multiprocessing import Process, Queue, freeze_support
-
-
-class JpegExtractor(object):
-    def __init__(self, video_file=None):
-        self.video_fp = None
-        if video_file is not None:
-            self.video_fp = open(video_file, 'rb')
-        self.output_path = None
-        self.buf = b''
-        self.buf_len = int(2 * 1024 * 1024)
-        self.done = True
-
-    def open(self, file_name):
-        self.video_fp = open(file_name, 'rb')
-        self.done = False
-
-    def release(self):
-        self.video_fp.close()
-        self.video_fp = None
-        self.done = True
-
-    def read(self):
-        if not self.video_fp:
-            return
-        a = self.buf.find(b'\xff\xd8')
-        b = self.buf.find(b'\xff\xd9')
-        while a == -1 or b == -1:
-            read = self.video_fp.read(self.buf_len)
-            if len(read) == 0:
-                self.release()
-                return
-            self.buf += read
-            a = self.buf.find(b'\xff\xd8')
-            b = self.buf.find(b'\xff\xd9')
-
-        jpg = self.buf[a:b + 2]
-        self.buf = self.buf[b + 2:]
-
-        return jpg
+import json
 
 
 def jpeg_extractor(video_dir):
@@ -89,7 +51,9 @@ def jpeg_extractor(video_dir):
 
 
 class LogPlayer(Process):
+
     def __init__(self, log_path, configs=None, start_frame=0, ratio=1.0):
+
         Process.__init__(self)
         # self.daemon = False
         self.time_aligned = True
@@ -118,6 +82,10 @@ class LogPlayer(Process):
         self.buf = []
         self.replay_speed = 1
         self.now_frame_id = 0
+
+        self.x1_log = os.path.dirname(log_path) + '/pcv_log.txt'
+        self.x1_fp = open(self.x1_log, 'r')
+
 
         for idx, cfg in enumerate(configs):
             cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
@@ -148,12 +116,8 @@ class LogPlayer(Process):
         res = {
             'frame_id': None,
             'img': None,
-            'vehicle': {},
-            'lane': {},
-            'ped': {},
-            'tsr': {},
             'can': {},
-            'extra': {}
+            'x1_data': []
         }
 
         if not self.cam_queue.empty():
@@ -169,7 +133,30 @@ class LogPlayer(Process):
                     # print(key, cache[key])
                     cache[key] = []
                 self.msg_cnt['frame'] += 1
-                # print('res can', res['can'])
+
+                while True:
+                    try:
+                        fx = self.x1_fp.tell()
+                        line = self.x1_fp.readline()
+                        try:
+                            data = json.loads(line.strip())
+                        except json.JSONDecodeError as e:
+                            print(line)
+                            continue
+
+                        if 'frame_id' not in data:
+                            continue
+
+                        if data['frame_id'] == res['frame_id']:
+                            res['x1_data'].append(data)
+                        elif data['frame_id'] < res['frame_id']:
+                            continue
+                        else:
+                            self.x1_fp.seek(fx)
+                            break
+                    except StopIteration as e:
+                        break
+
                 now = time.time()
                 if now - self.last_time < 1.0 / self.hz:
                     time.sleep(1.0 / self.hz + self.last_time - now)
@@ -177,19 +164,6 @@ class LogPlayer(Process):
                 return res
             else:
                 print('error decode img', frame_id, len(data))
-        # if not self.msg_queue.empty():
-        #     frame_id, msg_data, msg_type = self.msg_queue.get()
-        #     # res[msg_type] = msg_data
-        #     # res['frame_id'] = frame_id
-        #     if isinstance(msg_data, list):
-        #         # print('msg data list')
-        #         self.cache[msg_type].extend(msg_data)
-        #     elif isinstance(msg_data, dict):
-        #         self.cache[msg_type].append(msg_data)
-        #     # self.msg_cnt[msg_type]['rev'] += 1
-        #     # self.msg_cnt[msg_type]['show'] += 1
-        # else:
-        #     time.sleep(0.001)
 
     def pause(self, pause):
         if pause:
@@ -403,7 +377,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/pc-collect/20190710152810/log.txt')
+    sys.argv.append('/home/cao/pc-collect/hh_20190711174047/log.txt')
     freeze_support()
     source = sys.argv[1]
     print(source)

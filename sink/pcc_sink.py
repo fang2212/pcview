@@ -61,6 +61,7 @@ class Sink(Process):
             r = self.pkg_handler(buf)
             if r is not None and not self.isheadless:
                 self.queue.put((*r, self.cls))
+            time.sleep(0.01)
 
     def pkg_handler(self, msg_buf):
         pass
@@ -302,7 +303,7 @@ class X1CameraSink(Sink):
             pcv = mytools.convert(data)
             data = json.dumps(pcv)
             self.fileHandler.insert_pcv_raw(data)
-            return 'pcv_data', pcv
+            return 'x1_data', pcv
 
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
         if frame_id - self.last_fid != 1:

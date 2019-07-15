@@ -29,6 +29,7 @@ logging.basicConfig(level=logging.INFO,
 
 
 class PCC(object):
+
     def __init__(self, hub, replay=False, rlog=None, ipm=None):
         self.hub = hub
         self.player = Player()
@@ -95,6 +96,7 @@ class PCC(object):
                     # print(frame_cnt)
             # self.draw(d, frame_cnt)
             frame_cnt += 1
+            time.sleep(0.01)
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])
@@ -129,9 +131,9 @@ class PCC(object):
 
             self.player.show_dist_mark_ipm(self.ipm)
 
-        if 'pcv_data' in mess:
+        if 'x1_data' in mess:
             # print('------', mess['pcv_data'])
-            for data in mess['pcv_data']:
+            for data in mess['x1_data']:
                 self.flow_player.draw(data, img)
             pass
 

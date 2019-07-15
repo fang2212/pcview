@@ -95,7 +95,6 @@ def test_tkinter():
         panel.imgtk = img
         panel.config(image=img)
 
-
     bt1 = tk.Button(window, textvariable=bt1_var, command=record)
     bt1.pack(fill='x')
 
@@ -105,9 +104,45 @@ def test_tkinter():
     window.mainloop()
 
 
+def draw_lane(lane_file):
+    from player.pcc_ui import Player
+    player = Player()
+    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+    video_writer = cv2.VideoWriter("./lane.avi", fourcc, 20.0, (1280, 720), True)
+    ctx = []
+    speed = 0
+    frameid_lane = 0
+    with open(lane_file, 'r') as rf:
+        for line in rf:
+            if 'speed' in line:
+                speed = line.split()[1]
+                continue
+
+            if 'id' in line:
+                frameid_lane = line.split()[1]
+                continue
+
+            img = np.zeros([720, 1280, 3], np.uint8)
+            fields = line.strip().split()
+            c0, c1, c2, c3, end = float(fields[3]), float(fields[4]), float(fields[5]), float(fields[6]), float(fields[-1])
+            ctx.append([c0, c1, c2, c3, end])
+            if fields[1] == 'Lane4':
+                for line in ctx:
+                    if int(line[-1]) == 0:
+                        continue
+                    player.show_lane(img, line[:-1], r=line[-1])
+                cv2.putText(img, "speed:"+str(speed) + 'km/h', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
+                cv2.putText(img, "frameid_lane:" + str(frameid_lane), (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
+                video_writer.write(img)
+                cv2.imshow('lane', img)
+                cv2.waitKey(1)
+                ctx = []
+
+
 if __name__ == '__main__':
     # read_avi('/home/cao/桌面/20190513_ub482/20190513155950/video/camera_00066945.avi')
     # read_jpg('/home/cao/图片/')
     # test_mini_cv()
     # test_post()
-    test_tkinter()
+    # test_tkinter()
+    draw_lane('/home/cao/下载/log_q3_x1_can.txt')
