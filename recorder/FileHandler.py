@@ -155,7 +155,7 @@ class FileHandler(Thread):
                     raw_fp.write(log_line)
 
                 if pcv_fp:
-                    pcv_fp.write(json.dumps({"frame_id": frame_id, "create_ts": int(ts*1000000)}) + "\n" )
+                    pcv_fp.write(json.dumps({"frame_id": frame_id, "create_ts": int(ts*1000000)}) + "\n")
 
                 frame_cnt += 1
             time.sleep(0.01)

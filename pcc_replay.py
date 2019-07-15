@@ -137,11 +137,12 @@ class LogPlayer(Process):
                 while True:
                     try:
                         fx = self.x1_fp.tell()
-                        line = self.x1_fp.readline()
+                        line = self.x1_fp.readline().strip()
+
                         try:
-                            data = json.loads(line.strip())
+                            data = json.loads(line)
                         except json.JSONDecodeError as e:
-                            print(line)
+                            print('error json line', line)
                             continue
 
                         if 'frame_id' not in data:

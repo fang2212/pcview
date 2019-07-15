@@ -22,6 +22,7 @@ import base64
 from multiprocessing.dummy import Process as Thread
 import time
 from player import FPSCnt, FlowPlayer
+import sys
 
 
 logging.basicConfig(level=logging.INFO,
@@ -96,7 +97,10 @@ class PCC(object):
                     # print(frame_cnt)
             # self.draw(d, frame_cnt)
             frame_cnt += 1
-            time.sleep(0.01)
+            if frame_cnt > 500:
+                self.player.start_time = datetime.now()
+                frame_cnt = 1
+
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])
@@ -286,6 +290,7 @@ class PCC(object):
             cv2.destroyAllWindows()
             # os._exit(0)
             self.exit = True
+            sys.exit(0)
         elif key == 32:  # space
             self.pause = not self.pause
             print('Pause:', self.pause)
