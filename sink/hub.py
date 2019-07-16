@@ -111,7 +111,7 @@ class Hub(Thread):
 
         self.max_cache = 40
 
-        for msg_type in ['can', 'gsensor', 'rtk', 'pcv_data']:
+        for msg_type in ['can', 'gsensor', 'rtk', 'x1_data']:
             self.cache[msg_type] = []
             self.msg_cnt[msg_type] = {
                 'rev': 0,

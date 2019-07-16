@@ -90,6 +90,7 @@ class PCC(object):
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
                 self.hub.pause(True)
+                time.sleep(0.1)
             if self.replay:
                 self.hub.pause(False)
                 if self.hub.d:
@@ -100,7 +101,7 @@ class PCC(object):
             if frame_cnt > 500:
                 self.player.start_time = datetime.now()
                 frame_cnt = 1
-
+            time.sleep(0.01)
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])

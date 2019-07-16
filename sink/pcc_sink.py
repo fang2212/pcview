@@ -56,12 +56,12 @@ class Sink(Process):
         while True:
             buf = self.read()
             if not buf:
-                time.sleep(0.01)
+                time.sleep(0.001)
                 continue
             r = self.pkg_handler(buf)
             if r is not None and not self.isheadless:
                 self.queue.put((*r, self.cls))
-            time.sleep(0.01)
+            # time.sleep(0.01)
 
     def pkg_handler(self, msg_buf):
         pass
