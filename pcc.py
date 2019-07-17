@@ -85,6 +85,7 @@ class PCC(object):
         while not self.exit:
             d = self.hub.pop_simple()
             if d is None or not d.get('frame_id'):
+                # time.sleep(0.01)
                 continue
             self.draw(d, frame_cnt)
             while self.replay and self.pause:
@@ -140,7 +141,8 @@ class PCC(object):
             # print('------', mess['pcv_data'])
             for data in mess['x1_data']:
                 self.flow_player.draw(data, img)
-            pass
+
+
 
         cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
         if can_data:

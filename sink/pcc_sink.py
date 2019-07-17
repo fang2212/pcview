@@ -273,6 +273,7 @@ class X1CameraSink(Sink):
         self.msg_queue = msg_queue
 
 
+
     async def _run(self):
         session = aiohttp.ClientSession()
         URL = 'ws://' + str(self.ip) + ':' + str(self.port)
@@ -282,13 +283,23 @@ class X1CameraSink(Sink):
                 'topic': 'subscribe',
                 'data': 'pcview',
             }
+
+            msg_finish = {
+                'source': 'pcview',
+                'topic': 'subscribe',
+                'data': 'finish'
+            }
             data = msgpack.packb(msg)
             await ws.send_bytes(data)
+            data = msgpack.packb(msg_finish)
+            await ws.send_bytes(data)
             async for msg in ws:
+
                 r = self.pkg_handler(msg)
                 if r is not None:
                     if type(r[0]) == type(""):
-                        self.msg_queue.put((r[1]['frame_id'], r[1], r[0]))
+                        if 'x1_data' in r[0]:
+                            self.msg_queue.put((r[1]['frame_id'], r[1], r[0]))
                     else:
                         self.cam_queue.put((*r, self.cls))
 
@@ -297,7 +308,18 @@ class X1CameraSink(Sink):
         loop.run_until_complete(self._run())
 
     def pkg_handler(self, msg):
-        data = msgpack.unpackb(msg.data)[b'data']
+        data = msgpack.unpackb(msg.data)
+        print('-----', data[b'topic'])
+        if data[b'topic'] == b'finish':
+            buf = data[b'data']
+            if b'rc_fusion' in buf:
+                buf = msgpack.unpackb(buf)
+                fusion_data = buf[b'rc_fusion']
+                buf = msgpack.packb(fusion_data, use_bin_type=True)
+                self.fileHandler.insert_fusion_raw(buf)
+
+            return None
+        data = data[b'data']
         if b'frame_id' in data:
             data = msgpack.unpackb(data)
             pcv = mytools.convert(data)

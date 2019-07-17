@@ -48,7 +48,7 @@ class Hub(Thread):
         else:
             print('no devices...')
 
-        ip = '192.168.98.106'
+        ip = '192.168.0.233'
         port = 24011
         self.camera_sink = X1CameraSink(msg_queue=self.msg_queue, cam_queue=self.cam_queue, ip=ip, port=port, channel='camera',
                                         fileHandler=self.fileHandler)

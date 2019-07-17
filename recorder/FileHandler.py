@@ -23,6 +23,10 @@ class FileHandler(Thread):
         self.raw_queue = Queue(maxsize=7000)
         self.pcv_queue = Queue(maxsize=5000)
 
+        self.fusion_queue = Queue(maxsize=5000)
+
+
+
         # self.can_raw_queue = kqueue(maxsize=100)
         self._max_cnt = 6000
         self.path = None
@@ -41,13 +45,13 @@ class FileHandler(Thread):
 
         self.last_image = None
 
-
         print('outer id:', os.getpid())
 
     def run(self):
         # cnt = 0
         raw_fp = None
         pcv_fp = None
+        fusion_fp = None
 
         path = None
         video_path = None
@@ -73,8 +77,12 @@ class FileHandler(Thread):
 
                     path = ctrl['path']
                     video_path = ctrl['video_path']
+
                     raw_fp = open(os.path.join(path, 'log.txt'), 'w+')
                     pcv_fp = open(os.path.join(path, 'pcv_log.txt'), 'w+')
+                    fusion_fp = open(os.path.join(path, 'fusion.txt'), 'wb')
+
+
 
                     stdout_fp = open(os.path.join(path, 'stdout.txt'), 'w+')
                     sys.stdout = stdout_fp
@@ -89,6 +97,9 @@ class FileHandler(Thread):
                     while not self.pcv_queue.empty():
                         self.pcv_queue.get()
 
+                    while not self.fusion_queue.empty():
+                        self.fusion_queue.get()
+
                 elif ctrl['act'] == 'stop':
                     raw_fp.flush()
                     raw_fp.close()
@@ -97,6 +108,10 @@ class FileHandler(Thread):
                     pcv_fp.flush()
                     pcv_fp.close()
                     pcv_fp = None
+
+                    fusion_fp.flush()
+                    fusion_fp.close()
+                    fusion_fp = None
 
                     frame_reset = True
                     sys.stdout = origin_stdout
@@ -109,6 +124,9 @@ class FileHandler(Thread):
 
                     while not self.pcv_queue.empty():
                         self.pcv_queue.get()
+
+                    while not self.fusion_queue.empty():
+                        self.fusion_queue.get()
 
 
             # print(self.video_path)
@@ -130,6 +148,11 @@ class FileHandler(Thread):
                     data = self.pcv_queue.get()
                     pcv_fp.write(data + "\n")
                     pcv_fp.flush()
+
+                while not self.fusion_queue.empty():
+                    data = self.fusion_queue.get()
+                    fusion_fp.write(data)
+                    fusion_fp.flush()
 
 
             # print('filehandler...', video_path, self.video_queue.qsize())
@@ -251,6 +274,10 @@ class FileHandler(Thread):
     def insert_pcv_raw(self, msg):
         if not self.pcv_queue.full():
             self.pcv_queue.put(msg)
+
+    def insert_fusion_raw(self, msg):
+        if not self.pcv_queue.full():
+            self.fusion_queue.put(msg)
 
     def insert_can(self, msg):
         if not self.can_raw_queue.full():
