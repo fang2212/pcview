@@ -15,7 +15,7 @@ import asyncio
 import websockets
 import numpy as np
 import cv2
-
+import aiohttp
 from .sync import Sync
 
 pack = os.path.join

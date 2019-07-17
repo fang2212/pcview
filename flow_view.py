@@ -25,9 +25,11 @@ from sink import TcpSink
 from recorder import VideoRecorder, TextRecorder
 from sink.canSink import CanSink 
 
+
 def get_date_str():
     FORMAT = '%Y%m%d%H%M%S'
     return datetime.now().strftime(FORMAT)
+
 
 class PCView():
     
@@ -155,6 +157,7 @@ class PCDraw(Process):
 
             time.sleep(0.01)
         cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

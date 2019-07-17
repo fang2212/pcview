@@ -5,7 +5,7 @@ import cv2
 import time
 from datetime import datetime
 from multiprocessing.dummy import Process as Thread
-from multiprocessing import Queue
+from multiprocessing import Queue, Process
 from config.config import local_cfg, configs, install
 import sys
 import json
@@ -20,8 +20,12 @@ class FileHandler(Thread):
         self.ctrl_queue = Queue()
         # self.image_queue = Queue()
         self.video_queue = Queue(maxsize=40)
-        self.raw_queue = Queue(maxsize=5000)
+        self.raw_queue = Queue(maxsize=7000)
         self.pcv_queue = Queue(maxsize=5000)
+
+        self.fusion_queue = Queue(maxsize=5000)
+
+
 
         # self.can_raw_queue = kqueue(maxsize=100)
         self._max_cnt = 6000
@@ -41,13 +45,13 @@ class FileHandler(Thread):
 
         self.last_image = None
 
-
         print('outer id:', os.getpid())
 
     def run(self):
         # cnt = 0
         raw_fp = None
         pcv_fp = None
+        fusion_fp = None
 
         path = None
         video_path = None
@@ -62,9 +66,10 @@ class FileHandler(Thread):
 
         while True:
             now_time = time.time()
-            if self.recording and now_time - self.start_time > 20:
+            if self.recording and now_time - self.start_time > 600:
                 self.stop_rec()
                 self.start_rec()
+                self.start_time = now_time
 
             if not self.ctrl_queue.empty():
                 ctrl = self.ctrl_queue.get()
@@ -72,8 +77,12 @@ class FileHandler(Thread):
 
                     path = ctrl['path']
                     video_path = ctrl['video_path']
+
                     raw_fp = open(os.path.join(path, 'log.txt'), 'w+')
                     pcv_fp = open(os.path.join(path, 'pcv_log.txt'), 'w+')
+                    fusion_fp = open(os.path.join(path, 'fusion.txt'), 'wb')
+
+
 
                     stdout_fp = open(os.path.join(path, 'stdout.txt'), 'w+')
                     sys.stdout = stdout_fp
@@ -88,6 +97,9 @@ class FileHandler(Thread):
                     while not self.pcv_queue.empty():
                         self.pcv_queue.get()
 
+                    while not self.fusion_queue.empty():
+                        self.fusion_queue.get()
+
                 elif ctrl['act'] == 'stop':
                     raw_fp.flush()
                     raw_fp.close()
@@ -96,6 +108,10 @@ class FileHandler(Thread):
                     pcv_fp.flush()
                     pcv_fp.close()
                     pcv_fp = None
+
+                    fusion_fp.flush()
+                    fusion_fp.close()
+                    fusion_fp = None
 
                     frame_reset = True
                     sys.stdout = origin_stdout
@@ -108,6 +124,9 @@ class FileHandler(Thread):
 
                     while not self.pcv_queue.empty():
                         self.pcv_queue.get()
+
+                    while not self.fusion_queue.empty():
+                        self.fusion_queue.get()
 
 
             # print(self.video_path)
@@ -127,8 +146,13 @@ class FileHandler(Thread):
 
                 while not self.pcv_queue.empty():
                     data = self.pcv_queue.get()
-                    pcv_fp.write(data)
+                    pcv_fp.write(data + "\n")
                     pcv_fp.flush()
+
+                while not self.fusion_queue.empty():
+                    data = self.fusion_queue.get()
+                    fusion_fp.write(data)
+                    fusion_fp.flush()
 
 
             # print('filehandler...', video_path, self.video_queue.qsize())
@@ -145,12 +169,16 @@ class FileHandler(Thread):
 
                     video_writer = cv2.VideoWriter(vpath,
                                                    self.fourcc, 20.0, (1280, 720), True)
-                img = cv2.imdecode(np.fromstring(data, np.uint8), cv2.IMREAD_COLOR)
-                video_writer.write(img)
+
+                video_writer.write(data)
                 tv_s = int(ts)
                 tv_us = (ts - tv_s) * 1000000
                 log_line = "%.10d %.6d " % (tv_s, tv_us) + 'camera' + ' ' + '{}'.format(frame_id) + "\n"
-                raw_fp.write(log_line)
+                if raw_fp:
+                    raw_fp.write(log_line)
+
+                if pcv_fp:
+                    pcv_fp.write(json.dumps({"frame_id": frame_id, "create_ts": int(ts*1000000)}) + "\n")
 
                 frame_cnt += 1
             time.sleep(0.01)
@@ -214,14 +242,28 @@ class FileHandler(Thread):
 
     def insert_video(self, msg):
         # print(self.recording, 'video recording----')
-        self.last_image = msg[-1]
-        if local_cfg.save.video and not self.video_queue.full():
+
+        self.last_image = msg
+        # print('data img ', msg)
+
+        # if self.video_queue.full():
+        #     self.video_queue.get()
+        #
+        # # print('insert', self.last_image)
+        # if local_cfg.save.video:
+        #     self.video_queue.put(msg)
+        # print('------------------')
+        if local_cfg.save.video and self.recording:
             self.video_queue.put(msg)
 
     def insert_raw(self, msg):
         # print(self.recording, 'log recording----')
         # print(self.recording)
         timestamp, log_type, data = msg
+
+        # if self.raw_queue.full():
+        #     self.raw_queue.get()
+
         if local_cfg.save.raw and not self.raw_queue.full():
             # print('hahaha222')
             # print(log_type)
@@ -233,12 +275,18 @@ class FileHandler(Thread):
         if not self.pcv_queue.full():
             self.pcv_queue.put(msg)
 
+    def insert_fusion_raw(self, msg):
+        if not self.pcv_queue.full():
+            self.fusion_queue.put(msg)
+
     def insert_can(self, msg):
         if not self.can_raw_queue.full():
             self.can_raw_queue.put(msg)
 
     def get_last_image(self):
-        return self.last_image
+        # print('last', self.last_image)
+        if self.last_image:
+            return self.last_image[-1]
 
     # def insert_resolved(self, r):
     #     if config.save.raw and self.recording:

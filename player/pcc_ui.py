@@ -35,7 +35,7 @@ class Player(object):
         self.cipv = 0
 
         self.color_seq = [CVColor.White, CVColor.Red, CVColor.Green, CVColor.deeporange, CVColor.purple,
-             CVColor.Blue, CVColor.LightBlue]
+             CVColor.Blue, CVColor.LightBlue, CVColor.Black]
 
         self.color_obs = {'ifv300': CVColor.Blue,
              'esr': CVColor.Red,

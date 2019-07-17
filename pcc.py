@@ -20,6 +20,11 @@ from tools.vehicle import Vehicle
 from tools.match import is_near
 from net.ntrip_client import GGAReporter
 import numpy as np
+import base64
+from multiprocessing.dummy import Process as Thread
+import time
+from player import FPSCnt, FlowPlayer
+import sys
 
 
 logging.basicConfig(level=logging.INFO,
@@ -27,6 +32,7 @@ logging.basicConfig(level=logging.INFO,
 
 
 class PCC(object):
+
     def __init__(self, hub, replay=False, rlog=None, ipm=None):
         self.hub = hub
         self.player = Player()
@@ -74,6 +80,8 @@ class PCC(object):
 
         cv2.setMouseCallback('UI', self.left_click, '1234')
 
+        self.flow_player = FlowPlayer()
+
     def start(self):
         self.hub.start()
         self.player.start_time = datetime.now()
@@ -82,11 +90,13 @@ class PCC(object):
         while not self.exit:
             d = self.hub.pop_simple()
             if d is None or not d.get('frame_id'):
+                # time.sleep(0.01)
                 continue
             self.draw(d, frame_cnt)
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
                 self.hub.pause(True)
+                time.sleep(0.1)
             if self.replay:
                 self.hub.pause(False)
                 if self.hub.d:
@@ -94,10 +104,20 @@ class PCC(object):
                     # print(frame_cnt)
             # self.draw(d, frame_cnt)
             frame_cnt += 1
+            if frame_cnt > 500:
+                self.player.start_time = datetime.now()
+                frame_cnt = 1
+            time.sleep(0.01)
 
     def draw(self, mess, frame_cnt):
-        imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
-        img = imgraw.copy()
+        # print(mess[''])
+        try:
+            imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
+            img = imgraw.copy()
+        except Exception as e:
+            print(e)
+            return
+
         frame_id = mess['frame_id']
         self.now_id = frame_id
         self.ts_now = mess['ts']
@@ -105,6 +125,9 @@ class PCC(object):
         can_data = mess.get('can')
         if self.ts0 == 0:
             self.ts0 = self.ts_now
+
+        if local_cfg.save.video and not self.replay:
+            self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
 
         self.player.show_columns(img)
 
@@ -120,6 +143,13 @@ class PCC(object):
                 self.ipm[:, :] = [180, 180, 180]
 
             self.player.show_dist_mark_ipm(self.ipm)
+
+        if 'x1_data' in mess:
+            # print('------', mess['pcv_data'])
+            for data in mess['x1_data']:
+                self.flow_player.draw(data, img)
+
+
 
         cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
         if can_data:
@@ -163,6 +193,7 @@ class PCC(object):
             comb = np.hstack((img, self.ipm))
         else:
             comb = img
+
         cv2.imshow('UI', comb)
 
         self.handle_keyboard()
@@ -274,6 +305,7 @@ class PCC(object):
             cv2.destroyAllWindows()
             # os._exit(0)
             self.exit = True
+            sys.exit(0)
         elif key == 32:  # space
             self.pause = not self.pause
             print('Pause:', self.pause)
@@ -342,6 +374,24 @@ class PCC(object):
             cf.write(log_line)
 
 
+class HeadlessPCC:
+    def __init__(self, hub):
+        self.hub = hub
+
+    def start(self):
+        # self.hub.start()
+        while True:
+            mess = self.hub.pop_simple()
+
+            if mess is None or not mess.get('frame_id'):
+                continue
+            imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
+            frame_id = mess['frame_id']
+            if local_cfg.save.video:
+                self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
+            time.sleep(0.02)
+
+
 if __name__ == "__main__":
     import sys
     from config.config import load_cfg
@@ -350,8 +400,15 @@ if __name__ == "__main__":
     if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
         hub = Hub(headless=True)
         hub.start()
+        pcc = HeadlessPCC(hub)
 
-        from tornado.web import Application, RequestHandler
+
+        t = Thread(target=pcc.start)
+        t.start()
+        # hub.fileHandler.start_rec()
+        # pcc.start()
+
+        from tornado.web import Application, RequestHandler, StaticFileHandler
         from tornado.ioloop import IOLoop
 
         class IndexHandler(RequestHandler):
@@ -377,13 +434,28 @@ if __name__ == "__main__":
                         self.write({'status': 'ok', 'action': action, 'message': mess})
                     elif 'image' in action:
                         img = hub.fileHandler.get_last_image()
-                        self.write({'status': 'ok', 'action': action, 'message': 'get image', 'data': img})
+                        if img is None:
+                            # print('pcc', img)
+                            # img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
+                            img = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
+
+                        base64_str = cv2.imencode('.jpg', img)[1].tostring()
+                        base64_str = base64.b64encode(base64_str).decode()
+                        self.write({'status': 'ok', 'action': action, 'message': 'get image', 'data': base64_str})
                     else:
                         self.write({'status': 'ok', 'message': 'unrecognized action', 'action': action})
                 else:
                     # self.hub.fileHandler.stop_rec()
                     self.write({'status': 'error', 'message': 'not action', 'action': None})
-        app = Application([(r'/', IndexHandler)])
+
+            def get(self):
+                self.render("web/index.html")
+
+
+        app = Application([
+            (r'/', IndexHandler),
+            (r"/static/(.*)", StaticFileHandler, {"path": "web/statics"}),
+        ], debug=False)
         app.listen(9999)
         IOLoop.instance().start()
 

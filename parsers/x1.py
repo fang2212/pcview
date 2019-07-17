@@ -14,7 +14,7 @@ import cantools
 # db_x1 = cantools.database.load_file('dbc/MINIEYE_CAR.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/MINIEYE_PED.dbc')
 # db_x1.add_dbc_file('dbc/MINIEYE_LANE.dbc')
-db_x1 = cantools.database.load_file('dbc/MINIEYE_AEB_20190123.dbc', strict=False)
+db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190704.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/ESR DV3_64Tgt.dbc')
 
 cipv = {}
@@ -43,7 +43,6 @@ def parse_x1(id, data, ctx=None):
         if r['TargetVehicle_Type'] == 'NoVehicle':
             return None
         else:
-
             # print("0x%x" % id, r)
             cipv['type'] = 'obstacle'
             cipv['sensor'] = 'x1'
@@ -140,3 +139,41 @@ def parse_x1(id, data, ctx=None):
             if ctx.get('x1_obs'):
                 return ctx.get('x1_obs').copy()
         # return x1_ped_list
+
+    if id == 0x420:
+        ctx['fusion'] = {}
+        ctx['fusion']['frameid'] = r['FrameID']
+        ctx['fusion']['counter'] = r['Counter']
+
+    if 0x400 <= id <= 0x41f:
+        if 'fusion' not in ctx:
+            return
+        index = (id - 0x400) // 2
+        if id&1:
+            ctx['fusion'][index]['pos_lon'] = r['L_long_rel_'+'%02d'%(index+1)]
+            ctx['fusion'][index]['pos_lat'] = r['L_lat_rel_'+'%02d'%(index+1)]
+            ctx['fusion'][index]['vx'] = r['V_long_obj_' + '%02d' % (index + 1)]
+            ctx['fusion'][index]['vy'] = r['V_lat_obj_' + '%02d' % (index + 1)]
+            ctx['fusion'][index]['ax'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
+            ctx['fusion'][index]['cipo'] = False
+            ctx['fusion'][index]['type'] = 'obstacle'
+            ctx['fusion'][index]['class'] = 'fusion_data'
+            ctx['fusion'][index]['color'] = 7
+            ctx['fusion'][index]['width'] = 0.15
+            ctx['fusion'][index]['height'] = 0.15
+        else:
+            ctx['fusion'][index] = dict()
+            ctx['fusion'][index]['id'] = r['TrackID_'+'%02d'%(index+1)]
+            ctx['fusion'][index]['ay'] = r['Accel_lat_obj_'+'%02d'%(index+1)]
+
+        if id == 0x41f:
+            ret = []
+            for key in ctx['fusion']:
+                if key == 255 or type(key) == type(''):
+                    continue
+                obs = ctx['fusion'][key]
+                ret.append(obs.copy())
+            ctx.pop('fusion')
+            # print('fusion', ret)
+            return ret
+
