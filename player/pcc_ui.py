@@ -582,7 +582,7 @@ class Player(object):
 
     def show_frame_id(self, img, fn):
         indent = self.columns['video']['indent']
-        BaseDraw.draw_text(img, 'frn: ' + str(int(fn)), (indent + 2, 40), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'fid: ' + str(int(fn)), (indent + 2, 40), 0.5, CVColor.White, 1)
 
     def show_fps(self, img, fps):
         indent = self.columns['video']['indent']
@@ -621,6 +621,11 @@ class Player(object):
     def show_recording(self, img, info):
         time_passed = time.time() - info
         BaseDraw.draw_text(img, 'Recording... ', (2, 700), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
+
+    def show_replaying(self, img, dts):
+        time_passed = dts
+        BaseDraw.draw_text(img, 'Replaying... ', (2, 700), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
 
     def show_cipo_info(self, img, obs):

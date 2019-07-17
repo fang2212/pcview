@@ -7,6 +7,7 @@ __progname__ = 'run'
 
 from math import fabs
 import logging
+import time
 from multiprocessing import Manager
 import cv2
 from datetime import datetime
@@ -17,6 +18,7 @@ from player.pcc_ui import Player
 from sink.hub import Hub
 from tools.vehicle import Vehicle
 from tools.match import is_near
+from net.ntrip_client import GGAReporter
 import numpy as np
 
 
@@ -34,6 +36,7 @@ class PCC(object):
         self.replay = replay
         self.rlog = rlog
         self.frame_idx = 0
+        self.ts0 = 0
 
         self.now_id = 0
         self.pre_rtk = {}
@@ -60,6 +63,8 @@ class PCC(object):
         if not replay:
             self.supervisor = Supervisor([self.check_status, self.hub.fileHandler.check_file])
             self.supervisor.start()
+            self.gga = GGAReporter()
+            self.gga.start()
         else:
             self.hub.d = Manager().dict()
             def update_speed(x):
@@ -98,6 +103,8 @@ class PCC(object):
         self.ts_now = mess['ts']
         # print(mess)
         can_data = mess.get('can')
+        if self.ts0 == 0:
+            self.ts0 = self.ts_now
 
         self.player.show_columns(img)
 
@@ -142,6 +149,9 @@ class PCC(object):
         if not self.replay and self.hub.fileHandler.recording:
             self.player.show_recording(img, self.hub.fileHandler.start_time)
 
+        if self.replay:
+            self.player.show_replaying(img, self.ts_now - self.ts0)
+
         fps = self.player.cal_fps(frame_cnt)
         self.player.show_fps(img, fps)
 
@@ -181,6 +191,8 @@ class PCC(object):
         if data['source'] == 'rtk.5':
             if 'lat' in data:
                 self.rtk_pair[0] = data
+                if not self.replay:
+                    self.gga.set_pos(data['lat'], data['lon'])
             if 'yaw' in data:
                 self.rtk_pair[0]['yaw'] = data['yaw']
         if 'rtk' in data['source'] and data['source'] != 'rtk.5':
