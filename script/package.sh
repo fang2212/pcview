@@ -5,7 +5,8 @@ rm -r release/linux/build
 rm -r release/linux/dist
 
 echo "start pyinstaller"
-pyinstaller pcc.py -F --distpath release/linux/dist --workpath release/linux/build
+pyinstaller pcc.py -F --distpath release/linux/dist --workpath release/linux/build -p /usr/local/lib/python3.5/dist-packages/:/usr/local/lib/:/下载/nanomsg-python/dist
+
 
 echo "copy config"
 mkdir release/linux/dist/config

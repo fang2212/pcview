@@ -45,6 +45,8 @@ class FileHandler(Thread):
 
         self.last_image = None
 
+        self.isheadless = False
+
         print('outer id:', os.getpid())
 
     def run(self):
@@ -165,10 +167,17 @@ class FileHandler(Thread):
                     vpath = os.path.join(video_path, 'camera_{:08d}.avi'.format(frame_id))
                     print("video start over.", frame_cnt, vpath)
                     if video_writer:
-                        video_writer.release()
+                        if not self.isheadless:
+                            video_writer.release()
+                        else:
+                            video_writer.flush()
+                            video_writer.close()
 
-                    video_writer = cv2.VideoWriter(vpath,
-                                                   self.fourcc, 20.0, (1280, 720), True)
+                    if not self.isheadless:
+                        video_writer = cv2.VideoWriter(vpath,
+                                                       self.fourcc, 20.0, (1280, 720), True)
+                    else:
+                        video_writer = open(vpath, 'wb')
 
                 video_writer.write(data)
                 tv_s = int(ts)

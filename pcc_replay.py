@@ -84,7 +84,9 @@ class LogPlayer(Process):
         self.now_frame_id = 0
 
         self.x1_log = os.path.dirname(log_path) + '/pcv_log.txt'
-        self.x1_fp = open(self.x1_log, 'r')
+        self.x1_fp = None
+        if os.path.exists(self.x1_log):
+            self.x1_fp = open(self.x1_log, 'r')
 
 
         for idx, cfg in enumerate(configs):
@@ -135,6 +137,8 @@ class LogPlayer(Process):
                 self.msg_cnt['frame'] += 1
 
                 while True:
+                    if self.x1_fp is None:
+                        break
                     try:
                         fx = self.x1_fp.tell()
                         line = self.x1_fp.readline().strip()

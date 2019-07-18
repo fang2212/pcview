@@ -23,7 +23,7 @@ from multiprocessing.dummy import Process as Thread
 import time
 from player import FPSCnt, FlowPlayer
 import sys
-
+import nanomsg
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
@@ -141,8 +141,6 @@ class PCC(object):
             # print('------', mess['pcv_data'])
             for data in mess['x1_data']:
                 self.flow_player.draw(data, img)
-
-
 
         cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
         if can_data:
@@ -365,6 +363,7 @@ class PCC(object):
 class HeadlessPCC:
     def __init__(self, hub):
         self.hub = hub
+        self.hub.fileHandler.isheadless = True
 
     def start(self):
         # self.hub.start()
@@ -373,10 +372,9 @@ class HeadlessPCC:
 
             if mess is None or not mess.get('frame_id'):
                 continue
-            imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
             frame_id = mess['frame_id']
             if local_cfg.save.video:
-                self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
+                self.hub.fileHandler.insert_video((mess['ts'], frame_id, mess['img']))
             time.sleep(0.02)
 
 
@@ -422,6 +420,7 @@ if __name__ == "__main__":
                         self.write({'status': 'ok', 'action': action, 'message': mess})
                     elif 'image' in action:
                         img = hub.fileHandler.get_last_image()
+                        img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
                         if img is None:
                             # print('pcc', img)
                             # img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)

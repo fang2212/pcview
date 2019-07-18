@@ -272,8 +272,6 @@ class X1CameraSink(Sink):
         self.cam_queue = cam_queue
         self.msg_queue = msg_queue
 
-
-
     async def _run(self):
         session = aiohttp.ClientSession()
         URL = 'ws://' + str(self.ip) + ':' + str(self.port)
