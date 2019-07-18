@@ -307,7 +307,7 @@ class X1CameraSink(Sink):
 
     def pkg_handler(self, msg):
         data = msgpack.unpackb(msg.data)
-        print('-----', data[b'topic'])
+        # print('-----', data[b'topic'])
         if data[b'topic'] == b'finish':
             buf = data[b'data']
             if b'rc_fusion' in buf:
