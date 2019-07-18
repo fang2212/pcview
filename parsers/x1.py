@@ -14,7 +14,7 @@ import cantools
 # db_x1 = cantools.database.load_file('dbc/MINIEYE_CAR.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/MINIEYE_PED.dbc')
 # db_x1.add_dbc_file('dbc/MINIEYE_LANE.dbc')
-db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190704.dbc', strict=False)
+db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190715.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/ESR DV3_64Tgt.dbc')
 
 cipv = {}

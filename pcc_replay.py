@@ -83,8 +83,11 @@ class LogPlayer(Process):
         self.replay_speed = 1
         self.now_frame_id = 0
 
-        self.x1_log = os.path.dirname(log_path) + '/pcv_log.txt'
-        self.x1_fp = open(self.x1_log, 'r')
+        x1_log = os.path.dirname(log_path) + '/pcv_log.txt'
+        if os.path.exists(x1_log):
+            self.x1_fp = open(x1_log, 'r')
+        else:
+            self.x1_fp = None
 
 
         for idx, cfg in enumerate(configs):
@@ -133,30 +136,30 @@ class LogPlayer(Process):
                     # print(key, cache[key])
                     cache[key] = []
                 self.msg_cnt['frame'] += 1
-
-                while True:
-                    try:
-                        fx = self.x1_fp.tell()
-                        line = self.x1_fp.readline().strip()
-
+                if self.x1_fp:
+                    while True:
                         try:
-                            data = json.loads(line)
-                        except json.JSONDecodeError as e:
-                            print('error json line', line)
-                            continue
+                            fx = self.x1_fp.tell()
+                            line = self.x1_fp.readline().strip()
 
-                        if 'frame_id' not in data:
-                            continue
+                            try:
+                                data = json.loads(line)
+                            except json.JSONDecodeError as e:
+                                print('error json line', line)
+                                continue
 
-                        if data['frame_id'] == res['frame_id']:
-                            res['x1_data'].append(data)
-                        elif data['frame_id'] < res['frame_id']:
-                            continue
-                        else:
-                            self.x1_fp.seek(fx)
+                            if 'frame_id' not in data:
+                                continue
+
+                            if data['frame_id'] == res['frame_id']:
+                                res['x1_data'].append(data)
+                            elif data['frame_id'] < res['frame_id']:
+                                continue
+                            else:
+                                self.x1_fp.seek(fx)
+                                break
+                        except StopIteration as e:
                             break
-                    except StopIteration as e:
-                        break
 
                 now = time.time()
                 if now - self.last_time < 1.0 / self.hz:

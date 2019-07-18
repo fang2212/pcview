@@ -219,11 +219,13 @@ class PCC(object):
 
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
+        if 'lat' in data and not self.replay:
+            self.gga.set_pos(data['lat'], data['lon'])
         if data['source'] == 'rtk.5':
             if 'lat' in data:
                 self.rtk_pair[0] = data
-                if not self.replay:
-                    self.gga.set_pos(data['lat'], data['lon'])
+                # if not self.replay:
+                #     self.gga.set_pos(data['lat'], data['lon'])
             if 'yaw' in data:
                 self.rtk_pair[0]['yaw'] = data['yaw']
         if 'rtk' in data['source'] and data['source'] != 'rtk.5':

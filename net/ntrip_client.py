@@ -114,7 +114,7 @@ class GGAReporter(Process):
             # ggastr = b''
             if not self.iq.empty():
                 lat, lon = self.iq.get()
-                # print(lat, lon)
+                print('\033[94m'+'GGA updated:'+'\033[0m', lat, lon)
             ggastr = generate_gga(lat, lon).encode('utf8')
             try:
                 self.sock.sendall(ggastr)
