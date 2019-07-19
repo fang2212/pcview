@@ -83,11 +83,10 @@ class LogPlayer(Process):
         self.replay_speed = 1
         self.now_frame_id = 0
 
-        x1_log = os.path.dirname(log_path) + '/pcv_log.txt'
-        if os.path.exists(x1_log):
-            self.x1_fp = open(x1_log, 'r')
-        else:
-            self.x1_fp = None
+        self.x1_log = os.path.dirname(log_path) + '/pcv_log.txt'
+        self.x1_fp = None
+        if os.path.exists(self.x1_log):
+            self.x1_fp = open(self.x1_log, 'r')
 
 
         for idx, cfg in enumerate(configs):
@@ -136,30 +135,32 @@ class LogPlayer(Process):
                     # print(key, cache[key])
                     cache[key] = []
                 self.msg_cnt['frame'] += 1
-                if self.x1_fp:
-                    while True:
+
+                while True:
+                    if self.x1_fp is None:
+                        break
+                    try:
+                        fx = self.x1_fp.tell()
+                        line = self.x1_fp.readline().strip()
+
                         try:
-                            fx = self.x1_fp.tell()
-                            line = self.x1_fp.readline().strip()
+                            data = json.loads(line)
+                        except json.JSONDecodeError as e:
+                            print('error json line', line)
+                            continue
 
-                            try:
-                                data = json.loads(line)
-                            except json.JSONDecodeError as e:
-                                print('error json line', line)
-                                continue
+                        if 'frame_id' not in data:
+                            continue
 
-                            if 'frame_id' not in data:
-                                continue
-
-                            if data['frame_id'] == res['frame_id']:
-                                res['x1_data'].append(data)
-                            elif data['frame_id'] < res['frame_id']:
-                                continue
-                            else:
-                                self.x1_fp.seek(fx)
-                                break
-                        except StopIteration as e:
+                        if data['frame_id'] == res['frame_id']:
+                            res['x1_data'].append(data)
+                        elif data['frame_id'] < res['frame_id']:
+                            continue
+                        else:
+                            self.x1_fp.seek(fx)
                             break
+                    except StopIteration as e:
+                        break
 
                 now = time.time()
                 if now - self.last_time < 1.0 / self.hz:
@@ -381,8 +382,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/media/nan/860evo/data/20190622-T5_problem/pcc_probelm/20190622115618/log.txt')
-
+    sys.argv.append('/home/cao/pc-collect/hh_20190711174047/log.txt')
     freeze_support()
     source = sys.argv[1]
     print(source)
