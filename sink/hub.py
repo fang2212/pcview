@@ -48,14 +48,15 @@ class Hub(Thread):
         else:
             print('no devices...')
 
-        if 'use_x1_camera' in configs[0]:
+        x1_camera_flag = False
+        if 'use_x1_camera' in configs[0] and configs[0]['use_x1_camera']['use']:
             ip = configs[0]['use_x1_camera']['ip']
             port = configs[0]['use_x1_camera']['port']
             self.camera_sink = X1CameraSink(msg_queue=self.msg_queue, cam_queue=self.cam_queue, ip=ip, port=port,
                                             channel='camera',
                                             fileHandler=self.fileHandler)
             self.camera_sink.start()
-
+            x1_camera_flag = True
             print('use x1 algorithm camera')
 
         # self.collectors[ip]['sinks']['video'] = self.camera_sink
@@ -77,7 +78,7 @@ class Hub(Thread):
         for ip in finder.found:
             self.collectors[ip]['sinks'] = {}
             if finder.found[ip]['mac'] == configs[0]['mac']:
-                if 'use_x1_camera' not in configs[0]:
+                if not x1_camera_flag:
                     self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
                                                   fileHandler=self.fileHandler)
                     self.camera_sink.start()
