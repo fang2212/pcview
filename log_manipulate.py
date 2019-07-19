@@ -3,6 +3,7 @@ import os
 import shutil
 import time
 from collections import deque
+import pickle
 from math import *
 
 import cantools
@@ -21,6 +22,7 @@ class bcl:
 
 
 obs_meas_order = ['pos_lat', 'pos_lon', 'vel_lon', 'TTC']
+obs_meas_display = ['y', 'x', 'Vx', 'TTC']
 
 def compose_log(ts, log_type, data):
     tv_s = int(ts)
@@ -547,8 +549,10 @@ def parse_esr_line(line, ctx):
             ctx['esr_ids'].add(item['id'])
             item['pos_lat'] = y
             item['pos_lon'] = x
-        ctx['esr_obs_ep'] = r
-        ctx['esr_obs_ep_ts'] = ts
+        ctx['obs_ep']['esr']['data'] = r
+        ctx['obs_ep']['esr']['ts'] = ts
+        # ctx['esr_obs_ep'] = r
+        # ctx['esr_obs_ep_ts'] = ts
         # print(lines)
         return lines
 
@@ -585,8 +589,10 @@ def parse_x1_line(line, ctx):
             return
         # print(ret)
         lines = ''
-        ctx['x1_obs_ep'] = ret
-        ctx['x1_obs_ep_ts'] = ts
+        # ctx['x1_obs_ep'] = ret
+        # ctx['x1_obs_ep_ts'] = ts
+        ctx['obs_ep']['x1']['data'] = ret
+        ctx['obs_ep']['x1']['ts'] = ts
         for r in ret:
             lines += compose_log(ts, 'x1.{}.{}'.format(r['class'], r['id']),
                                  '{} {} {} {}'.format(r['pos_lat'], r['pos_lon'], (r['vel_lon']),
@@ -622,9 +628,11 @@ def parse_q3_line(line, ctx, can_port='CAN0'):
                 # print('0x{:x}'.format(r['id']), ts)
                 # print(r)
                 lines += compose_log(ts, 'q3.{}.{}'.format(r['class'], r['id']),
-                                     '{} {}'.format(r['pos_lat'], r['pos_lon'], r['vel_lon'], r['TTC']))
-            ctx['q3_obs_ep'] = ret
-            ctx['q3_obs_ep_ts'] = ts
+                                     '{} {} {} {}'.format(r['pos_lat'], r['pos_lon'], r['vel_lon'], r['TTC']))
+            # ctx['q3_obs_ep'] = ret
+            # ctx['q3_obs_ep_ts'] = ts
+            ctx['obs_ep']['q3']['data'] = ret
+            ctx['obs_ep']['q3']['ts'] = ts
             return lines
         else:
             if ret['type'] not in ['obstacle', 'vehicle_state']:
@@ -742,101 +750,103 @@ def spatial_match_obs(obs1, obs2):
         # return pair
 
 
-def find_esr_by_x1(line, ctx):
-    # from tools.match import is_near
-    if not ctx.get('matched_ep'):
-        ctx['matched_ep'] = dict()
-    if 'x1_obs_ep_ts' not in ctx or 'esr_obs_ep_ts' not in ctx:
-        return
-    if ctx.get('esr_obs_ep_ts') == ctx.get('esr_obs_ep_ts_last') \
-            and ctx.get('x1_obs_ep_ts') == ctx.get('x1_obs_ep_ts_last'):
-        return
-    # x1_dt = ctx['x1_obs_ep_ts'] - ctx['x1_obs_ep_ts_last'] if 'x1_obs_ep_ts_last' in ctx else None
-    # esr_dt = ctx['esr_obs_ep_ts'] - ctx['esr_obs_ep_ts_last'] if 'esr_obs_ep_ts_last' in ctx else None
-    # print(ctx['x1_obs_ep_ts'], 'x1 dt:', x1_dt, 'esr dt:', esr_dt)
-    # print('ok')
-    ctx['esr_obs_ep_ts_last'] = ctx['esr_obs_ep_ts']
-    ctx['x1_obs_ep_ts_last'] = ctx['x1_obs_ep_ts']
-    esr = ctx.get('esr_obs_ep')
-    x1 = ctx.get('x1_obs_ep')
-    if not x1 or not esr:
-        return
-
-    # pair_list = dict()
-    esr_cdt = dict()
-    for x1item in x1:
-        if len(esr) > 0:
-            esr_list = sorted(esr, key=lambda x: get_distance(x1item, x))
-            esr_t = esr_list[0]
-            # if x1item['id'] == 2:
-            #     print(x1item['id'], esr_t['id'], get_distance(x1item, esr_t),
-            #           ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'],
-            #           len(x1), len(esr))
-            #     print(x1item, esr_t)
-            # print(get_distance(x1item, esr_t))
-            if get_distance(x1item, esr_t) > 5.0:
-                # print('dist too large.', x1item['id'], esr_t['id'], get_distance(x1item, esr_t))
-                continue
-            if fabs(ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts']) > 0.2:
-                # print('time diff too large.', x1item['id'], esr_t['id'], ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'])
-                continue
-            if esr_t['id'] not in esr_cdt:
-                esr_cdt[esr_t['id']] = dict()
-            esr_cdt[esr_t['id']][x1item['id']] = {'dist': get_distance(x1item, esr_t)}
-    for eid in esr_cdt:
-        # print(eid)
-        dist = 99
-        x1_sel = 0
-        for x1id in esr_cdt[eid]:
-            if esr_cdt[eid][x1id]['dist'] < dist:
-                dist = esr_cdt[eid][x1id]['dist']
-                x1_sel = x1id
-        ts = ctx['x1_obs_ep_ts']
-        pair = {'x1': x1_sel, 'esr': eid}
-        pair.update(esr_cdt[eid][x1_sel])
-        ctx['matched_ep'][ts] = pair
-        # print('matched:', pair)
+# deprecated
+# def find_esr_by_x1(line, ctx):
+#     # from tools.match import is_near
+#     if not ctx.get('matched_ep'):
+#         ctx['matched_ep'] = dict()
+#     if 'x1_obs_ep_ts' not in ctx or 'esr_obs_ep_ts' not in ctx:
+#         return
+#     if ctx.get('esr_obs_ep_ts') == ctx.get('esr_obs_ep_ts_last') \
+#             and ctx.get('x1_obs_ep_ts') == ctx.get('x1_obs_ep_ts_last'):
+#         return
+#     # x1_dt = ctx['x1_obs_ep_ts'] - ctx['x1_obs_ep_ts_last'] if 'x1_obs_ep_ts_last' in ctx else None
+#     # esr_dt = ctx['esr_obs_ep_ts'] - ctx['esr_obs_ep_ts_last'] if 'esr_obs_ep_ts_last' in ctx else None
+#     # print(ctx['x1_obs_ep_ts'], 'x1 dt:', x1_dt, 'esr dt:', esr_dt)
+#     # print('ok')
+#     ctx['esr_obs_ep_ts_last'] = ctx['esr_obs_ep_ts']
+#     ctx['x1_obs_ep_ts_last'] = ctx['x1_obs_ep_ts']
+#     esr = ctx.get('esr_obs_ep')
+#     x1 = ctx.get('x1_obs_ep')
+#     if not x1 or not esr:
+#         return
+#
+#     # pair_list = dict()
+#     esr_cdt = dict()
+#     for x1item in x1:
+#         if len(esr) > 0:
+#             esr_list = sorted(esr, key=lambda x: get_distance(x1item, x))
+#             esr_t = esr_list[0]
+#             # if x1item['id'] == 2:
+#             #     print(x1item['id'], esr_t['id'], get_distance(x1item, esr_t),
+#             #           ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'],
+#             #           len(x1), len(esr))
+#             #     print(x1item, esr_t)
+#             # print(get_distance(x1item, esr_t))
+#             if get_distance(x1item, esr_t) > 5.0:
+#                 # print('dist too large.', x1item['id'], esr_t['id'], get_distance(x1item, esr_t))
+#                 continue
+#             if fabs(ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts']) > 0.2:
+#                 # print('time diff too large.', x1item['id'], esr_t['id'], ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'])
+#                 continue
+#             if esr_t['id'] not in esr_cdt:
+#                 esr_cdt[esr_t['id']] = dict()
+#             esr_cdt[esr_t['id']][x1item['id']] = {'dist': get_distance(x1item, esr_t)}
+#     for eid in esr_cdt:
+#         # print(eid)
+#         dist = 99
+#         x1_sel = 0
+#         for x1id in esr_cdt[eid]:
+#             if esr_cdt[eid][x1id]['dist'] < dist:
+#                 dist = esr_cdt[eid][x1id]['dist']
+#                 x1_sel = x1id
+#         ts = ctx['x1_obs_ep_ts']
+#         pair = {'x1': x1_sel, 'esr': eid}
+#         pair.update(esr_cdt[eid][x1_sel])
+#         ctx['matched_ep'][ts] = pair
+#         # print('matched:', pair)
 
 
 def match_x1_esr(line, ctx):
-    if 'x1_obs_ep_ts' not in ctx or 'esr_obs_ep_ts' not in ctx:
+    if 'x1' not in ctx['obs_ep'] or 'esr' not in ctx['obs_ep']:
         return
     if not ctx.get('matched_ep'):
         ctx['matched_ep'] = dict()
-    if ctx.get('esr_obs_ep_ts') == ctx.get('esr_obs_ep_ts_last') and \
-            ctx.get('x1_obs_ep_ts') == ctx.get('x1_obs_ep_ts_last'):
+    if ctx['obs_ep']['esr'].get('ts') == ctx['obs_ep']['esr'].get('ts_last') and \
+            ctx['obs_ep']['x1'].get('ts') == ctx['obs_ep']['x1'].get('ts_last'):
         return
 
-    if ctx.get('esr_obs_ep_ts') != ctx.get('esr_obs_ep_ts_last'):
-        if 'esr_buff' not in ctx:
-            ctx['esr_buff'] = deque(maxlen=10)
-        esr = ctx.get('esr_obs_ep')
-        ctx['esr_buff'].append((ctx['esr_obs_ep_ts'], esr))
-        ctx['esr_obs_ep_ts_last'] = ctx['esr_obs_ep_ts']
+    # print(ctx['obs_ep']['esr'].keys())
+    if ctx['obs_ep']['esr'].get('ts') != ctx['obs_ep']['esr'].get('ts_last'):
+        # if 'buff' not in ctx:
+        #     ctx['esr_buff'] = deque(maxlen=10)
+        esr = ctx['obs_ep']['esr'].get('data')
+        ctx['obs_ep']['esr']['buff'].append((ctx['obs_ep']['esr']['ts'], esr))
+        ctx['obs_ep']['esr']['ts_last'] = ctx['obs_ep']['esr']['ts']
 
-    if ctx.get('x1_obs_ep_ts') != ctx.get('x1_obs_ep_ts_last'):
-        if 'x1_buff' not in ctx:
-            ctx['x1_buff'] = deque(maxlen=10)
-        x1 = ctx.get('x1_obs_ep')
-        ctx['x1_buff'].append((ctx['x1_obs_ep_ts'], x1))
-        ctx['x1_obs_ep_ts_last'] = ctx['x1_obs_ep_ts']
+    if ctx['obs_ep']['x1'].get('ts') != ctx['obs_ep']['x1'].get('ts_last'):
+        # if 'x1_buff' not in ctx:
+        #     ctx['x1_buff'] = deque(maxlen=10)
+        x1 = ctx['obs_ep']['x1'].get('data')
+        ctx['obs_ep']['x1']['buff'].append((ctx['obs_ep']['x1']['ts'], x1))
+        ctx['obs_ep']['x1']['ts_last'] = ctx['obs_ep']['x1']['ts']
 
     done = False
-    for i in range(len(ctx['x1_buff']) - 1, 0, -1):
-        for j in range(len(ctx['esr_buff']) - 1, 0, -1):
-            ts = ctx['x1_buff'][i][0]
-            ts0 = ctx['esr_buff'][j-1][0]
-            ts1 = ctx['esr_buff'][j][0]
+    for i in range(len(ctx['obs_ep']['x1']['buff']) - 1, 0, -1):
+        for j in range(len(ctx['obs_ep']['esr']['buff']) - 1, 0, -1):
+            ts = ctx['obs_ep']['x1']['buff'][i][0]
+            ts0 = ctx['obs_ep']['esr']['buff'][j-1][0]
+            ts1 = ctx['obs_ep']['esr']['buff'][j][0]
 
             if ts0 < ts <= ts1:
-                x1_obs_t = ctx['x1_buff'][i][1]
+                x1_obs_t = ctx['obs_ep']['x1']['buff'][i][1]
                 # print(len(ctx['x1_buff'][i][1]), len(ctx['esr_buff'][j][1]))
                 if ts - ts0 > ts1 - ts:
                     dt = ts1 - ts
-                    esr_obs_t = ctx['esr_buff'][j][1]
+                    esr_obs_t = ctx['obs_ep']['esr']['buff'][j][1]
                 else:
                     dt = ts - ts0
-                    esr_obs_t = ctx['esr_buff'][j-1][1]
+                    esr_obs_t = ctx['obs_ep']['esr']['buff'][j-1][1]
 
                 if dt > 0.1:
                     done = True
@@ -848,11 +858,11 @@ def match_x1_esr(line, ctx):
                     # break
                 for ret in spatial_match_obs(x1_obs_t, esr_obs_t):
                     x1sel, esrsel = ret
-                    pair = {'x1': x1sel['id'], 'esr': esrsel['id']}
+                    pair = {'x1': x1sel, 'esr': esrsel}
                     # ctx['matched_ep'][ts] = pair
                     if ts not in ctx['matched_ep']:
                         ctx['matched_ep'][ts] = list()
-                    ctx['matched_ep'][ts].append((x1sel, esrsel))
+                    ctx['matched_ep'][ts].append(pair)
                 done = True
                 break
         if done:
@@ -864,47 +874,53 @@ def match_x1_esr(line, ctx):
 
 
 def match_obs(line, ctx):
-    if 'x1_obs_ep_ts' not in ctx or 'esr_obs_ep_ts' not in ctx:
+    if len(ctx['obs_ep']) < 2:  # at least 2 obs are updated
         return
     if not ctx.get('matched_ep'):
+        # print('matched ep')
         ctx['matched_ep'] = dict()
 
     updated = False
 
-    if ctx.get('esr_obs_ep_ts') != ctx.get('esr_obs_ep_ts_last'):
-        if 'esr_buff' not in ctx:
-            ctx['esr_buff'] = deque(maxlen=10)
-        esr = ctx.get('esr_obs_ep')
-        ctx['esr_buff'].append((ctx['esr_obs_ep_ts'], esr))
-        ctx['esr_obs_ep_ts_last'] = ctx['esr_obs_ep_ts']
-        updated = True
+    for obs_type in ['esr', 'x1', 'q3']:
+        if obs_type not in ctx['obs_ep']:
+            continue
+        if ctx['obs_ep'][obs_type].get('ts') != ctx['obs_ep'][obs_type].get('ts_last'):
+            if 'buff' not in ctx['obs_ep'][obs_type]:
+                ctx['obs_ep'][obs_type]['buff'] = deque(maxlen=10)
+            esr = ctx['obs_ep'][obs_type]['data']
+            ctx['obs_ep'][obs_type]['buff'].append((ctx['obs_ep'][obs_type]['ts'], esr))
+            ctx['obs_ep'][obs_type]['ts_last'] = ctx['obs_ep'][obs_type]['ts']
+            updated = True
 
-    if ctx.get('x1_obs_ep_ts') != ctx.get('x1_obs_ep_ts_last'):
-        if 'x1_buff' not in ctx:
-            ctx['x1_buff'] = deque(maxlen=10)
-        x1 = ctx.get('x1_obs_ep')
-        ctx['x1_buff'].append((ctx['x1_obs_ep_ts'], x1))
-        ctx['x1_obs_ep_ts_last'] = ctx['x1_obs_ep_ts']
-        updated = True
+    # if ctx.get('x1_obs_ep_ts') != ctx.get('x1_obs_ep_ts_last'):
+    #     if 'x1_buff' not in ctx:
+    #         ctx['x1_buff'] = deque(maxlen=10)
+    #     x1 = ctx.get('x1_obs_ep')
+    #     ctx['x1_buff'].append((ctx['x1_obs_ep_ts'], x1))
+    #     ctx['x1_obs_ep_ts_last'] = ctx['x1_obs_ep_ts']
+    #     updated = True
 
     if not updated:
         return
+    # print(ctx['obs_ep']['q3'])
     done = False
-    for i in range(len(ctx['x1_buff']) - 1, 0, -1):
-        for j in range(len(ctx['esr_buff']) - 1, 0, -1):
-            ts = ctx['x1_buff'][i][0]
-            ts0 = ctx['esr_buff'][j-1][0]
-            ts1 = ctx['esr_buff'][j][0]
+    for i in range(len(ctx['obs_ep']['x1']['buff']) - 1, 0, -1):
+        ts = ctx['obs_ep']['x1']['buff'][i][0]
+        for j in range(len(ctx['obs_ep']['esr']['buff']) - 1, 0, -1):
+
+            ts0 = ctx['obs_ep']['esr']['buff'][j-1][0]
+            ts1 = ctx['obs_ep']['esr']['buff'][j][0]
 
             if ts0 < ts <= ts1:
-                x1_obs_t = ctx['x1_buff'][i][1]
+                x1_obs_t = ctx['obs_ep']['x1']['buff'][i][1]
                 # print(len(ctx['x1_buff'][i][1]), len(ctx['esr_buff'][j][1]))
                 if ts - ts0 > ts1 - ts:
                     dt = ts1 - ts
-                    esr_obs_t = ctx['esr_buff'][j][1]
+                    esr_obs_t = ctx['obs_ep']['esr']['buff'][j][1]
                 else:
                     dt = ts - ts0
-                    esr_obs_t = ctx['esr_buff'][j-1][1]
+                    esr_obs_t = ctx['obs_ep']['esr']['buff'][j-1][1]
 
                 if dt > 0.1:
                     done = True
@@ -916,17 +932,60 @@ def match_obs(line, ctx):
                     # break
                 for ret in spatial_match_obs(x1_obs_t, esr_obs_t):
                     x1sel, esrsel = ret
-                    pair = {'x1': x1sel['id'], 'esr': esrsel['id']}
+                    candidate = {'esr': {'id': esrsel['id'], 'dist': get_distance(x1sel, esrsel)}}
+                    # ctx['matched_ep'][ts] = pair
+                    # print(pair)
+                    if ts not in ctx['matched_ep']:
+                        ctx['matched_ep'][ts] = dict()
+                    if x1sel['id'] not in ctx['matched_ep'][ts]:
+                        ctx['matched_ep'][ts][x1sel['id']] = dict()
+                    ctx['matched_ep'][ts][x1sel['id']].update(candidate)
+                    # print(len(ctx['matched_ep'][ts]))
+                    done = True
+                break
+    # for item in ctx['matched_ep'][ts]:
+    #     print(item)
+    # print(ctx['obs_ep']['x1']['buff'])
+    for i in range(len(ctx['obs_ep']['x1']['buff']) - 1, 0, -1):
+        ts = ctx['obs_ep']['x1']['buff'][i][0]
+        for j in range(len(ctx['obs_ep']['q3']['buff']) - 1, 0, -1):
+            ts0 = ctx['obs_ep']['q3']['buff'][j - 1][0]
+            ts1 = ctx['obs_ep']['q3']['buff'][j][0]
+
+            if ts0 < ts <= ts1:
+                x1_obs_t = ctx['obs_ep']['x1']['buff'][i][1]
+                # print(len(ctx['x1_buff'][i][1]), len(ctx['q3_buff'][j][1]))
+                if ts - ts0 > ts1 - ts:
+                    dt = ts1 - ts
+                    q3_obs_t = ctx['obs_ep']['q3']['buff'][j][1]
+                else:
+                    dt = ts - ts0
+                    q3_obs_t = ctx['obs_ep']['q3']['buff'][j - 1][1]
+
+                if dt > 0.1:
+                    done = True
+                    break
+                # ret = spatial_match_obs(x1_obs_t, q3_obs_t)
+                # if not ret:
+                #     done = True
+                # print('no spatial match', len(x1_obs_t), len(q3_obs_t), ts - ts0, ts1 - ts)
+                # break
+                for ret in spatial_match_obs(x1_obs_t, q3_obs_t):
+                    x1sel, q3sel = ret
+                    candidate = {'q3': {'id': q3sel['id'], 'dist':get_distance(x1sel, q3sel)}}
                     # ctx['matched_ep'][ts] = pair
                     if ts not in ctx['matched_ep']:
-                        ctx['matched_ep'][ts] = list()
-                    ctx['matched_ep'][ts].append((x1sel, esrsel))
-                done = True
-                break
+                        ctx['matched_ep'][ts] = dict()
+                    # found = False
+                    if x1sel['id'] not in ctx['matched_ep'][ts]:
+                        ctx['matched_ep'][ts][x1sel['id']] = dict()
+                    ctx['matched_ep'][ts][x1sel['id']].update(candidate)
+                    # if not found:
+                    #     ctx['matched_ep'][ts].append(pair)
+                    done = True
+                # break
         if done:
             break
-
-
 
 # deprecated
 # def pair_x1_esr(line, ctx):
@@ -1178,8 +1237,6 @@ def calc_delta_x1_esr_2(line, ctx):
                 # print('invalid 5')
                 return
 
-
-
             # if x1_id not in ctx['matched']:
             #     ctx['matched'][x1_id] = list()
             # ctx['matched'][x1_id].append(esr_id)
@@ -1297,6 +1354,89 @@ def calc_delta_x1_esr_3(line, ctx):
         if not ctx.get('start_ts'):
             ctx['start_ts'] = ts
         return compose_log(ts, 'match.x1_esr.{}.{}'.format(x1_id, esr_id), '{} {} {} {} {} {}'.format(
+            dx, dy, dvx, dx_ratio * 100, dy_ratio * 100, dvx_ratio * 100))
+
+
+def calc_delta(line, ctx):
+    type1, type2 = ctx.get('delta_names')
+    obj1 = type1+'_obj'
+    obj2 = type2+'_obj'
+    cols = line.split(' ')
+    ts = float(cols[0]) + float(cols[1]) / 1000000
+    if type1+'.' in cols[2]:
+        id = int(cols[2].split('.')[-1])
+        if id != ctx.get(type1+'_tgt'):
+            return
+
+        y = float(cols[3])
+        x = float(cols[4])
+        vlon_rel = float(cols[5])
+        ttc = float(cols[6])
+        # range_rate =
+        ctx[obj1] = {'ts': ts, 'id': id, 'pos_lat': y, 'pos_lon': x, 'vel_lon': vlon_rel, 'ttc': ttc}
+    elif type2+'.' in cols[2]:
+        if 'vehstate' in cols[2]:
+            return
+        id = int(cols[2].split('.')[-1])
+        if id != ctx.get(type2+'_tgt'):
+            return
+
+        y = float(cols[3])
+        x = float(cols[4])
+        vlon_rel = float(cols[5])
+        ttc = float(cols[6])
+        ctx[obj2] = {'ts': ts, 'id': id, 'pos_lat': y, 'pos_lon': x, 'vel_lon': vlon_rel, 'ttc': ttc}
+    else:
+        return
+
+    if obj1 in ctx and obj2 in ctx:
+        obs1id = ctx[obj1]['id']
+        obs2id = ctx[obj2]['id']
+        if obs2id not in ctx['match_tree'][obs1id]:
+            return
+        if ctx['match_tree'][obs1id][obs2id]['count'] <= 1:
+            return
+        if ts > ctx['match_tree'][obs1id][obs2id]['end_ts']:
+            return
+        if ts < ctx['match_tree'][obs1id][obs2id]['start_ts']:
+            return
+        # print(ctx[obj1], ctx[obj2])
+        if fabs(ctx[obj1]['ts'] - ctx[obj2]['ts']) > 0.2:
+            return
+
+        # if obs1id not in ctx['matched']:
+        #     ctx['matched'][obs1id] = list()
+        # ctx['matched'][obs1id].append(obs2id)
+        # ctx['matched']['esr'].add(ctx[obj2]['id'])
+        if not ctx.get('dx'):
+            ctx['dx'] = []
+        if not ctx.get('dy'):
+            ctx['dy'] = []
+        if not ctx.get('dvx'):
+            ctx['dvx'] = []
+        if not ctx.get('pct_dx'):
+            ctx['pct_dx'] = []
+        if not ctx.get('pct_dy'):
+            ctx['pct_dy'] = []
+        if not ctx.get('pct_dvx'):
+            ctx['pct_dvx'] = []
+        # print('matched.', ctx[obj1], ctx[obj2])
+        dx = ctx[obj1]['pos_lon'] - ctx[obj2]['pos_lon']
+        dx_ratio = fabs(dx / ctx[obj2]['pos_lon']) if ctx[obj2]['pos_lon'] != 0 else 0
+        dy = ctx[obj1]['pos_lat'] - ctx[obj2]['pos_lat']
+        dy_ratio = fabs(dy / ctx[obj2]['pos_lat']) if ctx[obj2]['pos_lat'] != 0 else 0
+        dvx = ctx[obj1]['vel_lon'] - ctx[obj2]['vel_lon']
+        dvx_ratio = fabs(dvx / ctx[obj2]['vel_lon']) if ctx[obj2]['vel_lon'] != 0 else 0
+        ctx['dx'].append(dx)
+        ctx['dy'].append(dy)
+        ctx['dvx'].append(dvx)
+        ctx['pct_dx'].append(dx_ratio * 100)
+        ctx['pct_dy'].append(dy_ratio * 100)
+        ctx['pct_dvx'].append(dvx_ratio * 100)
+        ctx['end_ts'] = ts
+        if not ctx.get('start_ts'):
+            ctx['start_ts'] = ts
+        return compose_log(ts, 'match.{}_{}.{}.{}'.format(type1, type2, obs1id, obs2id), '{} {} {} {} {} {}'.format(
             dx, dy, dvx, dx_ratio * 100, dy_ratio * 100, dvx_ratio * 100))
 
 # deprecated
@@ -1431,10 +1571,325 @@ def collect_result(dir_name):
             print('dir not found:', src_dir)
 
 
+def get_matches_from_pairs(matched_ep, names):
+    type1, type2 = names
+    matches = dict()
+    # match_file = open(os.path.join(analysis_dir, 'log_match.txt'), 'w')
+    for ts in sorted(matched_ep):
+        # print(m, matched_ep[m])
+        for obs1id in matched_ep[ts]:
+            # x1id = pair['x1']['id']
+            entry = matched_ep[ts][obs1id]
+            obs2id = entry[type2]['id'] if type2 in entry else None
+            # q3id = entry['q3']['id'] if 'q3' in entry else None
+            # obs2id = ['id']
+            # obs1id = pair.get()
+            if not obs2id:
+                continue
+            if obs1id not in matches:
+                matches[obs1id] = dict()
+            if obs2id not in matches[obs1id]:
+                matches[obs1id][obs2id] = dict()
+            if 'start_ts' not in matches[obs1id][obs2id]:
+                matches[obs1id][obs2id]['start_ts'] = ts
+            else:
+                matches[obs1id][obs2id]['end_ts'] = ts
+            if 'count' not in matches[obs1id][obs2id]:
+                matches[obs1id][obs2id]['count'] = 0
+            if 'dist_mean' not in matches[obs1id][obs2id]:
+                matches[obs1id][obs2id]['dist_mean'] = 0
+            dist = entry[type2]['dist']
+            matches[obs1id][obs2id]['count'] += 1
+            matches[obs1id][obs2id]['dist_mean'] += dist
+            # print(ts, 'x1', obs1id, 'esr', obs2id)
+    # matches[obs1id][obs2id]['dist_mean'] /= matches[obs1id][obs2id]['count']
+
+    # screen matches
+    for id1 in list(matches):
+        for id2 in list(matches[id1]):
+            entry = matches[id1][id2]
+            matches[id1][id2]['dist_mean'] /= entry['count']
+            if entry['count'] < 20:
+                del matches[id1][id2]
+                continue
+            if entry['dist_mean'] > 5.0:
+                del matches[id1][id2]
+                continue
+            sts = entry.get('start_ts')
+            ets = entry.get('end_ts')
+            if not sts or not ets or ets - sts < 1.0:
+                del matches[id1][id2]
+                continue
+    return matches
+
+
+def get_trajectory_from_matches(matches, types):
+    trj_list = list()
+    type1, type2 = types
+    # match_dict = {}
+    for obs1id in matches:
+        # if obs1id == 43:
+        #     print(matches[obs1id])
+        if len(matches[obs1id]) == 1:
+            obs2id = list(matches[obs1id])[0]
+            entry = matches[obs1id][obs2id]
+            trj = {'obs': {type1: [obs1id], type2: [obs2id]}, **entry}
+            trj_list.append(trj)
+            continue
+        discard_list = list()
+        for idx, obs2id1 in enumerate(sorted(matches[obs1id])):
+            for obs2id2 in sorted(matches[obs1id])[idx+1:]:
+                entry1 = matches[obs1id][obs2id1]
+                entry2 = matches[obs1id][obs2id2]
+                sts1 = entry1.get('start_ts')
+                ets1 = entry1.get('end_ts')
+                sts2 = entry2.get('start_ts')
+                ets2 = entry2.get('end_ts')
+                cnt1 = entry1.get('count')
+                cnt2 = entry2.get('count')
+
+                if not (sts1 and sts2 and ets2 and ets1 and cnt1 and cnt2):
+                    continue
+
+                # trj = None
+                if sts1 <= ets2 and sts2 <= ets1:  # overlapped
+                    if entry1['dist_mean'] > entry2['dist_mean'] + 1.0:
+                        # trj = {'obs': {type1: [obs1id], type2: [obs2id2]}, **entry2}
+                        discard_list.append(obs2id1)
+                    elif entry2['dist_mean'] > entry1['dist_mean'] + 1.0:
+                        # trj = {'obs': {type1: [obs1id], type2: [obs2id1]}, **entry1}
+                        discard_list.append(obs2id2)
+                    # trj_list.append(trj)
+
+                # elif sts1-ets2 < 0.8 or sts2-ets1 < 0.8:  # no overlap
+                    # trj = {'obs': {type1: [obs1id], type2: [obs2id1, obs2id2]},
+                    #        'start_ts': min(sts1, sts2), 'end_ts': max(ets1, ets2),
+                    #        'count': cnt1+cnt2,
+                    #        'dist_mean': (entry1['dist_mean']*cnt1+entry2['dist_mean']*cnt2)/(cnt1+cnt2)}
+                    # trj_list.append(trj)
+
+                # if not trj:
+                    # trj = {'obs': {type1: [obs1id], type2: [obs2id2]}, **entry2}
+                    # trj_list.append(trj)
+                    # trj = {'obs': {type1: [obs1id], type2: [obs2id1]}, **entry1}
+                    # trj_list.append(trj)
+                # if obs1id == 43:
+                #     print('hahahahahahahah', trj)
+            # match_dict['{}_{}'.format(obs1id, obs2id)] = entry
+        for obs2id in matches[obs1id]:
+            if obs2id in discard_list:
+                continue
+            trj = {'obs': {type1: [obs1id], type2: [obs2id]}, **(matches[obs1id][obs2id])}
+            # print(trj)
+            trj_list.append(trj)
+    return trj_list
+
+
+def get_traj_from_pairs(matched_ep, names):
+    matches = get_matches_from_pairs(matched_ep, names)
+    trj_list = get_trajectory_from_matches(matches, names)
+    return trj_list
+
+    # match_ids = list(match_dict)
+    # for idx, ids1 in enumerate(match_ids):
+    #     for ids2 in match_ids[idx:]:
+    #         obs1id1, obs2id1 = map(int, ids1.split('_'))
+    #         obs1id2, obs2id2 = map(int, ids2.split('_'))
+    #         sts1 = match_dict[ids1]['start_ts']
+    #         ets1 = match_dict[ids1]['end_ts']
+    #         sts2 = match_dict[ids2]['start_ts']
+    #         ets2 = match_dict[ids2]['end_ts']
+    #         if sts1 > ets2 or ets1 < sts2:  # no overlap
+    #             if obs1id1 == obs1id2 or obs2id1 == obs2id2:
+    #                 trj.append({''})
+
+
+def merge_trajectory(trj_list1, trj_list2):
+    trj_list = list()
+    for trj1 in trj_list1:
+        for trj2 in trj_list2:
+            if trj1['obs']['x1'][0] == trj2['obs']['x1'][0]:
+                sts1 = trj1['start_ts']
+                ets1 = trj1['end_ts']
+                sts2 = trj2['start_ts']
+                ets2 = trj2['end_ts']
+                # print(trj1['obs'])
+                # print(trj2['obs'])
+                if sts1 <= ets2 and sts2 <= ets1:
+                    a = dict()
+                    a.update(trj1['obs'])
+                    a.update(trj2['obs'])
+                    # print(obs)
+                    trj = {'obs': a,
+                           'start_ts': min(sts1, sts2), 'end_ts': max(ets1, ets2),
+                           'count': trj1['count'] + trj2['count'],
+                           'dist_mean': (trj1['dist_mean'] * trj1['count'] + trj2['dist_mean'] * trj2['count']) / (trj1['count'] + trj2['count'])}
+                    trj_list.append(trj)
+                else:
+                    trj_list.append(trj1)
+                    trj_list.append(trj2)
+    return trj_list
+
+
+def chart_by_trj(trj_list, r0, ts0, vis=False):
+    for trj in trj_list:
+        obs_list = list()
+        sts = trj.get('start_ts')
+        ets = trj.get('end_ts')
+        cnt = trj.get('count')
+        analysis_dir = os.path.dirname(r0)
+        # ts0 = ctx.get('ts0') or 0
+        curve_items = list()
+        # print(trj['obs'])
+        for type in sorted(trj['obs'], reverse=True):
+            curve_items.append('{}{}'.format(type, trj['obs'][type]).replace(' ', ''))
+            for id in trj['obs'][type]:
+                pattern = '{}.*.{}'.format(type, id)
+                obs_list.append(pattern)
+        print(bcl.OKBL + 'matched(x1/esr):' + bcl.ENDC, trj)
+        fig = visual.get_fig()
+        for idx, item in enumerate(obs_meas_display):
+            samples = {x: {item: idx} for x in obs_list}
+            visual.scatter(fig, r0, samples, item, ts0, sts, ets, vis)
+        fig.savefig(os.path.join(analysis_dir, '_'.join(curve_items) + '.png'), dpi=300)
+        visual.close_fig(fig)
+        # entry = matches_esr[x1id][esrid]
+        # matches_esr[x1id][esrid]['dist_mean'] /= matches_esr[x1id][esrid]['count']
+        # ctx['x1_tgt'] = x1id
+        # ctx['esr_tgt'] = esrid
+        # continue
+
+
+def process_error_by_matches(matches, names, r0, ts0, ctx, vis=False):
+    type1, type2 = names
+    for obs1id in matches:
+        for obs2id in matches[obs1id]:
+            entry = matches[obs1id][obs2id]
+            analysis_dir = os.path.dirname(r0)
+            ctx[type1 + '_tgt'] = obs1id
+            ctx[type2 + '_tgt'] = obs2id
+            ctx['delta_names'] = names
+            ctx['match_tree'] = matches
+            r1 = process_log(r0, [calc_delta], ctx, output=os.path.join(analysis_dir, '{}[{}]_{}[{}]_diff.txt'.format(type1, obs1id, type2, obs2id)))
+            sts = entry.get('start_ts')
+            ets = entry.get('end_ts')
+            # cnt = entry.get('count')
+
+            fig = visual.get_fig()
+            samples = {'match.{}_{}.{}.{}'.format(type1, type2, obs1id, obs2id): {'dx': 0, 'dy': 1, 'dvx': 2}}
+            visual.scatter(fig, r1, samples, 'error', ts0, sts, ets, vis)
+            samples = {
+                'match.{}_{}.{}.{}'.format(type1, type2, obs1id, obs2id): {'dx_ratio': 3, 'dy_ratio': 4,
+                                                                           'dvx_ratio': 5}}
+            visual.scatter(fig, r1, samples, 'error(percent)', ts0, sts, ets, vis)
+
+            pickle.dump(fig, open(
+                os.path.join(analysis_dir, '{}[{}]_{}[{}]_error.pyfig'.format(type1, obs1id, type2, obs2id)), 'wb'))
+            fig.savefig(os.path.join(analysis_dir, '{}[{}]_{}[{}]_error.png'.format(type1, obs1id, type2, obs2id)),
+                        dpi=300)
+            # fig.savefig(os.path.join(analysis_dir, '{}_error.svg'.format(d)), dpi=300)
+            visual.close_fig(fig)
+            err_file = os.path.join(analysis_dir, '{}[{}]_{}[{}]_error.csv'.format(type1, obs1id, type2, obs2id))
+            print('generating error analysis', err_file)
+            rmse_x = np.sqrt(((np.array(ctx['dx'])) ** 2).mean())
+            pct_dx = np.mean(ctx['pct_dx'])
+            rmse_y = np.sqrt(((np.array(ctx['dy'])) ** 2).mean())
+            pct_dy = np.mean(ctx['pct_dy'])
+            rmse_vx = np.sqrt(((np.array(ctx['dvx'])) ** 2).mean())
+            pct_dvx = np.mean(ctx['pct_dvx'])
+            ctx['dx'].clear()
+            ctx['dy'].clear()
+            ctx['dvx'].clear()
+            ctx['pct_dx'].clear()
+            ctx['pct_dy'].clear()
+            ctx['pct_dvx'].clear()
+            with open(err_file, 'w+') as wf:
+                wf.write('Param\tRMSE\tError_percent\n')
+                wf.write('x(m)\t{}\t{:.2f}%\n'.format(rmse_x, pct_dx))
+                wf.write('y(m)\t{}\t{:.2f}%\n'.format(rmse_y, pct_dy))
+                wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
+
+
+def process_by_matches(matches, names, r0, ts0, ctx, vis=False):
+    type1, type2 = names
+    for obs1id in matches:
+        for obs2id in matches[obs1id]:
+            entry = matches[obs1id][obs2id]
+            analysis_dir = os.path.dirname(r0)
+            ctx[type1+'_tgt'] = obs1id
+            ctx[type2+'_tgt'] = obs2id
+            r1 = process_log(r0, [calc_delta_x1_esr_3], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
+            sts = entry.get('start_ts')
+            ets = entry.get('end_ts')
+            cnt = entry.get('count')
+            if not sts or not ets or not cnt:
+                print(bcl.BOLD + 'discard match:' + bcl.ENDC, obs1id, obs2id, entry)
+            if cnt < 20 or ets - sts < 1.0:
+                print(bcl.BOLD + 'discard match:' + bcl.ENDC, obs1id, obs2id, entry)
+                continue
+            print(bcl.OKBL + 'matched(x1/esr):' + bcl.ENDC, obs1id, obs2id, entry)
+            fig = visual.get_fig()
+            jlist = []
+            samples = {'{}.obj.{}'.format(type1, obs2id): {'x': 1}, '{}.*.{}'.format(type2, obs1id): {'x': 1}}
+            jlist.append(samples)
+            visual.scatter(fig, r0, samples, 'x(m)', ts0, sts, ets, vis)
+            samples = {'{}.obj.{}'.format(type1, obs2id): {'y': 0}, '{}.*.{}'.format(type2, obs1id): {'y': 0}}
+            jlist.append(samples)
+            visual.scatter(fig, r0, samples, 'y(m)', ts0, sts, ets, vis)
+            samples = {'{}.obj.{}'.format(type1, obs2id): {'Vx': 2}, '{}.*.{}'.format(type2, obs1id): {'Vx': 2}}
+            jlist.append(samples)
+            visual.scatter(fig, r0, samples, 'Vx(m/s)', ts0, sts, ets, vis)
+            samples = {'{}.obj.{}'.format(type1, obs2id): {'TTC_m': 3}, '{}.*.{}'.format(type2, obs1id): {'TTC': 3}}
+            visual.scatter(fig, r0, samples, 'TTC(s)', ts0, sts, ets, False)
+            jlist.append(samples)
+            pickle.dump(fig, open(os.path.join(analysis_dir, '{}[{}]_{}[{}]_xyvx.pyfig'.format(type1, obs1id, type2, obs2id)), 'wb'))
+            json.dump(jlist, open(os.path.join(analysis_dir, '{}[{}]_{}[{}]_xyvx.json'.format(type1, obs1id, type2, obs2id)), 'w+'),
+                      indent=True)
+            fig.savefig(os.path.join(analysis_dir, '{}[{}]_{}[{}]_xyvx.png'.format(type1, obs1id, type2, obs2id)), dpi=300)
+            # fig.savefig(os.path.join(analysis_dir, '{}_xyvx.svg'.format(d)), dpi=300)
+            visual.close_fig(fig)
+
+            # if 'dx' not in ctx:
+            #     print('error analysis not calculated. Abort plotting.')
+            #     return
+
+            fig = visual.get_fig()
+            samples = {'match.{}_{}.{}.{}'.format(type1, type2, obs1id, obs2id): {'dx': 0, 'dy': 1, 'dvx': 2}}
+            visual.scatter(fig, r1, samples, 'error', ts0, sts, ets, vis)
+            samples = {
+                'match.{}_{}.{}.{}'.format(type1, type2, obs1id, obs2id): {'dx_ratio': 3, 'dy_ratio': 4, 'dvx_ratio': 5}}
+            visual.scatter(fig, r1, samples, 'error(percent)', ts0, sts, ets, vis)
+
+            pickle.dump(fig, open(os.path.join(analysis_dir, '{}[{}]_{}[{}]_error.pyfig'.format(type1, obs1id, type2, obs2id)), 'wb'))
+            fig.savefig(os.path.join(analysis_dir, '{}[{}]_{}[{}]_error.png'.format(type1, obs1id, type2, obs2id)), dpi=300)
+            # fig.savefig(os.path.join(analysis_dir, '{}_error.svg'.format(d)), dpi=300)
+            visual.close_fig(fig)
+            err_file = os.path.join(analysis_dir, '{}[{}]_{}[{}]_error.csv'.format(type1, obs1id, type2, obs2id))
+            print('generating error analysis', err_file)
+            rmse_x = np.sqrt(((np.array(ctx['dx'])) ** 2).mean())
+            pct_dx = np.mean(ctx['pct_dx'])
+            rmse_y = np.sqrt(((np.array(ctx['dy'])) ** 2).mean())
+            pct_dy = np.mean(ctx['pct_dy'])
+            rmse_vx = np.sqrt(((np.array(ctx['dvx'])) ** 2).mean())
+            pct_dvx = np.mean(ctx['pct_dvx'])
+            ctx['dx'].clear()
+            ctx['dy'].clear()
+            ctx['dvx'].clear()
+            ctx['pct_dx'].clear()
+            ctx['pct_dy'].clear()
+            ctx['pct_dvx'].clear()
+            with open(err_file, 'w+') as wf:
+                wf.write('Param\tRMSE\tError_percent\n')
+                wf.write('x(m)\t{}\t{:.2f}%\n'.format(rmse_x, pct_dx))
+                wf.write('y(m)\t{}\t{:.2f}%\n'.format(rmse_y, pct_dy))
+                wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
+
+
 def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
-    import pickle
+
     # log = os.path.join(dir_name, 'log.txt')
     ctx = dict()
+    ctx['obs_ep'] = {'x1': {'buff': deque(maxlen=10)}, 'esr': {'buff': deque(maxlen=10)}, 'q3': {'buff': deque(maxlen=10)}}
     if not os.path.exists(log):
         print(bcl.FAIL + 'Invalid data path. {} does not exist.'.format(log) + bcl.ENDC)
         return
@@ -1476,25 +1931,69 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
     print('esr_ids:', ctx['esr_ids'])
     print('ts0:', ts0)
 
-    matches = dict()
-    # match_file = open(os.path.join(analysis_dir, 'log_match.txt'), 'w')
-    for ts in sorted(ctx['matched_ep']):
-        # print(m, ctx['matched_ep'][m])
-        for pair in ctx['matched_ep'][ts]:
-            x1id = pair[0]['id']
-            esrid = pair[1]['id']
-            if x1id not in matches:
-                matches[x1id] = dict()
-            if esrid not in matches[x1id]:
-                matches[x1id][esrid] = dict()
-            if 'start_ts' not in matches[x1id][esrid]:
-                matches[x1id][esrid]['start_ts'] = ts
-            else:
-                matches[x1id][esrid]['end_ts'] = ts
-            if 'count' not in matches[x1id][esrid]:
-                matches[x1id][esrid]['count'] = 0
-            matches[x1id][esrid]['count'] += 1
-    ctx['match_tree'] = matches
+    matches_esr = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'esr'))
+    # ctx['match_tree'] = matches_esr
+    matches_q3 = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'q3'))
+
+    # matches_comb = dict()
+    # for ts in sorted(ctx['matched_ep']):
+    #     for x1id in ctx['matched_ep'][ts]:
+    #         entry = ctx['matched_ep'][ts][x1id]
+    #         q3id = entry['q3']['id'] if 'q3' in entry else None
+    #         esrid = entry['esr']['id'] if 'esr' in entry else None
+    #         if not q3id or not esrid:
+    #             continue
+    #         if x1id not in matches_comb:
+    #             matches_comb[x1id] = dict()
+    #         q3esr = '{}_{}'.format(q3id, esrid)
+    #         if q3esr not in matches_comb[x1id]:
+    #             matches_comb[x1id][q3esr] = dict()
+    #         if 'start_ts' not in matches_comb[x1id][q3esr]:
+    #             matches_comb[x1id][q3esr]['start_ts'] = ts
+    #         else:
+    #             matches_comb[x1id][q3esr]['end_ts'] = ts
+    #         if 'count' not in matches_comb[x1id][q3esr]:
+    #             matches_comb[x1id][q3esr]['count'] = 0
+    #         matches_comb[x1id][q3esr]['count'] += 1
+
+    # print(matches_q3)
+    # print(matches_esr)
+    trj_list_esr = get_trajectory_from_matches(matches_esr, ('x1', 'esr'))
+    trj_list_q3 = get_trajectory_from_matches(matches_q3, ('x1', 'q3'))
+    trj_list_comb = merge_trajectory(trj_list_esr, trj_list_q3)
+    print('trj_esr:')
+    for trj in trj_list_esr:
+        print(trj)
+    print('trj_q3:')
+    for trj in trj_list_q3:
+        print(trj)
+    print('trj_comb:')
+    for trj in trj_list_comb:
+        print(trj)
+    # print(trj_list_comb)
+    chart_by_trj(trj_list_comb, r0, ts0)
+    process_error_by_matches(matches_esr, ('x1', 'esr'), r0, ts0, ctx)
+    process_error_by_matches(matches_q3, ('x1', 'q3'), r0, ts0, ctx)
+
+    # matches_comb = dict()
+    # for x1id_1 in matches_esr:
+    #     for x1id_2 in matches_q3:
+    #         if x1id_1 == x1id_2:
+    #             for esrid in list(matches_esr[x1id_1]):
+    #                 esr = matches_esr[x1id_1][esrid]
+    #                 for q3id in list(matches_q3[x1id_2]):
+    #                     q3 = matches_q3[x1id_2][q3id]
+    #                     if esr['end_ts'] > q3['start_ts'] and esr['start_ts'] < q3['end_ts']:  # overlap
+    #
+    #                         matches_comb[x1id_1] = {'esr': esrid, 'q3': q3id,
+    #                                                 'start_ts': min(q3['start_ts'], esr['start_ts']),
+    #                                                 'end_ts': max(q3['end_ts'], esr['start_ts']),
+    #                                                 'count': max(q3['count'], esr['count'])}
+    #                         print(x1id_1, esrid, q3id, min(q3['count'], esr['count']))
+                            # del matches_esr[x1id_1][esrid]
+                            # del matches_q3[x1id_2][q3id]
+
+
     # r1 = process_log(r0, [calc_delta_x1_esr], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
     # r1 = calc_delta_x1_esr_1(ctx['matched_ep'], analysis_dir)
     # print('x1_targets:', x1_target)
@@ -1502,75 +2001,49 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
     # if len(x1_target) == 0:
     #     print('No x1 target selected, abort plotting.')
     #     return
-    for x1id in matches:
-        for esrid in matches[x1id]:
+
+    # process_by_matches(matches_esr, ('x1', 'esr'), r0, ts0, ctx)
+    # process_by_matches(matches_q3, ('x1', 'q3'), r0, ts0, ctx)
+
+    """
+    for x1id in matches_comb:
+        for q3esr in matches_comb[x1id]:
+            q3id = int(q3esr.split('_')[0])
+            esrid = int(q3esr.split('_')[1])
+            entry = matches_comb[x1id][q3esr]
             ctx['x1_tgt'] = x1id
-            ctx['esr_tgt'] = esrid
+            ctx['esr_tgt'] = q3id
             r1 = process_log(r0, [calc_delta_x1_esr_3], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
-            sts = matches[x1id][esrid].get('start_ts')
-            ets = matches[x1id][esrid].get('end_ts')
-            cnt = matches[x1id][esrid].get('count')
+            sts = entry.get('start_ts')
+            ets = entry.get('end_ts')
+            cnt = entry.get('count')
             if not sts or not ets or not cnt:
-                print(bcl.BOLD + 'discard match:' + bcl.ENDC, x1id, esrid, matches[x1id][esrid])
+                print(bcl.BOLD + 'discard match:' + bcl.ENDC, x1id, q3id, esrid, entry)
             if cnt < 10 or ets - sts < 1.0:
-                print(bcl.BOLD + 'discard match:' + bcl.ENDC, x1id, esrid, matches[x1id][esrid])
+                print(bcl.BOLD + 'discard match:' + bcl.ENDC, x1id, q3id, esrid, entry)
                 continue
-            print(bcl.OKBL + 'matched(x1/esr):' + bcl.ENDC, x1id, esrid, matches[x1id][esrid])
+            print(bcl.OKBL + 'matched(x1/esr/q3):' + bcl.ENDC, x1id, q3id, esrid, entry)
             fig = visual.get_fig()
             jlist = []
-            samples = {'esr.obj.{}'.format(esrid): {'x': 1}, 'x1.*.{}'.format(x1id): {'x': 1}}
+            samples = {'esr.obj.{}'.format(esrid): {'x': 1}, 'x1.*.{}'.format(x1id): {'x': 1}, 'q3.*.{}'.format(q3id): {'x': 1}}
             jlist.append(samples)
             visual.scatter(fig, r0, samples, 'x(m)', ts0, sts, ets, vis)
-            samples = {'esr.obj.{}'.format(esrid): {'y': 0}, 'x1.*.{}'.format(x1id): {'y': 0}}
+            samples = {'esr.obj.{}'.format(esrid): {'y': 0}, 'x1.*.{}'.format(x1id): {'y': 0}, 'q3.*.{}'.format(q3id): {'y': 0}}
             jlist.append(samples)
             visual.scatter(fig, r0, samples, 'y(m)', ts0, sts, ets, vis)
-            samples = {'esr.obj.{}'.format(esrid): {'Vx': 2}, 'x1.*.{}'.format(x1id): {'Vx': 2}}
+            samples = {'esr.obj.{}'.format(esrid): {'Vx': 2}, 'x1.*.{}'.format(x1id): {'Vx': 2}, 'q3.*.{}'.format(q3id): {'Vx': 2}}
             jlist.append(samples)
             visual.scatter(fig, r0, samples, 'Vx(m/s)', ts0, sts, ets, vis)
-            samples = {'esr.obj.{}'.format(esrid): {'TTC_m': 3}, 'x1.*.{}'.format(x1id): {'TTC': 3}}
+            samples = {'esr.obj.{}'.format(esrid): {'TTC_m': 3}, 'x1.*.{}'.format(x1id): {'TTC': 3}, 'q3.*.{}'.format(q3id): {'TTC': 3}}
             visual.scatter(fig, r0, samples, 'TTC(s)', ts0, sts, ets, False)
             jlist.append(samples)
-            pickle.dump(fig, open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_xyvx.pyfig'.format(x1id, esrid)), 'wb'))
-            json.dump(jlist, open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_xyvx.json'.format(x1id, esrid)), 'w+'),
+            pickle.dump(fig, open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_q3[{}]_xyvx.pyfig'.format(x1id, esrid, q3id)), 'wb'))
+            json.dump(jlist, open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_q3[{}]_xyvx.json'.format(x1id, esrid, q3id)), 'w+'),
                       indent=True)
-            fig.savefig(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_xyvx.png'.format(x1id, esrid)), dpi=300)
+            fig.savefig(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_q3[{}]_xyvx.png'.format(x1id, esrid, q3id)), dpi=300)
             # fig.savefig(os.path.join(analysis_dir, '{}_xyvx.svg'.format(d)), dpi=300)
             visual.close_fig(fig)
-
-            # if 'dx' not in ctx:
-            #     print('error analysis not calculated. Abort plotting.')
-            #     return
-
-            fig = visual.get_fig()
-            samples = {'match.x1_esr.{}.{}'.format(x1id, esrid): {'dx': 0, 'dy': 1, 'dvx': 2}}
-            visual.scatter(fig, r1, samples, 'error', ts0, sts, ets, vis)
-            samples = {
-                'match.x1_esr.{}.{}'.format(x1id, esrid): {'dx_ratio': 3, 'dy_ratio': 4, 'dvx_ratio': 5}}
-            visual.scatter(fig, r1, samples, 'error(percent)', ts0, sts, ets, vis)
-
-            pickle.dump(fig, open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_error.pyfig'.format(x1id, esrid)), 'wb'))
-            fig.savefig(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_error.png'.format(x1id, esrid)), dpi=300)
-            # fig.savefig(os.path.join(analysis_dir, '{}_error.svg'.format(d)), dpi=300)
-            visual.close_fig(fig)
-            err_file = os.path.join(analysis_dir, 'x1[{}]_esr[{}]_error.csv'.format(x1id, esrid))
-            print('generating error analysis', err_file)
-            rmse_x = np.sqrt(((np.array(ctx['dx'])) ** 2).mean())
-            pct_dx = np.mean(ctx['pct_dx'])
-            rmse_y = np.sqrt(((np.array(ctx['dy'])) ** 2).mean())
-            pct_dy = np.mean(ctx['pct_dy'])
-            rmse_vx = np.sqrt(((np.array(ctx['dvx'])) ** 2).mean())
-            pct_dvx = np.mean(ctx['pct_dvx'])
-            ctx['dx'].clear()
-            ctx['dy'].clear()
-            ctx['dvx'].clear()
-            ctx['pct_dx'].clear()
-            ctx['pct_dy'].clear()
-            ctx['pct_dvx'].clear()
-            with open(err_file, 'w+') as wf:
-                wf.write('Param\tRMSE\tError_percent\n')
-                wf.write('x(m)\t{}\t{:.2f}%\n'.format(rmse_x, pct_dx))
-                wf.write('y(m)\t{}\t{:.2f}%\n'.format(rmse_y, pct_dy))
-                wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
+    """
 
 
 if __name__ == "__main__":
@@ -1590,7 +2063,7 @@ if __name__ == "__main__":
 
     parsers = [
         dummy_parser,
-        match_x1_esr,
+        match_obs,
         parse_nmea_line,
         parse_esr_line,
         parse_q3_line,

@@ -206,7 +206,11 @@ class LogPlayer(Process):
             ts = float(cols[0]) + float(cols[1]) / 1000000
             if cols[2] == 'camera':
                 frame_id = int(cols[3])
-                fid, jpg = next(self.jpeg_extractor)
+                try:
+                    fid, jpg = next(self.jpeg_extractor)
+                except StopIteration as e:
+                    print('images run out.')
+                    return
                 lcnt += 1
                 if jpg is None or lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                     self.now_frame_id = frame_id
