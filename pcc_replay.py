@@ -11,6 +11,7 @@ import struct
 import time
 from multiprocessing import Process, Queue, freeze_support
 import json
+from parsers import ublox
 
 
 def jpeg_extractor(video_dir):
@@ -87,7 +88,6 @@ class LogPlayer(Process):
         self.x1_fp = None
         if os.path.exists(self.x1_log):
             self.x1_fp = open(self.x1_log, 'r')
-
 
         for idx, cfg in enumerate(configs):
             cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
@@ -355,6 +355,12 @@ class LogPlayer(Process):
                 # r['sig_mask'] = int(fields[16], 16)
                 # self.msg_queue.put((0xc7, r, 'can'))
                 self.cache['can'].append(r.copy())
+
+            if 'NMEA' in cols[2]:
+                r = ublox.decode_nmea(cols[3])
+                r['source'] = 'gps'
+                self.cache['can'].append(r.copy())
+
         rf.close()
         # cp.disable()
         # cp.print_stats()
@@ -386,7 +392,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/home/cao/pc-collect/hh_20190711174047/log.txt')
+    sys.argv.append('/media/nan/860evo/data/pcviewer/20190724122510/log.txt')
     freeze_support()
     source = sys.argv[1]
     print(source)

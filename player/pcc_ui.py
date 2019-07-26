@@ -42,7 +42,8 @@ class Player(object):
              'lmr': CVColor.Green,
              'x1': CVColor.purple,
              'rtk': CVColor.Green,
-             'ars': CVColor.Green}
+             'ars': CVColor.Green,
+             'gps': 0}
 
         self.param_bg_width = 160
 
@@ -240,7 +241,10 @@ class Player(object):
         cv2.addWeighted(car, 0.5, roi_img, 1.0, 0.0, roi_img)
 
     def show_obs(self, img, obs, color=CVColor.Cyan, thickness=2):
-        indent = self.get_indent(obs['source'])
+        try:
+            indent = self.get_indent(obs['source'])
+        except Exception as e:
+            print('Error indent', obs)
         color = obs.get('color')
         if color:
             color = self.color_seq[color]
@@ -629,7 +633,11 @@ class Player(object):
         BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
 
     def show_cipo_info(self, img, obs):
-        indent = self.get_indent(obs['source'])
+        try:
+            indent = self.get_indent(obs['source'])
+        except Exception as e:
+            print('Error:', obs)
+            return
         if obs.get('class') == 'pedestrian':
             line = 40
             BaseDraw.draw_text(img, 'CIPPed: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
@@ -794,12 +802,24 @@ class Player(object):
             BaseDraw.draw_line(img, p[i], p[i + 1], color, 1)
 
     def draw_vehicle_state(self, img, data):
+        indent = self.get_indent(data['source'])
         if len(data) == 0:
             return
         if 'speed' in data:
             self.show_veh_speed(img, data['speed'], data['source'])
         if 'yaw_rate' in data:
             self.show_yaw_rate(img, data['yaw_rate'], data['source'])
+        if 'lat' in data:
+            BaseDraw.draw_text(img, 'lat:{:.5f}'.format(data['lat']), (indent + 2, 60), 0.5, CVColor.White, 1)
+        if 'ts_origin' in data:
+            ta = time.localtime(data['ts_origin'])
+            FORMAT = '%Y/%m/%d'
+            date = time.strftime(FORMAT, ta)
+            FORMAT = '%H:%M:%S'
+            time_ = time.strftime(FORMAT, ta)
+            BaseDraw.draw_text(img, '{}'.format(date), (indent + 2, 100), 0.5, CVColor.White, 1)
+            BaseDraw.draw_text(img, '{}'.format(time_), (indent + 2, 120), 0.5, CVColor.White, 1)
+            # BaseDraw.draw_text(img, 'lat:{:.5f}'.format(data['ts_origin']), (indent + 2, 100), 0.5, CVColor.White, 1)
 
 
     def draw_obs(self, img, data, ipm):
@@ -893,6 +913,8 @@ class Player(object):
             BaseDraw.draw_text(img, 'pitch: {:.2f}'.format(data['pitch']), (indent + 2, 80), 0.5, color, 1)
             BaseDraw.draw_text(img, 'len: {:.3f}'.format(data['length']), (indent + 2, 100), 0.5, color, 1)
             # BaseDraw.draw_text(img, 'delay: {:.4f}'.format(data['ts'] - data['ts_origin']), (indent + 2, 120), 0.5, color, 1)
+        if data['type'] == 'bestvel':
+            BaseDraw.draw_text(img, '{}'.format(data['pos_type']), (indent + 2, 120), 0.5, color, 1)
 
         if data['type'] == 'rtcm':
             BaseDraw.draw_text(img, 'rtcm rcv:{}'.format(data['len']), (indent + 82, 20), 0.5, color, 1)

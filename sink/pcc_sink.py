@@ -72,6 +72,7 @@ class PinodeSink(Sink):
         super(PinodeSink, self).__init__(queue, ip, port, channel, index, isheadless)
         print('pi_node connected.', ip, port, channel, index)
         self.source = 'rtk.{:d}'.format(index)
+        self.index = index
         self.context = {'source': self.source}
         self.resname = resname
         self.fileHandler = fileHandler
@@ -88,6 +89,8 @@ class PinodeSink(Sink):
             data = [data]
         for r in data:
             r['source'] = self.source
+            if r.get('sensor') == 'm8n':
+                r['source'] = 'gps.{:d}'.format(self.index)
             if r['type'] == 'bestpos':
                 self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestpos',
                                              '{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
@@ -109,6 +112,13 @@ class PinodeSink(Sink):
                                                          r['#solSVs'],
                                                          r['#obs'], r['#multi'], r['ext_sol_stat']
                                                      )))
+            elif r['type'] == 'bestvel':
+                self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestvel',
+                                             '{} {} {} {} {} {} {}'.format(
+                                                         r['sol_stat'], r['pos_type'], r['latency'],
+                                                         r['age'], r['hor_speed'],
+                                                         r['trk_gnd'], r['vert_speed']
+                                                     )))
             elif r['type'] == 'rtk':
                 timestamp = r['ts_origin']
                 self.fileHandler.insert_raw((timestamp, r['source'] + '.sol',
@@ -120,7 +130,9 @@ class PinodeSink(Sink):
                         r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4], r['sat'][5], r['gdop'],
                         r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'], r['prn'])))
             elif r['type'] == 'vehicle_state':
-                self.fileHandler.insert_raw((time.time(), 'NMEA', msg.strip()))
+                # print(r)
+                self.fileHandler.insert_raw((time.time(), 'NMEA', msg.decode().strip()))
+                # print(time.time(), r['ts_origin'])
 
         return self.channel, data
 
@@ -130,7 +142,8 @@ class PinodeSink(Sink):
         elif resname == 'rtcm':
             return {'type': 'rtcm', 'len': len(msg)}
         elif resname == 'gps':
-            data = ublox.decode_nmea(msg)
+            # print(msg)
+            data = ublox.decode_nmea(msg.decode())
             return data
 
 
@@ -354,10 +367,10 @@ class RTKSink(Sink):
             self.v1msg = V1_msg()
         except Exception as e:
             self._socket = None
-
     def can_send(self, bus, buf):
         idx = int(len(buf) / 8)
         last_dlc = len(buf) % 8
+
         for i in range(idx):
             msg = can.Message(arbitration_id=0xc6, data=[x for x in buf[i * 8:i * 8 + 8]], extended_id=False)
             bus.send(msg)

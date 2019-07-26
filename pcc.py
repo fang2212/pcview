@@ -293,6 +293,9 @@ class PCC(object):
         elif data['type'] == 'heading':
             # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
+        elif data['type'] == 'bestvel':
+            # print('------------', data['type'])
+            self.draw_rtk_ub482(img, data)
         elif data['type'] == 'rtcm':
             # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
@@ -395,7 +398,7 @@ class HeadlessPCC:
 if __name__ == "__main__":
     import sys
     from config.config import load_cfg
-    load_cfg('config/cfg_superb_shenzhen.json')
+    load_cfg('config/h7.json')
 
     if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
         hub = Hub(headless=True)

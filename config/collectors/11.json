@@ -1,14 +1,24 @@
 {
-  "mac": "b8:27:eb:89:00:d2",
+  "mac": "00:0c:18:ef:ff:e0",
   "debug": true,
   "repeater": true,
   "can_types": {
-    "can1": [],
+    "can1": ["ifv300"],
     "can0": [
-      "gps"
+      "q3"
     ]
   },
-  "type": "pi_node",
-  "platform": "fpga",
+  "msg_types": [
+  "can0",
+  "can1",
+  "gsensor"
+ ],
+  "use_x1_camera": {
+  "use": false,
+  "ip": "192.168.98.106",
+  "port": 24011
+ },
+  "type": "x1",
+  "platform": "pi",
   "work_mode": "collector"
 }

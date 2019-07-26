@@ -1706,6 +1706,8 @@ def get_traj_from_pairs(matched_ep, names):
 
 def merge_trajectory(trj_list1, trj_list2):
     trj_list = list()
+    # del_list_1 = list()
+    # del_list_2 = list()
     for trj1 in trj_list1:
         for trj2 in trj_list2:
             if trj1['obs']['x1'][0] == trj2['obs']['x1'][0]:
@@ -1725,9 +1727,18 @@ def merge_trajectory(trj_list1, trj_list2):
                            'count': trj1['count'] + trj2['count'],
                            'dist_mean': (trj1['dist_mean'] * trj1['count'] + trj2['dist_mean'] * trj2['count']) / (trj1['count'] + trj2['count'])}
                     trj_list.append(trj)
+                    trj1['selected'] = True
+                    trj2['selected'] = True
                 else:
                     trj_list.append(trj1)
                     trj_list.append(trj2)
+
+    for trj1 in trj_list1:
+        if not trj1.get('selected'):
+            trj_list.append(trj1)
+    for trj2 in trj_list2:
+        if not trj2.get('selected'):
+            trj_list.append(trj2)
     return trj_list
 
 
@@ -1886,7 +1897,6 @@ def process_by_matches(matches, names, r0, ts0, ctx, vis=False):
 
 
 def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
-
     # log = os.path.join(dir_name, 'log.txt')
     ctx = dict()
     ctx['obs_ep'] = {'x1': {'buff': deque(maxlen=10)}, 'esr': {'buff': deque(maxlen=10)}, 'q3': {'buff': deque(maxlen=10)}}
@@ -2053,7 +2063,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190704-t5-q3-esr-x1-test/pc_colletor/20190704114204_P_40kmh/log.txt'
+    r = '/media/nan/860evo/data/20190724_x1_esr_33577/20190724154911/log.txt'
 
     if len(sys.argv) > 1:
         r = sys.argv[1]

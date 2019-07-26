@@ -62,8 +62,8 @@ class Hub(Thread):
         # self.collectors[ip]['sinks']['video'] = self.camera_sink
 
         print('Devices found:')
-        for dev in finder.found:
-            print(dev, finder.found[dev])
+        # for dev in finder.found:
+        #     print(dev, finder.found[dev])
 
         for dev in finder.found:
             print(bcl.OKGR+dev+bcl.ENDC, finder.found[dev])

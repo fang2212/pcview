@@ -16,7 +16,7 @@
    "pitch": 0.0,
    "height": 0.45,
    "lon_offset": 0.0,
-   "yaw": -1.8
+   "yaw": 0.2
   },
   "lmr": {
    "roll": 0.0,
@@ -47,9 +47,9 @@
    "cv": 360.0,
    "lon_offset": -1.67,
    "fv": 1458.0,
-   "yaw": 2.5,
+   "yaw": 1.46,
    "cu": 640.0,
-   "pitch": -1.5,
+   "pitch": -2.41,
    "lat_offset": 0.15,
    "height": 1.18,
    "roll": 0.05
