@@ -29,7 +29,7 @@ class CollectorFinder(Process):
                 data, address = ret
                 # print('response from {}:{}'.format(address, data.decode('utf-8')))
                 # self.q.put(ret)
-                print(data)
+                # print(data)
                 if data[0] == 123:
                     data = json.loads(data.decode())
                 self.found[address[0]] = data

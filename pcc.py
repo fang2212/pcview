@@ -67,7 +67,9 @@ class PCC(object):
         cv2.createTrackbar('Roll', 'UI', 500, 1000, self.ot.update_roll)
         cv2.createTrackbar('ESR_Yaw', 'UI', 500, 1000, self.ot.update_esr_yaw)
         if not replay:
-            self.supervisor = Supervisor([self.check_status, self.hub.fileHandler.check_file])
+            self.supervisor = Supervisor([self.check_status,
+                                          self.hub.fileHandler.check_file,
+                                          self.hub.find_collectors])
             self.supervisor.start()
             self.gga = GGAReporter()
             self.gga.start()
