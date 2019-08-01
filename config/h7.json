@@ -7,12 +7,12 @@
    "cv": 360.0,
    "lon_offset": -1.67,
    "fv": 1458.0,
-   "yaw": 0.05,
+   "yaw": -0.90,
    "cu": 640.0,
-   "pitch": -5.0,
+   "pitch": -1.64,
    "lat_offset": 0.10,
    "height": 2.35,
-   "roll": -0.11
+   "roll": -0.05
   },
   "x1": {
    "lon_offset": -1.64,

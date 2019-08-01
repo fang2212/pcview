@@ -121,6 +121,8 @@ class PCC(object):
         frame_id = mess['frame_id']
         self.now_id = frame_id
         self.ts_now = mess['ts']
+        self.player.ts_now = mess['ts']
+        self.player.update_column_ts('video', mess['ts'])
         # print(mess)
         can_data = mess.get('can')
         if self.ts0 == 0:
@@ -129,7 +131,7 @@ class PCC(object):
         if local_cfg.save.video and not self.replay:
             self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
 
-        self.player.show_columns(img)
+        # self.player.show_columns(img)
 
         self.player.show_frame_id(img, frame_id)
         self.player.show_datetime(img, self.ts_now)
@@ -187,10 +189,14 @@ class PCC(object):
             self.player.show_warning(img, self.supervisor.check())
         self.player.show_intrinsic_para(img)
 
+        self.player.render_text_info(img)
+
         if self.show_ipm:
             comb = np.hstack((img, self.ipm))
         else:
             comb = img
+
+
 
         cv2.imshow('UI', comb)
 
@@ -281,26 +287,23 @@ class PCC(object):
 
         elif data['type'] == 'vehicle_state':
             self.player.draw_vehicle_state(img, data)
+            # print(data)
+            self.player.update_column_ts(data['source'], data['ts'])
         elif data['type'] == 'CIPV':
             self.cipv = data['id']
         elif data['type'] == 'rtk':
             # print('------------', data['type'])
             data['updated'] = True
             self.draw_rtk(img, data)
-        elif data['type'] == 'bestpos':
+        elif data['type'] in ['bestpos', 'heading', 'bestvel','rtcm']:
             # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
-        elif data['type'] == 'heading':
-            # print('------------', data['type'])
-            self.draw_rtk_ub482(img, data)
-        elif data['type'] == 'bestvel':
-            # print('------------', data['type'])
-            self.draw_rtk_ub482(img, data)
-        elif data['type'] == 'rtcm':
-            # print('------------', data['type'])
-            self.draw_rtk_ub482(img, data)
-
+            self.player.update_column_ts(data['source'], data['ts'])
+        elif data['type'] == 'gps':
+            self.player.show_gps(data)
+            self.player.update_column_ts(data['source'], data['ts'])
         self.specific_handle(img, data)
+
 
     def handle_keyboard(self):
         key = cv2.waitKey(1) & 0xFF
@@ -398,7 +401,7 @@ class HeadlessPCC:
 if __name__ == "__main__":
     import sys
     from config.config import load_cfg
-    load_cfg('config/h7.json')
+    load_cfg('config/cfg_lab.json')
 
     if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
         hub = Hub(headless=True)

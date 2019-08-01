@@ -180,6 +180,9 @@ class LogPlayer(Process):
         # self.init_socket()
         # cp = cProfile.Profile()
         # cp.enable()
+        last_fid = 0
+        frame_lost = 0
+        total_frame = 0
         rtk_dec = False
         lcnt = 0
         rf = open(self.log_path)
@@ -204,13 +207,22 @@ class LogPlayer(Process):
             # print('line {}'.format(cnt))
             cols = line.split(' ')
             ts = float(cols[0]) + float(cols[1]) / 1000000
+
             if cols[2] == 'camera':
                 frame_id = int(cols[3])
+                if last_fid == 0:
+                    last_fid = frame_id - 1
+                frame_lost += frame_id - last_fid - 1
+                total_frame += 1
+                last_fid = frame_id
+
                 try:
                     fid, jpg = next(self.jpeg_extractor)
                 except StopIteration as e:
                     print('images run out.')
                     return
+                if fid and fid != frame_id:
+                    print(bcl.FAIL+'raw fid differs from log:'+bcl.ENDC, fid, frame_id)
                 lcnt += 1
                 if jpg is None or lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                     self.now_frame_id = frame_id
@@ -392,7 +404,7 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/media/nan/860evo/data/pcviewer/20190724122510/log.txt')
+    sys.argv.append('/media/nan/860evo/data/20190726_x1_esr_33577_Pedestrian/20190726152144/log.txt')
     freeze_support()
     source = sys.argv[1]
     print(source)
@@ -405,5 +417,5 @@ if __name__ == "__main__":
 
     replayer = LogPlayer(r_sort, configs, ratio=0.2, start_frame=0)
     # replayer.start()
-    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)
-    pc_viewer.start()
+    player = PCC(replayer, replay=True, rlog=r_sort, ipm=True)
+    player.start()

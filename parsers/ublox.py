@@ -16,17 +16,18 @@ def decode_nmea(nmeastr):
     if nmeastr.startswith('$GNRMC') or nmeastr.startswith('$GPRMC'):
         # print(nmeastr)
         r = dict()
-        r['type'] = 'vehicle_state'
+        r['type'] = 'gps'
         r['sensor'] = 'm8n'
         fields = nmeastr.split(',')
         if fields[7] == '':
             # print('no thanks')
             return
         # try:
+        r['pos_type'] = fields[2]
         r['speed'] = 0.514444 * float(fields[7]) if fields[7] else None  # m/s
         r['speed'] = 3.6 * r['speed']  # km/h
-        r['lat'] = float(fields[3]) / 100.0 if fields[3] else None
-        r['lon'] = float(fields[5]) / 100.0 if fields[5] else None
+        r['lat'] = float(fields[3][:2]) + float(fields[3][2:])/60 if fields[3] else None
+        r['lon'] = float(fields[5][:3]) + float(fields[5][3:])/60 if fields[5] else None
         r['heading'] = float(fields[8]) if fields[8] else None
         # print(fields)
         str_time = '20' + fields[9][4:] + '-' + fields[9][2:4] + '-' + fields[9][0:2] + ' ' + fields[1][:2] + ':' + \
@@ -34,8 +35,8 @@ def decode_nmea(nmeastr):
         dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
         dtime = dtime + datetime.timedelta(hours=8)
         # print(dtime)
-        r['ts_origin'] = time.mktime(dtime.timetuple())
-
+        r['ts'] = dtime.timestamp()
+        # print(dtime.timestamp())
         # except Exception as e:
         #     print(e, fields)
         #     return

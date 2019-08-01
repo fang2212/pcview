@@ -609,10 +609,11 @@ def parse_x1_line(line, ctx):
         #                                             ret.get('TTC')))
 
 
-def parse_q3_line(line, ctx, can_port='CAN0'):
+def parse_q3_line(line, ctx):
     from parsers.mobileye_q3 import parse_ifv300
     cols = line.split(' ')
     ts = float(cols[0]) + float(cols[1]) / 1000000
+    can_port = ctx['can_port']['ifv300']
     if can_port in cols[2] or can_port.lower() in cols[2]:
         can_id = int(cols[3], 16)
         buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])

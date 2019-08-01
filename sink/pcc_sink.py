@@ -129,7 +129,7 @@ class PinodeSink(Sink):
                                              '{} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
                         r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4], r['sat'][5], r['gdop'],
                         r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'], r['prn'])))
-            elif r['type'] == 'vehicle_state':
+            elif r['type'] == 'gps':
                 # print(r)
                 self.fileHandler.insert_raw((time.time(), 'NMEA', msg.decode().strip()))
                 # print(time.time(), r['ts_origin'])
