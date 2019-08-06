@@ -48,11 +48,12 @@ def time_sort(file_name, sort_itv=8000, output=None):
             lines = sorted(lines)
         wf.writelines(lines)
         wf.close()
+        # print('sorted', out_file)
         return os.path.abspath(out_file)
         # sort_itv = 8000
     # rev_lines = []
     past_lines = deque(maxlen=2 * sort_itv)
-    wf = open('/tmp/log_sort.txt', 'w')
+    wf = open(out_file, 'w')
     idx = 0
     with open(file_name) as rf:
         for idx, line in enumerate(rf):
@@ -1552,7 +1553,7 @@ def batch_process_3(dir_name, parsers):
         for f in files:
             if f == 'log.txt':
                 log = os.path.join(root, f)
-                print(bcl.BOLD + bcl.HDR + 'Entering dir: ' + root + bcl.ENDC)
+                print(bcl.BOLD + bcl.HDR + '\nEntering dir: ' + root + bcl.ENDC)
                 single_process(log, parsers, False)
 
 
@@ -2064,7 +2065,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190724_x1_esr_33577/20190724154911/log.txt'
+    r = '/media/nan/860evo/data/kemeicheng/PCC'
 
     if len(sys.argv) > 1:
         r = sys.argv[1]
