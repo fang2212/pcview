@@ -10,7 +10,7 @@ import time
 import aiohttp
 import msgpack
 import asyncio
-from parsers import ublox
+from parsers import ublox, rtcm3
 from tools import mytools
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
@@ -32,7 +32,6 @@ class Sink(Process):
         if 'can' in msg_type:
             self.cls = 'can'
             print(self.type, 'start.')
-
 
     def _init_port(self):
         self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
@@ -58,7 +57,10 @@ class Sink(Process):
             if not buf:
                 time.sleep(0.001)
                 continue
+            t0 = time.time()
             r = self.pkg_handler(buf)
+            dt = time.time() - t0
+            # print(self.dev, self.type, self.channel, 'dt: {:.5f}'.format(dt))
             if r is not None and not self.isheadless:
                 self.queue.put((*r, self.cls))
             # time.sleep(0.01)
@@ -76,6 +78,8 @@ class PinodeSink(Sink):
         self.context = {'source': self.source}
         self.resname = resname
         self.fileHandler = fileHandler
+        if resname == 'rtcm':
+            self.rtcm3 = rtcm3.RTCM3()
 
     def pkg_handler(self, msg):
         # print('hahahahha')
@@ -140,7 +144,24 @@ class PinodeSink(Sink):
         if resname == 'rtk':
             return json.loads(msg.decode())
         elif resname == 'rtcm':
-            return {'type': 'rtcm', 'len': len(msg)}
+            self.rtcm3.add_data(msg)
+            result = self.rtcm3.process_data(dump_decoded=False)
+            r = None
+            while result != 0:
+                #        print str(datetime.now())
+                if result == rtcm3.Got_Undecoded:
+                    # if rtcm3.Dump_Undecoded:
+                    print("Undecoded Data: " + rtcm3.ByteToHex(self.rtcm3.undecoded))
+                elif result == rtcm3.Got_Packet:
+                    r = self.rtcm3.dump(False, False, False, False)
+                    # sys.stdout.flush()
+                else:
+                    print("INTERNAL ERROR: Unknown result (" + str(result) + ")")
+                result = self.rtcm3.process_data()
+            if r:
+                r['type'] = 'rtcm'
+                r['len'] = len(msg)
+                return r
         elif resname == 'gps':
             # print(msg)
             data = ublox.decode_nmea(msg.decode())

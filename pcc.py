@@ -13,6 +13,7 @@ import cv2
 from datetime import datetime
 from tools.mytools import Supervisor, OrientTuner
 from tools.transform import Transform
+from tools.geo import *
 from config.config import local_cfg
 from player.pcc_ui import Player
 from sink.hub import Hub
@@ -61,6 +62,7 @@ class PCC(object):
 
         self.ego_car = Vehicle()
         self.calib_data = dict()
+        self.frame_cost = 0
         cv2.namedWindow('UI')
         cv2.createTrackbar('Yaw', 'UI', 500, 1000, self.ot.update_yaw)
         cv2.createTrackbar('Pitch', 'UI', 500, 1000, self.ot.update_pitch)
@@ -71,7 +73,7 @@ class PCC(object):
                                           self.hub.fileHandler.check_file,
                                           self.hub.find_collectors])
             self.supervisor.start()
-            self.gga = GGAReporter()
+            self.gga = GGAReporter('ntrip.weaty.cn', 5001)
             self.gga.start()
         else:
             self.hub.d = Manager().dict()
@@ -94,6 +96,13 @@ class PCC(object):
             if d is None or not d.get('frame_id'):
                 # time.sleep(0.01)
                 continue
+            if not self.replay:
+                qsize = self.hub.fileHandler.raw_queue.qsize()
+                # print(qsize)
+                if self.hub.fileHandler.recording and qsize > 2000:
+                    print('escap drawing', qsize)
+                    time.sleep(0.1)
+                    continue
             self.draw(d, frame_cnt)
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
@@ -109,10 +118,11 @@ class PCC(object):
             if frame_cnt > 500:
                 self.player.start_time = datetime.now()
                 frame_cnt = 1
-            time.sleep(0.01)
+            # time.sleep(0.01)
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])
+        t0 = time.time()
         try:
             imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
             img = imgraw.copy()
@@ -136,6 +146,7 @@ class PCC(object):
         # self.player.show_columns(img)
 
         self.player.show_frame_id(img, frame_id)
+        self.player.show_frame_cost(self.frame_cost)
         self.player.show_datetime(img, self.ts_now)
         if self.show_ipm:
             self.m_g2i = self.transform.calc_g2i_matrix()
@@ -203,6 +214,7 @@ class PCC(object):
         cv2.imshow('UI', comb)
 
         self.handle_keyboard()
+        self.frame_cost = time.time() - t0
 
     def draw_rtk(self, img, data):
         self.player.show_rtk(img, data)
@@ -226,7 +238,7 @@ class PCC(object):
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
         if 'lat' in data and not self.replay:
-            self.gga.set_pos(data['lat'], data['lon'])
+            self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
         if data['source'] == 'rtk.5':
             if 'lat' in data:
                 self.rtk_pair[0] = data
@@ -245,6 +257,17 @@ class PCC(object):
             self.player.show_target(img, self.rtk_pair[1], self.rtk_pair[0])
             if self.show_ipm:
                 self.player.show_ipm_target(self.ipm, self.rtk_pair[1], self.rtk_pair[0])
+
+    def viz_rtcm(self, img, data):
+        # if data['type'] == 'rtcm':
+        #     print(data)
+        if data['id'] == 1005:
+            llh = PosVector(data['ECEF-X'], data['ECEF-Y'], data['ECEF-Z']).ToLLH()
+            data['lat'] = llh.lat
+            data['lon'] = llh.lon
+            data['hgt'] = llh.alt
+            self.player.show_rtcm(data)
+            print('station loc:', data['lat'], data['lon'])
 
     def specific_handle(self, img, data):
         src = data.get('source')
@@ -277,6 +300,7 @@ class PCC(object):
             # self.player.show_obs(img, dummy0)
             # self.player.show_obs(img, dummy1)
             self.player.show_obs(img, data)
+            self.player.update_column_ts(data.get('source'), data.get('ts'))
             if self.show_ipm:
                 # self.player.show_ipm_obs(self.ipm, dummy0)
                 # self.player.show_ipm_obs(self.ipm, dummy1)
@@ -297,15 +321,16 @@ class PCC(object):
             # print('------------', data['type'])
             data['updated'] = True
             self.draw_rtk(img, data)
-        elif data['type'] in ['bestpos', 'heading', 'bestvel','rtcm']:
+        elif data['type'] in ['bestpos', 'heading', 'bestvel']:
             # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
             self.player.update_column_ts(data['source'], data['ts'])
+        elif data['type'] == 'rtcm':
+            self.viz_rtcm(img, data)
         elif data['type'] == 'gps':
             self.player.show_gps(data)
             self.player.update_column_ts(data['source'], data['ts'])
         self.specific_handle(img, data)
-
 
     def handle_keyboard(self):
         key = cv2.waitKey(1) & 0xFF
@@ -403,13 +428,12 @@ class HeadlessPCC:
 if __name__ == "__main__":
     import sys
     from config.config import load_cfg
-    load_cfg('config/cfg_lab.json')
+    load_cfg('config/cfg_superb_shenzhen.json')
 
     if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
         hub = Hub(headless=True)
         hub.start()
         pcc = HeadlessPCC(hub)
-
 
         t = Thread(target=pcc.start)
         t.start()

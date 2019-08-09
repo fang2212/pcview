@@ -31,12 +31,14 @@ class Hub(Thread):
 
         self.finder = CollectorFinder()
         self.finder.start()
-        for i in range(3):
-            # try:
-            self.finder.request()
-            # except Exception as e:
-            #     pass
-            time.sleep(0.2)
+        # for i in range(3):
+        #     # try:
+        #     self.finder.request()
+        #     # except Exception as e:
+        #     #     pass
+        #     time.sleep(0.2)
+        self.finder.request()
+        time.sleep(0.2)
 
         if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
             self.fileHandler = FileHandler()

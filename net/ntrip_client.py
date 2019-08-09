@@ -89,7 +89,7 @@ class GGAReporter(Process):
         self.port = port
         # self.lat = lat
         # self.lon = lon
-        self.iq = Queue()
+        self.iq = Queue(maxsize=5)
 
         # self.sock.connect((self.host, self.port))
         # self.gps = open(dev, 'rb')
@@ -97,7 +97,8 @@ class GGAReporter(Process):
     def set_pos(self, lat, lon):
         # self.lat = lat
         # self.lon = lon
-        self.iq.put((lat, lon))
+        if not self.iq.full():
+            self.iq.put((lat, lon))
 
     def run(self):
         print('GGA reporter inited.')
@@ -112,9 +113,12 @@ class GGAReporter(Process):
                 print('\033[94m'+'GGA reporter connected'+'\033[0m')
                 reconnect = False
             # ggastr = b''
-            if not self.iq.empty():
+            if self.iq.empty():
+                time.sleep(1)
+                continue
+            while not self.iq.empty():
                 lat, lon = self.iq.get()
-                print('\033[94m'+'GGA updated:'+'\033[0m', lat, lon)
+            print('\033[94m'+'GGA updated:'+'\033[0m', lat, lon)
             ggastr = generate_gga(lat, lon).encode('utf8')
             try:
                 self.sock.sendall(ggastr)
@@ -122,7 +126,7 @@ class GGAReporter(Process):
                 self.info = "error {}".format(e)
                 self.sock.close()
                 reconnect = True
-            time.sleep(0.5)
+            time.sleep(1)
 
 
 def test_rtk_caster(addr):

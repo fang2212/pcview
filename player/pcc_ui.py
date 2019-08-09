@@ -599,6 +599,8 @@ class Player(object):
         # print(source, height, text)
 
     def update_column_ts(self, source, ts):
+        if not source:
+            return
         self.columns[source]['ts'] = ts
 
     def render_text_info(self, img):
@@ -610,7 +612,8 @@ class Player(object):
             x0 = indent
             y0 = 0
             w = 160
-            h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 0
+            h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 20
+            h = 20 if h == 0 else h
             self.show_parameters_background(img, (x0, y0, w if w <= 1280 else 1280, h))
 
             BaseDraw.draw_text(img, col, (indent + 12, 20), 0.5, CVColor.Cyan, 1)
@@ -631,6 +634,9 @@ class Player(object):
         # indent = self.columns['video']['indent']
         # BaseDraw.draw_text(img, 'fid: ' + str(int(fn)), (indent + 2, 40), 0.5, CVColor.White, 1)
         self.show_text_info('video', 40, 'frame: ' + str(int(fn)))
+
+    def show_frame_cost(self, cost):
+        self.show_text_info('video', 80, 'cost: {:.3f}'.format(cost))
 
     def show_fps(self, img, fps):
         # indent = self.columns['video']['indent']
@@ -689,20 +695,25 @@ class Player(object):
             return
         if obs.get('class') == 'pedestrian':
             line = 40
-            BaseDraw.draw_text(img, 'CIPPed: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
+            # BaseDraw.draw_text(img, 'CIPPed: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
+            self.show_text_info(obs['source'], line, 'CIPPed: {}'.format(obs['id']))
         elif obs.get('class') == 'object':
             line = 100
-            BaseDraw.draw_text(img, 'CIPO: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
+            # BaseDraw.draw_text(img, 'CIPO: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
+            self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']))
         else:
             line = 100
-            BaseDraw.draw_text(img, 'CIPVeh: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
+            # BaseDraw.draw_text(img, 'CIPVeh: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
+            self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']))
 
         if 'TTC' in obs:
-            BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line + 20), 0.5, CVColor.White,
-                               1)
+            # BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line + 20), 0.5, CVColor.White,
+            #                    1)
+            self.show_text_info(obs['source'], line+20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']))
         dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
-        BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
-        BaseDraw.draw_up_arrow(img, indent + 8, line - 12, self.color_seq[obs['color']], 6)
+        # BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
+        self.show_text_info(obs['source'], line + 40, 'range: {:.2f}'.format(dist))
+        BaseDraw.draw_up_arrow(img, indent + 100, line - 12, self.color_seq[obs['color']], 6)
 
     def _show_rtk(self, img, rtk):
         # print(rtk)
@@ -989,6 +1000,14 @@ class Player(object):
             # BaseDraw.draw_text(img, '{}'.format(time_), (indent + 2, 120), 0.5, CVColor.White, 1)
             self.show_text_info(data['source'], 100, '{}'.format(date))
             self.show_text_info(data['source'], 120, '{}'.format(time_))
+
+    def show_rtcm(self, data):
+        if 'lat' in data:
+            # BaseDraw.draw_text(img, 'lat:{:.5f}'.format(data['lat']), (indent + 2, 60), 0.5, CVColor.White, 1)
+            self.show_text_info(data['source'], 60, 'lat:{:.5f}'.format(data['lat']))
+        if 'lon' in data:
+            # BaseDraw.draw_text(img, 'lon:{:.5f}'.format(data['lon']), (indent + 2, 80), 0.5, CVColor.White, 1)
+            self.show_text_info(data['source'], 80, 'lon:{:.5f}'.format(data['lon']))
 
     def _calc_relatives(self, target, host):
         range = gps_distance(target['lat'], target['lon'], host['lat'], host['lon'])

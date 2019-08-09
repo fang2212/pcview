@@ -36,6 +36,8 @@ def parse_x1(id, data, ctx=None):
         ctx['x1_obs'].clear()
         # x1_obs.clear()
         cipv.clear()
+
+    elif id == 0x77f:  # frame_ped
         cipp.clear()
 
     elif id == 0x76d:
@@ -137,7 +139,9 @@ def parse_x1(id, data, ctx=None):
             # pass
             # print(len(ctx['x1_obs']), ctx['x1_obs'])
             if ctx.get('x1_obs'):
-                return ctx.get('x1_obs').copy()
+                ret = ctx['x1_obs'].copy()
+                ctx['x1_obs'].clear()
+                return ret
         # return x1_ped_list
 
     if id == 0x420:
@@ -149,18 +153,20 @@ def parse_x1(id, data, ctx=None):
         if 'fusion' not in ctx:
             return
         index = (id - 0x400) // 2
-        if id&1:
-            ctx['fusion'][index]['pos_lon'] = r['L_long_rel_'+'%02d'%(index+1)]
-            ctx['fusion'][index]['pos_lat'] = r['L_lat_rel_'+'%02d'%(index+1)]
-            ctx['fusion'][index]['vx'] = r['V_long_obj_' + '%02d' % (index + 1)]
-            ctx['fusion'][index]['vy'] = r['V_lat_obj_' + '%02d' % (index + 1)]
-            ctx['fusion'][index]['ax'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
-            ctx['fusion'][index]['cipo'] = False
-            ctx['fusion'][index]['type'] = 'obstacle'
-            ctx['fusion'][index]['class'] = 'fusion_data'
-            ctx['fusion'][index]['color'] = 7
-            ctx['fusion'][index]['width'] = 0.15
-            ctx['fusion'][index]['height'] = 0.15
+        # print(index)
+        if id & 1:
+            if index in ctx['fusion']:
+                ctx['fusion'][index]['pos_lon'] = r['L_long_rel_'+'%02d'%(index+1)]
+                ctx['fusion'][index]['pos_lat'] = r['L_lat_rel_'+'%02d'%(index+1)]
+                ctx['fusion'][index]['vx'] = r['V_long_obj_' + '%02d' % (index + 1)]
+                ctx['fusion'][index]['vy'] = r['V_lat_obj_' + '%02d' % (index + 1)]
+                ctx['fusion'][index]['ax'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
+                ctx['fusion'][index]['cipo'] = False
+                ctx['fusion'][index]['type'] = 'obstacle'
+                ctx['fusion'][index]['class'] = 'fusion_data'
+                ctx['fusion'][index]['color'] = 7
+                ctx['fusion'][index]['width'] = 0.15
+                ctx['fusion'][index]['height'] = 0.15
         else:
             ctx['fusion'][index] = dict()
             ctx['fusion'][index]['id'] = r['TrackID_'+'%02d'%(index+1)]
@@ -169,7 +175,7 @@ def parse_x1(id, data, ctx=None):
         if id == 0x41f:
             ret = []
             for key in ctx['fusion']:
-                if key == 255 or type(key) == type(''):
+                if key == 255 or type(key) == type('') or 'id' not in  ctx['fusion'][key] or 'type' not in  ctx['fusion'][key]:
                     continue
                 obs = ctx['fusion'][key]
                 ret.append(obs.copy())
