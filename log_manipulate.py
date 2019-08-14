@@ -522,7 +522,9 @@ def parse_esr_cipo(file_name, can_port='CAN3'):
 def parse_esr_line(line, ctx):
     from parsers.radar import parse_esr
     from math import sin, pi
-    can_port = ctx['can_port']['esr']
+    can_port = ctx['can_port'].get('esr')
+    if can_port is None:
+        return
     cols = line.split(' ')
     ts = float(cols[0]) + float(cols[1]) / 1000000
     if not ctx.get('esr_ids'):
@@ -573,7 +575,9 @@ def parse_lmr_line(line, ctx, can_port='CAN2'):
 
 
 def parse_x1_line(line, ctx):
-    can_port = ctx.get('can_port')['x1']
+    can_port = ctx['can_port'].get('x1')
+    if can_port is None:
+        return
     if not ctx.get('x1_ids'):
         ctx['x1_ids'] = set()
     from parsers.x1 import parse_x1
@@ -614,7 +618,9 @@ def parse_q3_line(line, ctx):
     from parsers.mobileye_q3 import parse_ifv300
     cols = line.split(' ')
     ts = float(cols[0]) + float(cols[1]) / 1000000
-    can_port = ctx['can_port']['ifv300']
+    can_port = ctx['can_port'].get('ifv300')
+    if can_port is None:
+        return
     if can_port in cols[2] or can_port.lower() in cols[2]:
         can_id = int(cols[3], 16)
         buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
@@ -936,13 +942,13 @@ def match_obs(line, ctx):
                     x1sel, esrsel = ret
                     candidate = {'esr': {'id': esrsel['id'], 'dist': get_distance(x1sel, esrsel)}}
                     # ctx['matched_ep'][ts] = pair
-                    # print(pair)
+                    # print(candidate)
                     if ts not in ctx['matched_ep']:
                         ctx['matched_ep'][ts] = dict()
                     if x1sel['id'] not in ctx['matched_ep'][ts]:
                         ctx['matched_ep'][ts][x1sel['id']] = dict()
                     ctx['matched_ep'][ts][x1sel['id']].update(candidate)
-                    # print(len(ctx['matched_ep'][ts]))
+                    # print(ctx['matched_ep'][ts])
                     done = True
                 break
     # for item in ctx['matched_ep'][ts]:
@@ -984,6 +990,7 @@ def match_obs(line, ctx):
                     ctx['matched_ep'][ts][x1sel['id']].update(candidate)
                     # if not found:
                     #     ctx['matched_ep'][ts].append(pair)
+                    # print(ctx['matched_ep'][ts])
                     done = True
                 # break
         if done:
@@ -1586,7 +1593,7 @@ def get_matches_from_pairs(matched_ep, names):
             # q3id = entry['q3']['id'] if 'q3' in entry else None
             # obs2id = ['id']
             # obs1id = pair.get()
-            if not obs2id:
+            if obs2id is None:
                 continue
             if obs1id not in matches:
                 matches[obs1id] = dict()
@@ -2065,7 +2072,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/kemeicheng/PCC'
+    r = '/media/nan/860evo/data/20190812161945-20190728164620-FCW-case5-72kmh-32.4-6-env1/pcc_data/log.txt'
 
     if len(sys.argv) > 1:
         r = sys.argv[1]

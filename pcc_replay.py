@@ -146,8 +146,9 @@ class LogPlayer(Process):
                         try:
                             data = json.loads(line)
                         except json.JSONDecodeError as e:
-                            print('error json line', line)
-                            continue
+                            pass
+                            # print('error json line', line)
+                            # continue
 
                         if 'frame_id' not in data:
                             continue
@@ -404,7 +405,11 @@ if __name__ == "__main__":
     from config.config import *
     import sys
 
-    sys.argv.append('/media/nan/860evo/data/20190726_x1_esr_33577_Pedestrian/20190726152144/log.txt')
+    local_path = os.path.split(os.path.realpath(__file__))[0]
+    # print('local_path:', local_path)
+    os.chdir(local_path)
+
+    sys.argv.append('/media/nan/860evo/data/20190728164620-FCW-case5-72kmh-32.4-6/log.txt')
     freeze_support()
     source = sys.argv[1]
     print(source)

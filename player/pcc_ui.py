@@ -636,7 +636,7 @@ class Player(object):
         self.show_text_info('video', 40, 'frame: ' + str(int(fn)))
 
     def show_frame_cost(self, cost):
-        self.show_text_info('video', 80, 'cost: {:.3f}'.format(cost))
+        self.show_text_info('video', 80, 'render_cost: {:.3f}s'.format(cost))
 
     def show_fps(self, img, fps):
         # indent = self.columns['video']['indent']

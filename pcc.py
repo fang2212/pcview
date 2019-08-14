@@ -214,7 +214,7 @@ class PCC(object):
         cv2.imshow('UI', comb)
 
         self.handle_keyboard()
-        self.frame_cost = time.time() - t0
+        self.frame_cost = (time.time() - t0)*0.1 + self.frame_cost*0.9
 
     def draw_rtk(self, img, data):
         self.player.show_rtk(img, data)
@@ -428,9 +428,16 @@ class HeadlessPCC:
 if __name__ == "__main__":
     import sys
     from config.config import load_cfg
-    load_cfg('config/cfg_superb_shenzhen.json')
 
-    if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
+    local_path = os.path.split(os.path.realpath(__file__))[0]
+    # print('local_path:', local_path)
+    os.chdir(local_path)
+
+    if len(sys.argv) == 1:
+        sys.argv.append('config/cfg_lab.json')
+    load_cfg(sys.argv[1])
+
+    if '--headless' in sys.argv:
         hub = Hub(headless=True)
         hub.start()
         pcc = HeadlessPCC(hub)

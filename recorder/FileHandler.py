@@ -28,7 +28,7 @@ class FileHandler(Thread):
 
 
         # self.can_raw_queue = kqueue(maxsize=100)
-        self._max_cnt = 6000
+        self._max_cnt = 1200
         self.path = None
         self.image_path = None
         self.raw_fp = None
