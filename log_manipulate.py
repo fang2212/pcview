@@ -1401,6 +1401,8 @@ def calc_delta(line, ctx):
     if obj1 in ctx and obj2 in ctx:
         obs1id = ctx[obj1]['id']
         obs2id = ctx[obj2]['id']
+        # print(ctx['match_tree'])
+        # print(obj1, obs1id, obj2, obs2id)
         if obs2id not in ctx['match_tree'][obs1id]:
             return
         if ctx['match_tree'][obs1id][obs2id]['count'] <= 1:
@@ -1766,7 +1768,7 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
             for id in trj['obs'][type]:
                 pattern = '{}.*.{}'.format(type, id)
                 obs_list.append(pattern)
-        print(bcl.OKBL + 'matched(x1/esr):' + bcl.ENDC, trj)
+        print(bcl.OKBL + 'matched:' + bcl.ENDC, trj)
         fig = visual.get_fig()
         for idx, item in enumerate(obs_meas_display):
             samples = {x: {item: idx} for x in obs_list}
@@ -1782,14 +1784,21 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
 
 def process_error_by_matches(matches, names, r0, ts0, ctx, vis=False):
     type1, type2 = names
+    ctx['match_tree'] = matches
+    ctx['delta_names'] = names
+    if ctx.get(type1+'_obj') is not None:
+        del ctx[type1+'_obj']
+    if ctx.get(type2+'_obj') is not None:
+        del ctx[type2+'_obj']
+    # print(matches)
     for obs1id in matches:
         for obs2id in matches[obs1id]:
             entry = matches[obs1id][obs2id]
             analysis_dir = os.path.dirname(r0)
             ctx[type1 + '_tgt'] = obs1id
             ctx[type2 + '_tgt'] = obs2id
-            ctx['delta_names'] = names
-            ctx['match_tree'] = matches
+
+            print('calculating deltas:', type1, obs1id, type2, obs2id)
             r1 = process_log(r0, [calc_delta], ctx, output=os.path.join(analysis_dir, '{}[{}]_{}[{}]_diff.txt'.format(type1, obs1id, type2, obs2id)))
             sts = entry.get('start_ts')
             ets = entry.get('end_ts')
@@ -2072,7 +2081,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190812161945-20190728164620-FCW-case5-72kmh-32.4-6-env1/pcc_data/log.txt'
+    r = '/media/nan/860evo/data/20190814_minieye_aeb_test/Pcc'
 
     if len(sys.argv) > 1:
         r = sys.argv[1]
