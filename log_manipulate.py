@@ -1687,8 +1687,9 @@ def get_trajectory_from_matches(matches, types):
                 # if obs1id == 43:
                 #     print('hahahahahahahah', trj)
             # match_dict['{}_{}'.format(obs1id, obs2id)] = entry
-        for obs2id in matches[obs1id]:
+        for obs2id in list(matches[obs1id]):
             if obs2id in discard_list:
+                del matches[obs1id][obs2id]
                 continue
             trj = {'obs': {type1: [obs1id], type2: [obs2id]}, **(matches[obs1id][obs2id])}
             # print(trj)
@@ -2081,7 +2082,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190814_minieye_aeb_test/Pcc'
+    r = '/media/nan/860evo/data/20190728142339-FCW-case7-72-72-72kmh-3/log.txt'
 
     if len(sys.argv) > 1:
         r = sys.argv[1]
