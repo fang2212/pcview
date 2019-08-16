@@ -1425,12 +1425,16 @@ def calc_delta(line, ctx):
             ctx['dy'] = []
         if not ctx.get('dvx'):
             ctx['dvx'] = []
+        if not ctx.get('dttc'):
+            ctx['dttc'] = []
         if not ctx.get('pct_dx'):
             ctx['pct_dx'] = []
         if not ctx.get('pct_dy'):
             ctx['pct_dy'] = []
         if not ctx.get('pct_dvx'):
             ctx['pct_dvx'] = []
+        if not ctx.get('pct_dttc'):
+            ctx['pct_dttc'] = []
         # print('matched.', ctx[obj1], ctx[obj2])
         dx = ctx[obj1]['pos_lon'] - ctx[obj2]['pos_lon']
         dx_ratio = fabs(dx / ctx[obj2]['pos_lon']) if ctx[obj2]['pos_lon'] != 0 else 0
@@ -1438,12 +1442,16 @@ def calc_delta(line, ctx):
         dy_ratio = fabs(dy / ctx[obj2]['pos_lat']) if ctx[obj2]['pos_lat'] != 0 else 0
         dvx = ctx[obj1]['vel_lon'] - ctx[obj2]['vel_lon']
         dvx_ratio = fabs(dvx / ctx[obj2]['vel_lon']) if ctx[obj2]['vel_lon'] != 0 else 0
+        dttc = ctx[obj1]['ttc'] - ctx[obj2]['ttc']
+        dttc_ratio = fabs(dttc / ctx[obj2]['ttc']) if ctx[obj2]['ttc'] != 0 else 0
         ctx['dx'].append(dx)
         ctx['dy'].append(dy)
         ctx['dvx'].append(dvx)
+        ctx['dttc'].append(dttc)
         ctx['pct_dx'].append(dx_ratio * 100)
         ctx['pct_dy'].append(dy_ratio * 100)
         ctx['pct_dvx'].append(dvx_ratio * 100)
+        ctx['pct_dttc'].append(dttc_ratio * 100)
         ctx['end_ts'] = ts
         if not ctx.get('start_ts'):
             ctx['start_ts'] = ts
@@ -1827,17 +1835,22 @@ def process_error_by_matches(matches, names, r0, ts0, ctx, vis=False):
             pct_dy = np.mean(ctx['pct_dy'])
             rmse_vx = np.sqrt(((np.array(ctx['dvx'])) ** 2).mean())
             pct_dvx = np.mean(ctx['pct_dvx'])
+            rmse_ttc = np.sqrt(((np.array(ctx['dttc'])) ** 2).mean())
+            pct_dttc = np.mean(ctx['pct_dttc'])
             ctx['dx'].clear()
             ctx['dy'].clear()
             ctx['dvx'].clear()
+            ctx['dttc'].clear()
             ctx['pct_dx'].clear()
             ctx['pct_dy'].clear()
             ctx['pct_dvx'].clear()
+            ctx['pct_dttc'].clear()
             with open(err_file, 'w+') as wf:
                 wf.write('Param\tRMSE\tError_percent\n')
                 wf.write('x(m)\t{}\t{:.2f}%\n'.format(rmse_x, pct_dx))
                 wf.write('y(m)\t{}\t{:.2f}%\n'.format(rmse_y, pct_dy))
                 wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
+                wf.write('TTC(s)\t{}\t{:.2f}%\n'.format(rmse_ttc, pct_dttc))
 
 
 def process_by_matches(matches, names, r0, ts0, ctx, vis=False):

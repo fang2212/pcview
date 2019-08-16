@@ -409,7 +409,7 @@ if __name__ == "__main__":
     # print('local_path:', local_path)
     os.chdir(local_path)
 
-    sys.argv.append('/media/nan/860evo/data/20190728164620-FCW-case5-72kmh-32.4-6/log.txt')
+    sys.argv.append('/media/nan/860evo/data/20190728142339-FCW-case7-72-72-72kmh-3/log.txt')
     freeze_support()
     source = sys.argv[1]
     print(source)
