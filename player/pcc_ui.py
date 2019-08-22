@@ -968,7 +968,7 @@ class Player(object):
             # BaseDraw.draw_text(img, 'len: {:.3f}'.format(data['length']), (indent + 2, 100), 0.5, color, 1)
             self.show_text_info(data['source'], 140, 'H:{}'.format(data['pos_type']), style_list.get(data['pos_type']))
             self.show_text_info(data['source'], 180, 'Yaw  Pitch Len '.format(data['yaw']))
-            self.show_text_info(data['source'], 200, '{:.2f} {:.2f}  {:.2f}'.format(data['yaw'], data['pitch'], data['length']))
+            self.show_text_info(data['source'], 200, '{:.2f} {:.2f} {:.2f}'.format(data['yaw'], data['pitch'], data['length']))
             self.show_text_info(data['source'], 160, '#SVs/sol: {}/{}'.format(data['#SVs'], data['#solSVs']))
             # self.show_text_info(data['source'], 180, 'len: {:.3f}'.format(data['length']))
         if data['type'] == 'bestvel':

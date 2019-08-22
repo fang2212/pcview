@@ -36,10 +36,13 @@ def scatter(fig, file_name, labels=None, ytag=None, ts0=0, start_ts=None, end_ts
     for i in range(n):
         fig.axes[i].change_geometry(n + 1, 1, i + 1)
 
-    ax = fig.add_subplot(n + 1, 1, n + 1)
+
     if n > 0:
         # print('sharex')
-        ax.get_shared_x_axes().join(fig.axes[n - 1], ax)
+        ax = fig.add_subplot(n + 1, 1, n + 1, sharex=fig.axes[n - 1])
+        # ax.get_shared_x_axes().join(fig.axes[n - 1], ax)
+    else:
+        ax = fig.add_subplot(n + 1, 1, n + 1)
 
     # print(fig.axes)
     print('plotting', file_name, labels)

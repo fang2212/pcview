@@ -1565,13 +1565,14 @@ def batch_process_2(dir_name, parsers):
         single_process(log, parsers, False)
 
 
-def batch_process_3(dir_name, parsers):
+def batch_process_3(dir_name, parsers, odir=None):
     for root, dirs, files in os.walk(dir_name):
         for f in files:
             if f == 'log.txt':
+                odir = os.path.join(odir, os.path.basename(root)) if odir else None
                 log = os.path.join(root, f)
                 print(bcl.BOLD + bcl.HDR + '\nEntering dir: ' + root + bcl.ENDC)
-                single_process(log, parsers, False)
+                single_process(log, parsers, False, analysis_dir=odir)
 
 
 def collect_result(dir_name):
@@ -1782,8 +1783,11 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
         for idx, item in enumerate(obs_meas_display):
             samples = {x: {item: idx} for x in obs_list}
             visual.scatter(fig, r0, samples, item, ts0, sts, ets, vis)
-        fig.savefig(os.path.join(analysis_dir, '_'.join(curve_items) + '.png'), dpi=300)
+        save_fig_path = os.path.join(analysis_dir, '_'.join(curve_items))
+        fig.savefig(save_fig_path + '.png', dpi=300)
+        pickle.dump(fig, open(save_fig_path + '.pyfig', 'wb'))
         visual.close_fig(fig)
+        print('saving fig:', save_fig_path)
         # entry = matches_esr[x1id][esrid]
         # matches_esr[x1id][esrid]['dist_mean'] /= matches_esr[x1id][esrid]['count']
         # ctx['x1_tgt'] = x1id
@@ -1928,7 +1932,7 @@ def process_by_matches(matches, names, r0, ts0, ctx, vis=False):
                 wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
 
 
-def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
+def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir=None):
     # log = os.path.join(dir_name, 'log.txt')
     ctx = dict()
     ctx['obs_ep'] = {'x1': {'buff': deque(maxlen=10)}, 'esr': {'buff': deque(maxlen=10)}, 'q3': {'buff': deque(maxlen=10)}}
@@ -1960,7 +1964,7 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None):
         ctx['x1_target'] = x1tgt
     data_dir = os.path.dirname(log)
     # log = os.path.join(data_dir, 'log.txt')
-    analysis_dir = os.path.join(data_dir, 'analysis')
+    analysis_dir = analysis_dir or os.path.join(data_dir, 'analysis')
     if not os.path.exists(analysis_dir):
         os.mkdir(analysis_dir)
 
@@ -2096,9 +2100,12 @@ if __name__ == "__main__":
     os.chdir(local_path)
     # print('local_path:', local_path)
     r = '/media/nan/860evo/data/20190728142339-FCW-case7-72-72-72kmh-3/log.txt'
+    analysis_dir = None
 
     if len(sys.argv) > 1:
         r = sys.argv[1]
+        if len(sys.argv) > 2:
+            analysis_dir = sys.argv[2]
 
     rdir = os.path.dirname(r)
     ts = time.time()
@@ -2114,12 +2121,12 @@ if __name__ == "__main__":
 
     if r.endswith('log.txt'):
         print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
-        single_process(r, parsers, False)
+        single_process(r, parsers, False, analysis_dir=analysis_dir)
         # single_process(r, parsers, False, x1tgt=[6, 51], rdrtgt=[44])
     else:
         # batch_process(r, parsers)
         print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
-        batch_process_3(r, parsers)
+        batch_process_3(r, parsers, analysis_dir)
 
     dt = time.time() - ts
     print(bcl.WARN + 'Processing done. Time cost: {}s'.format(dt) + bcl.ENDC)
