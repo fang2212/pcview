@@ -91,54 +91,54 @@ class Player(object):
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
             BaseDraw.draw_text(img, '{}m'.format(i), p2, 0.3, CVColor.White, 1)
 
-    def show_overlook_background(self, img):
-        """绘制俯视图的背景，包括背景图，车背景图，光线图
-        Args:
-            img: 原始图片
-        """
-        y_background, x_background, _ = self.overlook_background_image.shape
-        y_img, x_img, _ = img.shape
-        roi_img = img[0: y_background, x_img - x_background: x_img]
-        cv2.addWeighted(self.overlook_background_image, 1, roi_img, 0.4, 0.0, roi_img)
-        x_center, y_center = 1144, 240
-
-        data_r = int(1) % 20 + 120
-
-        draw_r = []
-        while data_r > 30:
-            draw_r.append(data_r)
-            data_r = data_r - 20
-        draw_r.append(140)
-
-        y_circle, x_circle, _ = self.circlesmall_image.shape
-        for R in draw_r:
-            x_new, y_new = int(R), int(y_circle * R / x_circle)
-            new_circle = cv2.resize(self.circlesmall_image, (y_new, x_new),
-                                    interpolation=cv2.INTER_CUBIC)
-            x_begin = x_center - x_new // 2
-            x_end = x_begin + x_new
-            y_begin = y_center - y_new // 2
-            y_end = y_begin + y_new
-            roi_img = img[y_begin: y_end, x_begin: x_end]
-            cv2.addWeighted(new_circle, 0.5, roi_img, 1.0, 0.0, roi_img)
-
-        for sector_in in [self.sectorwide_image, self.sectorthin_image]:
-            y_sector, x_sector, _ = sector_in.shape
-            x_begin = 1145 - x_sector // 2
-            x_end = x_begin + x_sector
-            y_end = 219
-            y_begin = y_end - y_sector
-            roi_img = img[y_begin: y_end, x_begin: x_end]
-            cv2.addWeighted(sector_in, 0.5, roi_img, 1.0, 0.0, roi_img)
-
-        y_car, x_car, _ = self.car_image.shape
-        x_begin = x_center - x_car // 2 - 3
-        x_end = x_begin + x_car
-        y_begin = y_center - y_car // 2
-        y_end = y_begin + y_car
-        roi_img = img[y_begin: y_end, x_begin: x_end]
-        cv2.addWeighted(self.car_image, 1.0,
-                        roi_img, 1.0, 0.0, roi_img)
+    # def show_overlook_background(self, img):
+    #     """绘制俯视图的背景，包括背景图，车背景图，光线图
+    #     Args:
+    #         img: 原始图片
+    #     """
+    #     y_background, x_background, _ = self.overlook_background_image.shape
+    #     y_img, x_img, _ = img.shape
+    #     roi_img = img[0: y_background, x_img - x_background: x_img]
+    #     cv2.addWeighted(self.overlook_background_image, 1, roi_img, 0.4, 0.0, roi_img)
+    #     x_center, y_center = 1144, 240
+    #
+    #     data_r = int(1) % 20 + 120
+    #
+    #     draw_r = []
+    #     while data_r > 30:
+    #         draw_r.append(data_r)
+    #         data_r = data_r - 20
+    #     draw_r.append(140)
+    #
+    #     y_circle, x_circle, _ = self.circlesmall_image.shape
+    #     for R in draw_r:
+    #         x_new, y_new = int(R), int(y_circle * R / x_circle)
+    #         new_circle = cv2.resize(self.circlesmall_image, (y_new, x_new),
+    #                                 interpolation=cv2.INTER_CUBIC)
+    #         x_begin = x_center - x_new // 2
+    #         x_end = x_begin + x_new
+    #         y_begin = y_center - y_new // 2
+    #         y_end = y_begin + y_new
+    #         roi_img = img[y_begin: y_end, x_begin: x_end]
+    #         cv2.addWeighted(new_circle, 0.5, roi_img, 1.0, 0.0, roi_img)
+    #
+    #     for sector_in in [self.sectorwide_image, self.sectorthin_image]:
+    #         y_sector, x_sector, _ = sector_in.shape
+    #         x_begin = 1145 - x_sector // 2
+    #         x_end = x_begin + x_sector
+    #         y_end = 219
+    #         y_begin = y_end - y_sector
+    #         roi_img = img[y_begin: y_end, x_begin: x_end]
+    #         cv2.addWeighted(sector_in, 0.5, roi_img, 1.0, 0.0, roi_img)
+    #
+    #     y_car, x_car, _ = self.car_image.shape
+    #     x_begin = x_center - x_car // 2 - 3
+    #     x_end = x_begin + x_car
+    #     y_begin = y_center - y_car // 2
+    #     y_end = y_begin + y_car
+    #     roi_img = img[y_begin: y_end, x_begin: x_end]
+    #     cv2.addWeighted(self.car_image, 1.0,
+    #                     roi_img, 1.0, 0.0, roi_img)
 
     def show_parameters_background(self, img, rect):
         """左上角参数背景图"""
@@ -379,7 +379,6 @@ class Player(object):
     #     BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v * 6), 0.5, CVColor.White, 1)
     #     BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v * 7), 0.5, CVColor.White, 1)
 
-
     def show_lane(self, img, ratios, r=60, color=CVColor.Cyan):
         """绘制车道线
         Args:
@@ -389,22 +388,23 @@ class Player(object):
             color: CVColor 车道线颜色
         """
 
-        a0, a1, a2, a3 = ratios
-        a0 = float(a0)
-        a1 = float(a1)
-        a2 = float(a2)
-        a3 = float(a3)
-
-        p = []
-
-        for x in range(int(r)):
-            # x1 = x
-            # x2 = x1 + 1
-            y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
-            # y2 = a0 + a1 * x2 + a2 * x2 ** 2 + a3 * x2 ** 3
-            tx, ty = self.transform.trans_gnd2raw(x, y)
-            # tx2, ty2 = self.transform.trans_gnd2raw(x2, y2)
-            p.append((int(tx), int(ty)))
+        # a0, a1, a2, a3 = ratios
+        # a0 = float(a0)
+        # a1 = float(a1)
+        # a2 = float(a2)
+        # a3 = float(a3)
+        #
+        # p = []
+        #
+        # for x in range(int(r)):
+        #     # x1 = x
+        #     # x2 = x1 + 1
+        #     y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
+        #     # y2 = a0 + a1 * x2 + a2 * x2 ** 2 + a3 * x2 ** 3
+        #     tx, ty = self.transform.trans_gnd2raw(x, y)
+        #     # tx2, ty2 = self.transform.trans_gnd2raw(x2, y2)
+        #     p.append((int(tx), int(ty)))
+        p = self.transform.getp_ifc_from_poly(ratios, r, 1)
 
         for i in range(1, len(p) - 1, 1):
             BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
@@ -845,18 +845,19 @@ class Player(object):
             color: CVColor 车道线颜色
         """
 
-        a0, a1, a2, a3 = ratios
-        a0 = float(a0)
-        a1 = float(a1)
-        a2 = float(a2)
-        a3 = float(a3)
-
-        p = []
-
-        for x in range(int(r)):
-            y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
-            tx, ty = self.transform.trans_gnd2ipm(x, y)
-            p.append((int(tx), int(ty)))
+        # a0, a1, a2, a3 = ratios
+        # a0 = float(a0)
+        # a1 = float(a1)
+        # a2 = float(a2)
+        # a3 = float(a3)
+        #
+        # p = []
+        #
+        # for x in range(int(r)):
+        #     y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
+        #     tx, ty = self.transform.trans_gnd2ipm(x, y)
+        #     p.append((int(tx), int(ty)))
+        p = self.transform.getp_ipm_from_poly(ratios, r, 1)
 
         for i in range(1, len(p) - 1, 1):
             BaseDraw.draw_line(img, p[i], p[i + 1], color, 1)
@@ -897,15 +898,15 @@ class Player(object):
         # self.show_ipm_obs(ipm, otype, x, y, data['id'])
         # self.show_ipm_obs(ipm, data)
 
-    def draw_can_data(self, img, data, ipm):
-        if data['type'] == 'obstacle':
-            self.draw_obs(img, data, ipm)
-        elif data['type'] == 'lane':
-            self.draw_lane_r(img, data)
-        elif data['type'] == 'vehicle_state':
-            self.show_veh_speed(img, data['speed'], data['source'])
-        elif data['type'] == 'CIPV':
-            self.cipv = data['id']
+    # def draw_can_data(self, img, data, ipm):
+    #     if data['type'] == 'obstacle':
+    #         self.draw_obs(img, data, ipm)
+    #     elif data['type'] == 'lane':
+    #         self.draw_lane_r(img, data)
+    #     elif data['type'] == 'vehicle_state':
+    #         self.show_veh_speed(img, data['speed'], data['source'])
+    #     elif data['type'] == 'CIPV':
+    #         self.cipv = data['id']
 
     def draw_rtk(self, img, data, target):
         if len(data) == 0:

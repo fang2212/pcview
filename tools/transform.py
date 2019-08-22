@@ -18,17 +18,17 @@ from config.config import install
 class Transform:
     __instance = None
 
-    def __new__(cls):
+    def __new__(cls, installs=install):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
         return cls.__instance
 
-    def __init__(self):
-        self.camera_height = install['video']['height']
-        fu = install['video']['fu']
-        fv = install['video']['fv']
-        cu = install['video']['cu']
-        cv = install['video']['cv']
+    def __init__(self, installs=install):
+        self.camera_height = installs['video']['height']
+        fu = installs['video']['fu']
+        fv = installs['video']['fv']
+        cu = installs['video']['cu']
+        cv = installs['video']['cv']
 
         self.x_limits = [0, 180]
         self.y_limits = [-15, 15]
@@ -36,7 +36,8 @@ class Transform:
         self.ipm_height = 720
         self.intrinsic_para = np.array(((fu, 0, cu), (0, fv, cv), (0, 0, 1)))
         self.r_cam2img = np.array(((0, 1, 0), (0, 0, 1), (1, 0, 0)))
-        self.m_R_w2i = self.calc_m_w2i(install['video']['yaw'], install['video']['pitch'], install['video']['roll'])
+        self.m_R_w2i = self.calc_m_w2i(installs['video']['yaw'], installs['video']['pitch'], installs['video']['roll'])
+        self.installs = installs
 
     def calc_m_w2i(self, y, p, r):
         yaw = y * pi / 180
@@ -61,11 +62,31 @@ class Transform:
     def update_m_r2i(self, y, p, r):
         self.m_R_w2i = self.calc_m_w2i(y, p, r)
 
+    def getp_ifc_from_poly(self, coefs, r=60, step=0.1):
+        a0, a1, a2, a3 = coefs
+        p = []
+
+        for x in np.arange(0, r, step):
+            y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
+            tx, ty = self.trans_gnd2raw(x, y)
+            p.append((int(tx), int(ty)))
+        return p
+
+    def getp_ipm_from_poly(self, coefs, r=60, step=0.1):
+        a0, a1, a2, a3 = coefs
+        p = []
+
+        for x in np.arange(0, r, step):
+            y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
+            tx, ty = self.trans_gnd2ipm(x, y)
+            p.append((int(tx), int(ty)))
+        return p
+
     def trans_gnd2raw(self, x, y, h=None):
         if h is None:
             h = self.camera_height
-        x = x - install['video']['lon_offset']
-        y = y - install['video']['lat_offset']
+        x = x - self.installs['video']['lon_offset']
+        y = y - self.installs['video']['lat_offset']
         p_xyz = np.array([x, y, h])
         uv_t = np.dot(self.m_R_w2i, p_xyz)
         uv_new = uv_t / uv_t[2]
@@ -75,8 +96,8 @@ class Transform:
     def transf_gnd2raw(self, x, y, h=None):
         if h is None:
             h = self.camera_height
-        x = x - install['video']['lon_offset']
-        y = y - install['video']['lat_offset']
+        x = x - self.installs['video']['lon_offset']
+        y = y - self.installs['video']['lat_offset']
         p_xyz = np.array([x, y, h])
         uv_t = np.dot(self.m_R_w2i, p_xyz)
         uv_new = uv_t / uv_t[2]
@@ -150,14 +171,14 @@ class Transform:
             if dx < thres_dx:
                 break
             d_yaw = step * dx
-            install['video']['yaw'] = install['video']['yaw'] + d_yaw
-            self.update_m_r2i(install['video']['yaw'], install['video']['pitch'], install['video']['roll'])
+            self.installs['video']['yaw'] = self.installs['video']['yaw'] + d_yaw
+            self.update_m_r2i(self.installs['video']['yaw'], self.installs['video']['pitch'], self.installs['video']['roll'])
             max_iter -= 1
 
         if dx < thres_dx:
             print('yaw calibration succeeded.', dx)
-            print('yaw:', install['video']['yaw'])
-            json.dump(install, open(os.path.join(dataroot, 'instl_cal.json')), indent=True)
+            print('yaw:', self.installs['video']['yaw'])
+            json.dump(self.installs, open(os.path.join(dataroot, 'instl_cal.json')), indent=True)
         else:
             print('yaw calibration failed.', dx)
 
