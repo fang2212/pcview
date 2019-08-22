@@ -10,8 +10,10 @@
 import json
 import os
 from math import sin, cos, pi, atan2
+
 import cv2
 import numpy as np
+
 from config.config import install
 
 
@@ -38,6 +40,7 @@ class Transform:
         self.r_cam2img = np.array(((0, 1, 0), (0, 0, 1), (1, 0, 0)))
         self.m_R_w2i = self.calc_m_w2i(installs['video']['yaw'], installs['video']['pitch'], installs['video']['roll'])
         self.installs = installs
+        self.installs['default'] = {'lat_offset': 0.0, 'lon_offset': 0.0, 'pitch': 0.0, 'roll': 0.0, 'yaw': 0.0}
 
     def calc_m_w2i(self, y, p, r):
         yaw = y * pi / 180
@@ -82,39 +85,52 @@ class Transform:
             p.append((int(tx), int(ty)))
         return p
 
-    def trans_gnd2raw(self, x, y, h=None):
+    def getp_gnd_from_poly(self, coefs, r=60, step=0.1, dev='ifv300'):
+        a0, a1, a2, a3 = coefs
+        p = []
+
+        for x in np.arange(0, r, step):
+            y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
+            xg = x + self.installs[dev]['lon_offset']
+            yg = y + self.installs[dev]['lat_offset']
+            p.append((xg, yg))
+        return p
+
+    def trans_gnd2raw(self, x, y, h=None, dev='ifv300'):
         if h is None:
             h = self.camera_height
-        x = x - self.installs['video']['lon_offset']
-        y = y - self.installs['video']['lat_offset']
+        x = x - self.installs['video']['lon_offset'] + self.installs[dev]['lon_offset']
+        y = y - self.installs['video']['lat_offset'] + self.installs[dev]['lat_offset']
         p_xyz = np.array([x, y, h])
         uv_t = np.dot(self.m_R_w2i, p_xyz)
         uv_new = uv_t / uv_t[2]
 
         return int(uv_new[0]), int(uv_new[1])
 
-    def transf_gnd2raw(self, x, y, h=None):
+    def transf_gnd2raw(self, x, y, h=None, dev='ifv300'):
         if h is None:
             h = self.camera_height
-        x = x - self.installs['video']['lon_offset']
-        y = y - self.installs['video']['lat_offset']
+        x = x - self.installs['video']['lon_offset'] + self.installs[dev]['lon_offset']
+        y = y - self.installs['video']['lat_offset'] + self.installs[dev]['lat_offset']
         p_xyz = np.array([x, y, h])
         uv_t = np.dot(self.m_R_w2i, p_xyz)
         uv_new = uv_t / uv_t[2]
         return uv_new[0], uv_new[1]
 
-    def trans_gnd2ipm(self, x, y):
+    def trans_gnd2ipm(self, x, y, dev='ifv300'):
         x_scale = self.ipm_height / (self.x_limits[1] - self.x_limits[0])
         y_scale = self.ipm_width / (self.y_limits[1] - self.y_limits[0])
-
+        x += self.installs[dev]['lon_offset']
+        y += self.installs[dev]['lat_offset']
         ipm_y = (-x + self.x_limits[1]) * x_scale
         ipm_x = (y - self.y_limits[0]) * y_scale
         return int(ipm_x), int(ipm_y)
 
-    def transf_gnd2ipm(self, x, y):
+    def transf_gnd2ipm(self, x, y, dev='ifv300'):
         x_scale = self.ipm_height / (self.x_limits[1] - self.x_limits[0])
         y_scale = self.ipm_width / (self.y_limits[1] - self.y_limits[0])
-
+        x += self.installs[dev]['lon_offset']
+        y += self.installs[dev]['lat_offset']
         ipm_y = (-x + self.x_limits[1]) * x_scale
         ipm_x = (y - self.y_limits[0]) * y_scale
         return ipm_x, ipm_y
@@ -140,13 +156,13 @@ class Transform:
         return range, angle
 
     def calc_g2i_matrix(self):
-        p0 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[0])
-        p1 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[1])
-        p2 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[1])
-        p3 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[0])
+        p0 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[0], dev='video')
+        p1 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[1], dev='video')
+        p2 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[1], dev='video')
+        p3 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[0], dev='video')
         src = np.array([p0, p1, p2, p3], np.float32)
         dst = np.array([[0, 0], [self.ipm_width - 1, 0], [self.ipm_width - 1, self.ipm_height - 1],
-                        [0, self.ipm_height-1]], np.float32)
+                        [0, self.ipm_height - 1]], np.float32)
         m_g2i = cv2.getPerspectiveTransform(src, dst)
         return m_g2i
 
@@ -172,7 +188,8 @@ class Transform:
                 break
             d_yaw = step * dx
             self.installs['video']['yaw'] = self.installs['video']['yaw'] + d_yaw
-            self.update_m_r2i(self.installs['video']['yaw'], self.installs['video']['pitch'], self.installs['video']['roll'])
+            self.update_m_r2i(self.installs['video']['yaw'], self.installs['video']['pitch'],
+                              self.installs['video']['roll'])
             max_iter -= 1
 
         if dx < thres_dx:

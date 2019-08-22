@@ -281,7 +281,13 @@ class Player(object):
         w = 1200 * width / x
         if w > 600:
             w = 600
-        x0, y0 = self.transform.trans_gnd2raw(x, y)
+        dev = obs.get('source')
+        if dev:
+            dev = dev.split('.')[0]
+            # print(dev)
+        else:
+            dev = 'default'
+        x0, y0 = self.transform.trans_gnd2raw(x, y, dev=dev)
 
         h = w
         h = 1200 * height / x
@@ -763,7 +769,8 @@ class Player(object):
         width = 0.5
         height = 0.5
         ux, uy = self.transform.trans_gnd2raw(x, y,
-                               host['hgt'] - target['hgt'] + install['video']['height'] - install['rtk']['height'])
+                               host['hgt'] - target['hgt'] + install['video']['height'] - install['rtk']['height'],
+                                              'rtk')
         w = 1200 * width / x
         if w > 50:
             w = 50
