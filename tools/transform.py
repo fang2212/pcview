@@ -104,7 +104,10 @@ class Transform:
         p_xyz = np.array([x, y, h])
         uv_t = np.dot(self.m_R_w2i, p_xyz)
         uv_new = uv_t / uv_t[2]
-
+        # if uv_new[0] > 10000:
+        #     print(x, y)
+        #     uv_new[0] = 10000
+        # if uv_new[1] > 10000: uv_new[1] = 10000
         return int(uv_new[0]), int(uv_new[1])
 
     def transf_gnd2raw(self, x, y, h=None, dev='ifv300'):
@@ -156,10 +159,10 @@ class Transform:
         return range, angle
 
     def calc_g2i_matrix(self):
-        p0 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[0], dev='video')
-        p1 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[1], dev='video')
-        p2 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[1], dev='video')
-        p3 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[0], dev='video')
+        p0 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[0], dev='default')
+        p1 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[1], dev='default')
+        p2 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[1], dev='default')
+        p3 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[0], dev='default')
         src = np.array([p0, p1, p2, p3], np.float32)
         dst = np.array([[0, 0], [self.ipm_width - 1, 0], [self.ipm_width - 1, self.ipm_height - 1],
                         [0, self.ipm_height - 1]], np.float32)

@@ -38,7 +38,7 @@ class Hub(Thread):
         #     #     pass
         #     time.sleep(0.2)
         self.finder.request()
-        time.sleep(0.2)
+        time.sleep(0.6)
 
         if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
             self.fileHandler = FileHandler()
