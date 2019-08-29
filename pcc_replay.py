@@ -381,8 +381,12 @@ def prep_replay(source):
 if __name__ == "__main__":
     from config.config import *
     import sys
-
-    sys.argv.append('/home/cao/pc-collect/hh_20190711174047/log.txt')
+    import argparse
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--log", help="log.txt路径", type=str)
+    # parser.add_argument("--save_replay_video", help="是否保存回放视频", type=str)
+    # args = parser.parse_args()
+    sys.argv.append('/home/cao/pc-collect/20190801153613/log.txt')
     freeze_support()
     source = sys.argv[1]
     print(source)
@@ -395,5 +399,5 @@ if __name__ == "__main__":
 
     replayer = LogPlayer(r_sort, configs, ratio=0.2, start_frame=0)
     # replayer.start()
-    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)
+    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=True)
     pc_viewer.start()

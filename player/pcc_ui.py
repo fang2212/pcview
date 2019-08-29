@@ -955,8 +955,13 @@ class Player(object):
             # print(data)
         if data['type'] != 'lane':
             return
+
+        if 'color' in data:
+            color = self.color_seq[data['color']]
+        else:
+            color = CVColor.Blue
         # self.player.show_overlook_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
-        self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
+        self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
 
     # def show_radar(self, img, position, color=CVColor.Cyan, thickness=2):
     #     """绘制pedestrain

@@ -1,0 +1,9 @@
+{
+  "log_root": "/home/cao/pc-collector",
+  "save": {
+    "video": true,
+    "raw": true,
+    "alert": false,
+    "log": false
+  }
+}

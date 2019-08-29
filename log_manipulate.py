@@ -651,6 +651,7 @@ def parse_x1_line(line, ctx):
     from parsers.x1 import parse_x1
     cols = line.split(' ')
     ts = float(cols[0]) + float(cols[1]) / 1000000
+    print(line)
     if can_port in cols[2] or can_port.lower() in cols[2]:
         can_id = int(cols[3], 16)
         buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
@@ -664,7 +665,14 @@ def parse_x1_line(line, ctx):
         lines = ''
         ctx['x1_obs_ep'] = ret
         ctx['x1_obs_ep_ts'] = ts
+        # print(ret)
         for r in ret:
+            if 'no vehicle' in r['class']:
+                # print(r)
+                continue
+            # print(r)
+
+
             lines += compose_log(ts, 'x1.{}.{}'.format(r['class'], r['id']),
                                  '{} {} {} {}'.format(r['pos_lat'], r['pos_lon'], (r['vel_lon']),
                                                       r.get('TTC') or 7.0))
