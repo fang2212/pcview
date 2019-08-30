@@ -260,7 +260,11 @@ class Player(object):
         else:
             # print(obs['source'].split('.')[0])
             # x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
-            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'])
+            install_para = install[obs['source'].split('.')[0]]
+            if install_para is None:
+                x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'])
+            else:
+                x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install_para)
         if x == 0:
             x = 0.1
         if x < 0:
@@ -285,7 +289,7 @@ class Player(object):
             if w > 50:
                 w = 50
             # print(int(x1), int(y1), int(w), width)
-            cv2.circle(img, (int(x0), int(y0)), int(w), color, 1)
+            cv2.circle(img, (int(x0), int(y0-0.5*h)), int(w), color, 1)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), 0.45, color, 1)
         elif obs.get('class') == 'pedestrian':
             # print(obs)
@@ -321,7 +325,7 @@ class Player(object):
         color = self.color_seq[obs['color']]
 
         if obs.get('sensor') == 'radar':
-            cv2.circle(img, (u-9, v-8), 8, color, 2)
+            cv2.circle(img, (u, v-8), 8, color, 2)
             BaseDraw.draw_text(img, '{}'.format(id), (u - 28, v - 8), 0.4, color, 1)
             # ESR
             if 'TTC' in obs:
@@ -612,7 +616,8 @@ class Player(object):
 
     def show_yaw_rate(self, img, yr, source):
         indent = self.get_indent(source)
-        BaseDraw.draw_text(img, '%.4f' % yr + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
+        yr_deg = yr*57.3
+        BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
 
     def show_q3_veh(self, img, speed, yr):
         BaseDraw.draw_text(img, 'q3spd: ' + str(int(speed * 3.6)), (2, 120), 0.5, CVColor.White, 1)
@@ -638,10 +643,9 @@ class Player(object):
         if 'TTC' in obs:
             BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line + 20), 0.5, CVColor.White,
                                1)
-        dist = obs.get('pos_lon') or obs['range']
+        dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
         BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
         BaseDraw.draw_up_arrow(img, indent + 8, line - 12, self.color_seq[obs['color']], 6)
-
 
     def _show_rtk(self, img, rtk):
         # print(rtk)
@@ -822,7 +826,8 @@ class Player(object):
             self.show_cipo_info(img, data)
 
         self.show_obs(img, data, color)
-        self.show_ipm_obs(ipm, otype, x, y, data['id'])
+        # self.show_ipm_obs(ipm, otype, x, y, data['id'])
+        # self.show_ipm_obs(ipm, data)
 
     def draw_can_data(self, img, data, ipm):
         if data['type'] == 'obstacle':

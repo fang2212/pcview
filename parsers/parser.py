@@ -2,7 +2,7 @@ from parsers.x1 import parse_x1
 from parsers.mobileye_q3 import parse_ifv300, parse_q3
 from parsers.mobileye_q2 import parse_mobileye
 from parsers.mqb_esp import parse_mqb
-from parsers.radar import parse_esr, parse_hmb, parse_bosch_mrr, parse_hawkeye_lmr, parse_fusion_mrr
+from parsers.radar import parse_esr, parse_ars, parse_hmb, parse_bosch_mrr, parse_hawkeye_lmr, parse_fusion_mrr
 from parsers.drtk import parse_rtk
 
 
@@ -15,6 +15,7 @@ parsers_dict = {
     "ifv300":   parse_ifv300,
     "mbq2":     parse_mobileye,
     "esr":      parse_esr,
+    "ars":      parse_ars,
     "mqb":      parse_mqb,
     "mrr":      parse_bosch_mrr,
     "lmr":      parse_hawkeye_lmr,
