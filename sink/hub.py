@@ -29,22 +29,24 @@ class Hub(Thread):
         self.last_res = {}
         self.collectors = {}
 
-        finder = CollectorFinder()
-        finder.start()
-        for i in range(3):
-            # try:
-            finder.request()
-            # except Exception as e:
-            #     pass
-            time.sleep(0.2)
+        self.finder = CollectorFinder()
+        self.finder.start()
+        # for i in range(3):
+        #     # try:
+        #     self.finder.request()
+        #     # except Exception as e:
+        #     #     pass
+        #     time.sleep(0.2)
+        self.finder.request()
+        time.sleep(0.6)
 
         if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
             self.fileHandler = FileHandler()
             self.fileHandler.start()
             # self.fileHandler.start_rec()
 
-        if len(finder.found) > 0:
-            ts0 = finder.found[list(finder.found.keys())[0]]['ts']
+        if len(self.finder.found) > 0:
+            ts0 = self.finder.found[list(self.finder.found.keys())[0]]['ts']
         else:
             print('no devices...')
 
@@ -62,22 +64,22 @@ class Hub(Thread):
         # self.collectors[ip]['sinks']['video'] = self.camera_sink
 
         print('Devices found:')
-        for dev in finder.found:
-            print(dev, finder.found[dev])
+        # for dev in self.finder.found:
+        #     print(dev, self.finder.found[dev])
 
-        for dev in finder.found:
-            print(bcl.OKGR+dev+bcl.ENDC, finder.found[dev])
-            self.collectors[dev] = finder.found[dev]
-            if finder.found[dev]['ts'] - ts0 > 1.0 or finder.found[dev]['ts'] - ts0 < -1.0:
+        for dev in self.finder.found:
+            print(bcl.OKGR+dev+bcl.ENDC, self.finder.found[dev])
+            self.collectors[dev] = self.finder.found[dev]
+            if self.finder.found[dev]['ts'] - ts0 > 1.0 or self.finder.found[dev]['ts'] - ts0 < -1.0:
                 self.time_aligned = False
 
         print('Connecting to device(s)...')
         # print('collector0 on {}, types:'.format(config.ip), config.msg_types)
         # print('collector1 on {}, types:'.format(config2.ip), config2.msg_types)
 
-        for ip in finder.found:
+        for ip in self.finder.found:
             self.collectors[ip]['sinks'] = {}
-            if finder.found[ip]['mac'] == configs[0]['mac']:
+            if self.finder.found[ip]['mac'] == configs[0]['mac']:
                 if not x1_camera_flag:
                     self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
                                                   fileHandler=self.fileHandler)
@@ -90,10 +92,10 @@ class Hub(Thread):
 
             print('hub configs', len(configs))
             for idx, c in enumerate(configs):
-                if c['mac'] == finder.found[ip]['mac']:
-                    if finder.found[ip].get('type') == 'pi_node':
-                        for name in finder.found[ip]['ports']:
-                            port = finder.found[ip]['ports'][name]
+                if c['mac'] == self.finder.found[ip]['mac']:
+                    if self.finder.found[ip].get('type') == 'pi_node':
+                        for name in self.finder.found[ip]['ports']:
+                            port = self.finder.found[ip]['ports'][name]
                             self.collectors[ip]['idx'] = idx
                             pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=name,
                                                 fileHandler=self.fileHandler, isheadless=self.headless)
@@ -128,6 +130,71 @@ class Hub(Thread):
             }
         self.msg_cnt['frame'] = 0
         print('hub init done')
+    
+    def find_collectors(self):
+        self.finder.request()
+
+        if len(self.finder.found) > 0:
+            ts0 = self.finder.found[list(self.finder.found.keys())[0]]['ts']
+        else:
+            # print('no devices...')
+            pass
+
+        # x1_camera_flag = False
+        # if 'use_x1_camera' in configs[0] and configs[0]['use_x1_camera']['use']:
+        #     ip = configs[0]['use_x1_camera']['ip']
+        #     port = configs[0]['use_x1_camera']['port']
+        #     self.camera_sink = X1CameraSink(msg_queue=self.msg_queue, cam_queue=self.cam_queue, ip=ip, port=port,
+        #                                     channel='camera',
+        #                                     fileHandler=self.fileHandler)
+        #     self.camera_sink.start()
+        #     x1_camera_flag = True
+        #     print('use x1 algorithm camera')
+
+        # self.collectors[ip]['sinks']['video'] = self.camera_sink
+
+        # print('Devices found:')
+        # for dev in self.finder.found:
+        #     print(dev, self.finder.found[dev])
+
+        for ip in self.finder.found:
+            if ip in self.collectors:
+                continue
+            # print(bcl.OKGR+ip+bcl.ENDC, self.finder.found[ip])
+            self.collectors[ip] = self.finder.found[ip]
+            self.collectors[ip]['sinks'] = {}
+            if self.finder.found[ip]['mac'] == configs[0]['mac']:
+                # if not x1_camera_flag:
+                self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
+                                              fileHandler=self.fileHandler)
+                self.camera_sink.start()
+                self.collectors[ip]['sinks']['video'] = self.camera_sink
+
+                print('use x1 collector camera')
+
+            ndev = 0
+
+            print('hub configs', len(configs))
+            for idx, c in enumerate(configs):
+                if c['mac'] == self.finder.found[ip]['mac']:
+                    if self.finder.found[ip].get('type') == 'pi_node':
+                        for name in self.finder.found[ip]['ports']:
+                            port = self.finder.found[ip]['ports'][name]
+                            self.collectors[ip]['idx'] = idx
+                            pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=name,
+                                                fileHandler=self.fileHandler, isheadless=self.headless)
+                            pisink.start()
+                            self.collectors[ip]['sinks'][name] = pisink
+                    else:
+                        self.collectors[ip]['idx'] = idx
+                        self.collectors[ip]['sinks'].update(self.fpga_handle(c, self.msg_queue, ip, index=idx))
+                    ndev += 1
+                    print('Connected dev {} on {}, types:'.format(idx, ip), configs[0]['msg_types'])
+
+        return {'status': 'ok', 'info': 'oj8k'}
+        # print('Connecting to device(s)...')
+        # print('collector0 on {}, types:'.format(config.ip), config.msg_types)
+        # print('collector1 on {}, types:'.format(config2.ip), config2.msg_types)
 
     def fpga_handle(self, cfg, msg_queue, ip, index=0):
         print('fpga handle:', index, cfg)

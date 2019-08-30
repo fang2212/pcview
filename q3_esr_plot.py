@@ -149,7 +149,7 @@ def parse_esr_x1_data(file_name, parms, x1_can_port='CAN0', esr_can_port='CAN1')
 
                 if isinstance(r, list):
                     for item in r:
-                        print('--------', item)
+                        # print('--------', item)
                         if item['id'] not in esr_id:
                             continue
                         d = {'ts': ts, 'rng': item['range'], 'ttc': None}

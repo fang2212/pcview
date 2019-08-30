@@ -29,7 +29,7 @@ class CollectorFinder(Process):
                 data, address = ret
                 # print('response from {}:{}'.format(address, data.decode('utf-8')))
                 # self.q.put(ret)
-                # print(data[0])
+                # print(data)
                 if data[0] == 123:
                     data = json.loads(data.decode())
                 self.found[address[0]] = data
@@ -42,13 +42,13 @@ class CollectorFinder(Process):
 
 
 if __name__ == "__main__":
-    finder = ColletorFinder()
+    finder = CollectorFinder()
     finder.start()
-    for i in range(3):
+    for i in range(300):
         finder.request()
-        sleep(0.2)
+        sleep(1)
 
-    print(finder.found)
+    # print(finder.found)
 
     while True:
         sleep(1)

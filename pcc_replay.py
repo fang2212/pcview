@@ -11,6 +11,7 @@ import struct
 import time
 from multiprocessing import Process, Queue, freeze_support
 import json
+from parsers import ublox
 
 
 def jpeg_extractor(video_dir):
@@ -88,7 +89,6 @@ class LogPlayer(Process):
         if os.path.exists(self.x1_log):
             self.x1_fp = open(self.x1_log, 'r')
 
-
         for idx, cfg in enumerate(configs):
             cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
             cantypes1 = ' '.join(cfg['can_types']['can1']) + '.{:01}'.format(idx)
@@ -146,8 +146,9 @@ class LogPlayer(Process):
                         try:
                             data = json.loads(line)
                         except json.JSONDecodeError as e:
-                            print('error json line', line)
-                            continue
+                            pass
+                            # print('error json line', line)
+                            # continue
 
                         if 'frame_id' not in data:
                             continue
@@ -180,6 +181,9 @@ class LogPlayer(Process):
         # self.init_socket()
         # cp = cProfile.Profile()
         # cp.enable()
+        last_fid = 0
+        frame_lost = 0
+        total_frame = 0
         rtk_dec = False
         lcnt = 0
         rf = open(self.log_path)
@@ -204,9 +208,22 @@ class LogPlayer(Process):
             # print('line {}'.format(cnt))
             cols = line.split(' ')
             ts = float(cols[0]) + float(cols[1]) / 1000000
+
             if cols[2] == 'camera':
                 frame_id = int(cols[3])
-                fid, jpg = next(self.jpeg_extractor)
+                if last_fid == 0:
+                    last_fid = frame_id - 1
+                frame_lost += frame_id - last_fid - 1
+                total_frame += 1
+                last_fid = frame_id
+
+                try:
+                    fid, jpg = next(self.jpeg_extractor)
+                except StopIteration as e:
+                    print('images run out.')
+                    return
+                if fid and fid != frame_id:
+                    print(bcl.FAIL+'raw fid differs from log:'+bcl.ENDC, fid, frame_id)
                 lcnt += 1
                 if jpg is None or lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                     self.now_frame_id = frame_id
@@ -351,6 +368,12 @@ class LogPlayer(Process):
                 # r['sig_mask'] = int(fields[16], 16)
                 # self.msg_queue.put((0xc7, r, 'can'))
                 self.cache['can'].append(r.copy())
+
+            if 'NMEA' in cols[2]:
+                r = ublox.decode_nmea(cols[3])
+                r['source'] = 'gps'
+                self.cache['can'].append(r.copy())
+
         rf.close()
         # cp.disable()
         # cp.print_stats()
@@ -381,12 +404,12 @@ def prep_replay(source):
 if __name__ == "__main__":
     from config.config import *
     import sys
-    import argparse
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--log", help="log.txt路径", type=str)
-    # parser.add_argument("--save_replay_video", help="是否保存回放视频", type=str)
-    # args = parser.parse_args()
-    sys.argv.append('/home/cao/pc-collect/20190801153613/log.txt')
+    sys.argv.append('/home/cao/桌面/eyeq4_data/20190828174812/log.txt')
+
+    local_path = os.path.split(os.path.realpath(__file__))[0]
+    # print('local_path:', local_path)
+    os.chdir(local_path)
+
     freeze_support()
     source = sys.argv[1]
     print(source)
@@ -398,6 +421,6 @@ if __name__ == "__main__":
     from parsers.parser import parsers_dict
 
     replayer = LogPlayer(r_sort, configs, ratio=0.2, start_frame=0)
-    # replayer.start()
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=True)
     pc_viewer.start()
+

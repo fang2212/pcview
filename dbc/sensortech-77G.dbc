@@ -1,0 +1,193 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: _77G_
+
+
+BO_ 2565996784 Message_Config: 8 _77G_
+ SG_ Life_value : 63|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ Fault_Level : 39|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Program_Version : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Obstacle_amount : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 2565937136 Message_12_2: 8 _77G_
+ SG_ SNR_12 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_12 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_12 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_12 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565936880 Message_12: 8 _77G_
+ SG_ Relative_Object_12 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_12 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_12 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_12 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565936624 Message_11_2: 8 _77G_
+ SG_ SNR_11 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_11 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_11 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_11 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565936112 Message_10_2: 8 _77G_
+ SG_ SNR_10 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_10 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_10 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_10 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565935600 Message_9_2: 8 _77G_
+ SG_ SNR_9 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_9 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_9 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_9 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565935088 Message_8_2: 8 _77G_
+ SG_ SNR_8 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_8 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_8 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_8 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565934576 Message_7_2: 8 _77G_
+ SG_ SNR_7 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_7 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_7 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_7 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565934064 Message_6_2: 8 _77G_
+ SG_ SNR_6 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_6 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_6 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_6 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565933552 Message_5_2: 8 _77G_
+ SG_ SNR_5 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_5 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_5 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_5 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565933040 Message_4_2: 8 _77G_
+ SG_ SNR_4 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_4 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_4 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_4 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565932528 Message_3_2: 8 _77G_
+ SG_ SNR_3 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_3 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_3 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_3 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565932016 Message_2_2: 8 _77G_
+ SG_ SNR_2 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_2 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_2 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_2 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565931504 Message_1_2: 8 _77G_
+ SG_ SNR_1 : 63|8@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Amplitude_1 : 47|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Distance_1 : 31|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ori_Angle_1 : 15|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565936368 Message_11: 8 _77G_
+ SG_ Relative_Object_11 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_11 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_11 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_11 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565935856 Message_10: 8 _77G_
+ SG_ Relative_Object_10 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_10 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_10 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_10 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565935344 Message_9: 8 _77G_
+ SG_ Relative_Object_9 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_9 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_9 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_9 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565934832 Message_8: 8 _77G_
+ SG_ Relative_Object_8 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_8 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_8 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_8 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565934320 Message_7: 8 _77G_
+ SG_ Relative_Object_7 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_7 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_7 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_7 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565933808 Message_6: 8 _77G_
+ SG_ Relative_Object_6 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_6 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_6 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_6 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565933296 Message_5: 8 _77G_
+ SG_ Relative_Object_5 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_5 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_5 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_5 : 0|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565932784 Message_4: 8 _77G_
+ SG_ Relative_Object_4 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_4 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_4 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_4 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565932272 Message_3: 8 _77G_
+ SG_ Relative_Object_3 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_3 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_3 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_3 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565931760 Message_2: 8 _77G_
+ SG_ Relative_Object_2 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_2 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_2 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_2 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2565931248 Message_1: 8 _77G_
+ SG_ Relative_Object_1 : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Cross_Object_1 : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Distance_Object_1 : 23|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Object_Number_1 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+
+
+
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "BusType" "CAN";
+

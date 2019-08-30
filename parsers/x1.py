@@ -14,7 +14,7 @@ import cantools
 # db_x1 = cantools.database.load_file('dbc/MINIEYE_CAR.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/MINIEYE_PED.dbc')
 # db_x1.add_dbc_file('dbc/MINIEYE_LANE.dbc')
-db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190704.dbc', strict=False)
+db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190715.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/ESR DV3_64Tgt.dbc')
 
 cipv = {}
@@ -37,15 +37,18 @@ def parse_x1(id, data, ctx=None):
         ctx['x1_obs'].clear()
         # x1_obs.clear()
         cipv.clear()
+
+    elif id == 0x77f:  # frame_ped
         cipp.clear()
 
     elif id == 0x76d:
         # print("0x%x" % id, r)
-        if r['TargetVehicle_Type'] == 'No Vehicle':
+        if r['TargetVehicle_Type'] == 'NoVehicle':
             return None
         else:
             # print("0x%x" % id, r)
             cipv['type'] = 'obstacle'
+            cipv['sensor'] = 'x1'
             cipv['cipo'] = True
             cipv['id'] = r['Vehicle_ID']
             cipv['pos_lat'] = r['TargetVehicle_PosY']
@@ -75,6 +78,7 @@ def parse_x1(id, data, ctx=None):
         x1_obs = {}
         for i in range(obs_num):
             x1_obs['type'] = 'obstacle'
+            x1_obs['sensor'] = 'x1'
             x1_obs['id'] = r['Vehicle' + str(2 * (index - 1) + i + 1) + '_ID']
             x1_obs['class'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_Type']
             x1_obs['pos_lon'] = r['AdditionVehicle' + str(2 * (index - 1) + i + 1) + '_PosX']
@@ -93,6 +97,7 @@ def parse_x1(id, data, ctx=None):
         ped = None
         cipp['width'] = 0.3
         cipp['type'] = 'obstacle'
+        cipp['sensor'] = 'x1'
         cipp['cipo'] = True
         cipp['id'] = r['TargetPedestrian_ID']
         cipp['vel_lon'] = r['TargetPedestrian_VelX']
@@ -122,6 +127,7 @@ def parse_x1(id, data, ctx=None):
             x1_ped['pos_lon'] = r['AdditionPedestrian' + str(2 * (index - 1) + i + 1) + '_PosX']
             x1_ped['pos_lat'] = r['AdditionPedestrian' + str(2 * (index - 1) + i + 1) + '_PosY']
             x1_ped['type'] = 'obstacle'
+            x1_ped['sensor'] = 'x1'
             x1_ped['class'] = 'pedestrian'
             x1_ped['color'] = 4
             x1_ped['vel_lon'] = 0
@@ -134,9 +140,9 @@ def parse_x1(id, data, ctx=None):
             # pass
             # print(len(ctx['x1_obs']), ctx['x1_obs'])
             if ctx.get('x1_obs'):
-                res = ctx.get('x1_obs').copy()
-                ctx['x1_obs'] = []
-                return res
+                ret = ctx['x1_obs'].copy()
+                ctx['x1_obs'].clear()
+                return ret
         # return x1_ped_list
 
     if id == 0x420:
@@ -148,18 +154,20 @@ def parse_x1(id, data, ctx=None):
         if 'fusion' not in ctx:
             return
         index = (id - 0x400) // 2
-        if id&1:
-            ctx['fusion'][index]['pos_lon'] = r['L_long_rel_'+'%02d'%(index+1)]
-            ctx['fusion'][index]['pos_lat'] = r['L_lat_rel_'+'%02d'%(index+1)]
-            ctx['fusion'][index]['vx'] = r['V_long_obj_' + '%02d' % (index + 1)]
-            ctx['fusion'][index]['vy'] = r['V_lat_obj_' + '%02d' % (index + 1)]
-            ctx['fusion'][index]['ax'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
-            ctx['fusion'][index]['cipo'] = False
-            ctx['fusion'][index]['type'] = 'obstacle'
-            ctx['fusion'][index]['class'] = 'fusion_data'
-            ctx['fusion'][index]['color'] = 7
-            ctx['fusion'][index]['width'] = 0.15
-            ctx['fusion'][index]['height'] = 0.15
+        # print(index)
+        if id & 1:
+            if index in ctx['fusion']:
+                ctx['fusion'][index]['pos_lon'] = r['L_long_rel_'+'%02d'%(index+1)]
+                ctx['fusion'][index]['pos_lat'] = r['L_lat_rel_'+'%02d'%(index+1)]
+                ctx['fusion'][index]['vx'] = r['V_long_obj_' + '%02d' % (index + 1)]
+                ctx['fusion'][index]['vy'] = r['V_lat_obj_' + '%02d' % (index + 1)]
+                ctx['fusion'][index]['ax'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
+                ctx['fusion'][index]['cipo'] = False
+                ctx['fusion'][index]['type'] = 'obstacle'
+                ctx['fusion'][index]['class'] = 'fusion_data'
+                ctx['fusion'][index]['color'] = 7
+                ctx['fusion'][index]['width'] = 0.15
+                ctx['fusion'][index]['height'] = 0.15
         else:
             ctx['fusion'][index] = dict()
             ctx['fusion'][index]['id'] = r['TrackID_'+'%02d'%(index+1)]
@@ -168,7 +176,7 @@ def parse_x1(id, data, ctx=None):
         if id == 0x41f:
             ret = []
             for key in ctx['fusion']:
-                if key == 255 or type(key) == type(''):
+                if key == 255 or type(key) == type('') or 'id' not in  ctx['fusion'][key] or 'type' not in  ctx['fusion'][key]:
                     continue
                 obs = ctx['fusion'][key]
                 ret.append(obs.copy())

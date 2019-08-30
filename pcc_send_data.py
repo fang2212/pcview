@@ -101,7 +101,7 @@ class LogSend:
                 msg = struct.pack('<BBhIdhhhhhhhq', 0, 0, 0, 0, ts, data[3], data[4], data[5], data[0], data[1], data[2],
                                   int((float(cols[9]) - 36.53) * 340), 0)
                 nanomsg.wrapper.nn_send(self.socks[cols[2]], msg, 0)
-            print('---------', line)
+            # print('---------', line)
         rf.close()
 
 

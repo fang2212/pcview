@@ -50,5 +50,22 @@
     "yaw": 0.0,
     "pitch": 0.0,
     "roll": 0.0
-  }
+  },
+  "sta77": {
+  "roll": 0.0,
+  "lat_offset": -0.22,
+  "pitch": 0.0,
+  "height": 0.45,
+  "lon_offset": 0.0,
+  "yaw": 2.8
+ },
+   "mbq4": {
+  "roll": 0.0,
+  "lat_offset": 0.0,
+  "pitch": 0.0,
+  "height": 1.18,
+  "lon_offset": -1.64,
+  "yaw": 0.0
+ }
+
 }

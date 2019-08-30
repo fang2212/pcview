@@ -7,16 +7,19 @@ __progname__ = 'run'
 
 from math import fabs
 import logging
+import time
 from multiprocessing import Manager
 import cv2
 from datetime import datetime
 from tools.mytools import Supervisor, OrientTuner
 from tools.transform import Transform
+from tools.geo import *
 from config.config import local_cfg
 from player.pcc_ui import Player
 from sink.hub import Hub
 from tools.vehicle import Vehicle
 from tools.match import is_near
+from net.ntrip_client import GGAReporter
 import numpy as np
 import base64
 from multiprocessing.dummy import Process as Thread
@@ -41,6 +44,7 @@ class PCC(object):
         self.replay = replay
         self.rlog = rlog
         self.frame_idx = 0
+        self.ts0 = 0
 
         self.now_id = 0
         self.pre_rtk = {}
@@ -59,14 +63,19 @@ class PCC(object):
 
         self.ego_car = Vehicle()
         self.calib_data = dict()
+        self.frame_cost = 0
         cv2.namedWindow('UI')
         cv2.createTrackbar('Yaw', 'UI', 500, 1000, self.ot.update_yaw)
         cv2.createTrackbar('Pitch', 'UI', 500, 1000, self.ot.update_pitch)
         cv2.createTrackbar('Roll', 'UI', 500, 1000, self.ot.update_roll)
         cv2.createTrackbar('ESR_Yaw', 'UI', 500, 1000, self.ot.update_esr_yaw)
         if not replay:
-            self.supervisor = Supervisor([self.check_status, self.hub.fileHandler.check_file])
+            self.supervisor = Supervisor([self.check_status,
+                                          self.hub.fileHandler.check_file,
+                                          self.hub.find_collectors])
             self.supervisor.start()
+            self.gga = GGAReporter('ntrip.weaty.cn', 5001)
+            self.gga.start()
         else:
             self.hub.d = Manager().dict()
             def update_speed(x):
@@ -82,7 +91,7 @@ class PCC(object):
 
         if self.save_replay_video and self.replay:
             self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
-            self.vw.set_writer("q3_x1_compare")
+            self.vw.set_writer("replay-render")
             print('--------save replay video',os.path.dirname(self.rlog))
 
 
@@ -96,6 +105,13 @@ class PCC(object):
             if d is None or not d.get('frame_id'):
                 # time.sleep(0.01)
                 continue
+            if not self.replay:
+                qsize = self.hub.fileHandler.raw_queue.qsize()
+                # print(qsize)
+                if self.hub.fileHandler.recording and qsize > 2000:
+                    print('escap drawing', qsize)
+                    time.sleep(0.1)
+                    continue
             self.draw(d, frame_cnt)
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
@@ -111,10 +127,11 @@ class PCC(object):
             if frame_cnt > 500:
                 self.player.start_time = datetime.now()
                 frame_cnt = 1
-            time.sleep(0.01)
+            # time.sleep(0.01)
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])
+        t0 = time.time()
         try:
             imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
             img = imgraw.copy()
@@ -125,15 +142,20 @@ class PCC(object):
         frame_id = mess['frame_id']
         self.now_id = frame_id
         self.ts_now = mess['ts']
+        self.player.ts_now = mess['ts']
+        self.player.update_column_ts('video', mess['ts'])
         # print(mess)
         can_data = mess.get('can')
+        if self.ts0 == 0:
+            self.ts0 = self.ts_now
 
         if local_cfg.save.video and not self.replay:
             self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
 
-        self.player.show_columns(img)
+        # self.player.show_columns(img)
 
         self.player.show_frame_id(img, frame_id)
+        self.player.show_frame_cost(self.frame_cost)
         self.player.show_datetime(img, self.ts_now)
         if self.show_ipm:
             self.m_g2i = self.transform.calc_g2i_matrix()
@@ -179,6 +201,9 @@ class PCC(object):
         if not self.replay and self.hub.fileHandler.recording:
             self.player.show_recording(img, self.hub.fileHandler.start_time)
 
+        if self.replay:
+            self.player.show_replaying(img, self.ts_now - self.ts0)
+
         fps = self.player.cal_fps(frame_cnt)
         self.player.show_fps(img, fps)
 
@@ -186,18 +211,22 @@ class PCC(object):
             self.player.show_warning(img, self.supervisor.check())
         self.player.show_intrinsic_para(img)
 
+        self.player.render_text_info(img)
+
         if self.save_replay_video and self.replay:
             self.vw.write(img)
-            # print('-------- img')
 
         if self.show_ipm:
             comb = np.hstack((img, self.ipm))
         else:
             comb = img
 
+
+
         cv2.imshow('UI', comb)
 
         self.handle_keyboard()
+        self.frame_cost = (time.time() - t0)*0.1 + self.frame_cost*0.9
 
     def draw_rtk(self, img, data):
         self.player.show_rtk(img, data)
@@ -220,9 +249,13 @@ class PCC(object):
 
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
+        if 'lat' in data and not self.replay:
+            self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
         if data['source'] == 'rtk.5':
             if 'lat' in data:
                 self.rtk_pair[0] = data
+                # if not self.replay:
+                #     self.gga.set_pos(data['lat'], data['lon'])
             if 'yaw' in data:
                 self.rtk_pair[0]['yaw'] = data['yaw']
         if 'rtk' in data['source'] and data['source'] != 'rtk.5':
@@ -236,6 +269,17 @@ class PCC(object):
             self.player.show_target(img, self.rtk_pair[1], self.rtk_pair[0])
             if self.show_ipm:
                 self.player.show_ipm_target(self.ipm, self.rtk_pair[1], self.rtk_pair[0])
+
+    def viz_rtcm(self, img, data):
+        # if data['type'] == 'rtcm':
+        #     print(data)
+        if data['id'] == 1005:
+            llh = PosVector(data['ECEF-X'], data['ECEF-Y'], data['ECEF-Z']).ToLLH()
+            data['lat'] = llh.lat
+            data['lon'] = llh.lon
+            data['hgt'] = llh.alt
+            self.player.show_rtcm(data)
+            print('station loc:', data['lat'], data['lon'])
 
     def specific_handle(self, img, data):
         src = data.get('source')
@@ -268,6 +312,7 @@ class PCC(object):
             # self.player.show_obs(img, dummy0)
             # self.player.show_obs(img, dummy1)
             self.player.show_obs(img, data)
+            self.player.update_column_ts(data.get('source'), data.get('ts'))
             if self.show_ipm:
                 # self.player.show_ipm_obs(self.ipm, dummy0)
                 # self.player.show_ipm_obs(self.ipm, dummy1)
@@ -280,22 +325,23 @@ class PCC(object):
 
         elif data['type'] == 'vehicle_state':
             self.player.draw_vehicle_state(img, data)
+            # print(data)
+            self.player.update_column_ts(data['source'], data['ts'])
         elif data['type'] == 'CIPV':
             self.cipv = data['id']
         elif data['type'] == 'rtk':
             # print('------------', data['type'])
             data['updated'] = True
             self.draw_rtk(img, data)
-        elif data['type'] == 'bestpos':
+        elif data['type'] in ['bestpos', 'heading', 'bestvel']:
             # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
-        elif data['type'] == 'heading':
-            # print('------------', data['type'])
-            self.draw_rtk_ub482(img, data)
+            self.player.update_column_ts(data['source'], data['ts'])
         elif data['type'] == 'rtcm':
-            # print('------------', data['type'])
-            self.draw_rtk_ub482(img, data)
-
+            self.viz_rtcm(img, data)
+        elif data['type'] == 'gps':
+            self.player.show_gps(data)
+            self.player.update_column_ts(data['source'], data['ts'])
         self.specific_handle(img, data)
 
     def handle_keyboard(self):
@@ -394,9 +440,16 @@ class HeadlessPCC:
 if __name__ == "__main__":
     import sys
     from config.config import load_cfg
-    load_cfg('config/cfg_superb.json')
 
-    if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
+    local_path = os.path.split(os.path.realpath(__file__))[0]
+    # print('local_path:', local_path)
+    os.chdir(local_path)
+
+    if len(sys.argv) == 1:
+        sys.argv.append('config/cfg_lab.json')
+    load_cfg(sys.argv[1])
+
+    if '--headless' in sys.argv:
         hub = Hub(headless=True)
         hub.start()
         pcc = HeadlessPCC(hub)

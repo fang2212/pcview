@@ -15,7 +15,7 @@
  "repeater": true,
  "can_types": {
   "can1": [
-   "esr"
+   "x1"
   ],
   "can0": []
  },
