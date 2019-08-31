@@ -1,0 +1,674 @@
+VERSION "2"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: EyeQ4 MCU
+
+
+BO_ 272 Objects_Header: 8 EyeQ4
+ SG_ OBJ_VD_CIPV_ID : 32|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 273 ObjectDate0_A: 8 EyeQ4
+ SG_ OBJ_ID : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ OBJ_Existence_Probability : 8|8@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ OBJ_Motion_Category : 17|4@1+ (1,0) [0|12] "ENUM "  MCU
+ SG_ OBJ_Object_Age : 21|11@1+ (1,0) [0|2047] "Frame"  MCU
+ SG_ OBJ_Measuring_Status : 32|3@1+ (1,0) [0|7] "BITWIZE"  MCU
+ SG_ OBJ_Object_Class : 35|4@1+ (1,0) [0|8] "ENUM"  MCU
+ SG_ OBJ_Motion_Status : 39|3@1+ (1,0) [0|5] "ENUM "  MCU
+ SG_ OBJ_Brake_Light : 48|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Right : 49|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Left : 50|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 274 ObjectDate0_B: 8 EyeQ4
+ SG_ OBJ_Lane_Assignment : 0|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ OBJ_Width : 3|9@1+ (0.01,0) [0.4|2.95] "m"  MCU
+ SG_ OBJ_Length : 20|9@1+ (0.05,0) [1.2|21] "m"  MCU
+ SG_ OBJ_Abs_Long_Velocity : 37|12@1+ (0.05,-65) [-65|65] "m/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 275 ObjectDate0_C: 8 EyeQ4
+ SG_ OBJ_Abs_Lat_Velocity : 0|11@1+ (0.05,-50) [-50|50] "m/s"  MCU
+ SG_ OBJ_Abs_Long_Acc : 21|9@1+ (0.05,-10.3) [-10.3|7.3] "m/s2"  MCU
+ SG_ OBJ_Long_Distance : 38|14@1+ (0.05,-200) [-200|250] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 276 ObjectDate0_D: 8 EyeQ4
+ SG_ OBJ_Lat_Distance : 13|12@1+ (0.05,-100) [-100|100] "m"  MCU
+ SG_ OBJ_Angle_Rate : 46|12@1+ (0.002,-2.234) [-2.234|2.2318] "rad/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 277 ObjectDate1_A: 8 EyeQ4
+ SG_ OBJ_ID : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ OBJ_Existence_Probability : 8|8@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ OBJ_Motion_Category : 17|4@1+ (1,0) [0|12] "ENUM "  MCU
+ SG_ OBJ_Object_Age : 21|11@1+ (1,0) [0|2047] "Frame"  MCU
+ SG_ OBJ_Measuring_Status : 32|3@1+ (1,0) [0|7] "BITWIZE"  MCU
+ SG_ OBJ_Object_Class : 35|4@1+ (1,0) [0|8] "ENUM"  MCU
+ SG_ OBJ_Motion_Status : 39|3@1+ (1,0) [0|5] "ENUM "  MCU
+ SG_ OBJ_Brake_Light : 48|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Right : 49|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Left : 50|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 278 ObjectDate1_B: 8 EyeQ4
+ SG_ OBJ_Lane_Assignment : 0|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ OBJ_Width : 3|9@1+ (0.01,0) [0.4|2.95] "m"  MCU
+ SG_ OBJ_Length : 20|9@1+ (0.05,0) [1.2|21] "m"  MCU
+ SG_ OBJ_Abs_Long_Velocity : 37|12@1+ (0.05,-65) [-65|65] "m/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 279 ObjectDate1_C: 8 EyeQ4
+ SG_ OBJ_Abs_Lat_Velocity : 0|11@1+ (0.05,-50) [-50|50] "m/s"  MCU
+ SG_ OBJ_Abs_Long_Acc : 21|9@1+ (0.05,-10.3) [-10.3|7.3] "m/s2"  MCU
+ SG_ OBJ_Long_Distance : 38|14@1+ (0.05,-200) [-200|250] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 280 ObjectDate1_D: 8 EyeQ4
+ SG_ OBJ_Lat_Distance : 13|12@1+ (0.05,-100) [-100|100] "m"  MCU
+ SG_ OBJ_Angle_Rate : 46|12@1+ (0.002,-2.234) [-2.234|2.2318] "rad/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 281 ObjectDate2_A: 8 EyeQ4
+ SG_ OBJ_ID : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ OBJ_Existence_Probability : 8|8@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ OBJ_Motion_Category : 17|4@1+ (1,0) [0|12] "ENUM "  MCU
+ SG_ OBJ_Object_Age : 21|11@1+ (1,0) [0|2047] "Frame"  MCU
+ SG_ OBJ_Measuring_Status : 32|3@1+ (1,0) [0|7] "BITWIZE"  MCU
+ SG_ OBJ_Object_Class : 35|4@1+ (1,0) [0|8] "ENUM"  MCU
+ SG_ OBJ_Motion_Status : 39|3@1+ (1,0) [0|5] "ENUM "  MCU
+ SG_ OBJ_Brake_Light : 48|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Right : 49|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Left : 50|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 282 ObjectDate2_B: 8 EyeQ4
+ SG_ OBJ_Lane_Assignment : 0|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ OBJ_Width : 3|9@1+ (0.01,0) [0.4|2.95] "m"  MCU
+ SG_ OBJ_Length : 20|9@1+ (0.05,0) [1.2|21] "m"  MCU
+ SG_ OBJ_Abs_Long_Velocity : 37|12@1+ (0.05,-65) [-65|65] "m/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 283 ObjectDate2_C: 8 EyeQ4
+ SG_ OBJ_Abs_Lat_Velocity : 0|11@1+ (0.05,-50) [-50|50] "m/s"  MCU
+ SG_ OBJ_Abs_Long_Acc : 21|9@1+ (0.05,-10.3) [-10.3|7.3] "m/s2"  MCU
+ SG_ OBJ_Long_Distance : 38|14@1+ (0.05,-200) [-200|250] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 284 ObjectDate2_D: 8 EyeQ4
+ SG_ OBJ_Lat_Distance : 13|12@1+ (0.05,-100) [-100|100] "m"  MCU
+ SG_ OBJ_Angle_Rate : 46|12@1+ (0.002,-2.234) [-2.234|2.2318] "rad/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 285 ObjectDate3_A: 8 EyeQ4
+ SG_ OBJ_ID : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ OBJ_Existence_Probability : 8|8@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ OBJ_Motion_Category : 17|4@1+ (1,0) [0|12] "ENUM "  MCU
+ SG_ OBJ_Object_Age : 21|11@1+ (1,0) [0|2047] "Frame"  MCU
+ SG_ OBJ_Measuring_Status : 32|3@1+ (1,0) [0|7] "BITWIZE"  MCU
+ SG_ OBJ_Object_Class : 35|4@1+ (1,0) [0|8] "ENUM"  MCU
+ SG_ OBJ_Motion_Status : 39|3@1+ (1,0) [0|5] "ENUM "  MCU
+ SG_ OBJ_Brake_Light : 48|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Right : 49|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Left : 50|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 286 ObjectDate3_B: 8 EyeQ4
+ SG_ OBJ_Lane_Assignment : 0|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ OBJ_Width : 3|9@1+ (0.01,0) [0.4|2.95] "m"  MCU
+ SG_ OBJ_Length : 20|9@1+ (0.05,0) [1.2|21] "m"  MCU
+ SG_ OBJ_Abs_Long_Velocity : 37|12@1+ (0.05,-65) [-65|65] "m/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 287 ObjectDate3_C: 8 EyeQ4
+ SG_ OBJ_Abs_Lat_Velocity : 0|11@1+ (0.05,-50) [-50|50] "m/s"  MCU
+ SG_ OBJ_Abs_Long_Acc : 21|9@1+ (0.05,-10.3) [-10.3|7.3] "m/s2"  MCU
+ SG_ OBJ_Long_Distance : 38|14@1+ (0.05,-200) [-200|250] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 288 ObjectDate3_D: 8 EyeQ4
+ SG_ OBJ_Lat_Distance : 13|12@1+ (0.05,-100) [-100|100] "m"  MCU
+ SG_ OBJ_Angle_Rate : 46|12@1+ (0.002,-2.234) [-2.234|2.2318] "rad/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 289 ObjectDate4_A: 8 EyeQ4
+ SG_ OBJ_ID : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ OBJ_Existence_Probability : 8|8@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ OBJ_Motion_Category : 17|4@1+ (1,0) [0|12] "ENUM "  MCU
+ SG_ OBJ_Object_Age : 21|11@1+ (1,0) [0|2047] "Frame"  MCU
+ SG_ OBJ_Measuring_Status : 32|3@1+ (1,0) [0|7] "BITWIZE"  MCU
+ SG_ OBJ_Object_Class : 35|4@1+ (1,0) [0|8] "ENUM"  MCU
+ SG_ OBJ_Motion_Status : 39|3@1+ (1,0) [0|5] "ENUM "  MCU
+ SG_ OBJ_Brake_Light : 48|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Right : 49|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Left : 50|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 290 ObjectDate4_B: 8 EyeQ4
+ SG_ OBJ_Lane_Assignment : 0|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ OBJ_Width : 3|9@1+ (0.01,0) [0.4|2.95] "m"  MCU
+ SG_ OBJ_Length : 20|9@1+ (0.05,0) [1.2|21] "m"  MCU
+ SG_ OBJ_Abs_Long_Velocity : 37|12@1+ (0.05,-65) [-65|65] "m/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 291 ObjectDate4_C: 8 EyeQ4
+ SG_ OBJ_Abs_Lat_Velocity : 0|11@1+ (0.05,-50) [-50|50] "m/s"  MCU
+ SG_ OBJ_Abs_Long_Acc : 21|9@1+ (0.05,-10.3) [-10.3|7.3] "m/s2"  MCU
+ SG_ OBJ_Long_Distance : 38|14@1+ (0.05,-200) [-200|250] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 292 ObjectDate4_D: 8 EyeQ4
+ SG_ OBJ_Lat_Distance : 13|12@1+ (0.05,-100) [-100|100] "m"  MCU
+ SG_ OBJ_Angle_Rate : 46|12@1+ (0.002,-2.234) [-2.234|2.2318] "rad/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 293 ObjectDate5_A: 8 EyeQ4
+ SG_ OBJ_ID : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ OBJ_Existence_Probability : 8|8@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ OBJ_Motion_Category : 17|4@1+ (1,0) [0|12] "ENUM "  MCU
+ SG_ OBJ_Object_Age : 21|11@1+ (1,0) [0|2047] "Frame"  MCU
+ SG_ OBJ_Measuring_Status : 32|3@1+ (1,0) [0|7] "BITWIZE"  MCU
+ SG_ OBJ_Object_Class : 35|4@1+ (1,0) [0|8] "ENUM"  MCU
+ SG_ OBJ_Motion_Status : 39|3@1+ (1,0) [0|5] "ENUM "  MCU
+ SG_ OBJ_Brake_Light : 48|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Right : 49|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Left : 50|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 294 ObjectDate5_B: 8 EyeQ4
+ SG_ OBJ_Lane_Assignment : 0|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ OBJ_Width : 3|9@1+ (0.01,0) [0.4|2.95] "m"  MCU
+ SG_ OBJ_Length : 20|9@1+ (0.05,0) [1.2|21] "m"  MCU
+ SG_ OBJ_Abs_Long_Velocity : 37|12@1+ (0.05,-65) [-65|65] "m/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 295 ObjectDate5_C: 8 EyeQ4
+ SG_ OBJ_Abs_Lat_Velocity : 0|11@1+ (0.05,-50) [-50|50] "m/s"  MCU
+ SG_ OBJ_Abs_Long_Acc : 21|9@1+ (0.05,-10.3) [-10.3|7.3] "m/s2"  MCU
+ SG_ OBJ_Long_Distance : 38|14@1+ (0.05,-200) [-200|250] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 296 ObjectDate5_D: 8 EyeQ4
+ SG_ OBJ_Lat_Distance : 13|12@1+ (0.05,-100) [-100|100] "m"  MCU
+ SG_ OBJ_Angle_Rate : 46|12@1+ (0.002,-2.234) [-2.234|2.2318] "rad/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 297 ObjectDate6_A: 8 EyeQ4
+ SG_ OBJ_ID : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ OBJ_Existence_Probability : 8|8@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ OBJ_Motion_Category : 17|4@1+ (1,0) [0|12] "ENUM "  MCU
+ SG_ OBJ_Object_Age : 21|11@1+ (1,0) [0|2047] "Frame"  MCU
+ SG_ OBJ_Measuring_Status : 32|3@1+ (1,0) [0|7] "BITWIZE"  MCU
+ SG_ OBJ_Object_Class : 35|4@1+ (1,0) [0|8] "ENUM"  MCU
+ SG_ OBJ_Motion_Status : 39|3@1+ (1,0) [0|5] "ENUM "  MCU
+ SG_ OBJ_Brake_Light : 48|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Right : 49|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Left : 50|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 298 ObjectDate6_B: 8 EyeQ4
+ SG_ OBJ_Lane_Assignment : 0|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ OBJ_Width : 3|9@1+ (0.01,0) [0.4|2.95] "m"  MCU
+ SG_ OBJ_Length : 20|9@1+ (0.05,0) [1.2|21] "m"  MCU
+ SG_ OBJ_Abs_Long_Velocity : 37|12@1+ (0.05,-65) [-65|65] "m/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 299 ObjectDate6_C: 8 EyeQ4
+ SG_ OBJ_Abs_Lat_Velocity : 0|11@1+ (0.05,-50) [-50|50] "m/s"  MCU
+ SG_ OBJ_Abs_Long_Acc : 21|9@1+ (0.05,-10.3) [-10.3|7.3] "m/s2"  MCU
+ SG_ OBJ_Long_Distance : 38|14@1+ (0.05,-200) [-200|250] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 300 ObjectDate6_D: 8 EyeQ4
+ SG_ OBJ_Lat_Distance : 13|12@1+ (0.05,-100) [-100|100] "m"  MCU
+ SG_ OBJ_Angle_Rate : 46|12@1+ (0.002,-2.234) [-2.234|2.2318] "rad/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 301 ObjectDate7_A: 8 EyeQ4
+ SG_ OBJ_ID : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ OBJ_Existence_Probability : 8|8@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ OBJ_Motion_Category : 17|4@1+ (1,0) [0|12] "ENUM "  MCU
+ SG_ OBJ_Object_Age : 21|11@1+ (1,0) [0|2047] "Frame"  MCU
+ SG_ OBJ_Measuring_Status : 32|3@1+ (1,0) [0|7] "BITWIZE"  MCU
+ SG_ OBJ_Object_Class : 35|4@1+ (1,0) [0|8] "ENUM"  MCU
+ SG_ OBJ_Motion_Status : 39|3@1+ (1,0) [0|5] "ENUM "  MCU
+ SG_ OBJ_Brake_Light : 48|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Right : 49|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Left : 50|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 302 ObjectDate7_B: 8 EyeQ4
+ SG_ OBJ_Lane_Assignment : 0|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ OBJ_Width : 3|9@1+ (0.01,0) [0.4|2.95] "m"  MCU
+ SG_ OBJ_Length : 20|9@1+ (0.05,0) [1.2|21] "m"  MCU
+ SG_ OBJ_Abs_Long_Velocity : 37|12@1+ (0.05,-65) [-65|65] "m/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 303 ObjectDate7_C: 8 EyeQ4
+ SG_ OBJ_Abs_Lat_Velocity : 0|11@1+ (0.05,-50) [-50|50] "m/s"  MCU
+ SG_ OBJ_Abs_Long_Acc : 21|9@1+ (0.05,-10.3) [-10.3|7.3] "m/s2"  MCU
+ SG_ OBJ_Long_Distance : 38|14@1+ (0.05,-200) [-200|250] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 304 ObjectDate7_D: 8 EyeQ4
+ SG_ OBJ_Lat_Distance : 13|12@1+ (0.05,-100) [-100|100] "m"  MCU
+ SG_ OBJ_Angle_Rate : 46|12@1+ (0.002,-2.234) [-2.234|2.2318] "rad/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 305 ObjectDate8_A: 8 EyeQ4
+ SG_ OBJ_ID : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ OBJ_Existence_Probability : 8|8@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ OBJ_Motion_Category : 17|4@1+ (1,0) [0|12] "ENUM "  MCU
+ SG_ OBJ_Object_Age : 21|11@1+ (1,0) [0|2047] "Frame"  MCU
+ SG_ OBJ_Measuring_Status : 32|3@1+ (1,0) [0|7] "BITWIZE"  MCU
+ SG_ OBJ_Object_Class : 35|4@1+ (1,0) [0|8] "ENUM"  MCU
+ SG_ OBJ_Motion_Status : 39|3@1+ (1,0) [0|5] "ENUM "  MCU
+ SG_ OBJ_Brake_Light : 48|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Right : 49|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Left : 50|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 306 ObjectDate8_B: 8 EyeQ4
+ SG_ OBJ_Lane_Assignment : 0|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ OBJ_Width : 3|9@1+ (0.01,0) [0.4|2.95] "m"  MCU
+ SG_ OBJ_Length : 20|9@1+ (0.05,0) [1.2|21] "m"  MCU
+ SG_ OBJ_Abs_Long_Velocity : 37|12@1+ (0.05,-65) [-65|65] "m/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 307 ObjectDate8_C: 8 EyeQ4
+ SG_ OBJ_Abs_Lat_Velocity : 0|11@1+ (0.05,-50) [-50|50] "m/s"  MCU
+ SG_ OBJ_Abs_Long_Acc : 21|9@1+ (0.05,-10.3) [-10.3|7.3] "m/s2"  MCU
+ SG_ OBJ_Long_Distance : 38|14@1+ (0.05,-200) [-200|250] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 308 ObjectDate8_D: 8 EyeQ4
+ SG_ OBJ_Lat_Distance : 13|12@1+ (0.05,-100) [-100|100] "m"  MCU
+ SG_ OBJ_Angle_Rate : 46|12@1+ (0.002,-2.234) [-2.234|2.2318] "rad/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 309 ObjectDate9_A: 8 EyeQ4
+ SG_ OBJ_ID : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ OBJ_Existence_Probability : 8|8@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ OBJ_Motion_Category : 17|4@1+ (1,0) [0|12] "ENUM "  MCU
+ SG_ OBJ_Object_Age : 21|11@1+ (1,0) [0|2047] "Frame"  MCU
+ SG_ OBJ_Measuring_Status : 32|3@1+ (1,0) [0|7] "BITWIZE"  MCU
+ SG_ OBJ_Object_Class : 35|4@1+ (1,0) [0|8] "ENUM"  MCU
+ SG_ OBJ_Motion_Status : 39|3@1+ (1,0) [0|5] "ENUM "  MCU
+ SG_ OBJ_Brake_Light : 48|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Right : 49|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ OBJ_Turn_Indicator_Left : 50|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 310 ObjectDate9_B: 8 EyeQ4
+ SG_ OBJ_Lane_Assignment : 0|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ OBJ_Width : 3|9@1+ (0.01,0) [0.4|2.95] "m"  MCU
+ SG_ OBJ_Length : 20|9@1+ (0.05,0) [1.2|21] "m"  MCU
+ SG_ OBJ_Abs_Long_Velocity : 37|12@1+ (0.05,-65) [-65|65] "m/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 311 ObjectDate9_C: 8 EyeQ4
+ SG_ OBJ_Abs_Lat_Velocity : 0|11@1+ (0.05,-50) [-50|50] "m/s"  MCU
+ SG_ OBJ_Abs_Long_Acc : 21|9@1+ (0.05,-10.3) [-10.3|7.3] "m/s2"  MCU
+ SG_ OBJ_Long_Distance : 38|14@1+ (0.05,-200) [-200|250] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ 
+BO_ 312 ObjectDate9_D: 8 EyeQ4
+ SG_ OBJ_Lat_Distance : 13|12@1+ (0.05,-100) [-100|100] "m"  MCU
+ SG_ OBJ_Angle_Rate : 46|12@1+ (0.002,-2.234) [-2.234|2.2318] "rad/s"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+
+CM_ SG_ 272 OBJ_VD_CIPV_ID "The Current In Path Vehicle object ID";
+CM_ SG_ 273 OBJ_ID "The detected OBJ ID ";
+CM_ SG_ 273 OBJ_Existence_Probability "Existence probability of vehicle";
+CM_ SG_ 273 OBJ_Motion_Category "The general scene identification (is the target cutting us, moving in or out of lane etc.)";
+CM_ SG_ 273 OBJ_Object_Age "Frame age of obstacle";
+CM_ SG_ 273 OBJ_Measuring_Status "Were measurements predicted, old, or not valid";
+CM_ SG_ 273 OBJ_Object_Class "Kind of object.";
+CM_ SG_ 273 OBJ_Motion_Status "The target is moving or stopped";
+CM_ SG_ 273 OBJ_Brake_Light "if bit is on the brake light is on";
+CM_ SG_ 273 OBJ_Turn_Indicator_Right "if bit is on the right bliking light is on";
+CM_ SG_ 273 OBJ_Turn_Indicator_Left "if bit is on the left blinking light is on";
+CM_ SG_ 274 OBJ_Lane_Assignment "the lane on which the object is measured";
+CM_ SG_ 274 OBJ_Width "The actual width of the target vehicle in the world (not to be mistaken with the width of the visible part of the vehicle)";
+CM_ SG_ 274 OBJ_Length "The length in the world. ";
+CM_ SG_ 274 OBJ_Abs_Long_Velocity "the longtitudinal ground speed";
+CM_ SG_ 275 OBJ_Abs_Lat_Velocity "the lateral ground speed，Positive on left turn";
+CM_ SG_ 275 OBJ_Abs_Long_Acc "the lateral ground acceleration";
+CM_ SG_ 275 OBJ_Long_Distance "longtitudinal distance to the middle of the RL and RR corners.  ";
+CM_ SG_ 276 OBJ_Lat_Distance "lateral distance to the middle of the RL and RR corners，Positive on left turn.  ";
+CM_ SG_ 276 OBJ_Angle_Rate "The momentary angular speed，Positive on left turn ";
+CM_ SG_ 277 OBJ_ID "The detected OBJ ID ";
+CM_ SG_ 277 OBJ_Existence_Probability "Existence probability of vehicle";
+CM_ SG_ 277 OBJ_Motion_Category "The general scene identification (is the target cutting us, moving in or out of lane etc.)";
+CM_ SG_ 277 OBJ_Object_Age "Frame age of obstacle";
+CM_ SG_ 277 OBJ_Measuring_Status "Were measurements predicted, old, or not valid";
+CM_ SG_ 277 OBJ_Object_Class "Kind of object.";
+CM_ SG_ 277 OBJ_Motion_Status "The target is moving or stopped";
+CM_ SG_ 277 OBJ_Brake_Light "if bit is on the brake light is on";
+CM_ SG_ 277 OBJ_Turn_Indicator_Right "if bit is on the right bliking light is on";
+CM_ SG_ 277 OBJ_Turn_Indicator_Left "if bit is on the left blinking light is on";
+CM_ SG_ 278 OBJ_Lane_Assignment "the lane on which the object is measured";
+CM_ SG_ 278 OBJ_Width "The actual width of the target vehicle in the world (not to be mistaken with the width of the visible part of the vehicle)";
+CM_ SG_ 278 OBJ_Length "The length in the world. ";
+CM_ SG_ 278 OBJ_Abs_Long_Velocity "the longtitudinal ground speed";
+CM_ SG_ 279 OBJ_Abs_Lat_Velocity "the lateral ground speed，Positive on left turn";
+CM_ SG_ 279 OBJ_Abs_Long_Acc "the lateral ground acceleration";
+CM_ SG_ 279 OBJ_Long_Distance "longtitudinal distance to the middle of the RL and RR corners.  ";
+CM_ SG_ 280 OBJ_Lat_Distance "lateral distance to the middle of the RL and RR corners，Positive on left turn.  ";
+CM_ SG_ 280 OBJ_Angle_Rate "The momentary angular speed，Positive on left turn ";
+CM_ SG_ 281 OBJ_ID "The detected OBJ ID ";
+CM_ SG_ 281 OBJ_Existence_Probability "Existence probability of vehicle";
+CM_ SG_ 281 OBJ_Motion_Category "The general scene identification (is the target cutting us, moving in or out of lane etc.)";
+CM_ SG_ 281 OBJ_Object_Age "Frame age of obstacle";
+CM_ SG_ 281 OBJ_Measuring_Status "Were measurements predicted, old, or not valid";
+CM_ SG_ 281 OBJ_Object_Class "Kind of object.";
+CM_ SG_ 281 OBJ_Motion_Status "The target is moving or stopped";
+CM_ SG_ 281 OBJ_Brake_Light "if bit is on the brake light is on";
+CM_ SG_ 281 OBJ_Turn_Indicator_Right "if bit is on the right bliking light is on";
+CM_ SG_ 281 OBJ_Turn_Indicator_Left "if bit is on the left blinking light is on";
+CM_ SG_ 282 OBJ_Lane_Assignment "the lane on which the object is measured";
+CM_ SG_ 282 OBJ_Width "The actual width of the target vehicle in the world (not to be mistaken with the width of the visible part of the vehicle)";
+CM_ SG_ 282 OBJ_Length "The length in the world. ";
+CM_ SG_ 282 OBJ_Abs_Long_Velocity "the longtitudinal ground speed";
+CM_ SG_ 283 OBJ_Abs_Lat_Velocity "the lateral ground speed，Positive on left turn";
+CM_ SG_ 283 OBJ_Abs_Long_Acc "the lateral ground acceleration";
+CM_ SG_ 283 OBJ_Long_Distance "longtitudinal distance to the middle of the RL and RR corners.  ";
+CM_ SG_ 284 OBJ_Lat_Distance "lateral distance to the middle of the RL and RR corners，Positive on left turn.  ";
+CM_ SG_ 284 OBJ_Angle_Rate "The momentary angular speed，Positive on left turn";
+CM_ SG_ 285 OBJ_ID "The detected OBJ ID ";
+CM_ SG_ 285 OBJ_Existence_Probability "Existence probability of vehicle";
+CM_ SG_ 285 OBJ_Motion_Category "The general scene identification (is the target cutting us, moving in or out of lane etc.)";
+CM_ SG_ 285 OBJ_Object_Age "Frame age of obstacle";
+CM_ SG_ 285 OBJ_Measuring_Status "Were measurements predicted, old, or not valid";
+CM_ SG_ 285 OBJ_Object_Class "Kind of object.";
+CM_ SG_ 285 OBJ_Motion_Status "The target is moving or stopped";
+CM_ SG_ 285 OBJ_Brake_Light "if bit is on the brake light is on";
+CM_ SG_ 285 OBJ_Turn_Indicator_Right "if bit is on the right bliking light is on";
+CM_ SG_ 285 OBJ_Turn_Indicator_Left "if bit is on the left blinking light is on";
+CM_ SG_ 286 OBJ_Lane_Assignment "the lane on which the object is measured";
+CM_ SG_ 286 OBJ_Width "The actual width of the target vehicle in the world (not to be mistaken with the width of the visible part of the vehicle)";
+CM_ SG_ 286 OBJ_Length "The length in the world. ";
+CM_ SG_ 286 OBJ_Abs_Long_Velocity "the longtitudinal ground speed";
+CM_ SG_ 287 OBJ_Abs_Lat_Velocity "the lateral ground speed，Positive on left turn";
+CM_ SG_ 287 OBJ_Abs_Long_Acc "the lateral ground acceleration";
+CM_ SG_ 287 OBJ_Long_Distance "longtitudinal distance to the middle of the RL and RR corners.  ";
+CM_ SG_ 288 OBJ_Lat_Distance "lateral distance to the middle of the RL and RR corners，Positive on left turn.  ";
+CM_ SG_ 288 OBJ_Angle_Rate "The momentary angular speed，Positive on left turn ";
+CM_ SG_ 289 OBJ_ID "The detected OBJ ID ";
+CM_ SG_ 289 OBJ_Existence_Probability "Existence probability of vehicle";
+CM_ SG_ 289 OBJ_Motion_Category "The general scene identification (is the target cutting us, moving in or out of lane etc.)";
+CM_ SG_ 289 OBJ_Object_Age "Frame age of obstacle";
+CM_ SG_ 289 OBJ_Measuring_Status "Were measurements predicted, old, or not valid";
+CM_ SG_ 289 OBJ_Object_Class "Kind of object.";
+CM_ SG_ 289 OBJ_Motion_Status "The target is moving or stopped";
+CM_ SG_ 289 OBJ_Brake_Light "if bit is on the brake light is on";
+CM_ SG_ 289 OBJ_Turn_Indicator_Right "if bit is on the right bliking light is on";
+CM_ SG_ 289 OBJ_Turn_Indicator_Left "if bit is on the left blinking light is on";
+CM_ SG_ 290 OBJ_Lane_Assignment "the lane on which the object is measured";
+CM_ SG_ 290 OBJ_Width "The actual width of the target vehicle in the world (not to be mistaken with the width of the visible part of the vehicle)";
+CM_ SG_ 290 OBJ_Length "The length in the world. ";
+CM_ SG_ 290 OBJ_Abs_Long_Velocity "the longtitudinal ground speed";
+CM_ SG_ 291 OBJ_Abs_Lat_Velocity "the lateral ground speed，Positive on left turn";
+CM_ SG_ 291 OBJ_Abs_Long_Acc "the lateral ground acceleration";
+CM_ SG_ 291 OBJ_Long_Distance "longtitudinal distance to the middle of the RL and RR corners.  ";
+CM_ SG_ 292 OBJ_Lat_Distance "lateral distance to the middle of the RL and RR corners，Positive on left turn.  ";
+CM_ SG_ 292 OBJ_Angle_Rate "The momentary angular speed，Positive on left turn ";
+CM_ SG_ 293 OBJ_ID "The detected OBJ ID ";
+CM_ SG_ 293 OBJ_Existence_Probability "Existence probability of vehicle";
+CM_ SG_ 293 OBJ_Motion_Category "The general scene identification (is the target cutting us, moving in or out of lane etc.)";
+CM_ SG_ 293 OBJ_Object_Age "Frame age of obstacle";
+CM_ SG_ 293 OBJ_Measuring_Status "Were measurements predicted, old, or not valid";
+CM_ SG_ 293 OBJ_Object_Class "Kind of object.";
+CM_ SG_ 293 OBJ_Motion_Status "The target is moving or stopped";
+CM_ SG_ 293 OBJ_Brake_Light "if bit is on the brake light is on";
+CM_ SG_ 293 OBJ_Turn_Indicator_Right "if bit is on the right bliking light is on";
+CM_ SG_ 293 OBJ_Turn_Indicator_Left "if bit is on the left blinking light is on";
+CM_ SG_ 294 OBJ_Lane_Assignment "the lane on which the object is measured";
+CM_ SG_ 294 OBJ_Width "The actual width of the target vehicle in the world (not to be mistaken with the width of the visible part of the vehicle)";
+CM_ SG_ 294 OBJ_Length "The length in the world. ";
+CM_ SG_ 294 OBJ_Abs_Long_Velocity "the longtitudinal ground speed";
+CM_ SG_ 295 OBJ_Abs_Lat_Velocity "the lateral ground speed，Positive on left turn";
+CM_ SG_ 295 OBJ_Abs_Long_Acc "the lateral ground acceleration";
+CM_ SG_ 295 OBJ_Long_Distance "longtitudinal distance to the middle of the RL and RR corners.  ";
+CM_ SG_ 296 OBJ_Lat_Distance "lateral distance to the middle of the RL and RR corners，Positive on left turn.  ";
+CM_ SG_ 296 OBJ_Angle_Rate "The momentary angular speed，Positive on left turn ";
+CM_ SG_ 297 OBJ_ID "The detected OBJ ID ";
+CM_ SG_ 297 OBJ_Existence_Probability "Existence probability of vehicle";
+CM_ SG_ 297 OBJ_Motion_Category "The general scene identification (is the target cutting us, moving in or out of lane etc.)";
+CM_ SG_ 297 OBJ_Object_Age "Frame age of obstacle";
+CM_ SG_ 297 OBJ_Measuring_Status "Were measurements predicted, old, or not valid";
+CM_ SG_ 297 OBJ_Object_Class "Kind of object.";
+CM_ SG_ 297 OBJ_Motion_Status "The target is moving or stopped";
+CM_ SG_ 297 OBJ_Brake_Light "if bit is on the brake light is on";
+CM_ SG_ 297 OBJ_Turn_Indicator_Right "if bit is on the right bliking light is on";
+CM_ SG_ 297 OBJ_Turn_Indicator_Left "if bit is on the left blinking light is on";
+CM_ SG_ 298 OBJ_Lane_Assignment "the lane on which the object is measured";
+CM_ SG_ 298 OBJ_Width "The actual width of the target vehicle in the world (not to be mistaken with the width of the visible part of the vehicle)";
+CM_ SG_ 298 OBJ_Length "The length in the world. ";
+CM_ SG_ 298 OBJ_Abs_Long_Velocity "the longtitudinal ground speed";
+CM_ SG_ 299 OBJ_Abs_Lat_Velocity "the lateral ground speed，Positive on left turn";
+CM_ SG_ 299 OBJ_Abs_Long_Acc "the lateral ground acceleration";
+CM_ SG_ 299 OBJ_Long_Distance "longtitudinal distance to the middle of the RL and RR corners.  ";
+CM_ SG_ 300 OBJ_Lat_Distance "lateral distance to the middle of the RL and RR corners，Positive on left turn.  ";
+CM_ SG_ 300 OBJ_Angle_Rate "The momentary angular speed，Positive on left turn ";
+CM_ SG_ 301 OBJ_ID "The detected OBJ ID ";
+CM_ SG_ 301 OBJ_Existence_Probability "Existence probability of vehicle";
+CM_ SG_ 301 OBJ_Motion_Category "The general scene identification (is the target cutting us, moving in or out of lane etc.)";
+CM_ SG_ 301 OBJ_Object_Age "Frame age of obstacle";
+CM_ SG_ 301 OBJ_Measuring_Status "Were measurements predicted, old, or not valid";
+CM_ SG_ 301 OBJ_Object_Class "Kind of object.";
+CM_ SG_ 301 OBJ_Motion_Status "The target is moving or stopped";
+CM_ SG_ 301 OBJ_Brake_Light "if bit is on the brake light is on";
+CM_ SG_ 301 OBJ_Turn_Indicator_Right "if bit is on the right bliking light is on";
+CM_ SG_ 301 OBJ_Turn_Indicator_Left "if bit is on the left blinking light is on";
+CM_ SG_ 302 OBJ_Lane_Assignment "the lane on which the object is measured";
+CM_ SG_ 302 OBJ_Width "The actual width of the target vehicle in the world (not to be mistaken with the width of the visible part of the vehicle)";
+CM_ SG_ 302 OBJ_Length "The length in the world. ";
+CM_ SG_ 302 OBJ_Abs_Long_Velocity "the longtitudinal ground speed";
+CM_ SG_ 303 OBJ_Abs_Lat_Velocity "the lateral ground speed，Positive on left turn";
+CM_ SG_ 303 OBJ_Abs_Long_Acc "the lateral ground acceleration";
+CM_ SG_ 303 OBJ_Long_Distance "longtitudinal distance to the middle of the RL and RR corners.  ";
+CM_ SG_ 304 OBJ_Lat_Distance "lateral distance to the middle of the RL and RR corners，Positive on left turn.  ";
+CM_ SG_ 304 OBJ_Angle_Rate "The momentary angular speed，Positive on left turn ";
+CM_ SG_ 305 OBJ_ID "The detected OBJ ID ";
+CM_ SG_ 305 OBJ_Existence_Probability "Existence probability of vehicle";
+CM_ SG_ 305 OBJ_Motion_Category "The general scene identification (is the target cutting us, moving in or out of lane etc.)";
+CM_ SG_ 305 OBJ_Object_Age "Frame age of obstacle";
+CM_ SG_ 305 OBJ_Measuring_Status "Were measurements predicted, old, or not valid";
+CM_ SG_ 305 OBJ_Object_Class "Kind of object.";
+CM_ SG_ 305 OBJ_Motion_Status "The target is moving or stopped";
+CM_ SG_ 305 OBJ_Brake_Light "if bit is on the brake light is on";
+CM_ SG_ 305 OBJ_Turn_Indicator_Right "if bit is on the right bliking light is on";
+CM_ SG_ 305 OBJ_Turn_Indicator_Left "if bit is on the left blinking light is on";
+CM_ SG_ 306 OBJ_Lane_Assignment "the lane on which the object is measured";
+CM_ SG_ 306 OBJ_Width "The actual width of the target vehicle in the world (not to be mistaken with the width of the visible part of the vehicle)";
+CM_ SG_ 306 OBJ_Length "The length in the world. ";
+CM_ SG_ 306 OBJ_Abs_Long_Velocity "the longtitudinal ground speed";
+CM_ SG_ 307 OBJ_Abs_Lat_Velocity "the lateral ground speed，Positive on left turn";
+CM_ SG_ 307 OBJ_Abs_Long_Acc "the lateral ground acceleration";
+CM_ SG_ 307 OBJ_Long_Distance "longtitudinal distance to the middle of the RL and RR corners.  ";
+CM_ SG_ 308 OBJ_Lat_Distance "lateral distance to the middle of the RL and RR corners，Positive on left turn.  ";
+CM_ SG_ 308 OBJ_Angle_Rate "The momentary angular speed，Positive on left turn ";
+CM_ SG_ 309 OBJ_ID "The detected OBJ ID ";
+CM_ SG_ 309 OBJ_Existence_Probability "Existence probability of vehicle";
+CM_ SG_ 309 OBJ_Motion_Category "The general scene identification (is the target cutting us, moving in or out of lane etc.)";
+CM_ SG_ 309 OBJ_Object_Age "Frame age of obstacle";
+CM_ SG_ 309 OBJ_Measuring_Status "Were measurements predicted, old, or not valid";
+CM_ SG_ 309 OBJ_Object_Class "Kind of object.";
+CM_ SG_ 309 OBJ_Motion_Status "The target is moving or stopped";
+CM_ SG_ 309 OBJ_Brake_Light "if bit is on the brake light is on";
+CM_ SG_ 309 OBJ_Turn_Indicator_Right "if bit is on the right bliking light is on";
+CM_ SG_ 309 OBJ_Turn_Indicator_Left "if bit is on the left blinking light is on";
+CM_ SG_ 310 OBJ_Lane_Assignment "the lane on which the object is measured";
+CM_ SG_ 310 OBJ_Width "The actual width of the target vehicle in the world (not to be mistaken with the width of the visible part of the vehicle)";
+CM_ SG_ 310 OBJ_Length "The length in the world. ";
+CM_ SG_ 310 OBJ_Abs_Long_Velocity "the longtitudinal ground speed";
+CM_ SG_ 311 OBJ_Abs_Lat_Velocity "the lateral ground speed，Positive on left turn";
+CM_ SG_ 311 OBJ_Abs_Long_Acc "the lateral ground acceleration";
+CM_ SG_ 311 OBJ_Long_Distance "longtitudinal distance to the middle of the RL and RR corners.  ";
+CM_ SG_ 312 OBJ_Lat_Distance "lateral distance to the middle of the RL and RR corners，Positive on left turn.  ";
+CM_ SG_ 312 OBJ_Angle_Rate "The momentary angular speed，Positive on left turn ";
+
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_ SG_  "GenSigStartValue" INT 0 0;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 50000;
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_DEF_DEF_  "BusType" "CAN";
+BA_ "BusType" "CAN";
+BA_ "GenMsgCycleTime" BO_ 272 30;
+BA_ "GenMsgCycleTime" BO_ 273 30;
+BA_ "GenMsgCycleTime" BO_ 274 30;
+BA_ "GenMsgCycleTime" BO_ 275 30;
+BA_ "GenMsgCycleTime" BO_ 276 30;
+BA_ "GenMsgCycleTime" BO_ 277 30;
+BA_ "GenMsgCycleTime" BO_ 278 30;
+BA_ "GenMsgCycleTime" BO_ 279 30;
+BA_ "GenMsgCycleTime" BO_ 280 30;
+BA_ "GenMsgCycleTime" BO_ 281 30;
+BA_ "GenMsgCycleTime" BO_ 282 30;
+BA_ "GenMsgCycleTime" BO_ 283 30;
+BA_ "GenMsgCycleTime" BO_ 284 30;
+BA_ "GenMsgCycleTime" BO_ 285 30;
+BA_ "GenMsgCycleTime" BO_ 286 30;
+BA_ "GenMsgCycleTime" BO_ 287 30;
+BA_ "GenMsgCycleTime" BO_ 288 30;
+BA_ "GenMsgCycleTime" BO_ 289 30;
+BA_ "GenMsgCycleTime" BO_ 290 30;
+BA_ "GenMsgCycleTime" BO_ 291 30;
+BA_ "GenMsgCycleTime" BO_ 292 30;
+BA_ "GenMsgCycleTime" BO_ 293 30;
+BA_ "GenMsgCycleTime" BO_ 294 30;
+BA_ "GenMsgCycleTime" BO_ 295 30;
+BA_ "GenMsgCycleTime" BO_ 296 30;
+BA_ "GenMsgCycleTime" BO_ 297 30;
+BA_ "GenMsgCycleTime" BO_ 298 30;
+BA_ "GenMsgCycleTime" BO_ 299 30;
+BA_ "GenMsgCycleTime" BO_ 300 30;
+BA_ "GenMsgCycleTime" BO_ 301 30;
+BA_ "GenMsgCycleTime" BO_ 302 30;
+BA_ "GenMsgCycleTime" BO_ 303 30;
+BA_ "GenMsgCycleTime" BO_ 304 30;
+BA_ "GenMsgCycleTime" BO_ 305 30;
+BA_ "GenMsgCycleTime" BO_ 306 30;
+BA_ "GenMsgCycleTime" BO_ 307 30;
+BA_ "GenMsgCycleTime" BO_ 308 30;
+BA_ "GenMsgCycleTime" BO_ 309 30;
+BA_ "GenMsgCycleTime" BO_ 310 30;
+BA_ "GenMsgCycleTime" BO_ 311 30;
+BA_ "GenMsgCycleTime" BO_ 312 30;
+VAL_ 273 OBJ_Motion_Category 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 273 OBJ_Object_Class 8 "UNCERTAIN_VCL" 7 "ANIMAL" 6 "GENERAL_OBJECT" 5 "PEDESTRIAN" 4 "BICYCLE" 3 "BIKE" 2 "TRUCK" 1 "CAR" 0 "INVALID" ;
+VAL_ 273 OBJ_Motion_Status 5 "MOVINGSLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 273 OBJ_Brake_Light 1 "True" 0 "False" ;
+VAL_ 273 OBJ_Turn_Indicator_Right 1 "True" 0 "False" ;
+VAL_ 273 OBJ_Turn_Indicator_Left 1 "True" 0 "False" ;
+VAL_ 274 OBJ_Lane_Assignment 5 "RIGHT_RIGHT" 4 "RIGHT" 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 277 OBJ_Motion_Category 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 277 OBJ_Object_Class 8 "UNCERTAIN_VCL" 7 "ANIMAL" 6 "GENERAL_OBJECT" 5 "PEDESTRIAN" 4 "BICYCLE" 3 "BIKE" 2 "TRUCK" 1 "CAR" 0 "INVALID" ;
+VAL_ 277 OBJ_Motion_Status 5 "MOVINGSLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 277 OBJ_Brake_Light 1 "True" 0 "False" ;
+VAL_ 277 OBJ_Turn_Indicator_Right 1 "True" 0 "False" ;
+VAL_ 277 OBJ_Turn_Indicator_Left 1 "True" 0 "False" ;
+VAL_ 278 OBJ_Lane_Assignment 5 "RIGHT_RIGHT" 4 "RIGHT" 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 281 OBJ_Motion_Category 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 281 OBJ_Object_Class 8 "UNCERTAIN_VCL" 7 "ANIMAL" 6 "GENERAL_OBJECT" 5 "PEDESTRIAN" 4 "BICYCLE" 3 "BIKE" 2 "TRUCK" 1 "CAR" 0 "INVALID" ;
+VAL_ 281 OBJ_Motion_Status 5 "MOVINGSLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 281 OBJ_Brake_Light 1 "True" 0 "False" ;
+VAL_ 281 OBJ_Turn_Indicator_Right 1 "True" 0 "False" ;
+VAL_ 281 OBJ_Turn_Indicator_Left 1 "True" 0 "False" ;
+VAL_ 282 OBJ_Lane_Assignment 5 "RIGHT_RIGHT" 4 "RIGHT" 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 285 OBJ_Motion_Category 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 285 OBJ_Object_Class 8 "UNCERTAIN_VCL" 7 "ANIMAL" 6 "GENERAL_OBJECT" 5 "PEDESTRIAN" 4 "BICYCLE" 3 "BIKE" 2 "TRUCK" 1 "CAR" 0 "INVALID" ;
+VAL_ 285 OBJ_Motion_Status 5 "MOVINGSLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 285 OBJ_Brake_Light 1 "True" 0 "False" ;
+VAL_ 285 OBJ_Turn_Indicator_Right 1 "True" 0 "False" ;
+VAL_ 285 OBJ_Turn_Indicator_Left 1 "True" 0 "False" ;
+VAL_ 286 OBJ_Lane_Assignment 5 "RIGHT_RIGHT" 4 "RIGHT" 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 289 OBJ_Motion_Category 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 289 OBJ_Object_Class 8 "UNCERTAIN_VCL" 7 "ANIMAL" 6 "GENERAL_OBJECT" 5 "PEDESTRIAN" 4 "BICYCLE" 3 "BIKE" 2 "TRUCK" 1 "CAR" 0 "INVALID" ;
+VAL_ 289 OBJ_Motion_Status 5 "MOVINGSLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 289 OBJ_Brake_Light 1 "True" 0 "False" ;
+VAL_ 289 OBJ_Turn_Indicator_Right 1 "True" 0 "False" ;
+VAL_ 289 OBJ_Turn_Indicator_Left 1 "True" 0 "False" ;
+VAL_ 290 OBJ_Lane_Assignment 5 "RIGHT_RIGHT" 4 "RIGHT" 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 293 OBJ_Motion_Category 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 293 OBJ_Object_Class 8 "UNCERTAIN_VCL" 7 "ANIMAL" 6 "GENERAL_OBJECT" 5 "PEDESTRIAN" 4 "BICYCLE" 3 "BIKE" 2 "TRUCK" 1 "CAR" 0 "INVALID" ;
+VAL_ 293 OBJ_Motion_Status 5 "MOVINGSLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 293 OBJ_Brake_Light 1 "True" 0 "False" ;
+VAL_ 293 OBJ_Turn_Indicator_Right 1 "True" 0 "False" ;
+VAL_ 293 OBJ_Turn_Indicator_Left 1 "True" 0 "False" ;
+VAL_ 294 OBJ_Lane_Assignment 5 "RIGHT_RIGHT" 4 "RIGHT" 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 297 OBJ_Motion_Category 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 297 OBJ_Object_Class 8 "UNCERTAIN_VCL" 7 "ANIMAL" 6 "GENERAL_OBJECT" 5 "PEDESTRIAN" 4 "BICYCLE" 3 "BIKE" 2 "TRUCK" 1 "CAR" 0 "INVALID" ;
+VAL_ 297 OBJ_Motion_Status 5 "MOVINGSLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 297 OBJ_Brake_Light 1 "True" 0 "False" ;
+VAL_ 297 OBJ_Turn_Indicator_Right 1 "True" 0 "False" ;
+VAL_ 297 OBJ_Turn_Indicator_Left 1 "True" 0 "False" ;
+VAL_ 298 OBJ_Lane_Assignment 5 "RIGHT_RIGHT" 4 "RIGHT" 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 301 OBJ_Motion_Category 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 301 OBJ_Object_Class 8 "UNCERTAIN_VCL" 7 "ANIMAL" 6 "GENERAL_OBJECT" 5 "PEDESTRIAN" 4 "BICYCLE" 3 "BIKE" 2 "TRUCK" 1 "CAR" 0 "INVALID" ;
+VAL_ 301 OBJ_Motion_Status 5 "MOVINGSLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 301 OBJ_Brake_Light 1 "True" 0 "False" ;
+VAL_ 301 OBJ_Turn_Indicator_Right 1 "True" 0 "False" ;
+VAL_ 301 OBJ_Turn_Indicator_Left 1 "True" 0 "False" ;
+VAL_ 302 OBJ_Lane_Assignment 5 "RIGHT_RIGHT" 4 "RIGHT" 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 305 OBJ_Motion_Category 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 305 OBJ_Object_Class 8 "UNCERTAIN_VCL" 7 "ANIMAL" 6 "GENERAL_OBJECT" 5 "PEDESTRIAN" 4 "BICYCLE" 3 "BIKE" 2 "TRUCK" 1 "CAR" 0 "INVALID" ;
+VAL_ 305 OBJ_Motion_Status 5 "MOVINGSLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 305 OBJ_Brake_Light 1 "True" 0 "False" ;
+VAL_ 305 OBJ_Turn_Indicator_Right 1 "True" 0 "False" ;
+VAL_ 305 OBJ_Turn_Indicator_Left 1 "True" 0 "False" ;
+VAL_ 306 OBJ_Lane_Assignment 5 "RIGHT_RIGHT" 4 "RIGHT" 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 309 OBJ_Motion_Category 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 309 OBJ_Object_Class 8 "UNCERTAIN_VCL" 7 "ANIMAL" 6 "GENERAL_OBJECT" 5 "PEDESTRIAN" 4 "BICYCLE" 3 "BIKE" 2 "TRUCK" 1 "CAR" 0 "INVALID" ;
+VAL_ 309 OBJ_Motion_Status 5 "MOVINGSLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 309 OBJ_Brake_Light 1 "True" 0 "False" ;
+VAL_ 309 OBJ_Turn_Indicator_Right 1 "True" 0 "False" ;
+VAL_ 309 OBJ_Turn_Indicator_Left 1 "True" 0 "False" ;
+VAL_ 310 OBJ_Lane_Assignment 5 "RIGHT_RIGHT" 4 "RIGHT" 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+

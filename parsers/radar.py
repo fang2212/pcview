@@ -23,6 +23,7 @@ db_mrr = cantools.database.load_file('dbc/bosch_mrr_output.dbc', strict=False)
 db_lmr = cantools.database.load_file('dbc/HETLMR.dbc', strict=False)
 db_hmb = cantools.database.load_file('dbc/szhmb.dbc', strict=False)
 db_fusion_mrr = cantools.database.load_file('dbc/MRR_radar_CAN.dbc', strict=False)
+db_sta77_2 = cantools.database.load_file('dbc/sensortech-77G.dbc', strict=False)
 
 trans_polar2rcs = Transform().trans_polar2rcs
 
@@ -211,3 +212,48 @@ def parse_fusion_mrr(id, buf, ctx=None):
         # print(result)
         if valid:
             return result
+
+
+st77obs = []
+def parse_sta77(id, buf, ctx=None):
+    global st77obs
+    ids = [m.frame_id for m in db_sta77_2.messages]
+    if id not in ids:
+        return None
+
+    if ctx is not None and not ctx.get('filter'):
+        ctx['filter'] = CIPOFilter()
+
+    r = db_sta77_2.decode_message(id, buf)
+    # print('0x%x' % id)
+    id=(id&0x000FFF00)>>8
+    if id == 0x200:
+        if r.get('Fault_Level')>0:
+            print('Fault_Level:' ,r.get('Fault_Level'))
+        ret=st77obs
+        ret = ctx['filter'].add_cipo(ret)
+        st77obs = []
+        return ret
+    elif not (id&0x001):
+        tid=((id&0x0FE)>>1)+1
+        if 'Object_Number_%d'%tid in r.keys():
+            range_lon = r.get('Distance_Object_%d'%tid)*0.1
+            range_lat = r.get('Cross_Object_%d'%tid)*0.1
+            # range, angle = trans_polar2rcs(range_lon, range_lat)
+            range = sqrt(range_lat**2+range_lon**2)
+            angle = atan2(range_lat , range_lon)*180/pi
+            range_rate = r.get('Relative_Object_%d'%tid)*0.1
+            # x, y = trans_polar2rcs(angle, range, install['sta77'])
+            ret = {'type': 'obstacle', 'sensor': 'sta77', 'sensor_type': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
+                   'range_rate': range_rate,  'color': 7}
+            st77obs.append(ret)
+            return None
+    else: #st77obs[-1]['id']==(((id&0x0FE)>>1)+1):
+        tid = ((id & 0x0FE) >> 1)+1
+        if isinstance(r.get('Amplitude_%d'%tid),(int,float)):
+            st77obs[-1]['power']=r.get('Amplitude_%d'%tid)*0.1
+            st77obs[-1]['tgt_status'] ='SNR_%02d'%r.get('SNR_%d'%tid)
+            return None
+        else:
+            return None
+

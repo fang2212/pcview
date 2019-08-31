@@ -25,16 +25,17 @@ import base64
 from multiprocessing.dummy import Process as Thread
 import time
 from player import FPSCnt, FlowPlayer
-import sys
-import nanomsg
-
+from recorder import VideoRecorder
+import os
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 
 class PCC(object):
 
-    def __init__(self, hub, replay=False, rlog=None, ipm=None):
+    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None):
+
+
         self.hub = hub
         self.player = Player()
         self.exit = False
@@ -85,6 +86,14 @@ class PCC(object):
         cv2.setMouseCallback('UI', self.left_click, '1234')
 
         self.flow_player = FlowPlayer()
+
+        self.save_replay_video = save_replay_video
+
+        if self.save_replay_video and self.replay:
+            self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
+            self.vw.set_writer("replay-render")
+            print('--------save replay video',os.path.dirname(self.rlog))
+
 
     def start(self):
         self.hub.start()
@@ -203,6 +212,9 @@ class PCC(object):
         self.player.show_intrinsic_para(img)
 
         self.player.render_text_info(img)
+
+        if self.save_replay_video and self.replay:
+            self.vw.write(img)
 
         if self.show_ipm:
             comb = np.hstack((img, self.ipm))

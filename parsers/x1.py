@@ -25,6 +25,7 @@ def parse_x1(id, data, ctx=None):
     ids = [m.frame_id for m in db_x1.messages]
     if id not in ids:
         return None
+    # print(id, data)
     r = db_x1.decode_message(id, data)
     # print("0x%x" % id, r)
     if not ctx.get('x1_obs'):
@@ -183,3 +184,45 @@ def parse_x1(id, data, ctx=None):
             # print('fusion', ret)
             return ret
 
+    # return {'type': 'lane', 'class': 'left_indiv', 'a0': r['VIS_LANE_LEFT_INDIVID_A0'],
+    #         'a1': r['VIS_LANE_LEFT_INDIVID_A1'],
+    #         'a2': r['VIS_LANE_LEFT_INDIVID_A2'], 'a3': r['VIS_LANE_LEFT_INDIVID_A3'],
+    #         'range': r['VIS_LANE_LEFT_INDIVID_RANGE']}
+
+    # if 0x5f0 <= id <= 0x5f7:
+    #
+    #     res = []
+    #     if 'lanes' not in ctx:
+    #         ctx['lanes'] = [dict(), dict(), dict(), dict()]
+    #
+    #     fields = '''
+    #     Type
+    #     Position
+    #     HeadingAngle
+    #     Curvature
+    #     CurvatureDerivative
+    #     ViewRangeStart
+    #     ViewRangeEnd
+    #     '''
+    #     fields = [f.strip() for f in fields.split('\n') if f.strip() != '']
+    #
+    #     for i in range(1, 5):
+    #         for f in fields:
+    #             key = 'Lane' + str(i) + '_' + f
+    #             if key in r:
+    #                 ctx['lanes'][i - 1][key] = r[key]
+    #
+    #     l_keys = [len(ctx['lanes'][i - 1].keys()) for i in range(1, 5)]
+    #     for i in range(1, 5):
+    #         if l_keys[i - 1] == 7:
+    #             s = 'Lane' + str(i)
+    #             # print(ctx['lanes'])
+    #             line = [ctx['lanes'][i - 1][s + '_' + f] for f in fields]
+    #             lane = {
+    #                 'type': 'lane', 'class': s, 'a0': line[1], 'a1': line[2],
+    #                 'a2': line[3], 'a3': line[4], 'range': line[-1], 'color': 4
+    #             }
+    #             # print(lane)
+    #             res.append(lane)
+    #             ctx['lanes'][i - 1].clear()
+    #     return res

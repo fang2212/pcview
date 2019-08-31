@@ -1,0 +1,274 @@
+VERSION "1"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: EyeQ4 MCU
+
+
+BO_ 342 TSR_0_A: 8 EyeQ4
+ SG_ TSR_ID : 0|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ TSR_Sign_Name : 8|10@1+ (1,0) [0|1023] "NA"  MCU
+ SG_ TSR_Confidence : 18|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Relevancy : 25|5@1+ (1,0) [0|13] "ENUM"  MCU
+ SG_ TSR_Filter_Type : 30|4@1+ (1,0) [0|7] "ENUM"  MCU
+ SG_ TSR_Sup1_SignName : 34|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup1_Confidence : 42|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 343 TSR_0_B: 8 EyeQ4
+ SG_ TSR_Sup2_SignName : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup2_Confidence : 8|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Sign_Long_Distance : 15|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ TSR_Sign_Lateral_Distance : 30|13@1+ (0.01,-32) [-32|31] "m"  MCU
+ SG_ TSR_Sign_Height : 43|15@1+ (0.01,-15) [-15|15] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 344 TSR_1_A: 8 EyeQ4
+ SG_ TSR_ID : 0|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ TSR_Sign_Name : 8|10@1+ (1,0) [0|1023] "NA"  MCU
+ SG_ TSR_Confidence : 18|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Relevancy : 25|5@1+ (1,0) [0|13] "ENUM"  MCU
+ SG_ TSR_Filter_Type : 30|4@1+ (1,0) [0|7] "ENUM"  MCU
+ SG_ TSR_Sup1_SignName : 34|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup1_Confidence : 42|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 345 TSR_1_B: 8 EyeQ4
+ SG_ TSR_Sup2_SignName : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup2_Confidence : 8|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Sign_Long_Distance : 15|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ TSR_Sign_Lateral_Distance : 30|13@1+ (0.01,-32) [-32|31] "m"  MCU
+ SG_ TSR_Sign_Height : 43|15@1+ (0.01,-15) [-15|15] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 346 TSR_2_A: 8 EyeQ4
+ SG_ TSR_ID : 0|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ TSR_Sign_Name : 8|10@1+ (1,0) [0|1023] "NA"  MCU
+ SG_ TSR_Confidence : 18|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Relevancy : 25|5@1+ (1,0) [0|13] "ENUM"  MCU
+ SG_ TSR_Filter_Type : 30|4@1+ (1,0) [0|7] "ENUM"  MCU
+ SG_ TSR_Sup1_SignName : 34|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup1_Confidence : 42|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 347 TSR_2_B: 8 EyeQ4
+ SG_ TSR_Sup2_SignName : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup2_Confidence : 8|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Sign_Long_Distance : 15|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ TSR_Sign_Lateral_Distance : 30|13@1+ (0.01,-32) [-32|31] "m"  MCU
+ SG_ TSR_Sign_Height : 43|15@1+ (0.01,-15) [-15|15] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 348 TSR_3_A: 8 EyeQ4
+ SG_ TSR_ID : 0|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ TSR_Sign_Name : 8|10@1+ (1,0) [0|1023] "NA"  MCU
+ SG_ TSR_Confidence : 18|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Relevancy : 25|5@1+ (1,0) [0|13] "ENUM"  MCU
+ SG_ TSR_Filter_Type : 30|4@1+ (1,0) [0|7] "ENUM"  MCU
+ SG_ TSR_Sup1_SignName : 34|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup1_Confidence : 42|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 349 TSR_3_B: 8 EyeQ4
+ SG_ TSR_Sup2_SignName : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup2_Confidence : 8|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Sign_Long_Distance : 15|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ TSR_Sign_Lateral_Distance : 30|13@1+ (0.01,-32) [-32|31] "m"  MCU
+ SG_ TSR_Sign_Height : 43|15@1+ (0.01,-15) [-15|15] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 350 TSR_4_A: 8 EyeQ4
+ SG_ TSR_ID : 0|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ TSR_Sign_Name : 8|10@1+ (1,0) [0|1023] "NA"  MCU
+ SG_ TSR_Confidence : 18|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Relevancy : 25|5@1+ (1,0) [0|13] "ENUM"  MCU
+ SG_ TSR_Filter_Type : 30|4@1+ (1,0) [0|7] "ENUM"  MCU
+ SG_ TSR_Sup1_SignName : 34|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup1_Confidence : 42|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 351 TSR_4_B: 8 EyeQ4
+ SG_ TSR_Sup2_SignName : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup2_Confidence : 8|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Sign_Long_Distance : 15|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ TSR_Sign_Lateral_Distance : 30|13@1+ (0.01,-32) [-32|31] "m"  MCU
+ SG_ TSR_Sign_Height : 43|15@1+ (0.01,-15) [-15|15] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 352 TSR_5_A: 8 EyeQ4
+ SG_ TSR_ID : 0|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ TSR_Sign_Name : 8|10@1+ (1,0) [0|1023] "NA"  MCU
+ SG_ TSR_Confidence : 18|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Relevancy : 25|5@1+ (1,0) [0|13] "ENUM"  MCU
+ SG_ TSR_Filter_Type : 30|4@1+ (1,0) [0|7] "ENUM"  MCU
+ SG_ TSR_Sup1_SignName : 34|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup1_Confidence : 42|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 353 TSR_5_B: 8 EyeQ4
+ SG_ TSR_Sup2_SignName : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup2_Confidence : 8|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Sign_Long_Distance : 15|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ TSR_Sign_Lateral_Distance : 30|13@1+ (0.01,-32) [-32|31] "m"  MCU
+ SG_ TSR_Sign_Height : 43|15@1+ (0.01,-15) [-15|15] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 354 TSR_6_A: 8 EyeQ4
+ SG_ TSR_ID : 0|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ TSR_Sign_Name : 8|10@1+ (1,0) [0|1023] "NA"  MCU
+ SG_ TSR_Confidence : 18|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Relevancy : 25|5@1+ (1,0) [0|13] "ENUM"  MCU
+ SG_ TSR_Filter_Type : 30|4@1+ (1,0) [0|7] "ENUM"  MCU
+ SG_ TSR_Sup1_SignName : 34|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup1_Confidence : 42|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+BO_ 355 TSR_6_B: 8 EyeQ4
+ SG_ TSR_Sup2_SignName : 0|8@1+ (1,0) [0|255] "NA"  MCU
+ SG_ TSR_Sup2_Confidence : 8|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ TSR_Sign_Long_Distance : 15|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ TSR_Sign_Lateral_Distance : 30|13@1+ (0.01,-32) [-32|31] "m"  MCU
+ SG_ TSR_Sign_Height : 43|15@1+ (0.01,-15) [-15|15] "m"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+
+
+
+CM_ SG_ 342 TSR_ID "Unique ID to be used with frame ID from common messages";
+CM_ SG_ 342 TSR_Sign_Name "Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 342 TSR_Confidence "Currently not implemented = 1";
+CM_ SG_ 342 TSR_Relevancy "ENUM description (see below)";
+CM_ SG_ 342 TSR_Sup1_SignName "First Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 343 TSR_Sup2_SignName "Second Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 343 TSR_Sign_Long_Distance "Longitudinal distance to sign (on the ground ) in meters";
+CM_ SG_ 343 TSR_Sign_Lateral_Distance "Lateral distance to sign (on the ground) in meters";
+CM_ SG_ 343 TSR_Sign_Height "Sign height in meters";
+CM_ SG_ 344 TSR_ID "Unique ID to be used with frame ID from common messages";
+CM_ SG_ 344 TSR_Sign_Name "Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 344 TSR_Confidence "Currently not implemented = 1";
+CM_ SG_ 344 TSR_Relevancy "ENUM description (see below)";
+CM_ SG_ 344 TSR_Sup1_SignName "First Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 345 TSR_Sup2_SignName "Second Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 345 TSR_Sign_Long_Distance "Longitudinal distance to sign (on the ground ) in meters";
+CM_ SG_ 345 TSR_Sign_Lateral_Distance "Lateral distance to sign (on the ground) in meters,Positive on left turn";
+CM_ SG_ 345 TSR_Sign_Height "Sign height in meters";
+CM_ SG_ 346 TSR_ID "Unique ID to be used with frame ID from common messages";
+CM_ SG_ 346 TSR_Sign_Name "Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 346 TSR_Confidence "Currently not implemented = 1";
+CM_ SG_ 346 TSR_Relevancy "ENUM description (see below)";
+CM_ SG_ 346 TSR_Sup1_SignName "First Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 347 TSR_Sup2_SignName "Second Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 347 TSR_Sign_Long_Distance "Longitudinal distance to sign (on the ground ) in meters";
+CM_ SG_ 347 TSR_Sign_Lateral_Distance "Lateral distance to sign (on the ground) in meters,Positive on left turn";
+CM_ SG_ 347 TSR_Sign_Height "Sign height in meters";
+CM_ SG_ 348 TSR_ID "Unique ID to be used with frame ID from common messages";
+CM_ SG_ 348 TSR_Sign_Name "Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 348 TSR_Confidence "Currently not implemented = 1";
+CM_ SG_ 348 TSR_Relevancy "ENUM description (see below)";
+CM_ SG_ 348 TSR_Sup1_SignName "First Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 349 TSR_Sup2_SignName "Second Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 349 TSR_Sign_Long_Distance "Longitudinal distance to sign (on the ground ) in meters";
+CM_ SG_ 349 TSR_Sign_Lateral_Distance "Lateral distance to sign (on the ground) in meters,Positive on left turn";
+CM_ SG_ 349 TSR_Sign_Height "Sign height in meters";
+CM_ SG_ 350 TSR_ID "Unique ID to be used with frame ID from common messages";
+CM_ SG_ 350 TSR_Sign_Name "Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 350 TSR_Confidence "Currently not implemented = 1";
+CM_ SG_ 350 TSR_Relevancy "ENUM description (see below)";
+CM_ SG_ 350 TSR_Sup1_SignName "First Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 351 TSR_Sup2_SignName "Second Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 351 TSR_Sign_Long_Distance "Longitudinal distance to sign (on the ground ) in meters";
+CM_ SG_ 351 TSR_Sign_Lateral_Distance "Lateral distance to sign (on the ground) in meters,Positive on left turn";
+CM_ SG_ 351 TSR_Sign_Height "Sign height in meters";
+CM_ SG_ 352 TSR_ID "Unique ID to be used with frame ID from common messages";
+CM_ SG_ 352 TSR_Sign_Name "Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 352 TSR_Confidence "Currently not implemented = 1";
+CM_ SG_ 352 TSR_Relevancy "ENUM description (see below)";
+CM_ SG_ 352 TSR_Sup1_SignName "First Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 353 TSR_Sup2_SignName "Second Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 353 TSR_Sign_Long_Distance "Longitudinal distance to sign (on the ground ) in meters";
+CM_ SG_ 353 TSR_Sign_Lateral_Distance "Lateral distance to sign (on the ground) in meters,Positive on left turn";
+CM_ SG_ 353 TSR_Sign_Height "Sign height in meters";
+CM_ SG_ 354 TSR_ID "Unique ID to be used with frame ID from common messages";
+CM_ SG_ 354 TSR_Sign_Name "Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 354 TSR_Confidence "Currently not implemented = 1";
+CM_ SG_ 354 TSR_Relevancy "ENUM description (see below)";
+CM_ SG_ 354 TSR_Sup1_SignName "First Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 355 TSR_Sup2_SignName "Second Supplementary Sign descriptive name (TSR Signs ENUM)";
+CM_ SG_ 355 TSR_Sign_Long_Distance "Longitudinal distance to sign (on the ground ) in meters";
+CM_ SG_ 355 TSR_Sign_Lateral_Distance "Lateral distance to sign (on the ground) in meters,Positive on left turn";
+CM_ SG_ 355 TSR_Sign_Height "Sign height in meters";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 50000;
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_DEF_DEF_  "BusType" "CAN";
+BA_ "BusType" "CAN";
+BA_ "GenMsgCycleTime" BO_ 342 30;
+BA_ "GenMsgCycleTime" BO_ 343 30;
+BA_ "GenMsgCycleTime" BO_ 344 30;
+BA_ "GenMsgCycleTime" BO_ 345 30;
+BA_ "GenMsgCycleTime" BO_ 346 30;
+BA_ "GenMsgCycleTime" BO_ 347 30;
+BA_ "GenMsgCycleTime" BO_ 348 30;
+BA_ "GenMsgCycleTime" BO_ 349 30;
+BA_ "GenMsgCycleTime" BO_ 350 30;
+BA_ "GenMsgCycleTime" BO_ 351 30;
+BA_ "GenMsgCycleTime" BO_ 352 30;
+BA_ "GenMsgCycleTime" BO_ 353 30;
+BA_ "GenMsgCycleTime" BO_ 354 30;
+BA_ "GenMsgCycleTime" BO_ 355 30;
+VAL_ 342 TSR_Relevancy 10 "OTHER_FILTER_REASON" 9 "CONTRADICT_ARROW_SIGN" 8 "CIPV_IN_FRONT" 7 "ERROR_SIGN_CODE" 6 "INTERNAL_SIGN_CONTRADICTION" 5 "FAR_IRRELEVANT_SIGN" 4 "SIGN_ON_TURN" 3 "PARRALEL_ROAD_SIGN" 2 "LANE_ASSIGNMENT_SIGN" 1 "HIGHWAY_EXIT_SIGN" 0 "RELEVANT_SIGN" ;
+VAL_ 342 TSR_Filter_Type 7 "RESERVED_3" 6 "RESERVED_2" 5 "RESERVED_1" 4 "ROAD_NUMBER" 3 "MINIMUN" 2 "EMBEDDED" 1 "TRUCK" 0 "NO_SLI_FILTER" ;
+VAL_ 344 TSR_Relevancy 10 "OTHER_FILTER_REASON" 9 "CONTRADICT_ARROW_SIGN" 8 "CIPV_IN_FRONT" 7 "ERROR_SIGN_CODE" 6 "INTERNAL_SIGN_CONTRADICTION" 5 "FAR_IRRELEVANT_SIGN" 4 "SIGN_ON_TURN" 3 "PARRALEL_ROAD_SIGN" 2 "LANE_ASSIGNMENT_SIGN" 1 "HIGHWAY_EXIT_SIGN" 0 "RELEVANT_SIGN" ;
+VAL_ 344 TSR_Filter_Type 7 "RESERVED_3" 6 "RESERVED_2" 5 "RESERVED_1" 4 "ROAD_NUMBER" 3 "MINIMUN" 2 "EMBEDDED" 1 "TRUCK" 0 "NO_SLI_FILTER" ;
+VAL_ 346 TSR_Relevancy 10 "OTHER_FILTER_REASON" 9 "CONTRADICT_ARROW_SIGN" 8 "CIPV_IN_FRONT" 7 "ERROR_SIGN_CODE" 6 "INTERNAL_SIGN_CONTRADICTION" 5 "FAR_IRRELEVANT_SIGN" 4 "SIGN_ON_TURN" 3 "PARRALEL_ROAD_SIGN" 2 "LANE_ASSIGNMENT_SIGN" 1 "HIGHWAY_EXIT_SIGN" 0 "RELEVANT_SIGN" ;
+VAL_ 346 TSR_Filter_Type 7 "RESERVED_3" 6 "RESERVED_2" 5 "RESERVED_1" 4 "ROAD_NUMBER" 3 "MINIMUN" 2 "EMBEDDED" 1 "TRUCK" 0 "NO_SLI_FILTER" ;
+VAL_ 348 TSR_Relevancy 10 "OTHER_FILTER_REASON" 9 "CONTRADICT_ARROW_SIGN" 8 "CIPV_IN_FRONT" 7 "ERROR_SIGN_CODE" 6 "INTERNAL_SIGN_CONTRADICTION" 5 "FAR_IRRELEVANT_SIGN" 4 "SIGN_ON_TURN" 3 "PARRALEL_ROAD_SIGN" 2 "LANE_ASSIGNMENT_SIGN" 1 "HIGHWAY_EXIT_SIGN" 0 "RELEVANT_SIGN" ;
+VAL_ 348 TSR_Filter_Type 7 "RESERVED_3" 6 "RESERVED_2" 5 "RESERVED_1" 4 "ROAD_NUMBER" 3 "MINIMUN" 2 "EMBEDDED" 1 "TRUCK" 0 "NO_SLI_FILTER" ;
+VAL_ 350 TSR_Relevancy 10 "OTHER_FILTER_REASON" 9 "CONTRADICT_ARROW_SIGN" 8 "CIPV_IN_FRONT" 7 "ERROR_SIGN_CODE" 6 "INTERNAL_SIGN_CONTRADICTION" 5 "FAR_IRRELEVANT_SIGN" 4 "SIGN_ON_TURN" 3 "PARRALEL_ROAD_SIGN" 2 "LANE_ASSIGNMENT_SIGN" 1 "HIGHWAY_EXIT_SIGN" 0 "RELEVANT_SIGN" ;
+VAL_ 350 TSR_Filter_Type 7 "RESERVED_3" 6 "RESERVED_2" 5 "RESERVED_1" 4 "ROAD_NUMBER" 3 "MINIMUN" 2 "EMBEDDED" 1 "TRUCK" 0 "NO_SLI_FILTER" ;
+VAL_ 352 TSR_Relevancy 10 "OTHER_FILTER_REASON" 9 "CONTRADICT_ARROW_SIGN" 8 "CIPV_IN_FRONT" 7 "ERROR_SIGN_CODE" 6 "INTERNAL_SIGN_CONTRADICTION" 5 "FAR_IRRELEVANT_SIGN" 4 "SIGN_ON_TURN" 3 "PARRALEL_ROAD_SIGN" 2 "LANE_ASSIGNMENT_SIGN" 1 "HIGHWAY_EXIT_SIGN" 0 "RELEVANT_SIGN" ;
+VAL_ 352 TSR_Filter_Type 7 "RESERVED_3" 6 "RESERVED_2" 5 "RESERVED_1" 4 "ROAD_NUMBER" 3 "MINIMUN" 2 "EMBEDDED" 1 "TRUCK" 0 "NO_SLI_FILTER" ;
+VAL_ 354 TSR_Relevancy 10 "OTHER_FILTER_REASON" 9 "CONTRADICT_ARROW_SIGN" 8 "CIPV_IN_FRONT" 7 "ERROR_SIGN_CODE" 6 "INTERNAL_SIGN_CONTRADICTION" 5 "FAR_IRRELEVANT_SIGN" 4 "SIGN_ON_TURN" 3 "PARRALEL_ROAD_SIGN" 2 "LANE_ASSIGNMENT_SIGN" 1 "HIGHWAY_EXIT_SIGN" 0 "RELEVANT_SIGN" ;
+VAL_ 354 TSR_Filter_Type 7 "RESERVED_3" 6 "RESERVED_2" 5 "RESERVED_1" 4 "ROAD_NUMBER" 3 "MINIMUN" 2 "EMBEDDED" 1 "TRUCK" 0 "NO_SLI_FILTER" ;
+

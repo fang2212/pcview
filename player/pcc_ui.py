@@ -35,7 +35,7 @@ class Player(object):
         self.cipv = 0
 
         self.color_seq = [CVColor.White, CVColor.Red, CVColor.Green, CVColor.deeporange, CVColor.purple,
-             CVColor.Blue, CVColor.LightBlue, CVColor.Black]
+             CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
         self.color_obs = {'ifv300': CVColor.Blue,
              'esr': CVColor.Red,
@@ -43,7 +43,9 @@ class Player(object):
              'x1': CVColor.purple,
              'rtk': CVColor.Green,
              'ars': CVColor.Green,
-             'gps': 0}
+             'gps': 0,
+             'sta77': CVColor.Black,
+             'mbq4': CVColor.Grass}
 
         self.param_bg_width = 160
 
@@ -1080,8 +1082,13 @@ class Player(object):
             # print(data)
         if data['type'] != 'lane':
             return
+
+        if 'color' in data:
+            color = self.color_seq[data['color']]
+        else:
+            color = CVColor.Blue
         # self.player.show_overlook_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
-        self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
+        self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
 
     # def show_radar(self, img, position, color=CVColor.Cyan, thickness=2):
     #     """绘制pedestrain

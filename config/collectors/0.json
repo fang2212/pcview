@@ -25,7 +25,7 @@
  },
 
  "use_x1_camera": {
-  "use": false,
+  "use": true,
   "ip": "192.168.98.200",
   "port": 24011
  },
