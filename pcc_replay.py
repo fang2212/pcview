@@ -404,7 +404,7 @@ def prep_replay(source):
 if __name__ == "__main__":
     from config.config import *
     import sys
-    sys.argv.append('/home/cao/桌面/eyeq4_data/20190828174812/log.txt')
+    sys.argv.append('/home/yj/bak/data/q4/20190828_eyeq4_data/20190828175011/log.txt')
 
     local_path = os.path.split(os.path.realpath(__file__))[0]
     # print('local_path:', local_path)
@@ -421,6 +421,6 @@ if __name__ == "__main__":
     from parsers.parser import parsers_dict
 
     replayer = LogPlayer(r_sort, configs, ratio=0.2, start_frame=0)
-    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=True)
+    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=False)
     pc_viewer.start()
 
