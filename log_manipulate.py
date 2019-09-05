@@ -95,6 +95,8 @@ def process_log(file_name, parsers, ctx, startf=None, endf=None, output=None):
 
             if line == '\n':
                 continue
+            if len(line) < 26:
+                continue
             # try:
             log_type = line.split(' ')[2]
             if log_type == 'camera':
@@ -125,6 +127,8 @@ def process_log(file_name, parsers, ctx, startf=None, endf=None, output=None):
 def strip_log(file_name):
     def strip(line, ctx):
         if line == '\n':
+            return None
+        elif len(line) < 26:
             return None
         else:
             return line
@@ -1977,6 +1981,7 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
     if not os.path.exists(analysis_dir):
         os.mkdir(analysis_dir)
 
+    log = strip_log(log)
     r = time_sort(log, output=os.path.join(analysis_dir, 'log_sort.txt'))
     r0 = process_log(r, parsers, ctx, output=os.path.join(analysis_dir, 'log_p0.txt'))
 
