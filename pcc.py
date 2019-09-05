@@ -7,25 +7,33 @@ __progname__ = 'run'
 
 from math import fabs
 import logging
+import time
 from multiprocessing import Manager
 import cv2
 from datetime import datetime
 from tools.mytools import Supervisor, OrientTuner
 from tools.transform import Transform
+from tools.geo import *
 from config.config import local_cfg
 from player.pcc_ui import Player
 from sink.hub import Hub
 from tools.vehicle import Vehicle
 from tools.match import is_near
+from net.ntrip_client import GGAReporter
 import numpy as np
-
-
+import base64
+from multiprocessing.dummy import Process as Thread
+import time
+from player import FPSCnt, FlowPlayer
+from recorder import VideoRecorder
+import os
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 
 class PCC(object):
-    def __init__(self, hub, replay=False, rlog=None, ipm=None):
+
+    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None):
         self.hub = hub
         self.player = Player()
         self.exit = False
@@ -34,6 +42,7 @@ class PCC(object):
         self.replay = replay
         self.rlog = rlog
         self.frame_idx = 0
+        self.ts0 = 0
 
         self.now_id = 0
         self.pre_rtk = {}
@@ -52,14 +61,19 @@ class PCC(object):
 
         self.ego_car = Vehicle()
         self.calib_data = dict()
+        self.frame_cost = 0
         cv2.namedWindow('UI')
         cv2.createTrackbar('Yaw', 'UI', 500, 1000, self.ot.update_yaw)
         cv2.createTrackbar('Pitch', 'UI', 500, 1000, self.ot.update_pitch)
         cv2.createTrackbar('Roll', 'UI', 500, 1000, self.ot.update_roll)
         cv2.createTrackbar('ESR_Yaw', 'UI', 500, 1000, self.ot.update_esr_yaw)
         if not replay:
-            self.supervisor = Supervisor([self.check_status, self.hub.fileHandler.check_file])
+            self.supervisor = Supervisor([self.check_status,
+                                          self.hub.fileHandler.check_file,
+                                          self.hub.find_collectors])
             self.supervisor.start()
+            self.gga = GGAReporter('ntrip.weaty.cn', 5001)
+            self.gga.start()
         else:
             self.hub.d = Manager().dict()
             def update_speed(x):
@@ -69,6 +83,16 @@ class PCC(object):
 
         cv2.setMouseCallback('UI', self.left_click, '1234')
 
+        self.flow_player = FlowPlayer()
+
+        self.save_replay_video = save_replay_video
+
+        if self.save_replay_video and self.replay:
+            self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
+            self.vw.set_writer("replay-render")
+            print('--------save replay video',os.path.dirname(self.rlog))
+
+
     def start(self):
         self.hub.start()
         self.player.start_time = datetime.now()
@@ -77,11 +101,20 @@ class PCC(object):
         while not self.exit:
             d = self.hub.pop_simple()
             if d is None or not d.get('frame_id'):
+                # time.sleep(0.01)
                 continue
+            if not self.replay:
+                qsize = self.hub.fileHandler.raw_queue.qsize()
+                # print(qsize)
+                if self.hub.fileHandler.recording and qsize > 2000:
+                    print('escap drawing', qsize)
+                    time.sleep(0.1)
+                    continue
             self.draw(d, frame_cnt)
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
                 self.hub.pause(True)
+                time.sleep(0.1)
             if self.replay:
                 self.hub.pause(False)
                 if self.hub.d:
@@ -89,19 +122,38 @@ class PCC(object):
                     # print(frame_cnt)
             # self.draw(d, frame_cnt)
             frame_cnt += 1
+            if frame_cnt > 500:
+                self.player.start_time = datetime.now()
+                frame_cnt = 1
+            # time.sleep(0.01)
 
     def draw(self, mess, frame_cnt):
-        imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
-        img = imgraw.copy()
+        # print(mess[''])
+        t0 = time.time()
+        try:
+            imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
+            img = imgraw.copy()
+        except Exception as e:
+            print(e)
+            return
+
         frame_id = mess['frame_id']
         self.now_id = frame_id
         self.ts_now = mess['ts']
+        self.player.ts_now = mess['ts']
+        self.player.update_column_ts('video', mess['ts'])
         # print(mess)
         can_data = mess.get('can')
+        if self.ts0 == 0:
+            self.ts0 = self.ts_now
 
-        self.player.show_columns(img)
+        if local_cfg.save.video and not self.replay:
+            self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
+
+        # self.player.show_columns(img)
 
         self.player.show_frame_id(img, frame_id)
+        self.player.show_frame_cost(self.frame_cost)
         self.player.show_datetime(img, self.ts_now)
         if self.show_ipm:
             self.m_g2i = self.transform.calc_g2i_matrix()
@@ -114,16 +166,24 @@ class PCC(object):
 
             self.player.show_dist_mark_ipm(self.ipm)
 
+        if 'x1_data' in mess:
+            # print('------', mess['pcv_data'])
+            for data in mess['x1_data']:
+                self.flow_player.draw(data, img)
+
         cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
         if can_data:
             # print('can0 data')
             for d in mess['can']:
                 if not d:
                     continue
-                if d['type'] == 'rtk':
-                    cache[d['source']] = d
+                if 'type' in d:
+                    if d['type'] == 'rtk':
+                        cache[d['source']] = d
+                    else:
+                        self.draw_can_data(img, d)
                 else:
-                    self.draw_can_data(img, d)
+                    tt = 1
 
         for type in cache:
             d = cache[type]
@@ -142,6 +202,9 @@ class PCC(object):
         if not self.replay and self.hub.fileHandler.recording:
             self.player.show_recording(img, self.hub.fileHandler.start_time)
 
+        if self.replay:
+            self.player.show_replaying(img, self.ts_now - self.ts0)
+
         fps = self.player.cal_fps(frame_cnt)
         self.player.show_fps(img, fps)
 
@@ -149,13 +212,20 @@ class PCC(object):
             self.player.show_warning(img, self.supervisor.check())
         self.player.show_intrinsic_para(img)
 
+        self.player.render_text_info(img)
+
+        if self.save_replay_video and self.replay:
+            self.vw.write(img)
+
         if self.show_ipm:
             comb = np.hstack((img, self.ipm))
         else:
             comb = img
+
         cv2.imshow('UI', comb)
 
         self.handle_keyboard()
+        self.frame_cost = (time.time() - t0)*0.1 + self.frame_cost*0.9
 
     def draw_rtk(self, img, data):
         self.player.show_rtk(img, data)
@@ -178,9 +248,13 @@ class PCC(object):
 
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
+        if 'lat' in data and not self.replay:
+            self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
         if data['source'] == 'rtk.5':
             if 'lat' in data:
                 self.rtk_pair[0] = data
+                # if not self.replay:
+                #     self.gga.set_pos(data['lat'], data['lon'])
             if 'yaw' in data:
                 self.rtk_pair[0]['yaw'] = data['yaw']
         if 'rtk' in data['source'] and data['source'] != 'rtk.5':
@@ -194,6 +268,17 @@ class PCC(object):
             self.player.show_target(img, self.rtk_pair[1], self.rtk_pair[0])
             if self.show_ipm:
                 self.player.show_ipm_target(self.ipm, self.rtk_pair[1], self.rtk_pair[0])
+
+    def viz_rtcm(self, img, data):
+        # if data['type'] == 'rtcm':
+        #     print(data)
+        if data['id'] == 1005:
+            llh = PosVector(data['ECEF-X'], data['ECEF-Y'], data['ECEF-Z']).ToLLH()
+            data['lat'] = llh.lat
+            data['lon'] = llh.lon
+            data['hgt'] = llh.alt
+            self.player.show_rtcm(data)
+            print('station loc:', data['lat'], data['lon'])
 
     def specific_handle(self, img, data):
         src = data.get('source')
@@ -226,34 +311,39 @@ class PCC(object):
             # self.player.show_obs(img, dummy0)
             # self.player.show_obs(img, dummy1)
             self.player.show_obs(img, data)
+            self.player.update_column_ts(data.get('source'), data.get('ts'))
             if self.show_ipm:
                 # self.player.show_ipm_obs(self.ipm, dummy0)
                 # self.player.show_ipm_obs(self.ipm, dummy1)
                 self.player.show_ipm_obs(self.ipm, data)
-
+        # lane
         elif data['type'] == 'lane':
-            self.player.draw_lane_r(img, data)
+            self.player.draw_lane_r(img, data, )
             if self.show_ipm:
-                self.player.show_lane_ipm(self.ipm, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
-
+                self.player.draw_lane_ipm(self.ipm, data)
+        # vehicle
         elif data['type'] == 'vehicle_state':
             self.player.draw_vehicle_state(img, data)
+            # print(data)
+            self.player.update_column_ts(data['source'], data['ts'])
+
         elif data['type'] == 'CIPV':
             self.cipv = data['id']
+
         elif data['type'] == 'rtk':
             # print('------------', data['type'])
             data['updated'] = True
             self.draw_rtk(img, data)
-        elif data['type'] == 'bestpos':
-            # print('------------', data['type'])
-            self.draw_rtk_ub482(img, data)
-        elif data['type'] == 'heading':
-            # print('------------', data['type'])
-            self.draw_rtk_ub482(img, data)
-        elif data['type'] == 'rtcm':
-            # print('------------', data['type'])
-            self.draw_rtk_ub482(img, data)
 
+        elif data['type'] in ['bestpos', 'heading', 'bestvel']:
+            # print('------------', data['type'])
+            self.draw_rtk_ub482(img, data)
+            self.player.update_column_ts(data['source'], data['ts'])
+        elif data['type'] == 'rtcm':
+            self.viz_rtcm(img, data)
+        elif data['type'] == 'gps':
+            self.player.show_gps(data)
+            self.player.update_column_ts(data['source'], data['ts'])
         self.specific_handle(img, data)
 
     def handle_keyboard(self):
@@ -262,6 +352,7 @@ class PCC(object):
             cv2.destroyAllWindows()
             # os._exit(0)
             self.exit = True
+            sys.exit(0)
         elif key == 32:  # space
             self.pause = not self.pause
             print('Pause:', self.pause)
@@ -330,17 +421,49 @@ class PCC(object):
             cf.write(log_line)
 
 
+class HeadlessPCC:
+    def __init__(self, hub):
+        self.hub = hub
+        self.hub.fileHandler.isheadless = True
+
+    def start(self):
+        # self.hub.start()
+        while True:
+            mess = self.hub.pop_simple()
+
+            if mess is None or not mess.get('frame_id'):
+                continue
+            frame_id = mess['frame_id']
+            if local_cfg.save.video:
+                self.hub.fileHandler.insert_video((mess['ts'], frame_id, mess['img']))
+            time.sleep(0.02)
+
+
 if __name__ == "__main__":
     import sys
     from config.config import load_cfg
-    load_cfg('config/cfg_superb.json')
 
-    hub = Hub()
-    if len(sys.argv) == 2 and '--headless' in sys.argv[1]:
+    local_path = os.path.split(os.path.realpath(__file__))[0]
+    # print('local_path:', local_path)
+    os.chdir(local_path)
+
+    if len(sys.argv) == 1:
+        sys.argv.append('config/cfg_lab.json')
+    load_cfg(sys.argv[1])
+
+    if '--headless' in sys.argv:
+        hub = Hub(headless=True)
         hub.start()
-        import json
-        from tornado.web import Application, RequestHandler
+        pcc = HeadlessPCC(hub)
+
+        t = Thread(target=pcc.start)
+        t.start()
+        # hub.fileHandler.start_rec()
+        # pcc.start()
+
+        from tornado.web import Application, RequestHandler, StaticFileHandler
         from tornado.ioloop import IOLoop
+
         class IndexHandler(RequestHandler):
             def post(self):
                 action = self.get_body_argument('action')
@@ -349,29 +472,49 @@ if __name__ == "__main__":
                         if not hub.fileHandler.recording:
                             hub.fileHandler.start_rec()
                             print(hub.fileHandler.recording)
-                            self.write(json.dumps({'status': 'ok', 'action': action, 'message': 'start recording'}))
+                            self.write({'status': 'ok', 'action': action, 'message': 'start recording'})
                         else:
-                            self.write(json.dumps({'status': 'ok', 'message': 'already recording', 'action': action}))
+                            self.write({'status': 'ok', 'message': 'already recording', 'action': action})
                     elif 'stop' in action:
                         if not hub.fileHandler.recording:
-                            self.write(json.dumps({'status': 'ok', 'message': 'not recording', 'action': action}))
+                            self.write({'status': 'ok', 'message': 'not recording', 'action': action})
                         else:
                             hub.fileHandler.stop_rec()
                             print(hub.fileHandler.recording)
-                            self.write(json.dumps({'status': 'ok', 'action': action, 'message': 'stop recording'}))
+                            self.write({'status': 'ok', 'action': action, 'message': 'stop recording'})
                     elif 'check' in action:
                         mess = 'recording' if hub.fileHandler.recording else 'not recording'
-                        self.write(json.dumps({'status': 'ok', 'action': action, 'message': mess}))
+                        self.write({'status': 'ok', 'action': action, 'message': mess})
+                    elif 'image' in action:
+                        img = hub.fileHandler.get_last_image()
+                        img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
+                        if img is None:
+                            # print('pcc', img)
+                            # img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
+                            img = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
+
+                        base64_str = cv2.imencode('.jpg', img)[1].tostring()
+                        base64_str = base64.b64encode(base64_str).decode()
+                        self.write({'status': 'ok', 'action': action, 'message': 'get image', 'data': base64_str})
                     else:
-                        self.write(json.dumps({'status': 'ok', 'message': 'unrecognized action', 'action': action}))
+                        self.write({'status': 'ok', 'message': 'unrecognized action', 'action': action})
                 else:
                     # self.hub.fileHandler.stop_rec()
-                    self.write(json.dumps({'status': 'error', 'message': 'not action', 'action': None}))
-        app = Application([(r'/', IndexHandler)])
+                    self.write({'status': 'error', 'message': 'not action', 'action': None})
+
+            def get(self):
+                self.render("web/index.html")
+
+
+        app = Application([
+            (r'/', IndexHandler),
+            (r"/static/(.*)", StaticFileHandler, {"path": "web/statics"}),
+        ], debug=False)
         app.listen(9999)
         IOLoop.instance().start()
 
     else:
+        hub = Hub()
         pcc = PCC(hub, ipm=True, replay=False)
         pcc.start()
 

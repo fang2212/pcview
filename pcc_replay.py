@@ -10,45 +10,8 @@
 import struct
 import time
 from multiprocessing import Process, Queue, freeze_support
-
-
-class JpegExtractor(object):
-    def __init__(self, video_file=None):
-        self.video_fp = None
-        if video_file is not None:
-            self.video_fp = open(video_file, 'rb')
-        self.output_path = None
-        self.buf = b''
-        self.buf_len = int(2 * 1024 * 1024)
-        self.done = True
-
-    def open(self, file_name):
-        self.video_fp = open(file_name, 'rb')
-        self.done = False
-
-    def release(self):
-        self.video_fp.close()
-        self.video_fp = None
-        self.done = True
-
-    def read(self):
-        if not self.video_fp:
-            return
-        a = self.buf.find(b'\xff\xd8')
-        b = self.buf.find(b'\xff\xd9')
-        while a == -1 or b == -1:
-            read = self.video_fp.read(self.buf_len)
-            if len(read) == 0:
-                self.release()
-                return
-            self.buf += read
-            a = self.buf.find(b'\xff\xd8')
-            b = self.buf.find(b'\xff\xd9')
-
-        jpg = self.buf[a:b + 2]
-        self.buf = self.buf[b + 2:]
-
-        return jpg
+import json
+from parsers import ublox
 
 
 def jpeg_extractor(video_dir):
@@ -89,7 +52,9 @@ def jpeg_extractor(video_dir):
 
 
 class LogPlayer(Process):
+
     def __init__(self, log_path, configs=None, start_frame=0, ratio=1.0):
+
         Process.__init__(self)
         # self.daemon = False
         self.time_aligned = True
@@ -118,6 +83,11 @@ class LogPlayer(Process):
         self.buf = []
         self.replay_speed = 1
         self.now_frame_id = 0
+
+        self.x1_log = os.path.dirname(log_path) + '/pcv_log.txt'
+        self.x1_fp = None
+        if os.path.exists(self.x1_log):
+            self.x1_fp = open(self.x1_log, 'r')
 
         for idx, cfg in enumerate(configs):
             cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
@@ -148,12 +118,8 @@ class LogPlayer(Process):
         res = {
             'frame_id': None,
             'img': None,
-            'vehicle': {},
-            'lane': {},
-            'ped': {},
-            'tsr': {},
             'can': {},
-            'extra': {}
+            'x1_data': []
         }
 
         if not self.cam_queue.empty():
@@ -169,7 +135,34 @@ class LogPlayer(Process):
                     # print(key, cache[key])
                     cache[key] = []
                 self.msg_cnt['frame'] += 1
-                # print('res can', res['can'])
+
+                while True:
+                    if self.x1_fp is None:
+                        break
+                    try:
+                        fx = self.x1_fp.tell()
+                        line = self.x1_fp.readline().strip()
+
+                        try:
+                            data = json.loads(line)
+                        except json.JSONDecodeError as e:
+                            pass
+                            # print('error json line', line)
+                            # continue
+
+                        if 'frame_id' not in data:
+                            continue
+
+                        if data['frame_id'] == res['frame_id']:
+                            res['x1_data'].append(data)
+                        elif data['frame_id'] < res['frame_id']:
+                            continue
+                        else:
+                            self.x1_fp.seek(fx)
+                            break
+                    except StopIteration as e:
+                        break
+
                 now = time.time()
                 if now - self.last_time < 1.0 / self.hz:
                     time.sleep(1.0 / self.hz + self.last_time - now)
@@ -177,19 +170,6 @@ class LogPlayer(Process):
                 return res
             else:
                 print('error decode img', frame_id, len(data))
-        # if not self.msg_queue.empty():
-        #     frame_id, msg_data, msg_type = self.msg_queue.get()
-        #     # res[msg_type] = msg_data
-        #     # res['frame_id'] = frame_id
-        #     if isinstance(msg_data, list):
-        #         # print('msg data list')
-        #         self.cache[msg_type].extend(msg_data)
-        #     elif isinstance(msg_data, dict):
-        #         self.cache[msg_type].append(msg_data)
-        #     # self.msg_cnt[msg_type]['rev'] += 1
-        #     # self.msg_cnt[msg_type]['show'] += 1
-        # else:
-        #     time.sleep(0.001)
 
     def pause(self, pause):
         if pause:
@@ -201,6 +181,9 @@ class LogPlayer(Process):
         # self.init_socket()
         # cp = cProfile.Profile()
         # cp.enable()
+        last_fid = 0
+        frame_lost = 0
+        total_frame = 0
         rtk_dec = False
         lcnt = 0
         rf = open(self.log_path)
@@ -225,9 +208,22 @@ class LogPlayer(Process):
             # print('line {}'.format(cnt))
             cols = line.split(' ')
             ts = float(cols[0]) + float(cols[1]) / 1000000
+
             if cols[2] == 'camera':
                 frame_id = int(cols[3])
-                fid, jpg = next(self.jpeg_extractor)
+                if last_fid == 0:
+                    last_fid = frame_id - 1
+                frame_lost += frame_id - last_fid - 1
+                total_frame += 1
+                last_fid = frame_id
+
+                try:
+                    fid, jpg = next(self.jpeg_extractor)
+                except StopIteration as e:
+                    print('images run out.')
+                    return
+                if fid and fid != frame_id:
+                    print(bcl.FAIL+'raw fid differs from log:'+bcl.ENDC, fid, frame_id)
                 lcnt += 1
                 if jpg is None or lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                     self.now_frame_id = frame_id
@@ -260,6 +256,7 @@ class LogPlayer(Process):
                         break
                 if r is None:
                     continue
+
                 if isinstance(r, list):
                     # print('r is list')
                     for obs in r:
@@ -371,6 +368,12 @@ class LogPlayer(Process):
                 # r['sig_mask'] = int(fields[16], 16)
                 # self.msg_queue.put((0xc7, r, 'can'))
                 self.cache['can'].append(r.copy())
+
+            if 'NMEA' in cols[2]:
+                r = ublox.decode_nmea(cols[3])
+                r['source'] = 'gps'
+                self.cache['can'].append(r.copy())
+
         rf.close()
         # cp.disable()
         # cp.print_stats()
@@ -394,14 +397,18 @@ def prep_replay(source):
     if os.path.exists(install_path):
         print("using installation:", install_path)
         load_installation(install_path)
+    # return source
     return r_sort
 
 
 if __name__ == "__main__":
     from config.config import *
     import sys
-
-    sys.argv.append('/home/yj/bak/data/esr/20190813雷达yaw补偿测试/20190813173824/log.txt')
+    sys.argv.append('/home/yj/bak/data/q4/20190828_eyeq4_data/20190828175011/log.txt')
+    sys.argv.append('/media/nan/860evo/data/20190622-T5_problem/pcc_probelm/20190622115618/log.txt')
+    local_path = os.path.split(os.path.realpath(__file__))[0]
+    # print('local_path:', local_path)
+    os.chdir(local_path)
 
     freeze_support()
     source = sys.argv[1]
@@ -414,6 +421,6 @@ if __name__ == "__main__":
     from parsers.parser import parsers_dict
 
     replayer = LogPlayer(r_sort, configs, ratio=0.2, start_frame=0)
-    # replayer.start()
-    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True)
+    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=False)
     pc_viewer.start()
+

@@ -5,16 +5,16 @@ rm -r release/linux/build
 rm -r release/linux/dist
 
 echo "start pyinstaller"
-rm release/linux/dist/flow_view
-pyinstaller flow_view.py -F --distpath release/linux/dist --workpath release/linux/build
+pyinstaller pcc.py -F --distpath release/linux/dist --workpath release/linux/build -p /usr/local/lib/python3.5/dist-packages/:/usr/local/lib/:/下载/nanomsg-python/dist
 
-echo "copy *.node"
-cp release/linux/msgpackBinding.node release/linux/dist
-cp node/msg_fd release/linux/dist
-cp node/status2log release/linux/dist
 
-cp -r dbc/ release/linux/dist/dbc/
-mkdir release/linux/dist/script/
-cp script/chmod-usb.sh release/linux/dist/script/
-mkdir release/linux/dist/config/
-cp config/*.json release/linux/dist/config/
+echo "copy config"
+mkdir release/linux/dist/config
+cp -r config/*.json release/linux/dist/config/
+cp -r config/collectors/ release/linux/dist/config
+
+echo "copy dbc"
+cp -r dbc/ release/linux/dist
+
+echo "copy web"
+cp -r web/ release/linux/dist/

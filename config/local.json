@@ -1,5 +1,5 @@
 {
-  "log_root": "/home/cao/pc-collect",
+  "log_root": "/home/cao/pc-collector",
   "save": {
     "video": true,
     "raw": true,

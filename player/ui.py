@@ -45,6 +45,7 @@ class CVColor(object):
     deeporange = (0x22, 0x57, 0xff)
 
 
+
 class FPSCnt(object):
 
     def __init__(self, period, fps):

@@ -1,0 +1,330 @@
+VERSION "2"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: EyeQ4 MCU
+
+
+BO_ 320 Lanes_Support_Header: 8 EyeQ4
+ SG_ is_Construction_Area : 9|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Host_Estimated_Width : 0|9@1+ (0.01,0) [0|4] "meter"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_0 : 10|6@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_1 : 16|40@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_2 : 56|4@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 321 Left_Lane_A: 8 EyeQ4
+ SG_ is_Lane_Valid : 8|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Lane_Track_ID : 0|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ Lane_Exist_Probability : 9|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ Lane_Color : 55|2@1+ (1,0) [0|3] "ENUM"  MCU
+ SG_ Lane_Type_Class : 20|4@1+ (1,0) [0|15] "ENUM"  MCU
+ SG_ Lane_DLM_Type : 57|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ Lane_DECEL_Type : 17|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ Lane_View_Range_Start : 24|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ Lane_View_Range_End : 40|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ Lane_Crossing : 16|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_0 : 39|1@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 322 Left_Lane_B: 8 EyeQ4
+ SG_ Line_Marker_Width : 0|8@1+ (0.01,0) [0|0.7] "meter"  MCU
+ SG_ Reserved_0 : 8|7@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Dash_Average_Length : 15|13@1+ (0.01,0) [0|50] "meter"  MCU
+ SG_ Dash_Average_Gap : 28|13@1+ (0.01,0) [0|50] "meter"  MCU
+ SG_ Reserved_1 : 41|16@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Prediction_Source : 57|3@1+ (1,0) [0|6] "ENUM"  MCU
+
+BO_ 323 Left_Lane_C: 8 EyeQ4
+ SG_ Lane_C0 : 0|11@1+ (0.01,-10) [-10|10] "meter"  MCU
+ SG_ Reserved_0 : 11|14@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Lane_C1 : 25|10@1+ (0.000977,-0.357) [-0.357|0.357] "rad"  MCU
+ SG_ Reserved_1 : 35|12@1+ (1,0) [0|1] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_3 : 48|8@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_2 : 47|1@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_4 : 56|4@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 324 Left_Lane_D: 8 EyeQ4
+ SG_ Lane_C2 : 0|16@1+ (9.77E-007,-0.032) [-0.032|0.032] "1/m"  MCU
+ SG_ Reserved_0 : 16|16@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Lane_C3 : 32|16@1+ (3.73E-009,-0.000122) [-0.000122|0.000122] "1/m2"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_1 : 48|8@1+ (1,0) [0|1] "NA"  MCU
+ SG_ Reserved_2 : 56|4@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 325 Right_Lane_A: 8 EyeQ4
+ SG_ is_Lane_Valid : 8|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Lane_Track_ID : 0|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ Lane_Exist_Probability : 9|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ Lane_Color : 55|2@1+ (1,0) [0|3] "ENUM"  MCU
+ SG_ Lane_Type_Class : 20|4@1+ (1,0) [0|15] "ENUM"  MCU
+ SG_ Lane_DLM_Type : 57|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ Lane_DECEL_Type : 17|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ Lane_View_Range_Start : 24|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ Lane_View_Range_End : 40|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ Lane_Crossing : 16|1@1+ (1,0) [0|1] "bool"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_0 : 39|1@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 326 Right_Lane_B: 8 EyeQ4
+ SG_ Line_Marker_Width : 0|8@1+ (0.01,0) [0|0.7] "meter"  MCU
+ SG_ Reserved_0 : 8|7@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Dash_Average_Length : 15|13@1+ (0.01,0) [0|50] "meter"  MCU
+ SG_ Dash_Average_Gap : 28|13@1+ (0.01,0) [0|50] "meter"  MCU
+ SG_ Reserved_1 : 41|16@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Prediction_Source : 57|3@1+ (1,0) [0|6] "ENUM"  MCU
+
+BO_ 327 Right_Lane_C: 8 EyeQ4
+ SG_ Lane_C0 : 0|11@1+ (0.01,-10) [-10|10] "meter"  MCU
+ SG_ Reserved_0 : 11|14@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Lane_C1 : 25|10@1+ (0.000977,-0.357) [-0.357|0.357] "rad"  MCU
+ SG_ Reserved_1 : 35|12@1+ (0.0001,0) [0|0.3] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_3 : 48|8@1+ (1,0) [0|0] "m"  MCU
+ SG_ Reserved_2 : 47|1@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_4: 56|4@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 328 Right_Lane_D: 8 EyeQ4
+ SG_ Lane_C2 : 0|16@1+ (9.77E-007,-0.032) [-0.032|0.032] "1/m"  MCU
+ SG_ Reserved_0 : 16|16@1+ (0,0) [0|0] "NA"  MCU
+ SG_ Lane_C3 : 32|16@1+ (3.73E-009,-0.000122) [-0.000122|0.000122] "1/m2"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_1 : 48|8@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_2 : 56|4@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 329 Next_Right_Lane_A: 8 EyeQ4
+ SG_ Lane_Track_ID : 0|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ Lane_Exist_Probability : 9|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ Lane_Color : 55|2@1+ (1,0) [0|3] "ENUM"  MCU
+ SG_ Lane_View_Range_Start : 24|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ Lane_View_Range_End : 40|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ Lane_Type_Class : 20|4@1+ (1,0) [0|15] "ENUM"  MCU
+ SG_ Lane_DLM_Type : 57|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_0 : 8|1@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_1 : 16|4@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_2 : 39|1@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 330 Next_Right_Lane_B: 8 EyeQ4
+ SG_ Line_Marker_Width : 0|8@1+ (0.01,0) [0|0.7] "meter"  MCU
+ SG_ Reserved_0 : 8|7@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Dash_Average_Length : 15|13@1+ (0.01,0) [0|50] "meter"  MCU
+ SG_ Dash_Average_Gap : 28|13@1+ (0.01,0) [0|50] "meter"  MCU
+ SG_ Reserved_1 : 41|16@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_2 : 57|3@1+ (1,0) [0|0] "NA" MCU
+
+BO_ 331 Next_Right_Lane_C: 8 EyeQ4
+ SG_ Lane_C1 : 25|10@1+ (0.000977,-0.357) [-0.357|0.357] "rad"  MCU
+ SG_ Reserved_1 : 35|12@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Lane_C0 : 0|11@1+ (0.01,-10) [-10|10] "meter"  MCU
+ SG_ Reserved_0 : 11|14@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_3 : 48|8@1+ (1,0) [0|0] "m"  MCU
+ SG_ Reserved_2 : 47|1@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_4 : 56|4@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 332 Next_Right_Lane_D: 8 EyeQ4
+ SG_ Lane_C3 : 32|16@1+ (3.73E-009,-0.000122) [-0.000122|0.000122] "1/m2"  MCU
+ SG_ Lane_C2 : 0|16@1+ (9.77E-007,-0.032) [-0.032|0.032] "1/m"  MCU
+ SG_ Reserved_0 : 16|16@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_1 : 48|8@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_2 : 56|4@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 333 Next_Left_Lane_A: 8 EyeQ4
+ SG_ Lane_Track_ID : 0|8@1+ (1,0) [0|255] "counter"  MCU
+ SG_ Lane_Exist_Probability : 9|7@1+ (0.01,0) [0|1] "NA"  MCU
+ SG_ Lane_Color : 55|2@1+ (1,0) [0|3] "ENUM"  MCU
+ SG_ Lane_View_Range_Start : 24|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ Lane_View_Range_End : 40|15@1+ (0.01,0) [0|200] "m"  MCU
+ SG_ Lane_Type_Class : 20|4@1+ (1,0) [0|15] "ENUM"  MCU
+ SG_ Lane_DLM_Type : 57|3@1+ (1,0) [0|5] "ENUM"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_0 : 8|1@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_1 : 16|4@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_2 : 39|1@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 334 Next_Left_Lane_B: 8 EyeQ4
+ SG_ Line_Marker_Width : 0|8@1+ (0.01,0) [0|0.7] "meter"  MCU
+ SG_ Reserved_0 : 8|7@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Dash_Average_Length : 15|13@1+ (0.01,0) [0|50] "meter"  MCU
+ SG_ Dash_Average_Gap : 28|13@1+ (0.01,0) [0|50] "meter"  MCU
+ SG_ Reserved_1 : 41|16@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_2 : 57|3@1+ (1,0) [0|0] "NA" MCU
+
+BO_ 335 Next_Left_Lane_C: 8 EyeQ4
+ SG_ Lane_C1 : 25|10@1+ (0.000977,-0.357) [-0.357|0.357] "rad"  MCU
+ SG_ Reserved_1 : 35|12@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Lane_C0 : 0|11@1+ (0.01,-10) [-10|10] "meter"  MCU
+ SG_ Reserved_2 : 11|14@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_3 : 48|8@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_2 : 47|1@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_4 : 56|4@1+ (1,0) [0|0] "NA"  MCU
+
+BO_ 336 Next_Left_Lane_D: 8 EyeQ4
+ SG_ Lane_C3 : 32|16@1+ (3.73E-009,-0.000122) [-0.000122|0.000122] "1/m2"  MCU
+ SG_ Lane_C2 : 0|16@1+ (9.77E-007,-0.032) [-0.032|0.032] "1/m"  MCU
+ SG_ Reserved_0 : 16|16@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Rolling_Counter : 60|4@1+ (1,0) [0|15] "counter"  MCU
+ SG_ Reserved_1 : 48|8@1+ (1,0) [0|0] "NA"  MCU
+ SG_ Reserved_2 : 56|4@1+ (1,0) [0|0] "NA"  MCU
+
+
+
+CM_ SG_ 320 is_Construction_Area "True if this is a construction area scene. ";
+CM_ SG_ 320 Host_Estimated_Width "Multi-frame estimation of host lane width to be used for prediction or another driving cue/ scene cue";
+CM_ SG_ 321 is_Lane_Valid "True if L host polynom is found";
+CM_ SG_ 321 Lane_Track_ID "ID to be used for comparing frames";
+CM_ SG_ 321 Lane_Exist_Probability "Existence probability of lane mark";
+CM_ SG_ 321 Lane_Color "ENUM lane mark color";
+CM_ SG_ 321 Lane_Type_Class "ENUM of Lane Mark Type Classification";
+CM_ SG_ 321 Lane_DLM_Type "For double lane mark, what type of DLM (ENUM)";
+CM_ SG_ 321 Lane_DECEL_Type "For deceleration, what is inner line type (ENUM)";
+CM_ SG_ 321 Lane_View_Range_Start "Start of longitudinal view range of lane mark";
+CM_ SG_ 321 Lane_View_Range_End "End of longitudinal view range of lane mark";
+CM_ SG_ 321 Lane_Crossing "Is left lane mark crossed (Lane change)";
+CM_ SG_ 322 Line_Marker_Width "Width of lane mark in M";
+CM_ SG_ 322 Dash_Average_Length "Average length of each section of dashed line when lane mark is dashed in CM. This is a multi-frame signal.";
+CM_ SG_ 322 Dash_Average_Gap "Average gap between of sections of dashed line when lane mark is dashed in CM.  This is a multi-frame signal.";
+CM_ SG_ 322 Prediction_Source "Prediction source if Lane mark is predicted  Prediction source if Lane mark is predicted  ";
+CM_ SG_ 323 Lane_C0 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 323 Lane_C1 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 324 Lane_C2 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 324 Lane_C3 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 325 is_Lane_Valid "True if L host polynom is found";
+CM_ SG_ 325 Lane_Track_ID "ID to be used for comparing frames";
+CM_ SG_ 325 Lane_Exist_Probability "Existence probability of lane mark";
+CM_ SG_ 325 Lane_Color "ENUM lane mark color";
+CM_ SG_ 325 Lane_Type_Class "ENUM of Lane Mark Type Classification";
+CM_ SG_ 325 Lane_DLM_Type "For double lane mark, what type of DLM (ENUM)";
+CM_ SG_ 325 Lane_DECEL_Type "For deceleration, what is inner line type (ENUM)";
+CM_ SG_ 325 Lane_View_Range_Start "Start of longitudinal view range of lane mark";
+CM_ SG_ 325 Lane_View_Range_End "End of longitudinal view range of lane mark";
+CM_ SG_ 325 Lane_Crossing "Is left lane mark crossed (Lane change)";
+CM_ SG_ 326 Line_Marker_Width "Width of lane mark in M";
+CM_ SG_ 326 Dash_Average_Length "Average length of each section of dashed line when lane mark is dashed in CM. This is a multi-frame signal.";
+CM_ SG_ 326 Dash_Average_Gap "Average gap between of sections of dashed line when lane mark is dashed in CM.  This is a multi-frame signal.";
+CM_ SG_ 327 Lane_C0 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 327 Lane_C1 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 328 Lane_C2 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 328 Lane_C3 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 329 Lane_Track_ID "ID to be used for comparing frames";
+CM_ SG_ 329 Lane_Exist_Probability "Existence probability of lane mark";
+CM_ SG_ 329 Lane_Color "ENUM lane mark color";
+CM_ SG_ 329 Lane_View_Range_Start "Start of longitudinal view range of lane mark";
+CM_ SG_ 329 Lane_View_Range_End "End of longitudinal view range of lane mark";
+CM_ SG_ 329 Lane_Type_Class "ENUM of Lane Mark Type Classification";
+CM_ SG_ 329 Lane_DLM_Type "For double lane mark, what type of DLM (ENUM)";
+CM_ SG_ 330 Line_Marker_Width "Width of lane mark in M";
+CM_ SG_ 330 Dash_Avg_Length "Average length of each section of dashed line when lane mark is dashed in CM. This is a multi-frame signal.";
+CM_ SG_ 330 Dash_Avg_Gap "Average gap between of sections of dashed line when lane mark is dashed in CM. This is a multi-frame signal.";
+CM_ SG_ 331 Lane_C1 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 331 Lane_C0 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 332 Lane_C3 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 332 Lane_C2 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 333 Lane_Track_ID "ID to be used for comparing frames";
+CM_ SG_ 333 Lane_Exist_Probability "Existence probability of lane mark";
+CM_ SG_ 333 Lane_Color "ENUM lane mark color";
+CM_ SG_ 333 Lane_View_Range_Start "Start of longitudinal view range of lane mark";
+CM_ SG_ 333 Lane_View_Range_End "End of longitudinal view range of lane mark";
+CM_ SG_ 333 Lane_Type_Class "ENUM of Lane Mark Type Classification";
+CM_ SG_ 333 Lane_DLM_Type "For double lane mark, what type of DLM (ENUM)";
+CM_ SG_ 334 Line_Marker_Width "Width of lane mark in M";
+CM_ SG_ 334 Dash_Avg_Length "Average length of each section of dashed line when lane mark is dashed in CM. This is a multi-frame signal.";
+CM_ SG_ 334 Dash_Avg_Gap "Average gap between of sections of dashed line when lane mark is dashed in CM. This is a multi-frame signal.";
+CM_ SG_ 335 Lane_C1 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 335 Lane_C0 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 336 Lane_C3 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+CM_ SG_ 336 Lane_C2 "Ci is coefficient corresponding to variable with power of 'i'，Positive on left turn";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 50000;
+BA_DEF_DEF_  "BusType" "CAN";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_ "BusType" "CAN";
+BA_ "GenMsgCycleTime" BO_ 320 30;
+BA_ "GenMsgCycleTime" BO_ 321 30;
+BA_ "GenMsgCycleTime" BO_ 322 30;
+BA_ "GenMsgCycleTime" BO_ 323 30;
+BA_ "GenMsgCycleTime" BO_ 324 30;
+BA_ "GenMsgCycleTime" BO_ 325 30;
+BA_ "GenMsgCycleTime" BO_ 326 30;
+BA_ "GenMsgCycleTime" BO_ 327 30;
+BA_ "GenMsgCycleTime" BO_ 328 30;
+BA_ "GenMsgCycleTime" BO_ 329 30;
+BA_ "GenMsgCycleTime" BO_ 330 30;
+BA_ "GenMsgCycleTime" BO_ 331 30;
+BA_ "GenMsgCycleTime" BO_ 332 30;
+BA_ "GenMsgCycleTime" BO_ 333 30;
+BA_ "GenMsgCycleTime" BO_ 334 30;
+BA_ "GenMsgCycleTime" BO_ 335 30;
+BA_ "GenMsgCycleTime" BO_ 336 30;
+VAL_ 320 is_Construction_Area 1 "TRUE" 0 "FALSE" ;
+VAL_ 321 is_Lane_Valid 1 "TRUE" 0 "FALSE" ;
+VAL_ 321 Lane_Color 3 "BLUE_GREEN" 2 "YELLOW_ORANGE_RED" 1 "WHITE" 0 "UNDECIDED" ;
+VAL_ 321 Lane_Type_Class 11 "HOV_LANE" 10 "DECELERATION" 5 "BOTTS" 4 "DLM" 3 "ROAD_EDGE" 2 "DASHED" 1 "SOLID" 0 "UNDECIDED" ;
+VAL_ 321 Lane_DLM_Type 5 "UNDECIDED" 4 "DASHED_DASHED" 3 "SOLID_SOLID" 2 "DASHED_SOLID" 1 "SOLID_DASHED" 0 "NOT_DLM" ;
+VAL_ 321 Lane_DECEL_Type 5 "RESERVED_3" 4 "RESERVED_2" 3 "RESERVED_1" 2 "DASHED" 1 "SOLID" 0 "NO_DECEL" ;
+VAL_ 321 Lane_Crossing 1 "TRUE" 0 "FALSE" ;
+VAL_ 322 Prediction_Source 6 "MERGE" 5 "GR_SHADOW" 4 "DIVERGING" 3 "OCCLUDED" 2 "HEADWAY" 1 "LOSS" 0 "NONE" ;
+VAL_ 325 is_Lane_Valid 1 "TRUE" 0 "FALSE" ;
+VAL_ 325 Lane_Color 3 "BLUE_GREEN" 2 "YELLOW_ORANGE_RED" 1 "WHITE" 0 "UNDECIDED" ;
+VAL_ 325 Lane_Type_Class 11 "HOV_LANE" 10 "DECELERATION" 5 "BOTTS" 4 "DLM" 3 "ROAD_EDGE" 2 "DASHED" 1 "SOLID" 0 "UNDECIDED" ;
+VAL_ 325 Lane_DLM_Type 5 "UNDECIDED" 4 "DASHED_DASHED" 3 "SOLID_SOLID" 2 "DASHED_SOLID" 1 "SOLID_DASHED" 0 "NOT_DLM" ;
+VAL_ 325 Lane_DECEL_Type 5 "RESERVED_3" 4 "RESERVED_2" 3 "RESERVED_1" 2 "DASHED" 1 "SOLID" 0 "NO_DECEL" ;
+VAL_ 325 Lane_Crossing 1 "TRUE" 0 "FALSE" ;
+VAL_ 326 Prediction_Source 6 "MERGE" 5 "GR_SHADOW" 4 "DIVERGING" 3 "OCCLUDED" 2 "HEADWAY" 1 "LOSS" 0 "NONE" ;
+VAL_ 329 Lane_Color 3 "BLUE_GREEN" 2 "YELLOW_ORANGE_RED" 1 "WHITE" 0 "UNDECIDED" ;
+VAL_ 329 Lane_Type_Class 11 "HOV_LANE" 10 "DECELERATION" 5 "BOTTS" 4 "DLM" 3 "ROAD_EDGE" 2 "DASHED" 1 "SOLID" 0 "UNDECIDED" ;
+VAL_ 329 Lane_DLM_Type 5 "UNDECIDED" 4 "DASHED_DASHED" 3 "SOLID_SOLID" 2 "DASHED_SOLID" 1 "SOLID_DASHED" 0 "NOT_DLM" ;
+VAL_ 333 Lane_Color 3 "BLUE_GREEN" 2 "YELLOW_ORANGE_RED" 1 "WHITE" 0 "UNDECIDED" ;
+VAL_ 333 Lane_Type_Class 11 "HOV_LANE" 10 "DECELERATION" 5 "BOTTS" 4 "DLM" 3 "ROAD_EDGE" 2 "DASHED" 1 "SOLID" 0 "UNDECIDED" ;
+VAL_ 333 Lane_DLM_Type 5 "UNDECIDED" 4 "DASHED_DASHED" 3 "SOLID_SOLID" 2 "DASHED_SOLID" 1 "SOLID_DASHED" 0 "NOT_DLM" ;
+

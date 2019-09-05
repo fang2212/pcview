@@ -57,6 +57,7 @@ error.jpg
 
 # extra file
 error.json
+local.json
 dbc/*.ini
 .idea
 log_sort.txt

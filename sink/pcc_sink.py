@@ -10,7 +10,7 @@ import time
 import aiohttp
 import msgpack
 import asyncio
-from parsers import ublox
+from parsers import ublox, rtcm3
 from tools import mytools
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO,
 
 
 class Sink(Process):
-    def __init__(self, queue, ip, port, msg_type, index=0):
+    def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
         Process.__init__(self)
         self.deamon = True
         self.dev = ip
@@ -28,10 +28,10 @@ class Sink(Process):
         self.type = msg_type
         self.index = index
         self.cls = msg_type
+        self.isheadless = isheadless
         if 'can' in msg_type:
             self.cls = 'can'
             print(self.type, 'start.')
-
 
     def _init_port(self):
         self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
@@ -55,24 +55,31 @@ class Sink(Process):
         while True:
             buf = self.read()
             if not buf:
-                time.sleep(0.01)
+                time.sleep(0.001)
                 continue
+            t0 = time.time()
             r = self.pkg_handler(buf)
-            if r is not None:
+            dt = time.time() - t0
+            # print(self.dev, self.type, self.channel, 'dt: {:.5f}'.format(dt))
+            if r is not None and not self.isheadless:
                 self.queue.put((*r, self.cls))
+            # time.sleep(0.01)
 
     def pkg_handler(self, msg_buf):
         pass
 
 
 class PinodeSink(Sink):
-    def __init__(self, queue, ip, port, channel, index, resname, fileHandler):
-        super(PinodeSink, self).__init__(queue, ip, port, channel, index)
+    def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
+        super(PinodeSink, self).__init__(queue, ip, port, channel, index, isheadless)
         print('pi_node connected.', ip, port, channel, index)
         self.source = 'rtk.{:d}'.format(index)
+        self.index = index
         self.context = {'source': self.source}
         self.resname = resname
         self.fileHandler = fileHandler
+        if resname == 'rtcm':
+            self.rtcm3 = rtcm3.RTCM3()
 
     def pkg_handler(self, msg):
         # print('hahahahha')
@@ -86,6 +93,8 @@ class PinodeSink(Sink):
             data = [data]
         for r in data:
             r['source'] = self.source
+            if r.get('sensor') == 'm8n':
+                r['source'] = 'gps.{:d}'.format(self.index)
             if r['type'] == 'bestpos':
                 self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestpos',
                                              '{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
@@ -107,6 +116,13 @@ class PinodeSink(Sink):
                                                          r['#solSVs'],
                                                          r['#obs'], r['#multi'], r['ext_sol_stat']
                                                      )))
+            elif r['type'] == 'bestvel':
+                self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestvel',
+                                             '{} {} {} {} {} {} {}'.format(
+                                                         r['sol_stat'], r['pos_type'], r['latency'],
+                                                         r['age'], r['hor_speed'],
+                                                         r['trk_gnd'], r['vert_speed']
+                                                     )))
             elif r['type'] == 'rtk':
                 timestamp = r['ts_origin']
                 self.fileHandler.insert_raw((timestamp, r['source'] + '.sol',
@@ -117,8 +133,10 @@ class PinodeSink(Sink):
                                              '{} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
                         r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4], r['sat'][5], r['gdop'],
                         r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'], r['prn'])))
-            elif r['type'] == 'vehicle_state':
-                self.fileHandler.insert_raw((time.time(), 'NMEA', msg.strip()))
+            elif r['type'] == 'gps':
+                # print(r)
+                self.fileHandler.insert_raw((time.time(), 'NMEA', msg.decode().strip()))
+                # print(time.time(), r['ts_origin'])
 
         return self.channel, data
 
@@ -126,20 +144,42 @@ class PinodeSink(Sink):
         if resname == 'rtk':
             return json.loads(msg.decode())
         elif resname == 'rtcm':
-            return {'type': 'rtcm', 'len': len(msg)}
+            self.rtcm3.add_data(msg)
+            result = self.rtcm3.process_data(dump_decoded=False)
+            r = None
+            while result != 0:
+                #        print str(datetime.now())
+                if result == rtcm3.Got_Undecoded:
+                    # if rtcm3.Dump_Undecoded:
+                    print("Undecoded Data: " + rtcm3.ByteToHex(self.rtcm3.undecoded))
+                elif result == rtcm3.Got_Packet:
+                    r = self.rtcm3.dump(False, False, False, False)
+                    # sys.stdout.flush()
+                else:
+                    print("INTERNAL ERROR: Unknown result (" + str(result) + ")")
+                result = self.rtcm3.process_data()
+            if r:
+                r['type'] = 'rtcm'
+                r['len'] = len(msg)
+                return r
         elif resname == 'gps':
-            data = ublox.decode_nmea(msg)
+            # print(msg)
+            data = ublox.decode_nmea(msg.decode())
             return data
 
 
 class CANSink(Sink):
-    def __init__(self, queue, ip, port, channel, type, index, fileHandler):
-        Sink.__init__(self, queue, ip, port, channel, index)
+    def __init__(self, queue, ip, port, channel, type, index, fileHandler, isheadless=False):
+        Sink.__init__(self, queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
         self.parser = []
         for ptype in parsers_dict:
             if ptype in type:
                 self.parser.append(parsers_dict[ptype])
+
+        if self.isheadless:
+            self.parser = []
+
         if len(self.parser) == 0:
             self.parser = [parsers_dict["default"]]
         self.stat = {}
@@ -206,8 +246,8 @@ class CANSink(Sink):
 
 
 class GsensorSink(Sink):
-    def __init__(self, queue, ip, port, channel, index, fileHandler):
-        Sink.__init__(self, queue, ip, port, channel, index)
+    def __init__(self, queue, ip, port, channel, index, fileHandler, isheadless=False):
+        Sink.__init__(self, queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
 
     def pkg_handler(self, msg):
@@ -226,10 +266,11 @@ class GsensorSink(Sink):
 
 
 class CameraSink(Sink):
-    def __init__(self, queue, ip, port, channel, fileHandler):
-        Sink.__init__(self, queue, ip, port, channel)
+    def __init__(self, queue, ip, port, channel, fileHandler, headless=False):
+        Sink.__init__(self, queue, ip, port, channel, headless)
         self.last_fid = 0
         self.fileHandler = fileHandler
+        self.headless = headless
 
     def pkg_handler(self, msg):
         # print('cprocess-id:', os.getpid())
@@ -245,11 +286,10 @@ class CameraSink(Sink):
         timestamp, = struct.unpack('<d', msg[8:16])
 
         logging.debug('cam id {}'.format(frame_id))
-        print('frame id', frame_id)
-        self.fileHandler.insert_video((timestamp, frame_id, jpg))
+        # print('frame id', frame_id)
 
         r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id}
-        print('frame id', frame_id)
+        # print('frame id', frame_id)
         # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
 
         return frame_id, r
@@ -257,12 +297,14 @@ class CameraSink(Sink):
 
 class X1CameraSink(Sink):
 
-    def __init__(self, queue, ip, port, channel, fileHandler):
-        Sink.__init__(self, queue, ip, port, channel)
+    def __init__(self, cam_queue, msg_queue, ip, port, channel, fileHandler, isheadless=False):
+        Sink.__init__(self, cam_queue, ip, port, channel, isheadless)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.ip = ip
         self.port = port
+        self.cam_queue = cam_queue
+        self.msg_queue = msg_queue
 
     async def _run(self):
         session = aiohttp.ClientSession()
@@ -273,23 +315,50 @@ class X1CameraSink(Sink):
                 'topic': 'subscribe',
                 'data': 'pcview',
             }
+
+            msg_finish = {
+                'source': 'pcview',
+                'topic': 'subscribe',
+                'data': 'finish'
+            }
             data = msgpack.packb(msg)
             await ws.send_bytes(data)
+            data = msgpack.packb(msg_finish)
+            await ws.send_bytes(data)
             async for msg in ws:
+
                 r = self.pkg_handler(msg)
                 if r is not None:
-                    self.queue.put((*r, self.cls))
+                    if type(r[0]) == type(""):
+                        if 'x1_data' in r[0]:
+                            self.msg_queue.put((r[1]['frame_id'], r[1], r[0]))
+                    else:
+                        self.cam_queue.put((*r, self.cls))
 
     def run(self):
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self._run())
 
     def pkg_handler(self, msg):
-        data = msgpack.unpackb(msg.data)[b'data']
-        if b'frame_id' in data:
-            data = mytools.convert(data)
-            self.fileHandler.insert_pcv_raw(data)
+        data = msgpack.unpackb(msg.data)
+        # print('-----', data[b'topic'])
+        if data[b'topic'] == b'finish':
+            buf = data[b'data']
+            if b'rc_fusion' in buf:
+                buf = msgpack.unpackb(buf)
+                fusion_data = buf[b'rc_fusion']
+                buf = msgpack.packb(fusion_data, use_bin_type=True)
+                self.fileHandler.insert_fusion_raw(buf)
+
             return None
+        data = data[b'data']
+        if b'frame_id' in data:
+            data = msgpack.unpackb(data)
+            pcv = mytools.convert(data)
+            data = json.dumps(pcv)
+            self.fileHandler.insert_pcv_raw(data)
+            return 'x1_data', pcv
+
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
         if frame_id - self.last_fid != 1:
             print("frame jump.", self.last_fid, frame_id)
@@ -308,8 +377,8 @@ class X1CameraSink(Sink):
 
 class RTKSink(Sink):
 
-    def __init__(self, queue, ip, port, msg_type, index, fileHandler):
-        Sink.__init__(self, queue, ip, port, msg_type, index)
+    def __init__(self, queue, ip, port, msg_type, index, fileHandler, isheadless=False):
+        Sink.__init__(self, queue, ip, port, msg_type, index, isheadless)
         self.fileHandler = fileHandler
 
     def _init_port(self):
@@ -319,10 +388,10 @@ class RTKSink(Sink):
             self.v1msg = V1_msg()
         except Exception as e:
             self._socket = None
-
     def can_send(self, bus, buf):
         idx = int(len(buf) / 8)
         last_dlc = len(buf) % 8
+
         for i in range(idx):
             msg = can.Message(arbitration_id=0xc6, data=[x for x in buf[i * 8:i * 8 + 8]], extended_id=False)
             bus.send(msg)
