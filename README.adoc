@@ -25,3 +25,4 @@ CVE-PCC是一个用于采集多传感器、实时可视化显示、记录，并�
 ** pcc.py 采集主程序 
 ** pcc_replay.py 回放主程序 
 ** log_manipulate.py 后处理分析入口 
+** 配置参考 instruction.md
