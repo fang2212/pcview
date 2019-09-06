@@ -19,30 +19,26 @@ db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190715.dbc', 
 
 cipv = {}
 cipp = {}
+x1_lane = {}
 
 
 def parse_x1(id, data, ctx=None):
     ids = [m.frame_id for m in db_x1.messages]
     if id not in ids:
         return None
-    # print(id, data)
     r = db_x1.decode_message(id, data)
     # print("0x%x" % id, r)
     if not ctx.get('x1_obs'):
         ctx['x1_obs'] = list()
     if id == 0x76f:  # start of epoch
-        # print(r)
-
-        # print(ctx['x1_obs'])
         ctx['x1_obs'].clear()
-        # x1_obs.clear()
         cipv.clear()
 
     elif id == 0x77f:  # frame_ped
         cipp.clear()
 
     elif id == 0x76d:
-        # print("0x%x" % id, r)
+        # CIPV
         if r['TargetVehicle_Type'] == 'NoVehicle':
             return None
         else:
@@ -72,6 +68,7 @@ def parse_x1(id, data, ctx=None):
         # return cipv
 
     elif 0x770 <= id <= 0x777:
+        # other car
         index = id - 0x770 + 1
         obs_num = r['AdditionVehicleNumber' + str(index)]
         x1_obs_list = []
@@ -91,9 +88,8 @@ def parse_x1(id, data, ctx=None):
             x1_obs_list.append(x1_obs)
             ctx['x1_obs'].append(x1_obs.copy())
 
-        # return x1_obs_list
-
     elif id == 0x77a:
+        # ped cipo
         ped = None
         cipp['width'] = 0.3
         cipp['type'] = 'obstacle'
@@ -106,15 +102,11 @@ def parse_x1(id, data, ctx=None):
         cipp['color'] = 4
         cipp['class'] = 'pedestrian'
         cipp['TTC'] = r['TargetPedestrian_TTC']
-        # cipv['height'] = 1.6
-        # cipv['TTC'] = r['TTC']
         if cipp['pos_lon'] > 0.0:
-            # ped = cipp.copy()
             ctx['x1_obs'].append(cipp.copy())
-        # cipv.clear()
-        #     return cipp
 
     elif 0x77b <= id <= 0x77d:
+        # other ped
         index = id - 0x77a
         ped_num = r['AdditionPedestrianNumber' + str(index)]
         x1_ped_list = []
@@ -137,14 +129,51 @@ def parse_x1(id, data, ctx=None):
                 ctx['x1_obs'].append(x1_ped.copy())
             # x1_ped.clear()
         if id == 0x77d:
-            # pass
-            # print(len(ctx['x1_obs']), ctx['x1_obs'])
             if ctx.get('x1_obs'):
                 ret = ctx['x1_obs'].copy()
                 ctx['x1_obs'].clear()
                 return ret
-        # return x1_ped_list
+    elif 0x5f0 <= id <= 0x5fb:
+        # lane
+        index = (id - 0x5f0) // 2
 
+        if index not in x1_lane:
+            x1_lane[index] = {}
+
+        # lane Data A
+        tmp1 = 'Lane' + '%01d' % (index + 1) + '_Type'
+        if tmp1 in r:
+            x1_lane[index] = dict()
+            x1_lane[index]['Lane_Type'] = r['Lane' + '%01d' % (index + 1) + '_Type']
+            x1_lane[index]['Quality'] = r['Lane' + '%01d' % (index + 1) + '_Quality']
+            x1_lane[index]['a0'] = r['Lane' + '%01d' % (index + 1) + '_Position']
+            x1_lane[index]['a2'] = r['Lane' + '%01d' % (index + 1) + '_Curvature']
+            x1_lane[index]['a3'] = r['Lane' + '%01d' % (index + 1) + '_CurvatureDerivative']
+            x1_lane[index]['WidthMarking'] = r['Lane' + '%01d' % (index + 1) + '_WidthMarking']
+
+        # lane Data B
+        tmp1 = 'Lane' + '%01d' % (index + 1) + '_HeadingAngle'
+        if tmp1 in r:
+            if len(x1_lane[index]) == 0:
+                return None
+
+            x1_lane[index]['a1'] = r['Lane' + '%01d' % (index + 1) + '_HeadingAngle']
+            x1_lane[index]['ViewRangeStart'] = r['Lane' + '%01d' % (index + 1) + '_ViewRangeStart']
+            x1_lane[index]['range'] = r['Lane' + '%01d' % (index + 1) + '_ViewRangeEnd']
+            x1_lane[index]['LineCrossing'] = r['Lane' + '%01d' % (index + 1) + '_LineCrossing']
+            x1_lane[index]['LineMarkColor'] = r['Lane' + '%01d' % (index + 1) + '_LineMarkColor']
+
+            x1_lane[index]['type'] = 'lane'
+            x1_lane[index]['sensor'] = 'x1'
+            x1_lane[index]['id'] = index
+            x1_lane[index]['color'] = 4
+
+            res = x1_lane[index].copy()
+            x1_lane[index].clear()
+            return res
+
+
+    # fusion
     if id == 0x420:
         ctx['fusion'] = {}
         ctx['fusion']['frameid'] = r['FrameID']

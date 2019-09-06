@@ -34,8 +34,6 @@ logging.basicConfig(level=logging.INFO,
 class PCC(object):
 
     def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None):
-
-
         self.hub = hub
         self.player = Player()
         self.exit = False
@@ -179,10 +177,13 @@ class PCC(object):
             for d in mess['can']:
                 if not d:
                     continue
-                if d['type'] == 'rtk':
-                    cache[d['source']] = d
+                if 'type' in d:
+                    if d['type'] == 'rtk':
+                        cache[d['source']] = d
+                    else:
+                        self.draw_can_data(img, d)
                 else:
-                    self.draw_can_data(img, d)
+                    tt = 1
 
         for type in cache:
             d = cache[type]
@@ -220,8 +221,6 @@ class PCC(object):
             comb = np.hstack((img, self.ipm))
         else:
             comb = img
-
-
 
         cv2.imshow('UI', comb)
 
@@ -317,22 +316,25 @@ class PCC(object):
                 # self.player.show_ipm_obs(self.ipm, dummy0)
                 # self.player.show_ipm_obs(self.ipm, dummy1)
                 self.player.show_ipm_obs(self.ipm, data)
-
+        # lane
         elif data['type'] == 'lane':
-            self.player.draw_lane_r(img, data)
+            self.player.draw_lane_r(img, data, )
             if self.show_ipm:
-                self.player.show_lane_ipm(self.ipm, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
-
+                self.player.draw_lane_ipm(self.ipm, data)
+        # vehicle
         elif data['type'] == 'vehicle_state':
             self.player.draw_vehicle_state(img, data)
             # print(data)
             self.player.update_column_ts(data['source'], data['ts'])
+
         elif data['type'] == 'CIPV':
             self.cipv = data['id']
+
         elif data['type'] == 'rtk':
             # print('------------', data['type'])
             data['updated'] = True
             self.draw_rtk(img, data)
+
         elif data['type'] in ['bestpos', 'heading', 'bestvel']:
             # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)

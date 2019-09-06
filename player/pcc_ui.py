@@ -161,95 +161,6 @@ class Player(object):
             if col is not 'video':
                 cv2.rectangle(img, (indent, 10), (indent + 10, 20), self.columns[col]['color'], -1)
 
-    # def show_vehicle(self, img, position, id=0, dist=0, color=CVColor.Cyan, thickness=2):
-    #     """绘制车辆框
-    #     Args:
-    #         img: 原始图片
-    #         position: (x, y, width, height),车辆框的位置，大小
-    #         color: CVColor 车辆颜色
-    #         thickness: int 线粗
-    #     """
-    #
-    #     x, y, width, height = position
-    #     x1 = int(x)
-    #     y1 = int(y)
-    #     width = int(width)
-    #     height = int(height)
-    #     x2 = x1 + width
-    #     y2 = y1 + height
-    #     BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness)
-    #     # BaseDraw.draw_rect(img,  (x1, y1), (x1 + 70, y1 - 12), color,-1)
-    #     BaseDraw.draw_text(img, 'id:{} {:.1f}'.format(id, dist), (x1, y1), 0.4, CVColor.Black, 1)
-    #     # BaseDraw.draw_text(img, '{}'.format(type), (x1, y2+14), 0.4, CVColor.Green, 1)
-
-    # def show_vehicle_info(self, img, position, vertical_dis, horizontal_dis, vehicle_width, vehicle_type):
-    #     """绘制车辆信息
-    #     Args:
-    #         img: 原始图片
-    #         position: (x, y, width, height),车辆框的位置，大小
-    #         vertical_dis: float 与检测车辆的竖直距离
-    #         horizontal_dis: float 与检测车辆的水平距离
-    #         vehicle_width: float 检测车辆的宽度
-    #         vehicle: str 车辆类型，见const_type
-    #     """
-    #     x, y, width, height = position
-    #     x1 = int(x)
-    #     y1 = int(y)
-    #     width = int(width)
-    #     height = int(height)
-    #     x2 = x1 + width
-    #     y2 = y1 + height
-    #     origin_x = max(0, x2 - 150)
-    #     origin_y = max(0, y1 - 30)
-    #     BaseDraw.draw_alpha_rect(img, (origin_x, origin_y, 150, 30), 0.6)
-    #     size = 1
-    #     const_type = {
-    #         '2': 'CAR',
-    #         '3': 'BUS',
-    #         '4': 'BOX',
-    #         '5': 'SSP'
-    #     }
-    #     BaseDraw.draw_text(img, const_type[vehicle_type], (x2 - 150, y1 - 5),
-    #                        size, CVColor.White, 1)
-    #
-    #     d1 = int(float(vertical_dis) * 100) / 100
-    #     d2 = int(float(horizontal_dis) * 10) / 10
-    #     # data = str(d1) + ',' + str(d2)
-    #     data = str(d1)
-    #     BaseDraw.draw_text(img, data, (x2 - 90, y1 - 5), size, CVColor.White, 1)
-    #
-    #     # vehicle_width = '%.2f' % vehicle_width
-    #     # BaseDraw.draw_text(img, str(vehicle_width), (x2 - 50, y1 - 5), 0.5, CVColor.White, 1)
-
-    # def show_overlook_vehicle(self, img, type, x, y):
-    #     """在俯视图绘制车辆
-    #     Args:
-    #         img: 原始图片
-    #         type: 是否关键车
-    #         y: float 与检测车辆的竖直距离
-    #         x: float 与检测车辆的水平距离
-    #     """
-    #
-    #     d_y = int(float(y))
-    #     d_x = int(float(x))
-    #     x_car = max(20, 190 - d_x * 2)
-    #     typ = int(type)
-    #     if typ == 0:
-    #         car = self.overlook_othercar_image
-    #     elif type == 2:  # keycar
-    #         car = self.overlook_beforecar_image
-    #
-    #     y_car = 1144 + int(10 * d_y)
-    #
-    #     x_shape, y_shape, _ = car.shape
-    #     x_begin = x_car - x_shape // 2
-    #     x_end = x_begin + x_shape
-    #     y_begin = y_car - y_shape // 2
-    #     y_end = y_begin + y_shape
-    #
-    #     roi_img = img[x_begin: x_end, y_begin: y_end]
-    #     cv2.addWeighted(car, 0.5, roi_img, 1.0, 0.0, roi_img)
-
     def show_obs(self, img, obs, color=CVColor.Cyan, thickness=2):
         try:
             indent = self.get_indent(obs['source'])
@@ -266,15 +177,19 @@ class Player(object):
         height = obs.get('height')
         # print(obs['source'], obs['class'])
         height = height or width
-        if obs.get('class') == 'pedestrian':
-            height = 1.6
+        if obs.get('class') == 'pedestrian' or obs.get('class') == 'PEDESTRIAN':
+            height = 1.7
         if 'pos_lon' in obs:
             x = obs['pos_lon']
             y = obs['pos_lat']
         else:
             # print(obs['source'].split('.')[0])
             # x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
-            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
+            install_para = install[obs['source'].split('.')[0]]
+            if install_para is None:
+                x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'])
+            else:
+                x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install_para)
         if x == 0:
             x = 0.1
         if x < 0:
@@ -314,8 +229,6 @@ class Player(object):
         else:
             BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), 0.45, color, 1)
-        # BaseDraw.draw_rect(img,  (x1, y1), (x1 + 70, y1 - 12), color,-1)
-        # BaseDraw.draw_text(img, 'id:{} {:.1f}'.format(obs['id'], obs['pos_lon']), (x1, y1), 0.4, CVColor.Green, 1)
 
         if 'cipo' in obs and obs['cipo']:
             # color = CVColor.Yellow
@@ -333,11 +246,7 @@ class Player(object):
         else:
             x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
         u, v = self.transform.trans_gnd2ipm(x, y)
-        # color = CVColor.Green
-        # if type == 0:
-        #     color = CVColor.Green
-        # elif type == 2:
-        #     color = CVColor.Red
+
         color = self.color_seq[obs['color']]
 
         if obs.get('sensor_type') == 'radar':
@@ -348,46 +257,20 @@ class Player(object):
                 # for save space, only ttc<7 will be shown on the gui
                 if obs['TTC'] < 7:
                     BaseDraw.draw_text(img, '{:.2f}'.format(obs['TTC']), (u - 40, v + 5), 0.4, color, 1)
+
+            # STA 77
+            if obs.get('sensor') == 'sta77':
+                BaseDraw.draw_text(img, '{:.1f}'.format(x), (u - 40, v + 5), 0.4, color, 1)
+
         else:
-            cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
-            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v + 3), 0.4, color, 1)
+            if obs.get('class') == 'pedestrian' or obs.get('class') == 'PEDESTRIAN':
+                cv2.rectangle(img, (u - 4, v - 16), (u + 4, v), color, 2)
+            else:
+                cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
+            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v - 8), 0.4, color, 1)
+            BaseDraw.draw_text(img,  '{:.1f}'.format(x), (u + 10, v +5), 0.4, color, 1)
 
-        # if 'sensor' in obs:
-        #     # radar message show on the other side
-        #     if obs['sensor'] == 'radar':
-
-                # dist = obs['pos_lon'] if 'pos_lon' in obs else obs['range']
-                # BaseDraw.draw_text(img, '{:.1f}'.format(dist), (u - 45, v + 5), 0.4, color, 1)
-        # else:
-
-
-
-    # def show_vehicle_parameters(self, img, parameters, point):
-    #     """显示关键车参数信息
-    #     Args:
-    #         img: 原始图片
-    #         parameters: List [type, index, ttc, fcw, hwm, hw, vb] 关键车参数
-    #     """
-    #     type = parameters[0]
-    #     index = parameters[1]
-    #     ttc = parameters[2]
-    #     fcw = parameters[3]
-    #     hwm = parameters[4]
-    #     hw = parameters[5]
-    #     vb = parameters[6]
-    #
-    #     origin_x, origin_y = point
-    #     gap_v = 20
-    #     BaseDraw.draw_text(img, 'vechicle', (origin_x, origin_y + gap_v), 0.5, CVColor.Cyan, 1)
-    #     BaseDraw.draw_text(img, 'type:' + type, (origin_x, origin_y + gap_v * 2), 0.5, CVColor.White, 1)
-    #     # BaseDraw.draw_text(img, 'index:' + index, (origin_x, origin_y + gap_v*3), 0.5, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'ttc:' + ttc, (origin_x, origin_y + gap_v * 3), 0.5, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'fcw:' + fcw, (origin_x, origin_y + gap_v * 4), 0.5, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'hwm:' + hwm, (origin_x, origin_y + gap_v * 5), 0.5, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'hw:' + hw, (origin_x, origin_y + gap_v * 6), 0.5, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'vb:' + vb, (origin_x, origin_y + gap_v * 7), 0.5, CVColor.White, 1)
-
-    def show_lane(self, img, ratios, r=60, color=CVColor.Cyan):
+    def show_lane(self, img, data, ratios, r=60, color=CVColor.Cyan):
         """绘制车道线
         Args:
             img: 原始图片
@@ -395,136 +278,30 @@ class Player(object):
             width: float 车道线宽度
             color: CVColor 车道线颜色
         """
-
-        # a0, a1, a2, a3 = ratios
-        # a0 = float(a0)
-        # a1 = float(a1)
-        # a2 = float(a2)
-        # a3 = float(a3)
-        #
-        # p = []
-        #
-        # for x in range(int(r)):
-        #     # x1 = x
-        #     # x2 = x1 + 1
-        #     y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
-        #     # y2 = a0 + a1 * x2 + a2 * x2 ** 2 + a3 * x2 ** 3
-        #     tx, ty = self.transform.trans_gnd2raw(x, y)
-        #     # tx2, ty2 = self.transform.trans_gnd2raw(x2, y2)
-        #     p.append((int(tx), int(ty)))
         p = self.transform.getp_ifc_from_poly(ratios, r, 1)
 
-        for i in range(1, len(p) - 1, 1):
-            BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
+        p_length = len(p)
+        if p_length > 1:
+            for i in range(1, p_length - 1, 1):
+                BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
 
-    # def show_lane_info(self, img, ratios, index, width, type, conf, color):
-    #     """绘制车道线信息
-    #     Args:
-    #         img: 原始数据
-    #         ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
-    #         index: 车道索引
-    #         width: float 车道线宽度
-    #         type: 车道线类型
-    #         conf: 置信度
-    #         color: CVColor 车道线颜色
-    #     """
-    #     a0, a1, a2, a3 = ratios
-    #     a0 = float(a0)
-    #     a1 = float(a1)
-    #     a2 = float(a2)
-    #     a3 = float(a3)
-    #
-    #     color = CVColor.Cyan
-    #     size = 1
-    #     y1 = 500
-    #     x1 = (int)(a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1)
-    #     # BaseDraw.draw_text(img, 'index:' + str(index), (x1, y1-45), 0.5, color, 1)
-    #     width = '%.2f' % width
-    #     BaseDraw.draw_text(img, 'width:' + str(width), (x1, y1 - 20), size, color, 1)
-    #     BaseDraw.draw_text(img, 'type:' + str(type), (x1, y1), size, color, 1)
-    #     # BaseDraw.draw_text(img, 'conf:' + str(conf), (x1, y1), 0.5, color, 1)
+            # for now: only mbq4 used
+            a0, a1, a2, a3 = ratios
+            if abs(a0) < 5:
+                x = 12
+            else:
+                x = 25
+            y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
+            tx, ty = self.transform.trans_gnd2raw(x, y)
+            text_step = 15
+            if 'type_class' in data:
+                BaseDraw.draw_text(img, 'class: ' + data['type_class'], (tx-50, ty), 0.5, color, 1)
 
-    # def show_overlook_lane(self, img, ratios, r=60):
-    #     """在俯视图绘制车道线
-    #     Args:
-    #         img: 原始数据
-    #         ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
-    #         color: CVColor 车道线颜色
-    #     """
-    #     a0, a1, a2, a3 = ratios
-    #     a0 = float(a0)
-    #     a1 = float(a1)
-    #     a2 = float(a2)
-    #     a3 = float(a3)
-    #
-    #     for y in range(0, int(r), 1):
-    #         y1 = y
-    #         y2 = y1 + 2
-    #         x1 = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
-    #         x2 = a0 + a1 * y2 + a2 * y2 * y2 + a3 * y2 * y2 * y2
-    #         x1 = 1144 + int(x1 * 10)
-    #         x2 = 1144 + int(x2 * 10)
-    #         y1 = 240 - y1 * 2
-    #         y2 = 240 - y2 * 2
-    #         BaseDraw.draw_line(img, (x1, y1), (x2, y2), CVColor.Cyan, 1)
+            if 'prediction_source' in data:
+                BaseDraw.draw_text(img, 'predict: ' + data['prediction_source'], (tx-50, ty+text_step), 0.5, color, 1)
 
-    # def show_lane_parameters(self, img, parameters, point):
-    #     """显示车道线参数
-    #     Args:
-    #         img: 原始图像
-    #         parameters: List [lw_dis, rw_dis, ldw, trend] 车道线信息
-    #     """
-    #     lw_dis = parameters[0]
-    #     rw_dis = parameters[1]
-    #     ldw = parameters[2]
-    #     trend = parameters[3]
-    #
-    #     origin_x, origin_y = point
-    #     gap_v = 20
-    #     BaseDraw.draw_text(img, 'lane', (origin_x, origin_y + gap_v), 0.5, CVColor.Cyan, 1)
-    #     BaseDraw.draw_text(img, 'lw_dis:' + lw_dis, (origin_x, origin_y + gap_v * 2), 0.5, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'rw_dis:' + rw_dis, (origin_x, origin_y + gap_v * 3), 0.5, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'ldw:' + ldw, (origin_x, origin_y + gap_v * 4), 0.5, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'trend:' + trend, (origin_x, origin_y + gap_v * 5), 0.5, CVColor.White, 1)
-
-    # def show_peds(self, img, position, color=CVColor.Cyan, thickness=2):
-    #     """绘制pedestrain
-    #     Args:
-    #         img: 原始图片
-    #         position: (x, y, width, height),车辆框的位置，大小
-    #         color: CVColor 颜色
-    #         thickness: int 线粗
-    #     """
-    #
-    #     x, y, width, height = position
-    #     x1 = int(x)
-    #     y1 = int(y)
-    #     width = int(width)
-    #     height = int(height)
-    #     x2 = x1 + width
-    #     y2 = y1 + height
-    #     BaseDraw.draw_rect(img, (x1, y1), (x2, y2), color, thickness)
-
-    # def show_peds_info(self, img, position, distance):
-    #     """绘制车辆信息
-    #     Args:
-    #         img: 原始图片
-    #         position: (x, y, width, height),车辆框的位置，大小
-    #         max_speed: float
-    #     """
-    #     x, y, width, height = position
-    #     x1 = int(x)
-    #     y1 = int(y)
-    #     width = int(width)
-    #     height = int(height)
-    #     x2 = x1 + width
-    #     y2 = y1 + height
-    #     origin_x = max(0, x2 - 65)
-    #     origin_y = max(0, y1 - 30)
-    #     font_size = 1
-    #     BaseDraw.draw_alpha_rect(img, (origin_x, origin_y, 65, 30), 0.6)
-    #     BaseDraw.draw_text(img, ('%.1f' % distance), (x2 - 65, y1 - 5),
-    #                        font_size, CVColor.White, 1)
+            if 'probability' in data:
+                BaseDraw.draw_text(img, 'prob: ' + str('%.2f' % data['probability']), (tx-50, ty+text_step*2), 0.5, color, 1)
 
     # def show_tsr(self, img, position, color=CVColor.Cyan, thickness=2):
     #     """绘制tsr框
@@ -678,9 +455,10 @@ class Player(object):
         self.show_text_info(source, 40, '{:.1f} km/h'.format(speed))
 
     def show_yaw_rate(self, img, yr, source):
-        # indent = self.get_indent(source)
-        # BaseDraw.draw_text(img, '%.4f' % yr + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
-        self.show_text_info(source, 60, '%.4f' % yr + ' deg/s')
+        indent = self.get_indent(source)
+        yr_deg = yr*57.3
+        BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
+
     def show_q3_veh(self, img, speed, yr):
         BaseDraw.draw_text(img, 'q3spd: ' + str(int(speed * 3.6)), (2, 120), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'q3yr: ' + '%.4f' % yr, (2, 140), 0.5, CVColor.White, 1)
@@ -831,12 +609,6 @@ class Player(object):
         # print(corners)
         if ret is not True:
             return
-        # print(corners)
-
-        # if corners is None:
-        #     return
-        # if len(corners) == 0:
-        #     return
         # 亚像素精确定位角点位置
         corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
         d1 = np.linalg.norm(corners2[0] - corners2[6])
@@ -853,23 +625,10 @@ class Player(object):
             width: float 车道线宽度
             color: CVColor 车道线颜色
         """
-
-        # a0, a1, a2, a3 = ratios
-        # a0 = float(a0)
-        # a1 = float(a1)
-        # a2 = float(a2)
-        # a3 = float(a3)
-        #
-        # p = []
-        #
-        # for x in range(int(r)):
-        #     y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
-        #     tx, ty = self.transform.trans_gnd2ipm(x, y)
-        #     p.append((int(tx), int(ty)))
         p = self.transform.getp_ipm_from_poly(ratios, r, 1)
 
         for i in range(1, len(p) - 1, 1):
-            BaseDraw.draw_line(img, p[i], p[i + 1], color, 1)
+            BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
 
     def draw_vehicle_state(self, img, data):
         # indent = self.get_indent(data['source'])
@@ -1087,52 +846,20 @@ class Player(object):
             color = self.color_seq[data['color']]
         else:
             color = CVColor.Blue
-        # self.player.show_overlook_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'])
-        self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
+        # self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
+        # lane message
+        self.show_lane(img, data, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
 
-    # def show_radar(self, img, position, color=CVColor.Cyan, thickness=2):
-    #     """绘制pedestrain
-    #     Args:
-    #         img: 原始图片
-    #         position: (x, y, width, height),车辆框的位置，大小
-    #         color: CVColor 颜色
-    #         thickness: int 线粗
-    #     """
-    #
-    #     x, y, width, height = position
-    #     x1 = int(x)
-    #     y1 = int(y)
-    #     width = int(width)
-    #     height = int(height)
-    #     x2 = x1 + width
-    #     y2 = y1 + height
-    #     BaseDraw.draw_rect(img, (x1, y1), (x2, y2), color, thickness)
-    #
-    # def show_radar_overlook(self, img, type, y, x):
-    #     """在俯视图绘制车辆
-    #     Args:
-    #         img: 原始图片
-    #         type: 是否关键车
-    #         y: float 与检测车辆的竖直距离
-    #         x: float 与检测车辆的水平距离
-    #     """
-    #
-    #     d_y = int(float(y))
-    #     d_x = int(float(x))
-    #     y_car = max(20, 190 - d_y * 2)
-    #     y_car = y
-    #     typ = int(type)
-    #     if typ == 0:
-    #         car = self.overlook_othercar_image
-    #     else:
-    #         car = self.overlook_beforecar_image
-    #     x_car = 1144 + int(10 * d_x)
-    #
-    #     y_shape, x_shape, _ = car.shape
-    #     x_begin = x_car - x_shape // 2
-    #     x_end = x_begin + x_shape
-    #     y_begin = y_car - y_shape // 2
-    #     y_end = y_begin + y_shape
-    #
-    #     roi_img = img[y_begin: y_end, x_begin: x_end]
-    #     cv2.addWeighted(car, 0.5, roi_img, 1.0, 0.0, roi_img)
+    def draw_lane_ipm(self, img, data):
+        if len(data) == 0:
+            return
+        if data['type'] != 'lane':
+            return
+
+        if 'color' in data:
+            color = self.color_seq[data['color']]
+        else:
+            color = CVColor.Blue
+
+        self.show_lane_ipm(img, (data['a0'], data['a1'], data['a2'], data['a3']),
+                           data['range'], color)

@@ -16,7 +16,7 @@ from config.config import install
 R2D = 180.0/pi
 
 db_esr = cantools.database.load_file('dbc/ESR DV3_64Tgt.dbc', strict=False)
-# db_ars = cantools.database.load_file('dbc/ARS408.dbc', strict=False)
+db_ars = cantools.database.load_file('dbc/ARS408.dbc', strict=False)
 # db_huayu = cantools.database.load_file('/home/nan/workshop/doc/华域/lrr10_1.dbc', strict=False)
 
 db_mrr = cantools.database.load_file('dbc/bosch_mrr_output.dbc', strict=False)
@@ -26,6 +26,41 @@ db_fusion_mrr = cantools.database.load_file('dbc/MRR_radar_CAN.dbc', strict=Fals
 db_sta77_2 = cantools.database.load_file('dbc/sensortech-77G.dbc', strict=False)
 
 trans_polar2rcs = Transform().trans_polar2rcs
+
+def parse_ars(id, buf, ctx=None):
+    ids = [m.frame_id for m in db_ars.messages]
+    if id not in ids:
+        return None
+    r = db_ars.decode_message(id, buf)
+    # print('0x%x' % id, r)
+    if id == 0x300:
+        if ctx.get('radar_status') is None:
+            pass
+
+    if id == 0x60b:
+        tid = r['Obj_ID']
+        x_raw = r['Obj_DistLong']
+        y_raw = r['Obj_DistLat']
+        range = sqrt(x_raw ** 2 + y_raw ** 2)
+        angle = atan2(y_raw, x_raw) * 180.0 / pi
+        # x, y = trans_polar2rcs(angle, range, install['ars'])
+        ret = {'type': 'obstacle', 'sensor': 'radar', 'id': tid, 'range': range, 'angle': angle, 'color': 2}
+        return ret
+
+    if id == 0x600:
+        cluster_near_num = r['Cluster_NofClustersNear']
+        cluster_far_num = r['Cluster_NofClustersFar']
+        pass
+
+    if id == 0x701:
+        tid = r['Cluster_ID']
+        x_raw = r['Cluster_DistLong']
+        y_raw = -1 * r['Cluster_DistLat']  # clster模式和object模式坐标系横轴是反的？
+        range = sqrt(x_raw ** 2 + y_raw ** 2)
+        angle = atan2(y_raw, x_raw) * 180.0 / pi
+        # x, y = trans_polar2rcs(angle, range, install['ars'])
+        ret = {'type': 'obstacle', 'sensor': 'radar', 'id': tid, 'range': range, 'angle': angle, 'color': 2}
+        return ret
 
 
 def parse_esr(id, buf, ctx=None):
