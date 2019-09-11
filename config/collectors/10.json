@@ -3,9 +3,9 @@
   "debug": true,
   "repeater": true,
   "can_types": {
-    "can1": ["esr"],
+    "can1": ["x1"],
     "can0": [
-      "x1"
+      "ifv300"
     ]
   },
   "msg_types": [
@@ -14,7 +14,7 @@
   "gsensor"
  ],
   "use_x1_camera": {
-  "use": true,
+  "use": false,
   "ip": "192.168.98.106",
   "port": 24011
  },

@@ -41,7 +41,7 @@ def parse_esr(id, buf, ctx=None):
         ctx['obs'] = []
     # esrobs = ctx['obs']
     # esr_filter = ctx['filter']
-    # print('0x%x' % id)
+    # print('0x%x' % id, r)
     tgt_status = r.get('CAN_TX_TRACK_STATUS')
     if tgt_status is not None:
         if tgt_status == 'Updated_Target' or tgt_status == 'Coasted_Target' \

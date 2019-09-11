@@ -54,7 +54,6 @@ def jpeg_extractor(video_dir):
 class LogPlayer(Process):
 
     def __init__(self, log_path, configs=None, start_frame=0, ratio=1.0):
-
         Process.__init__(self)
         # self.daemon = False
         self.time_aligned = True

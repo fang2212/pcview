@@ -94,7 +94,6 @@ class PCC(object):
             self.vw.set_writer("replay-render")
             print('--------save replay video',os.path.dirname(self.rlog))
 
-
     def start(self):
         self.hub.start()
         self.player.start_time = datetime.now()

@@ -1,11 +1,11 @@
 {
-  "mac": "00:0c:18:ef:ff:e0",
+  "mac": "00:0c:18:ef:ff:d1",
   "debug": true,
   "repeater": true,
   "can_types": {
-    "can1": ["ifv300"],
+    "can1": ["esr"],
     "can0": [
-      "q3"
+      "vcan"
     ]
   },
   "msg_types": [

@@ -414,7 +414,7 @@ class Player(object):
         #     p.append((int(tx), int(ty)))
         p = self.transform.getp_ifc_from_poly(ratios, r, 1)
 
-        for i in range(1, len(p) - 1, 1):
+        for i in range(2, len(p) - 1, 1):
             BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
 
     # def show_lane_info(self, img, ratios, index, width, type, conf, color):
