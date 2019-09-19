@@ -2113,7 +2113,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190728142339-FCW-case7-72-72-72kmh-3/log.txt'
+    r = '/media/nan/860evo/data/20190627-t5-q3-esr-x1-test/pc_collector/PED/20190627173822_CPFA_20kmh/log.txt'
     analysis_dir = None
 
     if len(sys.argv) > 1:

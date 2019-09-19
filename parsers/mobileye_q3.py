@@ -31,44 +31,44 @@ def parse_ifv300(id, buf, ctx=None):
     if 0x401 <= id <= 0x493:  # pedestrian
         if 'TrackID' in r:
             return {'type': 'pedestrian', 'id': r['TrackID'], 'x': r['L_lat_rel'], 'y': r['L_long_rel']}
-    if 'VIS_LANE_RIGHT_PARALL_A0' in r:
-        # print("0x%x" % id, r)
-        return {'type': 'lane', 'class': 'right_parall', 'a0': r['VIS_LANE_RIGHT_PARALL_A0'],
-                'a1': r['VIS_LANE_RIGHT_PARALL_A1'],
-                'a2': r['VIS_LANE_RIGHT_PARALL_A2'], 'a3': r['VIS_LANE_RIGHT_PARALL_A3'],
-                'range': r['VIS_LANE_RIGHT_PARALL_RANGE']}
-    if 'VIS_LANE_LEFT_PARALL_A0' in r:
-        # print("0x%x" % id, r)
-        return {'type': 'lane', 'class': 'left_parall', 'a0': r['VIS_LANE_LEFT_PARALL_A0'],
-                'a1': r['VIS_LANE_LEFT_PARALL_A1'],
-                'a2': r['VIS_LANE_LEFT_PARALL_A2'], 'a3': r['VIS_LANE_LEFT_PARALL_A3'],
-                'range': r['VIS_LANE_LEFT_PARALL_RANGE']}
+    # if 'VIS_LANE_RIGHT_PARALL_A0' in r:
+    #     # print("0x%x" % id, r)
+    #     return {'type': 'lane', 'class': 'right_parall', 'a0': r['VIS_LANE_RIGHT_PARALL_A0'],
+    #             'a1': r['VIS_LANE_RIGHT_PARALL_A1'],
+    #             'a2': r['VIS_LANE_RIGHT_PARALL_A2'], 'a3': r['VIS_LANE_RIGHT_PARALL_A3'],
+    #             'range': r['VIS_LANE_RIGHT_PARALL_RANGE'], 'color': 2}
+    # if 'VIS_LANE_LEFT_PARALL_A0' in r:
+    #     # print("0x%x" % id, r)
+    #     return {'type': 'lane', 'class': 'left_parall', 'a0': r['VIS_LANE_LEFT_PARALL_A0'],
+    #             'a1': r['VIS_LANE_LEFT_PARALL_A1'],
+    #             'a2': r['VIS_LANE_LEFT_PARALL_A2'], 'a3': r['VIS_LANE_LEFT_PARALL_A3'],
+    #             'range': r['VIS_LANE_LEFT_PARALL_RANGE'], 'color': 5}
     if 'VIS_LANE_RIGHT_INDIVID_A0' in r:
         # print("0x%x" % id, r)
         return {'type': 'lane', 'class': 'right_indiv', 'a0': r['VIS_LANE_RIGHT_INDIVID_A0'],
                 'a1': r['VIS_LANE_RIGHT_INDIVID_A1'],
                 'a2': r['VIS_LANE_RIGHT_INDIVID_A2'], 'a3': r['VIS_LANE_RIGHT_INDIVID_A3'],
-                'range': r['VIS_LANE_RIGHT_INDIVID_RANGE']}
+                'range': r['VIS_LANE_RIGHT_INDIVID_RANGE'], 'color': 5}
     if 'VIS_LANE_LEFT_INDIVID_A0' in r:
         # print("0x%x" % id, r)
         return {'type': 'lane', 'class': 'left_indiv', 'a0': r['VIS_LANE_LEFT_INDIVID_A0'],
                 'a1': r['VIS_LANE_LEFT_INDIVID_A1'],
                 'a2': r['VIS_LANE_LEFT_INDIVID_A2'], 'a3': r['VIS_LANE_LEFT_INDIVID_A3'],
-                'range': r['VIS_LANE_LEFT_INDIVID_RANGE']}
+                'range': r['VIS_LANE_LEFT_INDIVID_RANGE'], 'color': 5}
 
     if 'VIS_LANE_NEIGHBOR_RIGHT_A0' in r:
         # print("0x%x" % id, r)
         return {'type': 'lane', 'class': 'left_indiv', 'a0': r['VIS_LANE_NEIGHBOR_RIGHT_A0'],
                 'a1': r['VIS_LANE_NEIGHBOR_RIGHT_A1'],
                 'a2': r['VIS_LANE_NEIGHBOR_RIGHT_A2'], 'a3': r['VIS_LANE_NEIGHBOR_RIGHT_A3'],
-                'range': r['VIS_LANE_NEIGHBOR_RIGHT_RANGE']}
+                'range': r['VIS_LANE_NEIGHBOR_RIGHT_RANGE'], 'color': 5}
 
     if 'VIS_LANE_NEIGHBOR_LEFT_A0' in r:
         # print("0x%x" % id, r)
         return {'type': 'lane', 'class': 'left_indiv', 'a0': r['VIS_LANE_NEIGHBOR_LEFT_A0'],
                 'a1': r['VIS_LANE_NEIGHBOR_LEFT_A1'],
                 'a2': r['VIS_LANE_NEIGHBOR_LEFT_A2'], 'a3': r['VIS_LANE_NEIGHBOR_LEFT_A3'],
-                'range': r['VIS_LANE_NEIGHBOR_LEFT_RANGE']}
+                'range': r['VIS_LANE_NEIGHBOR_LEFT_RANGE'], 'color': 5}
 
     if 'VIS_OBS_CIPV' in r:  # 0x671
         global cipv
@@ -123,7 +123,7 @@ def parse_ifv300(id, buf, ctx=None):
             obs['vel_lon'] = r['VIS_OBS_LONG_VEL_' + idx]  # + sin(yaw * pi / 180.0) * rg
             obs['pos_lat'] = r['VIS_OBS_LAT_POS_' + idx]
             obs['vel_lat'] = r['VIS_OBS_LAT_VEL_' + idx]
-            obs['color'] = 5 # green
+            obs['color'] = 5 # blue
             # send = obs.copy()
             # print(send)
             obs_list.append(obs.copy())
@@ -184,7 +184,7 @@ def parse_q3(id, buf, ctx=None):
     if 0x739 + 3 * ctx['obsnum'] > id >= 0x739 and (id - 0x73b) % 3 == 0:
         ctx['obs']['vel_lat'] = r['ObstacleVelY']
         ctx['obs']['acc_lon'] = r['Object_Accel_X']
-        ctx['obs']['color'] = 2
+        ctx['obs']['color'] = 5
         send = ctx['obs'].copy()
         # print(send)
         ctx['obs'].clear()

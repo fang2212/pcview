@@ -1,98 +1,28 @@
-= pcview-client
+= CVE-PCC
 :toc:
 
-* 作者: mailto:muhongyun@minieye.cc[木洪运]
-* 版本: 1.4
-* 日期: 2018-08-24
-* © 2018 MINIEYE
+* contributors: xuxinan@minieye.cc caofulin@minieye.cc yuji@minieye.cc
+* version: 1.1
+* date: 2018-09-06
+* © 2019 MINIEYE
 
 :numbered!:
 
 [abstract]
 == 概述
 
-pcview-client是一个实时显示车道线，车辆等ADAS算法结果及相关参数的工具。
+CVE-PCC是一个用于采集多传感器、实时可视化显示、记录，并对记录进行后处理分析的工具。
 
 == 路线图
-. *基础功能版本*
-** 显示vehicle lane ped tsr识别框,主要参数[done] 
-** 存储渲染图像,pcview-server发送的算法结果数据[done] 
-. *采集器功能*
-** 采集传感器数据,格式同m3采集器,包含时间戳和数值[plan]
+. *内部版本*
+** 实时采集，支持x1，q3，esr，conti，rtk，gps，mqb[done] 
+** 可视化[done] 
+** 后处理log，提供x1与esr、rtk的对比分析[done] 
+. *产品化版本*
+** 可以提供到外部客户的硬件平台和搭载的CVE-PCC软件版本[plan] 
 
 == 项目说明
-=== lib列表
-==== easy_can
-* **功能** can设备驱动，兼容串口can和ecan
-* **负责人** zzp
-
-==== parsers
-* **功能** can数据解析,手写解析或者使用dbc,将can消息转换成公司定义的消息格式
-* **负责人** cfl
-
-==== player
-* **功能** opencv绘图
-* **负责人** zzp
-
-==== recorder
-* **功能** 数据存储,包含图像,视频,日志
-* **负责人** zzp
-
-=== app列表
-==== flow_view.py
-* **功能** 内部流图版本pcv
-
-==== xilinx_view.py
-* **功能** 赛灵思版本，没有tsr，有俯视图
-
-==== cv22_view.py
-* **功能** 接收cv22图像，保存图像
-
-==== x1d_view.py
-* **功能**  x1d版本，720*480分辨率，车道线字段为lane_warning_res
-
-==== aeb_view.py
-* **功能** aeb版本
-
-=== tools
-==== send_data.py
-* **功能** 模拟设备发送数据，老架构
-
-==== send_flow_data.py
-* **功能** 模拟设备发送数据，数据源为pcv保存的log和原始视频，新架构
-
-==== can_up.sh
-* **功能** 挂载ecan
-
-==== changeIp.sh
-* **功能** 修改电脑ip
-
-==== chmod-usb.sh
-* **功能** 修改串口can的端口权限
-
-=== others
-==== script
-* 打包发布脚本
-
-==== dbc
-
-== changlog
-* release1109
-** 整合x1s、x1b的内容
-
-* release119
-** 修复中间报警信息与左边can数据不一致的bug
-** log保存can原始数据
-** 兼容serial-can和socket-can
-** 删除多余文件
-** 规范数据协议、配置参数
-
-* release20190419
-** add flow_view字段说明
-** add can报警数据显示
-
-
-== todo
-* can报警信息，兼容不同版本
-* 转向车道线报警
-* crash log
+** pcc.py 采集主程序 
+** pcc_replay.py 回放主程序 
+** log_manipulate.py 后处理分析入口 
+** 配置参考 instruction.md
