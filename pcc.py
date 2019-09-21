@@ -72,8 +72,8 @@ class PCC(object):
                                           self.hub.fileHandler.check_file,
                                           self.hub.find_collectors])
             self.supervisor.start()
-            self.gga = GGAReporter('ntrip.weaty.cn', 5001)
-            self.gga.start()
+            # self.gga = GGAReporter('ntrip.weaty.cn', 5001)
+            # self.gga.start()
         else:
             self.hub.d = Manager().dict()
             def update_speed(x):
@@ -82,7 +82,7 @@ class PCC(object):
             cv2.createTrackbar('replay-speed', 'UI', 10, 50, update_speed)
 
         cv2.setMouseCallback('UI', self.left_click, '1234')
-
+        self.gga = None
         self.flow_player = FlowPlayer()
 
         self.save_replay_video = save_replay_video
@@ -248,6 +248,9 @@ class PCC(object):
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
         if 'lat' in data and not self.replay:
+            if self.gga is None:
+                self.gga = GGAReporter('ntrip.weaty.cn', 5001)
+                self.gga.start()
             self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
         if data['source'] == 'rtk.5':
             if 'lat' in data:
@@ -447,7 +450,7 @@ if __name__ == "__main__":
     os.chdir(local_path)
 
     if len(sys.argv) == 1:
-        sys.argv.append('config/cfg_lab.json')
+        sys.argv.append('config/cfg_superb.json')
     load_cfg(sys.argv[1])
 
     if '--headless' in sys.argv:
