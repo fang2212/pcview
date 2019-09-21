@@ -169,6 +169,8 @@ class LogPlayer(Process):
                 return res
             else:
                 print('error decode img', frame_id, len(data))
+        else:
+            time.sleep(0.001)
 
     def pause(self, pause):
         if pause:
@@ -403,8 +405,7 @@ def prep_replay(source):
 if __name__ == "__main__":
     from config.config import *
     import sys
-    sys.argv.append('/home/yj/bak/data/q4/20190828_eyeq4_data/20190828175011/log.txt')
-    sys.argv.append('/media/nan/860evo/data/20190622-T5_problem/pcc_probelm/20190622115618/log.txt')
+    sys.argv.append('/media/nan/860evo/data/20190910 Minieye-AEB-test/20190910163041-1.3/log.txt')
     local_path = os.path.split(os.path.realpath(__file__))[0]
     # print('local_path:', local_path)
     os.chdir(local_path)

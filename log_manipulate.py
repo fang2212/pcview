@@ -23,6 +23,7 @@ class bcl:
 
 obs_meas_order = ['pos_lat', 'pos_lon', 'vel_lon', 'TTC']
 obs_meas_display = ['y', 'x', 'Vx', 'TTC']
+obs_meas_lane = ['']
 
 def compose_log(ts, log_type, data):
     tv_s = int(ts)
@@ -192,6 +193,11 @@ def dummy_parser(line, ctx):
         ctx['ts0'] = ts
 
     # ctx['last_tick'] = ts
+
+
+def tell_interval(line, ctx):
+    cols = line.split(' ')
+    ts = float(cols[0]) + float(cols[1]) / 1000000
 
 
 def copier(line, ctx):
@@ -587,7 +593,6 @@ def parse_x1_line(line, ctx):
     from parsers.x1 import parse_x1
     cols = line.split(' ')
     ts = float(cols[0]) + float(cols[1]) / 1000000
-    print(line)
     if can_port in cols[2] or can_port.lower() in cols[2]:
         can_id = int(cols[3], 16)
         buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])

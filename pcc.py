@@ -90,7 +90,7 @@ class PCC(object):
         if self.save_replay_video and self.replay:
             self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
             self.vw.set_writer("replay-render")
-            print('--------save replay video',os.path.dirname(self.rlog))
+            print('--------save replay video', os.path.dirname(self.rlog))
 
     def start(self):
         self.hub.start()

@@ -161,7 +161,7 @@ class Player(object):
             if col is not 'video':
                 cv2.rectangle(img, (indent, 10), (indent + 10, 20), self.columns[col]['color'], -1)
 
-    def show_obs(self, img, obs, color=CVColor.Cyan, thickness=2):
+    def show_obs(self, img, obs, thickness=2):
         try:
             indent = self.get_indent(obs['source'])
         except Exception as e:
@@ -195,7 +195,7 @@ class Player(object):
         if x < 0:
             return
 
-        w = 1200 * width / x
+        w = install['video']['fv'] * width / x
         if w > 600:
             w = 600
         dev = obs.get('source')
@@ -419,7 +419,7 @@ class Player(object):
         self.show_text_info('video', 40, 'frame: ' + str(int(fn)))
 
     def show_frame_cost(self, cost):
-        self.show_text_info('video', 80, 'render_cost: {:.3f}s'.format(cost))
+        self.show_text_info('video', 80, 'render_cost: {}ms'.format(int(cost*1000)))
 
     def show_fps(self, img, fps):
         # indent = self.columns['video']['indent']
@@ -453,9 +453,10 @@ class Player(object):
         self.show_text_info(source, 40, '{:.1f} km/h'.format(speed))
 
     def show_yaw_rate(self, img, yr, source):
-        indent = self.get_indent(source)
+        # indent = self.get_indent(source)
         yr_deg = yr*57.3
-        BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
+        # BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
+        self.show_text_info(source, 60, '{:.1f}deg/s'.format(yr_deg))
 
     def show_q3_veh(self, img, speed, yr):
         BaseDraw.draw_text(img, 'q3spd: ' + str(int(speed * 3.6)), (2, 120), 0.5, CVColor.White, 1)
