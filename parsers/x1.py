@@ -194,8 +194,8 @@ def parse_x1(id, data, ctx=None):
                 ctx['fusion'][index]['type'] = 'obstacle'
                 ctx['fusion'][index]['class'] = 'fusion_data'
                 ctx['fusion'][index]['color'] = 7
-                ctx['fusion'][index]['width'] = 0.15
-                ctx['fusion'][index]['height'] = 0.15
+                ctx['fusion'][index]['width'] = 1.5
+                ctx['fusion'][index]['height'] = 1.5
         else:
             ctx['fusion'][index] = dict()
             ctx['fusion'][index]['id'] = r['TrackID_'+'%02d'%(index+1)]
