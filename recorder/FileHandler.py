@@ -171,6 +171,8 @@ class FileHandler(Thread):
             # print('filehandler...', video_path, self.video_queue.qsize())
             while local_cfg.save.video and not self.video_queue.empty() and video_path:
                 ts, frame_id, data = self.video_queue.get()
+                # print(data.shape)
+                h, w, c = data.shape
                 # print(self.frame_cnt)
                 if frame_cnt % self._max_cnt == 0 or frame_reset:
                     frame_reset = False
@@ -186,7 +188,7 @@ class FileHandler(Thread):
 
                     if not self.isheadless:
                         video_writer = cv2.VideoWriter(vpath,
-                                                       self.fourcc, 20.0, (1280, 720), True)
+                                                       self.fourcc, 20.0, (w, h), True)
                     else:
                         video_writer = open(vpath, 'wb')
 

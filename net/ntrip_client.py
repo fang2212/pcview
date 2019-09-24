@@ -130,14 +130,15 @@ class GGAReporter(Process):
 
 
 def test_rtk_caster(addr):
+    from parsers import rtcm3
     sock = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
     nanomsg.wrapper.nn_setsockopt(sock, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
     nanomsg.wrapper.nn_connect(sock, addr)
     time.sleep(0.5)
-    gga = GGAReporter()
-    # gga.start()
+    gga = GGAReporter('ntrip.weaty.cn')
+    gga.start()
     print('start recving rtcm.')
-
+    last_time = 0
 
     while True:
         data = nanomsg.wrapper.nn_recv(sock, 0)[1]
@@ -145,9 +146,13 @@ def test_rtk_caster(addr):
             time.sleep(0.01)
             continue
         msg = memoryview(data).tobytes()
-        print(len(msg), 'bytes received.')
+        print(len(msg), 'bytes RTCM received.')
+        now = time.time()
+        if now - last_time > 1.0:
+            gga.set_pos(22.123456, 113.123456)
+            last_time = now
 
 
 if __name__ == "__main__":
     # run_client_ll('tcp://42.159.10.237:5010')
-    test_rtk_caster('tcp://su.weaty.cn:5010')
+    test_rtk_caster('tcp://ntrip.weaty.cn:5010')
