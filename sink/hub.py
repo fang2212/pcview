@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO,
 
 class Hub(Thread):
 
-    def __init__(self, headless=False):
+    def __init__(self, headless=False, direct_cfg=None):
 
         # msg_types = config.msg_types
 
@@ -31,6 +31,10 @@ class Hub(Thread):
 
         self.finder = CollectorFinder()
         self.finder.start()
+
+        x1_camera_flag = False
+        self.max_cache = 40
+        self.msg_cnt['frame'] = 0
         # for i in range(3):
         #     # try:
         #     self.finder.request()
@@ -49,8 +53,33 @@ class Hub(Thread):
             ts0 = self.finder.found[list(self.finder.found.keys())[0]]['ts']
         else:
             print('no devices...')
+        if direct_cfg is not None:
+            import json
+            cfg = json.load(open(direct_cfg))
+            ip = cfg['ip']
+            mac = cfg['mac']
+            self.collectors[ip] = {'mac': mac}
+            self.collectors[ip]['sinks'] = {}
+            print('initializing direct connect to {} {}'.format(ip, mac))
+            self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera', fileHandler=self.fileHandler)
+            self.camera_sink.start()
+            self.collectors[ip]['sinks']['video'] = self.camera_sink
+            self.collectors[ip]['idx'] = 0
+            self.collectors[ip]['sinks'].update(self.fpga_handle(cfg, self.msg_queue, ip, index=0))
+            self.msg_types = []
+            self.msg_types.append(cfg['can_types']['can0'][0] + '.0')
+            self.msg_types.append(cfg['can_types']['can1'][0] + '.0')
 
-        x1_camera_flag = False
+            print(self.msg_types)
+            for msg_type in ['can', 'gsensor', 'rtk', 'x1_data']:
+                self.cache[msg_type] = []
+                self.msg_cnt[msg_type] = {
+                    'rev': 0,
+                    'show': 0,
+                    'fix': 0,
+                }
+            return
+
         if 'use_x1_camera' in configs[0] and configs[0]['use_x1_camera']['use']:
             ip = configs[0]['use_x1_camera']['ip']
             port = configs[0]['use_x1_camera']['port']
@@ -79,14 +108,13 @@ class Hub(Thread):
 
         for ip in self.finder.found:
             self.collectors[ip]['sinks'] = {}
-            if self.finder.found[ip]['mac'] == configs[0]['mac']:
-                if not x1_camera_flag:
-                    self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
-                                                  fileHandler=self.fileHandler)
-                    self.camera_sink.start()
-                    self.collectors[ip]['sinks']['video'] = self.camera_sink
+            if self.finder.found[ip]['mac'] == configs[0]['mac'] and not x1_camera_flag:
+                self.camera_sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
+                                              fileHandler=self.fileHandler)
+                self.camera_sink.start()
+                self.collectors[ip]['sinks']['video'] = self.camera_sink
 
-                    print('use x1 collector camera')
+                print('use x1 collector camera')
 
             ndev = 0
 
@@ -107,6 +135,13 @@ class Hub(Thread):
                     ndev += 1
                     print('Connected dev {} on {}, types:'.format(idx, ip), configs[0]['msg_types'])
 
+        # msg_types = []
+        # for ip in self.collectors:
+        #     # print(ip, collectors[ip]['sinks'])
+        #     for port in self.collectors[ip]['sinks']:
+        #         if 'can' in port:
+        #             itype = configs[self.collectors[ip]['idx']]['can_types'][port]
+        #             msg_types.append(itype[0] + '.{}'.format(self.collectors[ip]['idx']))
         msg_types = []
         for ip in self.collectors:
             # print(ip, collectors[ip]['sinks'])
@@ -114,12 +149,8 @@ class Hub(Thread):
                 if 'can' in port:
                     itype = configs[self.collectors[ip]['idx']]['can_types'][port]
                     msg_types.append(itype[0] + '.{}'.format(self.collectors[ip]['idx']))
-
-        print(msg_types)
-
         self.msg_types = msg_types
-
-        self.max_cache = 40
+        print(self.msg_types)
 
         for msg_type in ['can', 'gsensor', 'rtk', 'x1_data']:
             self.cache[msg_type] = []
@@ -128,9 +159,9 @@ class Hub(Thread):
                 'show': 0,
                 'fix': 0,
             }
-        self.msg_cnt['frame'] = 0
+
         print('hub init done')
-    
+
     def find_collectors(self):
         self.finder.request()
 

@@ -450,10 +450,14 @@ if __name__ == "__main__":
     os.chdir(local_path)
 
     if len(sys.argv) == 1:
-        sys.argv.append('config/cfg_superb.json')
-    load_cfg(sys.argv[1])
+        sys.argv.append('config/cfg_wanan.json')
 
-    if '--headless' in sys.argv:
+    if '--direct' in sys.argv:
+        hub = Hub(direct_cfg=sys.argv[2])
+        pcc = PCC(hub, ipm=True, replay=False)
+        pcc.start()
+
+    elif '--headless' in sys.argv:
         hub = Hub(headless=True)
         hub.start()
         pcc = HeadlessPCC(hub)
@@ -516,6 +520,7 @@ if __name__ == "__main__":
         IOLoop.instance().start()
 
     else:
+        load_cfg(sys.argv[1])
         hub = Hub()
         pcc = PCC(hub, ipm=True, replay=False)
         pcc.start()
