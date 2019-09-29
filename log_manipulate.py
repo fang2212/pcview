@@ -632,6 +632,9 @@ def parse_x1_line(line, ctx):
         #                                             ret.get('TTC')))
 
 
+def parse_rtk_static_diff(line, ctx):
+    pass
+
 def parse_q3_line(line, ctx):
     from parsers.mobileye_q3 import parse_ifv300
     cols = line.split(' ')

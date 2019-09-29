@@ -31,7 +31,6 @@ error.log
 __pycache__
 *.pyc
 *.swp
-*.spec
 *.exe
 
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
@@ -42,8 +41,7 @@ test/
 sdk/
 build/
 dist/
-rotor_data/
-pubulish/
+
 
 # node file
 package-lock.json
