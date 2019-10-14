@@ -42,7 +42,7 @@ class Sink(Process):
         self.isheadless = isheadless
         if 'can' in msg_type:
             self.cls = 'can'
-            print(self.type, 'start.')
+            # print(self.type, 'start.')
 
     def _init_port(self):
         self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
@@ -83,7 +83,7 @@ class Sink(Process):
 class PinodeSink(Sink):
     def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
         super(PinodeSink, self).__init__(queue, ip, port, channel, index, isheadless)
-        print('pi_node connected.', ip, port, channel, index)
+        # print('pi_node connected.', ip, port, channel, index)
         self.source = 'rtk.{:d}'.format(index)
         self.index = index
         self.context = {'source': self.source}
@@ -201,7 +201,7 @@ class CANSink(Sink):
         if len(self.parser) == 0:
             self.parser = [parsers_dict["default"]]
         self.stat = {}
-        print('CANSink initialized.', self.type, ip, port, self.parser)
+        print('CANSink initialized.', self.type, ip, port, self.parser[0].__name__)
 
         self.temp_ts = {'CAN1': 0, 'CAN2': 0}
         self.source = '{}.{:d}'.format(type[0], index)
@@ -313,7 +313,7 @@ class CameraSink(Sink):
         return frame_id, r
 
 
-class X1CameraSink(Sink):
+class FlowSink(Sink):
 
     def __init__(self, cam_queue, msg_queue, ip, port, channel, fileHandler, isheadless=False):
         Sink.__init__(self, cam_queue, ip, port, channel, isheadless)
@@ -347,7 +347,7 @@ class X1CameraSink(Sink):
 
                 r = self.pkg_handler(msg)
                 if r is not None:
-                    if type(r[0]) == type(""):
+                    if isinstance(r[0], type("")):
                         if 'x1_data' in r[0]:
                             self.msg_queue.put((r[1]['frame_id'], r[1], r[0]))
                     else:

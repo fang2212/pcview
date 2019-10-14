@@ -1,10 +1,8 @@
 {
  "collectors": [
-  5,
-  1,
-  14
+  "ffd0", "ffe0", "55dd"
  ],
- "main_collector": 5,
+ "main_collector": "ffd0",
  "modules": {
   "GGA_reporter": false
  },

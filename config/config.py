@@ -293,6 +293,7 @@ def load_cfg(jsonspec):
     spec = json.load(open(jsonspec))
     main_collector = spec.get('main_collector')
     for idx in spec['collectors']:
+        idx = str(idx)
         clct = json.load(open('config/collectors/{}.json'.format(idx)))
         if idx == main_collector:
             clct['is_main'] = True
