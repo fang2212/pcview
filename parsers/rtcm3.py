@@ -224,7 +224,7 @@ class RTCM3:
         files = glob.glob("/home/nan/workshop/git/RTCM3/DEFS/*.RTCM3")
 
         for file in files:
-            sys.stderr.write("Loading File: " + file + "\n")
+            # sys.stderr.write("Loading File: " + file + "\n")
             rtcm3_Defs = rtcm3_Definition()
             rtcm3_Defs.read_from_file(file)
             # sys.stderr.write("Loaded Command: " + "{0}:{1}\n".format(rtcm3_Defs.Command_ID, rtcm3_Defs.Command_Name))

@@ -27,6 +27,7 @@ db_sta77_2 = cantools.database.load_file('dbc/sensortech-77G.dbc', strict=False)
 
 trans_polar2rcs = Transform().trans_polar2rcs
 
+
 def parse_ars(id, buf, ctx=None):
     ids = [m.frame_id for m in db_ars.messages]
     if id not in ids:

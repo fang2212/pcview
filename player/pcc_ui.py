@@ -404,7 +404,11 @@ class Player(object):
                     cv2.rectangle(img, (indent+1, 1), (indent + 159, 24), self.columns[col]['color'], -1)
             self.show_parameters_background(img, (x0, y0, w if w <= 1280 else 1280, h))
             BaseDraw.draw_text(img, col, (indent+2, 20), 0.5, CVColor.Cyan, 1)
-            BaseDraw.draw_text(img, '{:.3f}s'.format(self.ts_now-self.columns[col]['ts']), (indent + 102, 20), 0.5, CVColor.White, 1)
+            dt = self.ts_now-self.columns[col]['ts']
+            if dt >= 0:
+                BaseDraw.draw_text(img, '{:.3f}s'.format(dt), (indent + 102, 20), 0.5, CVColor.White, 1)
+            else:
+                BaseDraw.draw_text(img, '{:.3f}s'.format(dt), (indent + 89, 20), 0.5, CVColor.White, 1)
             # if col is not 'video':
             #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:

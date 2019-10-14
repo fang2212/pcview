@@ -1,0 +1,3 @@
+bestpos sol_stat pos_type lat lon hgt undulation datum lat_sgm lon_sgm hgt_sgm diff_age sol_age #SVs #solSVs ext_sol_stat
+heading sol_stat pos_type length yaw pitch hdgstddev ptchstddev #SVs #solSVs #obs #multi ext_sol_stat
+bestvel sol_stat pos_type latency age hor_speed trk_gnd vert_speed

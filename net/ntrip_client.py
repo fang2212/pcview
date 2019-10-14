@@ -126,7 +126,7 @@ class GGAReporter(Process):
                 self.info = "error {}".format(e)
                 self.sock.close()
                 reconnect = True
-            time.sleep(1)
+            time.sleep(0.8)
 
 
 def test_rtk_caster(addr):

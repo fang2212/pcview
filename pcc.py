@@ -34,6 +34,7 @@ logging.basicConfig(level=logging.INFO,
 class PCC(object):
 
     def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None):
+        from config.config import runtime
         self.hub = hub
         self.player = Player()
         self.exit = False
@@ -69,8 +70,7 @@ class PCC(object):
         cv2.createTrackbar('ESR_Yaw', 'UI', 500, 1000, self.ot.update_esr_yaw)
         if not replay:
             self.supervisor = Supervisor([self.check_status,
-                                          self.hub.fileHandler.check_file,
-                                          self.hub.find_collectors])
+                                          self.hub.fileHandler.check_file])
             self.supervisor.start()
             # self.gga = GGAReporter('ntrip.weaty.cn', 5001)
             # self.gga.start()
@@ -83,6 +83,7 @@ class PCC(object):
 
         cv2.setMouseCallback('UI', self.left_click, '1234')
         self.gga = None
+        self.en_gga = runtime['modules']['GGA_reporter']
         self.flow_player = FlowPlayer()
 
         self.save_replay_video = save_replay_video
@@ -217,7 +218,11 @@ class PCC(object):
             self.vw.write(img)
 
         if self.show_ipm:
-            comb = np.hstack((img, self.ipm))
+            # print(img.shape)
+            # print(self.ipm.shape)
+            padding = np.zeros((img.shape[0]-self.ipm.shape[0], self.ipm.shape[1], 3), np.uint8)
+
+            comb = np.hstack((img, np.vstack((self.ipm, padding))))
         else:
             comb = img
 
@@ -248,10 +253,11 @@ class PCC(object):
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
         if 'lat' in data and not self.replay:
-            if self.gga is None:
+            if self.gga is None and self.en_gga:
                 self.gga = GGAReporter('ntrip.weaty.cn', 5001)
                 self.gga.start()
-            self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
+            if self.gga is not None:
+                self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
         if data['source'] == 'rtk.5':
             if 'lat' in data:
                 self.rtk_pair[0] = data
@@ -450,7 +456,7 @@ if __name__ == "__main__":
     os.chdir(local_path)
 
     if len(sys.argv) == 1:
-        sys.argv.append('config/cfg_wanan.json')
+        sys.argv.append('config/cfg_lab.json')
 
     if '--direct' in sys.argv:
         hub = Hub(direct_cfg=sys.argv[2])

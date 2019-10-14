@@ -289,16 +289,24 @@ def load_config(jsonspec):
 
 def load_cfg(jsonspec):
     print(bcl.WARN+'using config:' + bcl.ENDC, jsonspec)
-    global configs, install
+    global configs, install, runtime
     spec = json.load(open(jsonspec))
+    main_collector = spec.get('main_collector')
     for idx in spec['collectors']:
         clct = json.load(open('config/collectors/{}.json'.format(idx)))
+        if idx == main_collector:
+            clct['is_main'] = True
+        else:
+            clct['is_main'] = False
         configs.append(clct)
-
+    if main_collector is None:
+        configs[0]['is_main'] = True
     for item in spec['installation']:
         # print(item)
         install[item] = spec['installation'][item]
     # config = dic2obj(configs[0])
+
+    runtime['modules'] = spec['modules']
 
 
 def load_installation(jsonspec):
@@ -325,6 +333,7 @@ class bcl:
 
 configs = []
 install = {}
+runtime = {}
 
 __test = []
 

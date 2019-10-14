@@ -1,0 +1,18 @@
+{
+  "type": "x1_algo",
+  "ip": "192.168.98.200",
+  "work_mode": "collector",
+  "repeater": true,
+  "ports": {
+    "video": {
+      "port": 24011,
+      "protocol": "libflow",
+      "topic": ""
+    },
+    "pcv_data": {
+      "port": 24011,
+      "protocol": "libflow",
+      "topic": ""
+    }
+  }
+}

@@ -18,6 +18,17 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 
+def load_log_defs(def_file):
+    defs = dict()
+    with open(def_file) as rf:
+        for line in rf:
+            fields = line.split(' ')
+            defs[fields[0]] = list()
+            for fi in fields[1:]:
+                defs[fields[0]].append(fi)
+    return defs
+
+
 class Sink(Process):
     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
         Process.__init__(self)
@@ -80,6 +91,7 @@ class PinodeSink(Sink):
         self.fileHandler = fileHandler
         if resname == 'rtcm':
             self.rtcm3 = rtcm3.RTCM3()
+        self.ub482_defs = load_log_defs('config/logdefs/ub482.logdef')
 
     def pkg_handler(self, msg):
         # print('hahahahha')
@@ -95,34 +107,40 @@ class PinodeSink(Sink):
             r['source'] = self.source
             if r.get('sensor') == 'm8n':
                 r['source'] = 'gps.{:d}'.format(self.index)
-            if r['type'] == 'bestpos':
-                self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestpos',
-                                             '{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                                                         r['sol_stat'], r['pos_type'], r['lat'], r['lon'],
-                                                         r['hgt'],
-                                                         r['undulation'], r['datum'], r['lat_sgm'],
-                                                         r['lon_sgm'],
-                                                         r['hgt_sgm'],
-                                                         r['diff_age'], r['sol_age'], r['#SVs'],
-                                                         r['#solSVs'],
-                                                         r['ext_sol_stat']
-                                                     )))
-            elif r['type'] == 'heading':
-                self.fileHandler.insert_raw((r['ts'], r['source'] + '.heading',
-                                             '{} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                                                         r['sol_stat'], r['pos_type'], r['length'],
-                                                         r['yaw'], r['pitch'],
-                                                         r['hdgstddev'], r['ptchstddev'], r['#SVs'],
-                                                         r['#solSVs'],
-                                                         r['#obs'], r['#multi'], r['ext_sol_stat']
-                                                     )))
-            elif r['type'] == 'bestvel':
-                self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestvel',
-                                             '{} {} {} {} {} {} {}'.format(
-                                                         r['sol_stat'], r['pos_type'], r['latency'],
-                                                         r['age'], r['hor_speed'],
-                                                         r['trk_gnd'], r['vert_speed']
-                                                     )))
+            if r['type'] in self.ub482_defs:
+                fields = self.ub482_defs[r['type']]
+                values = [r[fi.strip()] for fi in fields]
+                # print(values)
+                self.fileHandler.insert_raw((r['ts'], r['source'] + '.' + r['type'], ' '.join('{}'.format(values))))
+
+            # if r['type'] == 'bestpos':
+            #     self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestpos',
+            #                                  '{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
+            #                                              r['sol_stat'], r['pos_type'], r['lat'], r['lon'],
+            #                                              r['hgt'],
+            #                                              r['undulation'], r['datum'], r['lat_sgm'],
+            #                                              r['lon_sgm'],
+            #                                              r['hgt_sgm'],
+            #                                              r['diff_age'], r['sol_age'], r['#SVs'],
+            #                                              r['#solSVs'],
+            #                                              r['ext_sol_stat']
+            #                                          )))
+            # elif r['type'] == 'heading':
+            #     self.fileHandler.insert_raw((r['ts'], r['source'] + '.heading',
+            #                                  '{} {} {} {} {} {} {} {} {} {} {} {}'.format(
+            #                                              r['sol_stat'], r['pos_type'], r['length'],
+            #                                              r['yaw'], r['pitch'],
+            #                                              r['hdgstddev'], r['ptchstddev'], r['#SVs'],
+            #                                              r['#solSVs'],
+            #                                              r['#obs'], r['#multi'], r['ext_sol_stat']
+            #                                          )))
+            # elif r['type'] == 'bestvel':
+            #     self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestvel',
+            #                                  '{} {} {} {} {} {} {}'.format(
+            #                                              r['sol_stat'], r['pos_type'], r['latency'],
+            #                                              r['age'], r['hor_speed'],
+            #                                              r['trk_gnd'], r['vert_speed']
+            #                                          )))
             elif r['type'] == 'rtk':
                 timestamp = r['ts_origin']
                 self.fileHandler.insert_raw((timestamp, r['source'] + '.sol',

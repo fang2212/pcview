@@ -8,6 +8,8 @@
   8,
   9
  ],
+ "collectors_target":[
+ ],
  "installation": {
   "esr": {
    "roll": 0.0,
