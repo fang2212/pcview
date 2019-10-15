@@ -1,32 +1,24 @@
-from parsers.drtk import V1_msg, v1_handlers
-from multiprocessing import Process
-import struct
-import nanomsg
-import logging
-import can
-from parsers.parser import parsers_dict
-import json
-import time
-import aiohttp
-import msgpack
 import asyncio
+import json
+import logging
+import struct
+import time
+from multiprocessing import Process
+
+import aiohttp
+import can
+import msgpack
+
+import nanomsg
 from parsers import ublox, rtcm3
+from parsers.drtk import V1_msg, v1_handlers
+from parsers.parser import parsers_dict
+from recorder.convert import *
 from tools import mytools
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
-
-
-def load_log_defs(def_file):
-    defs = dict()
-    with open(def_file) as rf:
-        for line in rf:
-            fields = line.split(' ')
-            defs[fields[0]] = list()
-            for fi in fields[1:]:
-                defs[fields[0]].append(fi)
-    return defs
 
 
 class Sink(Process):
@@ -91,7 +83,6 @@ class PinodeSink(Sink):
         self.fileHandler = fileHandler
         if resname == 'rtcm':
             self.rtcm3 = rtcm3.RTCM3()
-        self.ub482_defs = load_log_defs('config/logdefs/ub482.logdef')
 
     def pkg_handler(self, msg):
         # print('hahahahha')
@@ -107,11 +98,8 @@ class PinodeSink(Sink):
             r['source'] = self.source
             if r.get('sensor') == 'm8n':
                 r['source'] = 'gps.{:d}'.format(self.index)
-            if r['type'] in self.ub482_defs:
-                fields = self.ub482_defs[r['type']]
-                values = [r[fi.strip()] for fi in fields]
-                # print(values)
-                self.fileHandler.insert_raw((r['ts'], r['source'] + '.' + r['type'], ' '.join('{}'.format(values))))
+            if r['type'] in ub482_defs:
+                self.fileHandler.insert_raw((r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
 
             # if r['type'] == 'bestpos':
             #     self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestpos',
@@ -145,12 +133,14 @@ class PinodeSink(Sink):
                 timestamp = r['ts_origin']
                 self.fileHandler.insert_raw((timestamp, r['source'] + '.sol',
                                              '{} {} {:.8f} {:.8f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}'.format(
-                                                     r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'],
-                                                     r['velE'], r['velD'], r['yaw'], r['pitch'], r['length'])))
+                                                 r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'],
+                                                 r['velE'], r['velD'], r['yaw'], r['pitch'], r['length'])))
                 self.fileHandler.insert_raw((timestamp, r['source'] + '.dop',
                                              '{} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                        r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4], r['sat'][5], r['gdop'],
-                        r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'], r['prn'])))
+                                                 r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4],
+                                                 r['sat'][5], r['gdop'],
+                                                 r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'],
+                                                 r['prn'])))
             elif r['type'] == 'gps':
                 # print(r)
                 self.fileHandler.insert_raw((time.time(), 'NMEA', msg.decode().strip()))
@@ -279,8 +269,8 @@ class GsensorSink(Sink):
         temp = temp / 340 + 36.53
         # print('gsensor', timestamp, 'gyro:', gyro,'accl:', accl, temp, sec, usec)
         self.fileHandler.insert_raw((timestamp, 'Gsensor',
-                                '{} {} {} {} {} {} {:.6f} {}'.format(accl[0], accl[1], accl[2], gyro[0], gyro[1],
-                                                                     gyro[2], temp, sec, usec)))
+                                     '{} {} {} {} {} {} {:.6f} {}'.format(accl[0], accl[1], accl[2], gyro[0], gyro[1],
+                                                                          gyro[2], temp, sec, usec)))
 
 
 class CameraSink(Sink):
@@ -406,6 +396,7 @@ class RTKSink(Sink):
             self.v1msg = V1_msg()
         except Exception as e:
             self._socket = None
+
     def can_send(self, bus, buf):
         idx = int(len(buf) / 8)
         last_dlc = len(buf) % 8
@@ -438,12 +429,15 @@ class RTKSink(Sink):
                 r = v1_handlers[msgid](msg, self.write)
                 if r is not None:
                     r['ts'] = timestamp
-                    self.fileHandler.insert_raw((timestamp, 'rtksol0', '{} {} {:.8f} {:.8f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}'.format(
-                        r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'], r['velE'], r['velD'], r['yaw'], r['pitch'], r['length'])))
-                    self.fileHandler.insert_raw((timestamp, 'rtkdop0', '{} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                        r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4], r['sat'][5], r['gdop'],
-                        r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'], r['prn']
-                    )))
+                    self.fileHandler.insert_raw((timestamp, 'rtksol0',
+                                                 '{} {} {:.8f} {:.8f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}'.format(
+                                                     r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'],
+                                                     r['velE'], r['velD'], r['yaw'], r['pitch'], r['length'])))
+                    self.fileHandler.insert_raw(
+                        (timestamp, 'rtkdop0', '{} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
+                            r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4], r['sat'][5], r['gdop'],
+                            r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'], r['prn']
+                        )))
                     return msgid, r
             else:
                 # print('0x{:04x}'.format(msgid), msg)

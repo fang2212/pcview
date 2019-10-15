@@ -1,32 +1,34 @@
 #!/usr/bin/env python3
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 __author__ = 'pengquanhua <pengquanhua@minieye.cc>'
 __version__ = '0.1.0'
 __progname__ = 'run'
 
-from math import fabs
+import base64
 import logging
 import time
-from multiprocessing import Manager
-import cv2
 from datetime import datetime
+from math import fabs
+from multiprocessing import Manager
+from multiprocessing.dummy import Process as Thread
+
+import cv2
+import numpy as np
+
+from config.config import local_cfg
+from net.ntrip_client import GGAReporter
+from player import FlowPlayer
+from player.pcc_ui import Player
+from recorder import VideoRecorder
+from recorder.convert import *
+from sink.hub import Hub
+from tools.geo import *
+from tools.match import is_near
 from tools.mytools import Supervisor, OrientTuner
 from tools.transform import Transform
-from tools.geo import *
-from config.config import local_cfg
-from player.pcc_ui import Player
-from sink.hub import Hub
 from tools.vehicle import Vehicle
-from tools.match import is_near
-from net.ntrip_client import GGAReporter
-import numpy as np
-import base64
-from multiprocessing.dummy import Process as Thread
-import time
-from player import FPSCnt, FlowPlayer
-from recorder import VideoRecorder
-import os
+
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
@@ -54,7 +56,7 @@ class PCC(object):
         self.m_g2i = self.transform.calc_g2i_matrix()
         self.ipm = None
         self.show_ipm = ipm
-        self.set_target = False
+        self.set_pinpoint = False
         self.target = None
         self.rtk_pair = [{}, {}]
         self.ot = OrientTuner()
@@ -76,9 +78,11 @@ class PCC(object):
             # self.gga.start()
         else:
             self.hub.d = Manager().dict()
+
             def update_speed(x):
-                self.hub.d['replay_speed'] = 1 if x//10 < 1 else x//10
+                self.hub.d['replay_speed'] = 1 if x // 10 < 1 else x // 10
                 print('replay-speed is', self.hub.d['replay_speed'])
+
             cv2.createTrackbar('replay-speed', 'UI', 10, 50, update_speed)
 
         cv2.setMouseCallback('UI', self.left_click, '1234')
@@ -193,11 +197,12 @@ class PCC(object):
             for d in mess['rtk']:
                 # print('----------- rtk')
                 self.draw_rtk(img, d)
-                if self.set_target:
+                if self.set_pinpoint:
+                    self.set_pinpoint = False
                     self.target = {'lat': d['lat'], 'lon': d['lon'], 'hgt': d['hgt'], 'rtkst': d['rtkst']}
                     self.hub.fileHandler.insert_raw((d['ts'], 'rtkpin', '{} {} {} {}'.format(
                         d['rtkst'], d['lat'], d['lon'], d['hgt'])))
-                    self.set_target = False
+                    print('set pinpoint:', d)
 
         if not self.replay and self.hub.fileHandler.recording:
             self.player.show_recording(img, self.hub.fileHandler.start_time)
@@ -220,7 +225,7 @@ class PCC(object):
         if self.show_ipm:
             # print(img.shape)
             # print(self.ipm.shape)
-            padding = np.zeros((img.shape[0]-self.ipm.shape[0], self.ipm.shape[1], 3), np.uint8)
+            padding = np.zeros((img.shape[0] - self.ipm.shape[0], self.ipm.shape[1], 3), np.uint8)
 
             comb = np.hstack((img, np.vstack((self.ipm, padding))))
         else:
@@ -229,7 +234,7 @@ class PCC(object):
         cv2.imshow('UI', comb)
 
         self.handle_keyboard()
-        self.frame_cost = (time.time() - t0)*0.1 + self.frame_cost*0.9
+        self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
 
     def draw_rtk(self, img, data):
         self.player.show_rtk(img, data)
@@ -258,6 +263,13 @@ class PCC(object):
                 self.gga.start()
             if self.gga is not None:
                 self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
+            # print('role:', self.hub.get_veh_role(data['source']))
+            if self.set_pinpoint and self.hub.get_veh_role(data['source']) == 'ego':
+                self.set_pinpoint = False
+                self.hub.fileHandler.insert_raw(
+                    (data['ts'], data['source'] + '.pinpoint', compose_from_def(ub482_defs, data)))
+                print('set pinpoint:', data)
+
         if data['source'] == 'rtk.5':
             if 'lat' in data:
                 self.rtk_pair[0] = data
@@ -380,8 +392,8 @@ class PCC(object):
             self.ot.save_para()
             if not self.replay:
                 self.hub.fileHandler.save_param()
-        elif key == ord('d'):
-            self.set_target = True
+        elif key == ord('p'):
+            self.set_pinpoint = True
             # print(self.set_target)
         elif key == ord('c'):
             self.calib_esr()
@@ -475,6 +487,7 @@ if __name__ == "__main__":
 
         from tornado.web import Application, RequestHandler, StaticFileHandler
         from tornado.ioloop import IOLoop
+
 
         class IndexHandler(RequestHandler):
             def post(self):

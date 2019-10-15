@@ -83,10 +83,12 @@ class Hub(Thread):
             print(self.msg_types)
             return
 
-        online = self.init_collectors()
+        self.finder.request()
+        time.sleep(0.6)
+        self.online = self.init_collectors()
         print(bcl.OKGR + 'collectors online:' + bcl.ENDC)
-        for ip in online:
-            ol = online[ip]
+        for ip in self.online:
+            ol = self.online[ip]
             print('index {}'.format(ol['idx']), bcl.OKBL + ip + bcl.ENDC, ol['mac'])
             for topic in ol['msg_types']:
                 print('----', topic)
@@ -149,9 +151,14 @@ class Hub(Thread):
 
         print('hub init done')
 
+    def get_veh_role(self, source):
+        for ip in self.online:
+            for data_type in self.online[ip]['msg_types']:
+                if data_type == source:
+                    role = self.online[ip].get('veh_tag') or 'default'
+                    return role
+
     def init_collectors(self):
-        self.finder.request()
-        time.sleep(0.6)
         cfgs_online = {}
         for idx, cfg in enumerate(configs):  # match cfg and finder results
             if cfg.get('type') == 'x1_algo' and cfg.get('is_main'):

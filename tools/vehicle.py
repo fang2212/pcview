@@ -28,7 +28,8 @@ class Vehicle(object):
                          'velE': [0.0, 0.0],
                          'velD': [0.0, 0.0],
                          'yaw_rate': [0.0, 0.0],
-                         'speed': [0.0, 0.0]}
+                         'speed': [0.0, 0.0],
+                         'pinpoint': None}
         self.road_gradient = 0.0
         self.pitch_history = deque(maxlen=100)
         self.pitch_history.append(0.0)

@@ -292,19 +292,34 @@ def load_cfg(jsonspec):
     global configs, install, runtime
     spec = json.load(open(jsonspec))
     main_collector = spec.get('main_collector')
-    for idx in spec['collectors']:
-        idx = str(idx)
-        clct = json.load(open('config/collectors/{}.json'.format(idx)))
-        if idx == main_collector:
-            clct['is_main'] = True
-        else:
-            clct['is_main'] = False
-        configs.append(clct)
+    if spec.get('version') and spec['version'] >= 0.6:
+        for role in spec['vehicles']:
+            for idx in spec['vehicles'][role]['collectors']:
+                idx = str(idx)
+                clct = json.load(open('config/collectors/{}.json'.format(idx)))
+                if idx == main_collector:
+                    clct['is_main'] = True
+                else:
+                    clct['is_main'] = False
+                clct['veh_tag'] = role
+                configs.append(clct)
+        for item in spec['vehicles']['ego']['installation']:  # TODO unify install params naming
+            install[item] = spec['vehicles']['ego']['installation'][item]
+    else:
+
+        for idx in spec['collectors']:
+            idx = str(idx)
+            clct = json.load(open('config/collectors/{}.json'.format(idx)))
+            if idx == main_collector:
+                clct['is_main'] = True
+            else:
+                clct['is_main'] = False
+            configs.append(clct)
+        for item in spec['installation']:
+            install[item] = spec['installation'][item]
     if main_collector is None:
         configs[0]['is_main'] = True
-    for item in spec['installation']:
-        # print(item)
-        install[item] = spec['installation'][item]
+
     # config = dic2obj(configs[0])
 
     runtime['modules'] = spec['modules']
