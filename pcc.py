@@ -87,7 +87,10 @@ class PCC(object):
 
         cv2.setMouseCallback('UI', self.left_click, '1234')
         self.gga = None
-        self.en_gga = runtime['modules']['GGA_reporter']
+        if not self.replay:
+            self.en_gga = runtime['modules']['GGA_reporter']
+        else:
+            self.en_gga = False
         self.flow_player = FlowPlayer()
 
         self.save_replay_video = save_replay_video

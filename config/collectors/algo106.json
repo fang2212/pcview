@@ -1,18 +1,12 @@
 {
   "type": "x1_algo",
-  "ip": "192.168.98.200",
+  "ip": "192.168.98.106",
   "work_mode": "collector",
   "repeater": false,
   "ports": {
     "video": {
       "enable": true,
       "port": 24011,
-      "protocol": "libflow",
-      "topic": ""
-    },
-    "x1_fusion": {
-      "enable": true,
-      "port": 24015,
       "protocol": "libflow",
       "topic": ""
     }

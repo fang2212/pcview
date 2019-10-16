@@ -58,10 +58,6 @@ class Hub(Thread):
             self.fileHandler.start()
             # self.fileHandler.start_rec()
 
-        if len(self.finder.found) > 0:
-            ts0 = self.finder.found[list(self.finder.found.keys())[0]]['ts']
-        else:
-            print('no devices...')
         if direct_cfg is not None:
             import json
             cfg = json.load(open(direct_cfg))
@@ -85,11 +81,21 @@ class Hub(Thread):
 
         self.finder.request()
         time.sleep(0.6)
+        self.finder.request()
+        time.sleep(0.6)
+        self.finder.request()
+        time.sleep(0.6)
+        if len(self.finder.found) > 0:
+            ts0 = self.finder.found[list(self.finder.found.keys())[0]]['ts']
+            for ip in self.finder.found:
+                print("found:", ip, self.finder.found[ip]['mac'])
+        else:
+            print('no devices...')
         self.online = self.init_collectors()
         print(bcl.OKGR + 'collectors online:' + bcl.ENDC)
         for ip in self.online:
             ol = self.online[ip]
-            print('index {}'.format(ol['idx']), bcl.OKBL + ip + bcl.ENDC, ol['mac'])
+            print('index {}'.format(ol['idx']), bcl.OKBL + ip + bcl.ENDC, ol.get('mac'))
             for topic in ol['msg_types']:
                 print('----', topic)
 

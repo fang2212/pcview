@@ -1,0 +1,27 @@
+{
+  "type": "pi_node",
+  "mac": "b8:27:eb:d5:9d:e8",
+  "ip": "192.168.98.0",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "gps": {
+      "enable": true,
+      "port": 1210,
+      "protocol": "nanomsg",
+      "topic": "video"
+    },
+    "rtcm": {
+      "enable": true,
+      "port": 1220,
+      "protocol": "nanomsg",
+      "topic": "ifv300"
+    },
+    "rtk": {
+      "enable": true,
+      "port": 1240,
+      "protocol": "nanomsg",
+      "topic": "gsensor"
+    }
+  }
+}

@@ -3,14 +3,15 @@
     "modules": {
         "GGA_reporter": false
     },
-    "main_collector": "ffd0",
+    "main_collector": "algo200",
     "vehicles": {
         "ego": {
             "enable": true,
             "collectors": {
-                "algo106": "normal",
+                "algo200": "normal",
                 "ffd0": "normal",
-                "ffe0": "normal",
+                "ffd1": "normal",
+                "ffd2": "normal",
                 "55dd": "normal"
             },
             "installation": {

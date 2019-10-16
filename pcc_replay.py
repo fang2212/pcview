@@ -12,6 +12,7 @@ import time
 from multiprocessing import Process, Queue, freeze_support
 import json
 from parsers import ublox
+from recorder.convert import *
 
 
 def jpeg_extractor(video_dir):
@@ -301,74 +302,85 @@ class LogPlayer(Process):
                 self.cache['can'].extend([r, vehstate])
                 # self.msg_queue.put((0xc7, [r, vehstate], 'can'))
 
-            if 'rtk.target' in cols[2]:
-                range = float(cols[3])
-                angle = float(cols[4])
-                height = float(cols[5])
-                r = {'source': cols[2], 'type': cols[2], 'ts': ts, 'range': range, 'angle': angle, 'height': height}
-                self.cache['can'].append(r.copy())
+            # if 'rtk.target' in cols[2]:
+            #     range = float(cols[3])
+            #     angle = float(cols[4])
+            #     height = float(cols[5])
+            #     r = {'source': cols[2], 'type': cols[2], 'ts': ts, 'range': range, 'angle': angle, 'height': height}
+            #     self.cache['can'].append(r.copy())
 
-            if 'rtk' in cols[2] and 'bestpos' in cols[2]:
-                # print('----------------rtk best pos')
-                r = dict()
-                r['ts'] = ts
-                r['type'] = 'bestpos'
-                r['source'] = '.'.join(cols[2].split('.')[:2])
+            if 'rtk' in cols[2]:
+                kw = cols[2].split('.')[-1]
+                if kw in ub482_defs:
+                    r = decode_with_def(ub482_defs, line)
+                    if not r:
+                        continue
+                    r['ts'] = ts
+                    r['type'] = kw
+                    r['source'] = '.'.join(cols[2].split('.')[:2])
+                    self.cache['can'].append(r.copy())
 
-                fields = cols[3:]
-
-                r['sol_stat'] = fields[0]
-                r['pos_type'] = fields[1]
-                r['lat'] = float(fields[2])
-                r['lon'] = float(fields[3])
-                r['hgt'] = float(fields[4])
-                r['undulation'] = float(fields[5])
-                r['datum'] = fields[6]
-                r['lat_sgm'] = float(fields[7])
-                r['lon_sgm'] = float(fields[8])
-                r['hgt_sgm'] = float(fields[9])
-                # r['station_id'] = fields[10]
-                r['diff_age'] = float(fields[10])
-                r['sol_age'] = float(fields[11])
-                r['#SVs'] = int(fields[12])
-                r['#solSVs'] = int(fields[13])
-                # r['rsv1'] = int(fields[15])
-                # r['rsv2'] = int(fields[16])
-                # r['rsv3'] = int(fields[17])
-                r['ext_sol_stat'] = int(fields[14], 16)
-                # r['rsv4'] = int(fields[19])
-                # r['sig_mask'] = int(fields[20], 16)
-                # self.msg_queue.put((0xc7, r, 'can'))
-                self.cache['can'].append(r.copy())
-
-            if 'rtk' in cols[2] and 'heading' in cols[2]:
-                r = dict()
-                r['ts'] = ts
-                r['type'] = 'heading'
-                r['source'] = '.'.join(cols[2].split('.')[:2])
-                fields = cols[3:]
-                # r = dict()
-                r['ts'] = ts
-                r['type'] = 'heading'
-                r['sol_stat'] = fields[0]
-                r['pos_type'] = fields[1]
-                r['length'] = float(fields[2])
-                r['yaw'] = float(fields[3])
-                r['pitch'] = float(fields[4])
-                # r['rsv1'] = fields[5]
-                r['hdgstddev'] = float(fields[5])
-                r['ptchstddev'] = float(fields[6])
-                # r['station_id'] = fields[8]
-                r['#SVs'] = int(fields[7])
-                r['#solSVs'] = int(fields[8])
-                r['#obs'] = int(fields[9])
-                r['#multi'] = int(fields[10])
-                # r['rsv2'] = fields[13]
-                r['ext_sol_stat'] = int(fields[11], 16)
-                # r['rsv4'] = int(fields[15])
-                # r['sig_mask'] = int(fields[16], 16)
-                # self.msg_queue.put((0xc7, r, 'can'))
-                self.cache['can'].append(r.copy())
+            # if 'rtk' in cols[2] and 'bestpos' in cols[2]:
+            #     # print('----------------rtk best pos')
+            #     r = dict()
+            #     r['ts'] = ts
+            #     r['type'] = 'bestpos'
+            #     r['source'] = '.'.join(cols[2].split('.')[:2])
+            #
+            #     fields = cols[3:]
+            #
+            #     r['sol_stat'] = fields[0]
+            #     r['pos_type'] = fields[1]
+            #     r['lat'] = float(fields[2])
+            #     r['lon'] = float(fields[3])
+            #     r['hgt'] = float(fields[4])
+            #     r['undulation'] = float(fields[5])
+            #     r['datum'] = fields[6]
+            #     r['lat_sgm'] = float(fields[7])
+            #     r['lon_sgm'] = float(fields[8])
+            #     r['hgt_sgm'] = float(fields[9])
+            #     # r['station_id'] = fields[10]
+            #     r['diff_age'] = float(fields[10])
+            #     r['sol_age'] = float(fields[11])
+            #     r['#SVs'] = int(fields[12])
+            #     r['#solSVs'] = int(fields[13])
+            #     # r['rsv1'] = int(fields[15])
+            #     # r['rsv2'] = int(fields[16])
+            #     # r['rsv3'] = int(fields[17])
+            #     r['ext_sol_stat'] = int(fields[14], 16)
+            #     # r['rsv4'] = int(fields[19])
+            #     # r['sig_mask'] = int(fields[20], 16)
+            #     # self.msg_queue.put((0xc7, r, 'can'))
+            #     self.cache['can'].append(r.copy())
+            #
+            # if 'rtk' in cols[2] and 'heading' in cols[2]:
+            #     r = dict()
+            #     r['ts'] = ts
+            #     r['type'] = 'heading'
+            #     r['source'] = '.'.join(cols[2].split('.')[:2])
+            #     fields = cols[3:]
+            #     # r = dict()
+            #     r['ts'] = ts
+            #     r['type'] = 'heading'
+            #     r['sol_stat'] = fields[0]
+            #     r['pos_type'] = fields[1]
+            #     r['length'] = float(fields[2])
+            #     r['yaw'] = float(fields[3])
+            #     r['pitch'] = float(fields[4])
+            #     # r['rsv1'] = fields[5]
+            #     r['hdgstddev'] = float(fields[5])
+            #     r['ptchstddev'] = float(fields[6])
+            #     # r['station_id'] = fields[8]
+            #     r['#SVs'] = int(fields[7])
+            #     r['#solSVs'] = int(fields[8])
+            #     r['#obs'] = int(fields[9])
+            #     r['#multi'] = int(fields[10])
+            #     # r['rsv2'] = fields[13]
+            #     r['ext_sol_stat'] = int(fields[11], 16)
+            #     # r['rsv4'] = int(fields[15])
+            #     # r['sig_mask'] = int(fields[16], 16)
+            #     # self.msg_queue.put((0xc7, r, 'can'))
+            #     self.cache['can'].append(r.copy())
 
             if 'NMEA' in cols[2]:
                 r = ublox.decode_nmea(cols[3])

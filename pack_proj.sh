@@ -18,6 +18,7 @@ cp dist/pcc_replay/pcc_replay dist/pcc/
 mv build_info.txt dist/pcc/
 #mkdir dist/pcc/tk
 #mkdir dist/pcc/tcl
+rm dist/pcc/config/local.json
 
 tar -czvf pcc.tar.gz dist/pcc
 

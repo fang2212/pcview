@@ -1,3 +1,4 @@
-bestpos sol_stat pos_type lat lon hgt undulation datum lat_sgm lon_sgm hgt_sgm diff_age sol_age #SVs #solSVs ext_sol_stat
-heading sol_stat pos_type length yaw pitch hdgstddev ptchstddev #SVs #solSVs #obs #multi ext_sol_stat
-bestvel sol_stat pos_type latency age hor_speed trk_gnd vert_speed
+bestpos str:sol_stat str:pos_type fl:lat fl:lon fl:hgt fl:undulation str:datum fl:lat_sgm fl:lon_sgm fl:hgt_sgm fl:diff_age fl:sol_age int:#SVs int:#solSVs hex:ext_sol_stat
+heading str:sol_stat str:pos_type fl:length fl:yaw fl:pitch fl:hdgstddev fl:ptchstddev int:#SVs int:#solSVs int:#obs int:#multi hex:ext_sol_stat
+bestvel str:sol_stat str:pos_type fl:latency fl:age fl:hor_speed fl:trk_gnd fl:vert_speed
+pinpoint str:sol_stat str:pos_type fl:lat fl:lon fl:hgt fl:undulation str:datum fl:lat_sgm fl:lon_sgm fl:hgt_sgm fl:diff_age fl:sol_age int:#SVs int:#solSVs hex:ext_sol_stat
