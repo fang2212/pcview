@@ -405,10 +405,8 @@ class Player(object):
             self.show_parameters_background(img, (x0, y0, w if w <= 1280 else 1280, h))
             BaseDraw.draw_text(img, col, (indent+2, 20), 0.5, CVColor.Cyan, 1)
             dt = self.ts_now-self.columns[col]['ts']
-            if dt >= 0:
-                BaseDraw.draw_text(img, '{:.3f}s'.format(dt), (indent + 102, 20), 0.5, CVColor.White, 1)
-            else:
-                BaseDraw.draw_text(img, '{:.3f}s'.format(dt), (indent + 89, 20), 0.5, CVColor.White, 1)
+
+            BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt*1000)), (indent + 92, 20), 0.5, CVColor.White, 1)
             # if col is not 'video':
             #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:
@@ -419,12 +417,18 @@ class Player(object):
                     color = style_list.get(style)
                 else:
                     color = CVColor.White
-                BaseDraw.draw_text(img, entry['buffer'][height]['text'], (entry['indent'] + 2, height), 0.5, color, 1)
+                line_len = len(entry['buffer'][height]['text'])
+                size = min(0.5 * 16 / line_len, 0.5)
+                size = max(0.24, size)
+                BaseDraw.draw_text(img, entry['buffer'][height]['text'], (entry['indent'] + 2, height), size, color, 1)
 
     def show_frame_id(self, img, fn):
         # indent = self.columns['video']['indent']
         # BaseDraw.draw_text(img, 'fid: ' + str(int(fn)), (indent + 2, 40), 0.5, CVColor.White, 1)
         self.show_text_info('video', 40, 'frame: ' + str(int(fn)))
+
+    def show_pinpoint(self, img, pp):
+        BaseDraw.draw_text(img, 'Pin: {lat:.8f} {lon:.8f} {hgt:.3f}'.format(**pp), (950, 710), 0.3, CVColor.White, 1)
 
     def show_frame_cost(self, cost):
         self.show_text_info('video', 80, 'render_cost: {}ms'.format(int(cost*1000)))

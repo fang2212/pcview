@@ -3,20 +3,20 @@ def load_log_defs(def_file):
     with open(def_file) as rf:
         for line in rf:
             fields = line.split(' ')
-            defs[fields[0]] = list()
+            defs[fields[0]] = dict()
+            defs[fields[0]]['items'] = list()
+            defs[fields[0]]['string'] = ' '.join(fields[1:]).strip()
             for fi in fields[1:]:
-                vtype, name = fi.split(':')
-                defs[fields[0]].append((vtype, name))
+                name, vtype = fi[1:-1].split(':')
+                defs[fields[0]]['items'].append((vtype, name))
     return defs
 
 
 def compose_from_def(defs, r):
     if 'type' not in r or r['type'] not in defs:
         return None
-    fields = defs[r['type']]
-    values = [r[fi[1].strip()] for fi in fields]
-    # print(values)
-    return ' '.join(['{}'.format(value) for value in values])
+
+    return defs[r['type']]['string'].format(**r)
 
 
 def decode_with_def(defs, line):
@@ -25,20 +25,20 @@ def decode_with_def(defs, line):
     if kw not in defs:
         print(kw, 'not in defs')
         return None
-    if len(defs[kw]) < len(fields) - 3:
+    if len(defs[kw]['items']) < len(fields) - 3:
         print('log line length grater than def', kw)
-        print()
+        print(len(defs[kw]['items']), len(fields)-3)
         return None
     r = dict()
     for idx, fi in enumerate(fields[3:]):
-        vtype, name = defs[kw][idx]
-        if vtype == 'fl':
+        vtype, name = defs[kw]['items'][idx]
+        if vtype[-1] == 'f':
             value = float(fi)
-        elif vtype == 'int':
+        elif vtype[-1] == 'd':
             value = int(fi)
-        elif vtype == 'str':
+        elif vtype[-1] == 's':
             value = fi
-        elif vtype == 'hex':
+        elif vtype[-1] in {'x', 'X'}:
             value = int(fi, 16)
         else:
             value = fi

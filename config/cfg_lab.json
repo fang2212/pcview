@@ -8,8 +8,8 @@
         "ego": {
             "enable": true,
             "collectors": {
-                "algo106": "normal",
                 "ffd0": "normal",
+                "algo106": "normal",
                 "ffe0": "normal",
                 "55dd": "normal"
             },

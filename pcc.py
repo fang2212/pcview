@@ -158,7 +158,8 @@ class PCC(object):
             self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
 
         # self.player.show_columns(img)
-
+        if self.ego_car.dynamics.get('pinpoint'):
+            self.player.show_pinpoint(img, self.ego_car.dynamics['pinpoint'])
         self.player.show_frame_id(img, frame_id)
         self.player.show_frame_cost(self.frame_cost)
         self.player.show_datetime(img, self.ts_now)
@@ -269,6 +270,7 @@ class PCC(object):
             # print('role:', self.hub.get_veh_role(data['source']))
             if self.set_pinpoint and self.hub.get_veh_role(data['source']) == 'ego':
                 self.set_pinpoint = False
+                self.ego_car.dynamics['pinpoint'] = data
                 self.hub.fileHandler.insert_raw(
                     (data['ts'], data['source'] + '.pinpoint', compose_from_def(ub482_defs, data)))
                 print('set pinpoint:', data)

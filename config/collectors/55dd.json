@@ -9,19 +9,19 @@
       "enable": true,
       "port": 1210,
       "protocol": "nanomsg",
-      "topic": "video"
+      "topic": "nmea"
     },
     "rtcm": {
       "enable": true,
       "port": 1220,
       "protocol": "nanomsg",
-      "topic": "ifv300"
+      "topic": "rtcm"
     },
     "rtk": {
       "enable": true,
       "port": 1240,
       "protocol": "nanomsg",
-      "topic": "gsensor"
+      "topic": "ub482"
     }
   }
 }

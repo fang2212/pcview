@@ -1,4 +1,4 @@
-bestpos str:sol_stat str:pos_type fl:lat fl:lon fl:hgt fl:undulation str:datum fl:lat_sgm fl:lon_sgm fl:hgt_sgm fl:diff_age fl:sol_age int:#SVs int:#solSVs hex:ext_sol_stat
-heading str:sol_stat str:pos_type fl:length fl:yaw fl:pitch fl:hdgstddev fl:ptchstddev int:#SVs int:#solSVs int:#obs int:#multi hex:ext_sol_stat
-bestvel str:sol_stat str:pos_type fl:latency fl:age fl:hor_speed fl:trk_gnd fl:vert_speed
-pinpoint str:sol_stat str:pos_type fl:lat fl:lon fl:hgt fl:undulation str:datum fl:lat_sgm fl:lon_sgm fl:hgt_sgm fl:diff_age fl:sol_age int:#SVs int:#solSVs hex:ext_sol_stat
+bestpos {sol_stat:s} {pos_type:s} {lat:f} {lon:f} {hgt:f} {undulation:f} {datum:s} {lat_sgm:f} {lon_sgm:f} {hgt_sgm:f} {diff_age:f} {sol_age:f} {#SVs:d} {#solSVs:d} {ext_sol_stat:x}
+heading {sol_stat:s} {pos_type:s} {length:f} {yaw:f} {pitch:f} {hdgstddev:f} {ptchstddev:f} {#SVs:d} {#solSVs:d} {#obs:d} {#multi:d} {ext_sol_stat:x}
+bestvel {sol_stat:s} {pos_type:s} {latency:f} {age:f} {hor_speed:f} {trk_gnd:f} {vert_speed:f}
+pinpoint {sol_stat:s} {pos_type:s} {lat:f} {lon:f} {hgt:f} {undulation:f} {datum:s} {lat_sgm:f} {lon_sgm:f} {hgt_sgm:f} {diff_age:f} {sol_age:f} {#SVs:d} {#solSVs:d} {ext_sol_stat:x}

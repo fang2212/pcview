@@ -4,6 +4,7 @@ import logging
 import struct
 import time
 from multiprocessing import Process
+from threading import Thread
 
 import aiohttp
 import can
@@ -22,6 +23,57 @@ logging.basicConfig(level=logging.INFO,
 
 
 class Sink(Process):
+    def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
+        Process.__init__(self)
+        self.deamon = True
+        self.dev = ip
+        self.channel = port
+        self.queue = queue
+        self.type = msg_type
+        self.index = index
+        self.cls = msg_type
+        self.isheadless = isheadless
+        if 'can' in msg_type:
+            self.cls = 'can'
+            # print(self.type, 'start.')
+
+    def _init_port(self):
+        self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
+        nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
+        nanomsg.wrapper.nn_connect(self._socket, "tcp://%s:%s" % (self.dev, self.channel,))
+        # self._socket = Socket(SUB)
+        # self._socket.connect("tcp://%s:%s" % (self.dev, self.channel,))
+
+    def read(self):
+        bs = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
+        return bs
+        # return self._socket.recv()
+
+    def _init_local_socket(self):
+        self.ss = None
+
+    def run(self):
+        self._init_port()
+        # if 'can' in self.type:
+        #     print(self.type, 'start.')
+        while True:
+            buf = self.read()
+            if not buf:
+                time.sleep(0.001)
+                continue
+            t0 = time.time()
+            r = self.pkg_handler(buf)
+            dt = time.time() - t0
+            # print(self.dev, self.type, self.channel, 'dt: {:.5f}'.format(dt))
+            if r is not None and not self.isheadless:
+                self.queue.put((*r, self.cls))
+            # time.sleep(0.01)
+
+    def pkg_handler(self, msg_buf):
+        pass
+
+
+class SinkThread(Thread):
     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
         Process.__init__(self)
         self.deamon = True
@@ -143,7 +195,7 @@ class PinodeSink(Sink):
                                                  r['prn'])))
             elif r['type'] == 'gps':
                 # print(r)
-                self.fileHandler.insert_raw((time.time(), 'NMEA', msg.decode().strip()))
+                self.fileHandler.insert_raw((time.time(), r['source'], msg.decode().strip()))
                 # print(time.time(), r['ts_origin'])
 
         return self.channel, data
@@ -211,6 +263,7 @@ class CANSink(Sink):
 
         can_id, timestamp, data = msg
         id = '0x%x' % can_id
+        # print(data)
 
         # print('can', id)
         if self.type == 'can0':
@@ -257,6 +310,7 @@ class GsensorSink(Sink):
     def __init__(self, queue, ip, port, channel, index, fileHandler, isheadless=False):
         Sink.__init__(self, queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
+        self.idx = index
 
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
@@ -268,7 +322,7 @@ class GsensorSink(Sink):
             '<dhhhhhhhII', msg[8:])
         temp = temp / 340 + 36.53
         # print('gsensor', timestamp, 'gyro:', gyro,'accl:', accl, temp, sec, usec)
-        self.fileHandler.insert_raw((timestamp, 'Gsensor',
+        self.fileHandler.insert_raw((timestamp, 'Gsensor.{}'.format(self.idx),
                                      '{} {} {} {} {} {} {:.6f} {}'.format(accl[0], accl[1], accl[2], gyro[0], gyro[1],
                                                                           gyro[2], temp, sec, usec)))
 
@@ -285,8 +339,9 @@ class CameraSink(Sink):
         msg = memoryview(msg).tobytes()
         jpg = msg[16:]
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
-        if frame_id - self.last_fid != 1:
-            print("camera sink frame jump.", self.last_fid, frame_id)
+        df = frame_id - self.last_fid
+        if df != 1:
+            print("\r{} frame jump at {}".format(df-1, frame_id), end='')
         self.last_fid = frame_id
         app1 = jpg.find(b'\xff\xe1')
         frame_id_jfif = int.from_bytes(jpg[24:28], byteorder="little")

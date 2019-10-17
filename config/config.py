@@ -296,12 +296,14 @@ def load_cfg(jsonspec):
         for role in spec['vehicles']:
             for idx in spec['vehicles'][role]['collectors']:
                 idx = str(idx)
-                clct = json.load(open('config/collectors/{}.json'.format(idx)))
+                def_name = 'config/collectors/{}.json'.format(idx)
+                clct = json.load(open(def_name))
                 if idx == main_collector:
                     clct['is_main'] = True
                 else:
                     clct['is_main'] = False
                 clct['veh_tag'] = role
+                clct['defs_path'] = def_name
                 configs.append(clct)
         for item in spec['vehicles']['ego']['installation']:  # TODO unify install params naming
             install[item] = spec['vehicles']['ego']['installation'][item]

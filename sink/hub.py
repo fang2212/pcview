@@ -67,7 +67,7 @@ class Hub(Thread):
             # self.collectors[ip]['sinks'] = {}
             print('initializing direct connect to {} {}'.format(ip, mac))
             sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
-                                          fileHandler=self.fileHandler)
+                              fileHandler=self.fileHandler)
             sink.start()
             # self.collectors[ip]['sinks']['video'] = sink
             # self.collectors[ip]['idx'] = 0
@@ -92,12 +92,15 @@ class Hub(Thread):
         else:
             print('no devices...')
         self.online = self.init_collectors()
-        print(bcl.OKGR + 'collectors online:' + bcl.ENDC)
+        print(bcl.OKGR + '---------------- collectors online ---------------' + bcl.ENDC)
         for ip in self.online:
             ol = self.online[ip]
             print('index {}'.format(ol['idx']), bcl.OKBL + ip + bcl.ENDC, ol.get('mac'))
-            for topic in ol['msg_types']:
-                print('----', topic)
+            print('definition:', ol['defs_path'])
+            for iface in ol['ports']:
+                print('--', iface, ol['ports'][iface]['topic'] + '.{}'.format(ol['idx']),
+                      'enabled' if ol['ports'][iface]['enable'] else bcl.FAIL+'disabled'+bcl.ENDC)
+        print(bcl.OKGR + '---------------- ----------------- ---------------' + bcl.ENDC)
 
         # if 'use_x1_camera' in configs[0] and configs[0]['use_x1_camera']['use']:
         #     ip = configs[0]['use_x1_camera']['ip']
@@ -167,7 +170,7 @@ class Hub(Thread):
     def init_collectors(self):
         cfgs_online = {}
         for idx, cfg in enumerate(configs):  # match cfg and finder results
-            if cfg.get('type') == 'x1_algo' and cfg.get('is_main'):
+            if cfg.get('type') == 'x1_algo':
                 cfg['idx'] = idx
                 ip = cfg['ip']
                 cfgs_online[ip] = cfg
@@ -191,15 +194,19 @@ class Hub(Thread):
             if cfg.get('type') == 'x1_algo':
                 if cfg.get('is_main'):
                     for item in cfg['ports']:
+                        if not cfg['ports'][item].get('enable'):
+                            continue
                         port = cfg['ports'][item]['port']
                         sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.cam_queue, ip=ip, port=port,
                                         channel=item, fileHandler=self.fileHandler)
                         sink.start()
                         # self.collectors[ip]['sinks'][item] = sink
-                        cfgs_online[ip]['msg_types'].append(item+'.{}'.format(idx))
+                        cfgs_online[ip]['msg_types'].append(item + '.{}'.format(idx))
 
             elif cfg.get('type') == 'pi_node':
                 for name in self.finder.found[ip]['ports']:
+                    if not cfg['ports'][name].get('enable'):
+                        continue
                     port = self.finder.found[ip]['ports'][name]
                     pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=name,
                                         fileHandler=self.fileHandler, isheadless=self.headless)
@@ -209,19 +216,27 @@ class Hub(Thread):
             elif cfg.get('type') == 'x1_collector':
                 sink = {}
                 for iface in cfg['ports']:
-                    if iface == 'video':
+                    if not cfg['ports'][iface].get('enable'):
                         continue
-                    chn = cfg['ports'][iface]
-                    sink[iface] = CANSink(self.msg_queue, ip=ip, port=chn['port'], channel=iface, type=[chn['topic']],
-                                          index=idx, fileHandler=self.fileHandler, isheadless=self.headless)
-                    sink[iface].start()
-                    cfgs_online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
-                    # self.collectors[ip]['sinks'].update(sink)
-                    # self.msg_types.append(chn['topic'] + '.' + str(idx))
-                    # print(chn['topic'])
+                    if 'can' in iface:
+                        chn = cfg['ports'][iface]
+                        sink[iface] = CANSink(self.msg_queue, ip=ip, port=chn['port'], channel=iface, type=[chn['topic']],
+                                              index=idx, fileHandler=self.fileHandler, isheadless=self.headless)
+                        sink[iface].start()
+                        cfgs_online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
+                        # self.collectors[ip]['sinks'].update(sink)
+                        # self.msg_types.append(chn['topic'] + '.' + str(idx))
+                        # print(chn['topic'])
+                    elif 'gsensor' in iface:
+                        chn = cfg['ports'][iface]
+                        sink[iface] = GsensorSink(queue=self.msg_queue, ip=ip, port=chn['port'], channel=iface, index=idx,
+                                                      fileHandler=self.fileHandler, isheadless=self.headless)
+                        sink[iface].start()
+                        cfgs_online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 if cfg.get('is_main'):
                     port = cfg['ports']['video']['port']
-                    sink = CameraSink(queue=self.cam_queue, ip=ip, port=port, channel='camera', fileHandler=self.fileHandler)
+                    sink = CameraSink(queue=self.cam_queue, ip=ip, port=port, channel='camera',
+                                      fileHandler=self.fileHandler)
                     sink.start()
                     # self.collectors[ip]['sinks']['video'] = sink
             else:  # no type, default is x1 collector
@@ -231,7 +246,8 @@ class Hub(Thread):
                 cfgs_online[ip]['msg_types'].append(cfg['can_types']['can1'][0] + '.{}'.format(idx))
                 cfgs_online[ip]['msg_types'].append('gsensor.{}'.format(idx))
                 if cfg.get('is_main'):
-                    sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera', fileHandler=self.fileHandler)
+                    sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera',
+                                      fileHandler=self.fileHandler)
                     sink.start()
                     # self.collectors[ip]['sinks']['video'] = sink
         return cfgs_online
