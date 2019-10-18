@@ -422,6 +422,10 @@ class Player(object):
                 size = max(0.24, size)
                 BaseDraw.draw_text(img, entry['buffer'][height]['text'], (entry['indent'] + 2, height), size, color, 1)
 
+    def show_video_info(self, img, data):
+        self.show_parameters_background(img, (0, 0, 40, 20))
+        BaseDraw.draw_text(img, data['source'], (2, 20), 0.5, CVColor.Cyan, 1)
+
     def show_frame_id(self, img, fn):
         # indent = self.columns['video']['indent']
         # BaseDraw.draw_text(img, 'fid: ' + str(int(fn)), (indent + 2, 40), 0.5, CVColor.White, 1)

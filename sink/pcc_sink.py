@@ -310,7 +310,6 @@ class GsensorSink(Sink):
     def __init__(self, queue, ip, port, channel, index, fileHandler, isheadless=False):
         Sink.__init__(self, queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
-        self.idx = index
 
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
@@ -322,17 +321,20 @@ class GsensorSink(Sink):
             '<dhhhhhhhII', msg[8:])
         temp = temp / 340 + 36.53
         # print('gsensor', timestamp, 'gyro:', gyro,'accl:', accl, temp, sec, usec)
-        self.fileHandler.insert_raw((timestamp, 'Gsensor.{}'.format(self.idx),
+        self.fileHandler.insert_raw((timestamp, 'Gsensor.{}'.format(self.index),
                                      '{} {} {} {} {} {} {:.6f} {}'.format(accl[0], accl[1], accl[2], gyro[0], gyro[1],
                                                                           gyro[2], temp, sec, usec)))
 
 
 class CameraSink(Sink):
-    def __init__(self, queue, ip, port, channel, fileHandler, headless=False):
-        Sink.__init__(self, queue, ip, port, channel, headless)
+    def __init__(self, queue, ip, port, channel, index, fileHandler, headless=False, is_main=False):
+        Sink.__init__(self, queue, ip, port, channel, index, headless)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.headless = headless
+        # self.index = index
+        self.source = 'video.{:d}'.format(index)
+        self.is_main = is_main
 
     def pkg_handler(self, msg):
         # print('cprocess-id:', os.getpid())
@@ -351,7 +353,7 @@ class CameraSink(Sink):
         logging.debug('cam id {}'.format(frame_id))
         # print('frame id', frame_id)
 
-        r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id}
+        r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id, 'source': self.source, 'is_main': self.is_main}
         # print('frame id', frame_id)
         # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
 
@@ -360,14 +362,16 @@ class CameraSink(Sink):
 
 class FlowSink(Sink):
 
-    def __init__(self, cam_queue, msg_queue, ip, port, channel, fileHandler, isheadless=False):
-        Sink.__init__(self, cam_queue, ip, port, channel, isheadless)
+    def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, isheadless=False, is_main=False):
+        Sink.__init__(self, cam_queue, ip, port, channel, index, isheadless)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.ip = ip
         self.port = port
         self.cam_queue = cam_queue
         self.msg_queue = msg_queue
+        self.is_main = is_main
+        self.source = 'video.{:d}'.format(index)
 
     async def _run(self):
         session = aiohttp.ClientSession()
@@ -433,7 +437,7 @@ class FlowSink(Sink):
                         aiohttp.WSMsgType.ERROR):
             return None
 
-        r = {'ts': ts, 'img': jpg, 'frame_id': frame_id}
+        r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'source': self.source, 'is_main': self.is_main}
         # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
         return frame_id, r
 

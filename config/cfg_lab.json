@@ -3,7 +3,7 @@
     "modules": {
         "GGA_reporter": false
     },
-    "main_collector": "ffd0",
+    "main_collector": "algo106",
     "vehicles": {
         "ego": {
             "enable": true,

@@ -33,6 +33,12 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 
+def loop_traverse(items):
+    while True:
+        for item in items:
+            yield item
+
+
 class PCC(object):
 
     def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None):
@@ -65,7 +71,11 @@ class PCC(object):
         self.ego_car = Vehicle()
         self.calib_data = dict()
         self.frame_cost = 0
+        self.video_cache = {}
         cv2.namedWindow('UI')
+        self.sideview_state = loop_traverse(['ipm', 'video_aux'])
+        self.sv_state = 'ipm'
+        # cv2.namedWindow('video_aux')
         cv2.createTrackbar('Yaw', 'UI', 500, 1000, self.ot.update_yaw)
         cv2.createTrackbar('Pitch', 'UI', 500, 1000, self.ot.update_pitch)
         cv2.createTrackbar('Roll', 'UI', 500, 1000, self.ot.update_roll)
@@ -174,6 +184,23 @@ class PCC(object):
 
             self.player.show_dist_mark_ipm(self.ipm)
 
+        img_aux = np.zeros([0, 427, 3], np.uint8)
+        if 'video_aux' in mess:
+            # print(mess['video_aux'])
+            for video in mess['video_aux']:
+                if len(video) > 0:
+                    self.video_cache[video['source']] = video
+
+        for idx, source in enumerate(self.video_cache):
+            if idx > 2:
+                continue
+            video = self.video_cache[source]
+            # print('incoming video', video['source'])
+            img_raw = cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR)
+            img_small = cv2.resize(img_raw, (427, 240))
+            self.player.show_video_info(img_small, video)
+            img_aux = np.vstack((img_aux, img_small))
+
         if 'x1_data' in mess:
             # print('------', mess['pcv_data'])
             for data in mess['x1_data']:
@@ -233,7 +260,9 @@ class PCC(object):
 
             comb = np.hstack((img, np.vstack((self.ipm, padding))))
         else:
-            comb = img
+            # comb = img
+            padding = np.zeros((img.shape[0] - img_aux.shape[0], img_aux.shape[1], 3), np.uint8)
+            comb = np.hstack((img, np.vstack((img_aux, padding))))
 
         cv2.imshow('UI', comb)
 
@@ -404,6 +433,9 @@ class PCC(object):
             self.calib_esr()
         elif key == ord('b'):
             self.show_ipm_bg = not self.show_ipm_bg
+        elif key == ord('i'):
+            self.sv_state = next(self.sideview_state)
+            self.show_ipm = not self.show_ipm
 
     def left_click(self, event, x, y, flags, param):
         # print(event, x, y, flags, param)
@@ -546,7 +578,7 @@ if __name__ == "__main__":
     else:
         load_cfg(sys.argv[1])
         hub = Hub()
-        pcc = PCC(hub, ipm=True, replay=False)
+        pcc = PCC(hub, ipm=False, replay=False)
         pcc.start()
 
     # pcc = PCC(hub, ipm=True, replay=False)
