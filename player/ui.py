@@ -22,6 +22,7 @@ VehicleType = {
     '5': 'ssp'
 }
 
+
 class CVColor(object):
     '''
     basic color RGB define
@@ -43,7 +44,6 @@ class CVColor(object):
     purple = (0xb0, 0x27, 0x9c)
     bluegrey = (0x8b, 0x7D, 0x60)
     deeporange = (0x22, 0x57, 0xff)
-
 
 
 class FPSCnt(object):
@@ -171,7 +171,10 @@ class BaseDraw(object):
         """
         if np.NaN in ratios:
             return
-        a0, a1, a2, a3 = list(map(float, ratios))
+        try:
+            a0, a1, a2, a3 = list(map(float, ratios))
+        except Exception as e:
+            return
         width = int(float(width) * 10 + 0.5)
         for y in range(begin, end, 20):
             y1 = y

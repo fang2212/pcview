@@ -3,7 +3,7 @@ import json
 import logging
 import struct
 import time
-from multiprocessing import Process
+# from multiprocessing import Process
 from threading import Thread
 
 import aiohttp
@@ -22,9 +22,9 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 
-class Sink(Process):
+class Sink(Thread):
     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
-        Process.__init__(self)
+        super(Sink, self).__init__()
         self.deamon = True
         self.dev = ip
         self.channel = port
@@ -59,7 +59,7 @@ class Sink(Process):
         while True:
             buf = self.read()
             if not buf:
-                time.sleep(0.001)
+                time.sleep(0.01)
                 continue
             t0 = time.time()
             r = self.pkg_handler(buf)
@@ -75,7 +75,7 @@ class Sink(Process):
 
 class SinkThread(Thread):
     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
-        Process.__init__(self)
+        super(SinkThread, self).__init__()
         self.deamon = True
         self.dev = ip
         self.channel = port
@@ -135,6 +135,7 @@ class PinodeSink(Sink):
         self.fileHandler = fileHandler
         if resname == 'rtcm':
             self.rtcm3 = rtcm3.RTCM3()
+        # print(queue, ip, port, channel, index, resname, fileHandler, isheadless)
 
     def pkg_handler(self, msg):
         # print('hahahahha')
@@ -147,40 +148,13 @@ class PinodeSink(Sink):
         if not isinstance(data, list):
             data = [data]
         for r in data:
+            # print(r)
             r['source'] = self.source
             if r.get('sensor') == 'm8n':
                 r['source'] = 'gps.{:d}'.format(self.index)
             if r['type'] in ub482_defs:
                 self.fileHandler.insert_raw((r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
 
-            # if r['type'] == 'bestpos':
-            #     self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestpos',
-            #                                  '{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
-            #                                              r['sol_stat'], r['pos_type'], r['lat'], r['lon'],
-            #                                              r['hgt'],
-            #                                              r['undulation'], r['datum'], r['lat_sgm'],
-            #                                              r['lon_sgm'],
-            #                                              r['hgt_sgm'],
-            #                                              r['diff_age'], r['sol_age'], r['#SVs'],
-            #                                              r['#solSVs'],
-            #                                              r['ext_sol_stat']
-            #                                          )))
-            # elif r['type'] == 'heading':
-            #     self.fileHandler.insert_raw((r['ts'], r['source'] + '.heading',
-            #                                  '{} {} {} {} {} {} {} {} {} {} {} {}'.format(
-            #                                              r['sol_stat'], r['pos_type'], r['length'],
-            #                                              r['yaw'], r['pitch'],
-            #                                              r['hdgstddev'], r['ptchstddev'], r['#SVs'],
-            #                                              r['#solSVs'],
-            #                                              r['#obs'], r['#multi'], r['ext_sol_stat']
-            #                                          )))
-            # elif r['type'] == 'bestvel':
-            #     self.fileHandler.insert_raw((r['ts'], r['source'] + '.bestvel',
-            #                                  '{} {} {} {} {} {} {}'.format(
-            #                                              r['sol_stat'], r['pos_type'], r['latency'],
-            #                                              r['age'], r['hor_speed'],
-            #                                              r['trk_gnd'], r['vert_speed']
-            #                                          )))
             elif r['type'] == 'rtk':
                 timestamp = r['ts_origin']
                 self.fileHandler.insert_raw((timestamp, r['source'] + '.sol',
@@ -230,7 +204,7 @@ class PinodeSink(Sink):
 
 class CANSink(Sink):
     def __init__(self, queue, ip, port, channel, type, index, fileHandler, isheadless=False):
-        Sink.__init__(self, queue, ip, port, channel, index, isheadless)
+        super(CANSink, self).__init__(queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
         self.parser = []
         for ptype in parsers_dict:
@@ -308,7 +282,7 @@ class CANSink(Sink):
 
 class GsensorSink(Sink):
     def __init__(self, queue, ip, port, channel, index, fileHandler, isheadless=False):
-        Sink.__init__(self, queue, ip, port, channel, index, isheadless)
+        super(GsensorSink, self).__init__(queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
 
     def pkg_handler(self, msg):
@@ -328,7 +302,7 @@ class GsensorSink(Sink):
 
 class CameraSink(Sink):
     def __init__(self, queue, ip, port, channel, index, fileHandler, headless=False, is_main=False):
-        Sink.__init__(self, queue, ip, port, channel, index, headless)
+        super(CameraSink, self).__init__(queue, ip, port, channel, index, headless)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.headless = headless
@@ -363,7 +337,7 @@ class CameraSink(Sink):
 class FlowSink(Sink):
 
     def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, isheadless=False, is_main=False):
-        Sink.__init__(self, cam_queue, ip, port, channel, index, isheadless)
+        super(FlowSink, self).__init__(cam_queue, ip, port, channel, index, isheadless)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.ip = ip

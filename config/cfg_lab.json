@@ -3,13 +3,13 @@
     "modules": {
         "GGA_reporter": false
     },
-    "main_collector": "algo106",
+    "main_collector": "algoc195",
     "vehicles": {
         "ego": {
             "enable": true,
             "collectors": {
                 "ffd0": "normal",
-                "algo106": "normal",
+                "algoc195": "normal",
                 "ffe0": "normal",
                 "55dd": "normal"
             },
