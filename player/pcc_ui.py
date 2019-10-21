@@ -13,6 +13,15 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 
+class InfoCard(object):
+    pos_x = 0
+    pos_y = 0
+    width = 0
+    height = 0
+    buffer = {}
+    ts = 0
+
+
 class Player(object):
     """图片播放器"""
     def __init__(self):
@@ -426,10 +435,10 @@ class Player(object):
         self.show_parameters_background(img, (0, 0, 40, 20))
         BaseDraw.draw_text(img, data['source'], (2, 20), 0.5, CVColor.Cyan, 1)
 
-    def show_frame_id(self, img, fn):
+    def show_frame_id(self, img, source, fn):
         # indent = self.columns['video']['indent']
         # BaseDraw.draw_text(img, 'fid: ' + str(int(fn)), (indent + 2, 40), 0.5, CVColor.White, 1)
-        self.show_text_info('video', 40, 'frame: ' + str(int(fn)))
+        self.show_text_info(source, 40, 'frame: ' + str(int(fn)))
 
     def show_pinpoint(self, img, pp):
         BaseDraw.draw_text(img, 'Pin: {lat:.8f} {lon:.8f} {hgt:.3f}'.format(**pp), (950, 710), 0.3, CVColor.White, 1)
@@ -437,10 +446,10 @@ class Player(object):
     def show_frame_cost(self, cost):
         self.show_text_info('video', 80, 'render_cost: {}ms'.format(int(cost*1000)))
 
-    def show_fps(self, img, fps):
+    def show_fps(self, img, source, fps):
         # indent = self.columns['video']['indent']
         # BaseDraw.draw_text(img, 'fps: ' + str(int(fps)), (indent + 2, 60), 0.5, CVColor.White, 1)
-        self.show_text_info('video', 60, 'fps: ' + str(int(fps)))
+        self.show_text_info(source, 60, 'fps: ' + str(int(fps)))
 
     def show_datetime(self, img, ts=None):
         # indent = self.columns['video']['indent']

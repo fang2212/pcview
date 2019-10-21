@@ -165,12 +165,12 @@ class PCC(object):
             self.ts0 = self.ts_now
 
         if local_cfg.save.video and not self.replay:
-            self.hub.fileHandler.insert_video((mess['ts'], frame_id, imgraw))
+            self.hub.fileHandler.insert_video({'ts': mess['ts'], 'frame_id': frame_id, 'img': imgraw, 'source': 'video'})
 
         # self.player.show_columns(img)
         if self.ego_car.dynamics.get('pinpoint'):
             self.player.show_pinpoint(img, self.ego_car.dynamics['pinpoint'])
-        self.player.show_frame_id(img, frame_id)
+        self.player.show_frame_id(img, 'video', frame_id)
         self.player.show_frame_cost(self.frame_cost)
         self.player.show_datetime(img, self.ts_now)
         if self.show_ipm:
@@ -190,6 +190,7 @@ class PCC(object):
             for video in mess['video_aux']:
                 if len(video) > 0:
                     self.video_cache[video['source']] = video
+                    self.video_cache[video['source']]['updated'] = True
 
         for idx, source in enumerate(self.video_cache):
             if idx > 2:
@@ -197,6 +198,9 @@ class PCC(object):
             video = self.video_cache[source]
             # print('incoming video', video['source'])
             img_raw = cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR)
+            if self.video_cache[source]['updated']:
+                self.hub.fileHandler.insert_video({'ts': video['ts'], 'frame_id': video['frame_id'], 'img': img_raw, 'source': video['source']})
+            self.video_cache[source]['updated'] = False
             img_small = cv2.resize(img_raw, (427, 240))
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
@@ -242,7 +246,7 @@ class PCC(object):
             self.player.show_replaying(img, self.ts_now - self.ts0)
 
         fps = self.player.cal_fps(frame_cnt)
-        self.player.show_fps(img, fps)
+        self.player.show_fps(img, 'video', fps)
 
         if not self.replay:
             self.player.show_warning(img, self.supervisor.check())
@@ -492,7 +496,7 @@ class HeadlessPCC:
                 continue
             frame_id = mess['frame_id']
             if local_cfg.save.video:
-                self.hub.fileHandler.insert_video((mess['ts'], frame_id, mess['img']))
+                self.hub.fileHandler.insert_video({'ts': mess['ts'], 'frame_id': frame_id, 'img': mess['img'], 'source': 'video'})
             time.sleep(0.02)
 
 
