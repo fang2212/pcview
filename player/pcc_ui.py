@@ -34,6 +34,8 @@ class Player(object):
         self.overlook_beforecar_image = cv2.imread(pack(logodir, 'before.tif'))
         self.transform = Transform()
 
+        self.video_streams = {'video': {}}
+
         self.indent = 160
         self.columns = {'video': {'indent': 0, 'buffer': {}, 'ts': 0}}
         self.param_bg_width = 160
@@ -432,8 +434,22 @@ class Player(object):
                 BaseDraw.draw_text(img, entry['buffer'][height]['text'], (entry['indent'] + 2, height), size, color, 1)
 
     def show_video_info(self, img, data):
-        self.show_parameters_background(img, (0, 0, 40, 20))
+        tnow = time.time()
+        self.show_parameters_background(img, (0, 0, 160, 80))
         BaseDraw.draw_text(img, data['source'], (2, 20), 0.5, CVColor.Cyan, 1)
+        dt = self.ts_now - data['ts']
+        BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt*1000)), (92, 20), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'frame: '.format(data['frame_id']), (2, 40), 0.5, CVColor.White, 1)
+        if data['source'] not in self.video_streams:
+            self.video_streams[data['source']] = {'frame_cnt': data['frame_id'] - 1, 'last_ts': 0, 'ts0': time.time(), 'fps': 20}
+        self.video_streams[data['source']]['frame_cnt'] += 1
+        # duration = time.time() - self.video_streams[data['source']]['ts0']
+        dt = tnow - self.video_streams[data['source']]['last_ts']
+        self.video_streams[data['source']]['last_ts'] = tnow
+        fps = 1 / dt
+        self.video_streams[data['source']]['fps'] = 0.9 * self.video_streams[data['source']]['fps'] + 0.1 * fps
+        BaseDraw.draw_text(img, 'fps: {:.1f}'.format(self.video_streams[data['source']]['fps']), (2, 60), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'lost frames: {}'.format(data['frame_id'] - self.video_streams[data['source']]['frame_cnt']), (2, 80), 0.5, CVColor.White, 1)
 
     def show_frame_id(self, img, source, fn):
         # indent = self.columns['video']['indent']
@@ -487,6 +503,7 @@ class Player(object):
         BaseDraw.draw_text(img, 'q3spd: ' + str(int(speed * 3.6)), (2, 120), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'q3yr: ' + '%.4f' % yr, (2, 140), 0.5, CVColor.White, 1)
         # self.show_text_info(source, 40, )
+
     def show_recording(self, img, info):
         time_passed = time.time() - info
         BaseDraw.draw_text(img, 'Recording... ', (2, 700), 0.5, CVColor.White, 1)
