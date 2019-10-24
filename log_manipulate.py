@@ -421,7 +421,7 @@ def parse_q3_speed(file_name):
     return os.path.abspath('log_speed.txt')
 
 
-def parse_rtk(file_name):
+def parse_drtk(file_name):
     from parsers.drtk import parse_rtk
     ctx = {}
     wf = open('log_rtk.txt', 'w')
@@ -502,31 +502,67 @@ def parse_rtk_target(file_name):
     return os.path.abspath(out_file)
 
 
-def parse_esr_cipo(file_name, can_port='CAN3'):
-    from parsers.radar import parse_esr
-    print('parsing esr cipo...')
-    ctx = {}
-    out_file = '/tmp/log_esr_cipo.txt'
-    wf = open(out_file, 'w')
-    with open(file_name) as rf:
-        for line in rf:
-            cols = line.split(' ')
-            ts = float(cols[0]) + float(cols[1]) / 1000000
-            if can_port in cols[2]:
-                can_id = int(cols[3], 16)
-                buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
-                r = parse_esr(can_id, buf, ctx)
-                # print(can_port, buf, r)
-                if not r:
-                    wf.write(' '.join(cols))
-                    continue
-                for item in r:
-                    # print(item['cipo'])
-                    if item.get('cipo'):
-                        wf.write(compose_log(ts, 'esr.cipo', '{} {}'.format(item['id'], item['range'], item['angle'])))
-            wf.write(' '.join(cols))
-    wf.close()
-    return os.path.abspath(out_file)
+def parse_rtk_target_ub482(line, ctx):
+    from recorder.convert import ub482_defs, decode_with_def
+    from tools.vehicle import Vehicle
+    cols = line.split(' ')
+    ts = float(cols[0]) + float(cols[1]) / 1000000
+    if 'rtk' not in cols[2]:
+        return
+    if 'rtksol' not in ctx:
+        ctx['rtksol'] = {'vehicles': dict(), 'ts': 0}
+
+    _, idx, kw = cols[2].split('.')
+    source = 'rtl.{}'.format(idx)
+    role = ctx.get(source)
+    if role not in ctx['rtksol']['vehicles']:
+        ctx['rtksol']['vehicles'][role] = Vehicle(role)
+    r = decode_with_def(ub482_defs, line)
+    if not r:
+        return
+    ctx['rtksol']['vehicles'][role].update_dynamics(r)
+
+    ego_car = ctx['rtksol']['vehicles'].get('ego')
+    if not ego_car:
+        return
+    lines = ''
+    target = ego_car.get_pp_target()
+    if target:
+        lines += compose_log(ts, 'rtk.obj.pp', '{pos_lat} {pos_lon} {vel_lon} {TTC}'.format(**r))
+        # ctx['obs_ep']['rtk']['data'] = r
+        # ctx['obs_ep']['rtk']['ts'] = ts
+    # for role in ctx['rtksol']['vehicles']:
+        
+    # if role == 'ego':
+    #     target = ctx['rtksol'][role].get_pp_target()
+    #     if target:
+
+
+# def parse_esr_cipo(file_name, can_port='CAN3'):
+#     from parsers.radar import parse_esr
+#     print('parsing esr cipo...')
+#     ctx = {}
+#     out_file = '/tmp/log_esr_cipo.txt'
+#     wf = open(out_file, 'w')
+#     with open(file_name) as rf:
+#         for line in rf:
+#             cols = line.split(' ')
+#             ts = float(cols[0]) + float(cols[1]) / 1000000
+#             if can_port in cols[2]:
+#                 can_id = int(cols[3], 16)
+#                 buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+#                 r = parse_esr(can_id, buf, ctx)
+#                 # print(can_port, buf, r)
+#                 if not r:
+#                     wf.write(' '.join(cols))
+#                     continue
+#                 for item in r:
+#                     # print(item['cipo'])
+#                     if item.get('cipo'):
+#                         wf.write(compose_log(ts, 'esr.cipo', '{} {}'.format(item['id'], item['range'], item['angle'])))
+#             wf.write(' '.join(cols))
+#     wf.close()
+#     return os.path.abspath(out_file)
 
 
 def parse_esr_line(line, ctx):
@@ -616,7 +652,6 @@ def parse_x1_line(line, ctx):
                 continue
             # print(r)
 
-
             lines += compose_log(ts, 'x1.{}.{}'.format(r['class'], r['id']),
                                  '{} {} {} {}'.format(r['pos_lat'], r['pos_lon'], (r['vel_lon']),
                                                       r.get('TTC') or 7.0))
@@ -631,9 +666,6 @@ def parse_x1_line(line, ctx):
         #                        '{} {} {} {}'.format(ret['pos_lat'], ret['pos_lon'], (ret['vel_lon']),
         #                                             ret.get('TTC')))
 
-
-def parse_rtk_static_diff(line, ctx):
-    pass
 
 def parse_q3_line(line, ctx):
     from parsers.mobileye_q3 import parse_ifv300
@@ -902,6 +934,51 @@ def match_x1_esr(line, ctx):
     # print('ok')
 
 
+def _match_obs(names, ctx):
+    key0, key1 = names
+    done = False
+    for i in range(len(ctx['obs_ep'][key0]['buff']) - 1, 0, -1):
+        ts = ctx['obs_ep'][key0]['buff'][i][0]
+        for j in range(len(ctx['obs_ep'][key1]['buff']) - 1, 0, -1):
+            ts0 = ctx['obs_ep'][key1]['buff'][j - 1][0]
+            ts1 = ctx['obs_ep'][key1]['buff'][j][0]
+
+            if ts0 < ts <= ts1:
+                k0_obs_t = ctx['obs_ep'][key0]['buff'][i][1]
+                # print(len(ctx['x1_buff'][i][1]), len(ctx['q3_buff'][j][1]))
+                if ts - ts0 > ts1 - ts:
+                    dt = ts1 - ts
+                    k1_obs_t = ctx['obs_ep'][key1]['buff'][j][1]
+                else:
+                    dt = ts - ts0
+                    k1_obs_t = ctx['obs_ep'][key1]['buff'][j - 1][1]
+
+                if dt > 0.1:
+                    done = True
+                    break
+                # ret = spatial_match_obs(x1_obs_t, k1_obs_t)
+                # if not ret:
+                #     done = True
+                # print('no spatial match', len(x1_obs_t), len(k1_obs_t), ts - ts0, ts1 - ts)
+                # break
+                for ret in spatial_match_obs(k0_obs_t, k1_obs_t):
+                    k0sel, k1sel = ret
+                    candidate = {key1: {'id': k1sel['id'], 'dist': get_distance(k0sel, k1sel)}}
+                    # ctx['matched_ep'][ts] = pair
+                    if ts not in ctx['matched_ep']:
+                        ctx['matched_ep'][ts] = dict()
+                    # found = False
+                    if k0sel['id'] not in ctx['matched_ep'][ts]:
+                        ctx['matched_ep'][ts][k0sel['id']] = dict()
+                    ctx['matched_ep'][ts][k0sel['id']].update(candidate)
+                    # if not found:
+                    #     ctx['matched_ep'][ts].append(pair)
+                    # print(ctx['matched_ep'][ts])
+                    done = True
+        if done:
+            break
+
+
 def match_obs(line, ctx):
     if len(ctx['obs_ep']) < 2:  # at least 2 obs are updated
         return
@@ -917,8 +994,8 @@ def match_obs(line, ctx):
         if ctx['obs_ep'][obs_type].get('ts') != ctx['obs_ep'][obs_type].get('ts_last'):
             if 'buff' not in ctx['obs_ep'][obs_type]:
                 ctx['obs_ep'][obs_type]['buff'] = deque(maxlen=10)
-            esr = ctx['obs_ep'][obs_type]['data']
-            ctx['obs_ep'][obs_type]['buff'].append((ctx['obs_ep'][obs_type]['ts'], esr))
+            data = ctx['obs_ep'][obs_type]['data']
+            ctx['obs_ep'][obs_type]['buff'].append((ctx['obs_ep'][obs_type]['ts'], data))
             ctx['obs_ep'][obs_type]['ts_last'] = ctx['obs_ep'][obs_type]['ts']
             updated = True
 
@@ -1964,6 +2041,7 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
     if os.path.exists(conf_path):
         conf = json.load(open(conf_path))
         canports = dict()
+        ctx['veh_roles'] = dict()
         for idx, collector in enumerate(conf):
             type0 = collector['can_types']['can0']
             if type0 and type0[0] not in canports:
@@ -1971,6 +2049,9 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
             type1 = collector['can_types']['can1']
             if type1 and type1[0] not in canports:
                 canports[type1[0]] = 'CAN{}'.format(idx * 2 + 1)
+            if 'can_types' in collector:
+                for msg in collector['can_types']:
+                    ctx['veh_roles'][msg] = collector.get('veh_tag')
         ctx['can_port'] = canports
         print(canports)
         # time.sleep(10)

@@ -227,19 +227,20 @@ class Player(object):
         x2 = int(x2)
         y1 = int(y1)
         y2 = int(y2)
+        size = max(min(0.5 * 8 / x, 0.5), 0.28)
         if obs.get('sensor_type') == 'radar':
             if w > 50:
                 w = 50
             # print(int(x1), int(y1), int(w), width)
             cv2.circle(img, (int(x0), int(y0-0.5*h)), int(w), color, 1)
-            BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), 0.45, color, 1)
+            BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
         elif obs.get('class') == 'pedestrian':
             # print(obs)
             cv2.rectangle(img, (x1, y1), (x2, y2), color, thickness)
-            BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), 0.45, color, 1)
+            BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), size, color, 1)
         else:
             BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness)
-            BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), 0.45, color, 1)
+            BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), size, color, 1)
 
         if 'cipo' in obs and obs['cipo']:
             # color = CVColor.Yellow
@@ -406,8 +407,8 @@ class Player(object):
             x0 = indent
             y0 = 0
             w = 160
-            h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 20
-            h = 20 if h == 0 else h
+            h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 24
+            h = 24 if h == 0 else h
 
             if col is not 'video':
                 color_lg = self.columns[col].get('color')
@@ -581,6 +582,8 @@ class Player(object):
         # self.show_target()
 
     def show_target(self, img, target, host):
+        if not target or not host:
+            return
         indent = self.get_indent(target['source'])
 
         range, angle = self._calc_relatives(target, host)
@@ -592,6 +595,44 @@ class Player(object):
         ux, uy = self.transform.trans_gnd2raw(x, y,
                                host['hgt'] - target['hgt'] + install['video']['height'] - install['rtk']['height'],
                                               'rtk')
+        w = 1200 * width / x
+        if w > 50:
+            w = 50
+
+        h = w
+
+        p1 = int(ux - 0.5 * w), int(uy)
+        p2 = int(ux + 0.5 * w), int(uy)
+        p3 = int(ux), int(uy - 0.5 * h)
+        p4 = int(ux), int(uy + 0.5 * h)
+
+        if angle > 90 or angle < -90:
+            BaseDraw.draw_text(img, 'RTK target in behind', (int(ux + 4), int(uy - 4)), 0.6, CVColor.White, 1)
+            return
+        # cv2.line(img, p1, p2, CVColor.Green if target['rtkst'] >= 48 else CVColor.Grey, 2)
+        # cv2.line(img, p3, p4, CVColor.Green if host['rtkst'] >= 48 else CVColor.Grey, 2)
+
+        cv2.line(img, p1, p2, CVColor.White, 2)
+        cv2.line(img, p3, p4, CVColor.White, 2)
+
+        BaseDraw.draw_text(img, 'R: {:.3f}'.format(range), (int(ux + 4), int(uy - 4)), 0.4, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (int(ux + 4), int(uy + 14)), 0.4, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
+                           CVColor.White, 1)
+        return range, angle
+
+    def show_rtk_target(self, img, target):
+        indent = self.get_indent(target['source'])
+        angle = target.get('angle')
+        range = target.get('range')
+        delta_h = target.get('delta_hgt')
+
+        x, y = self.transform.trans_polar2rcs(angle, range, install['rtk'])
+        if x == 0:
+            x = 0.001
+        width = 0.5
+        height = 0.5
+        ux, uy = self.transform.trans_gnd2raw(x, y,  delta_h + install['video']['height'] - install['rtk']['height'], 'rtk')
         w = 1200 * width / x
         if w > 50:
             w = 50
@@ -616,7 +657,6 @@ class Player(object):
         BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (int(ux + 4), int(uy + 14)), 0.4, CVColor.White, 1)
         BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
                            CVColor.White, 1)
-        return range, angle
 
     def show_mobile_parameters(self, img, parameters, point):
         """显示关键车参数信息

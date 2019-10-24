@@ -70,7 +70,7 @@ class FlowPlayer(object):
                 d2 = 'nan' if isnan(d2) else int(float(d2) * 100) / 100
                 tid = str(vehicle['vehicle_class'])
                 para_list = [
-                    # 'v:' + str(d1),
+                    'v:' + str(d1),
                     # 'h:' + str(d2),
                     # 'width:' + vehicle_width,
                     # 'type:' + str(VehicleType.get(tid)),
@@ -78,7 +78,7 @@ class FlowPlayer(object):
                 ]
                 if vehicle.get('is_crucial'):
                     para_list.append('ttc:' + ttc)
-                # BaseDraw.draw_head_info(img, pos[0:2], para_list, 85)
+                BaseDraw.draw_head_info(img, pos[0:2], para_list, 85)
 
         if 'can' in mess:
             DrawAlarmCan.draw(img, mess['can'])

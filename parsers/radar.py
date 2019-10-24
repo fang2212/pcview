@@ -45,7 +45,7 @@ def parse_ars(id, buf, ctx=None):
         range = sqrt(x_raw ** 2 + y_raw ** 2)
         angle = atan2(y_raw, x_raw) * 180.0 / pi
         # x, y = trans_polar2rcs(angle, range, install['ars'])
-        ret = {'type': 'obstacle', 'sensor': 'radar', 'id': tid, 'range': range, 'angle': angle, 'color': 2}
+        ret = {'type': 'obstacle', 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle, 'color': 2}
         return ret
 
     if id == 0x600:
@@ -60,7 +60,7 @@ def parse_ars(id, buf, ctx=None):
         range = sqrt(x_raw ** 2 + y_raw ** 2)
         angle = atan2(y_raw, x_raw) * 180.0 / pi
         # x, y = trans_polar2rcs(angle, range, install['ars'])
-        ret = {'type': 'obstacle', 'sensor': 'radar', 'id': tid, 'range': range, 'angle': angle, 'color': 2}
+        ret = {'type': 'obstacle', 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle, 'color': 2}
         return ret
 
 

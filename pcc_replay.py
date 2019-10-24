@@ -76,6 +76,7 @@ class LogPlayer(Process):
         self.context = {}
         self.ratio = ratio
         self.ctrl_q = Queue()
+        self.type_roles = {}
 
         self.last_time = 0
         self.hz = 20
@@ -102,6 +103,10 @@ class LogPlayer(Process):
             elif 'msg_types' in cfg:
                 for mtype in cfg['msg_types']:
                     self.msg_types.append(mtype)
+                    if 'can0' in cfg['ports']:
+                        self.can_types['CAN' + '{:01d}'.format(idx * 2)] = cfg['ports']['can0']['topic']
+                    if 'can1' in cfg['ports']:
+                        self.can_types['CAN' + '{:01d}'.format(idx * 2 + 1)] = cfg['ports']['can1']['topic']
         print('msgtypes:', self.msg_types)
 
         self.msg_types = [x if len(x) > 0 else '' for x in list(self.can_types.values()) if len(x) > 2]
@@ -117,6 +122,19 @@ class LogPlayer(Process):
             if len(self.parser[can]) == 0:
                 self.parser[can] = [parsers_dict['default']]
         self.cache['can'] = []
+
+    def get_veh_role(self, source):
+        if not source:
+            return
+        if source in self.type_roles:
+            return self.type_roles[source]
+        for cfg in configs:
+            msg_types = cfg.get('msg_types')
+            if not msg_types:
+                return 'ego'
+            if source in msg_types:
+                return cfg.get('veh_tag')
+        return 'default'
 
     def pop_simple(self, pause=False):
         res = {
@@ -259,6 +277,7 @@ class LogPlayer(Process):
                     # print("0x%x" % can_id, parser)
                     r = parser(int(cols[3], 16), data, self.context[msg_type])
                     if r is not None:
+                        # print(parser, r)
                         break
                 if r is None:
                     continue
@@ -329,6 +348,8 @@ class LogPlayer(Process):
                 r['source'] = cols[2]
                 self.cache['can'].append(r.copy())
 
+            # print(r)
+
         rf.close()
         # cp.disable()
         # cp.print_stats()
@@ -359,7 +380,7 @@ def prep_replay(source):
 if __name__ == "__main__":
     from config.config import *
     import sys
-    sys.argv.append('/media/nan/860evo/data/20190910 Minieye-AEB-test/20190910163041-1.3/log.txt')
+    sys.argv.append('/media/nan/860evo/data/20190916 Minieye-AEB-test/20190916174330/log.txt')
     local_path = os.path.split(os.path.realpath(__file__))[0]
     # print('local_path:', local_path)
     os.chdir(local_path)

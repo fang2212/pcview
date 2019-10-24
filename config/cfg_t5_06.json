@@ -23,6 +23,14 @@
                     "lon_offset": 0.0,
                     "yaw": -1.8
                 },
+                "ars": {
+                    "roll": 0.0,
+                    "lat_offset": 0.22,
+                    "pitch": 0.0,
+                    "height": 0.45,
+                    "lon_offset": 0.0,
+                    "yaw": -1.8
+                },
                 "lmr": {
                     "roll": 0.0,
                     "lat_offset": -0.3,

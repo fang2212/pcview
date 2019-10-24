@@ -20,30 +20,32 @@ class CollectorNode(kProcess):
         self.sinks = sinks
 
     def run(self):
-        import asyncio
-        from tornado.platform.asyncio import AnyThreadEventLoopPolicy
-        asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+
         print('Inited collector node', os.getpid())
         for sink in self.sinks:
+            if 'Flow' in sink.__class__.__name__:
+                import asyncio
+                from tornado.platform.asyncio import AnyThreadEventLoopPolicy
+                asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
             sink.start()
-            continue
-            stype = sink.get('stype')
-            del sink['stype']
-            if stype == 'flow':
 
-                inst = FlowSink(**sink)
-            elif stype == 'pi':
-                inst = PinodeSink(**sink)
-            elif stype == 'can':
-                inst = CANSink(**sink)
-            elif stype == 'imu':
-                inst = GsensorSink(**sink)
-            elif stype == 'camera':
-                inst = CameraSink(**sink)
-            else:
-                inst = CANSink(**sink)
-            print('Initialized collector sink:', stype)
-            inst.start()
+            # stype = sink.get('stype')
+            # del sink['stype']
+            # if stype == 'flow':
+            #
+            #     inst = FlowSink(**sink)
+            # elif stype == 'pi':
+            #     inst = PinodeSink(**sink)
+            # elif stype == 'can':
+            #     inst = CANSink(**sink)
+            # elif stype == 'imu':
+            #     inst = GsensorSink(**sink)
+            # elif stype == 'camera':
+            #     inst = CameraSink(**sink)
+            # else:
+            #     inst = CANSink(**sink)
+            # print('Initialized collector sink:', stype)
+            # inst.start()
         while True:
             time.sleep(0.5)
             # for sink in self.sinks:
@@ -75,6 +77,7 @@ class Hub(Thread):
         self.max_cache = 40
         self.msg_cnt['frame'] = 0
         self.msg_types = []
+        self.type_roles = dict()
 
         for msg_type in ['can', 'gsensor', 'rtk', 'x1_data', 'video_aux']:
             self.cache[msg_type] = []
@@ -144,10 +147,13 @@ class Hub(Thread):
         print('hub init done')
 
     def get_veh_role(self, source):
+        if source in self.type_roles:
+            return self.type_roles[source]
         for ip in self.online:
             for data_type in self.online[ip]['msg_types']:
                 if data_type == source:
                     role = self.online[ip].get('veh_tag') or 'default'
+                    self.type_roles[source] = role
                     return role
 
     def init_collectors(self):

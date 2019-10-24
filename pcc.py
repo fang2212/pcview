@@ -68,18 +68,21 @@ class PCC(object):
         self.ot = OrientTuner()
         self.show_ipm_bg = False
 
-        self.ego_car = Vehicle()
+        # self.ego_car = Vehicle()
+        self.vehicles = {'ego': Vehicle('ego')}
         self.calib_data = dict()
         self.frame_cost = 0
         self.video_cache = {}
         cv2.namedWindow('UI')
+        cv2.namedWindow('adj')
+        # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
         self.sv_state = 'ipm'
         # cv2.namedWindow('video_aux')
-        cv2.createTrackbar('Yaw', 'UI', 500, 1000, self.ot.update_yaw)
-        cv2.createTrackbar('Pitch', 'UI', 500, 1000, self.ot.update_pitch)
-        cv2.createTrackbar('Roll', 'UI', 500, 1000, self.ot.update_roll)
-        cv2.createTrackbar('ESR_Yaw', 'UI', 500, 1000, self.ot.update_esr_yaw)
+        cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
+        cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
+        cv2.createTrackbar('Roll  ', 'adj', 500, 1000, self.ot.update_roll)
+        cv2.createTrackbar('ESR_y', 'adj', 500, 1000, self.ot.update_esr_yaw)
         if not replay:
             self.supervisor = Supervisor([self.check_status,
                                           self.hub.fileHandler.check_file])
@@ -93,7 +96,7 @@ class PCC(object):
                 self.hub.d['replay_speed'] = 1 if x // 10 < 1 else x // 10
                 print('replay-speed is', self.hub.d['replay_speed'])
 
-            cv2.createTrackbar('replay-speed', 'UI', 10, 50, update_speed)
+            cv2.createTrackbar('replay-speed', 'adj', 10, 50, update_speed)
 
         cv2.setMouseCallback('UI', self.left_click, '1234')
         self.gga = None
@@ -168,8 +171,8 @@ class PCC(object):
             self.hub.fileHandler.insert_video({'ts': mess['ts'], 'frame_id': frame_id, 'img': imgraw, 'source': 'video'})
 
         # self.player.show_columns(img)
-        if self.ego_car.dynamics.get('pinpoint'):
-            self.player.show_pinpoint(img, self.ego_car.dynamics['pinpoint'])
+        if self.vehicles['ego'].dynamics.get('pinpoint'):
+            self.player.show_pinpoint(img, self.vehicles['ego'].dynamics['pinpoint'][0])
         self.player.show_frame_id(img, 'video', frame_id)
         self.player.show_frame_cost(self.frame_cost)
         self.player.show_datetime(img, self.ts_now)
@@ -210,23 +213,24 @@ class PCC(object):
             for data in mess['x1_data']:
                 self.flow_player.draw(data, img)
 
-        cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
+        # cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
         if can_data:
             # print('can0 data')
             for d in mess['can']:
                 if not d:
                     continue
-                if 'type' in d:
-                    if d['type'] == 'rtk':
-                        cache[d['source']] = d
-                    else:
-                        self.draw_can_data(img, d)
-                else:
-                    tt = 1
+                self.draw_can_data(img, d)
+                # if 'type' in d:
+                #     if d['type'] == 'rtk':
+                #         cache[d['source']] = d
+                #     else:
+                #         self.draw_can_data(img, d)
+                # else:
+                #     tt = 1
 
-        for type in cache:
-            d = cache[type]
-            self.draw_can_data(img, d)
+        # for type in cache:
+        #     d = cache[type]
+        #     self.draw_can_data(img, d)
 
         if 'rtk' in mess and mess['rtk']:  # usb pcan rtk
             for d in mess['rtk']:
@@ -292,40 +296,101 @@ class PCC(object):
             if self.show_ipm:
                 self.player.show_ipm_target(self.ipm, self.rtk_pair[1], self.rtk_pair[0])
 
+    def update_pinpoint(self, data):
+        if data['type'] == 'pinpoint':
+            self.vehicles['ego'].dynamics['pinpoint'].appendleft(data)
+            if not self.replay:
+                self.hub.fileHandler.insert_raw(
+                    (data['ts'], data.get('source') + '.pinpoint', compose_from_def(ub482_defs, data)))
+            print('set pinpoint:', data)
+            return
+
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
-        if 'lat' in data and not self.replay:
-            if self.gga is None and self.en_gga:
-                self.gga = GGAReporter('ntrip.weaty.cn', 5001)
-                self.gga.start()
-            if self.gga is not None:
-                self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
-            # print('role:', self.hub.get_veh_role(data['source']))
-            if self.set_pinpoint and self.hub.get_veh_role(data['source']) == 'ego':
-                self.set_pinpoint = False
-                self.ego_car.dynamics['pinpoint'] = data
-                self.hub.fileHandler.insert_raw(
-                    (data['ts'], data['source'] + '.pinpoint', compose_from_def(ub482_defs, data)))
-                print('set pinpoint:', data)
+        source = data.get('source')
+        role = self.hub.get_veh_role(source)
+        # self.vehicles[role].dynamics[data['type']] = data
+        self.vehicles[role].update_dynamics(data)
 
-        if data['source'] == 'rtk.5':
-            if 'lat' in data:
-                self.rtk_pair[0] = data
-                # if not self.replay:
-                #     self.gga.set_pos(data['lat'], data['lon'])
-            if 'yaw' in data:
-                self.rtk_pair[0]['yaw'] = data['yaw']
-        if 'rtk' in data['source'] and data['source'] != 'rtk.5':
-            if 'lat' in data:
-                self.rtk_pair[1] = data
-            if 'yaw' in data:
-                self.rtk_pair[1]['yaw'] = data['yaw']
+        if data['type'] == 'pinpoint':
+            self.update_pinpoint(data)
 
-        if 'lat' in self.rtk_pair[0] and 'lat' in self.rtk_pair[1] and 'yaw' in self.rtk_pair[0] and 'yaw' in \
-                self.rtk_pair[1]:
-            self.player.show_target(img, self.rtk_pair[1], self.rtk_pair[0])
-            if self.show_ipm:
-                self.player.show_ipm_target(self.ipm, self.rtk_pair[1], self.rtk_pair[0])
+        if role in ('ego', 'default'):
+            host = self.vehicles['ego'].get_pos()
+            if 'lat' in data:
+                if self.set_pinpoint:
+                    self.set_pinpoint = False
+                    pp = data.copy()
+                    pp['type'] = 'pinpoint'
+                    self.update_pinpoint(pp)
+                    # self.vehicles['ego'].dynamics['pinpoint'] = data
+                    # self.hub.fileHandler.insert_raw(
+                    #     (data['ts'], source + '.pinpoint', compose_from_def(ub482_defs, data)))
+                    # print('set pinpoint:', data)
+                if self.gga is None and self.en_gga and not self.replay:
+                    self.gga = GGAReporter('ntrip.weaty.cn', 5001)
+                    self.gga.start()
+                if self.gga is not None and not self.replay:
+                    self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
+            # ppq = self.vehicles['ego'].dynamics.get('pinpoint')
+            # pp = {'source': 'rtk.3', 'lat': 22.546303, 'lon': 113.942000, 'hgt': 35.0}
+            # if ppq and host and data['ts'] - host['ts'] < 0.1:
+            #     pp1 = ppq[0]
+            #     self.player.show_target(img, pp1, host)
+
+        pp_target = self.vehicles['ego'].get_pp_target()
+        if pp_target:
+            # t0 = time.time()
+            self.player.show_rtk_target(img, pp_target)
+            # dt = time.time() - t0
+            # print('rtk target cost:{}'.format(dt * 1000))
+            # print(pp_target['ts'])
+
+        else:  # other vehicle
+            host = self.vehicles['ego'].get_pos()
+            # if 'lat' in data and host:
+            #     self.player.show_target(img, data, host)
+            # pass
+
+        # if 'lat' in data and not self.replay:
+        #     if self.gga is None and self.en_gga:
+        #         self.gga = GGAReporter('ntrip.weaty.cn', 5001)
+        #         self.gga.start()
+        #     if self.gga is not None:
+        #         self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
+        #     # print('role:', self.hub.get_veh_role(data['source']))
+        #     if self.hub.get_veh_role(data['source']) == 'ego':
+        #         self.vehicles['ego'].dynamics['rtkpos'] = data
+        #         if self.set_pinpoint:
+        #             self.set_pinpoint = False
+        #             self.vehicles['ego'].dynamics['pinpoint'] = data
+        #             self.hub.fileHandler.insert_raw(
+        #                 (data['ts'], data['source'] + '.pinpoint', compose_from_def(ub482_defs, data)))
+        #             print('set pinpoint:', data)
+        #         pp = self.vehicles['ego'].dynamics.get('pinpoint')
+        #         if pp:
+        #             self.player.show_target(img, pp, data)
+        #     else:  # not ego car
+        #         self.player.show_target(img, data, self.vehicles['ego'].dynamics.get('rtkpos'))
+        #
+        # if data['source'] == 'rtk.5':
+        #     if 'lat' in data:
+        #         self.rtk_pair[0] = data
+        #         # if not self.replay:
+        #         #     self.gga.set_pos(data['lat'], data['lon'])
+        #     if 'yaw' in data:
+        #         self.rtk_pair[0]['yaw'] = data['yaw']
+        # if 'rtk' in data['source'] and data['source'] != 'rtk.5':
+        #     if 'lat' in data:
+        #         self.rtk_pair[1] = data
+        #     if 'yaw' in data:
+        #         self.rtk_pair[1]['yaw'] = data['yaw']
+        #
+        # if 'lat' in self.rtk_pair[0] and 'lat' in self.rtk_pair[1] and 'yaw' in self.rtk_pair[0] and 'yaw' in \
+        #         self.rtk_pair[1]:
+        #     self.player.show_target(img, self.rtk_pair[1], self.rtk_pair[0])
+        #     if self.show_ipm:
+        #         self.player.show_ipm_target(self.ipm, self.rtk_pair[1], self.rtk_pair[0])
 
     def viz_rtcm(self, img, data):
         # if data['type'] == 'rtcm':
@@ -363,6 +428,11 @@ class PCC(object):
         #     self.calib_esr()
 
     def draw_can_data(self, img, data):
+        # print(data)
+        role = self.hub.get_veh_role(data.get('source'))
+        if role not in self.vehicles:
+            self.vehicles[role] = Vehicle(role)
+
         if data['type'] == 'obstacle':
             # dummy0 = {'type': 'obstacle', 'id': 20, 'source': 'x1.1', 'pos_lat': 0, 'pos_lon': 60, 'color': 1}
             # dummy1 = {'type': 'obstacle', 'id': 20, 'source': 'esr.0', 'sensor': 'radar', 'pos_lat': 0, 'pos_lon': 60, 'color': 2}
@@ -393,7 +463,7 @@ class PCC(object):
             data['updated'] = True
             self.draw_rtk(img, data)
 
-        elif data['type'] in ['bestpos', 'heading', 'bestvel']:
+        elif data['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint']:
             # print('------------', data['type'])
             self.draw_rtk_ub482(img, data)
             self.player.update_column_ts(data['source'], data['ts'])
@@ -448,7 +518,7 @@ class PCC(object):
 
     def check_status(self):
         if not self.hub.time_aligned:
-            return {'status': 'fail', 'info': 'collectorss\' time not aligned!'}
+            return {'status': 'fail', 'info': 'collectors\' time not aligned!'}
         return {'status': 'ok', 'info': 'oj8k'}
 
     def calib_esr(self, ofile='esr_clb.txt'):
