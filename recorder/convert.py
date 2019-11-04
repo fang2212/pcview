@@ -29,7 +29,7 @@ def decode_with_def(defs, line):
         print('log line length grater than def', kw)
         print(len(defs[kw]['items']), len(fields)-3)
         return None
-    r = dict()
+    r = {'type': kw}
     for idx, fi in enumerate(fields[3:]):
         vtype, name = defs[kw]['items'][idx]
         if vtype[-1] == 'f':
@@ -43,6 +43,7 @@ def decode_with_def(defs, line):
         else:
             value = fi
         r[name] = value
+
     return r
 
 

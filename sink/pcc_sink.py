@@ -226,6 +226,8 @@ class CANSink(Sink):
     def read(self):
         msg = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
         msg = memoryview(msg).tobytes()
+        dlc = msg[3]
+        print(dlc)
         can_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         timestamp, = struct.unpack('<d', msg[8:16])
         data = msg[16:]
@@ -377,6 +379,9 @@ class FlowSink(Sink):
                         self.cam_queue.put((*r, self.cls))
 
     def run(self):
+        import asyncio
+        from tornado.platform.asyncio import AnyThreadEventLoopPolicy
+        asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self._run())
 

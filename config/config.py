@@ -354,6 +354,7 @@ install = {}
 runtime = {}
 
 __test = []
+local_cfg = None
 
 if __name__ == "__main__":
     config = dic2obj(collector0)
@@ -377,8 +378,9 @@ if __name__ == "__main__":
 else:
     # install = json.load(open('etc/installation.json'))
     # configs = json.load(open('config/skoda_spb.json'))['collectors']
-    install = json.load(open('config/cfg_superb.json'))['installation']
+    # install = json.load(open('config/cfg_superb.json'))['installation']
     # config = dic2obj(configs[0])
+    load_cfg('config/cfg_superb.json')  # default
 
     if not os.path.exists('config/local.json'):
         shutil.copy('config/local_sample.json', 'config/local.json')

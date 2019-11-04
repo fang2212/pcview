@@ -9,6 +9,7 @@ from config.config import configs, bcl, local_cfg
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
 from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink
+from tools.ip_mac import get_mac_ip
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')  # logging.basicConfig函数对日志的输出格式及方式做相关配置
@@ -23,10 +24,10 @@ class CollectorNode(kProcess):
 
         print('Inited collector node', os.getpid())
         for sink in self.sinks:
-            if 'Flow' in sink.__class__.__name__:
-                import asyncio
-                from tornado.platform.asyncio import AnyThreadEventLoopPolicy
-                asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+            # if 'Flow' in sink.__class__.__name__:
+            #     import asyncio
+            #     from tornado.platform.asyncio import AnyThreadEventLoopPolicy
+            #     asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
             sink.start()
 
             # stype = sink.get('stype')
@@ -75,23 +76,19 @@ class Hub(Thread):
 
         x1_camera_flag = False
         self.max_cache = 40
-        self.msg_cnt['frame'] = 0
+        # self.msg_cnt['frame'] = 0
         self.msg_types = []
         self.type_roles = dict()
+        print('scanning for LAN devices...')
+        self.mac_ip = get_mac_ip()
 
-        for msg_type in ['can', 'gsensor', 'rtk', 'x1_data', 'video_aux']:
+        for msg_type in ['frame', 'can', 'gsensor', 'rtk', 'x1_data', 'video_aux']:
             self.cache[msg_type] = []
             self.msg_cnt[msg_type] = {
-                'rev': 0,
-                'show': 0,
+                'recv': 0,
+                'ts': 0,
                 'fix': 0,
             }
-        # for i in range(3):
-        #     # try:
-        #     self.finder.request()
-        #     # except Exception as e:
-        #     #     pass
-        #     time.sleep(0.2)
 
         self.direct_cfg = direct_cfg
         if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
@@ -159,19 +156,32 @@ class Hub(Thread):
     def init_collectors(self):
         cfgs_online = {}
         for idx, cfg in enumerate(configs):  # match cfg and finder results
-            if cfg.get('type') == 'x1_algo':
+            mac = cfg.get('mac')
+            if mac and mac in self.mac_ip:
+                ip = self.mac_ip[mac]
+                cfg['ip'] = ip
                 cfg['idx'] = idx
-                ip = cfg['ip']
                 cfgs_online[ip] = cfg
-                # self.collectors[ip] = self.finder.found[ip]
                 continue
+
             for ip in self.finder.found:
                 if cfg.get('mac') == self.finder.found[ip]['mac']:
                     cfg['ip'] = ip
                     cfg['idx'] = idx
                     cfgs_online[ip] = cfg
-                    # self.collectors[ip] = self.finder.found[ip]
                     break
+
+            # if cfg.get('type') == 'x1_algo':
+            #     cfg['idx'] = idx
+            #     ip = cfg['ip']
+            #     cfgs_online[ip] = cfg
+            #     continue
+            # for ip in self.finder.found:
+            #     if cfg.get('mac') == self.finder.found[ip]['mac']:
+            #         cfg['ip'] = ip
+            #         cfg['idx'] = idx
+            #         cfgs_online[ip] = cfg
+            #         break
 
         for ip in cfgs_online:  # initialize online collectors
             cfg = cfgs_online[ip]
@@ -254,6 +264,8 @@ class Hub(Thread):
                     # self.collectors[ip]['sinks']['video'] = sink
             node = CollectorNode(sinks)
             node.start()
+            # for sink in sinks:
+            #     sink.start()
         return cfgs_online
 
     def fpga_handle(self, cfg, msg_queue, ip, index=0):
@@ -283,6 +295,11 @@ class Hub(Thread):
 
         return sink
 
+    def get_statistics(self):
+        cnt = 0
+        for channel in self.msg_cnt:
+            cnt += self.msg_cnt['channel']
+
     def pop_simple(self, pause=False):
         res = {}
         if not self.cam_queue.empty():
@@ -305,7 +322,8 @@ class Hub(Thread):
                     # self.last_res[key] = self.cache[key]
                     res[key] = self.cache[key]
                 self.cache[key] = []
-            self.msg_cnt['frame'] += 1
+            self.msg_cnt['frame']['recv'] += 1
+            self.msg_cnt['frame']['ts'] = time.time()
             return res
         if not self.msg_queue.empty():
             id, msg_data, channel = self.msg_queue.get()
@@ -314,5 +332,5 @@ class Hub(Thread):
                 self.cache[channel].extend(msg_data)
             elif isinstance(msg_data, dict):
                 self.cache[channel].append(msg_data)
-            self.msg_cnt[channel]['rev'] += 1
-            self.msg_cnt[channel]['show'] += 1
+            self.msg_cnt[channel]['recv'] += 1
+            self.msg_cnt[channel]['ts'] = time.time()

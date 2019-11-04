@@ -193,20 +193,22 @@ class Player(object):
         if 'pos_lon' in obs:
             x = obs['pos_lon']
             y = obs['pos_lat']
+            dist = (x**2 + y**2)**0.5
         else:
             # print(obs['source'].split('.')[0])
             # x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
+            dist = obs['range']
             install_para = install[obs['source'].split('.')[0]]
             if install_para is None:
                 x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'])
             else:
                 x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install_para)
-        if x == 0:
-            x = 0.1
-        if x < 0:
+        if dist < 0.1:
+            dist = 0.1
+        if dist < 0:
             return
 
-        w = install['video']['fv'] * width / x
+        w = install['video']['fu'] * width / dist
         if w > 600:
             w = 600
         dev = obs.get('source')
@@ -217,8 +219,7 @@ class Player(object):
             dev = 'default'
         x0, y0 = self.transform.trans_gnd2raw(x, y, dev=dev)
 
-        h = w
-        h = 1200 * height / x
+        h = install['video']['fv'] * height / dist
         x1 = x0 - 0.5 * w
         y1 = y0 - h
         x2 = x1 + w
@@ -227,12 +228,13 @@ class Player(object):
         x2 = int(x2)
         y1 = int(y1)
         y2 = int(y2)
-        size = max(min(0.5 * 8 / x, 0.5), 0.28)
+        size = max(min(0.5 * 8 / dist, 0.5), 0.28)
         if obs.get('sensor_type') == 'radar':
-            if w > 50:
-                w = 50
+            w = max(5, min(50, w))
+            h = max(5, min(50, h))
             # print(int(x1), int(y1), int(w), width)
             cv2.circle(img, (int(x0), int(y0-0.5*h)), int(w), color, 1)
+            # print(x1, y1, x, h)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
         elif obs.get('class') == 'pedestrian':
             # print(obs)
@@ -440,7 +442,7 @@ class Player(object):
         BaseDraw.draw_text(img, data['source'], (2, 20), 0.5, CVColor.Cyan, 1)
         dt = self.ts_now - data['ts']
         BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt*1000)), (92, 20), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'frame: '.format(data['frame_id']), (2, 40), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'frame: {}'.format(data['frame_id']), (2, 40), 0.5, CVColor.White, 1)
         if data['source'] not in self.video_streams:
             self.video_streams[data['source']] = {'frame_cnt': data['frame_id'] - 1, 'last_ts': 0, 'ts0': time.time(), 'fps': 20}
         self.video_streams[data['source']]['frame_cnt'] += 1
@@ -543,6 +545,12 @@ class Player(object):
         self.show_text_info(obs['source'], line + 40, 'range: {:.2f}'.format(dist))
         BaseDraw.draw_up_arrow(img, indent + 100, line - 12, self.color_seq[obs['color']], 6)
 
+    def show_heading_horizen(self, img):
+        h = int(img.shape[0] / 2)
+        w = img.shape[1]
+        BaseDraw.draw_line(img, (0, h), (w, h), CVColor.Grey, 1)
+
+
     def _show_rtk(self, img, rtk):
         # print(rtk)
         indent = self.get_indent(rtk['source'])
@@ -633,10 +641,8 @@ class Player(object):
         width = 0.5
         height = 0.5
         ux, uy = self.transform.trans_gnd2raw(x, y,  delta_h + install['video']['height'] - install['rtk']['height'], 'rtk')
-        w = 1200 * width / x
-        if w > 50:
-            w = 50
-
+        w = install['video']['fu'] * width / x
+        w = max(10, min(50, w))
         h = w
 
         p1 = int(ux - 0.5 * w), int(uy)
@@ -650,13 +656,54 @@ class Player(object):
         # cv2.line(img, p1, p2, CVColor.Green if target['rtkst'] >= 48 else CVColor.Grey, 2)
         # cv2.line(img, p3, p4, CVColor.Green if host['rtkst'] >= 48 else CVColor.Grey, 2)
 
-        cv2.line(img, p1, p2, CVColor.Green, 2)
-        cv2.line(img, p3, p4, CVColor.Green, 2)
+        cv2.line(img, p1, p2, CVColor.Green, 1)
+        cv2.line(img, p3, p4, CVColor.Green, 1)
+        cv2.line(img, p1, p3, CVColor.Green, 1)
+        cv2.line(img, p1, p4, CVColor.Green, 1)
+        cv2.line(img, p2, p3, CVColor.Green, 1)
+        cv2.line(img, p2, p4, CVColor.Green, 1)
 
         BaseDraw.draw_text(img, 'R: {:.3f}'.format(range), (int(ux + 4), int(uy - 4)), 0.4, CVColor.White, 1)
         BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (int(ux + 4), int(uy + 14)), 0.4, CVColor.White, 1)
         BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
                            CVColor.White, 1)
+
+    def show_ipm_target(self, img, target, host):
+        range, angle = self._calc_relatives(target, host)
+        x, y = self.transform.trans_polar2rcs(angle, range)
+        ux, uy = self.transform.trans_gnd2ipm(x, y)
+        color = CVColor.Green
+        # if type == 0:
+        #     color = CVColor.Green
+        # elif type == 2:
+        #     color = CVColor.Red
+
+        w = h = 30
+
+        p1 = int(ux - 0.5 * w), int(uy)
+        p2 = int(ux + 0.5 * w), int(uy)
+        p3 = int(ux), int(uy - 0.5 * h)
+        p4 = int(ux), int(uy + 0.5 * h)
+
+        cv2.line(img, p1, p2, CVColor.Green, 2)
+        cv2.line(img, p3, p4, CVColor.Green, 2)
+
+    def show_rtk_target_ipm(self, img, target):
+        angle = target.get('angle')
+        range = target.get('range')
+        x, y = self.transform.trans_polar2rcs(angle, range)
+        ux, uy = self.transform.trans_gnd2ipm(x, y)
+        color = CVColor.Green
+
+        w = h = 30
+
+        p1 = int(ux - 0.5 * w), int(uy)
+        p2 = int(ux + 0.5 * w), int(uy)
+        p3 = int(ux), int(uy - 0.5 * h)
+        p4 = int(ux), int(uy + 0.5 * h)
+
+        cv2.line(img, p1, p2, CVColor.Green, 2)
+        cv2.line(img, p3, p4, CVColor.Green, 2)
 
     def show_mobile_parameters(self, img, parameters, point):
         """显示关键车参数信息
@@ -865,26 +912,6 @@ class Player(object):
         angle = angle - host['yaw']
         return range, angle
 
-    def show_ipm_target(self, img, target, host):
-        range, angle = self._calc_relatives(target, host)
-        x, y = self.transform.trans_polar2rcs(angle, range)
-        ux, uy = self.transform.trans_gnd2ipm(x, y)
-        color = CVColor.Green
-        # if type == 0:
-        #     color = CVColor.Green
-        # elif type == 2:
-        #     color = CVColor.Red
-
-        w = h = 30
-
-        p1 = int(ux - 0.5 * w), int(uy)
-        p2 = int(ux + 0.5 * w), int(uy)
-        p3 = int(ux), int(uy - 0.5 * h)
-        p4 = int(ux), int(uy + 0.5 * h)
-
-        cv2.line(img, p1, p2, CVColor.Green, 2)
-        cv2.line(img, p3, p4, CVColor.Green, 2)
-
     def get_alert(self, vehicle_data, lane_data, ped_data):
         alert = {}
         warning_level, alert_ttc, hw_state, fcw_state, vb_state, sg_state = 0, 0, 0, 0, 0, 0
@@ -942,5 +969,4 @@ class Player(object):
         else:
             color = CVColor.Blue
 
-        self.show_lane_ipm(img, (data['a0'], data['a1'], data['a2'], data['a3']),
-                           data['range'], color)
+        self.show_lane_ipm(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color)

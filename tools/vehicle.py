@@ -129,3 +129,27 @@ class Vehicle(object):
                 'delta_hgt': delta_h, 'pos_lat': pos_y, 'pos_lon': pos_x, 'vel_lat': vel_y, 'vel_lon': vel_x,
                 'TTC': pos_x/vel_x}
 
+
+def get_vehicle_target(host, target):
+    host_dyn = host.get_dynamics(('lat', 'lon', 'hgt', 'pitch', 'yaw', 'hor_speed', 'trk_gnd'))
+    target_dyn = target.get_dynamics(('lat', 'lon', 'hgt', 'hor_speed', 'trk_gnd'))
+    if not host_dyn or not target_dyn:
+        return
+    range = gps_distance(target_dyn['lat'], target_dyn['lon'], host_dyn['lat'], host_dyn['lon'])
+    angle = gps_bearing(target_dyn['lat'], target_dyn['lon'], host_dyn['lat'], host_dyn['lon'])
+    angle = angle - host_dyn['yaw']
+    velN = target_dyn['hor_speed']*cos(target_dyn['trk_gnd'] * pi / 180.0) - host_dyn['hor_speed']*cos(host_dyn['trk_gnd'] * pi / 180.0)
+    velE = target_dyn['hor_speed']*sin(target_dyn['trk_gnd'] * pi / 180.0) - host_dyn['hor_speed']*sin(host_dyn['trk_gnd'] * pi / 180.0)
+    trk = atan2(velE, velN) * 180.0 / pi
+    if trk < 0:
+        trk = trk + 360.0
+    vel = (velE**2 + velN**2)**0.5
+    vel_x = vel * sin(trk * pi / 180)
+    vel_y = vel * cos(trk * pi / 180)
+    pos_x = cos(angle * pi / 180.0) * range
+    pos_y = sin(angle * pi / 180.0) * range
+    delta_h = host_dyn['hgt'] - target_dyn['hgt']
+
+    return {'ts': host['ts'], 'source': target['source'], 'type': 'rtktarget', 'range': range, 'angle': angle,
+            'delta_hgt': delta_h, 'pos_lat': pos_y, 'pos_lon': pos_x, 'vel_lat': vel_y, 'vel_lon': vel_x,
+            'TTC': pos_x / vel_x}

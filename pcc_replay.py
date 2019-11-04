@@ -107,6 +107,8 @@ class LogPlayer(Process):
                         self.can_types['CAN' + '{:01d}'.format(idx * 2)] = cfg['ports']['can0']['topic']
                     if 'can1' in cfg['ports']:
                         self.can_types['CAN' + '{:01d}'.format(idx * 2 + 1)] = cfg['ports']['can1']['topic']
+                # if cfg.get('is_main'):
+                #     self.jpeg_extractor = jpeg_extractor(os.path.dirname(log_path) + '/video.{}'.format(cfg.get('idx')))
         print('msgtypes:', self.msg_types)
 
         self.msg_types = [x if len(x) > 0 else '' for x in list(self.can_types.values()) if len(x) > 2]

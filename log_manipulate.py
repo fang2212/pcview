@@ -25,6 +25,7 @@ obs_meas_order = ['pos_lat', 'pos_lon', 'vel_lon', 'TTC']
 obs_meas_display = ['y', 'x', 'Vx', 'TTC']
 obs_meas_lane = ['']
 
+
 def compose_log(ts, log_type, data):
     tv_s = int(ts)
     tv_us = (ts - tv_s) * 1000000
@@ -504,7 +505,7 @@ def parse_rtk_target(file_name):
 
 def parse_rtk_target_ub482(line, ctx):
     from recorder.convert import ub482_defs, decode_with_def
-    from tools.vehicle import Vehicle
+    from tools.vehicle import Vehicle, get_vehicle_target
     cols = line.split(' ')
     ts = float(cols[0]) + float(cols[1]) / 1000000
     if 'rtk' not in cols[2]:
@@ -520,19 +521,43 @@ def parse_rtk_target_ub482(line, ctx):
     r = decode_with_def(ub482_defs, line)
     if not r:
         return
+
+    epoch = []
+    select = {'bestpos': 'lat', 'bestvel': 'hor_speed', 'heading': 'pitch'}
+    key = select.get(r['type'])
+    new_epoch = True
+    ego_car = ctx['rtksol']['vehicles'].get('ego')
+    for role in ctx['rtksol']['vehicles']:
+        if r['ts'] <= ctx['rtksol']['vehicles'][role].dynamics[key][0][0]:
+            new_epoch = False
+    if new_epoch:
+        for role in ctx['rtksol']['vehicles']:
+            if role == 'ego':
+                continue
+            t = get_vehicle_target(ego_car, ctx['rtksol']['vehicles'][role])
+            if t:
+                epoch.append(t)
     ctx['rtksol']['vehicles'][role].update_dynamics(r)
 
-    ego_car = ctx['rtksol']['vehicles'].get('ego')
-    if not ego_car:
-        return
     lines = ''
-    target = ego_car.get_pp_target()
-    if target:
-        lines += compose_log(ts, 'rtk.obj.pp', '{pos_lat} {pos_lon} {vel_lon} {TTC}'.format(**r))
-        # ctx['obs_ep']['rtk']['data'] = r
-        # ctx['obs_ep']['rtk']['ts'] = ts
-    # for role in ctx['rtksol']['vehicles']:
-        
+    for t in epoch:
+        lines += compose_log(ts, 'rtk.obj.pp', '{pos_lat} {pos_lon} {vel_lon} {TTC}'.format(**t))
+
+    if not ego_car:
+        if epoch:
+            ctx['obs_ep']['rtk']['data'] = epoch
+            ctx['obs_ep']['rtk']['ts'] = ts
+        return
+
+    ppt = ego_car.get_pp_target()
+    if ppt:
+        epoch.append(ppt)
+        lines += compose_log(ts, 'rtk.obj.pp', '{pos_lat} {pos_lon} {vel_lon} {TTC}'.format(**ppt))
+    if epoch:
+        ctx['obs_ep']['rtk']['data'] = epoch
+        ctx['obs_ep']['rtk']['ts'] = ts
+
+
     # if role == 'ego':
     #     target = ctx['rtksol'][role].get_pp_target()
     #     if target:

@@ -16,7 +16,7 @@ from multiprocessing.dummy import Process as Thread
 import cv2
 import numpy as np
 
-from config.config import local_cfg
+from config.config import local_cfg, load_cfg
 from net.ntrip_client import GGAReporter
 from player import FlowPlayer
 from player.pcc_ui import Player
@@ -78,6 +78,7 @@ class PCC(object):
         # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
         self.sv_state = 'ipm'
+        self.rt_param = runtime
         # cv2.namedWindow('video_aux')
         cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
         cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
@@ -101,7 +102,7 @@ class PCC(object):
         cv2.setMouseCallback('UI', self.left_click, '1234')
         self.gga = None
         if not self.replay:
-            self.en_gga = runtime['modules']['GGA_reporter']
+            self.en_gga = runtime['modules']['GGA_reporter']['enable']
         else:
             self.en_gga = False
         self.flow_player = FlowPlayer()
@@ -117,6 +118,7 @@ class PCC(object):
         self.hub.start()
         self.player.start_time = datetime.now()
         frame_cnt = 0
+        data_cnt = 0
 
         while not self.exit:
             d = self.hub.pop_simple()
@@ -127,7 +129,7 @@ class PCC(object):
                 qsize = self.hub.fileHandler.raw_queue.qsize()
                 # print(qsize)
                 if self.hub.fileHandler.recording and qsize > 2000:
-                    print('escap drawing', qsize)
+                    print('msg_q critical, skip drawing.', qsize)
                     time.sleep(0.1)
                     continue
             self.draw(d, frame_cnt)
@@ -168,7 +170,8 @@ class PCC(object):
             self.ts0 = self.ts_now
 
         if local_cfg.save.video and not self.replay:
-            self.hub.fileHandler.insert_video({'ts': mess['ts'], 'frame_id': frame_id, 'img': imgraw, 'source': 'video'})
+            self.hub.fileHandler.insert_video(
+                {'ts': mess['ts'], 'frame_id': frame_id, 'img': imgraw, 'source': 'video'})
 
         # self.player.show_columns(img)
         if self.vehicles['ego'].dynamics.get('pinpoint'):
@@ -202,11 +205,14 @@ class PCC(object):
             # print('incoming video', video['source'])
             img_raw = cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR)
             if self.video_cache[source]['updated']:
-                self.hub.fileHandler.insert_video({'ts': video['ts'], 'frame_id': video['frame_id'], 'img': img_raw, 'source': video['source']})
+                self.hub.fileHandler.insert_video(
+                    {'ts': video['ts'], 'frame_id': video['frame_id'], 'img': img_raw, 'source': video['source']})
             self.video_cache[source]['updated'] = False
             img_small = cv2.resize(img_raw, (427, 240))
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
+
+        self.player.show_heading_horizen(img)
 
         if 'x1_data' in mess:
             # print('------', mess['pcv_data'])
@@ -328,7 +334,9 @@ class PCC(object):
                     #     (data['ts'], source + '.pinpoint', compose_from_def(ub482_defs, data)))
                     # print('set pinpoint:', data)
                 if self.gga is None and self.en_gga and not self.replay:
-                    self.gga = GGAReporter('ntrip.weaty.cn', 5001)
+                    server = self.rt_param['modules']['GGA_reporter']['ntrip_address']
+                    port = self.rt_param['modules']['GGA_reporter']['port']
+                    self.gga = GGAReporter(server, port)
                     self.gga.start()
                 if self.gga is not None and not self.replay:
                     self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
@@ -342,6 +350,7 @@ class PCC(object):
         if pp_target:
             # t0 = time.time()
             self.player.show_rtk_target(img, pp_target)
+            self.player.show_rtk_target_ipm(self.ipm, pp_target)
             # dt = time.time() - t0
             # print('rtk target cost:{}'.format(dt * 1000))
             # print(pp_target['ts'])
@@ -566,13 +575,13 @@ class HeadlessPCC:
                 continue
             frame_id = mess['frame_id']
             if local_cfg.save.video:
-                self.hub.fileHandler.insert_video({'ts': mess['ts'], 'frame_id': frame_id, 'img': mess['img'], 'source': 'video'})
+                self.hub.fileHandler.insert_video(
+                    {'ts': mess['ts'], 'frame_id': frame_id, 'img': mess['img'], 'source': 'video'})
             time.sleep(0.02)
 
 
 if __name__ == "__main__":
     import sys
-    from config.config import load_cfg
 
     local_path = os.path.split(os.path.realpath(__file__))[0]
     # print('local_path:', local_path)
@@ -582,11 +591,13 @@ if __name__ == "__main__":
         sys.argv.append('config/cfg_lab.json')
 
     if '--direct' in sys.argv:
+        print('direct mode.')
         hub = Hub(direct_cfg=sys.argv[2])
         pcc = PCC(hub, ipm=True, replay=False)
         pcc.start()
 
     elif '--headless' in sys.argv:
+        print('headless mode.')
         hub = Hub(headless=True)
         hub.start()
         pcc = HeadlessPCC(hub)
@@ -650,6 +661,7 @@ if __name__ == "__main__":
         IOLoop.instance().start()
 
     else:
+        print('normal mode.')
         load_cfg(sys.argv[1])
         hub = Hub()
         pcc = PCC(hub, ipm=False, replay=False)
