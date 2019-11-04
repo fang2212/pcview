@@ -340,7 +340,7 @@ class PCC(object):
                 if self.gga is not None and not self.replay:
                     self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
             elif 'yaw' in data:
-                self.player.show_heading_horizen(img, data['yaw'])
+                self.player.show_heading_horizen(img, data)
             # ppq = self.vehicles['ego'].dynamics.get('pinpoint')
             # pp = {'source': 'rtk.3', 'lat': 22.546303, 'lon': 113.942000, 'hgt': 35.0}
             # if ppq and host and data['ts'] - host['ts'] < 0.1:
