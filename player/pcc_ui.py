@@ -555,23 +555,28 @@ class Player(object):
         self.show_text_info(obs['source'], line + 40, 'range: {:.2f}'.format(dist))
         BaseDraw.draw_up_arrow(img, indent + 100, line - 12, self.color_seq[obs['color']], 6)
 
-    def show_heading_horizen(self, img, heading=90.0, fov=90.0):
+    def show_heading_horizen(self, img, rtk):
+        heading = rtk.get('yaw')
+        pitch = rtk.get('pitch')
+        if not heading:
+            return
+        hfov = 90.0
+        vfov = 60.0
         dyaw = install['rtk']['yaw'] - install['video']['yaw']
+        dpitch = install['rtk']['pitch'] - install['video']['pitch']
         h = int(img.shape[0] / 2)
         w = img.shape[1]
-        bias = w * dyaw / fov
+        bias = w * dyaw / hfov
         hc = int(w / 2 + bias)
         BaseDraw.draw_line(img, (0, h), (w, h), CVColor.Grey, 1)
         BaseDraw.draw_line(img, (hc, h - 20), (hc, h + 10), CVColor.White, 1)
-        # BaseDraw.draw_line(img, (int(w / 2), h - 20), (int(w / 2) - 5, h -20), CVColor.White, 1)
-        # BaseDraw.draw_line(img, (int(w / 2), h - 20), (int(w / 2) + 5, h - 20), CVColor.White, 1)
         BaseDraw.draw_line(img, (hc + 5, h - 20), (hc - 5, h - 20), CVColor.White, 1)
         BaseDraw.draw_text(img, '{:.1f}'.format(heading), (hc - 14, h - 22), 0.4, CVColor.White, 1)
-        heading_start = heading - fov / 2 - dyaw
-        heading_end = heading + fov / 2 - dyaw
+        heading_start = heading - hfov / 2 - dyaw
+        heading_end = heading + hfov / 2 - dyaw
         pxs = []
         for deg in range(int(heading_start), 360):
-            px = int((deg - heading_start) * w / fov)
+            px = int((deg - heading_start) * w / hfov)
             if deg < 0.0:
                 deg = 360 + deg
             if deg > 360.0:
