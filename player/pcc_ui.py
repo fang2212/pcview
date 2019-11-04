@@ -1,12 +1,14 @@
-from player.ui import BaseDraw, pack, logodir, CVColor
-from config.config import install
-import cv2
-from tools.transform import Transform
-from datetime import datetime
-import time
-from tools.geo import gps_bearing, gps_distance
-import numpy as np
 import logging
+import time
+from datetime import datetime
+
+import cv2
+import numpy as np
+
+from config.config import install
+from player.ui import BaseDraw, pack, logodir, CVColor
+from tools.geo import gps_bearing, gps_distance
+from tools.transform import Transform
 
 # logging.basicConfig函数对日志的输出格式及方式做相关配置
 logging.basicConfig(level=logging.INFO,
@@ -24,6 +26,7 @@ class InfoCard(object):
 
 class Player(object):
     """图片播放器"""
+
     def __init__(self):
         self.overlook_background_image = cv2.imread(pack(logodir, 'back.png'))
         self.circlesmall_image = cv2.imread(pack(logodir, 'circlesmall.tif'))
@@ -46,17 +49,17 @@ class Player(object):
         self.cipv = 0
 
         self.color_seq = [CVColor.White, CVColor.Red, CVColor.Green, CVColor.deeporange, CVColor.purple,
-             CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
+                          CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
         self.color_obs = {'ifv300': CVColor.Blue,
-             'esr': CVColor.Red,
-             'lmr': CVColor.Green,
-             'x1': CVColor.purple,
-             'rtk': CVColor.Green,
-             'ars': CVColor.Green,
-             'gps': 0,
-             'sta77': CVColor.Black,
-             'mbq4': CVColor.Grass}
+                          'esr': CVColor.Red,
+                          'lmr': CVColor.Green,
+                          'x1': CVColor.purple,
+                          'rtk': CVColor.Green,
+                          'ars': CVColor.Green,
+                          'gps': 0,
+                          'sta77': CVColor.Black,
+                          'mbq4': CVColor.Grass}
 
         self.param_bg_width = 160
 
@@ -193,7 +196,7 @@ class Player(object):
         if 'pos_lon' in obs:
             x = obs['pos_lon']
             y = obs['pos_lat']
-            dist = (x**2 + y**2)**0.5
+            dist = (x ** 2 + y ** 2) ** 0.5
         else:
             # print(obs['source'].split('.')[0])
             # x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
@@ -203,20 +206,21 @@ class Player(object):
                 x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'])
             else:
                 x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install_para)
-        if dist < 0.1:
-            dist = 0.1
-        if dist < 0:
+        # if dist < 0.1:
+        #     dist = 0.1
+        dist = max(0.1, dist)
+        if dist <= 0 or x <= 0:
             return
 
         w = install['video']['fu'] * width / dist
-        if w > 600:
-            w = 600
+        w = min(600, w)
         dev = obs.get('source')
         if dev:
             dev = dev.split('.')[0]
             # print(dev)
         else:
             dev = 'default'
+        # print(x, y)
         x0, y0 = self.transform.trans_gnd2raw(x, y, dev=dev)
 
         h = install['video']['fv'] * height / dist
@@ -233,7 +237,7 @@ class Player(object):
             w = max(5, min(50, w))
             h = max(5, min(50, h))
             # print(int(x1), int(y1), int(w), width)
-            cv2.circle(img, (int(x0), int(y0-0.5*h)), int(w), color, 1)
+            cv2.circle(img, (int(x0), int(y0 - 0.5 * h)), int(w), color, 1)
             # print(x1, y1, x, h)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
         elif obs.get('class') == 'pedestrian':
@@ -264,7 +268,7 @@ class Player(object):
         color = self.color_seq[obs['color']]
 
         if obs.get('sensor_type') == 'radar':
-            cv2.circle(img, (u, v-8), 8, color, 2)
+            cv2.circle(img, (u, v - 8), 8, color, 2)
             BaseDraw.draw_text(img, '{}'.format(id), (u - 28, v - 8), 0.4, color, 1)
             # ESR
             if 'TTC' in obs:
@@ -282,7 +286,7 @@ class Player(object):
             else:
                 cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
             BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v - 8), 0.4, color, 1)
-            BaseDraw.draw_text(img,  '{:.1f}'.format(x), (u + 10, v +5), 0.4, color, 1)
+            BaseDraw.draw_text(img, '{:.1f}'.format(x), (u + 10, v + 5), 0.4, color, 1)
 
     def show_lane(self, img, data, ratios, r=60, color=CVColor.Cyan):
         """绘制车道线
@@ -307,13 +311,15 @@ class Player(object):
             tx, ty = self.transform.trans_gnd2raw(x, y)
             text_step = 15
             if 'type_class' in data:
-                BaseDraw.draw_text(img, 'class: ' + data['type_class'], (tx-50, ty), 0.5, color, 1)
+                BaseDraw.draw_text(img, 'class: ' + data['type_class'], (tx - 50, ty), 0.5, color, 1)
 
             if 'prediction_source' in data:
-                BaseDraw.draw_text(img, 'predict: ' + data['prediction_source'], (tx-50, ty+text_step), 0.5, color, 1)
+                BaseDraw.draw_text(img, 'predict: ' + data['prediction_source'], (tx - 50, ty + text_step), 0.5, color,
+                                   1)
 
             if 'probability' in data:
-                BaseDraw.draw_text(img, 'prob: ' + str('%.2f' % data['probability']), (tx-50, ty+text_step*2), 0.5, color, 1)
+                BaseDraw.draw_text(img, 'prob: ' + str('%.2f' % data['probability']), (tx - 50, ty + text_step * 2),
+                                   0.5, color, 1)
 
     # def show_tsr(self, img, position, color=CVColor.Cyan, thickness=2):
     #     """绘制tsr框
@@ -415,12 +421,12 @@ class Player(object):
             if col is not 'video':
                 color_lg = self.columns[col].get('color')
                 if color_lg is not None:
-                    cv2.rectangle(img, (indent+1, 1), (indent + 159, 24), self.columns[col]['color'], -1)
+                    cv2.rectangle(img, (indent + 1, 1), (indent + 159, 24), self.columns[col]['color'], -1)
             self.show_parameters_background(img, (x0, y0, w if w <= 1280 else 1280, h))
-            BaseDraw.draw_text(img, col, (indent+2, 20), 0.5, CVColor.Cyan, 1)
-            dt = self.ts_now-self.columns[col]['ts']
+            BaseDraw.draw_text(img, col, (indent + 2, 20), 0.5, CVColor.Cyan, 1)
+            dt = self.ts_now - self.columns[col]['ts']
 
-            BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt*1000)), (indent + 92, 20), 0.5, CVColor.White, 1)
+            BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt * 1000)), (indent + 92, 20), 0.5, CVColor.White, 1)
             # if col is not 'video':
             #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:
@@ -441,18 +447,22 @@ class Player(object):
         self.show_parameters_background(img, (0, 0, 160, 80))
         BaseDraw.draw_text(img, data['source'], (2, 20), 0.5, CVColor.Cyan, 1)
         dt = self.ts_now - data['ts']
-        BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt*1000)), (92, 20), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt * 1000)), (92, 20), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'frame: {}'.format(data['frame_id']), (2, 40), 0.5, CVColor.White, 1)
         if data['source'] not in self.video_streams:
-            self.video_streams[data['source']] = {'frame_cnt': data['frame_id'] - 1, 'last_ts': 0, 'ts0': time.time(), 'fps': 20}
+            self.video_streams[data['source']] = {'frame_cnt': data['frame_id'] - 1, 'last_ts': 0, 'ts0': time.time(),
+                                                  'fps': 20}
         self.video_streams[data['source']]['frame_cnt'] += 1
         # duration = time.time() - self.video_streams[data['source']]['ts0']
         dt = tnow - self.video_streams[data['source']]['last_ts']
         self.video_streams[data['source']]['last_ts'] = tnow
         fps = 1 / dt
         self.video_streams[data['source']]['fps'] = 0.9 * self.video_streams[data['source']]['fps'] + 0.1 * fps
-        BaseDraw.draw_text(img, 'fps: {:.1f}'.format(self.video_streams[data['source']]['fps']), (2, 60), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'lost frames: {}'.format(data['frame_id'] - self.video_streams[data['source']]['frame_cnt']), (2, 80), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'fps: {:.1f}'.format(self.video_streams[data['source']]['fps']), (2, 60), 0.5,
+                           CVColor.White, 1)
+        BaseDraw.draw_text(img,
+                           'lost frames: {}'.format(data['frame_id'] - self.video_streams[data['source']]['frame_cnt']),
+                           (2, 80), 0.5, CVColor.White, 1)
 
     def show_frame_id(self, img, source, fn):
         # indent = self.columns['video']['indent']
@@ -463,7 +473,7 @@ class Player(object):
         BaseDraw.draw_text(img, 'Pin: {lat:.8f} {lon:.8f} {hgt:.3f}'.format(**pp), (950, 710), 0.3, CVColor.White, 1)
 
     def show_frame_cost(self, cost):
-        self.show_text_info('video', 80, 'render_cost: {}ms'.format(int(cost*1000)))
+        self.show_text_info('video', 80, 'render_cost: {}ms'.format(int(cost * 1000)))
 
     def show_fps(self, img, source, fps):
         # indent = self.columns['video']['indent']
@@ -498,7 +508,7 @@ class Player(object):
 
     def show_yaw_rate(self, img, yr, source):
         # indent = self.get_indent(source)
-        yr_deg = yr*57.3
+        yr_deg = yr * 57.3
         # BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
         self.show_text_info(source, 60, '{:.1f}deg/s'.format(yr_deg))
 
@@ -539,17 +549,61 @@ class Player(object):
         if 'TTC' in obs:
             # BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line + 20), 0.5, CVColor.White,
             #                    1)
-            self.show_text_info(obs['source'], line+20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']))
+            self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']))
         dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
         # BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
         self.show_text_info(obs['source'], line + 40, 'range: {:.2f}'.format(dist))
         BaseDraw.draw_up_arrow(img, indent + 100, line - 12, self.color_seq[obs['color']], 6)
 
-    def show_heading_horizen(self, img):
+    def show_heading_horizen(self, img, heading=90.0, fov=90.0):
+        dyaw = install['rtk']['yaw'] - install['video']['yaw']
         h = int(img.shape[0] / 2)
         w = img.shape[1]
+        bias = w * dyaw / fov
+        hc = int(w / 2 + bias)
         BaseDraw.draw_line(img, (0, h), (w, h), CVColor.Grey, 1)
+        BaseDraw.draw_line(img, (hc, h - 20), (hc, h + 10), CVColor.White, 1)
+        # BaseDraw.draw_line(img, (int(w / 2), h - 20), (int(w / 2) - 5, h -20), CVColor.White, 1)
+        # BaseDraw.draw_line(img, (int(w / 2), h - 20), (int(w / 2) + 5, h - 20), CVColor.White, 1)
+        BaseDraw.draw_line(img, (hc + 5, h - 20), (hc - 5, h - 20), CVColor.White, 1)
+        BaseDraw.draw_text(img, '{:.1f}'.format(heading), (hc - 14, h - 22), 0.4, CVColor.White, 1)
+        heading_start = heading - fov / 2 - dyaw
+        heading_end = heading + fov / 2 - dyaw
+        pxs = []
+        for deg in range(int(heading_start), 360):
+            px = int((deg - heading_start) * w / fov)
+            if deg < 0.0:
+                deg = 360 + deg
+            if deg > 360.0:
+                deg = deg - 360.0
+            pxs.append((px, deg))
 
+        for px, deg in pxs:
+            if deg % 5 == 0:
+                BaseDraw.draw_line(img, (px, h - 10), (px, h), CVColor.White, 1)
+                BaseDraw.draw_text(img, '{}'.format(deg), (px - 10, h - 10), 0.4, CVColor.White, 1)
+            else:
+                BaseDraw.draw_line(img, (px, h - 5), (px, h), CVColor.Grey, 1)
+        #
+        # if roll_over:
+        #     for deg in range(int(heading_start), 360):
+        #         if deg % 5 == 0:
+        #             px = int((deg - heading_start)*w/fov)
+        #             BaseDraw.draw_line(img, (px, h-10), (px, h), CVColor.White, 1)
+        #             BaseDraw.draw_text(img, '{}'.format(deg), (px, h-10), 0.4, CVColor.White, 1)
+        #     for deg in range(0, int(heading_end)):
+        #         if deg == 0:
+        #             BaseDraw.draw_text(img, '{}'.format(deg), (px, h - 10), 0.4, CVColor.White, 1)
+        #         if deg % 5 == 0:
+        #             px = int((deg - 0)*w/fov + w/2)
+        #             BaseDraw.draw_line(img, (px, h-10), (px, h), CVColor.White, 1)
+        #             BaseDraw.draw_text(img, '{}'.format(deg), (px, h-10), 0.4, CVColor.White, 1)
+        # else:
+        #     for deg in range(int(heading_start), int(heading_end)):
+        #         if deg % 5 == 0:
+        #             px = int((deg - heading_start)*w/fov)
+        #             BaseDraw.draw_line(img, (px, h-10), (px, h), CVColor.White, 1)
+        #             BaseDraw.draw_text(img, '{}'.format(deg), (px, h-10), 0.4, CVColor.White, 1)
 
     def _show_rtk(self, img, rtk):
         # print(rtk)
@@ -567,11 +621,12 @@ class Player(object):
         BaseDraw.draw_text(img, 'yaw: {:.2f}'.format(rtk['yaw']), (indent + 2, 60), 0.5, color, 1)
         BaseDraw.draw_text(img, 'pitch: {:.2f}'.format(rtk['pitch']), (indent + 2, 80), 0.5, color, 1)
         BaseDraw.draw_text(img, 'len: {:.3f}'.format(rtk['length']), (indent + 2, 100), 0.5, color, 1)
-        BaseDraw.draw_text(img, 'delay: {:.4f}'.format(rtk['ts']-rtk['ts_origin']), (indent + 2, 120), 0.5, color, 1)
+        BaseDraw.draw_text(img, 'delay: {:.4f}'.format(rtk['ts'] - rtk['ts_origin']), (indent + 2, 120), 0.5, color, 1)
         vel = (rtk['velN'] ** 2 + rtk['velE'] ** 2) ** 0.5
-        BaseDraw.draw_text(img, '{:.2f}km/h'.format(vel*3.6), (indent + 142, 120), 0.5, color, 1)
+        BaseDraw.draw_text(img, '{:.2f}km/h'.format(vel * 3.6), (indent + 142, 120), 0.5, color, 1)
         if 'sat' in rtk:
-            BaseDraw.draw_text(img, '#rtk:{}/{} #ori:{}/{}'.format(rtk['sat'][1], rtk['sat'][0], rtk['sat'][5], rtk['sat'][4]), (indent + 50, 20), 0.5, color, 1)
+            BaseDraw.draw_text(img, '#rtk:{}/{} #ori:{}/{}'.format(rtk['sat'][1], rtk['sat'][0], rtk['sat'][5],
+                                                                   rtk['sat'][4]), (indent + 50, 20), 0.5, color, 1)
 
     def show_rtk(self, img, rtk=None):
         if not rtk or rtk.get('rtkst') is None:
@@ -601,7 +656,8 @@ class Player(object):
         width = 0.5
         height = 0.5
         ux, uy = self.transform.trans_gnd2raw(x, y,
-                               host['hgt'] - target['hgt'] + install['video']['height'] - install['rtk']['height'],
+                                              host['hgt'] - target['hgt'] + install['video']['height'] - install['rtk'][
+                                                  'height'],
                                               'rtk')
         w = 1200 * width / x
         if w > 50:
@@ -640,7 +696,8 @@ class Player(object):
             x = 0.001
         width = 0.5
         height = 0.5
-        ux, uy = self.transform.trans_gnd2raw(x, y,  delta_h + install['video']['height'] - install['rtk']['height'], 'rtk')
+        ux, uy = self.transform.trans_gnd2raw(x, y, delta_h + install['video']['height'] - install['rtk']['height'],
+                                              'rtk')
         w = install['video']['fu'] * width / x
         w = max(10, min(50, w))
         h = w
@@ -835,7 +892,7 @@ class Player(object):
         if isinstance(title, list):
             for idx, t in enumerate(title):
                 # print(idx)
-                BaseDraw.draw_text(img, t, (10, 200 + idx*80), 2, CVColor.Red, 3)
+                BaseDraw.draw_text(img, t, (10, 200 + idx * 80), 2, CVColor.Red, 3)
         else:
             BaseDraw.draw_text(img, title, (10, 200), 2, CVColor.Red, 3)
 
@@ -865,7 +922,8 @@ class Player(object):
             # BaseDraw.draw_text(img, 'len: {:.3f}'.format(data['length']), (indent + 2, 100), 0.5, color, 1)
             self.show_text_info(data['source'], 140, 'H:{}'.format(data['pos_type']), style_list.get(data['pos_type']))
             self.show_text_info(data['source'], 180, 'Yaw  Pitch Len '.format(data['yaw']))
-            self.show_text_info(data['source'], 200, '{:.2f} {:.2f} {:.2f}'.format(data['yaw'], data['pitch'], data['length']))
+            self.show_text_info(data['source'], 200,
+                                '{:.2f} {:.2f} {:.2f}'.format(data['yaw'], data['pitch'], data['length']))
             self.show_text_info(data['source'], 160, '#SVs/sol: {}/{}'.format(data['#SVs'], data['#solSVs']))
             # self.show_text_info(data['source'], 180, 'len: {:.3f}'.format(data['length']))
         if data['type'] == 'bestvel':

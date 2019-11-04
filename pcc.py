@@ -212,7 +212,6 @@ class PCC(object):
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
 
-        self.player.show_heading_horizen(img)
 
         if 'x1_data' in mess:
             # print('------', mess['pcv_data'])
@@ -340,6 +339,8 @@ class PCC(object):
                     self.gga.start()
                 if self.gga is not None and not self.replay:
                     self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
+            elif 'yaw' in data:
+                self.player.show_heading_horizen(img, data['yaw'])
             # ppq = self.vehicles['ego'].dynamics.get('pinpoint')
             # pp = {'source': 'rtk.3', 'lat': 22.546303, 'lon': 113.942000, 'hgt': 35.0}
             # if ppq and host and data['ts'] - host['ts'] < 0.1:
