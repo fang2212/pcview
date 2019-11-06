@@ -459,7 +459,7 @@ def parse_drtk(file_name):
     return os.path.abspath('log_rtk.txt')
 
 
-def parse_rtk_target(file_name):
+def parse_drtk_target(file_name):
     from tools.geo import gps_bearing, gps_distance
     print('parsing rtk...')
     ctx = {}
@@ -661,7 +661,7 @@ def parse_x1_line(line, ctx):
         # print(ret)
         speed = ctx.get('speed') or 0
         # print(can_port, buf, r)
-        if not ret:
+        if not ret or not isinstance(ret, list):
             return
         # print(ret)
         lines = ''
@@ -2063,6 +2063,7 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
         print(bcl.FAIL + 'Invalid data path. {} does not exist.'.format(log) + bcl.ENDC)
         return
     conf_path = os.path.join(os.path.dirname(log), 'config.json')
+    install_path = os.path.join(os.path.dirname(log), 'installation.json')
     if os.path.exists(conf_path):
         conf = json.load(open(conf_path))
         canports = dict()
@@ -2084,6 +2085,12 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
         ctx['can_port'] = {'x1': 'CAN1',
                            'esr': 'CAN0'
                            }
+    if os.path.exists(install_path):
+        from config.config import load_installation
+        load_installation(install_path)
+    else:
+        print('no installation.json found in {}. exit.'.format(os.path.dirname(log)))
+        return
 
     if rdrtgt is not None:
         ctx['radar_target'] = rdrtgt
@@ -2227,7 +2234,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190627-t5-q3-esr-x1-test/pc_collector/PED/20190627173822_CPFA_20kmh/log.txt'
+    r = '/media/nan/860evo/data/20190402150351_CPFA_10kmh/log.txt'
     analysis_dir = None
 
     if len(sys.argv) > 1:

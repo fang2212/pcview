@@ -391,9 +391,9 @@ if __name__ == "__main__":
     source = sys.argv[1]
     print(source)
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
+
     from tools import mytools
     r_sort = prep_replay(source)
-
     from pcc import PCC
     from parsers.parser import parsers_dict
 

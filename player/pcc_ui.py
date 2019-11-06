@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 
 from config.config import install
-from player.ui import BaseDraw, pack, logodir, CVColor
+from player.ui import BaseDraw, pack, logodir, CVColor, FlatColor
 from tools.geo import gps_bearing, gps_distance
 from tools.transform import Transform
 
@@ -47,19 +47,30 @@ class Player(object):
 
         self.start_time = datetime.now()
         self.cipv = 0
+        self.pxs = None
 
         self.color_seq = [CVColor.White, CVColor.Red, CVColor.Green, CVColor.deeporange, CVColor.purple,
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
-        self.color_obs = {'ifv300': CVColor.Blue,
-                          'esr': CVColor.Red,
-                          'lmr': CVColor.Green,
-                          'x1': CVColor.purple,
-                          'rtk': CVColor.Green,
-                          'ars': CVColor.Green,
-                          'gps': 0,
-                          'sta77': CVColor.Black,
-                          'mbq4': CVColor.Grass}
+        # self.color_obs = {'ifv300': CVColor.Blue,
+        #                   'esr': CVColor.Red,
+        #                   'lmr': CVColor.Green,
+        #                   'x1': CVColor.purple,
+        #                   'rtk': CVColor.Yellow,
+        #                   'ars': CVColor.Green,
+        #                   'gps': CVColor.Midgrey,
+        #                   'sta77': CVColor.Black,
+        #                   'mbq4': CVColor.Grass}
+        self.color_obs = {'ifv300': FlatColor.peter_river,
+                          'esr': FlatColor.alizarin,
+                          'lmr': FlatColor.emerald,
+                          'x1': FlatColor.amethyst,
+                          'rtk': FlatColor.sun_flower,
+                          'ars': FlatColor.emerald,
+                          'gps': FlatColor.clouds,
+                          'sta77': FlatColor.wet_asphalt,
+                          'mbq4': FlatColor.turquoise,
+                          'default': FlatColor.clouds}
 
         self.param_bg_width = 160
 
@@ -103,9 +114,9 @@ class Player(object):
 
         for i in range(-10, 11, 5):
             p1 = self.transform.trans_gnd2ipm(-10, i)
-            p2 = self.transform.trans_gnd2ipm(170, i)
+            p2 = self.transform.trans_gnd2ipm(180, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
-            BaseDraw.draw_text(img, '{}m'.format(i), p2, 0.3, CVColor.White, 1)
+            BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(170, i), 0.3, CVColor.White, 1)
 
     # def show_overlook_background(self, img):
     #     """绘制俯视图的背景，包括背景图，车背景图，光线图
@@ -180,11 +191,19 @@ class Player(object):
             indent = self.get_indent(obs['source'])
         except Exception as e:
             print('Error indent', obs)
-        color = obs.get('color')
-        if color:
-            color = self.color_seq[color]
-        else:
-            color = self.color_seq[0]
+        # color = obs.get('color')
+        # if color:
+        #     color = self.color_seq[color]
+        # else:
+        #     color = self.color_seq[0]
+
+        color = self.color_obs.get(obs['source'].split('.')[0])
+        if not color:
+            color = self.color_obs['default']
+
+        if 'x1' in obs['source'] and obs['class']=='fusion_data':
+            color = FlatColor.concrete
+            # print(obs)
 
         width = obs.get('width')
         width = width or 0.3
@@ -265,28 +284,34 @@ class Player(object):
             x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
         u, v = self.transform.trans_gnd2ipm(x, y)
 
-        color = self.color_seq[obs['color']]
+        color = self.color_obs.get(obs['source'].split('.')[0])
+        if not color:
+            color = self.color_obs['default']
+        if 'x1' in obs['source'] and obs['class']=='fusion_data':
+            color = FlatColor.concrete
+            # print(obs)
 
         if obs.get('sensor_type') == 'radar':
-            cv2.circle(img, (u, v - 8), 8, color, 2)
-            BaseDraw.draw_text(img, '{}'.format(id), (u - 28, v - 8), 0.4, color, 1)
+            cv2.circle(img, (u, v - 8), 8, color, 1)
+            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v - 5), 0.3, color, 1)
             # ESR
             if 'TTC' in obs:
                 # for save space, only ttc<7 will be shown on the gui
                 if obs['TTC'] < 7:
-                    BaseDraw.draw_text(img, '{:.2f}'.format(obs['TTC']), (u - 40, v + 5), 0.4, color, 1)
+                    BaseDraw.draw_text(img, '{:.2f}'.format(obs['TTC']), (u - 40, v + 5), 0.3, color, 1)
 
             # STA 77
             if obs.get('sensor') == 'sta77':
-                BaseDraw.draw_text(img, '{:.1f}'.format(x), (u - 40, v + 5), 0.4, color, 1)
+                BaseDraw.draw_text(img, '{:.1f}'.format(x), (u - 40, v + 5), 0.3, color, 1)
 
         else:
             if obs.get('class') == 'pedestrian' or obs.get('class') == 'PEDESTRIAN':
                 cv2.rectangle(img, (u - 4, v - 16), (u + 4, v), color, 2)
             else:
                 cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
-            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v - 8), 0.4, color, 1)
-            BaseDraw.draw_text(img, '{:.1f}'.format(x), (u + 10, v + 5), 0.4, color, 1)
+            # BaseDraw.draw_text(img, '{}'.format(id), (u - 6, v - 6), 0.3, color, 1)
+            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v - 8), 0.3, color, 1)
+            BaseDraw.draw_text(img, '{:.1f}'.format(x), (u + 10, v + 2), 0.3, color, 1)
 
     def show_lane(self, img, data, ratios, r=60, color=CVColor.Cyan):
         """绘制车道线
@@ -418,12 +443,18 @@ class Player(object):
             h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 24
             h = 24 if h == 0 else h
 
+            # if col is not 'video':
+            #     color_lg = self.columns[col].get('color')
+            #     if color_lg is not None:
+            #         cv2.rectangle(img, (indent + 1, 1), (indent + 159, 24), self.columns[col]['color'], -1)
+            self.show_parameters_background(img, (x0, y0, w if w <= 1280 else 1280, h))
+
             if col is not 'video':
                 color_lg = self.columns[col].get('color')
                 if color_lg is not None:
-                    cv2.rectangle(img, (indent + 1, 1), (indent + 159, 24), self.columns[col]['color'], -1)
-            self.show_parameters_background(img, (x0, y0, w if w <= 1280 else 1280, h))
-            BaseDraw.draw_text(img, col, (indent + 2, 20), 0.5, CVColor.Cyan, 1)
+                    cv2.rectangle(img, (indent + 1, 1), (indent + 19, 24), self.columns[col]['color'], -1)
+                    cv2.rectangle(img, (x0, y0), (x0 + w - 2, y0 + h), self.columns[col]['color'], 2)
+            BaseDraw.draw_text(img, col, (indent + 22, 20), 0.5, CVColor.Cyan, 1)
             dt = self.ts_now - self.columns[col]['ts']
 
             BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt * 1000)), (indent + 92, 20), 0.5, CVColor.White, 1)
@@ -558,59 +589,80 @@ class Player(object):
     def show_heading_horizen(self, img, rtk):
         heading = rtk.get('yaw')
         pitch = rtk.get('pitch')
+        # print(pitch)
         if not heading:
             return
         hfov = 90.0
         vfov = 60.0
         dyaw = install['rtk']['yaw'] - install['video']['yaw']
         dpitch = install['rtk']['pitch'] - install['video']['pitch']
+        vbias = (pitch - dpitch) * install['video']['cv'] / (vfov/2)
+        # h = int(img.shape[0] / 2 - vbias)
         h = int(img.shape[0] / 2)
         w = img.shape[1]
         bias = w * dyaw / hfov
         hc = int(w / 2 + bias)
         BaseDraw.draw_line(img, (0, h), (w, h), CVColor.Grey, 1)
-        BaseDraw.draw_line(img, (hc, h - 20), (hc, h + 10), CVColor.White, 1)
-        BaseDraw.draw_line(img, (hc + 5, h - 20), (hc - 5, h - 20), CVColor.White, 1)
-        BaseDraw.draw_text(img, '{:.1f}'.format(heading), (hc - 14, h - 22), 0.4, CVColor.White, 1)
+        BaseDraw.draw_line(img, (hc, h - 30), (hc, h + 10), CVColor.White, 1)
+        BaseDraw.draw_line(img, (hc + 5, h - 30), (hc - 5, h - 30), CVColor.White, 1)
+        BaseDraw.draw_text(img, '{:.1f}'.format(heading), (hc - 14, h - 32), 0.4, CVColor.White, 1)
         heading_start = heading - hfov / 2 - dyaw
         heading_end = heading + hfov / 2 - dyaw
-        pxs = []
+        self.pxs = []
         for deg in range(int(heading_start), 360):
             px = int((deg - heading_start) * w / hfov)
             if deg < 0.0:
                 deg = 360 + deg
             if deg > 360.0:
                 deg = deg - 360.0
-            pxs.append((px, deg))
+            self.pxs.append((px, deg))
 
-        for px, deg in pxs:
-            if deg % 5 == 0:
+        for px, deg in self.pxs:
+            if deg == 0:
+                BaseDraw.draw_line(img, (px, h - 12), (px, h), CVColor.White, 1)
+                BaseDraw.draw_text(img, 'N', (px - 5, h - 12), 0.5, CVColor.White, 1)
+            elif deg == 90:
+                BaseDraw.draw_line(img, (px, h - 12), (px, h), CVColor.White, 1)
+                BaseDraw.draw_text(img, 'E', (px - 5, h - 12), 0.5, CVColor.White, 1)
+            elif deg == 180:
+                BaseDraw.draw_line(img, (px, h - 12), (px, h), CVColor.White, 1)
+                BaseDraw.draw_text(img, 'S', (px - 5, h - 12), 0.5, CVColor.White, 1)
+            elif deg == 90:
+                BaseDraw.draw_line(img, (px, h - 12), (px, h), CVColor.White, 1)
+                BaseDraw.draw_text(img, 'W', (px - 5, h - 12), 0.5, CVColor.White, 1)
+            elif deg % 5 == 0:
                 BaseDraw.draw_line(img, (px, h - 10), (px, h), CVColor.White, 1)
                 BaseDraw.draw_text(img, '{}'.format(deg), (px - 10, h - 10), 0.4, CVColor.White, 1)
             else:
                 BaseDraw.draw_line(img, (px, h - 5), (px, h), CVColor.Grey, 1)
-        #
-        # if roll_over:
-        #     for deg in range(int(heading_start), 360):
-        #         if deg % 5 == 0:
-        #             px = int((deg - heading_start)*w/fov)
-        #             BaseDraw.draw_line(img, (px, h-10), (px, h), CVColor.White, 1)
-        #             BaseDraw.draw_text(img, '{}'.format(deg), (px, h-10), 0.4, CVColor.White, 1)
-        #     for deg in range(0, int(heading_end)):
-        #         if deg == 0:
-        #             BaseDraw.draw_text(img, '{}'.format(deg), (px, h - 10), 0.4, CVColor.White, 1)
-        #         if deg % 5 == 0:
-        #             px = int((deg - 0)*w/fov + w/2)
-        #             BaseDraw.draw_line(img, (px, h-10), (px, h), CVColor.White, 1)
-        #             BaseDraw.draw_text(img, '{}'.format(deg), (px, h-10), 0.4, CVColor.White, 1)
-        # else:
-        #     for deg in range(int(heading_start), int(heading_end)):
-        #         if deg % 5 == 0:
-        #             px = int((deg - heading_start)*w/fov)
-        #             BaseDraw.draw_line(img, (px, h-10), (px, h), CVColor.White, 1)
-        #             BaseDraw.draw_text(img, '{}'.format(deg), (px, h-10), 0.4, CVColor.White, 1)
 
-    def _show_rtk(self, img, rtk):
+    def show_track_gnd(self, img, rtk):
+        trk_gnd = rtk.get('trk_gnd')
+        speed = rtk.get('hor_speed')
+        if not self.pxs or speed < 2:
+            return
+        trk_gnd = trk_gnd - 180.0
+        if trk_gnd > 360:
+            trk_gnd = trk_gnd - 360
+        if trk_gnd < 0:
+            trk_gnd = trk_gnd + 360
+        hfov = 90.0
+        dyaw = install['video']['yaw']
+        h = int(img.shape[0] / 2)
+        w = img.shape[1]
+        bias = w * dyaw / hfov
+
+        if self.pxs[0][1] > 360 - hfov:
+            begin = self.pxs[0][1] - 360
+        else:
+            begin = self.pxs[0][1]
+        px = (trk_gnd - begin) * w / hfov
+        hc = int(px + bias)
+        BaseDraw.draw_line(img, (hc, h - 44), (hc, h + 10), CVColor.White, 1)
+        BaseDraw.draw_line(img, (hc + 5, h - 44), (hc - 5, h - 44), CVColor.White, 1)
+        BaseDraw.draw_text(img, '{:.1f}'.format(trk_gnd), (hc - 14, h - 46), 0.4, CVColor.White, 1)
+
+    def _show_drtk(self, img, rtk):
         # print(rtk)
         indent = self.get_indent(rtk['source'])
         if rtk['updated']:
@@ -633,7 +685,7 @@ class Player(object):
             BaseDraw.draw_text(img, '#rtk:{}/{} #ori:{}/{}'.format(rtk['sat'][1], rtk['sat'][0], rtk['sat'][5],
                                                                    rtk['sat'][4]), (indent + 50, 20), 0.5, color, 1)
 
-    def show_rtk(self, img, rtk=None):
+    def show_drtk(self, img, rtk=None):
         if not rtk or rtk.get('rtkst') is None:
             for s in self.rtk:
                 d = self.rtk[s]
@@ -641,10 +693,10 @@ class Player(object):
                 # print(self.ts_now)
                 if dt > 0.25:
                     d['updated'] = False
-                self._show_rtk(img, d)
+                self._show_drtk(img, d)
             return
 
-        self._show_rtk(img, rtk)
+        self._show_drtk(img, rtk)
         # rtk['updated'] = False
         self.rtk[rtk['source']] = rtk
         # self.show_target()
@@ -707,10 +759,12 @@ class Player(object):
         w = max(10, min(50, w))
         h = w
 
-        p1 = int(ux - 0.5 * w), int(uy)
-        p2 = int(ux + 0.5 * w), int(uy)
-        p3 = int(ux), int(uy - 0.5 * h)
-        p4 = int(ux), int(uy + 0.5 * h)
+        p1 = int(ux - 0.5 * w), int(uy - 0.5 * h)
+        p2 = int(ux + 0.5 * w), int(uy + 0.5 * h)
+        p3 = int(ux + 0.5 * w), int(uy - 0.5 * h)
+        p4 = int(ux - 0.5 * w), int(uy + 0.5 * h)
+
+        color = self.color_obs['rtk']
 
         if angle > 90 or angle < -90:
             BaseDraw.draw_text(img, 'RTK target on the back', (int(ux + 4), int(uy - 4)), 0.6, CVColor.White, 1)
@@ -718,21 +772,27 @@ class Player(object):
         # cv2.line(img, p1, p2, CVColor.Green if target['rtkst'] >= 48 else CVColor.Grey, 2)
         # cv2.line(img, p3, p4, CVColor.Green if host['rtkst'] >= 48 else CVColor.Grey, 2)
 
-        cv2.line(img, p1, p2, CVColor.Green, 1)
-        cv2.line(img, p3, p4, CVColor.Green, 1)
-        cv2.line(img, p1, p3, CVColor.Green, 1)
-        cv2.line(img, p1, p4, CVColor.Green, 1)
-        cv2.line(img, p2, p3, CVColor.Green, 1)
-        cv2.line(img, p2, p4, CVColor.Green, 1)
+        cv2.line(img, p1, p2, color, 1)
+        cv2.line(img, p3, p4, color, 1)
+        cv2.line(img, p1, p3, color, 1)
+        cv2.line(img, p1, p4, color, 1)
+        cv2.line(img, p2, p3, color, 1)
+        cv2.line(img, p2, p4, color, 1)
 
-        BaseDraw.draw_text(img, 'R: {:.3f}'.format(range), (int(ux + 4), int(uy - 4)), 0.4, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (int(ux + 4), int(uy + 14)), 0.4, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
-                           CVColor.White, 1)
+        p5 = (int(ux+80), int(uy-0.5*h-80))
+        p6 = (p5[0]+20, p5[1])
+
+        cv2.line(img, (ux, uy), p5, color, 1)
+        cv2.line(img, p5, p6, color, 1)
+
+        BaseDraw.draw_text(img, 'R: {:.2f}'.format(range), p5, 0.3, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (p5[0], p5[1]-10), 0.3, CVColor.White, 1)
+        # BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
+        #                    CVColor.White, 1)
 
     def show_ipm_target(self, img, target, host):
         range, angle = self._calc_relatives(target, host)
-        x, y = self.transform.trans_polar2rcs(angle, range)
+        x, y = self.transform.trans_polar2rcs(angle, range, install['rtk'])
         ux, uy = self.transform.trans_gnd2ipm(x, y)
         color = CVColor.Green
         # if type == 0:
@@ -747,25 +807,28 @@ class Player(object):
         p3 = int(ux), int(uy - 0.5 * h)
         p4 = int(ux), int(uy + 0.5 * h)
 
-        cv2.line(img, p1, p2, CVColor.Green, 2)
-        cv2.line(img, p3, p4, CVColor.Green, 2)
+        cv2.line(img, p1, p2, color, 2)
+        cv2.line(img, p3, p4, color, 2)
 
     def show_rtk_target_ipm(self, img, target):
         angle = target.get('angle')
         range = target.get('range')
-        x, y = self.transform.trans_polar2rcs(angle, range)
+        x, y = self.transform.trans_polar2rcs(angle, range, install['rtk'])
         ux, uy = self.transform.trans_gnd2ipm(x, y)
-        color = CVColor.Green
+        color = self.color_obs['rtk']
 
-        w = h = 30
+        w = h = 20
 
         p1 = int(ux - 0.5 * w), int(uy)
         p2 = int(ux + 0.5 * w), int(uy)
         p3 = int(ux), int(uy - 0.5 * h)
         p4 = int(ux), int(uy + 0.5 * h)
 
-        cv2.line(img, p1, p2, CVColor.Green, 2)
-        cv2.line(img, p3, p4, CVColor.Green, 2)
+        cv2.line(img, p1, p2, color, 2)
+        cv2.line(img, p3, p4, color, 2)
+
+        BaseDraw.draw_text(img, '{:.2f}'.format(range), (int(ux + 4), int(uy + 20)), 0.3, color, 1)
+        BaseDraw.draw_text(img, '{:.2f}'.format(angle), (int(ux + 4), int(uy + 10)), 0.3, color, 1)
 
     def show_mobile_parameters(self, img, parameters, point):
         """显示关键车参数信息
@@ -815,10 +878,18 @@ class Player(object):
             width: float 车道线宽度
             color: CVColor 车道线颜色
         """
-        p = self.transform.getp_ipm_from_poly(ratios, r, 1)
+        if r == 0:
+            return
+        p = self.transform.getp_ipm_from_poly(ratios, 1, 0, r)
 
         for i in range(1, len(p) - 1, 1):
             BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
+
+        p = self.transform.getp_ipm_from_poly(ratios, 1, r, 160)
+
+        for idx, i in enumerate(range(1, len(p) - 1, 1)):
+            if idx % 2 == 0:
+                BaseDraw.draw_line(img, p[i], p[i + 1], color, 1)
 
     def draw_vehicle_state(self, img, data):
         # indent = self.get_indent(data['source'])
@@ -829,50 +900,38 @@ class Player(object):
         if 'yaw_rate' in data:
             self.show_yaw_rate(img, data['yaw_rate'], data['source'])
 
-    def draw_obs(self, img, data, ipm):
-        if len(data) == 0:
-            return
-        if data['type'] != 'obstacle':
-            return
+    # def draw_obs(self, img, data, ipm):
+    #     if len(data) == 0:
+    #         return
+    #     if data['type'] != 'obstacle':
+    #         return
+    #
+    #     x = data['pos_lon']
+    #     y = data['pos_lat']
+    #
+    #     color = self.color_seq[data['color']]
+    #     width = 0.4
+    #     otype = 0
+    #     if data['color'] == 1:
+    #         otype = 2
+    #
+    #     if 'class' in data:
+    #         width = data['width']
+    #         otype = data['class']
+    #
+    #     if 'cipo' in data and data['cipo']:
+    #         color = CVColor.Yellow
+    #         self.show_cipo_info(img, data)
+    #
+    #     self.show_obs(img, data, color)
 
-        x = data['pos_lon']
-        y = data['pos_lat']
-
-        color = self.color_seq[data['color']]
-        width = 0.4
-        otype = 0
-        if data['color'] == 1:
-            otype = 2
-
-        if 'class' in data:
-            width = data['width']
-            otype = data['class']
-
-        if 'cipo' in data and data['cipo']:
-            color = CVColor.Yellow
-            self.show_cipo_info(img, data)
-
-        self.show_obs(img, data, color)
-        # self.show_ipm_obs(ipm, otype, x, y, data['id'])
-        # self.show_ipm_obs(ipm, data)
-
-    # def draw_can_data(self, img, data, ipm):
-    #     if data['type'] == 'obstacle':
-    #         self.draw_obs(img, data, ipm)
-    #     elif data['type'] == 'lane':
-    #         self.draw_lane_r(img, data)
-    #     elif data['type'] == 'vehicle_state':
-    #         self.show_veh_speed(img, data['speed'], data['source'])
-    #     elif data['type'] == 'CIPV':
-    #         self.cipv = data['id']
-
-    def draw_rtk(self, img, data, target):
-        if len(data) == 0:
-            return
-
-        self.show_rtk(img, data)
-        if target:
-            self.show_target(img, target, data)
+    # def draw_rtk(self, img, data, target):
+    #     if len(data) == 0:
+    #         return
+    #
+    #     self.show_drtk(img, data)
+    #     if target:
+    #         self.show_target(img, target, data)
 
     def cal_fps(self, frame_cnt):
         end_time = datetime.now()
@@ -1013,10 +1072,13 @@ class Player(object):
         if data['type'] != 'lane':
             return
 
-        if 'color' in data:
-            color = self.color_seq[data['color']]
-        else:
-            color = CVColor.Blue
+        # if 'color' in data:
+        #     color = self.color_seq[data['color']]
+        # else:
+        #     color = CVColor.Blue
+        color = self.color_obs.get(data['source'].split('.')[0])
+        if not color:
+            color = self.color_obs['default']
         # self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
         # lane message
         self.show_lane(img, data, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
@@ -1027,9 +1089,12 @@ class Player(object):
         if data['type'] != 'lane':
             return
 
-        if 'color' in data:
-            color = self.color_seq[data['color']]
-        else:
-            color = CVColor.Blue
+        # if 'color' in data:
+        #     color = self.color_seq[data['color']]
+        # else:
+        #     color = CVColor.Blue
+        color = self.color_obs.get(data['source'].split('.')[0])
+        if not color:
+            color = self.color_obs['default']
 
         self.show_lane_ipm(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color)

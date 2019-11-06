@@ -2,8 +2,6 @@ import os
 import threading
 import functools
 from multiprocessing.dummy import Process as Thread
-from config.config import install
-from tools.transform import Transform
 import time
 
 
@@ -26,53 +24,6 @@ class Supervisor(Thread):
         return self.result
 
 
-class OrientTuner(object):
-
-    def __init__(self, y=install['video']['yaw'], p=install['video']['pitch'], r=install['video']['roll'],  ey=install['esr']['yaw']):
-        self.yaw = y
-        self.pitch = p
-        self.roll = r
-        self.esr_yaw = ey
-        self.transform = Transform()
-
-    def update_yaw(self, x):
-        self.yaw = install['video']['yaw'] - 0.01 * (x - 500)
-        # self.pitch = install['video']['pitch']
-        # self.roll = install['video']['roll']
-
-        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def update_pitch(self, x):
-        # self.yaw = install['video']['yaw']
-        self.pitch = install['video']['pitch'] - 0.01 * (x - 500)
-        # self.roll = install['video']['roll']
-
-        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def update_roll(self, x):
-        # self.yaw = install['video']['yaw']
-        self.roll = install['video']['roll'] - 0.01 * (x - 500)
-        # self.roll = install['video']['roll']
-
-        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def update_esr_yaw(self, x):
-        self.esr_yaw = install['esr']['yaw'] - 0.01 * (x - 500)
-        # self.pitch = install['video']['pitch']
-        # self.roll = install['video']['roll']
-
-        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
-
-    def save_para(self):
-        install['video']['yaw'] = self.yaw
-        install['video']['pitch'] = self.pitch
-        install['video']['roll'] = self.roll
-
-
 def convert(data):
     '''
     msgpack dict type value convert
@@ -84,6 +35,7 @@ def convert(data):
     if isinstance(data, list):   return list(map(convert, data))
     if isinstance(data, set):    return set(map(convert, data))
     return data
+
 
 def sort_big_file(filename, file_splits=10, my_cmp=None):
     idx = 0

@@ -25,8 +25,8 @@ from recorder.convert import *
 from sink.hub import Hub
 from tools.geo import *
 from tools.match import is_near
-from tools.mytools import Supervisor, OrientTuner
-from tools.transform import Transform
+from tools.mytools import Supervisor
+from tools.transform import Transform, OrientTuner
 from tools.vehicle import Vehicle
 
 logging.basicConfig(level=logging.INFO,
@@ -73,7 +73,7 @@ class PCC(object):
         self.calib_data = dict()
         self.frame_cost = 0
         self.video_cache = {}
-        cv2.namedWindow('UI')
+        cv2.namedWindow('MINIEYE-CVE')
         cv2.namedWindow('adj')
         # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
@@ -186,7 +186,7 @@ class PCC(object):
                 self.ipm = cv2.warpPerspective(img, self.m_g2i, (480, 720))
             else:
                 self.ipm = np.zeros([720, 480, 3], np.uint8)
-                self.ipm[:, :] = [180, 180, 180]
+                self.ipm[:, :] = [40, 40, 40]
 
             self.player.show_dist_mark_ipm(self.ipm)
 
@@ -283,7 +283,7 @@ class PCC(object):
         self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
 
     def draw_rtk(self, img, data):
-        self.player.show_rtk(img, data)
+        self.player.show_drtk(img, data)
         if len(data) == 0 or data.get('source') is None:
             return
 
@@ -341,6 +341,8 @@ class PCC(object):
                     self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
             elif 'yaw' in data:
                 self.player.show_heading_horizen(img, data)
+            elif 'trk_gnd' in data:
+                self.player.show_track_gnd(img, data)
             # ppq = self.vehicles['ego'].dynamics.get('pinpoint')
             # pp = {'source': 'rtk.3', 'lat': 22.546303, 'lon': 113.942000, 'hgt': 35.0}
             # if ppq and host and data['ts'] - host['ts'] < 0.1:

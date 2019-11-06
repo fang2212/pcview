@@ -185,8 +185,8 @@ def parse_x1(id, data, ctx=None):
         # print(index)
         if id & 1:
             if index in ctx['fusion']:
-                ctx['fusion'][index]['pos_lon'] = r['L_long_rel_'+'%02d'%(index+1)]
-                ctx['fusion'][index]['pos_lat'] = r['L_lat_rel_'+'%02d'%(index+1)]
+                ctx['fusion'][index]['pos_lon'] = r['L_long_rel_'+'%02d' % (index+1)]
+                ctx['fusion'][index]['pos_lat'] = r['L_lat_rel_'+'%02d' % (index+1)]
                 ctx['fusion'][index]['vx'] = r['V_long_obj_' + '%02d' % (index + 1)]
                 ctx['fusion'][index]['vy'] = r['V_lat_obj_' + '%02d' % (index + 1)]
                 ctx['fusion'][index]['ax'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
@@ -204,7 +204,7 @@ def parse_x1(id, data, ctx=None):
         if id == 0x41f:
             ret = []
             for key in ctx['fusion']:
-                if key == 255 or type(key) == type('') or 'id' not in  ctx['fusion'][key] or 'type' not in  ctx['fusion'][key]:
+                if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in ctx['fusion'][key]:
                     continue
                 obs = ctx['fusion'][key]
                 ret.append(obs.copy())

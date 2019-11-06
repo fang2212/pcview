@@ -17,6 +17,52 @@ import numpy as np
 from config.config import install
 
 
+class OrientTuner(object):
+    def __init__(self, y=install['video']['yaw'], p=install['video']['pitch'], r=install['video']['roll'],  ey=install['esr']['yaw']):
+        self.yaw = y
+        self.pitch = p
+        self.roll = r
+        self.esr_yaw = ey
+        self.transform = Transform()
+
+    def update_yaw(self, x):
+        self.yaw = install['video']['yaw'] - 0.01 * (x - 500)
+        # self.pitch = install['video']['pitch']
+        # self.roll = install['video']['roll']
+
+        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
+        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
+
+    def update_pitch(self, x):
+        # self.yaw = install['video']['yaw']
+        self.pitch = install['video']['pitch'] - 0.01 * (x - 500)
+        # self.roll = install['video']['roll']
+
+        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
+        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
+
+    def update_roll(self, x):
+        # self.yaw = install['video']['yaw']
+        self.roll = install['video']['roll'] - 0.01 * (x - 500)
+        # self.roll = install['video']['roll']
+
+        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
+        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
+
+    def update_esr_yaw(self, x):
+        self.esr_yaw = install['esr']['yaw'] - 0.01 * (x - 500)
+        # self.pitch = install['video']['pitch']
+        # self.roll = install['video']['roll']
+
+        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
+        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
+
+    def save_para(self):
+        install['video']['yaw'] = self.yaw
+        install['video']['pitch'] = self.pitch
+        install['video']['roll'] = self.roll
+
+
 class Transform:
     __instance = None
 
@@ -75,11 +121,11 @@ class Transform:
             p.append((int(tx), int(ty)))
         return p
 
-    def getp_ipm_from_poly(self, coefs, r=60, step=0.1):
+    def getp_ipm_from_poly(self, coefs, step=0.1, start=0, end=60):
         a0, a1, a2, a3 = coefs
         p = []
 
-        for x in np.arange(0, r, step):
+        for x in np.arange(start, end, step):
             y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
             tx, ty = self.trans_gnd2ipm(x, y)
             p.append((int(tx), int(ty)))
