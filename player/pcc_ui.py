@@ -772,8 +772,8 @@ class Player(object):
         # cv2.line(img, p1, p2, CVColor.Green if target['rtkst'] >= 48 else CVColor.Grey, 2)
         # cv2.line(img, p3, p4, CVColor.Green if host['rtkst'] >= 48 else CVColor.Grey, 2)
 
-        cv2.line(img, p1, p2, color, 1)
-        cv2.line(img, p3, p4, color, 1)
+        cv2.line(img, p1, p2, color, 2)
+        cv2.line(img, p3, p4, color, 2)
         cv2.line(img, p1, p3, color, 1)
         cv2.line(img, p1, p4, color, 1)
         cv2.line(img, p2, p3, color, 1)

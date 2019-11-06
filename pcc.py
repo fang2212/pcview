@@ -99,7 +99,7 @@ class PCC(object):
 
             cv2.createTrackbar('replay-speed', 'adj', 10, 50, update_speed)
 
-        cv2.setMouseCallback('UI', self.left_click, '1234')
+        cv2.setMouseCallback('MINIEYE-CVE', self.left_click, '1234')
         self.gga = None
         if not self.replay:
             self.en_gga = runtime['modules']['GGA_reporter']['enable']
@@ -277,7 +277,7 @@ class PCC(object):
             padding = np.zeros((img.shape[0] - img_aux.shape[0], img_aux.shape[1], 3), np.uint8)
             comb = np.hstack((img, np.vstack((img_aux, padding))))
 
-        cv2.imshow('UI', comb)
+        cv2.imshow('MINIEYE-CVE', comb)
 
         self.handle_keyboard()
         self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
