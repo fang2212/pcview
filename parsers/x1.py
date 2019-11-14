@@ -187,24 +187,25 @@ def parse_x1(id, data, ctx=None):
             if index in ctx['fusion']:
                 ctx['fusion'][index]['pos_lon'] = r['L_long_rel_'+'%02d' % (index+1)]
                 ctx['fusion'][index]['pos_lat'] = r['L_lat_rel_'+'%02d' % (index+1)]
-                ctx['fusion'][index]['vx'] = r['V_long_obj_' + '%02d' % (index + 1)]
-                ctx['fusion'][index]['vy'] = r['V_lat_obj_' + '%02d' % (index + 1)]
-                ctx['fusion'][index]['ax'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
+                ctx['fusion'][index]['vel_lon'] = r['V_long_obj_' + '%02d' % (index + 1)]
+                ctx['fusion'][index]['vel_lat'] = r['V_lat_obj_' + '%02d' % (index + 1)]
+                ctx['fusion'][index]['acc_lon'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
                 ctx['fusion'][index]['cipo'] = False
                 ctx['fusion'][index]['type'] = 'obstacle'
-                ctx['fusion'][index]['class'] = 'fusion_data'
+                ctx['fusion'][index]['sensor'] = 'x1_fusion'
+                ctx['fusion'][index]['class'] = 'fusion'
                 ctx['fusion'][index]['color'] = 7
                 ctx['fusion'][index]['width'] = 1.5
                 ctx['fusion'][index]['height'] = 1.5
         else:
             ctx['fusion'][index] = dict()
-            ctx['fusion'][index]['id'] = r['TrackID_'+'%02d'%(index+1)]
-            ctx['fusion'][index]['ay'] = r['Accel_lat_obj_'+'%02d'%(index+1)]
+            ctx['fusion'][index]['id'] = r['TrackID_'+'%02d' % (index+1)]
+            ctx['fusion'][index]['acc_lat'] = r['Accel_lat_obj_'+'%02d' % (index+1)]
 
         if id == 0x41f:
             ret = []
             for key in ctx['fusion']:
-                if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in ctx['fusion'][key]:
+                if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in ctx['fusion'][key] or ctx['fusion'][key]['pos_lon'] == 0:
                     continue
                 obs = ctx['fusion'][key]
                 ret.append(obs.copy())

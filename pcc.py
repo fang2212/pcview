@@ -41,10 +41,11 @@ def loop_traverse(items):
 
 class PCC(object):
 
-    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None):
-        from config.config import runtime
+    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None):
+        # from config.config import runtime
         self.hub = hub
-        self.player = Player()
+        self.cfg = uniconf
+        self.player = Player(uniconf)
         self.exit = False
         self.pause = False
         # self.recording = False
@@ -58,14 +59,14 @@ class PCC(object):
         self.ts_now = 0
         self.cipv = 0
         self.msg_cnt = {}
-        self.transform = Transform()
+        self.transform = Transform(uniconf)
         self.m_g2i = self.transform.calc_g2i_matrix()
         self.ipm = None
         self.show_ipm = ipm
         self.set_pinpoint = False
         self.target = None
         self.rtk_pair = [{}, {}]
-        self.ot = OrientTuner()
+        self.ot = OrientTuner(uniconf)
         self.show_ipm_bg = False
 
         # self.ego_car = Vehicle()
@@ -78,7 +79,7 @@ class PCC(object):
         # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
         self.sv_state = 'ipm'
-        self.rt_param = runtime
+        # self.rt_param = self.cfg.runtime
         # cv2.namedWindow('video_aux')
         cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
         cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
@@ -102,7 +103,7 @@ class PCC(object):
         cv2.setMouseCallback('MINIEYE-CVE', self.left_click, '1234')
         self.gga = None
         if not self.replay:
-            self.en_gga = runtime['modules']['GGA_reporter']['enable']
+            self.en_gga = self.cfg.runtime['modules']['GGA_reporter']['enable']
         else:
             self.en_gga = False
         self.flow_player = FlowPlayer()
@@ -111,7 +112,7 @@ class PCC(object):
 
         if self.save_replay_video and self.replay:
             self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
-            self.vw.set_writer("replay-render")
+            self.vw.set_writer("replay-render", 1760, 720)
             print('--------save replay video', os.path.dirname(self.rlog))
 
     def start(self):
@@ -212,7 +213,6 @@ class PCC(object):
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
 
-
         if 'x1_data' in mess:
             # print('------', mess['pcv_data'])
             for data in mess['x1_data']:
@@ -263,9 +263,6 @@ class PCC(object):
 
         self.player.render_text_info(img)
 
-        if self.save_replay_video and self.replay:
-            self.vw.write(img)
-
         if self.show_ipm:
             # print(img.shape)
             # print(self.ipm.shape)
@@ -278,6 +275,10 @@ class PCC(object):
             comb = np.hstack((img, np.vstack((img_aux, padding))))
 
         cv2.imshow('MINIEYE-CVE', comb)
+
+        if self.save_replay_video and self.replay:
+            self.vw.write(comb)
+            # print(comb.shape)
 
         self.handle_keyboard()
         self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
@@ -303,7 +304,7 @@ class PCC(object):
 
     def update_pinpoint(self, data):
         if data['type'] == 'pinpoint':
-            self.vehicles['ego'].dynamics['pinpoint'].appendleft(data)
+            self.vehicles['ego'].set_pinpoint(data)
             if not self.replay:
                 self.hub.fileHandler.insert_raw(
                     (data['ts'], data.get('source') + '.pinpoint', compose_from_def(ub482_defs, data)))
@@ -333,8 +334,8 @@ class PCC(object):
                     #     (data['ts'], source + '.pinpoint', compose_from_def(ub482_defs, data)))
                     # print('set pinpoint:', data)
                 if self.gga is None and self.en_gga and not self.replay:
-                    server = self.rt_param['modules']['GGA_reporter']['ntrip_address']
-                    port = self.rt_param['modules']['GGA_reporter']['port']
+                    server = self.cfg.runtime['modules']['GGA_reporter']['ntrip_address']
+                    port = self.cfg.runtime['modules']['GGA_reporter']['port']
                     self.gga = GGAReporter(server, port)
                     self.gga.start()
                 if self.gga is not None and not self.replay:
@@ -450,6 +451,7 @@ class PCC(object):
             # dummy1 = {'type': 'obstacle', 'id': 20, 'source': 'esr.0', 'sensor': 'radar', 'pos_lat': 0, 'pos_lon': 60, 'color': 2}
             # self.player.show_obs(img, dummy0)
             # self.player.show_obs(img, dummy1)
+
             self.player.show_obs(img, data)
             self.player.update_column_ts(data.get('source'), data.get('ts'))
             if self.show_ipm:
@@ -484,6 +486,10 @@ class PCC(object):
         elif data['type'] == 'gps':
             self.player.show_gps(data)
             self.player.update_column_ts(data['source'], data['ts'])
+        elif data['type'] == 'traffic_sign':
+            # print(data)
+            self.player.show_tsr(img, data)
+            # self.pause = True
         self.specific_handle(img, data)
 
     def handle_keyboard(self):
@@ -665,7 +671,7 @@ if __name__ == "__main__":
 
     else:
         print('normal mode.')
-        load_cfg(sys.argv[1])
+        uni_conf = load_cfg(sys.argv[1])
         hub = Hub()
         pcc = PCC(hub, ipm=False, replay=False)
         pcc.start()

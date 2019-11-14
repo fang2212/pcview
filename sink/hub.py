@@ -5,7 +5,7 @@ from multiprocessing import Process as kProcess
 from multiprocessing import Queue as kQueue
 from threading import Thread
 
-from config.config import configs, bcl, local_cfg
+from config.config import bcl
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
 from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink
@@ -55,7 +55,7 @@ class CollectorNode(kProcess):
 
 class Hub(Thread):
 
-    def __init__(self, headless=False, direct_cfg=None):
+    def __init__(self, headless=False, direct_cfg=None, uniconf=None):
 
         # msg_types = config.msg_types
 
@@ -69,6 +69,7 @@ class Hub(Thread):
         self.time_aligned = True
         self.msg_cnt = {}
         self.last_res = {}
+        self.configs = uniconf.configs
         # self.collectors = {}
 
         self.finder = CollectorFinder()
@@ -89,10 +90,10 @@ class Hub(Thread):
                 'ts': 0,
                 'fix': 0,
             }
-
+        local_cfg = uniconf.local_cfg
         self.direct_cfg = direct_cfg
         if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
-            self.fileHandler = FileHandler()
+            self.fileHandler = FileHandler(uniconf=uniconf)
             self.fileHandler.start()
             # self.fileHandler.start_rec()
 
@@ -155,7 +156,7 @@ class Hub(Thread):
 
     def init_collectors(self):
         cfgs_online = {}
-        for idx, cfg in enumerate(configs):  # match cfg and finder results
+        for idx, cfg in enumerate(self.configs):  # match cfg and finder results
             mac = cfg.get('mac')
             if mac and mac in self.mac_ip:
                 ip = self.mac_ip[mac]

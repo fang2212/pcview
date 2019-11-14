@@ -11,7 +11,7 @@ import cantools
 from tools.match import *
 from tools.transform import Transform
 from math import pi
-from config.config import install
+# from config.config import install
 
 R2D = 180.0/pi
 
@@ -25,7 +25,7 @@ db_hmb = cantools.database.load_file('dbc/szhmb.dbc', strict=False)
 db_fusion_mrr = cantools.database.load_file('dbc/MRR_radar_CAN.dbc', strict=False)
 db_sta77_2 = cantools.database.load_file('dbc/sensortech-77G.dbc', strict=False)
 
-trans_polar2rcs = Transform().trans_polar2rcs
+# trans_polar2rcs = Transform().trans_polar2rcs
 
 
 def parse_ars(id, buf, ctx=None):
@@ -88,23 +88,25 @@ def parse_esr(id, buf, ctx=None):
 
             range_rate = r.get('CAN_TX_TRACK_RANGE_RATE')
             range_acc = r.get('CAN_TX_TRACK_RANGE_ACCEL')
-            x, y = trans_polar2rcs(angle_raw, range_raw, install['esr'])
-            angle_new = atan2(y, x)*R2D
-            range_new = sqrt(x * x + y * y)
+            # x, y = trans_polar2rcs(angle_raw, range_raw, 'esr')
+            # angle_new = atan2(y, x)*R2D
+            # range_new = sqrt(x * x + y * y)
 
             # -YJ- new
-            v_x = range_rate * cos(angle_new/R2D)
+            # v_x = range_rate * cos(angle_new/R2D)
+            v_x = range_rate * cos(angle_raw / R2D)
 
             # ttc_m
-            if v_x < -0.1:
-                ttc_m = -x / v_x
+            if range_rate < -0.1:
+                ttc_m = -range_raw / range_rate
                 if ttc_m > 7:
                     ttc_m = 7
             else:
                 ttc_m = 7
 
             # ttc_a
-            t1 = v_x * v_x - 2 * range_acc * range_new
+            # t1 = v_x * v_x - 2 * range_acc * range_new
+            t1 = v_x * v_x - 2 * range_acc * range_raw
             if t1 > 0 and range_acc < 0:
                 # only use ttc_a when a < 0
                 ttc_a = (-v_x - sqrt(t1)) / range_acc
@@ -119,8 +121,8 @@ def parse_esr(id, buf, ctx=None):
                 ttc = ttc_m
 
             # only show ego-lane and next-lane ttc
-            if fabs(y) > 6.0:
-                ttc = 7
+            # if fabs(y) > 6.0:
+            #     ttc = 7
 
             # print('ESR 0x%x' % id, r)
             # ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,

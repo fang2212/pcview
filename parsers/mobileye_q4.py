@@ -15,6 +15,7 @@ db_q4.add_dbc_file('dbc/q4/TSR_V1.3.dbc')
 
 obs = {}
 
+
 def parser_mbq4(id, buf, ctx):
     ids = [m.frame_id for m in db_q4.messages]
     if id not in ids:
@@ -23,6 +24,7 @@ def parser_mbq4(id, buf, ctx):
     r = db_q4.decode_message(id, buf)
     if not r:
         return None
+    # print(r)
 
     ## 341
     if id == 0x155:
@@ -119,6 +121,8 @@ def parser_mbq4(id, buf, ctx):
 
         # Data B
         if 'OBJ_Lane_Assignment' in r:
+            if 'id' not in ctx[cur_id_key]:
+                return
             ctx[cur_id_key]['lane_assignment'] = r['OBJ_Lane_Assignment']
             ctx[cur_id_key]['width'] = r['OBJ_Width']
             ctx[cur_id_key]['length'] = r['OBJ_Length']
@@ -127,16 +131,20 @@ def parser_mbq4(id, buf, ctx):
 
         # Data C
         if 'OBJ_Abs_Lat_Velocity' in r:
+            if 'id' not in ctx[cur_id_key]:
+                return
             ctx[cur_id_key]['abs_lat_velocity'] = r['OBJ_Abs_Lat_Velocity']
             ctx[cur_id_key]['abs_long_acc'] = r['OBJ_Abs_Long_Acc']
             ctx[cur_id_key]['pos_lon'] = r['OBJ_Long_Distance']
 
         # Data D
         if 'OBJ_Lat_Distance' in r:
+            if 'id' not in ctx[cur_id_key]:
+                return
             ctx[cur_id_key]['pos_lat'] = -r['OBJ_Lat_Distance'] # eyeq4 坐标系不一样
             ctx[cur_id_key]['angle_rate'] = r['OBJ_Angle_Rate']
 
-        if (id-0x111 + 1)%4 == 0:
+        if (id-0x111 + 1) % 4 == 0:
             if len(ctx[cur_id_key]) >= 6:
                 ctx[cur_id_key]['color'] = 8
                 ctx[cur_id_key]['type'] = 'obstacle'
@@ -149,26 +157,28 @@ def parser_mbq4(id, buf, ctx):
 
     if 0x156 <= id <= 0x16F:
         if 'TSR_ID' in r:
-            obs['TSR_ID'] = r['TSR_ID']
-            obs['TSR_Sign_Name'] = r['TSR_Sign_Name']
-            obs['TSR_Confidence'] = r['TSR_Confidence']
-            obs['TSR_Relevancy'] = r['TSR_Relevancy']
-            obs['TSR_Filter_Type'] = r['TSR_Filter_Type']
-            obs['TSR_Sup1_SignName'] = r['TSR_Sup1_SignName']
-            obs['TSR_Sup1_Confidence'] = r['TSR_Sup1_Confidence']
+            obs['id'] = r['TSR_ID']
+            obs['type'] = 'traffic_sign'
+            obs['sign_name'] = r['TSR_Sign_Name']
+            obs['confidence'] = r['TSR_Confidence']
+            obs['relevancy'] = r['TSR_Relevancy']
+            obs['filter_type'] = r['TSR_Filter_Type']
+            obs['sup1_sign_name'] = r['TSR_Sup1_SignName']
+            obs['sup1_confidence'] = r['TSR_Sup1_Confidence']
 
         if 'TSR_Sign_Height' in r:
-            obs['TSR_Sup2_SignName'] = r['TSR_Sup2_SignName']
-            obs['TSR_Sup2_Confidence'] = r['TSR_Sup2_Confidence']
-            obs['TSR_Sign_Long_Distance'] = r['TSR_Sign_Long_Distance']
-            obs['TSR_Sign_Lateral_Distance'] = r['TSR_Sign_Lateral_Distance']
-            obs['TSR_Sign_Height'] = r['TSR_Sign_Height']
+            obs['sup2_sign_name'] = r['TSR_Sup2_SignName']
+            obs['sup2_confidence'] = r['TSR_Sup2_Confidence']
+            obs['pos_lon'] = r['TSR_Sign_Long_Distance']
+            obs['pos_lat'] = -r['TSR_Sign_Lateral_Distance']
+            obs['pos_hgt'] = r['TSR_Sign_Height']
 
             obs['color'] = 8
-            obs['type'] = 'tsr'
             obs['sensor'] = 'mbq4'
             res = obs.copy()
-            if r['TSR_Sign_Long_Distance'] > 0.0:
-                print('x: ',  r['TSR_Sign_Long_Distance'], 'y: ', r['TSR_Sign_Lateral_Distance'], 'Z: ', r['TSR_Sign_Height'])
+            if obs['pos_lon'] > 0.0:
+                # print(res)
+                return res
+                # print('x: ',  r['TSR_Sign_Long_Distance'], 'y: ', r['TSR_Sign_Lateral_Distance'], 'Z: ', r['TSR_Sign_Height'])
             obs.clear()
-            return res
+            # return res

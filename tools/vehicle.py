@@ -40,8 +40,9 @@ class Vehicle(object):
                          'hor_speed': deque(maxlen=20),
                          'vert_speed': deque(maxlen=20),
                          'trk_gnd': deque(maxlen=20),
-                         'pinpoint': deque(maxlen=20),
+                         # 'pinpoint': deque(maxlen=20),
                          'road_grad_x': deque(maxlen=20)}
+        self.pinpoint = None
         # self.road_gradient = 0.0
         # self.pitch_history = deque(maxlen=100)
         # self.pitch_history.append(0.0)
@@ -50,6 +51,11 @@ class Vehicle(object):
 
     def update_dynamics(self, dyn):
         self.source = dyn['source']
+        if dyn['type'] == 'pinpoint':
+            self.set_pinpoint(dyn)
+        if dyn['type'] not in ['bestpos', 'bestvel', 'heading', 'vehicle_state']:
+            return
+
         for key in self.dynamics:
             if key in dyn:
                 # self.dynamics[key][0] = dyn[key]
@@ -61,6 +67,10 @@ class Vehicle(object):
                 #     self.pitch_history.append(dyn[key])
                 #     self.road_gradient = np.mean(self.pitch_history)
                 # self.dynamics[key][0] = np.mean(list(self.pitch_history)[-3:-1])
+        # print(self.dynamics['pinpoint'])
+
+    def set_pinpoint(self, pp):
+        self.pinpoint = pp
 
     def get_pos(self, ts=None):
         for idx0, pitch in enumerate(self.dynamics['pitch']):
@@ -107,11 +117,15 @@ class Vehicle(object):
         #     return r
 
     def get_pp_target(self):
+        if not self.pinpoint:
+            return
         host = self.get_dynamics(('lat', 'lon', 'hgt', 'pitch', 'yaw', 'hor_speed', 'trk_gnd'))
         # print(host)
-        pp = self.dynamics['pinpoint'][0] if len(self.dynamics['pinpoint']) > 0 else None
+        pp = self.pinpoint
+        # print('get pp target', self.dynamics['pinpoint'], host)
         if not host or not pp:
             return
+        # print('get pp target')
         range = gps_distance(pp['lat'], pp['lon'], host['lat'], host['lon'])
         angle = gps_bearing(pp['lat'], pp['lon'], host['lat'], host['lon'])
         angle = angle - host['yaw']
@@ -127,7 +141,7 @@ class Vehicle(object):
 
         return {'ts': host['ts'], 'source': self.source, 'type': 'rtktarget', 'range': range, 'angle': angle,
                 'delta_hgt': delta_h, 'pos_lat': pos_y, 'pos_lon': pos_x, 'vel_lat': vel_y, 'vel_lon': vel_x,
-                'TTC': pos_x/vel_x}
+                'TTC': pos_x / host['hor_speed']}
 
 
 def get_vehicle_target(host, target):
@@ -135,6 +149,7 @@ def get_vehicle_target(host, target):
     target_dyn = target.get_dynamics(('lat', 'lon', 'hgt', 'hor_speed', 'trk_gnd'))
     if not host_dyn or not target_dyn:
         return
+
     range = gps_distance(target_dyn['lat'], target_dyn['lon'], host_dyn['lat'], host_dyn['lon'])
     angle = gps_bearing(target_dyn['lat'], target_dyn['lon'], host_dyn['lat'], host_dyn['lon'])
     angle = angle - host_dyn['yaw']

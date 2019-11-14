@@ -7,14 +7,14 @@
             "port": 5001
         }
     },
-    "main_collector": "algo106",
+    "main_collector": "algo_0122",
     "vehicles": {
         "ego": {
             "enable": true,
             "collectors": {
-                "algo106": "normal",
+                "algo_0122": "normal",
+                "ffd0": "normal",
                 "ffe1": "normal",
-                "ffe0": "normal",
                 "55dd": "normal"
             },
             "installation": {

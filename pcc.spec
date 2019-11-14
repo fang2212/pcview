@@ -9,7 +9,7 @@ added_files = [
 	('web', 'web')
 ]
 
-a = Analysis(['pcc.py'],
+a = Analysis(['pcc_app.py'],
              pathex=['.'],
              binaries=[],
              datas= added_files,

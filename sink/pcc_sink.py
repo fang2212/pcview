@@ -227,7 +227,7 @@ class CANSink(Sink):
         msg = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
         msg = memoryview(msg).tobytes()
         dlc = msg[3]
-        print(dlc)
+        # print(dlc)
         can_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         timestamp, = struct.unpack('<d', msg[8:16])
         data = msg[16:]

@@ -1,6 +1,6 @@
 import sys
 import os
-from config.config import load_cfg
+from config.config import load_cfg, get_local_cfg
 
 local_path = os.path.split(os.path.realpath(__file__))[0]
 # print('local_path:', local_path)
@@ -9,7 +9,7 @@ os.chdir(local_path)
 # load_cfg(sys.argv[1])
 
 if len(sys.argv) == 1:
-    sys.argv.append('config/cfg_lab.json')
+    sys.argv.append('config/cfg_lab_suzhou.json')
 
 if '--direct' in sys.argv:
     print('direct mode.')
@@ -20,7 +20,7 @@ if '--direct' in sys.argv:
 
 elif '--headless' in sys.argv:
     print('headless mode.')
-    load_cfg(sys.argv[1])
+    configs, installs, runtime = load_cfg(sys.argv[1])
     from pcc import *
     hub = Hub(headless=True)
     hub.start()
@@ -86,8 +86,9 @@ elif '--headless' in sys.argv:
 
 else:
     print('normal mode.')
-    load_cfg(sys.argv[1])
+    cve_conf = load_cfg(sys.argv[1])
+    local_cfg = get_local_cfg()
     from pcc import *
-    hub = Hub()
-    pcc = PCC(hub, ipm=False, replay=False)
+    hub = Hub(uniconf=cve_conf)
+    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf)
     pcc.start()

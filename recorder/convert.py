@@ -22,6 +22,7 @@ def compose_from_def(defs, r):
 def decode_with_def(defs, line):
     fields = line.split(' ')
     kw = fields[2].split('.')[-1]
+    ts = float(fields[0]) + float(fields[1]) / 1000000
     if kw not in defs:
         print(kw, 'not in defs')
         return None
@@ -29,7 +30,7 @@ def decode_with_def(defs, line):
         print('log line length grater than def', kw)
         print(len(defs[kw]['items']), len(fields)-3)
         return None
-    r = {'type': kw}
+    r = {'type': kw, 'ts': ts}
     for idx, fi in enumerate(fields[3:]):
         vtype, name = defs[kw]['items'][idx]
         if vtype[-1] == 'f':

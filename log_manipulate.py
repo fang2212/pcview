@@ -514,30 +514,44 @@ def parse_rtk_target_ub482(line, ctx):
         ctx['rtksol'] = {'vehicles': dict(), 'ts': 0}
 
     _, idx, kw = cols[2].split('.')
-    source = 'rtl.{}'.format(idx)
-    role = ctx.get(source)
+    source = 'rtk.{}'.format(idx)
+    role = ctx['veh_roles'].get(source)
+    # print(ctx['veh_roles'])
+    # print('source, role:', source, role)
     if role not in ctx['rtksol']['vehicles']:
         ctx['rtksol']['vehicles'][role] = Vehicle(role)
     r = decode_with_def(ub482_defs, line)
+    r['source'] = source
     if not r:
         return
 
     epoch = []
     select = {'bestpos': 'lat', 'bestvel': 'hor_speed', 'heading': 'pitch'}
     key = select.get(r['type'])
+    # print(key, r['type'])
     new_epoch = True
     ego_car = ctx['rtksol']['vehicles'].get('ego')
-    for role in ctx['rtksol']['vehicles']:
-        if r['ts'] <= ctx['rtksol']['vehicles'][role].dynamics[key][0][0]:
-            new_epoch = False
+    if not key:
+        new_epoch = False
+    else:
+        for role in ctx['rtksol']['vehicles']:
+            # print(ctx['rtksol']['vehicles'])
+            if len(ctx['rtksol']['vehicles'][role].dynamics[key]) == 0:
+                continue
+            if r['ts'] <= ctx['rtksol']['vehicles'][role].dynamics[key][0][0]:
+                new_epoch = False
     if new_epoch:
         for role in ctx['rtksol']['vehicles']:
             if role == 'ego':
+                continue
+            if not ego_car or not ctx['rtksol']['vehicles'][role]:
                 continue
             t = get_vehicle_target(ego_car, ctx['rtksol']['vehicles'][role])
             if t:
                 epoch.append(t)
     ctx['rtksol']['vehicles'][role].update_dynamics(r)
+    # if r['type'] == 'pinpoint':
+    #     print(r)
 
     lines = ''
     for t in epoch:
@@ -551,6 +565,7 @@ def parse_rtk_target_ub482(line, ctx):
 
     ppt = ego_car.get_pp_target()
     if ppt:
+        # print(ppt)
         epoch.append(ppt)
         lines += compose_log(ts, 'rtk.obj.pp', '{pos_lat} {pos_lon} {vel_lon} {TTC}'.format(**ppt))
     if epoch:
@@ -613,13 +628,13 @@ def parse_esr_line(line, ctx):
             # print(type(item), item)
             # print(item['cipo'])
             # if item.get('cipo'):
-            angle_rad = item['angle'] * pi / 180.0
-            x = cos(angle_rad) * item['range']
-            y = sin(angle_rad) * item['range']
-            # lines += compose_log(ts, 'esr.obj.{}'.format(item['id']),
-            #                      '{} {} {} {} {}'.format(item['range'], item['angle'], item['range_rate'], y, item['TTC_m']))
-            lines += compose_log(ts, 'esr.obj.{}'.format(item['id']),
-                                 '{} {} {} {}'.format(y, x, item['range_rate'], item['TTC_m']))
+            # angle_rad = item['angle'] * pi / 180.0
+            # x = cos(angle_rad) * item['range']
+            # y = sin(angle_rad) * item['range']
+            x, y = ctx['trans'].trans_polar2rcs(item['angle'], item['range'], 'esr')
+
+            lines += compose_log(ts, 'esr.obj.{id}'.format(**item),
+                                 '{} {} {range_rate} {TTC_m}'.format(y, x, **item))
             ctx['esr_ids'].add(item['id'])
             item['pos_lat'] = y
             item['pos_lon'] = x
@@ -668,19 +683,20 @@ def parse_x1_line(line, ctx):
 
         # ctx['x1_obs_ep'] = ret
         # ctx['x1_obs_ep_ts'] = ts
-        ctx['obs_ep']['x1']['data'] = ret
-        ctx['obs_ep']['x1']['ts'] = ts
 
         for r in ret:
-            if 'no vehicle' in r['class']:
-                # print(r)
-                continue
             # print(r)
+            if 'no vehicle' in r['class']:
+                continue
+            if r['sensor'] is not 'x1':
+                return
 
-            lines += compose_log(ts, 'x1.{}.{}'.format(r['class'], r['id']),
-                                 '{} {} {} {}'.format(r['pos_lat'], r['pos_lon'], (r['vel_lon']),
-                                                      r.get('TTC') or 7.0))
+            x, y = ctx['trans'].compensate_param_rcs(r['pos_lon'], r['pos_lat'], 'x1')
+            lines += compose_log(ts, 'x1.{class}.{id}'.format(**r),
+                                 '{} {} {} {}'.format(y, x, (r['vel_lon']), r.get('TTC') or 7.0))
             ctx['x1_ids'].add(r['id'])
+        ctx['obs_ep']['x1']['data'] = ret
+        ctx['obs_ep']['x1']['ts'] = ts
         return lines
         # if isinstance(ret, list):
         #
@@ -690,6 +706,46 @@ def parse_x1_line(line, ctx):
         #     return compose_log(ts, 'x1.{}.{}'.format(ret['class'], ret['id']),
         #                        '{} {} {} {}'.format(ret['pos_lat'], ret['pos_lon'], (ret['vel_lon']),
         #                                             ret.get('TTC')))
+
+
+def parse_x1_fusion_line(line, ctx):
+    can_port = ctx['can_port'].get('x1')
+    if can_port is None:
+        return
+    if not ctx.get('x1_ids'):
+        ctx['x1_ids'] = set()
+    from parsers.x1 import parse_x1
+    cols = line.split(' ')
+    ts = float(cols[0]) + float(cols[1]) / 1000000
+    if can_port in cols[2] or can_port.lower() in cols[2]:
+        can_id = int(cols[3], 16)
+        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        ret = parse_x1(can_id, buf, ctx)
+        # print(ret)
+        speed = ctx.get('speed') or 0
+        # print(can_port, buf, r)
+        if not ret or not isinstance(ret, list):
+            return
+        # print(ret)
+        lines = ''
+
+        # ctx['x1_obs_ep'] = ret
+        # ctx['x1_obs_ep_ts'] = ts
+
+        for r in ret:
+            # print(r)
+            if 'no vehicle' in r['class']:
+                continue
+            if r['sensor'] is not 'x1_fusion':
+                return
+
+            x, y = ctx['trans'].compensate_param_rcs(r['pos_lon'], r['pos_lat'], 'x1')
+            lines += compose_log(ts, 'x1.{class}.{id}'.format(**r),
+                                 '{} {} {} {}'.format(y, x, (r['vel_lon']), r.get('TTC') or 7.0))
+            ctx['x1_ids'].add(r['id'])
+        ctx['obs_ep']['x1']['data'] = ret
+        ctx['obs_ep']['x1']['ts'] = ts
+        return lines
 
 
 def parse_q3_line(line, ctx):
@@ -708,13 +764,18 @@ def parse_q3_line(line, ctx):
         if not ret:
             return
         # print(ret)
+        if 'type' in ret and ret['type'] == 'vehicle_state':
+            # print(ret['speed'])
+            ctx['q3_speed'] = ret['speed']/3.6
         if isinstance(ret, list):
             lines = ''
             for r in ret:
                 # print('0x{:x}'.format(r['id']), ts)
                 # print(r)
-                lines += compose_log(ts, 'q3.{}.{}'.format(r['class'], r['id']),
-                                     '{} {} {} {}'.format(r['pos_lat'], r['pos_lon'], r['vel_lon'], r['TTC']))
+                speed = ctx.get('q3_speed') or 0
+                x, y = ctx['trans'].compensate_param_rcs(r['pos_lon'], r['pos_lat'], 'ifv300')
+                lines += compose_log(ts, 'q3.{class}.{id}'.format(**r),
+                                     '{} {} {} {}'.format(y, x, r['vel_lon'] - speed, r['TTC']))
             # ctx['q3_obs_ep'] = ret
             # ctx['q3_obs_ep_ts'] = ts
             ctx['obs_ep']['q3']['data'] = ret
@@ -1035,89 +1096,89 @@ def match_obs(line, ctx):
     if not updated:
         return
     # print(ctx['obs_ep']['q3'])
-    done = False
-    for i in range(len(ctx['obs_ep']['x1']['buff']) - 1, 0, -1):
-        ts = ctx['obs_ep']['x1']['buff'][i][0]
-        for j in range(len(ctx['obs_ep']['esr']['buff']) - 1, 0, -1):
-
-            ts0 = ctx['obs_ep']['esr']['buff'][j-1][0]
-            ts1 = ctx['obs_ep']['esr']['buff'][j][0]
-
-            if ts0 < ts <= ts1:
-                x1_obs_t = ctx['obs_ep']['x1']['buff'][i][1]
-                # print(len(ctx['x1_buff'][i][1]), len(ctx['esr_buff'][j][1]))
-                if ts - ts0 > ts1 - ts:
-                    dt = ts1 - ts
-                    esr_obs_t = ctx['obs_ep']['esr']['buff'][j][1]
-                else:
-                    dt = ts - ts0
-                    esr_obs_t = ctx['obs_ep']['esr']['buff'][j-1][1]
-
-                if dt > 0.1:
-                    done = True
-                    break
-                # ret = spatial_match_obs(x1_obs_t, esr_obs_t)
-                # if not ret:
-                #     done = True
-                    # print('no spatial match', len(x1_obs_t), len(esr_obs_t), ts - ts0, ts1 - ts)
-                    # break
-                for ret in spatial_match_obs(x1_obs_t, esr_obs_t):
-                    x1sel, esrsel = ret
-                    candidate = {'esr': {'id': esrsel['id'], 'dist': get_distance(x1sel, esrsel)}}
-                    # ctx['matched_ep'][ts] = pair
-                    # print(candidate)
-                    if ts not in ctx['matched_ep']:
-                        ctx['matched_ep'][ts] = dict()
-                    if x1sel['id'] not in ctx['matched_ep'][ts]:
-                        ctx['matched_ep'][ts][x1sel['id']] = dict()
-                    ctx['matched_ep'][ts][x1sel['id']].update(candidate)
-                    # print(ctx['matched_ep'][ts])
-                    done = True
-                break
-    # for item in ctx['matched_ep'][ts]:
-    #     print(item)
-    # print(ctx['obs_ep']['x1']['buff'])
-    for i in range(len(ctx['obs_ep']['x1']['buff']) - 1, 0, -1):
-        ts = ctx['obs_ep']['x1']['buff'][i][0]
-        for j in range(len(ctx['obs_ep']['q3']['buff']) - 1, 0, -1):
-            ts0 = ctx['obs_ep']['q3']['buff'][j - 1][0]
-            ts1 = ctx['obs_ep']['q3']['buff'][j][0]
-
-            if ts0 < ts <= ts1:
-                x1_obs_t = ctx['obs_ep']['x1']['buff'][i][1]
-                # print(len(ctx['x1_buff'][i][1]), len(ctx['q3_buff'][j][1]))
-                if ts - ts0 > ts1 - ts:
-                    dt = ts1 - ts
-                    q3_obs_t = ctx['obs_ep']['q3']['buff'][j][1]
-                else:
-                    dt = ts - ts0
-                    q3_obs_t = ctx['obs_ep']['q3']['buff'][j - 1][1]
-
-                if dt > 0.1:
-                    done = True
-                    break
-                # ret = spatial_match_obs(x1_obs_t, q3_obs_t)
-                # if not ret:
-                #     done = True
-                # print('no spatial match', len(x1_obs_t), len(q3_obs_t), ts - ts0, ts1 - ts)
-                # break
-                for ret in spatial_match_obs(x1_obs_t, q3_obs_t):
-                    x1sel, q3sel = ret
-                    candidate = {'q3': {'id': q3sel['id'], 'dist':get_distance(x1sel, q3sel)}}
-                    # ctx['matched_ep'][ts] = pair
-                    if ts not in ctx['matched_ep']:
-                        ctx['matched_ep'][ts] = dict()
-                    # found = False
-                    if x1sel['id'] not in ctx['matched_ep'][ts]:
-                        ctx['matched_ep'][ts][x1sel['id']] = dict()
-                    ctx['matched_ep'][ts][x1sel['id']].update(candidate)
-                    # if not found:
-                    #     ctx['matched_ep'][ts].append(pair)
-                    # print(ctx['matched_ep'][ts])
-                    done = True
-                # break
-        if done:
-            break
+    _match_obs(('x1', 'esr'), ctx)
+    _match_obs(('x1', 'q3'), ctx)
+    # done = False
+    # for i in range(len(ctx['obs_ep']['x1']['buff']) - 1, 0, -1):
+    #     ts = ctx['obs_ep']['x1']['buff'][i][0]
+    #     for j in range(len(ctx['obs_ep']['esr']['buff']) - 1, 0, -1):
+    #
+    #         ts0 = ctx['obs_ep']['esr']['buff'][j-1][0]
+    #         ts1 = ctx['obs_ep']['esr']['buff'][j][0]
+    #
+    #         if ts0 < ts <= ts1:
+    #             x1_obs_t = ctx['obs_ep']['x1']['buff'][i][1]
+    #             # print(len(ctx['x1_buff'][i][1]), len(ctx['esr_buff'][j][1]))
+    #             if ts - ts0 > ts1 - ts:
+    #                 dt = ts1 - ts
+    #                 esr_obs_t = ctx['obs_ep']['esr']['buff'][j][1]
+    #             else:
+    #                 dt = ts - ts0
+    #                 esr_obs_t = ctx['obs_ep']['esr']['buff'][j-1][1]
+    #
+    #             if dt > 0.1:
+    #                 done = True
+    #                 break
+    #             # ret = spatial_match_obs(x1_obs_t, esr_obs_t)
+    #             # if not ret:
+    #             #     done = True
+    #                 # print('no spatial match', len(x1_obs_t), len(esr_obs_t), ts - ts0, ts1 - ts)
+    #                 # break
+    #             for ret in spatial_match_obs(x1_obs_t, esr_obs_t):
+    #                 x1sel, esrsel = ret
+    #                 candidate = {'esr': {'id': esrsel['id'], 'dist': get_distance(x1sel, esrsel)}}
+    #                 # ctx['matched_ep'][ts] = pair
+    #                 # print(candidate)
+    #                 if ts not in ctx['matched_ep']:
+    #                     ctx['matched_ep'][ts] = dict()
+    #                 if x1sel['id'] not in ctx['matched_ep'][ts]:
+    #                     ctx['matched_ep'][ts][x1sel['id']] = dict()
+    #                 ctx['matched_ep'][ts][x1sel['id']].update(candidate)
+    #                 # print(ctx['matched_ep'][ts])
+    #                 done = True
+    #             break
+    #
+    # for i in range(len(ctx['obs_ep']['x1']['buff']) - 1, 0, -1):
+    #     ts = ctx['obs_ep']['x1']['buff'][i][0]
+    #     for j in range(len(ctx['obs_ep']['q3']['buff']) - 1, 0, -1):
+    #         ts0 = ctx['obs_ep']['q3']['buff'][j - 1][0]
+    #         ts1 = ctx['obs_ep']['q3']['buff'][j][0]
+    #
+    #         if ts0 < ts <= ts1:
+    #             x1_obs_t = ctx['obs_ep']['x1']['buff'][i][1]
+    #             # print(len(ctx['x1_buff'][i][1]), len(ctx['q3_buff'][j][1]))
+    #             if ts - ts0 > ts1 - ts:
+    #                 dt = ts1 - ts
+    #                 q3_obs_t = ctx['obs_ep']['q3']['buff'][j][1]
+    #             else:
+    #                 dt = ts - ts0
+    #                 q3_obs_t = ctx['obs_ep']['q3']['buff'][j - 1][1]
+    #
+    #             if dt > 0.1:
+    #                 done = True
+    #                 break
+    #             # ret = spatial_match_obs(x1_obs_t, q3_obs_t)
+    #             # if not ret:
+    #             #     done = True
+    #             # print('no spatial match', len(x1_obs_t), len(q3_obs_t), ts - ts0, ts1 - ts)
+    #             # break
+    #             for ret in spatial_match_obs(x1_obs_t, q3_obs_t):
+    #                 x1sel, q3sel = ret
+    #                 candidate = {'q3': {'id': q3sel['id'], 'dist':get_distance(x1sel, q3sel)}}
+    #                 # ctx['matched_ep'][ts] = pair
+    #                 if ts not in ctx['matched_ep']:
+    #                     ctx['matched_ep'][ts] = dict()
+    #                 # found = False
+    #                 if x1sel['id'] not in ctx['matched_ep'][ts]:
+    #                     ctx['matched_ep'][ts][x1sel['id']] = dict()
+    #                 ctx['matched_ep'][ts][x1sel['id']].update(candidate)
+    #                 # if not found:
+    #                 #     ctx['matched_ep'][ts].append(pair)
+    #                 # print(ctx['matched_ep'][ts])
+    #                 done = True
+    #             # break
+    #     if done:
+    #         break
 
 # deprecated
 # def pair_x1_esr(line, ctx):
@@ -1753,6 +1814,7 @@ def get_matches_from_pairs(matched_ep, names):
             entry = matches[id1][id2]
             matches[id1][id2]['dist_mean'] /= entry['count']
             if entry['count'] < 20:
+
                 del matches[id1][id2]
                 continue
             if entry['dist_mean'] > 5.0:
@@ -1821,11 +1883,12 @@ def get_trajectory_from_matches(matches, types):
             # match_dict['{}_{}'.format(obs1id, obs2id)] = entry
         for obs2id in list(matches[obs1id]):
             if obs2id in discard_list:
+                print(bcl.BOLD+'discarded match:'+bcl.ENDC, type1, obs1id, type2, obs2id)
                 del matches[obs1id][obs2id]
-                continue
-            trj = {'obs': {type1: [obs1id], type2: [obs2id]}, **(matches[obs1id][obs2id])}
-            # print(trj)
-            trj_list.append(trj)
+            else:
+                trj = {'obs': {type1: [obs1id], type2: [obs2id]}, **(matches[obs1id][obs2id])}
+                # print('lalala', trj)
+                trj_list.append(trj)
     return trj_list
 
 
@@ -1869,7 +1932,9 @@ def merge_trajectory(trj_list1, trj_list2):
                     trj = {'obs': a,
                            'start_ts': min(sts1, sts2), 'end_ts': max(ets1, ets2),
                            'count': trj1['count'] + trj2['count'],
-                           'dist_mean': (trj1['dist_mean'] * trj1['count'] + trj2['dist_mean'] * trj2['count']) / (trj1['count'] + trj2['count'])}
+                           # 'dist_mean': (trj1['dist_mean'] * trj1['count'] + trj2['dist_mean'] * trj2['count']) / (trj1['count'] + trj2['count']),
+                           'dist_mean': max(trj1['dist_mean'], trj2['dist_mean'])
+                           }
                     trj_list.append(trj)
                     trj1['selected'] = True
                     trj2['selected'] = True
@@ -2057,8 +2122,13 @@ def process_by_matches(matches, names, r0, ts0, ctx, vis=False):
 
 def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir=None):
     # log = os.path.join(dir_name, 'log.txt')
+    from tools.transform import Transform
+    from config.config import CVECfg
     ctx = dict()
-    ctx['obs_ep'] = {'x1': {'buff': deque(maxlen=10)}, 'esr': {'buff': deque(maxlen=10)}, 'q3': {'buff': deque(maxlen=10)}}
+    ctx['obs_ep'] = {'x1': {'buff': deque(maxlen=10)},
+                     'esr': {'buff': deque(maxlen=10)},
+                     'q3': {'buff': deque(maxlen=10)},
+                     'rtk': {'buff': deque(maxlen=10)}}
     if not os.path.exists(log):
         print(bcl.FAIL + 'Invalid data path. {} does not exist.'.format(log) + bcl.ENDC)
         return
@@ -2069,15 +2139,31 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
         canports = dict()
         ctx['veh_roles'] = dict()
         for idx, collector in enumerate(conf):
-            type0 = collector['can_types']['can0']
-            if type0 and type0[0] not in canports:
-                canports[type0[0]] = 'CAN{}'.format(idx * 2)
-            type1 = collector['can_types']['can1']
-            if type1 and type1[0] not in canports:
-                canports[type1[0]] = 'CAN{}'.format(idx * 2 + 1)
             if 'can_types' in collector:
-                for msg in collector['can_types']:
+                if 'can0' in collector['can_types']:
+                    type0 = collector['can_types']['can0'][0] if collector['can_types']['can0'] else None
+                if 'can1' in collector['can_types']:
+                    type1 = collector['can_types']['can1'][0] if collector['can_types']['can1'] else None
+            elif 'msg_types' not in collector:  # configured not used device
+                continue
+            elif 'can0' in collector['ports']:
+                for msg in collector['msg_types']:
                     ctx['veh_roles'][msg] = collector.get('veh_tag')
+                type0 = collector['ports']['can0']['topic']
+                type1 = collector['ports']['can1']['topic']
+
+            else:
+                for msg in collector['msg_types']:
+                    ctx['veh_roles'][msg] = collector.get('veh_tag')
+                continue
+            if type0 and type0 not in canports:
+                canports[type0] = 'CAN{}'.format(idx * 2)
+
+            if type1 and type1 not in canports:
+                canports[type1] = 'CAN{}'.format(idx * 2 + 1)
+            # if 'can_types' in collector:
+            #     for msg in collector['can_types']:
+            #         ctx['veh_roles'][msg] = collector.get('veh_tag')
         ctx['can_port'] = canports
         print(canports)
         # time.sleep(10)
@@ -2087,7 +2173,11 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
                            }
     if os.path.exists(install_path):
         from config.config import load_installation
-        load_installation(install_path)
+        # load_installation(install_path)
+        # print(install_path)
+        cfg = CVECfg()
+        cfg.installs = json.load(open(install_path))
+        ctx['trans'] = Transform(cfg)
     else:
         print('no installation.json found in {}. exit.'.format(os.path.dirname(log)))
         return
@@ -2108,13 +2198,14 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
 
     # rfile = shutil.copy2(r, os.path.join(data_dir, 'log_process0.txt'))
     ts0 = ctx.get('ts0') or 0
-    print('x1_ids:', ctx['x1_ids'])
-    print('esr_ids:', ctx['esr_ids'])
+    print('x1_ids:', ctx['x1_ids']) if 'x1_ids' in ctx else None
+    print('esr_ids:', ctx['esr_ids']) if 'esr_ids' in ctx else None
     print('ts0:', ts0)
 
     matches_esr = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'esr'))
     # ctx['match_tree'] = matches_esr
-    matches_q3 = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'q3'))
+    matches_q3 = get_matches_from_pairs(ctx['matched_e'
+                                            'p'], ('x1', 'q3'))
 
     # matches_comb = dict()
     # for ts in sorted(ctx['matched_ep']):
@@ -2234,7 +2325,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190402150351_CPFA_10kmh/log.txt'
+    r = '/media/nan/860evo/data/20190402161122_P_40kmh/log.txt'
     analysis_dir = None
 
     if len(sys.argv) > 1:
@@ -2252,6 +2343,8 @@ if __name__ == "__main__":
         parse_esr_line,
         parse_q3_line,
         parse_x1_line,
+        parse_x1_fusion_line,
+        parse_rtk_target_ub482,
     ]
 
     if r.endswith('log.txt'):

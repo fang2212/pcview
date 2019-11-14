@@ -12,7 +12,7 @@
       "topic": "video"
     },
     "can0": {
-      "enable": false,
+      "enable": true,
       "port": 1207,
       "protocol": "nanomsg",
       "topic": ""

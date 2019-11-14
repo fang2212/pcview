@@ -10,11 +10,11 @@ from multiprocessing.dummy import Process as Thread
 
 import cv2
 
-from config.config import local_cfg, configs, install
+# from config.config import local_cfg, configs, install
 
 
 class FileHandler(Thread):
-    def __init__(self, redirect=False):
+    def __init__(self, redirect=False, uniconf=None):
         super(FileHandler, self).__init__()
         self.deamon = True
         # self.log_queue = Queue()
@@ -45,8 +45,9 @@ class FileHandler(Thread):
         self.last_image = None
 
         self.isheadless = False
+        self.uniconf = uniconf
 
-        print('outer id:', os.getpid())
+        # print('outer id:', os.getpid())
 
     def run(self):
         # cnt = 0
@@ -61,7 +62,7 @@ class FileHandler(Thread):
         # frame_reset = True
         # video_writer = None
         # can_queue = deque(maxlen=2000)
-        print('inner id:', os.getpid())
+        # print('inner id:', os.getpid())
         state = 'stop'
         origin_stdout = sys.stdout
 
@@ -145,7 +146,7 @@ class FileHandler(Thread):
             # print(self.video_path)
             # print('---fileHandle process id----', os.getpid())
             # print(config.save.raw, raw_fp)
-            if local_cfg.save.raw and raw_fp:
+            if self.uniconf.local_cfg.save.raw and raw_fp:
                 while not self.raw_queue.empty():
                     timestamp, log_type, data = self.raw_queue.get()
                     tv_s = int(timestamp)
@@ -170,7 +171,7 @@ class FileHandler(Thread):
                     # fusion_fp.flush()
             t2 = time.time()
             # print('filehandler...', video_path, self.video_queue.qsize())
-            while local_cfg.save.video and not self.video_queue.empty() and path:
+            while self.uniconf.local_cfg.save.video and not self.video_queue.empty() and path:
                 res = self.video_queue.get()
                 ts = res['ts']
                 frame_id = res['frame_id']
@@ -244,16 +245,16 @@ class FileHandler(Thread):
         if rlog:
             self.path = os.path.join(os.path.dirname(rlog), 'clip_' + date)
         else:
-            self.path = os.path.join(local_cfg.log_root, date)
+            self.path = os.path.join(self.uniconf.local_cfg.log_root, date)
         if not os.path.exists(self.path):
             os.makedirs(self.path)
         if not rlog:
-            json.dump(configs, open(os.path.join(self.path, 'config.json'), 'w+'), indent=True)
+            json.dump(self.uniconf.configs, open(os.path.join(self.path, 'config.json'), 'w+'), indent=True)
             # json.dump(install, open(os.path.join(self.path, 'installation.json'), 'w+'), indent=True)
             # shutil.copy('etc/installation.json', os.path.join(self.path, 'installation.json'))
-            json.dump(install, open(os.path.join(self.path, 'installation.json'), 'w+'), indent=True)
+            json.dump(self.uniconf.installs, open(os.path.join(self.path, 'installation.json'), 'w+'), indent=True)
 
-        if local_cfg.save.video:
+        if self.uniconf.local_cfg.save.video:
             # self.video_writer = None
             self.video_path = os.path.join(self.path, 'video')
             if not os.path.exists(self.video_path):
@@ -279,7 +280,7 @@ class FileHandler(Thread):
         print('stop recording.', self.recording, self.frame_cnt)
 
     def save_param(self):
-        json.dump(install, open(os.path.join(self.path, 'installation.json'), 'w+'), indent=True)
+        json.dump(self.uniconf.installs, open(os.path.join(self.path, 'installation.json'), 'w+'), indent=True)
 
     def check_file(self):
         if not self.recording:
@@ -307,7 +308,7 @@ class FileHandler(Thread):
         # if local_cfg.save.video:
         #     self.video_queue.put(msg)
         # print('------------------')
-        if local_cfg.save.video and self.recording:
+        if self.uniconf.local_cfg.save.video and self.recording:
             self.video_queue.put(msg)
 
     def insert_raw(self, msg):
@@ -318,7 +319,7 @@ class FileHandler(Thread):
         # if self.raw_queue.full():
         #     self.raw_queue.get()
 
-        if local_cfg.save.raw and not self.raw_queue.full():
+        if self.uniconf.local_cfg.save.raw and not self.raw_queue.full():
             pass
             # print('hahaha222')
             # print(log_type)

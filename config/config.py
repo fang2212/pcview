@@ -271,7 +271,8 @@ def dic2obj(d):
 
 
 def load_config(jsonspec):
-    global config, configs
+    # global config, configs
+    configs = []
     spec = json.load(open(jsonspec))
     # config = dic2obj(spec[0])
     for idx, coll in enumerate(spec):
@@ -285,11 +286,22 @@ def load_config(jsonspec):
     print(bcl.WARN + 'configs:' + bcl.ENDC)
     for c in configs:
         print(c)
+    return configs
+
+
+class CVECfg(object):
+    configs = []
+    installs = {}
+    runtime = {}
+    local_cfg = None
 
 
 def load_cfg(jsonspec):
     print(bcl.WARN+'using config:' + bcl.ENDC, jsonspec)
-    global configs, install, runtime
+    # configs = []
+    # install = {}
+    # runtime = {}
+    cve_conf = CVECfg()
     spec = json.load(open(jsonspec))
     main_collector = spec.get('main_collector')
     if spec.get('version') and spec['version'] >= 0.6:
@@ -304,9 +316,9 @@ def load_cfg(jsonspec):
                     clct['is_main'] = False
                 clct['veh_tag'] = role
                 clct['defs_path'] = def_name
-                configs.append(clct)
+                cve_conf.configs.append(clct)
         for item in spec['vehicles']['ego']['installation']:  # TODO unify install params naming
-            install[item] = spec['vehicles']['ego']['installation'][item]
+            cve_conf.installs[item] = spec['vehicles']['ego']['installation'][item]
     else:
 
         for idx in spec['collectors']:
@@ -316,26 +328,37 @@ def load_cfg(jsonspec):
                 clct['is_main'] = True
             else:
                 clct['is_main'] = False
-            configs.append(clct)
+            cve_conf.configs.append(clct)
         for item in spec['installation']:
-            install[item] = spec['installation'][item]
+            cve_conf.installs[item] = spec['installation'][item]
     if main_collector is None:
-        configs[0]['is_main'] = True
+        cve_conf.configs[0]['is_main'] = True
 
     # config = dic2obj(configs[0])
+    if not os.path.exists('config/local.json'):
+        shutil.copy('config/local_sample.json', 'config/local.json')
+    cve_conf.local_cfg = dic2obj(json.load(open('config/local.json')))
+    cve_conf.runtime['modules'] = spec['modules']
+    return cve_conf
 
-    runtime['modules'] = spec['modules']
+
+def get_local_cfg():
+    if not os.path.exists('config/local.json'):
+        shutil.copy('config/local_sample.json', 'config/local.json')
+    local_cfg = dic2obj(json.load(open('config/local.json')))
+    return local_cfg
 
 
 def load_installation(jsonspec):
-    global install
+    # global install
     spec = json.load(open(jsonspec))
-    for item in spec:
-        install[item] = spec[item]
+    # for item in spec:
+    #     install[item] = spec[item]
     # del install
     # install = dic2obj(spec)
     print(bcl.WARN + 'installation:' + bcl.ENDC)
-    print(install)
+    print(spec)
+    return spec
 
 
 class bcl:
@@ -349,12 +372,12 @@ class bcl:
     UNDERLINE = '\033[4m'
 
 
-configs = []
-install = {}
-runtime = {}
+# configs = []
+# install = {}
+# runtime = {}
 
 __test = []
-local_cfg = None
+# local_cfg = None
 
 if __name__ == "__main__":
     config = dic2obj(collector0)

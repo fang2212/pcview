@@ -80,7 +80,6 @@ class Collector(object):
                 print('****'*10, 'write log flush', '****'*10)
             self.video_fp.write(image)
             self.inc += 1
-                
 
     
 class VideoRecorder(Recorder):

@@ -7,7 +7,7 @@
             "port": 5001
         }
     },
-    "main_collector": "algo200",
+    "main_collector": "algo_0122",
     "vehicles": {
         "ego": {
             "enable": true,
@@ -15,8 +15,7 @@
                 "algo_0122": "normal",
                 "ffed": "normal",
                 "ffe0": "normal",
-                "ffec": "normal",
-                "ffe1": "normal",
+                "ffd1": "normal",
                 "pi_ba29": "normal",
                 "pi_0d06": "normal",
                 "pi_5297": "normal"

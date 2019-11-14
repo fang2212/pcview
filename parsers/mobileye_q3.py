@@ -1,6 +1,5 @@
 import time
 import cantools
-from math import *
 
 db_ifv300 = cantools.database.load_file('dbc/if300_inst_all.dbc', strict=False)
 # db_q3_pv = cantools.database.load_file('/home/nan/workshop/doc/eyeQ3/dbc/PB_Vehicle_CAN_V1.9.0_1.dbc', strict=False)
@@ -133,6 +132,7 @@ def parse_ifv300(id, buf, ctx=None):
             # print('q3 epoch end')
             return obs_list
     if 'CAN_VEHICLE_SPEED' in r:
+        # print(r['CAN_VEHICLE_SPEED']*3.6)
         # print("vehicle speed: {} yaw_rate: {}".format(r['CAN_VEHICLE_SPEED'], r['CAN_VEHICLE_YAW_RATE']))
         return {'type': 'vehicle_state', 'speed': r['CAN_VEHICLE_SPEED']*3.6, 'yaw_rate': r['CAN_VEHICLE_YAW_RATE']}
 

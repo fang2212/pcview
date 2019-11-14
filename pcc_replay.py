@@ -54,7 +54,7 @@ def jpeg_extractor(video_dir):
 
 class LogPlayer(Process):
 
-    def __init__(self, log_path, configs=None, start_frame=0, ratio=1.0):
+    def __init__(self, log_path, uniconf=None, start_frame=0, ratio=1.0):
         Process.__init__(self)
         # self.daemon = False
         self.time_aligned = True
@@ -77,6 +77,7 @@ class LogPlayer(Process):
         self.ratio = ratio
         self.ctrl_q = Queue()
         self.type_roles = {}
+        self.cfg = uniconf
 
         self.last_time = 0
         self.hz = 20
@@ -90,7 +91,7 @@ class LogPlayer(Process):
         if os.path.exists(self.x1_log):
             self.x1_fp = open(self.x1_log, 'r')
 
-        for idx, cfg in enumerate(configs):
+        for idx, cfg in enumerate(uniconf.configs):
             if 'can_types' in cfg:
                 cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
                 cantypes1 = ' '.join(cfg['can_types']['can1']) + '.{:01}'.format(idx)
@@ -130,7 +131,7 @@ class LogPlayer(Process):
             return
         if source in self.type_roles:
             return self.type_roles[source]
-        for cfg in configs:
+        for cfg in self.cfg.configs:
             msg_types = cfg.get('msg_types')
             if not msg_types:
                 return 'ego'
@@ -368,15 +369,16 @@ def prep_replay(source):
 
     config_path = os.path.join(os.path.dirname(source), 'config.json')
     install_path = os.path.join(os.path.dirname(source), 'installation.json')
-
+    uniconf = CVECfg()
     if os.path.exists(config_path):
         print("using configs:", config_path)
-        load_config(config_path)
+        uniconf.configs = load_config(config_path)
     if os.path.exists(install_path):
         print("using installation:", install_path)
-        load_installation(install_path)
+        uniconf.installs = load_installation(install_path)
+
     # return source
-    return r_sort
+    return r_sort, uniconf
 
 
 if __name__ == "__main__":
@@ -393,11 +395,11 @@ if __name__ == "__main__":
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
 
     from tools import mytools
-    r_sort = prep_replay(source)
+    r_sort, cfg = prep_replay(source)
     from pcc import PCC
     from parsers.parser import parsers_dict
 
-    replayer = LogPlayer(r_sort, configs, ratio=0.2, start_frame=0)
-    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=False)
+    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0)
+    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=False, uniconf=cfg)
     pc_viewer.start()
 

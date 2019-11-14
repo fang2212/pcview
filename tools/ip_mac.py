@@ -8,14 +8,26 @@ def print_ip_mac(ip_mac):
         print(mac, ip_mac[mac])
 
 
-def nmap_scan(ip_range='192.168.98.0/24', async=True):
+def ping(ip):
+    r = os.popen('ping -c 1 -W 500 -i 0.2 {}'.format(ip))
+    for line in r:
+        # print(line)
+        pass
+
+
+def nmap_scan(ip_range='192.168.98.0/24', async=False):
     r = os.popen('nmap -T5 -sP {}'.format(ip_range))
+    ips = []
     if async:
         return
     for line in r:
         # print(line, end='')
+        if 'Nmap scan report for' in line:
+            ip = line.split(' ')[4]
+            ips.append(ip)
         pass
     r.close()
+    return ips
 
 
 def get_macs(ip_range='192.168.98.0/24'):
@@ -26,7 +38,7 @@ def get_macs(ip_range='192.168.98.0/24'):
         for line in arp:
             fields = list(filter(None, line.split(' ')))
             mac = fields[3]
-            ip = fields[0]
+            ip = fields[0].strip()
             # print(mac, ip)
             if ip_kw in ip:
                 mac_ip[mac] = ip
@@ -35,14 +47,20 @@ def get_macs(ip_range='192.168.98.0/24'):
     return mac_ip
 
 
-def get_mac_ip(ip_range='192.168.98.0/24'):
-    nmap_scan(ip_range, async=True)
+def get_mac_ip(ip_range='192.168.98.0/24', async=False):
+    ips = nmap_scan(ip_range, async=async)
+    if not ips:
+        print('nmap found no device in {}.'.format(ip_range))
+        return
+    for ip in ips:
+        ping(ip)
     mac_ip = get_macs(ip_range)
     return mac_ip
 
 
 if __name__ == "__main__":
     nm = get_mac_ip()
+    print(nm)
     # while nm.still_scanning():
     #     print('scanning...')
     #     nm.wait(2)
