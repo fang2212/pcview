@@ -14,6 +14,7 @@ from math import sin, cos, pi, atan2
 import cv2
 import numpy as np
 
+
 # from config.config import install
 
 
@@ -25,7 +26,7 @@ class OrientTuner(object):
         self.roll = installs['video']['roll']
         self.esr_yaw = installs['esr']['yaw']
         self.transform = Transform(uniconf)
-        self.installs = installs
+        # self.installs = installs
         self.cfg = uniconf
 
     def update_yaw(self, x):
@@ -34,8 +35,11 @@ class OrientTuner(object):
         # self.pitch = install['video']['pitch']
         # self.roll = install['video']['roll']
 
-        self.transform.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'], self.cfg.installs['video']['roll'])
-        print('current yaw:{} pitch:{} roll:{}'.format(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'], self.cfg.installs['video']['roll']))
+        self.transform.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'],
+                                    self.cfg.installs['video']['roll'])
+        print('current yaw:{} pitch:{} roll:{}'.format(self.cfg.installs['video']['yaw'],
+                                                       self.cfg.installs['video']['pitch'],
+                                                       self.cfg.installs['video']['roll']))
 
     def update_pitch(self, x):
         # self.yaw = install['video']['yaw']
@@ -76,12 +80,12 @@ class OrientTuner(object):
 
 
 class Transform:
-    # __instance = None
-    #
-    # def __new__(cls, installs):
-    #     if cls.__instance is None:
-    #         cls.__instance = super().__new__(cls)
-    #     return cls.__instance
+    __instance = None
+
+    def __new__(cls, uniconf):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
 
     def __init__(self, uniconf):
         # print(installs['video'])

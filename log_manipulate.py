@@ -522,9 +522,11 @@ def parse_rtk_target_ub482(line, ctx):
         ctx['rtksol']['vehicles'][role] = Vehicle(role)
     r = decode_with_def(ub482_defs, line)
     r['source'] = source
+    r['id'] = int(idx)
     if not r:
         return
-
+    lines = ''
+    lines += line
     epoch = []
     select = {'bestpos': 'lat', 'bestvel': 'hor_speed', 'heading': 'pitch'}
     key = select.get(r['type'])
@@ -553,9 +555,10 @@ def parse_rtk_target_ub482(line, ctx):
     # if r['type'] == 'pinpoint':
     #     print(r)
 
-    lines = ''
+
     for t in epoch:
-        lines += compose_log(ts, 'rtk.obj.pp', '{pos_lat} {pos_lon} {vel_lon} {TTC}'.format(**t))
+        x, y = ctx['trans'].trans_polar2rcs(t['angle'], t['range'], 'rtk')
+        lines += compose_log(ts, 'rtk.target.{}'.format(idx), '{} {} {vel_lon} {TTC}'.format(y, x, **t))
 
     if not ego_car:
         if epoch:
@@ -566,11 +569,15 @@ def parse_rtk_target_ub482(line, ctx):
     ppt = ego_car.get_pp_target()
     if ppt:
         # print(ppt)
+        ppt['id'] = int(idx)
+        x, y = ctx['trans'].trans_polar2rcs(ppt['angle'], ppt['range'], 'rtk')
         epoch.append(ppt)
-        lines += compose_log(ts, 'rtk.obj.pp', '{pos_lat} {pos_lon} {vel_lon} {TTC}'.format(**ppt))
+        lines += compose_log(ts, 'rtk.ppt.{}'.format(idx), '{} {} {vel_lon} {TTC}'.format(y, x,**ppt))
     if epoch:
         ctx['obs_ep']['rtk']['data'] = epoch
         ctx['obs_ep']['rtk']['ts'] = ts
+
+    return lines
 
 
     # if role == 'ego':
@@ -1047,6 +1054,7 @@ def _match_obs(names, ctx):
                 #     done = True
                 # print('no spatial match', len(x1_obs_t), len(k1_obs_t), ts - ts0, ts1 - ts)
                 # break
+                # print(k1_obs_t)
                 for ret in spatial_match_obs(k0_obs_t, k1_obs_t):
                     k0sel, k1sel = ret
                     candidate = {key1: {'id': k1sel['id'], 'dist': get_distance(k0sel, k1sel)}}
@@ -1074,7 +1082,7 @@ def match_obs(line, ctx):
 
     updated = False
 
-    for obs_type in ['esr', 'x1', 'q3']:
+    for obs_type in ['esr', 'x1', 'q3', 'rtk']:
         if obs_type not in ctx['obs_ep']:
             continue
         if ctx['obs_ep'][obs_type].get('ts') != ctx['obs_ep'][obs_type].get('ts_last'):
@@ -1098,6 +1106,7 @@ def match_obs(line, ctx):
     # print(ctx['obs_ep']['q3'])
     _match_obs(('x1', 'esr'), ctx)
     _match_obs(('x1', 'q3'), ctx)
+    _match_obs(('x1', 'rtk'), ctx)
     # done = False
     # for i in range(len(ctx['obs_ep']['x1']['buff']) - 1, 0, -1):
     #     ts = ctx['obs_ep']['x1']['buff'][i][0]
@@ -1969,7 +1978,7 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
         print(bcl.OKBL + 'matched:' + bcl.ENDC, trj)
         fig = visual.get_fig()
         for idx, item in enumerate(obs_meas_display):
-            samples = {x: {item: idx} for x in obs_list}
+            samples = {x: {item: idx} for x in obs_list}  # {'esr.obj.2': {'pos_lat': 2}}
             visual.scatter(fig, r0, samples, item, ts0, sts, ets, vis)
         save_fig_path = os.path.join(analysis_dir, '_'.join(curve_items))
         fig.savefig(save_fig_path + '.png', dpi=300)
@@ -1982,6 +1991,8 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
         # ctx['esr_tgt'] = esrid
         # continue
 
+# def viz_2d_trj(r0, vis=False)
+#     for
 
 def process_error_by_matches(matches, names, r0, ts0, ctx, vis=False):
     type1, type2 = names
@@ -2125,6 +2136,7 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
     from tools.transform import Transform
     from config.config import CVECfg
     ctx = dict()
+    cfg = CVECfg()
     ctx['obs_ep'] = {'x1': {'buff': deque(maxlen=10)},
                      'esr': {'buff': deque(maxlen=10)},
                      'q3': {'buff': deque(maxlen=10)},
@@ -2135,10 +2147,10 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
     conf_path = os.path.join(os.path.dirname(log), 'config.json')
     install_path = os.path.join(os.path.dirname(log), 'installation.json')
     if os.path.exists(conf_path):
-        conf = json.load(open(conf_path))
+        cfg.congigs = json.load(open(conf_path))
         canports = dict()
         ctx['veh_roles'] = dict()
-        for idx, collector in enumerate(conf):
+        for idx, collector in enumerate(cfg.congigs):
             if 'can_types' in collector:
                 if 'can0' in collector['can_types']:
                     type0 = collector['can_types']['can0'][0] if collector['can_types']['can0'] else None
@@ -2175,7 +2187,7 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
         from config.config import load_installation
         # load_installation(install_path)
         # print(install_path)
-        cfg = CVECfg()
+
         cfg.installs = json.load(open(install_path))
         ctx['trans'] = Transform(cfg)
     else:
@@ -2204,8 +2216,8 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
 
     matches_esr = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'esr'))
     # ctx['match_tree'] = matches_esr
-    matches_q3 = get_matches_from_pairs(ctx['matched_e'
-                                            'p'], ('x1', 'q3'))
+    matches_q3 = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'q3'))
+    matches_rtk = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'rtk'))
 
     # matches_comb = dict()
     # for ts in sorted(ctx['matched_ep']):
@@ -2232,7 +2244,9 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
     # print(matches_esr)
     trj_list_esr = get_trajectory_from_matches(matches_esr, ('x1', 'esr'))
     trj_list_q3 = get_trajectory_from_matches(matches_q3, ('x1', 'q3'))
+    trj_list_rtk = get_trajectory_from_matches(matches_rtk, ('x1', 'rtk'))
     trj_list_comb = merge_trajectory(trj_list_esr, trj_list_q3)
+    trj_list_comb = merge_trajectory(trj_list_comb, trj_list_rtk)
     print('trj_esr:')
     for trj in trj_list_esr:
         print(trj)
@@ -2325,7 +2339,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20190402161122_P_40kmh/log.txt'
+    r = '/media/nan/860evo/data/20191101_q3_contiradar_fusion_aeb_test/20191101082905_20kmh/log.txt'
     analysis_dir = None
 
     if len(sys.argv) > 1:

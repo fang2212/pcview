@@ -7,16 +7,16 @@
             "port": 5001
         }
     },
-    "main_collector": "algo200",
+    "main_collector": "algo_0122",
     "vehicles": {
         "ego": {
             "enable": true,
             "collectors": {
-                "algo200": "normal",
+                "algo_0122": "normal",
                 "ffd0": "normal",
                 "ffd1": "normal",
                 "ffd2": "normal",
-                "55dd": "normal"
+                "pi_00d2": "normal"
             },
             "installation": {
                 "esr": {
@@ -61,23 +61,23 @@
                 },
                 "video": {
                     "fu": 1458.0,
-                    "yaw": 0.0,
+                    "yaw": -2.2,
                     "fv": 1458.0,
-                    "pitch": -0.0,
+                    "pitch": 0.3,
                     "cu": 640.0,
                     "lat_offset": 0.15,
                     "roll": 0.0,
-                    "height": 1.18,
-                    "lon_offset": -1.67,
+                    "height": 1.26,
+                    "lon_offset": -1.72,
                     "cv": 360.0
                 },
                 "x1": {
                     "roll": 0.0,
                     "lat_offset": 0.0,
-                    "pitch": 0.0,
-                    "height": 1.18,
-                    "lon_offset": -1.64,
-                    "yaw": 0.0
+                    "pitch": 0.3,
+                    "height": 1.26,
+                    "lon_offset": -1.72,
+                    "yaw": -2.2
                 }
             }
         },

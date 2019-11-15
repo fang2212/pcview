@@ -31,6 +31,26 @@ def close_fig(fig):
     plt.close(fig)
 
 
+def match_label(label, entry):
+    match = True
+    spc0 = label.split('.')
+    spc1 = entry.split('.')
+    # print(spc0, spc1)
+    for idx, spc in enumerate(spc0):
+        if idx >= len(spc1):
+            match = False
+            break
+        elif spc != spc1[idx] and spc != '*' and '[' not in spc:
+            match = False
+            break
+
+        if '[' in spc:
+            ids = [int(x) for x in spc[1:-1].split(',')]
+            if int(spc1[idx]) not in ids:
+                match = False
+    return match
+
+
 def scatter(fig, file_name, labels=None, ytag=None, ts0=0, start_ts=None, end_ts=None, vis=True):
     n = len(fig.axes)
     for i in range(n):
@@ -66,22 +86,7 @@ def scatter(fig, file_name, labels=None, ytag=None, ts0=0, start_ts=None, end_ts
             # if end_ts and ts_now > end_ts:
             #     break
             for label in labels:
-                match = True
-                spc0 = label.split('.')
-                spc1 = cols[2].split('.')
-                # print(spc0, spc1)
-                for idx, spc in enumerate(spc0):
-                    if idx >= len(spc1):
-                        match = False
-                        break
-                    elif spc != spc1[idx] and spc != '*' and '[' not in spc:
-                        match = False
-                        break
-
-                    if '[' in spc:
-                        ids = [int(x) for x in spc[1:-1].split(',')]
-                        if int(spc1[idx]) not in ids:
-                            match = False
+                match = match_label(label, cols[2])
 
                 if match:
                     # print('ok')
@@ -99,7 +104,6 @@ def scatter(fig, file_name, labels=None, ytag=None, ts0=0, start_ts=None, end_ts
         # ax.plot(ts[item], data[item])
         ax.plot(ts[item], data[item], '.-', alpha=0.8)
 
-
     ax.legend(sorted(data.keys()))
     dur = end_ts - start_ts
     if 'TTC' not in labels:
@@ -113,6 +117,20 @@ def scatter(fig, file_name, labels=None, ytag=None, ts0=0, start_ts=None, end_ts
     if vis:
         plt.show()
     # ax_idx += 1
+
+
+# def trj_2d(fig, file_name, labels=None, vis=True):
+#     x = []
+#     y = []
+#     with open(file_name) as rf:
+#         for idx, line in enumerate(rf):
+#             cols = line.split(' ')
+#             ts_now = float(cols[0]) + float(cols[1]) / 1000000
+#
+#             for label in labels:
+#                 match = match_label(label, cols[2])
+#                 if match:
+#
 
 
 def calc_rmse(predictions, targets):

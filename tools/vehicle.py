@@ -122,7 +122,7 @@ class Vehicle(object):
         host = self.get_dynamics(('lat', 'lon', 'hgt', 'pitch', 'yaw', 'hor_speed', 'trk_gnd'))
         # print(host)
         pp = self.pinpoint
-        # print('get pp target', self.dynamics['pinpoint'], host)
+        # print('get pp target', self.pinpoint, host)
         if not host or not pp:
             return
         # print('get pp target')
@@ -133,15 +133,24 @@ class Vehicle(object):
         trk_host = host['trk_gnd'] + 180.0
         if trk_host > 360:
             trk_host = trk_host - 360.0
-        vel_x = host['hor_speed'] * sin(trk_host * pi / 180)
-        vel_y = host['hor_speed'] * cos(trk_host * pi / 180)
+        velN = - host['hor_speed'] * cos(host['trk_gnd'] * pi / 180.0)
+        velE = - host['hor_speed'] * sin(host['trk_gnd'] * pi / 180.0)
+        # vel_x = host['hor_speed'] * sin(trk_host * pi / 180)
+        # vel_y = host['hor_speed'] * cos(trk_host * pi / 180)
+        theta = host['trk_gnd'] - host['yaw']
+        vel_x = host['hor_speed'] * cos(theta * pi / 180)
+        vel_y = host['hor_speed'] * sin(theta * pi / 180)
         pos_x = cos(angle * pi / 180.0) * range
         pos_y = sin(angle * pi / 180.0) * range
         delta_h = host['hgt'] - pp['hgt']
 
+        ttc = pos_x / host['hor_speed']
+        if ttc > 7:
+            ttc = 7
+
         return {'ts': host['ts'], 'source': self.source, 'type': 'rtktarget', 'range': range, 'angle': angle,
                 'delta_hgt': delta_h, 'pos_lat': pos_y, 'pos_lon': pos_x, 'vel_lat': vel_y, 'vel_lon': vel_x,
-                'TTC': pos_x / host['hor_speed']}
+                'TTC': ttc}
 
 
 def get_vehicle_target(host, target):
