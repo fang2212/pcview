@@ -1,0 +1,61 @@
+# Build and Release Folders
+bin-debug/
+bin-release/
+[Oo]bj/
+[Bb]in/
+
+# Other files and folders
+cyrelease/
+release/
+dist/
+client/build/
+etc/build/
+try/
+fpga_camera_tz/
+node_modules/
+log/
+video/
+pcview_data/
+.vscode/
+error.log
+
+# Executables
+*.swf
+*.air
+*.ipa
+*.apk
+*.so
+*.c
+
+# python
+__pycache__
+*.pyc
+*.swp
+*.exe
+
+# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
+# should NOT be excluded as they contain compiler settings and other important
+# information for Eclipse / Flash Builder.
+
+test/
+sdk/
+build/
+dist/
+
+
+# node file
+package-lock.json
+
+# binary file
+msg_fd
+status2log
+msg_fd.exe
+status2log.exe
+error.jpg
+
+# extra file
+error.json
+local.json
+dbc/*.ini
+.idea
+log_sort.txt
