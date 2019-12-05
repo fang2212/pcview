@@ -1,0 +1,191 @@
+VERSION "4"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:
+VAL_TABLE_ Validity 1 "Valid" 0 "Invalid" ;
+VAL_TABLE_ Quality 3 "High Quality" 2 "Medium Quality" 1 "Low Quality" 0 "Low Quality" ;
+VAL_TABLE_ Construction_Area 3 "CA not detected" 2 "Detected Left" 1 "Detected Right" 0 "Detected Both" ;
+VAL_TABLE_ Prediction_Flag 0 "Off" 1 "On" ;
+VAL_TABLE_ V_Color 3 "Invalid" 2 "Blue" 1 "Yellow" 0 "White" ;
+VAL_TABLE_ Road_Type 2 "Urban" 1 "Highway" 0 "Unknown" ;
+VAL_TABLE_ Lane_Type 15 "Invalid" 6 "Barrier" 5 "Bott's Dots" 4 "Double Lane" 3 "Dashed" 2 "Road Edge" 1 "Solid" 0 "Undecided" ;
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ Quality : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 1903 Next_Right_Lane_B: 5 Vector__XXX
+ SG_ reserved_bits5 : 35|5@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Lane_mark_color : 32|3@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ View_Range_End : 24|8@1+ (0.5,0) [0|127.5] "meter" Vector__XXX
+ SG_ View_Range_Start : 16|8@1+ (0.5,0) [0|127.5] "meter" Vector__XXX
+ SG_ Heading_Angle : 0|16@1+ (0.0009765625,-31.999023438) [-0.357|0.357] "radians" Vector__XXX
+
+BO_ 1901 Next_Left_Lane_B: 5 Vector__XXX
+ SG_ reserved_bits5 : 35|5@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Lane_mark_color : 32|3@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ View_Range_End : 24|8@1+ (0.5,0) [0|127.5] "meter" Vector__XXX
+ SG_ View_Range_Start : 16|8@1+ (0.5,0) [0|127.5] "meter" Vector__XXX
+ SG_ Heading_Angle : 0|16@1+ (0.0009765625,-31.999023438) [-0.357|0.357] "radians" Vector__XXX
+
+BO_ 1902 Next_Right_Lane_A: 8 Vector__XXX
+ SG_ Lane_Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|127] "meter" Vector__XXX
+ SG_ Lane_mark_width : 56|8@1+ (0.01,0) [0|2.5] "meter" Vector__XXX
+ SG_ Curvature_Derivative : 40|16@1+ (3.7252902985E-009,-0.00012206658721) [-0.00012|0.00012] "1/meter^2" Vector__XXX
+ SG_ Curvature : 24|16@1+ (9.765625E-007,-0.031999023438) [-0.02|0.02] "1/meter" Vector__XXX
+
+BO_ 1900 Next_Left_Lane_A: 8 Vector__XXX
+ SG_ Lane_Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|127] "meter" Vector__XXX
+ SG_ Curvature_Derivative : 40|16@1+ (3.7252902985E-009,-0.00012206658721) [-0.00012|0.00012] "1/meter^2" Vector__XXX
+ SG_ Curvature : 24|16@1+ (9.765625E-007,-0.031999023438) [-0.02|0.02] "1/meter" Vector__XXX
+ SG_ Lane_mark_width : 56|8@1+ (0.01,0) [0|2.5] "meter" Vector__XXX
+
+BO_ 1899 Road_Information: 8 Vector__XXX
+ SG_ protocol_version : 56|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ Driving_Speed_Right_Lane : 38|12@1- (0.0625,0) [-1|127.93] "m/s" Vector__XXX
+ SG_ Driving_Speed_Left_Lane : 26|12@1- (0.0625,0) [-1|127.9375] "m/s" Vector__XXX
+ SG_ Probability_Of_Right_Lane : 16|10@1+ (0.001,0) [0|1] "probability" Vector__XXX
+ SG_ Probability_Of_Left_Lane : 6|10@1+ (0.001,0) [0|1] "probability" Vector__XXX
+ SG_ Road_Type : 2|2@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ Construction_Area : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Highway_Exit_Right : 4|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Highway_Exit_Left : 5|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1897 LKA_Right_Lane_B: 7 Vector__XXX
+ SG_ PRED_SOURCE_HWE_SPAIN : 45|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_SOURCE_GUARDRAIL_SHADOW : 44|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_SOURCE_DIVERGING_LANES : 43|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ Reserved1_laneB : 41|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ PRED_SOURCE_VRTL_MERGE : 47|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_SOURCE_STD : 46|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_OTHER_SIDE : 37|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_OCCLUDED_LM_EXTRAPOLATION : 39|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_HEADWAY_ORIENTED : 40|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_OVERRIDE : 38|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_DIST_BASED_EXTRAPOLATION : 36|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ View_Range_Start : 16|8@1+ (0.5,0) [0|127.5] "meter" Vector__XXX
+ SG_ View_Range_End : 24|8@1+ (0.5,0) [0|127.5] "meter" Vector__XXX
+ SG_ Lane_mark_color : 33|3@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ TLC : 48|8@1+ (0.01,0) [0|2] "" Vector__XXX
+ SG_ Lane_Crossing : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Heading_Angle : 0|16@1+ (0.0009765625,-31.999023438) [-0.357|0.357] "radians" Vector__XXX
+
+BO_ 1896 LKA_Right_Lane_A: 8 Vector__XXX
+ SG_ Lane_Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|127] "meter" Vector__XXX
+ SG_ Curvature_Derivative : 40|16@1+ (3.7252902985E-009,-0.00012206658721) [-0.00012|0.00012] "1/meter^2" Vector__XXX
+ SG_ Curvature : 24|16@1+ (9.765625E-007,-0.031999023438) [-0.02|0.02] "1/meter" Vector__XXX
+ SG_ Width_right_marking : 56|8@1+ (0.01,0) [0|2.55] "m" Vector__XXX
+
+BO_ 1895 LKA_Left_Lane_B: 7 Vector__XXX
+ SG_ PRED_SOURCE_HWE_SPAIN : 45|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_SOURCE_GUARDRAIL_SHADOW : 44|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_SOURCE_DIVERGING_LANES : 43|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ Reserved1_laneB : 41|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ PRED_SOURCE_VRTL_MERGE : 47|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_SOURCE_STD : 46|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_OTHER_SIDE : 37|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_OCCLUDED_LM_EXTRAPOLATION : 39|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_HEADWAY_ORIENTED : 40|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_OVERRIDE : 38|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ PRED_DIST_BASED_EXTRAPOLATION : 36|1@1+ (1,0) [0|1] "ENUM" Vector__XXX
+ SG_ View_Range_End : 24|8@1+ (0.5,0) [0|127.5] "meter" Vector__XXX
+ SG_ Lane_mark_color : 33|3@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ TLC : 48|8@1+ (0.01,0) [0|2] "" Vector__XXX
+ SG_ Lane_Crossing : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ View_Range_Start : 16|8@1+ (0.5,0) [0|127.5] "meter" Vector__XXX
+ SG_ Heading_Angle : 0|16@1+ (0.0009765625,-31.999023438) [-0.357|0.357] "radians" Vector__XXX
+
+BO_ 1894 LKA_Left_Lane_A: 8 Vector__XXX
+ SG_ Position : 8|16@1- (0.00390625,0) [-128|127] "meter" Vector__XXX
+ SG_ Width_left_marking : 56|8@1+ (0.01,0) [0|2.5] "m" Vector__XXX
+ SG_ Curvature_Derivative : 40|16@1+ (3.7252902985E-009,-0.00012206658721) [-0.00012|0.00012] "1/meter^2" Vector__XXX
+ SG_ Curvature : 24|16@1+ (9.765625E-007,-0.031999023438) [-0.02|0.02] "1/meter" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Lane_Type : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+
+
+
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+CM_ SG_ 1899 protocol_version "Any change done in the protocol (in any message) should be reflected by incrementing the protocol_version value by 1. First Version is numbered 3 (to be in sync with former revision control)";
+CM_ SG_ 1899 Driving_Speed_Right_Lane "estimated driving speed in the lane which is right to the host lane. -1 if signal is not available.";
+CM_ SG_ 1899 Driving_Speed_Left_Lane "estimated driving speed in the lane which is left to the host lane. -1 if signal is not available.";
+CM_ SG_ 1899 Probability_Of_Right_Lane "probability of the existence of a lane (not lane mark) to the right of the host lane.";
+CM_ SG_ 1899 Probability_Of_Left_Lane "probability of the existence of a lane (not lane mark) to the left of the host lane.";
+CM_ SG_ 1899 Highway_Exit_Right "When we detect highway exit to our right this flag is turned on.";
+CM_ SG_ 1899 Highway_Exit_Left "When we detect highway exit to our left this flag is turned on.";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "BusType" "CAN";
+VAL_ 3221225472 Quality 3 "High quality" 2 "High quality" 1 "Low quality" 0 "Low quality" ;
+VAL_ 1903 Lane_mark_color 3 "invalid" 2 "blue" 1 "yellow" 0 "white" ;
+VAL_ 1901 Lane_mark_color 3 "invalid" 2 "blue" 1 "yellow" 0 "white" ;
+VAL_ 1902 Lane_Type 15 "Invalid" 6 "Barrier" 5 "Bott's Dots" 4 "Double Lane" 3 "Dashed" 2 "Road Edge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1902 Quality 3 "High quality" 2 "High quality" 1 "Low quality" 0 "Low quality" ;
+VAL_ 1900 Lane_Type 15 "Invalid" 6 "Barrier" 5 "Bott's Dots" 4 "Double Lane" 3 "Dashed" 2 "Road Edge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1900 Quality 3 "High quality" 2 "High quality" 1 "Low quality" 0 "Low quality" ;
+VAL_ 1899 Road_Type 2 "Urban" 1 "Highway" 0 "Unknown" ;
+VAL_ 1899 Construction_Area 3 "Detected Both" 2 "Detected Left" 1 "Detected Right" 0 "CA not detected" ;
+VAL_ 1897 PRED_SOURCE_HWE_SPAIN 0 "Off" 1 "On" ;
+VAL_ 1897 PRED_SOURCE_GUARDRAIL_SHADOW 0 "Off" 1 "On" ;
+VAL_ 1897 PRED_SOURCE_DIVERGING_LANES 0 "Off" 1 "On" ;
+VAL_ 1897 PRED_SOURCE_VRTL_MERGE 0 "Off" 1 "On" ;
+VAL_ 1897 PRED_SOURCE_STD 0 "Off" 1 "On" ;
+VAL_ 1897 PRED_OTHER_SIDE 0 "Off" 1 "On" ;
+VAL_ 1897 PRED_OCCLUDED_LM_EXTRAPOLATION 0 "Off" 1 "On" ;
+VAL_ 1897 PRED_HEADWAY_ORIENTED 0 "Off" 1 "On" ;
+VAL_ 1897 PRED_OVERRIDE 0 "Off" 1 "On" ;
+VAL_ 1897 PRED_DIST_BASED_EXTRAPOLATION 0 "Off" 1 "On" ;
+VAL_ 1897 Lane_mark_color 3 "invalid" 2 "blue" 1 "yellow" 0 "white" ;
+VAL_ 1896 Lane_Type 15 "Invalid" 6 "Barrier" 5 "Bott's Dots" 4 "Double Lane" 3 "Dashed" 2 "Road Edge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1896 Quality 3 "High quality" 2 "High quality" 1 "Low quality" 0 "Low quality" ;
+VAL_ 1895 PRED_SOURCE_HWE_SPAIN 0 "Off" 1 "On" ;
+VAL_ 1895 PRED_SOURCE_GUARDRAIL_SHADOW 0 "Off" 1 "On" ;
+VAL_ 1895 PRED_SOURCE_DIVERGING_LANES 0 "Off" 1 "On" ;
+VAL_ 1895 PRED_SOURCE_VRTL_MERGE 0 "Off" 1 "On" ;
+VAL_ 1895 PRED_SOURCE_STD 0 "Off" 1 "On" ;
+VAL_ 1895 PRED_OTHER_SIDE 0 "Off" 1 "On" ;
+VAL_ 1895 PRED_OCCLUDED_LM_EXTRAPOLATION 0 "Off" 1 "On" ;
+VAL_ 1895 PRED_HEADWAY_ORIENTED 0 "Off" 1 "On" ;
+VAL_ 1895 PRED_OVERRIDE 0 "Off" 1 "On" ;
+VAL_ 1895 PRED_DIST_BASED_EXTRAPOLATION 0 "Off" 1 "On" ;
+VAL_ 1895 Lane_mark_color 3 "invalid" 2 "blue" 1 "yellow" 0 "white" ;
+VAL_ 1894 Quality 3 "High quality" 2 "High quality" 1 "Low quality" 0 "Low quality" ;
+VAL_ 1894 Lane_Type 15 "Invalid" 6 "Barrier" 5 "Bott's Dots" 4 "Double Lane" 3 "Dashed" 2 "Road Edge" 1 "Solid" 0 "Undecided" ;
+

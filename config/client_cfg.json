@@ -1,0 +1,31 @@
+{
+  "recorder": { "path": "pcview_data", "log": false, "video": false },
+  "player": {
+    "lane": {
+      "show_obj": true,
+      "lane_speed_limit": 0,
+      "show_warning": true,
+      "show_info": true
+    },
+    "vehicle": {
+      "show_obj": true,
+      "thickness": 2,
+      "len_ratio": 50,
+      "show_warning": true,
+      "show_info": true
+    },
+    "ped": {
+      "show_obj": true,
+      "thickness": 1,
+      "show_warning": true,
+      "show_info": true
+    },
+    "tsr": {
+      "show_obj": true,
+      "thickness": 1,
+      "show_warning": true,
+      "show_info": true
+    },
+    "env": { "show": true }
+  }
+}

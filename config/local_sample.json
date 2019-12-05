@@ -1,0 +1,9 @@
+{
+  "log_root": "/home/minieye/cve_data/",
+  "save": {
+    "video": true,
+    "raw": true,
+    "alert": false,
+    "log": false
+  }
+}

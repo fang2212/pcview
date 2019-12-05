@@ -1,0 +1,219 @@
+{
+ "collectors": [
+  {
+   "save": {
+    "alert": false,
+    "log": false,
+    "path": "/media/nan/860evo/data/pcviewer",
+    "raw": true,
+    "video": true
+   },
+   "ip": "192.168.0.233",
+   "msg_types": [
+    "can0",
+    "can1",
+    "gsensor"
+   ],
+   "debug": true,
+   "platform": "fpga",
+   "mac": "00:0c:18:ef:ff:ed",
+   "repeater": true,
+   "work_mode": "collector",
+   "can_types": {
+    "can1": [],
+    "can0": [
+     "ifv300"
+    ]
+   },
+   "show": {
+    "radar": true,
+    "overlook": false,
+    "vehicle": true,
+    "tsr": true,
+    "q3": true,
+    "lane_speed_limit": 40,
+    "lane": true,
+    "ped": true,
+    "color": "color"
+   },
+   "fix": {
+    "vehicle": 2,
+    "lane": 1,
+    "ped": 2,
+    "tsr": 2
+   }
+  },
+  {
+   "save": {
+    "alert": false,
+    "log": false,
+    "path": "/media/nan/860evo/data/pcviewer",
+    "raw": true,
+    "video": false
+   },
+   "ip": "192.168.98.227",
+   "msg_types": [
+    "can0",
+    "can1"
+   ],
+   "debug": true,
+   "platform": "fpga",
+   "mac": "00:0c:18:ef:ff:e0",
+   "repeater": true,
+   "work_mode": "collector",
+   "can_types": {
+    "can1": [
+     "esr"
+    ],
+    "can0": [
+     "x1"
+    ]
+   },
+   "show": {
+    "radar": true,
+    "overlook": false,
+    "vehicle": true,
+    "tsr": true,
+    "q3": true,
+    "lane_speed_limit": 40,
+    "lane": true,
+    "ped": true,
+    "color": "color"
+   },
+   "fix": {
+    "vehicle": 2,
+    "lane": 1,
+    "ped": 2,
+    "tsr": 2
+   }
+  },
+  {
+   "save": {
+    "alert": false,
+    "log": false,
+    "path": "/media/nan/860evo/data/pcviewer",
+    "raw": true,
+    "video": false
+   },
+   "ip": "192.168.98.227",
+   "msg_types": [
+    "can0",
+    "can1"
+   ],
+   "debug": true,
+   "platform": "fpga",
+   "mac": "00:0c:18:ef:ff:ec",
+   "repeater": true,
+   "work_mode": "collector",
+   "can_types": {
+    "can1": [],
+    "can0": [
+     "rtk"
+    ]
+   }
+  },
+  {
+   "save": {
+    "alert": false,
+    "log": false,
+    "path": "/media/nan/860evo/data/pcviewer",
+    "raw": true,
+    "video": false
+   },
+   "ip": "192.168.98.227",
+   "msg_types": [
+    "can0",
+    "can1"
+   ],
+   "debug": true,
+   "platform": "fpga",
+   "mac": "00:0c:18:ef:ff:e1",
+   "repeater": true,
+   "work_mode": "collector",
+   "can_types": {
+    "can1": [],
+    "can0": [
+     "rtk"
+    ]
+   }
+  },
+  {
+   "mac": "b8:27:eb:21:ba:29",
+   "msg_types": [
+    "can0"
+   ],
+   "debug": true,
+   "platform": "fpga",
+   "work_mode": "collector",
+   "repeater": true,
+   "can_types": {
+    "can1": [],
+    "can0": [
+     "rtk"
+    ]
+   }
+  }
+ ],
+ "installation": {
+  "esr": {
+   "roll": 0.0,
+   "lat_offset": 0.22,
+   "pitch": 0.0,
+   "height": 0.45,
+   "lon_offset": 0.0,
+   "yaw": -1.8
+  },
+  "lmr": {
+   "roll": 0.0,
+   "lat_offset": -0.3,
+   "pitch": 0.0,
+   "height": 0.45,
+   "lon_offset": 0.0,
+   "yaw": -1.0
+  },
+  "ifv300": {
+   "roll": 0.0,
+   "lat_offset": 0.0,
+   "pitch": 0.0,
+   "height": 1.18,
+   "lon_offset": -1.64,
+   "yaw": 0.0
+  },
+  "x1": {
+   "roll": 0.0,
+   "lat_offset": 0.0,
+   "pitch": 0.0,
+   "height": 1.18,
+   "lon_offset": -1.64,
+   "yaw": 0.0
+  },
+  "video": {
+   "fu": 1458.0,
+   "roll": 1.0,
+   "fv": 1458.0,
+   "cu": 640.0,
+   "lat_offset": 0.15,
+   "pitch": -0.4,
+   "height": 1.18,
+   "lon_offset": -1.67,
+   "cv": 360.0,
+   "yaw": -0.5
+  },
+  "hmb": {
+   "roll": 0.0,
+   "lat_offset": -0.3,
+   "pitch": 0.0,
+   "height": 0.45,
+   "lon_offset": 0.0,
+   "yaw": 0.0
+  },
+  "rtk": {
+   "roll": 0.0,
+   "lat_offset": 0.0,
+   "pitch": -2.0,
+   "height": 0.86,
+   "lon_offset": -0.21,
+   "yaw": 0.0
+  }
+ }
+}

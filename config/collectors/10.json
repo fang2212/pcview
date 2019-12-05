@@ -1,0 +1,24 @@
+{
+  "mac": "00:0c:18:ef:ff:d0",
+  "debug": true,
+  "repeater": true,
+  "can_types": {
+    "can1": ["x1"],
+    "can0": [
+      "ifv300"
+    ]
+  },
+  "msg_types": [
+  "can0",
+  "can1",
+  "gsensor"
+ ],
+  "use_x1_camera": {
+  "use": false,
+  "ip": "192.168.98.106",
+  "port": 24011
+ },
+  "type": "x1",
+  "platform": "pi",
+  "work_mode": "collector"
+}

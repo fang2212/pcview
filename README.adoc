@@ -1,0 +1,28 @@
+= CVE-PCC
+:toc:
+
+* contributors: xuxinan@minieye.cc caofulin@minieye.cc yuji@minieye.cc
+* version: 1.1
+* date: 2018-09-06
+* © 2019 MINIEYE
+
+:numbered!:
+
+[abstract]
+== 概述
+
+CVE-PCC是一个用于采集多传感器、实时可视化显示、记录，并对记录进行后处理分析的工具。
+
+== 路线图
+. *内部版本*
+** 实时采集，支持x1，q3，esr，conti，rtk，gps，mqb[done] 
+** 可视化[done] 
+** 后处理log，提供x1与esr、rtk的对比分析[done] 
+. *产品化版本*
+** 可以提供到外部客户的硬件平台和搭载的CVE-PCC软件版本[plan] 
+
+== 项目说明
+** pcc.py 采集主程序 
+** pcc_replay.py 回放主程序 
+** log_manipulate.py 后处理分析入口 
+** 配置参考 instruction.md

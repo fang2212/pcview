@@ -1,0 +1,36 @@
+{
+  "proxy": "nanomsg",
+  "ip1": "192.168.0.233",
+  "ip": "127.0.0.1",
+  "port": "24011",
+  "sink": [
+    {
+      "type": "camera",
+      "port": 1200
+    },
+    {
+      "type": "lane",
+      "port": 1203
+    },
+    {
+      "type": "vehicle",
+      "port": 1204
+    },
+    {
+      "type": "tsr",
+      "port": 1206
+    },
+    {
+      "type": "pcw",
+      "port": 1205
+    }
+  ],
+  "max_delay": 15,
+  "gc_size": 100,
+  "export": {
+    "proxy": "origin",
+    "proxy comment": "tcp,origin,test",
+    "requireCamera": true,
+    "addr": "0.0.0.0:12032"
+  }
+}

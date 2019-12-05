@@ -1,0 +1,44 @@
+{
+ "save": {
+  "alert": false,
+  "log": false,
+  "path": "/media/nan/860evo/data/pcviewer",
+  "raw": true,
+  "video": false
+ },
+ "ip": "192.168.98.227",
+ "msg_types": [
+  "can0",
+  "can1"
+ ],
+ "debug": true,
+ "platform": "fpga",
+ "mac": "00:0c:18:ef:ff:e0",
+ "repeater": true,
+ "work_mode": "collector",
+ "can_types": {
+  "can1": [
+   "esr"
+  ],
+  "can0": [
+   ""
+  ]
+ },
+ "show": {
+  "radar": true,
+  "overlook": false,
+  "vehicle": true,
+  "tsr": true,
+  "q3": true,
+  "lane_speed_limit": 40,
+  "lane": true,
+  "ped": true,
+  "color": "color"
+ },
+ "fix": {
+  "vehicle": 2,
+  "lane": 1,
+  "ped": 2,
+  "tsr": 2
+ }
+}

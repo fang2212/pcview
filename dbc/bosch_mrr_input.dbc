@@ -1,0 +1,607 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Tester L_RSDS R_RSDS GW
+VAL_TABLE_ Wheel_Speed_Range 5334 "0x14d6 to 1fff are invalid" ;
+VAL_TABLE_ ReverseGearStatus 3 "Not Available" 2 "Reserved" 1 "On" 0 "Off" ;
+VAL_TABLE_ WiperSwitchSts 7 "Reserved" 6 "Description for the value '0x6'" 5 "Wash in Auto Mode" 4 "Wiper Wash" 3 "High Speed" 2 "Low Speed" 1 "Wiper Auto" 0 "Wiper Off" ;
+VAL_TABLE_ WiprReq 7 "Invalid" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "Speed2 (Hi)" 2 "Speed1 (Lo)" 1 "Wiper action once" 0 "Wiper Off" ;
+VAL_TABLE_ QDashACCFail 1 "Error" 0 "No Error" ;
+VAL_TABLE_ AEBBAActive 1 "Active" 0 "Not Active" ;
+VAL_TABLE_ BTCActive 1 "Valid" 0 "Not Valid" ;
+VAL_TABLE_ PTCActive 1 "Active" 0 "Not Active" ;
+VAL_TABLE_ ESPBrakeLightCtrl 1 "Brake light on" 0 "Brake light off" ;
+VAL_TABLE_ EPB_SwtichPositionValid 1 "Not Valid" 0 "Valid" ;
+VAL_TABLE_ ECM_ACCSwErr 1 "Error" 0 "No error" ;
+VAL_TABLE_ ECM_ACC_CancelSw 1 "Pressed" 0 "No press" ;
+VAL_TABLE_ ECM_ACC_ON_OFFSw 1 "Pressed" 0 "No press" ;
+VAL_TABLE_ AccPedalOverride 1 "override" 0 "not override" ;
+VAL_TABLE_ Target_Gear 15 "Reserved" 14 "Reserved" 13 "Reserved" 12 "Reserved" 11 "Reserved" 10 "Reserved" 9 "Reserved" 8 "Target gear R" 7 "Target gear 7" 6 "Target gear 6" 5 "Target gear 5" 4 "Target gear 4" 3 "Target gear 3" 2 "Target gear 2" 1 "Target gear 1" 0 "0x0:Target gear N or P" ;
+VAL_TABLE_ TargetGearValid 1 "0x1:Valid " 0 "0x0:Invalid " ;
+VAL_TABLE_ VehDynYawRateValid 1 "0x1: Valid" 0 "0x0: Invalid" ;
+VAL_TABLE_ LateralAcceValid 1 "0x1: Valid" 0 "0x0: Invalid" ;
+VAL_TABLE_ LongitudeAccValid 1 "0x1: Valid" 0 "0x0: Invalid" ;
+VAL_TABLE_ Passenger_SeatBeltReminder 1 "0x1:Reminder" 0 "0x0:No Reminder" ;
+VAL_TABLE_ CDD_S_Available 1 "Available" 0 "NOTAvailable" ;
+VAL_TABLE_ CDD_S_Active 1 "Active" 0 "NOTactive" ;
+VAL_TABLE_ Start_Stop_Sts 7 "Invalid" 6 "Engine autostopping" 5 "Engine Operation" 4 "Engine start" 3 "starter restart" 2 "Engine stopped" 1 "Engine standby" 0 "non-start/stop mode" ;
+VAL_TABLE_ HUT_AEB_ON_OFF 1 "AEB_OFF" 0 "AEB_ON" ;
+VAL_TABLE_ SAS_Status 3 "Permanent Error Detected" 2 "Intermittent Error Detected" 1 "SAS Not Calibrated" 0 "SAS Angle And Speed Correct" ;
+VAL_TABLE_ PedaltobeApplied 1 "Pedal needs to be applied" 0 "No reminder" ;
+VAL_TABLE_ LKPWarning 3 "Not available" 2 "LKP warning 2" 1 "LKP warning 1" 0 "No LKP warning" ;
+VAL_TABLE_ IPBackgroundLightCmd 1 "Backlight ON" 0 "Backlight OFF" ;
+VAL_TABLE_ HDCFault 3 "Reserved" 2 "Not available" 1 "Failure" 0 "No failure" ;
+VAL_TABLE_ FuelLvLw 3 "Reserved" 2 "Internal Error" 1 "True" 0 "False" ;
+VAL_TABLE_ FuelLv 101 "0x65~0xFF:Invalid Value" 100 "100 L" 2 "2 L" 1 "1 L" 0 "0 L" ;
+VAL_TABLE_ EngOilPrsLw 3 "Reserved" 2 "Internal Error" 1 "True" 0 "False" ;
+VAL_TABLE_ CruiseCtrlSts 2 "Standby" 1 "Active" 0 "Inactive" ;
+VAL_TABLE_ BattChargeSts 3 "Reserved" 2 "Internal Error" 1 "True" 0 "False" ;
+VAL_TABLE_ AVHerrorSts 3 "Reserved" 2 "Not available" 1 "Error
+" 0 "No Error" ;
+VAL_TABLE_ PowerRelayFault 1 "Power Relay failure" 0 "No failure" ;
+VAL_TABLE_ Unfold 1 "Fold" 0 "Unfold" ;
+VAL_TABLE_ Traileroff 1 "Trailer on" 0 "Trailer off" ;
+VAL_TABLE_ PowerModeBackup 3 "Crank" 2 "ON" 1 "ACC" 0 "OFF" ;
+VAL_TABLE_ PowerModBackEnable 1 "Power mode backup enable" 0 "Power mode backup disable" ;
+VAL_TABLE_ RvcOperationState 4 "4~7:Reserved" 3 "Calibration status" 2 "System not available (No video Output)" 1 "Operation" 0 "Standby" ;
+VAL_TABLE_ RvcButtonGroup 5 "5~7:Reserved" 4 "Button Group 4 (Return to the First Step of Parallel Parking and Normal Parking)" 3 "Button Group 3 (Angle Parking and Normal Parking)" 2 "Button Group 2 (Parallel Parking and Normal Parking)" 1 "Button Group 1 (Parallel Parking and Angle Parking)" 0 "No Button" ;
+VAL_TABLE_ GuideVoiceReq 8 "8~15:Reserved" 7 "When the overlaid straight line becomes parallel to the parking space edges, stop the vehicle. Turn steering wheel to initial position and continue to move the vehicle backwards." 6 "Align the arch line with distal edge of the parking space. Stop the vehicle. Then turn the steering wheel to maximum. Drive vehicle backwards.   " 5 "When the overlaid straight line is parallel to the curb, turn the steering wheel back to the initial position. Parking complete.   " 4 "When the arch line touches the curb, stop the vehicle. Turn steering wheel backward to maximum. Then keep moving the vehicle." 3 "When the moving block becomes green, keep the steering wheel, then drive the vehicle backward." 2 "Drive the vehicle to starting position, then turn the steering wheel.      " 1 "Attention, please select the parking mode" 0 "No Reminding Information" ;
+VAL_TABLE_ Evr_Min 59 "59~63: Invalid" 0 "0~59: Minute" ;
+VAL_TABLE_ Evr_Hour 24 "24~31: Invalid" 0 "0~23: Hour" ;
+VAL_TABLE_ TimeSet_Year_Right 10 "10~15:Reserved" 0 "0~9:valid Year" ;
+VAL_TABLE_ TimeSet_Year_Left 10 "10~15:Reserved" 0 "0~9:valid" ;
+VAL_TABLE_ TimeSet_Second 60 "60~63:Reserved" 0 "0~59:valid Second" ;
+VAL_TABLE_ TimeSet_Month 13 "Reserved" 1 "valid hour" 0 "Invalid" ;
+VAL_TABLE_ Evr_Vid_Ctrl 3 "Reserved" 2 "Stop Video Replay" 1 "Start Video Replay" 0 " No Commands" ;
+VAL_TABLE_ Evr_Arrow_Cmd 3 "Reserved" 2 "Move Down for 3 Items" 1 "Move Up for 3 Items" 0 "No Commands" ;
+VAL_TABLE_ Evr_Act_Cmd 3 "Reserved" 2 "Exit EVR" 1 "Enter EVR" 0 "No Commands" ;
+VAL_TABLE_ Sgl_View_Sel 5 "5~7: Reserved" 4 "Select Rear View" 3 " Select Right Side View" 2 "Select Left Side View" 1 "Select Front View" 0 "No Comamnds" ;
+VAL_TABLE_ Lg_Sgl_View_Cmd 3 "Reserved" 2 "Exit Large Single View" 1 " Enter Large Single View" 0 "No Comamnds" ;
+VAL_TABLE_ Evr_Vid_Sel 6 "6~15 reserved" 5 "Select Video No.5" 4 "Select Video No.4" 3 "Select Video No.3" 2 "Select Video No.2" 1 "Select Video No.1" 0 "No Commands" ;
+VAL_TABLE_ Evr_Sec 59 "59~63: Invalid" 0 "0~59: Second" ;
+VAL_TABLE_ Evr_Month 13 "13~15: Invalid" 1 "1~12: Month" 0 "Invalid" ;
+VAL_TABLE_ Evr_Day 1 "1~31: Day" 0 "Invalid" ;
+VAL_TABLE_ Emerg_Vid_Rec 1 " Command is sent" 0 "No Command" ;
+VAL_TABLE_ User_Input_Cmd 5 "5~7:reserved" 4 "Return to  the First Step of Parallel Parking" 3 "Enter Normal Parking" 2 "Enter Angle Parking" 1 "Enter Parallel Parking" 0 "No Input" ;
+VAL_TABLE_ TimeSet_Minutes 60 "60~63:Reserved" 0 "0~59:valid min" ;
+VAL_TABLE_ TimeSet_Hour 36 "24~31:Reserved" 0 "0~23:valid hour" ;
+VAL_TABLE_ LanguageSet 8 "8~15:Reserved" 7 "Portuguese" 6 "Spanish" 5 "Italian" 4 "French" 3 "German" 2 "Russian" 1 "English" 0 "Chinese" ;
+VAL_TABLE_ PrewarningON 1 "Prewarning OFF" 0 "Prewarning ON" ;
+VAL_TABLE_ PCWON 1 "PCW OFF" 0 "PCW ON" ;
+VAL_TABLE_ RPADetectionRML 255 "No Obstacle" 131 "0x83~0xFE  reserved" 2 "0x02~0x82: 2 cm~130 cm" 1 "1 cm" 0 " 0 cm" ;
+VAL_TABLE_ RORErrorFlag 1 "Error occurred
+    ①传感器内部故障
+    ②ROR与RMR通信线短路
+    ③ROR与RMR通信异常" 0 "No Error" ;
+VAL_TABLE_ ROLErrorFlag 1 "Error occurred
+    ①传感器内部故障
+    ②ROL与FOL通信线短路
+    ③ROL与FOL通信异常
+    ④RML与ROL通信异常" 0 "No Error" ;
+VAL_TABLE_ RMRErrorFlag 1 "Error occurred
+    ①传感器内部故障
+    ②RMR与RML通信线短路
+    ③RMR与RML通信异常
+    ④ROR与RMR通信异常" 0 "No Error" ;
+VAL_TABLE_ RMLErrorFlag 1 "Error occurred
+    ①传感器内部故障
+    ②RML与ROL通信线短路
+    ③RML与ROL通信异常
+    ④RMR与RML通信异常" 0 "No Error" ;
+VAL_TABLE_ FPADetectionFOR 255 "No Obstacle" 61 "0x3D~0xFE  reserved" 2 "0x02~0x3C: 2 cm~60 cm" 1 " 1 cm" 0 "0 cm" ;
+VAL_TABLE_ FPADetectionFML 255 " No Obstacle" 101 "0x65~0xFE  reserved" 2 "0x02~0x64: 2 cm~100 cm" 1 "1 cm" 0 " 0 cm" ;
+VAL_TABLE_ FORErrorFlag 1 "Error occurred
+    ①传感器内部故障
+    ②FMR与FOR通信异常" 0 " No Error" ;
+VAL_TABLE_ FOLErrorFlag 1 "Error occurred
+    ①传感器内部故障
+    ②FOL与FML通信线短路
+    ③FOL与FML通信异常
+    ④ROL与FOL通信异常" 0 "No Error" ;
+VAL_TABLE_ FMRErrorFlag 1 "Error occurred
+    ①传感器内部故障
+    ②FMR与FOR通信线短路
+    ③FMR与FOR通信异常
+    ④FML与FMR通信异常" 0 "No Error" ;
+VAL_TABLE_ FMLErrorFlag 1 "Error occurred
+    ①传感器内部故障
+    ②FML与FMR通信线短路
+    ③FML与FMR通信异常
+    ④FOL与FML通信异常" 0 "No Error" ;
+VAL_TABLE_ Stopped 1 "Playing" 0 "Stopped" ;
+VAL_TABLE_ Swa_Icon 5 "5~7: Reserved" 4 "DisplayGreen Icon" 3 "DisplayRight Turn Icon" 2 "DisplayLeft Turn Icon" 1 " Display Normal Icon" 0 "Don't Display" ;
+VAL_TABLE_ Sgl_View_Ind 4 "4~7: Reserved" 3 "Rear View" 2 "Right Side View" 1 "Left Side View" 0 "Front View" ;
+VAL_TABLE_ Sd_Card_Fault 6 "6~15: Reserved" 5 "Damaged" 4 " Memory Full" 3 "Write-Protection" 2 "Not Formatted" 1 "Not Inserted" 0 "No Faults" ;
+VAL_TABLE_ Pgs_Icon 6 "6~15: Reserved" 5 "Angle Parking, Support Restart" 4 "Angle Parking, Need Confirm" 3 " Parallel Parking , Support Restar" 2 "Parallel Parking , Need Confirm" 1 "Normal Parking without Overlay" 0 "Normal Parking with Overlay" ;
+VAL_TABLE_ Guid_Voice_Req 10 "10~31:Reserved" 9 "Voice Request No. 9" 8 "Voice Request No. 8" 7 "Voice Request No. 7" 6 "Voice Request No. 6" 5 "Voice Request No. 5" 4 "Voice Request No. 4" 3 "Voice Request No. 3" 2 "Voice Request No. 2" 1 "Voice Request No. 1" 0 "No Voice Requests" ;
+VAL_TABLE_ Can_Com_Fault 1 "Fault Exsits" 0 "Fault doesn't exsit" ;
+VAL_TABLE_ Avm_Op_State 4 "4~7: Reserved" 3 "Test State" 2 "EOL State" 1 "Operation State" 0 "Standby State" ;
+VAL_TABLE_ Avm_Hmi_Index 4 "4~7: Reserved" 3 "EVR HMI" 2 "EOL/Test State HMI" 1 "Large Single View HMI" 0 "Main Screen HMI" ;
+VAL_TABLE_ Nothold 1 "hold" 0 "Not hold" ;
+VAL_TABLE_ RvsGearSts 3 "Invalid" 2 " Unknown" 1 "Active (in reverse gear)" 0 " Inactive (not in reverse gear)" ;
+VAL_TABLE_ CoolFanReq 15 "Invalid" 4 "0x04-0x0E：Reserved" 3 "max speed" 2 "mid speed" 1 "low speed" 0 "no fan control" ;
+VAL_TABLE_ Enable 1 "Disable" 0 "Enable" ;
+VAL_TABLE_ DrvGearDisp 7 "Reserved" 6 "6st Gear" 5 "5st Gear" 4 "4st Gear" 3 "3st Gear" 2 "2st Gear" 1 "1st Gear" 0 "Neutral" ;
+VAL_TABLE_ DrvModDispSts 3 "Reserved(treat as Blank/No Display)" 2 "Keep light" 1 "On" 0 "Blank/No Display" ;
+VAL_TABLE_ DrvModDisp 7 "Reserved " 6 "Reserved " 5 "Reserved " 4 "M" 3 "D" 2 "N" 1 "R" 0 "P" ;
+VAL_TABLE_ DrvFaiMsg 15 "transmission limit function" 2 "2-14 :Reserved" 1 "Transmission Malfunction" 0 "No Message" ;
+VAL_TABLE_ DrvWarnMsg 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "Reserved" 2 "TransToo_Hot" 1 "PressBrake" 0 "No Text" ;
+VAL_TABLE_ FFFEUnknown 65535 "Invalid" 65534 ": Unknown" ;
+VAL_TABLE_ TC_SLIP_STATE 7 "Invalid" 6 "Reversed" 5 "Reversed" 4 "Reversed" 3 "Slip" 2 "Microro Slip" 1 "Open" 0 "Closed" ;
+VAL_TABLE_ RSDS_display 15 "reserved" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "CTA blindness" 9 "CTA error" 8 "BSD/LCA blindness" 7 "BSD/LCA error" 6 "Trailer mode, CTA not avilable" 5 "Trailer mode, BSD/LCA not avialbel" 4 "CTA OFF" 3 "CTA ON" 2 "BSD/LCA OFF" 1 "BSD/LCA ON" 0 "no display" ;
+VAL_TABLE_ CTA_warningReqLeft 3 "reserved" 2 "warning level 2" 1 "reserved" 0 "no warning" ;
+VAL_TABLE_ BSD_LCA_warningReqLeft 3 "reserved" 2 ":warning level 2" 1 ":warning level 1" 0 "no warning" ;
+VAL_TABLE_ SystemPowerMode 3 "Crank" 2 "ON" 1 "ACC
+" 0 "OFF" ;
+VAL_TABLE_ WarningEsclFailed 1 "ESCL Failed" 0 "No Error" ;
+VAL_TABLE_ OffWarning 1 "Warning" 0 "Off" ;
+VAL_TABLE_ PEPSPDMDriverErrorInd 1 "PDM driver is defect" 0 "No error" ;
+VAL_TABLE_ PEPS_StrtAuthReq 1 "StartAuthentication Request " 0 "Not available" ;
+VAL_TABLE_ EngineStartReq 3 "Reserved" 2 "Start Engine via Immo" 1 "Start Engine Request" 0 "No Action" ;
+VAL_TABLE_ CameraBlockageSts 1 "Camera Blocked" 0 "Camera Not Blocked" ;
+VAL_TABLE_ LDWCalibrationSts 3 "Reserved" 2 "Calibration Failed" 1 "Calibration In Process" 0 "Calibration Success" ;
+VAL_TABLE_ LDWReminder 3 "Reserved" 2 "LDWRightReminer" 1 "LDWLeftReminder" 0 "No Reminder" ;
+VAL_TABLE_ LDWErrorSts 3 "Internal Error" 2 "External Error" 1 ":Temporary Error" 0 "No Error" ;
+VAL_TABLE_ LDWWarning 3 "Reserved" 2 "LDWRightWarning" 1 "LDWLeftWarning" 0 "No LDW warning" ;
+VAL_TABLE_ Invalid1FFF 8191 "Invalid" ;
+VAL_TABLE_ ManShftReq 7 "Fault" 6 "Invalid" 5 "Reserved" 4 "Reserved" 3 "both pedals pressed" 2 "Shift down request " 1 "Shift up request" 0 "no shift/ no control" ;
+VAL_TABLE_ VehicleStandstill 3 "Reserved" 2 "invalid (short unavailability, max 3s)" 1 "standstill" 0 "not standstill" ;
+VAL_TABLE_ notavailable 1 "available" 0 "not available" ;
+VAL_TABLE_ BrakeDiskOverHeat 1 "temp too high" 0 "not high" ;
+VAL_TABLE_ NoBrakeForce 1 "no brk force" 0 "exist brk force" ;
+VAL_TABLE_ notdeactivated 1 "deactivated" 0 "not deactivated" ;
+VAL_TABLE_ FLWheelDriveDirection 3 "Stop" 2 "Backward" 1 "Forward" 0 "Invalid" ;
+VAL_TABLE_ notvalid 1 "valid" 0 "not valid" ;
+VAL_TABLE_ EPB_SwtichPosition 3 "reserved" 2 "Apply" 1 "Release" 0 "Neutral" ;
+VAL_TABLE_ PedaltobeApplied 1 "Pedal needs to be applied" 0 "No reminder" ;
+VAL_TABLE_ EPBErrorSts 3 "Diagnosis" 2 "Error" 1 "No Error" 0 "Undefined" ;
+VAL_TABLE_ ESPBreakLightControl 1 "Request to light up break light" 0 "No request to light up break light" ;
+VAL_TABLE_ nopress 1 "pressed" 0 "no press" ;
+VAL_TABLE_ noactive3 3 "reserved" 2 "invalid" 1 "active" 0 "no active " ;
+VAL_TABLE_ running 1 "stopped" 0 "running" ;
+VAL_TABLE_ Notachieved 1 "Achieved" 0 "Not achieved" ;
+VAL_TABLE_ notokay 1 "okay" 0 "not okay" ;
+VAL_TABLE_ Failed 1 " Passed" 0 "Failed" ;
+VAL_TABLE_ FPAworkfrq 3 "Reserved" 2 "1500Hz" 1 "1000HZ" 0 "750Hz" ;
+VAL_TABLE_ FPASpeakerInfo 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "3Hz" 2 "1.5Hz" 1 "Long Beep" 0 "off" ;
+VAL_TABLE_ NormalMode 1 "Temporary Mode" 0 "Normal Mode" ;
+VAL_TABLE_ ACC_Mode_display 8 "0x08~0x1F:reserved" 7 "failure mode" 6 "reserved" 5 "Override" 4 "Brake-only mode" 3 "Active-Control mode" 2 "Stand-By mode" 1 "Passive mode" 0 "OFF mode" ;
+VAL_TABLE_ ACC_AEBL_Triggered 1 "AEB-L triggered" 0 "AEB-L not tirggered" ;
+VAL_TABLE_ ACC_DriverOverride 1 "driver override" 0 "No driver override" ;
+VAL_TABLE_ ACC_ObjectSpeed 1 "0x01~0xFF:Valid value" 0 "No display" ;
+VAL_TABLE_ ACC_TextInfoForDriver 11 "0x0B~0x1F: Resvered" 10 "PEBS error" 9 "ACC error" 8 "ACC switched off" 7 "ACC switched on" 6 " ACC and PEBS error" 5 "unable to activate ACC due to other limitation(except speed not achive)" 4 "ACC and PEBS temporary unavailable" 3 "Active" 2 " ACC active control is cancelled" 1 "unable to activate ACC due to speed not achive" 0 "no display" ;
+VAL_TABLE_ ACC_TakeOverReq 1 "valid TakeOver request" 0 "no TakeOver request" ;
+VAL_TABLE_ ACC_ObjValid 1 " target object detected" 0 "no object" ;
+VAL_TABLE_ ACC_TauGapSet 7 "reserved" 6 "reserved" 5 "reserved" 4 " tauGap_4 1.9s" 3 " tauGap_3 1.6s" 2 "tauGap_2 1.3s" 1 "tauGap_1 1s" 0 "No display" ;
+VAL_TABLE_ ACC_dxTarObjBar 7 "resvered" 6 "resvered" 5 "resvered" 4 "Distance_4 four bars" 3 "Distance_3 three bars" 2 "Distance_2 two bars" 1 " Distance_1 one bar" 0 "No display" ;
+VAL_TABLE_ FFnodisplay 255 " no display" ;
+VAL_TABLE_ ACC_AWB_Level 5 "0x5~0x15: resvered" 4 "Level 5" 3 "Level 3" 2 "Level 2" 1 "Level 1" 0 "No level" ;
+VAL_TABLE_ ACC_ABA_Level 3 "Level 3" 2 "Level 2" 1 "Level 1" 0 "Level 0" ;
+VAL_TABLE_ ACC_PCW_preWarning_ON_OFF 3 "reserved" 2 "Prewaring ON" 1 "Prewarning OFF" 0 "no display" ;
+VAL_TABLE_ nowarning 1 " enable warning" 0 "no warning" ;
+VAL_TABLE_ ACC_PCW_ON_OFF 3 "reserved" 2 "FCW ON
+" 1 "FCW OFF" 0 "no display" ;
+VAL_TABLE_ Nodemand 1 "demand" 0 "No demand" ;
+VAL_TABLE_ ACC_Mode 8 "0x08~0x1F:reserved" 7 "failure mode" 6 "reserved" 5 "Override" 4 "Brake-only mode" 3 "Active-Control mode" 2 "Stand-By mode" 1 "Passive mode" 0 "OFF mode" ;
+VAL_TABLE_ ACC_ShutdownMode 3 "initial" 2 "immediate off" 1 "fast off" 0 "soft off" ;
+VAL_TABLE_ FFFailure 255 "Failure" ;
+VAL_TABLE_ Indicates_Temperature_Signal_Sta 3 "Invalid-Initializing" 2 "Potentially Invalid" 1 "Invalid" 0 "Valid" ;
+VAL_TABLE_ ABM_PassSeatOccupantstatus 1 "have passenger" 0 "no passenger" ;
+VAL_TABLE_ WarnSSNotMet 1 "SS condition is not satisfied" 0 "SS condition is satisfied" ;
+VAL_TABLE_ TCU_RPM_request_indication 1 "valid request " 0 "no request " ;
+VAL_TABLE_ TC_SLIP_STATE 7 "Invalid" 6 "Open slip" 5 "Closed slip" 4 "Slip" 3 "reserved" 2 "Open" 1 "Closed" 0 "reserved" ;
+VAL_TABLE_ Active 1 "Inactive" 0 "Active" ;
+VAL_TABLE_ EngGlowSts 1 "engine is in pre-glow state" 0 "engine is not in pre-glow state" ;
+VAL_TABLE_ Nofault 1 "Fault" 0 "No fault" ;
+VAL_TABLE_ notpressed3 3 "error" 2 "reserved" 1 "pressed" 0 "not pressed" ;
+VAL_TABLE_ LKPWarning 3 "Reserved" 2 "LKP warning 2" 1 "LKP warning 1" 0 "No LKP warning" ;
+VAL_TABLE_ PowerModeBackup 3 "Crank" 2 "ON
+" 1 "ACC" 0 "OFF
+" ;
+VAL_TABLE_ PowerModBackEnable 1 "Power mode backup enable" 0 "Power mode backup disable" ;
+VAL_TABLE_ InvalidFFF 4095 "Invalid value" ;
+VAL_TABLE_ offflash 3 "Reservd" 2 "flash" 1 "on" 0 "off" ;
+VAL_TABLE_ TRANS_Warning_LAMP 1 "the Warning(Mil) light is on" 0 " the Warning(Mil) light is off" ;
+VAL_TABLE_ TRANS_OVERHEAT 1 "Transmission is overheating" 0 "Transmission is within operating temperature" ;
+VAL_TABLE_ TGS_MODE 7 "Invalid" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "economy Mode" 2 "Power Mode" 1 "Winter Mode" 0 "Normal Mode" ;
+VAL_TABLE_ SHIFT_IN_PROGRESS 1 "Gear Shif is in progress" 0 "Gear Shift NOT in progress" ;
+VAL_TABLE_ InvalidFFFF 65535 "Invalid value" ;
+VAL_TABLE_ TURN_OFF_AC 1 "Turn off the AC if it is on" 0 "no action" ;
+VAL_TABLE_ TURN_ON_FAN 1 "Turn on the fan at high speed " 0 "no action" ;
+VAL_TABLE_ OBD_DTC_STATUS 3 "Invalid" 2 "tested,result error" 1 "testerd,result pass" 0 "not test" ;
+VAL_TABLE_ norequest 1 "valid request " 0 "no request " ;
+VAL_TABLE_ OBD_CALID_CVN_ACTIVE 1 "CALID CVN Active" 0 "CALID CVN Not active" ;
+VAL_TABLE_ SHIFT_GARAGE_ACTIVE 1 "Garage Shift is in progress" 0 "Garage Shift NOT in progress" ;
+VAL_TABLE_ TRANS_LIMP_HOME 1 "Transmission is Limp Home Mode" 0 "Transmission NOT in Limp Home Mode" ;
+VAL_TABLE_ TRQ_RED_MODE 7 "Invalid" 6 "reserved" 5 "reserved" 4 "reserved" 3 "FastRest" 2 "Fast" 1 "Slow" 0 "Inactive" ;
+VAL_TABLE_ TC_SLIP_STATE 7 "Invalid" 6 "Open slip" 5 "Closed slip" 4 "Slip" 3 "reserved" 2 "Open" 1 "Closed" 0 "reserved" ;
+VAL_TABLE_ SAS_Status 3 "Permanent Error Detected" 2 "Intermittent Error Detected" 1 "SAS Not Calibrated" 0 "SAS Angle And Speed Correct" ;
+VAL_TABLE_ FFFFFault 65535 "Fault" ;
+VAL_TABLE_ ShiftMotorPosition 15 "Unused" 14 "Unused" 13 "Unused" 12 "Unused" 11 "Unused" 10 "Right Stop" 9 "4WD Low" 8 "Between 4WD Low" 7 "Neutral" 6 "Between Neutral" 5 "4WD Lock" 4 "Between 4WD Lock" 3 "2WD/High Range" 2 "Left Stop" 1 "Position Invalid" 0 "Position Unknown" ;
+VAL_TABLE_ FFFFault 4095 "Fault" ;
+VAL_TABLE_ ClutchCircFaultSts 3 "Clutch Circuit Open" 2 "Clutch  Circuit Shorted to Ground " 1 "Clutch  Circuit Shorted to  Battery" 0 "Normal Operation" ;
+VAL_TABLE_ LampOff3 3 "Unused" 2 "Lamp On" 1 "Blink Lamp" 0 "Lamp Off" ;
+VAL_TABLE_ EngLimitingEnable 1 "Engine Limiting enable" 0 "disable" ;
+VAL_TABLE_ CouplingFaultSts 3 "Permanent coupling failure" 2 "Temporary coupling failure" 1 "Reduced coupling functionality" 0 "Normal Operating Mode" ;
+VAL_TABLE_ CouplingTherFail 1 "coupling thermal failsafe" 0 "No coupling thermal failsafe" ;
+VAL_TABLE_ ShiftSysActFault 1 "Shift System Actuator Fault" 0 "No fault" ;
+VAL_TABLE_ ShiftSysStuinLow 1 "shift system stuck in low" 0 "Not in low" ;
+VAL_TABLE_ ShiftSysEncFault 1 "shift system encoder fault" 0 "no fault" ;
+VAL_TABLE_ DiagLampRequest 1 "Lamp is being requested" 0 "Lamp is not being requested" ;
+VAL_TABLE_ ExternalReqIgnored 1 "External Requests not being accepted" 0 "External Requests being accepted" ;
+VAL_TABLE_ SystemType 7 "Unused" 6 "Unused" 5 "Unused" 4 "Active 2 Speed (RWD)" 3 "Active Single Speed (RWD)" 2 "Active Single Speed (FWD)" 1 "Passive 2 Speed (AWD)" 0 "Part Time 2 Speed (RWD)" ;
+VAL_TABLE_ SystemOperMode 15 "Unused" 14 "Unused" 13 "Unused" 12 "Unused" 11 "Unused" 10 "Unused" 9 "Unused" 8 "Unused" 7 "Sport Mode (Active)" 6 "Mode 4WD Low Range" 5 "Mode Neutral" 4 "Mode Active (AWD)" 3 "Mode 4WD (Lock)" 2 "Mode 2WD" 1 "System Fault" 0 "Mode Unknown" ;
+VAL_TABLE_ ModeChangeInPro 1 "Mode change in Progress" 0 "No mode change" ;
+VAL_TABLE_ ECU_FMI 27 "Temperature of ECU is bellow limit (-40°C)" 26 "Temperature of ECU is above limit (125°C)" 25 "Battery voltage out of range low (xxx V)" 24 "Battery voltage out of range high (xxx V)" 21 "ASIC EEPROM signature is bad; all
+temperature values can be wrong" 20 "Two copies of uC EEPROM are not
+identical; all temp values can be wrong" 19 "ECU board temperature and CJ temperature
+are too different; all temperature values can
+be wrong" 18 "Error during measurement (Device error)" 17 "CJ is disconnected or CJ is broken" 16 "CJ sensing element is shortcut" 1 "Diagnostic of ECU is not finished" 0 "No error" ;
+VAL_TABLE_ TC1_FMI 25 "Temperature of TC is bellow limit (-
+40°C)" 24 "Temperature of TC is above limit
+(900°C)" 22 "Error during measurement (Device error)" 21 "TC is disconnected or TC is broken" 18 "TC is shortcut to GND" 17 "TC is shortcut to VBAT" 16 "ECU Error see ECU message FMI" 1 "Diagnostic of TC is not finished" 0 "No error" ;
+VAL_TABLE_ AutoholdReqToEPB 2 "Lock brake request" 1 "Release brake request" 0 "No Request" ;
+VAL_TABLE_ ESPBreakLightControl 1 "Request to light up break light" 0 "No request to light up break light" ;
+VAL_TABLE_ NoError 1 " Error" 0 "No Error" ;
+VAL_TABLE_ SwithOffCuriseControl 1 "switch off cruise control" 0 "Not switch off cruise control " ;
+VAL_TABLE_ ClutchOpenReq 3 "Error" 2 "Torque max limit" 1 "Fast open" 0 "Passive" ;
+VAL_TABLE_ nofailed 1 "failed" 0 "no failed" ;
+VAL_TABLE_ EPBAcousticwarn 3 "Reserved" 2 "Buzzer (constant tone)" 1 "Acoustic warning (one single tone)" 0 "No Warning" ;
+VAL_TABLE_ EPBTXTdisplay 15 "Reserved" 14 "Reserved" 13 "Reserved" 12 "Reserved" 11 "Reserved" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "PressBrakePedal" 4 "OpenEPBBySwitch" 3 "FastenSeatbelt" 2 "BrakeForceNotEnough" 1 "GradientTooHigh" 0 "No display" ;
+VAL_TABLE_ offflash 3 "Reservd" 2 "flash" 1 "on" 0 "off" ;
+VAL_TABLE_ EPBSts 3 "unknown" 2 "both brakes in operation (applying/releasing)" 1 "both brakes applied" 0 "both brakes released" ;
+VAL_TABLE_ Error1F 31 "Error" ;
+VAL_TABLE_ Notenabled 1 "enabled" 0 "Not enabled" ;
+VAL_TABLE_ CALID_CVN_E 3 "invalid" 2 "Reserved" 1 "Enable flag is ON" 0 "enable flag is Off" ;
+VAL_TABLE_ ENGINE_LIMP_HOME 1 "Engine is in Limp Home Mode" 0 "engine is NOT in  limp Home Mode" ;
+VAL_TABLE_ BRAKE_PEDAL 3 "invalid" 2 "not used" 1 "Brake Switch is pressed" 0 "Brake Switch is NOT pressed" ;
+VAL_TABLE_ Start_StopSts 7 "Invalid" 6 "Engine auto-stopping" 5 "Engine Operation" 4 "Engine restart " 3 "Starter restart " 2 "Engine Stopped" 1 "Engine standby" 0 "non-start/stop mode" ;
+VAL_TABLE_ Available 1 "Not available" 0 "Available" ;
+VAL_TABLE_ DesireGear 15 "Fault" 14 "Reserved" 13 "Reserved" 12 "Reserved" 11 "Reserved" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Gear Position '6' display" 5 "Gear Position '5' display" 4 "Gear Position '4' display" 3 "Gear Position '3' display" 2 "Gear Position '2' display" 1 "Gear Position '1' display" 0 "No display" ;
+VAL_TABLE_ Tgtgear_Down 1 "Gear shiftdown display on" 0 "Gear shiftdown display off" ;
+VAL_TABLE_ Tgtgear_Up 1 "Gear shiftup display on" 0 "Gear shiftup display off " ;
+VAL_TABLE_ Ssindicator 7 "Reserved" 6 "P_L_CC_ISG_START_DEACT ; Auto start is deactivated system automatically to keep safety, such as door open, hood open and seat belt unlock" 5 "P_L_CC_ISG_INHIBITED ; Idle Stop is inhibited by system automatically for safety and convenient condition related with battery SOC, brake vacuum pressure, etc." 4 "P_L_CC_ISG_FAULT ; Fault is existing in ISG - There is fault, which is related with ISG. So idle stop is prohibited and engine started automatically if it is idle stop condition" 3 "P_L_CC_ISG_PROHIBITED ; ISG is prohibited - Driver prohibits to activate ISG in order to avoid start lag when he met traffic jam for example" 2 "P_L_CC_ISG_START_ECU ; Automatically started by ECU - Engine is automatically started by ECU regardless driver’s volition during idle stop because the condition that ISG function to be prohibited is satisfied, for example SOC is too low" 1 "P_L_CC_ISG_IDLE_STOP ; Idle stop is activated - Idle is stopped by Stop&Start strategy during driving" 0 " P_L_CC_ISG_OFF ; ISG is not operating - Normal engine operating without ISG" ;
+VAL_TABLE_ No 1 "Yes" 0 "No" ;
+VAL_TABLE_ Nofailure3 3 "Not available" 1 "Failure" 0 "No failure" ;
+VAL_TABLE_ Off3 3 "Not available" 1 "On" 0 "Off" ;
+VAL_TABLE_ SVSoff 1 "SVS on" 0 "SVS off" ;
+VAL_TABLE_ Inactive 2 "Standby" 1 "Active" 0 "Inactive" ;
+VAL_TABLE_ Valid 1 "Invalid" 0 "Valid" ;
+VAL_TABLE_ PSC_EPS_Ctrl_Status 3 "Invalid" 2 "EPS_Control_Active" 1 "Request_EPS_Control" 0 "No_request" ;
+VAL_TABLE_ Right 1 "Left" 0 "Right" ;
+VAL_TABLE_ PSC_Button_Pressed 1 "PSC_button_pressed" 0 "PSC_button_idle" ;
+VAL_TABLE_ PSC_Guidance 7 "Reserved" 6 "Guidance_Req_Stop" 5 "Guidance_Req_Drive_Forwards" 4 "Guidance_Req_Drive_Backwards" 3 "Guidance_Req_D_Gear" 2 "Guidance_Req_R_Gear" 1 "Reserved" 0 "Guidance_Off" ;
+VAL_TABLE_ PSC_Operation_Mode 7 "xPSC_Guidance_Terminated" 6 "xPSC_Failure" 5 "xPSC_Guidance_Completed" 4 "xPSC_Guidance_Active" 3 " xPSC_Parkspace_Found" 2 "xPSC_Searching" 1 "Reserved" 0 "xPSC_Off" ;
+VAL_TABLE_ PSC_Function 3 "Reserved" 2 "cPSC" 1 "pPSC" 0 "None" ;
+VAL_TABLE_ SVA_Warning_Right 3 "Reserved" 2 "WarningLevel_2" 1 "WarningLevel_1" 0 "No_warning" ;
+VAL_TABLE_ SVA_Warning_Left 3 "Reserved" 2 "WarningLevel_2" 1 "WarningLevel_1" 0 "No_warning" ;
+VAL_TABLE_ SVA_Button_Pressed 1 "SVA_button_pressed" 0 "SVA_button_idle" ;
+VAL_TABLE_ SVA_Mode 7 "Reserved" 6 "SVA_Inhibited" 5 "SVA_Failure" 4 "Reserved" 3 "Reserved" 2 "SVA_Active" 1 "SVA_Standby" 0 "SVA_Off" ;
+VAL_TABLE_ PAS_Buzzer_Localization 3 "Reserved" 2 "Reserved" 1 "Front" 0 "Rear" ;
+VAL_TABLE_ PAS_Buzzer_Range 7 "Reserved" 6 "Reserved" 5 "Range_5 (first detection)" 4 "Range_4" 3 "Range_3" 2 "Range_2" 1 "Range_1 (Full warning, continous tone)" 0 "Buzzer_Off" ;
+VAL_TABLE_ PAS_Button_Pressed 1 "PAS_button_pressed" 0 "PAS_button_idle" ;
+VAL_TABLE_ PAS_Mode 7 "Reserved" 6 "PAS_Driver_Inhibited" 5 "PAS_System_Failure" 4 "Only_Rear_PAS_Active" 3 "Only_Front_PAS_Active" 2 "Front_and_Rear_PAS_Active" 1 "PAS_Standby" 0 "PAS_Off" ;
+VAL_TABLE_ PAS_Range_FMR 7 "Reserved" 6 "Reserved" 5 "Range_5 (first detection)" 4 "Range_4" 3 "Range_3" 2 "Range_2" 1 "Range_1 (Full warning)" 0 "No_distance" ;
+VAL_TABLE_ PAS_Range_FML 7 "Reserved" 6 "Reserved" 5 "Range_5 (first detection)" 4 "Range_4" 3 "Range_3" 2 "Range_2" 1 "Range_1 (Full warning)" 0 "No_distance" ;
+VAL_TABLE_ PAS_Range_RMR 7 "Reserved" 6 "Reserved" 5 "Range_5 (first detection)" 4 "Range_4" 3 "Range_3" 2 "Range_2" 1 "Range_1 (Full warning)" 0 "No_distance" ;
+VAL_TABLE_ PAS_Range_RML 7 "Reserved" 6 "Reserved" 5 "Range_5 (first detection)" 4 "Range_4" 3 "Range_3" 2 "Range_2" 1 "Range_1 (Full warning)" 0 "No_distance" ;
+VAL_TABLE_ PAS_Range_FR 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "Range_3 (first detection)" 2 "Range_2" 1 "Range_1 (Full warning)" 0 "No_distance" ;
+VAL_TABLE_ PAS_Range_FL 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "Range_3 (first detection)" 2 "Range_2" 1 "Range_1 (Full warning)" 0 "No_distance" ;
+VAL_TABLE_ PAS_Range_RR 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "Range_3 (first detection)" 2 "Range_2" 1 "Range_1 (Full warning)" 0 "No_distance" ;
+VAL_TABLE_ PAS_Range_RL 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "Range_3 (first detection)" 2 "Range_2" 1 "Range_1 (Full warning)" 0 "No_distance" ;
+VAL_TABLE_ SUB_ID_ECM8 6 "postive Reply SC" 4 "share the third frame of SKC and SC" 3 "share the second frame of SKC and SC" 2 "share  the first frame of SKC and SC" 1 "Report ESCL learning status" ;
+VAL_TABLE_ EMSvirgin 1 "EMS learnt" 0 "EMS virgin" ;
+VAL_TABLE_ Invalid7F 127 "Invalid Value" ;
+VAL_TABLE_ Unmute 1 "Mute" 0 "Unmute" ;
+VAL_TABLE_ invalid 1 " valid" 0 "invalid" ;
+VAL_TABLE_ SUB_ID_PEPS5 5 "Request set ESCL learning status to learnt" 4 "Request ESCL to store the third frame of SKC and SC" 3 "Request ESCL to store the second frame of SKC and SC" 2 "Request ESCL to store the first frame of SKC and SC" 1 "System Learning active (Request ESCL learning status)" ;
+VAL_TABLE_ InvalidFFFFF 1048575 "Invalid" ;
+VAL_TABLE_ Left 1 "Right" 0 "Left" ;
+VAL_TABLE_ Invalid7FFF 32767 "Invalid" ;
+VAL_TABLE_ SteeringWheelAngleSign 1 "Right (Negative)" 0 "Left (Positive)" ;
+VAL_TABLE_ EPBBrakelightReq 3 "signal not available" 2 "Reserved" 1 "brake light ON" 0 "brake light OFF" ;
+VAL_TABLE_ EPBSWPos 3 "Error" 2 "Apply request" 1 "Release request" 0 "no request" ;
+VAL_TABLE_ SAS_Status 3 "Permanent Error Detected" 2 "Intermittent Error Detected" 1 "SAS Not Calibrated
+" 0 "SAS Angle And Speed Correct" ;
+VAL_TABLE_ EspFuncOffSts 1 "unavailable/Off" 0 "available/On" ;
+VAL_TABLE_ AVHSts 2 "active" 1 "Standby" 0 "Off" ;
+VAL_TABLE_ HDCBrakeLightControl 1 "brake light on" 0 "brake light off" ;
+VAL_TABLE_ HDCControl 2 "On not active braking" 1 "On active braking" 0 "OFF" ;
+VAL_TABLE_ Notactive 1 "Active" 0 "Not active" ;
+VAL_TABLE_ TGS_LEVER 15 "Invalid" 14 "Reserved" 13 "Reserved" 12 "Reserved" 11 "Reserved" 10 "Reserved" 9 "Reserved" 8 "Select lever in position 'M'" 7 "Select lever in position 'R'" 6 "Select lever in position 'N'" 5 "Select lever in position 'D'" 4 "Reserved" 3 "Reserved" 2 "Reserved" 1 "Reserved" 0 "Select lever in position 'P'" ;
+VAL_TABLE_ CURRENT_GEAR 7 "current gear 'R'" 6 "current gear '6'" 5 "current gear '5'" 4 "current gear '4'" 3 "current gear '3'" 2 "current gear '2'" 1 "current gear '1'" 0 "current gear 'N' or 'P'" ;
+VAL_TABLE_ EMS_ImmoAuthen_ErrorType 6 "SMRC overheat" 5 "SMRC transmission engaged" 4 "SMRC circuit fault" 3 "IMMO wrong secret Key" 2 " IMMO No response" 1 "EMS virgin" 0 "No Error" ;
+VAL_TABLE_ EMS_ImmoAuthen_Result 3 "Crank Error " 1 "AuthFailed" 0 "No Error" ;
+VAL_TABLE_ EMS_ImmoAuthen_ID 2 "Auth Result " 1 "RAND Number " ;
+VAL_TABLE_ SUBID_ECM7 1 "Report EMS learning status" ;
+VAL_TABLE_ BRAKE_PEDAL 3 "invalid" 2 "not used" 1 "Brake Switch is pressed" 0 "Brake Switch is NOT pressed" ;
+VAL_TABLE_ EngState 3 "Stalling" 2 "Running" 1 "Cranking" 0 "Stopped" ;
+VAL_TABLE_ EMS_AuthenResult 3 "reserved" 2 "authentication success" 1 "authentication/authentication failure" 0 "nothing" ;
+VAL_TABLE_ NotActived2 3 "Reserved" 2 "Not available" 1 "Actived" 0 "Not Actived" ;
+VAL_TABLE_ EngineStarted 1 "Engine started" 0 "Engine in starting" ;
+VAL_TABLE_ Invalid2 2 "Init value" 1 "Valid" 0 "Invalid" ;
+VAL_TABLE_ CrashOutputSts 16 "Left hand side" 8 "Right hand side" 2 "Front First level" 0 "No crash" ;
+VAL_TABLE_ AMP_TempSts 3 "Invalid temperature value" 2 "Temperature value higher than working temperature" 1 "Temperature value lower than working temperature" 0 "Temperature normal" ;
+VAL_TABLE_ AMP_Chan1DTCInfo 1 "Short to ground/short to ACC/ open load error" 0 "No error in this channel" ;
+VAL_TABLE_ SamplePhase 1 "Minor Change" 0 "Sample Phase" ;
+VAL_TABLE_ AMP_SWVersion 1 "Minor Version" 0 "Major Version" ;
+VAL_TABLE_ Noaction 1 "Get info" 0 "No action" ;
+VAL_TABLE_ Invalid3F 63 "Invalid Value" ;
+VAL_TABLE_ BassSet 20 "+10" 19 "+9" 18 "+8" 17 "+7" 16 "+6" 15 "+5" 14 "+4" 13 "+3" 12 "+2" 11 "+1" 10 "0" 9 "-1" 8 "-2" 7 "-3" 6 "-4" 5 "-5" 4 "-6" 3 "-7" 2 "-8" 1 "-9" 0 "-10" ;
+VAL_TABLE_ FadeSet 20 "Front+10" 19 "Front+9" 18 "Front+8" 17 "Front+7" 16 "Front+6" 15 "Front+5" 14 "Front+4" 13 "Front+3" 12 "Front+2" 11 "Front+1" 10 "Center" 9 "Rear+1" 8 "Rear+2" 7 "Rear+3" 6 "Rear+4" 5 "Rear+5" 4 "Rear+6" 3 "Rear+7" 2 "Rear+8" 1 "Rear+9" 0 "Rear+10" ;
+VAL_TABLE_ BalanceSet 20 "Rch+10" 19 "Rch+9" 18 "Rch+8" 17 "Rch+7" 16 "Rch+6" 15 "Rch+5" 14 "Rch+4" 13 "Rch+3" 12 "Rch+2" 11 "Rch+1" 10 "Center" 9 "Lch+1" 8 "Lch+2" 7 "Lch+3" 6 "Lch+4" 5 "Lch+5" 4 "Lch+6" 3 "Lch+7" 2 "Lch+8" 1 "Lch+9" 0 "Lch+10" ;
+VAL_TABLE_ NaviModeSet 7 "Reserved" 6 "Reserved" 5 "beep\chime(only for 41）" 4 "TA" 3 "RVC reminder" 2 "Bluetooth call ON" 1 "Navi ON" 0 "None" ;
+VAL_TABLE_ AudioMode 15 "Reserved" 14 "Reserved" 13 "Reserved" 12 "Reserved" 11 "Reserved" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "DVD DECK" 5 "DAB" 4 "USB/iPod" 3 "AUX" 2 "Bluetooth audio" 1 "CD/MP3" 0 "FM/AM" ;
+VAL_TABLE_ ALSDrvSideShftCmd 1 "Right" 0 "Left" ;
+VAL_TABLE_ LanguageSet 15 "Reserved" 14 "Reserved" 13 "Reserved" 12 "Reserved" 11 "Reserved" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Portuguese" 6 "Spanish" 5 "Italian" 4 "French" 3 "German" 2 "Russian" 1 "English" 0 "Chinese" ;
+VAL_TABLE_ Dualicon 3 "Reserved" 2 "Failure" 1 "Dual mode" 0 "Single mode" ;
+VAL_TABLE_ Automode 3 "Reserved" 2 "Failure" 1 "Auto mode" 0 "No auto mode" ;
+VAL_TABLE_ AirInlet 3 "Reserved" 2 "Failure" 1 "Recirculation" 0 "Fresh" ;
+VAL_TABLE_ AirDistriMode 7 "Reserved" 6 "Reserved" 5 "Failure" 4 "Screen" 3 "FootScreen" 2 "Foot" 1 "FaceFoot" 0 "Face" ;
+VAL_TABLE_ BlowerSpeed 15 "Reserved" 14 "Reserved" 13 "Reserved" 12 "Reserved" 11 "Reserved" 10 "Reserved" 9 "Reserved" 8 "speed 8" 7 "speed 7" 6 "speed 6" 5 "speed 5" 4 "speed 4" 3 "speed 3" 2 "speed 2" 1 "speed 1" 0 "Off" ;
+VAL_TABLE_ NotActived 1 "Actived" 0 "Not Actived" ;
+VAL_TABLE_ AntitheSet 3 "30min" 2 "20min" 1 "10min" 0 "OFF" ;
+VAL_TABLE_ RLS_Sts 1 "Europe Mode" 0 "Asia Mode" ;
+VAL_TABLE_ FollowMeDelaySts 3 "3minutes" 2 "2minutes" 1 "1minutes" 0 "30seconds" ;
+VAL_TABLE_ DomeLampDelaySts 3 "30seconds" 2 "20seconds" 1 "10seconds" 0 "3seconds" ;
+VAL_TABLE_ GlobePWSts 7 "Reserved" 6 "Reserved" 5 "Drop Driver's Only" 4 "Drop All" 3 "Drop Disable" 2 "Upgrade Disable" 1 "Upgrade enable" 0 "Invalid" ;
+VAL_TABLE_ BattSaveDelaySts 3 "Reserved" 2 "30minutes" 1 "20minutes" 0 "10minutes" ;
+VAL_TABLE_ Noactive 1 "Active" 0 "No active" ;
+VAL_TABLE_ RearWindowDefrostSts 1 "Rear Window Defrost enable " 0 "Rear Window Defrost disable" ;
+VAL_TABLE_ Lock 1 "Unlock" 0 "Lock" ;
+VAL_TABLE_ Closed 1 "Open" 0 "Closed" ;
+VAL_TABLE_ FFInvalidValue 255 ":Invalid Value" ;
+VAL_TABLE_ TransMode 1 "Transportation Mode" 0 "Normal mode" ;
+VAL_TABLE_ NonAuto 1 "Auto" 0 "Non-Auto" ;
+VAL_TABLE_ LKPWarning 3 "Reserved" 2 "LKP warning 2" 1 "LKP warning 1" 0 "No LKP warning" ;
+VAL_TABLE_ BacklightOFF 1 "Backlight ON" 0 "Backlight OFF" ;
+VAL_TABLE_ LamplightSwSts 7 "level 8" 6 "level 7" 5 "level 6" 4 "level 5" 3 "level 4" 2 "level 3" 1 "level 2" 0 "level 1" ;
+VAL_TABLE_ TPFastLeakageInd 1 "Fast Leakage" 0 "Not Fast Leakage" ;
+VAL_TABLE_ LampOFF 1 "Lamp ON" 0 "Lamp OFF" ;
+VAL_TABLE_ Nopress 1 "press" 0 "No press" ;
+VAL_TABLE_ NonOFF 1 "Non-OFF" 0 "OFF" ;
+VAL_TABLE_ AntitheftSts 3 "Alarmed" 2 "Prearmed" 1 "Armed" 0 "Disarmed" ;
+VAL_TABLE_ Nofailure 1 "Failure" 0 "No failure" ;
+VAL_TABLE_ FFFnotavailable 4095 ":not available" ;
+VAL_TABLE_ Off 1 "On" 0 "Off" ;
+VAL_TABLE_ ESCL_LEARN_STATUS 1 "ESCL learnt" 0 "ESCL virgin" ;
+VAL_TABLE_ SUB_ID_ESCL4 1 "Report ESCL learning status" ;
+VAL_TABLE_ SUB_ID_ESCL3 6 "postive Reply SC" 4 "share the third frame of SKC and SC" 3 "share the second frame of SKC and SC" 2 "share  the first frame of SKC and SC" 1 "Report ESCL learning status" ;
+VAL_TABLE_ ESCL_AuthResult 1 "Failed" 0 "Not Failed" ;
+VAL_TABLE_ ESCL_AuthMessageID 2 "Result FeedBack" 1 "Random number" ;
+VAL_TABLE_ ESCL_TextRotateSteeringWheel 1 "Steering wheel is blocked" 0 "Steering wheel is not blocked" ;
+VAL_TABLE_ ESCL_LedYellow 1 "Service relevant failure detected" 0 "No servie relevant failure detected" ;
+VAL_TABLE_ ESCL_LedRed 1 "Defect failure detected" 0 "No defect failure detected" ;
+VAL_TABLE_ ESCL_Unlocked 1 "ESCL is unlocked" 0 "ESCL is not unlocked" ;
+VAL_TABLE_ ESCL_Locked 1 "ESCL is locked" 0 "ESCL is not locked" ;
+VAL_TABLE_ ESCL_ServiceRelevantFailure 1 "No servie relevant failure detected" 0 "Service relevant failure detected" ;
+VAL_TABLE_ SUB_ID_PEPS7 10 "Clear ESCL learning Status" 8 "Clear EMS learning Status" 7 "Verification Trig" 6 "publish SC" 5 "Request set learning status to learnt" 4 "Share the third frame of SKC and SC" 3 "Share the second frame of SKC and SC" 2 "Share  the first frame of SKC and SC" 1 "System Learning Active (Request EMS/ESCL learning status)" ;
+VAL_TABLE_ SUB_ID_PEPS6 7 "Verification Trig" 6 "Reserved" 5 "Request set EMS learning status to learnt" 4 "Request EMS to store the third frame of SKC and SC" 3 "Request EMS to store the second frame of SKC and SC" 2 "Request EMS to store the first frame of SKC and SC" 1 "System Learning active (Request EMS learning status)" ;
+VAL_TABLE_ SUB_ID 5 "Request set ESCL learning status to learnt" 4 "Request ESCL to store the third frame of SKC and SC" 3 "Request ESCL to store the second frame of SKC and SC" 2 "Request ESCL to store the first frame of SKC and SC" 1 "System Learning active (Request ESCL learning status)" ;
+VAL_TABLE_ PEPSESCL_Auth_SubID 2 "Sub_ID for Reply" 1 "Sub_ID for trigger" 0 "None" ;
+VAL_TABLE_ Inhibit_ImmoAuthEMS 1 "In Lock Status" 0 "Not in Lock Status" ;
+VAL_TABLE_ PEPS_CrankError 3 "Time out (CRANK Off Time)" 2 "EMS authentication failure" 1 "starter low speed/block" 0 "no error" ;
+VAL_TABLE_ Press_Brake_to_start_Warning 1 " press brake to start" 0 " No Information" ;
+VAL_TABLE_ No_UID_Found_Warning 1 "no UID found" 0 " No Information" ;
+VAL_TABLE_ ESCL_Unlock_Warning 1 "ESCL is not unlocked" 0 "No Information" ;
+VAL_TABLE_ EMS_AuthFailure_Warning 1 "EMS authentication failure" 0 "No Information" ;
+VAL_TABLE_ UID_LowBatt_Warning 1 "UID low battery" 0 "No Information" ;
+VAL_TABLE_ PEPSresumedUIDWarning 1 "UID is resumed" 0 "No information " ;
+VAL_TABLE_ KeyOut_Reminder_Warning 1 "key out reminder" 0 "No Information" ;
+VAL_TABLE_ KeyIn_Reminder_Warning 1 "key in reminder" 0 "No Information" ;
+VAL_TABLE_ Plevel_Stop_Warning 1 "shift to P to park" 0 "No Information" ;
+VAL_TABLE_ Clutch_Start_Warning 1 "press clutch to start" 0 "No Information" ;
+VAL_TABLE_ PN_Start_Warning 1 "shift to P/N to start" 0 "No Information" ;
+VAL_TABLE_ FOB_Status 1 "Active" 0 "Passvive" ;
+VAL_TABLE_ KeyIn_Status 7 "UID 1、2、3 is found" 6 "UID 2、3 is found" 5 "UID 1、3 is found" 4 "UID 3 is found" 3 "UID 1、2 is found" 2 "UID 2 is found" 1 "UID 1 is found" 0 "No UID found " ;
+VAL_TABLE_ FOB_WindowCmd 2 "Down" 1 "Up" 0 "Inactive" ;
+VAL_TABLE_ LockCmd 5 "Panic" 4 "TailgateRelease" 3 "Unlock all doors" 2 "Unlock driver door(Reserved)" 1 "Lock all doors" 0 "Inactive" ;
+VAL_TABLE_ LF_TriggerSource 13 "TailgateClosed" 12 "AllDoorsClosed" 11 "StartStopSwitch" 10 "LockSensorTailgate" 9 "LockSensorRearRight" 8 "LockSensorRearLeft" 7 "LockSensorPassenger" 6 "LockSensorDriver" 5 "TailgateRelease" 4 "UnlockSensorRearRight" 3 "UnlockSensorRearLeft" 2 "UnlockSesnorPassenger" 1 "UnlockSensorDriver" 0 "Initial" ;
+VAL_TABLE_ DoorHandle_Command 10 "TailgateLock" 9 "tailgateRelease" 8 "RRUnlock" 7 "RRLock" 6 "RLUnlock" 5 "RLLock" 4 "PassUnlock" 3 "PassLock" 2 "DrvUnlock" 1 "DrvLock" 0 "initial" ;
+VAL_TABLE_ Inactive 1 "active" 0 "Inactive" ;
+VAL_TABLE_ SystemRed_Warning 1 "system red warning" 0 "No Information" ;
+VAL_TABLE_ SystemYellow_Warning 1 "Description for the value '0x1'" 0 "No Information" ;
+VAL_TABLE_ StarterRelay_HSD_Status 3 "Used" 2 "Active" 1 "Inactive" 0 "Not available" ;
+VAL_TABLE_ CRANK_OFF_ForImmo 1 "n crank off status " 0 "Not in crank off status" ;
+VAL_TABLE_ CRANKING_ForImmo 1 "In crank status " 0 "Not in crank status " ;
+VAL_TABLE_ CRANK_PendingForImmo 1 "In crank pending status" 0 "Not in crank pending status" ;
+VAL_TABLE_ ImmoAuth_EMSReq 1 "Request Challenge from EMS" 0 "No Request" ;
+VAL_TABLE_ ESCL_InihibitLock 1 "no locking (When SSB pressed)" 0 "default" ;
+VAL_TABLE_ PNSW_Status 3 "Not Used" 2 "in P/N" 1 "Not in P/N" 0 "Not available" ;
+VAL_TABLE_ Clutch_Status 3 "Not Used" 2 "Pressed" 1 "No Pressed" 0 "Not available" ;
+VAL_TABLE_ NoPressed 1 "Pressed" 0 "No Pressed" ;
+VAL_TABLE_ Ignition1_Status 3 "Not Used" 2 "Active" 1 "nactive" 0 "Not available" ;
+VAL_TABLE_ PowerMode 5 "CRANK OFF (Reserve)" 4 "Start" 3 "CRANK PENDING (Reserve)" 2 "RUN" 1 "ACC" 0 "OFF" ;
+VAL_TABLE_ PowerMode_Valid 3 "Not Used (Reserve)" 2 "Valid" 1 "Invalid" 0 "Not available" ;
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ RRWheelDriveDirection : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ RLWheelDriveDirection : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ FRWheelDriveDirection : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ FLWheelDriveDirection : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ EngState : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 581 VehDyn: 8 GW
+ SG_ VehDynYawRateValid : 61|1@0+ (1,0) [0|1] ""  L_RSDS,R_RSDS
+ SG_ LateralAcceValid : 62|1@0+ (1,0) [0|1] ""  L_RSDS,R_RSDS
+ SG_ LongitudeAccValid : 63|1@0+ (1,0) [0|1] ""  L_RSDS,R_RSDS
+ SG_ VehDynYawRate : 47|16@0+ (0.00024,-2.093) [-2.093|2.093] "rad/s"  L_RSDS,R_RSDS
+ SG_ LateralAcce : 31|16@0+ (0.00098,-21.592) [-21.592|21.592] "m/s^2"  L_RSDS,R_RSDS
+ SG_ LongitudeAcc : 15|16@0+ (0.00098,-21.592) [-21.592|21.592] "m/s^2"  L_RSDS,R_RSDS
+
+BO_ 625 ECM2: 8 GW
+ SG_ EngState : 60|2@0+ (1,0) [0|3] ""  L_RSDS,R_RSDS
+
+BO_ 161 SAS: 8 GW
+ SG_ SteeringWheelSpeedSign : 32|1@0+ (1,0) [0|1] ""  R_RSDS,L_RSDS
+ SG_ SteeringWheelSpeed : 31|15@0+ (0.1,0) [0|1016] "°/s"  R_RSDS,L_RSDS
+ SG_ SteeringWheelAngleSign : 16|1@0+ (1,0) [0|1] ""  R_RSDS,L_RSDS
+ SG_ SteeringWheelAngle : 15|15@0+ (0.1,0) [0|780] "°"  R_RSDS,L_RSDS
+
+BO_ 329 ESP1: 8 GW
+ SG_ ESPFailSts : 15|1@0+ (1,0) [0|1] ""  R_RSDS,L_RSDS
+
+BO_ 325 VehicleStandstill: 8 GW
+ SG_ NoBrakeForce : 12|1@0+ (1,0) [0|1] ""  L_RSDS,R_RSDS
+ SG_ VehicleStandstill : 14|2@0+ (1,0) [0|3] ""  L_RSDS,R_RSDS
+
+BO_ 582 RWheelSpd: 8 GW
+ SG_ RRWheelDriveDirection : 31|2@0+ (1,0) [0|3] ""  L_RSDS,R_RSDS
+ SG_ RLWheelDriveDirection : 15|2@0+ (1,0) [0|3] ""  L_RSDS,R_RSDS
+ SG_ RRWheelSpdValid : 29|1@0+ (1,0) [0|1] ""  R_RSDS,L_RSDS
+ SG_ RRWheelSpd : 28|13@0+ (0.05625,0) [0|300] "km/h"  R_RSDS,L_RSDS
+ SG_ RLWheelSpdValid : 13|1@0+ (1,0) [0|1] ""  R_RSDS,L_RSDS
+ SG_ RLWheelSpd : 12|13@0+ (0.05625,0) [0|300] "km/h"  R_RSDS,L_RSDS
+
+BO_ 561 FWheelSpd: 8 GW
+ SG_ FRWheelDriveDirection : 31|2@0+ (1,0) [0|3] ""  L_RSDS,R_RSDS
+ SG_ FLWheelDriveDirection : 15|2@0+ (1,0) [0|3] ""  L_RSDS,R_RSDS
+ SG_ FRWheelSpd : 28|13@0+ (0.05625,0) [0|299.98125] "km/h"  R_RSDS,L_RSDS
+ SG_ FLWheelSpd : 12|13@0+ (0.05625,0) [0|299.98125] "km/h"  R_RSDS,L_RSDS
+ SG_ FRWheelSpdValid : 29|1@0+ (1,0) [0|1] ""  R_RSDS,L_RSDS
+ SG_ FLWheelSpdValid : 13|1@0+ (1,0) [0|1] ""  R_RSDS,L_RSDS
+
+BO_ 545 DCT: 8 GW
+ SG_ CurrentGearValid : 18|1@0+ (1,0) [0|1] ""  L_RSDS,R_RSDS
+ SG_ CURRENT_GEAR : 55|4@0+ (1,0) [0|15] ""  R_RSDS,L_RSDS
+
+BO_ 273 ECM1: 8 GW
+ SG_ EngSpdValidity : 63|2@0+ (1,0) [0|2] ""  R_RSDS,L_RSDS
+ SG_ EngSpd : 47|16@0+ (0.125,0) [0|8191.875] "rpm"  R_RSDS,L_RSDS
+
+
+
+EV_ EnvKlemme15: 0 [0|1] "" 0 1 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+CM_ "SJ：V1.8 2014.2.8 详细变更历史见2041-001-005MM01 C_Matrix for AD-CAN_V1.8.xlsx";
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 65535;
+BA_DEF_ SG_  "NWM-WakeupAllowed" ENUM  "No","Yes";
+BA_DEF_ BO_  "NmMessage" ENUM  "no","yes";
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmNode" ENUM  "no","yes";
+BA_DEF_ BU_  "NmStationAddress" INT 0 63;
+BA_DEF_  "NmBaseAddress" HEX 1024 1087;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 50000;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 50000;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 999999;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","Event","NotUsed","NotUsed","NotUsed","Cyclic","NotUsed","IfActive","NoMsgSendType","NotUsed","vector_leerstring";
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 100000;
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed";
+BA_DEF_ SG_  "GenSigStartValue" FLOAT 0 1215752192;
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "NWM-WakeupAllowed" "";
+BA_DEF_DEF_  "NmMessage" "no";
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "NmNode" "no";
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "NmBaseAddress" 1024;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "BusType" "CAN";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_  "GenMsgSendType" "NoMsgSendType";
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_ "GenMsgCycleTime" BO_ 581 20;
+BA_ "GenMsgSendType" BO_ 581 0;
+BA_ "GenMsgDelayTime" BO_ 581 20;
+BA_ "GenMsgCycleTime" BO_ 625 10;
+BA_ "GenMsgSendType" BO_ 625 0;
+BA_ "GenMsgCycleTime" BO_ 161 10;
+BA_ "GenMsgSendType" BO_ 161 0;
+BA_ "GenMsgCycleTimeFast" BO_ 329 20;
+BA_ "GenMsgSendType" BO_ 329 0;
+BA_ "GenMsgCycleTime" BO_ 329 20;
+BA_ "GenMsgDelayTime" BO_ 329 20;
+BA_ "GenMsgSendType" BO_ 325 0;
+BA_ "GenMsgCycleTime" BO_ 325 20;
+BA_ "GenMsgCycleTimeFast" BO_ 325 20;
+BA_ "GenMsgDelayTime" BO_ 325 20;
+BA_ "GenMsgSendType" BO_ 582 0;
+BA_ "GenMsgCycleTime" BO_ 582 20;
+BA_ "GenMsgCycleTimeFast" BO_ 582 20;
+BA_ "GenMsgDelayTime" BO_ 582 20;
+BA_ "GenMsgSendType" BO_ 561 0;
+BA_ "GenMsgCycleTime" BO_ 561 20;
+BA_ "GenMsgCycleTimeFast" BO_ 561 20;
+BA_ "GenMsgDelayTime" BO_ 561 20;
+BA_ "GenMsgSendType" BO_ 545 0;
+BA_ "GenMsgCycleTime" BO_ 545 20;
+BA_ "GenMsgCycleTimeFast" BO_ 545 20;
+BA_ "GenMsgDelayTime" BO_ 545 20;
+BA_ "GenMsgSendType" BO_ 273 0;
+BA_ "GenMsgCycleTime" BO_ 273 10;
+BA_ "GenSigStartValue" SG_ 581 VehDynYawRate 8720.83333333333;
+BA_ "GenSigStartValue" SG_ 581 LateralAcce 22032.6530612245;
+BA_ "GenSigStartValue" SG_ 581 LongitudeAcc 22032.6530612245;
+BA_ "GenSigStartValue" SG_ 273 EngSpdValidity 2;
+VAL_ 3221225472 RRWheelDriveDirection 3 "Stop" 2 "Backward" 1 "Forward" 0 "Invalid" ;
+VAL_ 3221225472 RLWheelDriveDirection 3 "Stop" 2 "Backward" 1 "Forward" 0 "Invalid" ;
+VAL_ 3221225472 FRWheelDriveDirection 3 "Stop" 2 "Backward" 1 "Forward" 0 "Invalid" ;
+VAL_ 3221225472 FLWheelDriveDirection 3 "Stop" 2 "Backward" 1 "Forward" 0 "Invalid" ;
+VAL_ 3221225472 EngState 3 "Stalling" 2 "Running" 1 "Cranking" 0 "Stopped" ;
+VAL_ 581 VehDynYawRateValid 1 "0x1: Valid" 0 "0x0: Invalid" ;
+VAL_ 581 LateralAcceValid 1 "0x1: Valid" 0 "0x0: Invalid" ;
+VAL_ 581 LongitudeAccValid 1 "0x1: Valid" 0 "0x0: Invalid" ;
+VAL_ 625 EngState 3 "Stalling" 2 "Running" 1 "Cranking" 0 "Stopped" ;
+VAL_ 161 SteeringWheelSpeedSign 1 "Right (Negative)" 0 "Left (Positive)" ;
+VAL_ 161 SteeringWheelSpeed 32767 "Invalid" ;
+VAL_ 161 SteeringWheelAngleSign 1 "Right (Negative)" 0 "Left (Positive)" ;
+VAL_ 161 SteeringWheelAngle 32767 "Invalid" ;
+VAL_ 329 ESPFailSts 1 "Failure" 0 "No failure" ;
+VAL_ 325 NoBrakeForce 1 "no brk force" 0 "exist brk force" ;
+VAL_ 325 VehicleStandstill 3 "Reserved" 2 "invalid (short unavailability, max 3s)" 1 "standstill" 0 "not standstill" ;
+VAL_ 582 RRWheelDriveDirection 3 "Stop" 2 "Backward" 1 "Forward" 0 "Invalid" ;
+VAL_ 582 RLWheelDriveDirection 3 "Stop" 2 "Backward" 1 "Forward" 0 "Invalid" ;
+VAL_ 582 RRWheelSpdValid 1 " valid" 0 "invalid" ;
+VAL_ 582 RRWheelSpd 5334 "0x14d6 to 1fff are invalid" ;
+VAL_ 582 RLWheelSpdValid 1 " valid" 0 "invalid" ;
+VAL_ 582 RLWheelSpd 5334 "0x14d6 to 1fff are invalid" ;
+VAL_ 561 FRWheelDriveDirection 3 "Stop" 2 "Backward" 1 "Forward" 0 "Invalid" ;
+VAL_ 561 FLWheelDriveDirection 3 "Stop" 2 "Backward" 1 "Forward" 0 "Invalid" ;
+VAL_ 561 FRWheelSpd 5334 "0x14d6 to 1fff are invalid" ;
+VAL_ 561 FLWheelSpd 5334 "0x14d6 to 1fff are invalid" ;
+VAL_ 561 FRWheelSpdValid 1 " valid" 0 "invalid" ;
+VAL_ 561 FLWheelSpdValid 1 " valid" 0 "invalid" ;
+VAL_ 545 CurrentGearValid 1 " valid" 0 "invalid" ;
+VAL_ 545 CURRENT_GEAR 15 "Reserved" 14 "Reserved" 13 "Reserved" 12 "Reserved" 11 "Reserved" 10 "Reserved" 9 "Reserved" 8 "current gear 'R'" 7 "current gear '7'" 6 "current gear '6'" 5 "current gear '5'" 4 "current gear '4'" 3 "current gear '3'" 2 "current gear '2'" 1 "current gear '1'" 0 "current gear 'N' or 'P'" ;
+VAL_ 273 EngSpdValidity 3 "Reserved" 2 "Init value" 1 "Valid" 0 "Invalid" ;
+

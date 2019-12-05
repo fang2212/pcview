@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>pcc</title>
+    <style>
+        .main {
+            width: 1280px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        #image {
+            display: block;
+            width: 100%;
+            height: auto;
+            border: solid #ccc 1px;
+        }
+        .buttons {
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+    <script src="/static/js/jquery-3.4.1.min.js"></script>
+    <script>
+        $(function(){
+            $('#btn_start').click(function() {
+                $.post('', {action: 'start'}, function(res) {
+                    console.log(res)
+                    $('#info').html(res.message)
+                })
+            })
+            $('#btn_stop').click(function() {
+                $.post('', {action: 'stop'}, function(res) {
+                    console.log(res)
+                    $('#info').html(res.message)
+                })
+            })
+
+            $('#btn_refresh').click(function() {
+                $.post('', {action: 'image'}, function(res) {
+                    console.log(res.data)
+                    $('#image').prop('src', 'data:image/jpeg;base64,' + res.data)
+
+                })
+            }).click()
+            $.post('', {action: 'check'}, function(res) {
+                    console.log(res)
+                    $('#info').html(res.message)
+                })
+        })
+    </script>
+</head>
+<body>
+    <div class="main">
+        <img id="image" src="" alt="">
+        <div class="buttons">
+            <button id="btn_start">start</button>
+            <button id="btn_stop">stop</button>
+            <button id="btn_refresh">refresh</button>
+        </div>
+        <p>
+            <pre id="info"></pre>
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: ADAS
+
+
+BO_ 2566849000 camera: 8 Vector__XXX
+ SG_ Camera_State : 0|2@1+ (1,0) [0|4] "" Vector__XXX
+
+BO_ 2566806504 FLI2: 8 Vector__XXX
+ SG_ Rlane_Detect : 2|2@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Llane_Detect : 4|2@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ LDW_Status : 6|2@1+ (1,0) [0|4] "" Vector__XXX
+ SG_ Buzzing : 8|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ HMW_Level : 13|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ PCW_warn : 16|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PCW_Detect : 17|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ HMW_Status : 24|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ TTC : 25|7@1+ (0.1,0) [0|127] "s" Vector__XXX
+ SG_ Overspeed : 44|3@1+ (5,0) [0|7] "" Vector__XXX
+
+BO_ 2431649768 FLI1: 8 Vector__XXX
+ SG_ FCW_Warn : 8|4@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ LLDW_Warn : 6|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ RLDW_Warn : 4|1@1+ (1,0) [0|1] "" Vector__XXX
+
+
+
+BA_DEF_ BO_  "GenMsgCycleTime" INT 2 50000;
+BA_DEF_DEF_  "GenMsgCycleTime" 100;
+BA_ "GenMsgCycleTime" BO_ 2431649768 50;
+VAL_ 2566849000 Camera_State 2 "camera blocked" 1 "error" 0 "normal" ;
+VAL_ 2566806504 Rlane_Detect 3 "Don't Care/take no action" 2 "Reserved" 1 "Tracking Right side" 0 "Not Tracking Right side" ;
+VAL_ 2566806504 Llane_Detect 3 "Don't Care/take no action" 2 "Reserved" 1 "Tracking Right side" 0 "Not Tracking Right side" ;
+VAL_ 2566806504 LDW_Status 3 "Don't Care/take no action" 2 "Reserved" 1 "enabled" 0 "disabled" ;
+VAL_ 2566806504 Buzzing 6 "PCW" 5 "FCW" 4 "TSR" 3 "HMW" 2 "RLDW" 1 "LLDW" 0 "NO WARN" ;
+VAL_ 2566806504 HMW_Level 3 "Reserved" 2 "Warning level 2" 1 "Warning level 1" 0 "No Warning" ;
+VAL_ 2566806504 PCW_warn 1 "Warning" 0 "No Warning" ;
+VAL_ 2566806504 PCW_Detect 1 "Warning" 0 " No Warning" ;
+VAL_ 2566806504 HMW_Status 1 "display" 0 "no display" ;
+VAL_ 2431649768 FCW_Warn 1 "warning" 0 "no warning" ;
+VAL_ 2431649768 LLDW_Warn 1 "Imminent" 0 "Not imminent" ;
+VAL_ 2431649768 RLDW_Warn 1 "imminent" 0 "Not imminent" ;
+
