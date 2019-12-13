@@ -20,7 +20,13 @@ db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190715.dbc', 
 cipv = {}
 cipp = {}
 x1_lane = {}
-
+detection_sensor = {
+0: 'no_matched_measurements',
+1: 'single_radar_only',
+2: 'multi_radar_only',
+3: 'vision_only',
+4: 'radar and vision',
+}
 
 def parse_x1(id, data, ctx=None):
     ids = [m.frame_id for m in db_x1.messages]
@@ -190,6 +196,7 @@ def parse_x1(id, data, ctx=None):
                 ctx['fusion'][index]['vel_lon'] = r['V_long_obj_' + '%02d' % (index + 1)]
                 ctx['fusion'][index]['vel_lat'] = r['V_lat_obj_' + '%02d' % (index + 1)]
                 ctx['fusion'][index]['acc_lon'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
+                ctx['fusion'][index]['detection_sensor'] = detection_sensor.get(r['DetectionSensor_' + '%02d' % (index + 1)])
                 ctx['fusion'][index]['cipo'] = False
                 ctx['fusion'][index]['type'] = 'obstacle'
                 ctx['fusion'][index]['sensor'] = 'x1_fusion'
@@ -201,6 +208,10 @@ def parse_x1(id, data, ctx=None):
             ctx['fusion'][index] = dict()
             ctx['fusion'][index]['id'] = r['TrackID_'+'%02d' % (index+1)]
             ctx['fusion'][index]['acc_lat'] = r['Accel_lat_obj_'+'%02d' % (index+1)]
+            ctx['fusion'][index]['status'] = r['Status_'+'%02d' % (index+1)]
+            ctx['fusion'][index]['class'] = r['MC_object_class_'+'%02d' % (index+1)]
+            ctx['fusion'][index]['vis_track_id'] = r['Vis_Track_ID_'+'%02d' % (index+1)]
+            #ctx['fusion'][index]['confidence'] = r['Confidence_'+'%02d' % (index+1)]
 
         if id == 0x41f:
             ret = []

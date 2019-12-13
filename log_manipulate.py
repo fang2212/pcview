@@ -653,6 +653,42 @@ def parse_esr_line(line, ctx):
         return lines
 
 
+def parse_ars_line(line, ctx):
+    from parsers.radar import parse_ars
+    if not ctx.get('ars_ids'):
+        ctx['ars_ids'] = set()
+    can_port = ctx['can_port'].get('ars')
+    if can_port is None:
+        return
+    cols = line.split(' ')
+    ts = float(cols[0]) + float(cols[1]) / 1000000
+
+    if can_port in cols[2] or can_port.lower() in cols[2]:
+        can_id = int(cols[3], 16)
+        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        r = parse_ars(can_id, buf, ctx)
+        # print(can_port, buf, r)
+        if not r or isinstance(r, dict):
+            return
+        lines = ''
+
+        for item in r:
+            # print(item)
+            x, y = ctx['trans'].trans_polar2rcs(item['angle'], item['range'], 'ars')
+
+            lines += compose_log(ts, 'ars.obj.{id}'.format(**item),
+                                 '{} {} {vel_lon} {TTC}'.format(y, x, **item))
+            ctx['ars_ids'].add(item['id'])
+            item['pos_lat'] = y
+            item['pos_lon'] = x
+        ctx['obs_ep']['ars']['data'] = r
+        ctx['obs_ep']['ars']['ts'] = ts
+        # ctx['esr_obs_ep'] = r
+        # ctx['esr_obs_ep_ts'] = ts
+        # print(lines)
+        return lines
+
+
 def parse_lmr_line(line, ctx, can_port='CAN2'):
     from parsers.radar import parse_hawkeye_lmr
     cols = line.split(' ')
@@ -693,6 +729,8 @@ def parse_x1_line(line, ctx):
 
         for r in ret:
             # print(r)
+            if r['type'] != 'obstacle':
+                return
             if 'no vehicle' in r['class']:
                 continue
             if r['sensor'] is not 'x1':
@@ -740,6 +778,8 @@ def parse_x1_fusion_line(line, ctx):
         # ctx['x1_obs_ep_ts'] = ts
 
         for r in ret:
+            if r['type'] != 'obstacle':
+                return
             # print(r)
             if 'no vehicle' in r['class']:
                 continue
@@ -777,6 +817,8 @@ def parse_q3_line(line, ctx):
         if isinstance(ret, list):
             lines = ''
             for r in ret:
+                if r['type'] != 'obstacle':
+                    return
                 # print('0x{:x}'.format(r['id']), ts)
                 # print(r)
                 speed = ctx.get('q3_speed') or 0
@@ -789,7 +831,7 @@ def parse_q3_line(line, ctx):
             ctx['obs_ep']['q3']['ts'] = ts
             return lines
         else:
-            if ret['type'] not in ['obstacle', 'vehicle_state']:
+            if ret['type'] not in ['obstacle', 'vehicle_state', 'obstacle_f']:
                 return
             if ret['type'] == 'vehicle_state':
                 return compose_log(ts, 'q3.vehstate', '{} {}'.format(ret['speed'], ret['yaw_rate']))
@@ -1030,6 +1072,7 @@ def match_x1_esr(line, ctx):
 def _match_obs(names, ctx):
     key0, key1 = names
     done = False
+    # print(len(ctx['obs_ep'][key0]['buff']), len(ctx['obs_ep'][key1]['buff']))
     for i in range(len(ctx['obs_ep'][key0]['buff']) - 1, 0, -1):
         ts = ctx['obs_ep'][key0]['buff'][i][0]
         for j in range(len(ctx['obs_ep'][key1]['buff']) - 1, 0, -1):
@@ -1038,6 +1081,7 @@ def _match_obs(names, ctx):
 
             if ts0 < ts <= ts1:
                 k0_obs_t = ctx['obs_ep'][key0]['buff'][i][1]
+                # print(k0_obs_t)
                 # print(len(ctx['x1_buff'][i][1]), len(ctx['q3_buff'][j][1]))
                 if ts - ts0 > ts1 - ts:
                     dt = ts1 - ts
@@ -1082,7 +1126,7 @@ def match_obs(line, ctx):
 
     updated = False
 
-    for obs_type in ['esr', 'x1', 'q3', 'rtk']:
+    for obs_type in ctx['sensors']:
         if obs_type not in ctx['obs_ep']:
             continue
         if ctx['obs_ep'][obs_type].get('ts') != ctx['obs_ep'][obs_type].get('ts_last'):
@@ -1104,9 +1148,11 @@ def match_obs(line, ctx):
     if not updated:
         return
     # print(ctx['obs_ep']['q3'])
-    _match_obs(('x1', 'esr'), ctx)
-    _match_obs(('x1', 'q3'), ctx)
-    _match_obs(('x1', 'rtk'), ctx)
+    for sensor in ctx['sensors']:
+        _match_obs(('x1', sensor), ctx)
+    # _match_obs(('x1', 'esr'), ctx)
+    # _match_obs(('x1', 'q3'), ctx)
+    # _match_obs(('x1', 'rtk'), ctx)
     # done = False
     # for i in range(len(ctx['obs_ep']['x1']['buff']) - 1, 0, -1):
     #     ts = ctx['obs_ep']['x1']['buff'][i][0]
@@ -1758,14 +1804,14 @@ def batch_process_2(dir_name, parsers):
         single_process(log, parsers, False)
 
 
-def batch_process_3(dir_name, parsers, odir=None):
+def batch_process_3(dir_name, sensors, parsers=None, odir=None):
     for root, dirs, files in os.walk(dir_name):
         for f in files:
             if f == 'log.txt':
                 odir = os.path.join(odir, os.path.basename(root)) if odir else None
                 log = os.path.join(root, f)
                 print(bcl.BOLD + bcl.HDR + '\nEntering dir: ' + root + bcl.ENDC)
-                single_process(log, parsers, False, analysis_dir=odir)
+                single_process(log, sensors, parsers, False, analysis_dir=odir)
 
 
 def collect_result(dir_name):
@@ -1991,8 +2037,45 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
         # ctx['esr_tgt'] = esrid
         # continue
 
-# def viz_2d_trj(r0, vis=False)
-#     for
+
+def viz_2d_trj(r0, source, vis=False):
+    from recorder.convert import ub482_defs, decode_with_def
+    from tools.geo import gps_bearing, gps_distance
+
+    xlist = []
+    ylist = []
+    point0 = None
+    with open(r0) as rf:
+        for idx, line in enumerate(rf):
+            cols = line.split(' ')
+            ts_now = float(cols[0]) + float(cols[1]) / 1000000
+            if 'pinpoint' in cols[2]:
+                _, idx, kw = cols[2].split('.')
+                src = _ + '.' + idx
+                if src == source:
+                    r = decode_with_def(ub482_defs, line)
+                    point0 = r
+            if 'bestpos' in cols[2]:
+                _, idx, kw = cols[2].split('.')
+                src = _ + '.' + idx
+                if src == source:
+                    r = decode_with_def(ub482_defs, line)
+
+                    angle = gps_bearing(point0['lat'], point0['lon'], r['lat'], r['lon'])
+                    range = gps_distance(point0['lat'], point0['lon'], r['lat'], r['lon'])
+                    x = cos(angle * pi / 180.0) * range
+                    y = sin(angle * pi / 180.0) * range
+                    xlist.append(x)
+                    ylist.append(y)
+
+    fig = visual.get_fig()
+    visual.trj_2d(fig, xlist, ylist, vis)
+    fig.close()
+
+            # for label in labels:
+            #     match = match_label(label, cols[2])
+            #     if match:
+
 
 def process_error_by_matches(matches, names, r0, ts0, ctx, vis=False):
     type1, type2 = names
@@ -2131,16 +2214,38 @@ def process_by_matches(matches, names, r0, ts0, ctx, vis=False):
                 wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
 
 
-def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir=None):
+def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1tgt=None, rdrtgt=None, analysis_dir=None):
     # log = os.path.join(dir_name, 'log.txt')
     from tools.transform import Transform
     from config.config import CVECfg
     ctx = dict()
     cfg = CVECfg()
-    ctx['obs_ep'] = {'x1': {'buff': deque(maxlen=10)},
-                     'esr': {'buff': deque(maxlen=10)},
-                     'q3': {'buff': deque(maxlen=10)},
-                     'rtk': {'buff': deque(maxlen=10)}}
+    ctx['obs_ep'] = dict().fromkeys(sensors, {'buff': deque(maxlen=10)})
+    # for key in ctx['obs_ep']:
+    #     ctx['obs_ep'][key] = {'buff': deque(maxlen=10)}
+    ctx['obs_ep']['x1'] = {'buff': deque(maxlen=10)}
+    ctx['sensors'] = sensors
+
+    parsers_choice = {'esr': parse_esr_line,
+                      'ars': parse_ars_line,
+                      'rtk': parse_rtk_target_ub482,
+                      'x1': parse_x1_line,
+                      'x1_fusion': parse_x1_fusion_line,
+                      'q3': parse_q3_line}
+
+    if not parsers:
+        parsers = [
+            dummy_parser,
+            match_obs,
+            parse_nmea_line,
+            parse_x1_line]
+        for sensor in sensors:
+            parsers.append(parsers_choice[sensor])
+
+    # ctx['obs_ep'] = {'x1': {'buff': deque(maxlen=10)},
+    #                  'esr': {'buff': deque(maxlen=10)},
+    #                  'q3': {'buff': deque(maxlen=10)},
+    #                  'rtk': {'buff': deque(maxlen=10)}}
     if not os.path.exists(log):
         print(bcl.FAIL + 'Invalid data path. {} does not exist.'.format(log) + bcl.ENDC)
         return
@@ -2210,14 +2315,19 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
 
     # rfile = shutil.copy2(r, os.path.join(data_dir, 'log_process0.txt'))
     ts0 = ctx.get('ts0') or 0
-    print('x1_ids:', ctx['x1_ids']) if 'x1_ids' in ctx else None
-    print('esr_ids:', ctx['esr_ids']) if 'esr_ids' in ctx else None
+    for sensor in ctx['obs_ep']:
+        kw = '{}_ids'.format(sensor)
+        print(kw, ctx.get(kw))
+    # print('x1_ids:', ctx['x1_ids']) if 'x1_ids' in ctx else None
+    # print('esr_ids:', ctx['esr_ids']) if 'esr_ids' in ctx else None
     print('ts0:', ts0)
 
-    matches_esr = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'esr'))
-    # ctx['match_tree'] = matches_esr
-    matches_q3 = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'q3'))
-    matches_rtk = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'rtk'))
+    matches = dict()
+    for sensor in sensors:
+        matches[sensor] = get_matches_from_pairs(ctx['matched_ep'], ('x1', sensor))
+    # matches_esr = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'esr'))
+    # matches_q3 = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'q3'))
+    # matches_rtk = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'rtk'))
 
     # matches_comb = dict()
     # for ts in sorted(ctx['matched_ep']):
@@ -2242,24 +2352,34 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
 
     # print(matches_q3)
     # print(matches_esr)
-    trj_list_esr = get_trajectory_from_matches(matches_esr, ('x1', 'esr'))
-    trj_list_q3 = get_trajectory_from_matches(matches_q3, ('x1', 'q3'))
-    trj_list_rtk = get_trajectory_from_matches(matches_rtk, ('x1', 'rtk'))
-    trj_list_comb = merge_trajectory(trj_list_esr, trj_list_q3)
-    trj_list_comb = merge_trajectory(trj_list_comb, trj_list_rtk)
-    print('trj_esr:')
-    for trj in trj_list_esr:
-        print(trj)
-    print('trj_q3:')
-    for trj in trj_list_q3:
-        print(trj)
+    trj_lists = dict()
+    trj_list_comb = list()
+    for sensor in sensors:
+        trj_list = get_trajectory_from_matches(matches[sensor], ('x1', sensor))
+        trj_lists[sensor] = trj_list
+        trj_list_comb = merge_trajectory(trj_list_comb, trj_list)
+    # trj_list_esr = get_trajectory_from_matches(matches_esr, ('x1', 'esr'))
+    # trj_list_q3 = get_trajectory_from_matches(matches_q3, ('x1', 'q3'))
+    # trj_list_rtk = get_trajectory_from_matches(matches_rtk, ('x1', 'rtk'))
+    # trj_list_comb = merge_trajectory(trj_list_esr, trj_list_q3)
+    # trj_list_comb = merge_trajectory(trj_list_comb, trj_list_rtk)
+    # print('trj_esr:')
+    # for trj in trj_list_esr:
+    #     print(trj)
+    # print('trj_q3:')
+    # for trj in trj_list_q3:
+    #     print(trj)
     print('trj_comb:')
     for trj in trj_list_comb:
         print(trj)
     # print(trj_list_comb)
     chart_by_trj(trj_list_comb, r0, ts0)
-    process_error_by_matches(matches_esr, ('x1', 'esr'), r0, ts0, ctx)
-    process_error_by_matches(matches_q3, ('x1', 'q3'), r0, ts0, ctx)
+    for sensor in sensors:
+        process_by_matches(matches[sensor], ('x1', sensor), r0, ts0, ctx)
+    # process_error_by_matches(matches_esr, ('x1', 'esr'), r0, ts0, ctx)
+    # process_error_by_matches(matches_q3, ('x1', 'q3'), r0, ts0, ctx)
+
+    # viz_2d_trj(r0, 'rtk.5', vis=True)
 
     # matches_comb = dict()
     # for x1id_1 in matches_esr:
@@ -2335,11 +2455,14 @@ def single_process(log, parsers, vis=True, x1tgt=None, rdrtgt=None, analysis_dir
 if __name__ == "__main__":
     from tools import visual
     import sys
+    import argparse
 
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/20191101_q3_contiradar_fusion_aeb_test/20191101082905_20kmh/log.txt'
+    r = '/media/nan/860evo/data/pcviewer/20191122154307/log.txt'
+    # sensors = ['q3', 'x1_fusion', 'rtk', 'ars']
+    sensors = ['ars']
     analysis_dir = None
 
     if len(sys.argv) > 1:
@@ -2350,25 +2473,26 @@ if __name__ == "__main__":
     rdir = os.path.dirname(r)
     ts = time.time()
 
-    parsers = [
-        dummy_parser,
-        match_obs,
-        parse_nmea_line,
-        parse_esr_line,
-        parse_q3_line,
-        parse_x1_line,
-        parse_x1_fusion_line,
-        parse_rtk_target_ub482,
-    ]
+    # parsers = [
+    #     dummy_parser,
+    #     match_obs,
+    #     parse_nmea_line,
+    #     parse_esr_line,
+    #     parse_ars_line,
+    #     parse_q3_line,
+    #     parse_x1_line,
+    #     parse_x1_fusion_line,
+    #     parse_rtk_target_ub482,
+    # ]
 
     if r.endswith('log.txt'):
         print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
-        single_process(r, parsers, False, analysis_dir=analysis_dir)
+        single_process(r, sensors, analysis_dir=analysis_dir)
         # single_process(r, parsers, False, x1tgt=[6, 51], rdrtgt=[44])
     else:
         # batch_process(r, parsers)
         print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
-        batch_process_3(r, parsers, analysis_dir)
+        batch_process_3(r, sensors, odir=analysis_dir)
 
     dt = time.time() - ts
     print(bcl.WARN + 'Processing done. Time cost: {}s'.format(dt) + bcl.ENDC)
