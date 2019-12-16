@@ -90,7 +90,7 @@ def parse_x1(id, data, ctx=None):
             x1_obs['vel_lon'] = 0
             x1_obs['cipv'] = False
             x1_obs['color'] = 4
-            x1_obs['width'] = 2
+            x1_obs['width'] = 1.5
             x1_obs_list.append(x1_obs)
             ctx['x1_obs'].append(x1_obs.copy())
 
@@ -139,7 +139,7 @@ def parse_x1(id, data, ctx=None):
                 ret = ctx['x1_obs'].copy()
                 ctx['x1_obs'].clear()
                 return ret
-    elif 0x5f0 <= id <= 0x5fb:
+    elif 0x5f0 <= id <= 0x5f7:
         # lane
         index = (id - 0x5f0) // 2
 
@@ -160,7 +160,7 @@ def parse_x1(id, data, ctx=None):
         # lane Data B
         tmp1 = 'Lane' + '%01d' % (index + 1) + '_HeadingAngle'
         if tmp1 in r:
-            if len(x1_lane[index]) == 0:
+            if not x1_lane[index]:
                 return None
 
             x1_lane[index]['a1'] = r['Lane' + '%01d' % (index + 1) + '_HeadingAngle']
@@ -174,8 +174,13 @@ def parse_x1(id, data, ctx=None):
             x1_lane[index]['id'] = index
             x1_lane[index]['color'] = 4
 
-            res = x1_lane[index].copy()
-            x1_lane[index].clear()
+        if id == 0x5f7:
+            res = []
+            for lane in x1_lane:
+                res.append(x1_lane[lane])
+            # res = x1_lane.copy()
+            x1_lane.clear()
+            # print(res)
             return res
 
     # fusion

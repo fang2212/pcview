@@ -583,6 +583,8 @@ class Player(object):
         except Exception as e:
             print('Error:', obs)
             return
+
+        color = self.color_obs['rtk']
         if obs.get('class') == 'pedestrian':
             line = 40
             # BaseDraw.draw_text(img, 'CIPPed: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
@@ -603,7 +605,7 @@ class Player(object):
         dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
         # BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
         self.show_text_info(obs['source'], line + 40, 'range: {:.2f}'.format(dist))
-        BaseDraw.draw_up_arrow(img, indent + 100, line - 12, self.color_seq[obs['color']], 6)
+        BaseDraw.draw_up_arrow(img, indent + 100, line - 12, color, 6)
 
     def show_heading_horizen(self, img, rtk):
         heading = rtk.get('yaw')
@@ -987,7 +989,7 @@ class Player(object):
 
     def show_ub482_common(self, img, data):
         indent = self.get_indent(data['source'])
-        return
+        # return
         # print(data['type'], data['ts'], data['sol_stat'], data['pos_type'])
         # self.update_column_ts(data['source'], data['ts'])
         color = CVColor.White

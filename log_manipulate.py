@@ -735,13 +735,14 @@ def parse_x1_line(line, ctx):
                 continue
             if r['sensor'] is not 'x1':
                 return
-
+            # print(r)
             x, y = ctx['trans'].compensate_param_rcs(r['pos_lon'], r['pos_lat'], 'x1')
             lines += compose_log(ts, 'x1.{class}.{id}'.format(**r),
                                  '{} {} {} {}'.format(y, x, (r['vel_lon']), r.get('TTC') or 7.0))
             ctx['x1_ids'].add(r['id'])
         ctx['obs_ep']['x1']['data'] = ret
         ctx['obs_ep']['x1']['ts'] = ts
+        # print(len(ctx['obs_ep']['x1']['data']))
         return lines
         # if isinstance(ret, list):
         #
@@ -816,6 +817,8 @@ def parse_q3_line(line, ctx):
             ctx['q3_speed'] = ret['speed']/3.6
         if isinstance(ret, list):
             lines = ''
+            if 'q3_ids' not in ctx:
+                ctx['q3_ids'] = set()
             for r in ret:
                 if r['type'] != 'obstacle':
                     return
@@ -827,6 +830,7 @@ def parse_q3_line(line, ctx):
                                      '{} {} {} {}'.format(y, x, r['vel_lon'] - speed, r['TTC']))
             # ctx['q3_obs_ep'] = ret
             # ctx['q3_obs_ep_ts'] = ts
+                ctx['q3_ids'].add(r['id'])
             ctx['obs_ep']['q3']['data'] = ret
             ctx['obs_ep']['q3']['ts'] = ts
             return lines
@@ -1072,7 +1076,7 @@ def match_x1_esr(line, ctx):
 def _match_obs(names, ctx):
     key0, key1 = names
     done = False
-    # print(len(ctx['obs_ep'][key0]['buff']), len(ctx['obs_ep'][key1]['buff']))
+    # print(key0, len(ctx['obs_ep'][key0]['buff']), key1, len(ctx['obs_ep'][key1]['buff']))
     for i in range(len(ctx['obs_ep'][key0]['buff']) - 1, 0, -1):
         ts = ctx['obs_ep'][key0]['buff'][i][0]
         for j in range(len(ctx['obs_ep'][key1]['buff']) - 1, 0, -1):
@@ -1149,6 +1153,8 @@ def match_obs(line, ctx):
         return
     # print(ctx['obs_ep']['q3'])
     for sensor in ctx['sensors']:
+        if sensor == 'x1':
+            continue
         _match_obs(('x1', sensor), ctx)
     # _match_obs(('x1', 'esr'), ctx)
     # _match_obs(('x1', 'q3'), ctx)
@@ -1625,6 +1631,7 @@ def calc_delta(line, ctx):
     elif type2+'.' in cols[2]:
         if 'vehstate' in cols[2]:
             return
+        # print(line)
         id = int(cols[2].split('.')[-1])
         if id != ctx.get(type2+'_tgt'):
             return
@@ -2156,7 +2163,7 @@ def process_by_matches(matches, names, r0, ts0, ctx, vis=False):
             if cnt < 20 or ets - sts < 1.0:
                 print(bcl.BOLD + 'discard match:' + bcl.ENDC, obs1id, obs2id, entry)
                 continue
-            print(bcl.OKBL + 'matched(x1/esr):' + bcl.ENDC, obs1id, obs2id, entry)
+            # print(bcl.OKBL + 'matched(x1/esr):' + bcl.ENDC, obs1id, obs2id, entry)
             fig = visual.get_fig()
             jlist = []
             samples = {'{}.obj.{}'.format(type1, obs2id): {'x': 1}, '{}.*.{}'.format(type2, obs1id): {'x': 1}}
@@ -2220,11 +2227,12 @@ def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1
     from config.config import CVECfg
     ctx = dict()
     cfg = CVECfg()
-    ctx['obs_ep'] = dict().fromkeys(sensors, {'buff': deque(maxlen=10)})
-    # for key in ctx['obs_ep']:
-    #     ctx['obs_ep'][key] = {'buff': deque(maxlen=10)}
+    ctx['obs_ep'] = dict().fromkeys(sensors)
+    for key in ctx['obs_ep']:
+        ctx['obs_ep'][key] = {'buff': deque(maxlen=10)}
     ctx['obs_ep']['x1'] = {'buff': deque(maxlen=10)}
     ctx['sensors'] = sensors
+    ctx['sensors'].append('x1')
 
     parsers_choice = {'esr': parse_esr_line,
                       'ars': parse_ars_line,
@@ -2356,6 +2364,7 @@ def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1
     trj_list_comb = list()
     for sensor in sensors:
         trj_list = get_trajectory_from_matches(matches[sensor], ('x1', sensor))
+        # print('trj_'+sensor+':', trj_list)
         trj_lists[sensor] = trj_list
         trj_list_comb = merge_trajectory(trj_list_comb, trj_list)
     # trj_list_esr = get_trajectory_from_matches(matches_esr, ('x1', 'esr'))
@@ -2372,10 +2381,10 @@ def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1
     print('trj_comb:')
     for trj in trj_list_comb:
         print(trj)
-    # print(trj_list_comb)
+
     chart_by_trj(trj_list_comb, r0, ts0)
     for sensor in sensors:
-        process_by_matches(matches[sensor], ('x1', sensor), r0, ts0, ctx)
+        process_error_by_matches(matches[sensor], ('x1', sensor), r0, ts0, ctx)
     # process_error_by_matches(matches_esr, ('x1', 'esr'), r0, ts0, ctx)
     # process_error_by_matches(matches_q3, ('x1', 'q3'), r0, ts0, ctx)
 
@@ -2462,7 +2471,7 @@ if __name__ == "__main__":
     # print('local_path:', local_path)
     r = '/media/nan/860evo/data/pcviewer/20191122154307/log.txt'
     # sensors = ['q3', 'x1_fusion', 'rtk', 'ars']
-    sensors = ['ars']
+    sensors = ['ars', 'q3', 'rtk']
     analysis_dir = None
 
     if len(sys.argv) > 1:
