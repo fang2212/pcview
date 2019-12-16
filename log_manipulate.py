@@ -2408,7 +2408,6 @@ def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1
                             # del matches_esr[x1id_1][esrid]
                             # del matches_q3[x1id_2][q3id]
 
-
     # r1 = process_log(r0, [calc_delta_x1_esr], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
     # r1 = calc_delta_x1_esr_1(ctx['matched_ep'], analysis_dir)
     # print('x1_targets:', x1_target)
@@ -2465,20 +2464,52 @@ if __name__ == "__main__":
     from tools import visual
     import sys
     import argparse
+    log = '/media/nan/860evo/data/pcviewer/20191122154307/log.txt'
+    parser = argparse.ArgumentParser(description="process the log.")
+
+    parser.add_argument('input_path', nargs='?', default=log)
+    parser.add_argument('-o', '--output', default=None)
+    parser.add_argument('-q3', '--q3', help='indicator for q3 parsing', action="store_true")
+    parser.add_argument('-fus', '--fusion', help='indicator for x1_fusion parsing', action="store_true")
+    parser.add_argument('-rtk', '--rtk', help='indicator for rtk target parsing', action="store_true")
+    parser.add_argument('-ars', '--ars', help='indicator for conti ars parsing', action="store_true")
+    parser.add_argument('-esr', '--esr', help='indicator for aptiv esr parsing', action="store_true")
+
+    args = parser.parse_args()
+    sensors = []
+    if args.input_path:
+        r = args.input_path
+
+    if args.output:
+        analysis_dir = args.output
+    else:
+        analysis_dir = None
+    if args.q3:
+        sensors.append('q3')
+    if args.fusion:
+        sensors.append('x1_fusion')
+    if args.rtk:
+        sensors.append('rtk')
+    if args.esr:
+        sensors.append('esr')
+    if args.ars:
+        sensors.append('ars')
 
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
     # print('local_path:', local_path)
-    r = '/media/nan/860evo/data/pcviewer/20191122154307/log.txt'
+    # r = '/media/nan/860evo/data/pcviewer/20191122154307/log.txt'
     # sensors = ['q3', 'x1_fusion', 'rtk', 'ars']
-    sensors = ['ars', 'q3', 'rtk']
-    analysis_dir = None
+    # sensors = ['ars', 'q3', 'rtk', 'x1_fusion']
+    if not sensors:
+        sensors = ['q3', 'esr']
+    # analysis_dir = None
 
-    if len(sys.argv) > 1:
-        r = sys.argv[1]
-        if len(sys.argv) > 2:
-            analysis_dir = sys.argv[2]
-
+    # if len(sys.argv) > 1:
+    #     r = sys.argv[1]
+    #     if len(sys.argv) > 2:
+    #         analysis_dir = sys.argv[2]
+    print('sensors:', sensors)
     rdir = os.path.dirname(r)
     ts = time.time()
 

@@ -11,6 +11,7 @@ import cv2
 import argparse
 import numpy as np
 from datetime import datetime
+from functools import wraps
 
 def calc_frame_cost(path):
     content = []
@@ -39,7 +40,22 @@ def calc_frame_cost(path):
         if res[item]['num'] == max_num:
             print(res[item]['end']-res[item]['begin'])
     print('num', max_num)
-    
+
+# import time
+
+
+def timer(function):
+    @wraps(function)
+    def function_timer(*args, **kwargs):
+        t0 = time.time()
+        result = function(*args, **kwargs)
+        t1 = time.time()
+        print("Time cost running {}: {} ms".format(function.func_name, int(1000*(t1-t0))))
+
+        return result
+    return function_timer
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--path", help="log地址", type=str)
