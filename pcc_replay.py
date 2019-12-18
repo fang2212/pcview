@@ -384,7 +384,7 @@ def prep_replay(source):
 if __name__ == "__main__":
     from config.config import *
     import sys
-    sys.argv.append('/media/nan/860evo/data/20190916 Minieye-AEB-test/20190916174330/log.txt')
+    sys.argv.append('/media/nan/860evo/data/pcviewer/20191122154307/log.txt')
     local_path = os.path.split(os.path.realpath(__file__))[0]
     # print('local_path:', local_path)
     os.chdir(local_path)

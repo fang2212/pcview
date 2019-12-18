@@ -2474,6 +2474,7 @@ if __name__ == "__main__":
     parser.add_argument('-rtk', '--rtk', help='indicator for rtk target parsing', action="store_true")
     parser.add_argument('-ars', '--ars', help='indicator for conti ars parsing', action="store_true")
     parser.add_argument('-esr', '--esr', help='indicator for aptiv esr parsing', action="store_true")
+    parser.add_argument('-hil', '--hil', help='preprocess log for HIL replay', action="store_true")
 
     args = parser.parse_args()
     sensors = []
@@ -2484,6 +2485,8 @@ if __name__ == "__main__":
         analysis_dir = args.output
     else:
         analysis_dir = None
+    if args.hil:
+        pass  # TODO: add preprocess for HIL
     if args.q3:
         sensors.append('q3')
     if args.fusion:

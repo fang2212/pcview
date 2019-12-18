@@ -66,6 +66,7 @@ class Player(object):
                           'esr': FlatColor.alizarin,
                           'lmr': FlatColor.emerald,
                           'x1': FlatColor.amethyst,
+                          'x1_fusion': CVColor.Red,
                           'rtk': FlatColor.sun_flower,
                           'ars': FlatColor.emerald,
                           'gps': FlatColor.clouds,
@@ -192,18 +193,19 @@ class Player(object):
             indent = self.get_indent(obs['source'])
         except Exception as e:
             print('Error indent', obs)
+        sensor = obs.get('sensor') or obs['source'].split('.')[0]
         # color = obs.get('color')
         # if color:
         #     color = self.color_seq[color]
         # else:
         #     color = self.color_seq[0]
 
-        color = self.color_obs.get(obs['source'].split('.')[0])
+        color = self.color_obs.get(sensor)
         if not color:
             color = self.color_obs['default']
 
-        if 'x1' in obs['source'] and obs['class'] == 'fusion_data':
-            color = FlatColor.concrete
+        # if 'x1' in obs['source'] and obs['class'] == 'fusion_data':
+        #     color = FlatColor.concrete
             # print(obs)
 
         width = obs.get('width')
@@ -214,7 +216,7 @@ class Player(object):
         if obs.get('class') == 'pedestrian' or obs.get('class') == 'PEDESTRIAN':
             height = 1.7
         # install_para = install[obs['source'].split('.')[0]]
-        sensor = obs['source'].split('.')[0]
+
         if 'pos_lon' in obs:
 
             # x = obs['pos_lon']
@@ -280,7 +282,7 @@ class Player(object):
     def show_ipm_obs(self, img, obs):
         # print(obs)
         id = obs['id']
-        sensor = obs['source'].split('.')[0]
+        sensor = obs.get('sensor') or obs['source'].split('.')[0]
         if 'pos_lon' in obs:
             # x = obs['pos_lon']
             # y = obs['pos_lat']
@@ -289,7 +291,7 @@ class Player(object):
             x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], sensor)
         u, v = self.transform.trans_gnd2ipm(x, y)
 
-        color = self.color_obs.get(obs['source'].split('.')[0]) or self.color_obs['default']
+        color = self.color_obs.get(sensor) or self.color_obs['default']
 
         if 'x1' in obs['source'] and obs['class']=='fusion_data':
             color = FlatColor.concrete
