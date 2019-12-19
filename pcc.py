@@ -216,6 +216,7 @@ class PCC(object):
         if 'x1_data' in mess:
             # print('------', mess['pcv_data'])
             for data in mess['x1_data']:
+                # print(mess['x1_data'])
                 self.flow_player.draw(data, img)
 
         # cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}

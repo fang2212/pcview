@@ -852,6 +852,32 @@ def parse_nmea_line(line, ctx):
             ctx['speed'] = r['speed']
 
 
+def trans_line_to_asc(line, ctx):
+    cols = line.split(' ')
+    
+    if cols[2][:3] == 'CAN':
+        lines = ''
+        time_init = ctx.get('asc_t0')
+        if not time_init:
+            ctx['asc_t0'] = float(cols[0] + '.' + cols[1])
+            time_init = ctx['asc_t0']
+        new_time = float(cols[0] + '.' + cols[1]) - time_init
+        lines += str(new_time)
+        lines += ' '
+        lines += str(int(cols[2][3]) + 1)
+        lines += ' '
+        if len(cols[3]) > 6:
+            lines += cols[3][2:]
+            lines += 'x'
+        else:
+            lines += cols[3][2:]
+
+        lines += ' Rx d 8 '
+        lines += ' '.join(cols[4:])
+        lines += '\n'
+        return lines
+
+
 def adj_timestamp(line, ctx, log_type='NMEA'):
     cols = line.split(' ')
     if cols[2] != log_type:
@@ -2028,7 +2054,7 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
             for id in trj['obs'][type]:
                 pattern = '{}.*.{}'.format(type, id)
                 obs_list.append(pattern)
-        print(bcl.OKBL + 'matched:' + bcl.ENDC, trj)
+        print(bcl.OKBL + 'matched {}:'.format(len(trj['obs'])) + bcl.ENDC, trj)
         fig = visual.get_fig()
         for idx, item in enumerate(obs_meas_display):
             samples = {x: {item: idx} for x in obs_list}  # {'esr.obj.2': {'pos_lat': 2}}
@@ -2464,8 +2490,12 @@ if __name__ == "__main__":
     from tools import visual
     import sys
     import argparse
+
+    local_path = os.path.split(os.path.realpath(__file__))[0]
+    os.chdir(local_path)
+
     log = '/media/nan/860evo/data/pcviewer/20191122154307/log.txt'
-    parser = argparse.ArgumentParser(description="process the log.")
+    parser = argparse.ArgumentParser(description="process CVE log.")
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=None)
@@ -2475,69 +2505,53 @@ if __name__ == "__main__":
     parser.add_argument('-ars', '--ars', help='indicator for conti ars parsing', action="store_true")
     parser.add_argument('-esr', '--esr', help='indicator for aptiv esr parsing', action="store_true")
     parser.add_argument('-hil', '--hil', help='preprocess log for HIL replay', action="store_true")
+    parser.add_argument('-vec', '--vector', help='preprocess log for vector canalyzer', action="store_true")
 
     args = parser.parse_args()
     sensors = []
-    if args.input_path:
-        r = args.input_path
+    # if args.input_path:
+    r = args.input_path
+    t0 = time.time()
 
     if args.output:
         analysis_dir = args.output
     else:
-        analysis_dir = None
+        analysis_dir = os.path.join(os.path.dirname(r), 'analysis')
+    if not os.path.exists(analysis_dir):
+        os.mkdir(analysis_dir)
+
     if args.hil:
         pass  # TODO: add preprocess for HIL
-    if args.q3:
-        sensors.append('q3')
-    if args.fusion:
-        sensors.append('x1_fusion')
-    if args.rtk:
-        sensors.append('rtk')
-    if args.esr:
-        sensors.append('esr')
-    if args.ars:
-        sensors.append('ars')
-
-    local_path = os.path.split(os.path.realpath(__file__))[0]
-    os.chdir(local_path)
-    # print('local_path:', local_path)
-    # r = '/media/nan/860evo/data/pcviewer/20191122154307/log.txt'
-    # sensors = ['q3', 'x1_fusion', 'rtk', 'ars']
-    # sensors = ['ars', 'q3', 'rtk', 'x1_fusion']
-    if not sensors:
-        sensors = ['q3', 'esr']
-    # analysis_dir = None
-
-    # if len(sys.argv) > 1:
-    #     r = sys.argv[1]
-    #     if len(sys.argv) > 2:
-    #         analysis_dir = sys.argv[2]
-    print('sensors:', sensors)
-    rdir = os.path.dirname(r)
-    ts = time.time()
-
-    # parsers = [
-    #     dummy_parser,
-    #     match_obs,
-    #     parse_nmea_line,
-    #     parse_esr_line,
-    #     parse_ars_line,
-    #     parse_q3_line,
-    #     parse_x1_line,
-    #     parse_x1_fusion_line,
-    #     parse_rtk_target_ub482,
-    # ]
-
-    if r.endswith('log.txt'):
-        print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
-        single_process(r, sensors, analysis_dir=analysis_dir)
-        # single_process(r, parsers, False, x1tgt=[6, 51], rdrtgt=[44])
+    elif args.vector:
+        ctx = {}
+        ofile = os.path.join(analysis_dir, 'log_vector.asc')
+        process_log(r, [trans_line_to_asc], ctx, output=ofile)
     else:
-        # batch_process(r, parsers)
-        print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
-        batch_process_3(r, sensors, odir=analysis_dir)
+        if args.q3:
+            sensors.append('q3')
+        if args.fusion:
+            sensors.append('x1_fusion')
+        if args.rtk:
+            sensors.append('rtk')
+        if args.esr:
+            sensors.append('esr')
+        if args.ars:
+            sensors.append('ars')
 
-    dt = time.time() - ts
+        if not sensors:
+            sensors = ['q3', 'esr', 'ars', 'rtk']
+        print('sensors:', sensors)
+        rdir = os.path.dirname(r)
+
+
+        if r.endswith('log.txt'):
+            print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
+            single_process(r, sensors, analysis_dir=analysis_dir)
+        else:
+            print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
+            batch_process_3(r, sensors, odir=analysis_dir)
+
+    dt = time.time() - t0
     print(bcl.WARN + 'Processing done. Time cost: {}s'.format(dt) + bcl.ENDC)
     # test_sort(r)
     #
