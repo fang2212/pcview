@@ -12,8 +12,9 @@ from datetime import datetime
 from math import fabs
 from multiprocessing import Manager
 from multiprocessing.dummy import Process as Thread
-
+import signal
 import cv2
+import sys
 import numpy as np
 
 from config.config import load_cfg
@@ -28,7 +29,7 @@ from tools.match import is_near
 from tools.mytools import Supervisor
 from tools.transform import Transform, OrientTuner
 from tools.vehicle import Vehicle
-
+from multiprocessing import Queue
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
@@ -41,7 +42,7 @@ def loop_traverse(items):
 
 class PCC(object):
 
-    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None):
+    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=False):
         # from config.config import runtime
         self.hub = hub
         self.cfg = uniconf
@@ -109,6 +110,14 @@ class PCC(object):
         self.flow_player = FlowPlayer()
 
         self.save_replay_video = save_replay_video
+        self.to_web = to_web
+        self.vs = None
+        if to_web:
+            from video_server import VideoServer
+            import video_server
+            self.web_img = video_server.server_dict
+            self.vs = VideoServer()
+            self.vs.start()
 
         if save_replay_video and replay:
             if isinstance(save_replay_video, str):
@@ -118,6 +127,15 @@ class PCC(object):
             self.vw = VideoRecorder(odir, fps=20)
             self.vw.set_writer("replay-render", 1760, 720)
             print('--------save replay video', odir)
+
+        def exit_for_signal(signal_num, frame):
+            if self.vs:
+                self.vs.terminate()
+            print("exit by signal")
+            sys.exit(0)
+        for sig in [signal.SIGINT, signal.SIGTERM]:
+            signal.signal(sig, exit_for_signal)
+
 
     def start(self):
         print('starting hub')
@@ -284,6 +302,9 @@ class PCC(object):
             # comb = img
             padding = np.zeros((img.shape[0] - img_aux.shape[0], img_aux.shape[1], 3), np.uint8)
             comb = np.hstack((img, np.vstack((img_aux, padding))))
+
+        if self.to_web:
+            self.web_img['now_image'] = comb.copy()
 
         cv2.imshow('MINIEYE-CVE', comb)
 
