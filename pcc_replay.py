@@ -384,7 +384,7 @@ def prep_replay(source):
 if __name__ == "__main__":
     from config.config import *
     import sys
-    sys.argv.append('/media/nan/860evo/data/pcviewer/20191122155307_express/log.txt')
+    sys.argv.append('/run/user/1000/gvfs/smb-share:server=wtg32,share=aeb_test/AEB data for HIL test/For X1/PED_X1_HIL_Case_1/20190402151301_CPFA_20kmh/log.txt')
     local_path = os.path.split(os.path.realpath(__file__))[0]
     # print('local_path:', local_path)
     os.chdir(local_path)

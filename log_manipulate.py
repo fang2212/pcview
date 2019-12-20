@@ -723,25 +723,29 @@ def parse_x1_line(line, ctx):
             return
         # print(ret)
         lines = ''
-
-        # ctx['x1_obs_ep'] = ret
-        # ctx['x1_obs_ep_ts'] = ts
-
+        obs_type = 'x1'
         for r in ret:
             # print(r)
             if r['type'] != 'obstacle':
                 return
             if 'no vehicle' in r['class']:
                 continue
-            if r['sensor'] is not 'x1':
+            obs_type = r['sensor']
+            if r['sensor'] == 'x1':
+                # print(r)
+                x, y = ctx['trans'].compensate_param_rcs(r['pos_lon'], r['pos_lat'], 'x1')
+                lines += compose_log(ts, 'x1.{class}.{id}'.format(**r),
+                                     '{} {} {} {}'.format(y, x, (r['vel_lon']), r.get('TTC') or 7.0))
+                ctx['x1_ids'].add(r['id'])
+            elif r['sensor'] == 'x1_fusion':
+                x, y = ctx['trans'].compensate_param_rcs(r['pos_lon'], r['pos_lat'], 'x1')
+                lines += compose_log(ts, 'x1_fusion.{class}.{id}'.format(**r),
+                                     '{} {} {} {}'.format(y, x, (r['vel_lon']), r.get('TTC') or 7.0))
+                ctx['x1_fusion_ids'].add(r['id'])
+            else:
                 return
-            # print(r)
-            x, y = ctx['trans'].compensate_param_rcs(r['pos_lon'], r['pos_lat'], 'x1')
-            lines += compose_log(ts, 'x1.{class}.{id}'.format(**r),
-                                 '{} {} {} {}'.format(y, x, (r['vel_lon']), r.get('TTC') or 7.0))
-            ctx['x1_ids'].add(r['id'])
-        ctx['obs_ep']['x1']['data'] = ret
-        ctx['obs_ep']['x1']['ts'] = ts
+        ctx['obs_ep'][obs_type]['data'] = ret
+        ctx['obs_ep'][obs_type]['ts'] = ts
         # print(len(ctx['obs_ep']['x1']['data']))
         return lines
         # if isinstance(ret, list):
@@ -754,6 +758,7 @@ def parse_x1_line(line, ctx):
         #                                             ret.get('TTC')))
 
 
+# deprecated
 def parse_x1_fusion_line(line, ctx):
     can_port = ctx['can_port'].get('x1')
     if can_port is None:
@@ -788,7 +793,7 @@ def parse_x1_fusion_line(line, ctx):
                 return
 
             x, y = ctx['trans'].compensate_param_rcs(r['pos_lon'], r['pos_lat'], 'x1')
-            lines += compose_log(ts, 'x1.{class}.{id}'.format(**r),
+            lines += compose_log(ts, 'x1_fusion.{class}.{id}'.format(**r),
                                  '{} {} {} {}'.format(y, x, (r['vel_lon']), r.get('TTC') or 7.0))
             ctx['x1_ids'].add(r['id'])
         ctx['obs_ep']['x1']['data'] = ret
@@ -2251,6 +2256,8 @@ def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1
     # log = os.path.join(dir_name, 'log.txt')
     from tools.transform import Transform
     from config.config import CVECfg
+    from tools.log_info import get_can_ports_and_roles
+    import json
     ctx = dict()
     cfg = CVECfg()
     ctx['obs_ep'] = dict().fromkeys(sensors)
@@ -2274,59 +2281,23 @@ def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1
             parse_nmea_line,
             parse_x1_line]
         for sensor in sensors:
-            parsers.append(parsers_choice[sensor])
+            if parsers_choice.get(sensor):
+                parsers.append(parsers_choice[sensor])
 
-    # ctx['obs_ep'] = {'x1': {'buff': deque(maxlen=10)},
-    #                  'esr': {'buff': deque(maxlen=10)},
-    #                  'q3': {'buff': deque(maxlen=10)},
-    #                  'rtk': {'buff': deque(maxlen=10)}}
     if not os.path.exists(log):
         print(bcl.FAIL + 'Invalid data path. {} does not exist.'.format(log) + bcl.ENDC)
         return
+
     conf_path = os.path.join(os.path.dirname(log), 'config.json')
     install_path = os.path.join(os.path.dirname(log), 'installation.json')
+
+    pnr = get_can_ports_and_roles(log)
+    ctx.update(pnr)
     if os.path.exists(conf_path):
-        cfg.congigs = json.load(open(conf_path))
-        canports = dict()
-        ctx['veh_roles'] = dict()
-        for idx, collector in enumerate(cfg.congigs):
-            if 'can_types' in collector:
-                if 'can0' in collector['can_types']:
-                    type0 = collector['can_types']['can0'][0] if collector['can_types']['can0'] else None
-                if 'can1' in collector['can_types']:
-                    type1 = collector['can_types']['can1'][0] if collector['can_types']['can1'] else None
-            elif 'msg_types' not in collector:  # configured not used device
-                continue
-            elif 'can0' in collector['ports']:
-                for msg in collector['msg_types']:
-                    ctx['veh_roles'][msg] = collector.get('veh_tag')
-                type0 = collector['ports']['can0']['topic']
-                type1 = collector['ports']['can1']['topic']
-
-            else:
-                for msg in collector['msg_types']:
-                    ctx['veh_roles'][msg] = collector.get('veh_tag')
-                continue
-            if type0 and type0 not in canports:
-                canports[type0] = 'CAN{}'.format(idx * 2)
-
-            if type1 and type1 not in canports:
-                canports[type1] = 'CAN{}'.format(idx * 2 + 1)
-            # if 'can_types' in collector:
-            #     for msg in collector['can_types']:
-            #         ctx['veh_roles'][msg] = collector.get('veh_tag')
-        ctx['can_port'] = canports
-        print(canports)
-        # time.sleep(10)
+        cfg.configs = json.load(open(conf_path))
     else:
-        ctx['can_port'] = {'x1': 'CAN1',
-                           'esr': 'CAN0'
-                           }
+        print('no config.json found in {}. exit.'.format(os.path.dirname(log)))
     if os.path.exists(install_path):
-        from config.config import load_installation
-        # load_installation(install_path)
-        # print(install_path)
-
         cfg.installs = json.load(open(install_path))
         ctx['trans'] = Transform(cfg)
     else:
@@ -2494,7 +2465,7 @@ if __name__ == "__main__":
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
 
-    log = '/media/nan/860evo/data/pcviewer/20191122154307/log.txt'
+    log = '/media/nan/860evo/data/20191218150228_ars_x1_fusion_aeb_15kmh_test/log.txt'
     parser = argparse.ArgumentParser(description="process CVE log.")
 
     parser.add_argument('input_path', nargs='?', default=log)
@@ -2542,7 +2513,6 @@ if __name__ == "__main__":
             sensors = ['q3', 'esr', 'ars', 'rtk']
         print('sensors:', sensors)
         rdir = os.path.dirname(r)
-
 
         if r.endswith('log.txt'):
             print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
