@@ -916,6 +916,127 @@ def merge_log(log1, log2, outfile=None):
 #     if 'x1.' in cols[2]:
 #         pass
 
+def trans_to_hil(log, output=None):
+    from tools.log_info import get_connected_sensors, get_main_index
+    from parsers import ublox, parser
+    data_dir = os.path.dirname(log)
+    if not os.path.exists(data_dir):
+        print('no such dir')
+        return None
+
+    print('processing', data_dir)
+    video_files = sorted(os.listdir(os.path.join(data_dir, 'video')))
+    print(video_files)
+    if not video_files:
+        print('video files not found!')
+        return
+    midx = get_main_index(log)
+    connected = get_connected_sensors(log)
+    if midx is None:
+        imu = 'Gsensor'
+    else:
+        imu = 'Gsensor.{}'.format(midx)
+        if imu not in connected:
+            for idx in range(10):
+                imu_aux = 'Gsensor.{}'.format(idx)
+                if imu_aux in connected:
+                    imu = imu_aux
+                    break
+
+    print('use {} as imu.'.format(imu))
+
+    speed_meter = None
+    kw = None
+    ctx = {}
+
+    for sensor in ['mqb', 'bestvel', 'gps', 'ifv300']:
+        for port in connected:
+            if sensor == connected[port]:
+                speed_meter = port
+                kw = sensor
+                break
+        if kw:
+            break
+    if speed_meter is None:
+        print('sensor for speed not found. please check the data.')
+        return
+    elif 'bestvel' == kw:
+        def spd_parser(cols):
+            return float(cols[7]) * 3.6
+    elif 'gps' == kw:
+        def spd_parser(cols):
+            r = ublox.decode_nmea(cols[3])
+            if r and r.get('speed') is not None:
+                return r['speed']
+    elif kw in parser.parsers_dict:
+        def spd_parser(cols):
+            data = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+            can_id = int(cols[3], 16)
+            can_parser = parser.parsers_dict.get(kw)
+            r = can_parser(can_id, data, ctx)
+            if r and 'speed' in r:
+                return r['speed']
+    else:
+        def spd_parser(cols):
+            return None
+    print('use {} as speed meter.'.format(speed_meter))
+    # os.rename(os.path.join(data_dir, 'log.txt'), os.path.join(data_dir, 'log0.txt'))
+    if output:
+        parser_hil = open(os.path.join(output, 'log_for_hil.txt'), 'w')
+    else:
+        parser_hil = open(os.path.join(data_dir, 'log_for_hil.txt'), 'w')
+    lines = []
+
+    # for video_file in video_files:
+    #     os.rename(os.path.join(data_dir, 'video', video_file), os.path.join(data_dir, video_file))
+    video_files.append("")  # 追加一个空元素，否则如果最后一个视频刚好1200帧，会报错
+
+    # read speed from rtk data
+    with open(log) as can_log:
+        cnt_cam = 0
+        cnt_video = 0
+        video_name = video_files[cnt_video]
+        for line in can_log:
+            line = line.strip()
+            if not line:
+                continue
+            cols = line.split()
+            if cols[2] == speed_meter:
+                speed = spd_parser(cols)
+                if speed is not None:
+                    row = cols[0], cols[1], 'speed', '%.6f' % speed
+                    lines.append(' '.join(row))
+            # if cols[2].startswith('rtk') and cols[2].endswith('bestvel'):
+            #     speed = float(cols[7]) * 3.6
+            #     row = cols[0], cols[1], 'speed', '%.6f' % speed
+            #     # print(' '.join(row), file=parser_hil)
+            #     lines.append(' '.join(row))
+            elif cols[2].startswith('CAN'):
+                lines.append(line)
+            elif cols[2] == 'camera':
+                ts = int(cols[0])
+                vs = int(cols[1])
+                s = " ".join(['%010d' % ts, '%06d' % vs, 'cam_frame', 'video/'+video_name, str(cnt_cam)])
+                lines.append(s)
+                cnt_cam += 1
+                if cnt_cam >= 1200:
+                    cnt_video += 1
+                    cnt_cam = 0
+                    video_name = video_files[cnt_video]
+            elif cols[2] == imu:
+                # print(imu)
+                cols[2] = 'Gsensor'
+                s = ' '.join(cols)
+                lines.append(s)
+
+    cnt_frames = cnt_video * 1200 + cnt_cam
+    print(cnt_frames, ' video frames')
+    print(len(lines) - cnt_frames, 'speed and CAN lines')
+    # lines.sort()
+    for line in lines:
+        print(line, file=parser_hil)
+    parser_hil.close()
+
 
 def get_distance(t1, t2):
     if 'pos_lat' not in t1:
@@ -2292,6 +2413,8 @@ def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1
     install_path = os.path.join(os.path.dirname(log), 'installation.json')
 
     pnr = get_can_ports_and_roles(log)
+    if not pnr:
+        pnr['can_port'] = {'x1': 'CAN1', 'esr': 'CAN0'}
     ctx.update(pnr)
     if os.path.exists(conf_path):
         cfg.configs = json.load(open(conf_path))
@@ -2492,7 +2615,7 @@ if __name__ == "__main__":
         os.mkdir(analysis_dir)
 
     if args.hil:
-        pass  # TODO: add preprocess for HIL
+        trans_to_hil(r, args.output)
     elif args.vector:
         ctx = {}
         ofile = os.path.join(analysis_dir, 'log_vector.asc')

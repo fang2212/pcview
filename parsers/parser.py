@@ -5,6 +5,8 @@ from parsers.mqb_esp import parse_mqb
 from parsers.radar import parse_esr, parse_ars, parse_hmb, parse_bosch_mrr, parse_hawkeye_lmr, parse_fusion_mrr, parse_sta77
 from parsers.drtk import parse_rtk
 from parsers.mobileye_q4 import parser_mbq4
+from parsers.ublox import decode_nmea
+
 
 def default_parser(id, data, type=None):
     return None
@@ -22,8 +24,9 @@ parsers_dict = {
     "lmr":      parse_hawkeye_lmr,
     "hmb":      parse_hmb,
     "x1":       parse_x1,
-    "rtk":      parse_rtk,
+    "drtk":     parse_rtk,
     "mrr_fusion": parse_fusion_mrr,
-    "sta77": parse_sta77,
+    "sta77":    parse_sta77,
+    "gps":      decode_nmea,
     "default":  default_parser
 }

@@ -33,6 +33,8 @@ def parse_x1(id, data, ctx=None):
     if id not in ids:
         return None
     r = db_x1.decode_message(id, data)
+    if ctx and ctx.get('parser_mode') == 'direct':
+        return r
     # print("0x%x" % id, r)
     if not ctx.get('x1_obs'):
         ctx['x1_obs'] = list()

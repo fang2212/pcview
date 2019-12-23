@@ -36,6 +36,8 @@ def parse_ars(id, buf, ctx=None):
     if id not in ids:
         return None
     r = db_ars.decode_message(id, buf)
+    if ctx and ctx.get('parser_mode') == 'direct':
+        return r
     # print('0x%x' % id, r)
     if id == 0x300:  # end of scan
         if ctx.get('ars_obj'):
@@ -93,6 +95,8 @@ def parse_esr(id, buf, ctx=None):
     if id not in ids:
         return None
     r = db_esr.decode_message(id, buf)
+    if ctx.get('parser_mode') == 'direct':
+        return r
     # print('hahaha', ctx)
     if ctx is not None and not ctx.get('filter'):
         ctx['filter'] = CIPOFilter()

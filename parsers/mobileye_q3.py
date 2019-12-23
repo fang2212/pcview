@@ -27,6 +27,8 @@ def parse_ifv300(id, buf, ctx=None):
         # print('error', e)
         return
     # print("0x%x" % id, r)
+    if ctx and ctx.get('parser_mode') == 'direct':
+        return r
     if 0x401 <= id <= 0x493:  # pedestrian
         if 'TrackID' in r:
             return {'type': 'pedestrian', 'id': r['TrackID'], 'x': r['L_lat_rel'], 'y': r['L_long_rel']}
@@ -147,6 +149,8 @@ def parse_q3(id, buf, ctx=None):
     if id not in ids:
         return None
     r = db_q3.decode_message(id, buf)
+    if ctx.get('parser_mode') == 'direct':
+        return r
     # print("0x%x" % id, r)
     if not ctx.get('obs'):
         ctx['obs'] = {}

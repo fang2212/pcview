@@ -392,11 +392,16 @@ class FlowSink(Sink):
             buf = data[b'data']
             if b'rc_fusion' in buf:
                 buf = msgpack.unpackb(buf)
-                fusion_data = buf[b'rc_fusion']
-                buf = msgpack.packb(fusion_data, use_bin_type=True)
+                data = buf[b'rc_fusion']
+                buf = msgpack.packb(data, use_bin_type=True)
+                self.fileHandler.insert_fusion_raw(buf)
+            elif b'calib_params' in buf:
+                buf = msgpack.unpackb(buf)
+                data = buf[b'calib_params']
+                buf = msgpack.packb(data, use_bin_type=True)
                 self.fileHandler.insert_fusion_raw(buf)
 
-            return None
+            return 'fusion_data', data
         data = data[b'data']
         if b'frame_id' in data:
             data = msgpack.unpackb(data)

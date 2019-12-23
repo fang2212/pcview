@@ -40,23 +40,92 @@ def get_can_ports_and_roles(log):
         print(canports)
         return ctx
         # time.sleep(10)
-    else:
-        ctx['can_port'] = {'x1': 'CAN1', 'esr': 'CAN0'}
 
 
-def get_connected_sensors(log, can_ports):
+def audit_can_data(log, canport, sensor, audit_lines=500, thres=0.2):
+    from parsers.parser import parsers_dict
+    parser = parsers_dict.get(sensor)
+    canport = canport.upper()
+    line_cnt = 0
+    valid_cnt = 0
+    ctx = {'parser_mode': 'direct'}
+    if not parser:
+        print('audit quitting. found no parser for', sensor)
+        return
+    print('auditing {} for {}... '.format(canport, sensor), end='')
+    for line in open(log):
+        cols = line.split()
+        if len(cols) < 4:
+            continue
+        if cols[2] == canport:
+            line_cnt += 1
+            data = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+            can_id = int(cols[3], 16)
+            r = parser(can_id, data, ctx)
+            if r:
+                if isinstance(r, list):
+                    valid_cnt += len(r)
+                else:
+                    valid_cnt += 1
+
+        if line_cnt > audit_lines:
+            if valid_cnt > audit_lines * thres:
+                print('passed.', '{}/{}'.format(valid_cnt, line_cnt))
+                return True
+            else:
+                print('failed.', '{}/{}'.format(valid_cnt, line_cnt))
+                return
+    print('failed')
+
+
+def get_connected_sensors(log):
+    print('analyzing for present sensors...')
+    can_ports = get_can_ports_and_roles(log)['can_port']
     ports = {}
-    can_lines = {}
+    sensors = {}
     for s in can_ports:
         ports[can_ports[s]] = s
     with open(log) as rf:
         line_cnt = 0
 
         for line in rf:
+            if not line:
+                continue
             cols = line.strip().split(' ')
+            # print(cols)
             line_cnt += 1
+            if len(cols) < 4:
+                continue
             if line_cnt > 5000:
                 break
             if 'CAN' in cols[2]:
-                can_lines[cols[2]] = ports[cols[2]]
-    return can_lines
+                sensors[cols[2]] = ports[cols[2]]
+            elif 'bestpos' in cols[2]:
+                sensors[cols[2]] = 'bestpos'
+            elif 'bestvel' in cols[2]:
+                sensors[cols[2]] = 'bestvel'
+            elif 'heading' in cols[2]:
+                sensors[cols[2]] = 'heading'
+            elif 'gps' in cols[2] or 'NMEA' in cols[2]:
+                sensors[cols[2]] = 'gps'
+            elif 'Gsensor' in cols[2]:
+                sensors[cols[2]] = 'gsensor'
+
+    for kw in list(sensors):
+        if 'CAN' in kw:
+            if not audit_can_data(log, kw, sensors[kw]):
+                del sensors[kw]
+    return sensors
+
+
+def get_main_index(log):
+    cfg_path = os.path.join(os.path.dirname(log), 'config.json')
+    if not os.path.exists(cfg_path):
+        print('no config.json in', os.path.dirname(log))
+        return
+
+    cfg = json.load(open(cfg_path))
+    for collector in cfg:
+        if collector.get('is_main'):
+            return collector['idx']
+
