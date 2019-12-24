@@ -580,38 +580,6 @@ def parse_rtk_target_ub482(line, ctx):
     return lines
 
 
-    # if role == 'ego':
-    #     target = ctx['rtksol'][role].get_pp_target()
-    #     if target:
-
-
-# def parse_esr_cipo(file_name, can_port='CAN3'):
-#     from parsers.radar import parse_esr
-#     print('parsing esr cipo...')
-#     ctx = {}
-#     out_file = '/tmp/log_esr_cipo.txt'
-#     wf = open(out_file, 'w')
-#     with open(file_name) as rf:
-#         for line in rf:
-#             cols = line.split(' ')
-#             ts = float(cols[0]) + float(cols[1]) / 1000000
-#             if can_port in cols[2]:
-#                 can_id = int(cols[3], 16)
-#                 buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
-#                 r = parse_esr(can_id, buf, ctx)
-#                 # print(can_port, buf, r)
-#                 if not r:
-#                     wf.write(' '.join(cols))
-#                     continue
-#                 for item in r:
-#                     # print(item['cipo'])
-#                     if item.get('cipo'):
-#                         wf.write(compose_log(ts, 'esr.cipo', '{} {}'.format(item['id'], item['range'], item['angle'])))
-#             wf.write(' '.join(cols))
-#     wf.close()
-#     return os.path.abspath(out_file)
-
-
 def parse_esr_line(line, ctx):
     from parsers.radar import parse_esr
     from math import sin, pi
@@ -1096,65 +1064,6 @@ def spatial_match_obs(obs1, obs2):
             for o2 in obs2:
                 if o1['id'] == o1sel and o2['id'] == o2id:
                     yield (o1, o2)
-        # pair.update(esr_cdt[eid][x1_sel])
-        # return pair
-
-
-# deprecated
-# def find_esr_by_x1(line, ctx):
-#     # from tools.match import is_near
-#     if not ctx.get('matched_ep'):
-#         ctx['matched_ep'] = dict()
-#     if 'x1_obs_ep_ts' not in ctx or 'esr_obs_ep_ts' not in ctx:
-#         return
-#     if ctx.get('esr_obs_ep_ts') == ctx.get('esr_obs_ep_ts_last') \
-#             and ctx.get('x1_obs_ep_ts') == ctx.get('x1_obs_ep_ts_last'):
-#         return
-#     # x1_dt = ctx['x1_obs_ep_ts'] - ctx['x1_obs_ep_ts_last'] if 'x1_obs_ep_ts_last' in ctx else None
-#     # esr_dt = ctx['esr_obs_ep_ts'] - ctx['esr_obs_ep_ts_last'] if 'esr_obs_ep_ts_last' in ctx else None
-#     # print(ctx['x1_obs_ep_ts'], 'x1 dt:', x1_dt, 'esr dt:', esr_dt)
-#     # print('ok')
-#     ctx['esr_obs_ep_ts_last'] = ctx['esr_obs_ep_ts']
-#     ctx['x1_obs_ep_ts_last'] = ctx['x1_obs_ep_ts']
-#     esr = ctx.get('esr_obs_ep')
-#     x1 = ctx.get('x1_obs_ep')
-#     if not x1 or not esr:
-#         return
-#
-#     # pair_list = dict()
-#     esr_cdt = dict()
-#     for x1item in x1:
-#         if len(esr) > 0:
-#             esr_list = sorted(esr, key=lambda x: get_distance(x1item, x))
-#             esr_t = esr_list[0]
-#             # if x1item['id'] == 2:
-#             #     print(x1item['id'], esr_t['id'], get_distance(x1item, esr_t),
-#             #           ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'],
-#             #           len(x1), len(esr))
-#             #     print(x1item, esr_t)
-#             # print(get_distance(x1item, esr_t))
-#             if get_distance(x1item, esr_t) > 5.0:
-#                 # print('dist too large.', x1item['id'], esr_t['id'], get_distance(x1item, esr_t))
-#                 continue
-#             if fabs(ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts']) > 0.2:
-#                 # print('time diff too large.', x1item['id'], esr_t['id'], ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'])
-#                 continue
-#             if esr_t['id'] not in esr_cdt:
-#                 esr_cdt[esr_t['id']] = dict()
-#             esr_cdt[esr_t['id']][x1item['id']] = {'dist': get_distance(x1item, esr_t)}
-#     for eid in esr_cdt:
-#         # print(eid)
-#         dist = 99
-#         x1_sel = 0
-#         for x1id in esr_cdt[eid]:
-#             if esr_cdt[eid][x1id]['dist'] < dist:
-#                 dist = esr_cdt[eid][x1id]['dist']
-#                 x1_sel = x1id
-#         ts = ctx['x1_obs_ep_ts']
-#         pair = {'x1': x1_sel, 'esr': eid}
-#         pair.update(esr_cdt[eid][x1_sel])
-#         ctx['matched_ep'][ts] = pair
-#         # print('matched:', pair)
 
 
 def match_x1_esr(line, ctx):
