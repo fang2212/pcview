@@ -709,6 +709,8 @@ def parse_x1_line(line, ctx):
         return
     if not ctx.get('x1_ids'):
         ctx['x1_ids'] = set()
+    if not ctx.get('x1_fusion_ids'):
+        ctx['x1_fusion_ids'] = set()
     from parsers.x1 import parse_x1
     cols = line.split(' ')
     ts = float(cols[0]) + float(cols[1]) / 1000000
@@ -1063,23 +1065,19 @@ def spatial_match_obs(obs1, obs2):
     for obs1item in obs1:
         if len(obs2) > 0:
             obs2list = sorted(obs2, key=lambda x: get_distance(obs1item, x))
-            # if obs1item['id'] == 43:
-            #     print([x['id'] for x in obs2list])
             obs2t = obs2list[0]
-            # if x1item['id'] == 2:
-            #     print(x1item['id'], esr_t['id'], get_distance(x1item, esr_t),
-            #           ctx['esr_obs_ep_ts'] - ctx['x1_obs_ep_ts'],
-            #           len(x1), len(esr))
-            #     print(x1item, esr_t)
-            # print(get_distance(x1item, esr_t))
-            if get_distance(obs1item, obs2t) > 6.0:
+
+            x = obs1item.get('range') or obs1item['pos_lon']
+            dx = get_distance(obs1item, obs2t)
+            if x > 60 and dx / x > 0.1:
+                continue
+            elif dx > 6.0:
                 # print('dist too large.', x1item['id'], esr_t['id'], get_distance(x1item, esr_t))
                 continue
             if obs2t['id'] not in obs2_cdt:
                 obs2_cdt[obs2t['id']] = dict()
             obs2_cdt[obs2t['id']][obs1item['id']] = {'dist': get_distance(obs1item, obs2t)}
-            # if obs1item['id'] == 43:
-            #     print(obs2t['id'], obs2_cdt[obs2t['id']][obs1item['id']])
+
     # print(obs2_cdt)
     ret = list()
     for o2id in obs2_cdt:
