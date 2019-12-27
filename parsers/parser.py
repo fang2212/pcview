@@ -24,6 +24,7 @@ parsers_dict = {
     "lmr":      parse_hawkeye_lmr,
     "hmb":      parse_hmb,
     "x1":       parse_x1,
+    "x1_fusion": parse_x1,
     "drtk":     parse_rtk,
     "mrr_fusion": parse_fusion_mrr,
     "sta77":    parse_sta77,
