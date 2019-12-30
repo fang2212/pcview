@@ -384,13 +384,24 @@ def prep_replay(source):
 if __name__ == "__main__":
     from config.config import *
     import sys
-    sys.argv.append('/run/user/1000/gvfs/smb-share:server=wtg32,share=aeb_test/AEB data for HIL test/For fusion/Vehicle_Fusion_HIL_Case_1/20191101082905_20kmh_distance_200m/log.txt')
+    import argparse
+
     local_path = os.path.split(os.path.realpath(__file__))[0]
     # print('local_path:', local_path)
     os.chdir(local_path)
 
+    parser = argparse.ArgumentParser(description="Replay CVE log.")
+    log = '/run/user/1000/gvfs/smb-share:server=wtg32,share=aeb_test/AEB data for HIL test/For fusion/Vehicle_Fusion_HIL_Case_1/20191101082905_20kmh_distance_200m/log.txt'
+
+    parser.add_argument('input_path', nargs='?', default=log)
+    parser.add_argument('-o', '--output', default=False)
+
+    args = parser.parse_args()
+    source = args.input_path
+    odir = args.output
+
     freeze_support()
-    source = sys.argv[1]
+    # source = sys.argv[1]
     print(source)
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
 
@@ -400,6 +411,6 @@ if __name__ == "__main__":
     from parsers.parser import parsers_dict
 
     replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0)
-    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=False, uniconf=cfg)
+    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg)
     pc_viewer.start()
 

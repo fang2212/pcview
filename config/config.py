@@ -293,6 +293,7 @@ class CVECfg(object):
     configs = []
     installs = {}
     runtime = {}
+    versions = {}
     local_cfg = None
 
 
@@ -359,6 +360,18 @@ def load_installation(jsonspec):
     print(bcl.WARN + 'installation:' + bcl.ENDC)
     print(spec)
     return spec
+
+
+def get_pcc_version():
+    if os.path.exists('build_info.txt'):
+        with open('build_info.txt') as rf:
+            build_time = rf.readline()
+            git_desc = rf.readline()
+            return {'build_time': build_time, 'git_desc': git_desc}
+    else:
+        from tools.build_info import get_git_label
+        git_desc = get_git_label()
+        return {'git_desc': git_desc}
 
 
 class bcl:

@@ -110,10 +110,14 @@ class PCC(object):
 
         self.save_replay_video = save_replay_video
 
-        if self.save_replay_video and self.replay:
-            self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
+        if save_replay_video and replay:
+            if isinstance(save_replay_video, str):
+                odir = save_replay_video
+            else:
+                odir = os.path.dirname(self.rlog)
+            self.vw = VideoRecorder(odir, fps=20)
             self.vw.set_writer("replay-render", 1760, 720)
-            print('--------save replay video', os.path.dirname(self.rlog))
+            print('--------save replay video', odir)
 
     def start(self):
         self.hub.start()
@@ -510,10 +514,10 @@ class PCC(object):
         elif key == ord('r'):
             if self.hub.fileHandler.recording:
                 # self.recording = False
-                self.hub.fileHandler.stop_rec()
+                self.stop_rec()
             else:
                 # self.recording = True
-                self.hub.fileHandler.start_rec(self.rlog)
+                self.start_rec(self.rlog)
             print('toggle recording status. {}'.format(self.hub.fileHandler.recording))
         elif key == ord('s'):
             self.ot.save_para()
@@ -529,6 +533,16 @@ class PCC(object):
         elif key == ord('i'):
             self.sv_state = next(self.sideview_state)
             self.show_ipm = not self.show_ipm
+
+    def start_rec(self):
+        self.hub.fileHandler.start_rec(self.rlog)
+        pp = self.vehicles['ego'].pinpoint
+        if pp and not self.replay:
+            self.hub.fileHandler.insert_raw(
+                (pp['ts'], pp.get('source') + '.pinpoint', compose_from_def(ub482_defs, pp)))
+
+    def stop_rec(self):
+        self.hub.fileHandler.stop_rec()
 
     def left_click(self, event, x, y, flags, param):
         # print(event, x, y, flags, param)
