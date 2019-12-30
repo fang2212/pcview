@@ -244,7 +244,7 @@ class Player(object):
         else:
             dev = 'default'
         # print(x, y)
-        x0, y0 = self.transform.trans_gnd2raw(x, y, dev=dev)
+        x0, y0 = self.transform.trans_gnd2raw(x, y)
 
         h = self.cfg.installs['video']['fv'] * height / dist
         x1 = x0 - 0.5 * w
@@ -361,7 +361,7 @@ class Player(object):
         x = data.get('pos_lon')
         y = data.get('pos_lat')
         h = data.get('pos_hgt')
-        u, v = self.transform.trans_gnd2raw(x, y, h, dev=data['sensor'])
+        u, v = self.transform.trans_gnd2raw(x, y, h)
         color = self.color_obs.get(data['sensor']) or self.color_obs['default']
         cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
     # def show_tsr(self, img, position, color=CVColor.Cyan, thickness=2):
@@ -777,7 +777,7 @@ class Player(object):
             x = 0.001
         width = 0.5
         height = 0.5
-        ux, uy = self.transform.trans_gnd2raw(x, y, delta_h + self.cfg.installs['rtk']['height'], 'rtk')
+        ux, uy = self.transform.trans_gnd2raw(x, y, delta_h + self.cfg.installs['rtk']['height'])
         w = self.cfg.installs['video']['fu'] * width / x
         w = max(10, min(50, w))
         h = w

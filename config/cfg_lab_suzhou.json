@@ -7,7 +7,7 @@
             "port": 5001
         }
     },
-    "main_collector": "algo_0122",
+    "main_collector": "ffe1",
     "vehicles": {
         "ego": {
             "enable": true,
