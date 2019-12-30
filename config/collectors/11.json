@@ -1,5 +1,6 @@
 {
   "mac": "00:0c:18:ef:ff:d1",
+  "ip": "192.168.98.234",
   "debug": true,
   "repeater": true,
   "can_types": {
