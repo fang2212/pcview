@@ -120,24 +120,29 @@ class PCC(object):
             print('--------save replay video', odir)
 
     def start(self):
+        print('starting hub')
         self.hub.start()
         self.player.start_time = datetime.now()
         frame_cnt = 0
         data_cnt = 0
+        print('entering pcc loop.')
 
         while not self.exit:
             d = self.hub.pop_simple()
             if d is None or not d.get('frame_id'):
                 # time.sleep(0.01)
                 continue
+            # print('pcc frame cnt:', frame_cnt)
             if not self.replay:
                 qsize = self.hub.fileHandler.raw_queue.qsize()
-                # print(qsize)
+                # print('raw queue size:', qsize)
                 if self.hub.fileHandler.recording and qsize > 2000:
                     print('msg_q critical, skip drawing.', qsize)
                     time.sleep(0.1)
                     continue
+            # print('pre draw')
             self.draw(d, frame_cnt)
+            # print('after draw')
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
                 self.hub.pause(True)
@@ -170,6 +175,7 @@ class PCC(object):
         self.player.ts_now = mess['ts']
         self.player.update_column_ts('video', mess['ts'])
         # print(mess)
+        # print(frame_id, img.shape)
         can_data = mess.get('can')
         if self.ts0 == 0:
             self.ts0 = self.ts_now

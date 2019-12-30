@@ -80,8 +80,6 @@ class Hub(Thread):
         # self.msg_cnt['frame'] = 0
         self.msg_types = []
         self.type_roles = dict()
-        print('scanning for LAN devices...')
-        self.mac_ip = get_mac_ip()
 
         for msg_type in ['frame', 'can', 'gsensor', 'rtk', 'x1_data', 'video_aux']:
             self.cache[msg_type] = []
@@ -106,7 +104,7 @@ class Hub(Thread):
             # self.collectors[ip]['sinks'] = {}
             print('initializing direct connect to {} {}'.format(ip, mac))
             sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera', index=0,
-                              fileHandler=self.fileHandler)
+                              fileHandler=self.fileHandler, is_main=True)
             sink.start()
             # self.collectors[ip]['sinks']['video'] = sink
             # self.collectors[ip]['idx'] = 0
@@ -117,6 +115,9 @@ class Hub(Thread):
 
             print(self.msg_types)
             return
+
+        print('scanning for LAN devices...')
+        self.mac_ip = get_mac_ip()
 
         self.finder.request()
         time.sleep(0.6)
@@ -305,12 +306,14 @@ class Hub(Thread):
         res = {}
         if not self.cam_queue.empty():
             frame_id, data, msg_type = self.cam_queue.get()
+            # print(frame_id, len(data), msg_type)
             # fileHandler.insert_raw((data['ts'], 'camera', '{}'.format(frame_id)))
             is_main = data.get('is_main')
             if not is_main:
                 self.cache['video_aux'].append(data)
                 # self.msg_cnt['video']['rev'] += 1
                 # self.msg_cnt['video']['show'] += 1
+                print('not main video stream')
                 return
             res['ts'] = data['ts']
             res['img'] = data['img']
