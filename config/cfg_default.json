@@ -1,0 +1,77 @@
+{
+  "version": 0.7,
+  "modules": {
+    "GGA_reporter": {
+      "enable": false,
+      "ntrip_address": "ntrip.weaty.cn",
+      "port": 5001
+    }
+  },
+  "main_collector": "algo_626d",
+  "vehicles": {
+    "ego": {
+      "enable": true,
+      "collectors": {
+        "ffd0": "normal",
+        "algo_626d": "normal",
+        "algo_e23e": "normal",
+        "ffe0": "normal",
+        "55dd": "normal"
+      },
+      "installation": {
+        "esr": {
+          "pitch": 0.0,
+          "roll": 0.0,
+          "yaw": 0.0,
+          "lat_offset": 0.0,
+          "lon_offset": 0.0,
+          "height": 0.0
+        },
+        "lmr": {
+          "pitch": 0.0,
+          "roll": 0.0,
+          "yaw": 0.0,
+          "lat_offset": 0.0,
+          "lon_offset": 0.0,
+          "height": 0.0
+        },
+        "ifv300": {
+          "pitch": 0.0,
+          "roll": 0.0,
+          "yaw": 0.0,
+          "lat_offset": 0.0,
+          "lon_offset": 0.0,
+          "height": 0.0
+        },
+        "rtk": {
+          "pitch": 0.0,
+          "roll": 0.0,
+          "yaw": 0.0,
+          "lat_offset": 0.0,
+          "lon_offset": 0.0,
+          "height": 0.0
+        },
+        "video": {
+          "pitch": 0.0,
+          "roll": 0.0,
+          "yaw": 0.0,
+          "lat_offset": 0.0,
+          "lon_offset": 0.0,
+          "height": 0.0,
+          "fu": 1458.0,
+          "fv": 1458.0,
+          "cu": 640.0,
+          "cv": 360.0
+        },
+        "x1": {
+          "pitch": 0.0,
+          "roll": 0.0,
+          "yaw": 0.0,
+          "lat_offset": 0.0,
+          "lon_offset": 0.0,
+          "height": 0.0
+        }
+      }
+    }
+  }
+}
