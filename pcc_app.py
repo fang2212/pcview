@@ -14,8 +14,11 @@ if len(sys.argv) == 1:
 if '--direct' in sys.argv:
     print('direct mode.')
     from pcc import *
-    hub = Hub(direct_cfg=sys.argv[2])
-    pcc = PCC(hub, ipm=True, replay=False)
+
+    cve_conf = load_cfg('config/cfg_default.json')
+    # cve_conf.local_cfg = get_local_cfg()
+    hub = Hub(uniconf=cve_conf, direct_cfg=sys.argv[2])
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf)
     pcc.start()
 
 elif '--headless' in sys.argv:
