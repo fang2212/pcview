@@ -84,7 +84,7 @@ class PCC(object):
         cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
         cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
         cv2.createTrackbar('Roll  ', 'adj', 500, 1000, self.ot.update_roll)
-        cv2.createTrackbar('ESR_y', 'adj', 500, 1000, self.ot.update_esr_yaw)
+        # cv2.createTrackbar('ESR_y', 'adj', 500, 1000, self.ot.update_esr_yaw)
         if not replay:
             self.supervisor = Supervisor([self.check_status,
                                           self.hub.fileHandler.check_file])
