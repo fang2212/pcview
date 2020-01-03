@@ -72,6 +72,7 @@ class Player(object):
                           'gps': FlatColor.clouds,
                           'sta77': FlatColor.wet_asphalt,
                           'mbq4': FlatColor.turquoise,
+                          'xyd2': FlatColor.Blue,
                           'default': FlatColor.clouds}
 
         self.param_bg_width = 160
@@ -107,18 +108,19 @@ class Player(object):
             return self.columns[source]['indent']
 
     def show_dist_mark_ipm(self, img):
-        for i in range(5, 200, 1):
-            if i % 20 == 0 or i == 10:
+        show_range = 201
+        for i in range(5, show_range, 1):
+            if i % 20 == 0:
                 p1 = self.transform.trans_gnd2ipm(i, -10)
                 p2 = self.transform.trans_gnd2ipm(i, 10)
                 BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
-                BaseDraw.draw_text(img, '{}m'.format(i), p2, 0.3, CVColor.White, 1)
+                BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(i-1, 10), 0.3, CVColor.White, 1)
 
         for i in range(-10, 11, 5):
             p1 = self.transform.trans_gnd2ipm(-10, i)
-            p2 = self.transform.trans_gnd2ipm(180, i)
+            p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
-            BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(170, i), 0.3, CVColor.White, 1)
+            BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i-1), 0.3, CVColor.White, 1)
 
     # def show_overlook_background(self, img):
     #     """绘制俯视图的背景，包括背景图，车背景图，光线图
@@ -204,10 +206,6 @@ class Player(object):
         if not color:
             color = self.color_obs['default']
 
-        # if 'x1' in obs['source'] and obs['class'] == 'fusion_data':
-        #     color = FlatColor.concrete
-            # print(obs)
-
         width = obs.get('width')
         width = width or 0.3
         height = obs.get('height')
@@ -218,7 +216,6 @@ class Player(object):
         # install_para = install[obs['source'].split('.')[0]]
 
         if 'pos_lon' in obs:
-
             # x = obs['pos_lon']
             # y = obs['pos_lat']
             x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], sensor)
@@ -229,8 +226,6 @@ class Player(object):
             # x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
             dist = obs['range']
             x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], sensor)
-        # if dist < 0.1:
-        #     dist = 0.1
         dist = max(0.1, dist)
         if dist <= 0 or x <= 0:
             return
@@ -280,7 +275,6 @@ class Player(object):
         #     self.show_ttc(img, obs['TTC'], obs['source'])
 
     def show_ipm_obs(self, img, obs):
-        # print(obs)
         id = obs['id']
         sensor = obs.get('sensor') or obs['source'].split('.')[0]
         if 'pos_lon' in obs:
@@ -304,7 +298,7 @@ class Player(object):
             if 'TTC' in obs:
                 # for save space, only ttc<7 will be shown on the gui
                 if obs['TTC'] < 7:
-                    BaseDraw.draw_text(img, '{:.2f}'.format(obs['TTC']), (u - 40, v + 5), 0.3, color, 1)
+                    BaseDraw.draw_text(img, '{:.1f}'.format(obs['TTC']), (u - 25, v + 5), 0.3, color, 1)
 
             # STA 77
             if obs.get('sensor') == 'sta77':
@@ -316,8 +310,8 @@ class Player(object):
             else:
                 cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
             # BaseDraw.draw_text(img, '{}'.format(id), (u - 6, v - 6), 0.3, color, 1)
-            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v - 8), 0.3, color, 1)
-            BaseDraw.draw_text(img, '{:.1f}'.format(x), (u + 10, v + 2), 0.3, color, 1)
+            BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v - 9), 0.4, color, 1)
+            BaseDraw.draw_text(img, '{:.1f}'.format(x), (u + 10, v + 3), 0.4, color, 1)
 
     def show_lane(self, img, data, color=CVColor.Cyan):
         """绘制车道线

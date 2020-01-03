@@ -26,6 +26,7 @@ db_hmb = cantools.database.load_file('dbc/szhmb.dbc', strict=False)
 db_fusion_mrr = cantools.database.load_file('dbc/MRR_radar_CAN.dbc', strict=False)
 db_sta77_2 = cantools.database.load_file('dbc/sensortech-77G.dbc', strict=False)
 
+db_xyd2 = cantools.database.load_file('dbc/[XYD]P18006Plus_Targets_CAN_V1.3.dbc', strict=False)
 # trans_polar2rcs = Transform().trans_polar2rcs
 
 ars_filter = CIPOFilter()
@@ -63,6 +64,10 @@ def parse_ars(id, buf, ctx=None):
         rcs = r['Obj_RCS']
         ttc = x_raw / -vx if vx < 0 else 7
         if ttc > 7:
+            ttc = 7
+
+        # only show ego-lane and next-lane ttc
+        if fabs(y_raw) > 6.0:
             ttc = 7
         range = sqrt(x_raw ** 2 + y_raw ** 2)
         angle = atan2(y_raw, x_raw) * 180.0 / pi
@@ -147,9 +152,11 @@ def parse_esr(id, buf, ctx=None):
             else:
                 ttc = ttc_m
 
+            # ttc_a is not robust, so only use ttc_m
+            ttc = ttc_m
             # only show ego-lane and next-lane ttc
-            # if fabs(y) > 6.0:
-            #     ttc = 7
+            if fabs(y) > 6.0:
+                ttc = 7
 
             # print('ESR 0x%x' % id, r)
             # ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
@@ -329,3 +336,63 @@ def parse_sta77(id, buf, ctx=None):
             return None
         else:
             return None
+
+xydobs2 = []
+def parse_xyd2(id, buf,ctx=None):
+    global xydobs2
+    ids = [m.frame_id for m in db_xyd2.messages]
+    # if id == 0x301:
+    #     if (buf[0] >> 7)& 0x01:
+    #         speed=((buf[0] & 0x7f) << 8 | buf[1])/128.0
+    #     else:
+    #         speed=1000
+    #     if (buf[2] >> 7)& 0x01:
+    #         yaw_rate=((buf[2] & 0x7f) << 8 | buf[3])/128.0-128
+    #     else:
+    #         yaw_rate = 1000
+    #     return {'speed':speed,'yaw_rate':yaw_rate,'type': 'obstacle', 'id': 0, 'pos_lon': 0, 'pos_lat': 0, 'range': 0, 'angle': 0,
+    #            'range_rate': 0,'power':0,'dyn_prop':'Stationary','tgt_status':'lmr_state_00','color': 1}
+    if id not in ids:
+        return None
+    r = db_xyd2.decode_message(id, buf)
+    tgt_status = r.get('MMR_targetStatus')
+    tgt_confidence_coef=r.get('MMR_targetConfidenceCoef')
+    speed_xyd = r.get('CAN_VEHICLE_SPEED')
+    if speed_xyd is not None:
+        speed_xyd = speed_xyd*3.6
+    yaw_rate_xyd = r.get('CAN_YAW_RATE')
+    if tgt_status is not None:
+        if tgt_status == 'First detected' or ((tgt_status == 'unconfirmed' or  tgt_status == 'valid' ) and tgt_confidence_coef>30):
+            range_raw = r.get('MMR_targetRange')
+            angle_raw = r.get('MMR_targetAngle')
+            range_rate = r.get('MMR_targetRangeRateOrig')
+            power=r.get('MMR_targetPower')
+            UPDATED=r.get('MMR_targetUpdated')
+            if(UPDATED=='predicted'):
+                update=0
+            else:
+                update =1
+            dyn_prop=r.get('MMR_targetType')
+            tid = id - 0x3FF
+            ret = {'type': 'obstacle', 'sensor': 'xyd2', 'sensor_type': 'radar', 'class': 'object', 'id': tid,
+                   'range': range_raw, 'angle': angle_raw, 'power': power,
+                   'tgt_status': tgt_status+'_%03d'%(tgt_confidence_coef)+'_%1d'%(update),'dyn_prop':dyn_prop,'color': 1}
+            # x, y = trans_polar2rcs(angle, range, install['xyd2'])
+            # ret = {'type': 'obstacle', 'id': tid, 'pos_lon': x, 'pos_lat': y, 'range': range, 'angle': angle,
+            #        'range_rate': range_rate, 'power': power,'tgt_status': tgt_status+'_%03d'%(tgt_confidence_coef)+'_%1d'%(update),'dyn_prop':dyn_prop,'color': 1}
+            xydobs2.append(ret)
+        else:
+            pass
+            # return None
+    elif speed_xyd is not None:
+        # xydobs = []
+        return {'type': 'vehicle_state', 'speed': speed_xyd, 'yaw_rate': yaw_rate_xyd}
+        # return {'speed': speed, 'yaw_rate': yaw_rate, 'type': 'obstacle', 'id': 0, 'pos_lon': 0, 'pos_lat': 0,
+        #         'range': 0, 'angle': 0,'range_rate': 0, 'power': 0, 'dyn_prop': 'Stationary', 'tgt_status': 'lmr_state_00', 'color': 1}
+
+    if len(xydobs2)>0 and id == 0x43F:
+        ret = xydobs2
+        xydobs2 = []
+        return ret
+    else:
+        return None

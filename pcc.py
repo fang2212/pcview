@@ -197,7 +197,7 @@ class PCC(object):
                 self.ipm = cv2.warpPerspective(img, self.m_g2i, (480, 720))
             else:
                 self.ipm = np.zeros([720, 480, 3], np.uint8)
-                self.ipm[:, :] = [40, 40, 40]
+                self.ipm[:, :] = [100, 100, 100]
 
             self.player.show_dist_mark_ipm(self.ipm)
 

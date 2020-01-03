@@ -107,7 +107,7 @@ class Transform:
         cu = installs['video']['cu']
         cv = installs['video']['cv']
 
-        self.x_limits = [0.01, 180]
+        self.x_limits = [-1, 200]
         self.y_limits = [-15, 15]
         self.ipm_width = 480
         self.ipm_height = 720
