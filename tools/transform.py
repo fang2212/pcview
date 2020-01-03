@@ -143,7 +143,9 @@ class Transform:
     def getp_ifc_from_poly(self, coefs, step=0.1, start=0, end=60, sensor=None):
         a0, a1, a2, a3 = coefs
         p = []
-
+        if step <= 0:
+            # print('ivalid step', step)
+            return
         x = np.arange(start, end, step)
         y = a0 + a1 * x + a2 * np.power(x, 2) + a3 * np.power(x, 3)
         for i, item in enumerate(x):

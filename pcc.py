@@ -453,6 +453,9 @@ class PCC(object):
 
     def draw_can_data(self, img, data):
         # print(data)
+        if 'type' not in data:
+            print('data invalid', data)
+            return
         role = self.hub.get_veh_role(data.get('source'))
         if role not in self.vehicles:
             self.vehicles[role] = Vehicle(role)
@@ -523,7 +526,7 @@ class PCC(object):
                 self.stop_rec()
             else:
                 # self.recording = True
-                self.start_rec(self.rlog)
+                self.start_rec()
             print('toggle recording status. {}'.format(self.hub.fileHandler.recording))
         elif key == ord('s'):
             self.ot.save_para()

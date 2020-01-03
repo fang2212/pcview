@@ -391,7 +391,7 @@ if __name__ == "__main__":
     os.chdir(local_path)
 
     parser = argparse.ArgumentParser(description="Replay CVE log.")
-    log = '/run/user/1000/gvfs/smb-share:server=wtg32,share=aeb_test/AEB data for HIL test/For fusion/Vehicle_Fusion_HIL_Case_1/20191101082905_20kmh_distance_200m/log.txt'
+    log = '/media/nan/860evo/data/pcviewer/20191122155613_express_q3_dist_issue/log.txt'
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=False)
