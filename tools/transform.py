@@ -20,54 +20,25 @@ import numpy as np
 
 class OrientTuner(object):
     def __init__(self, uniconf):
-        # installs = uniconf.installs
-        self.init_value = uniconf.installs.copy()
-        # self.yaw = installs['video']['yaw']
-        # self.pitch = installs['video']['pitch']
-        # self.roll = installs['video']['roll']
-        # self.esr_yaw = installs['esr']['yaw']
+        self.init_value = {}
+        for sensor in uniconf.installs:
+            self.init_value[sensor] = {}
+            for item in uniconf.installs[sensor]:
+                self.init_value[sensor][item] = uniconf.installs[sensor][item]
         self.transform = Transform(uniconf)
-        # self.installs = installs
         self.cfg = uniconf
 
     def update_yaw(self, x, sensor='video'):
-        # self.yaw = self.installs['video']['yaw'] - 0.01 * (x - 500)
         self.cfg.installs[sensor]['yaw'] = self.init_value[sensor]['yaw'] - 0.01 * (x - 500)
         self.update_r2i()
-        # self.pitch = install['video']['pitch']
-        # self.roll = install['video']['roll']
-
-        # self.transform.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'],
-        #                             self.cfg.installs['video']['roll'])
-        # print('current yaw:{} pitch:{} roll:{}'.format(self.cfg.installs['video']['yaw'],
-        #                                                self.cfg.installs['video']['pitch'],
-        #                                                self.cfg.installs['video']['roll']))
 
     def update_pitch(self, x, sensor='video'):
-        # self.yaw = install['video']['yaw']
-        # self.pitch = self.installs['video']['pitch'] - 0.01 * (x - 500)
         self.cfg.installs[sensor]['pitch'] = self.init_value[sensor]['pitch'] - 0.01 * (x - 500)
         self.update_r2i()
-        # self.roll = install['video']['roll']
-
-        # self.transform.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'],
-        #                             self.cfg.installs['video']['roll'])
-        # print('current yaw:{} pitch:{} roll:{}'.format(self.cfg.installs['video']['yaw'],
-        #                                                self.cfg.installs['video']['pitch'],
-        #                                                self.cfg.installs['video']['roll']))
 
     def update_roll(self, x, sensor='video'):
-        # self.yaw = install['video']['yaw']
-        # self.roll = self.installs['video']['roll'] - 0.01 * (x - 500)
         self.cfg.installs[sensor]['roll'] = self.init_value[sensor]['roll'] - 0.01 * (x - 500)
         self.update_r2i()
-        # self.roll = install['video']['roll']
-
-        # self.transform.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'],
-        #                             self.cfg.installs['video']['roll'])
-        # print('current yaw:{} pitch:{} roll:{}'.format(self.cfg.installs['video']['yaw'],
-        #                                                self.cfg.installs['video']['pitch'],
-        #                                                self.cfg.installs['video']['roll']))
 
     def update_r2i(self):
         self.transform.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'],
@@ -143,7 +114,9 @@ class Transform:
     def getp_ifc_from_poly(self, coefs, step=0.1, start=0, end=60, sensor=None):
         a0, a1, a2, a3 = coefs
         p = []
-
+        if step <= 0:
+            # print('ivalid step', step)
+            return
         x = np.arange(start, end, step)
         y = a0 + a1 * x + a2 * np.power(x, 2) + a3 * np.power(x, 3)
         for i, item in enumerate(x):

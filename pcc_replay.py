@@ -391,7 +391,8 @@ if __name__ == "__main__":
     os.chdir(local_path)
 
     parser = argparse.ArgumentParser(description="Replay CVE log.")
-    log = '/home/yj/bak/data/fusion_AEB/DF_D530/20191224_ars_x1_fusion_aeb/20191224110451_CCRS_AEB_40KMH_6.1M/log.txt'
+
+    log = '/media/nan/860evo/data/pcviewer/20191122155613_express_q3_dist_issue/log.txt'
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=False)

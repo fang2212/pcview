@@ -41,16 +41,24 @@ def parse_ars(id, buf, ctx=None):
         return r
     # print('0x%x' % id, r)
     if id == 0x300:  # end of scan
-        if ctx.get('ars_obj'):
-            ret = ars_filter.add_cipo(ctx['ars_obj'])
-            # print(ret)
-            return ret
+        # if ctx.get('ars_obj'):
+        #     ret = ars_filter.add_cipo(ctx['ars_obj'])
+        #     print(ret)
+        #     return ret
         if ctx.get('radar_status') is None:
             pass
 
     elif id == 0x60a:  # new start of scan
         # print('start of scan')
+        ret = None
+        if ctx.get('ars_obj'):
+            ret = ars_filter.add_cipo(ctx['ars_obj'].copy())
+            # print(ret)
+            # return ret
         ctx['ars_obj'] = []
+
+        if ret:
+            return ret
 
     elif id == 0x301:
         pass

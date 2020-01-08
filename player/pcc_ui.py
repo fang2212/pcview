@@ -275,6 +275,12 @@ class Player(object):
         #     self.show_ttc(img, obs['TTC'], obs['source'])
 
     def show_ipm_obs(self, img, obs):
+        # print(obs)
+        try:
+            source = obs['source']
+        except Exception as e:
+            print('Error, no source in', obs)
+
         id = obs['id']
         sensor = obs.get('sensor') or obs['source'].split('.')[0]
         if 'pos_lon' in obs:
@@ -287,7 +293,7 @@ class Player(object):
 
         color = self.color_obs.get(sensor) or self.color_obs['default']
 
-        if 'x1' in obs['source'] and obs['class']=='fusion_data':
+        if 'x1' in obs['source'] and obs['class'] == 'fusion_data':
             color = FlatColor.concrete
             # print(obs)
 
@@ -324,7 +330,9 @@ class Player(object):
         r = data.get('range')
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
         sensor = data['source'].split('.')[0]
-        p = self.transform.getp_ifc_from_poly(ratios, r, 1, sensor=sensor)
+        p = self.transform.getp_ifc_from_poly(ratios, 1, 0, r, sensor=sensor)
+        if not p:
+            return
 
         for i in range(2, len(p) - 1, 1):
             BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)

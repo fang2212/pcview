@@ -193,7 +193,7 @@ class Hub(Thread):
             cfgs_online[ip]['msg_types'] = []
             if cfg.get('type') == 'x1_algo':
                 for item in cfg['ports']:
-                    if not cfg['ports'][item].get('enable'):
+                    if not cfg['ports'][item].get('enable') and not cfg.get('is_main'):
                         continue
                     port = cfg['ports'][item]['port']
                     sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.cam_queue, ip=ip, port=port, channel=item,
@@ -220,7 +220,7 @@ class Hub(Thread):
                     cfgs_online[ip]['msg_types'].append(name + '.{}'.format(idx))
             elif cfg.get('type') == 'x1_collector':
                 for iface in cfg['ports']:
-                    if not cfg['ports'][iface].get('enable'):
+                    if not cfg['ports'][iface].get('enable') and not cfg.get('is_main'):
                         continue
                     if 'can' in iface:
                         chn = cfg['ports'][iface]
@@ -313,7 +313,7 @@ class Hub(Thread):
                 self.cache['video_aux'].append(data)
                 # self.msg_cnt['video']['rev'] += 1
                 # self.msg_cnt['video']['show'] += 1
-                print('not main video stream')
+                # print('not main video stream')
                 return
             res['ts'] = data['ts']
             res['img'] = data['img']
