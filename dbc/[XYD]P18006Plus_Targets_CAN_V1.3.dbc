@@ -1,0 +1,1540 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: VCU Radar
+VAL_TABLE_ VehicleInfoValid 1 "Valid" 0 "Invalid" ;
+VAL_TABLE_ MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_TABLE_ MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_TABLE_ MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+
+
+BO_ 768 VehicleInfoInput: 8 Vector__XXX
+ SG_ CAN_YAW_RATE_VALID : 23|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ CAN_YAW_RATE : 22|15@0+ (0.0078125,-128) [-128|127.9921875] "deg/s" Vector__XXX
+ SG_ CAN_VEHICLE_SPEED_VALID : 7|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ CAN_VEHICLE_SPEED : 6|15@0+ (0.0078125,0) [0|0] "m/s" Vector__XXX
+
+BO_ 1343 Tag64_Msg2_0x53F: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1327 Tag48_Msg2_0x52F: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1311 Tag32_Msg2_0x51F: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1342 Tag63_Msg2_0x53E: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1326 Tag47_Msg2_0x52E: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1310 Tag31_Msg2_0x51E: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1341 Tag62_Msg2_0x53D: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1325 Tag46_Msg2_0x52D: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1309 Tag30_Msg2_0x51D: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1340 Tag61_Msg2_0x53C: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1324 Tag45_Msg2_0x52C: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1308 Tag29_Msg2_0x51C: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1339 Tag60_Msg2_0x53B: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1323 Tag44_Msg2_0x52B: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1307 Tag28_Msg2_0x51B: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1338 Tag59_Msg2_0x53A: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1322 Tag43_Msg2_0x52A: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1306 Tag27_Msg2_0x51A: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1337 Tag58_Msg2_0x539: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1321 Tag42_Msg2_0x529: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1305 Tag26_Msg2_0x519: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1336 Tag57_Msg2_0x538: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1320 Tag41_Msg2_0x528: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1304 Tag25_Msg2_0x518: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1335 Tag56_Msg2_0x537: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1319 Tag40_Msg2_0x527: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1303 Tag24_Msg2_0x517: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1334 Tag55_Msg2_0x536: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1318 Tag39_Msg2_0x526: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1302 Tag23_Msg2_0x516: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1333 Tag54_Msg2_0x535: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1317 Tag38_Msg2_0x525: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1301 Tag22_Msg2_0x515: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1332 Tag53_Msg2_0x534: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1316 Tag37_Msg2_0x524: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1300 Tag21_Msg2_0x514: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1331 Tag52_Msg2_0x533: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1315 Tag36_Msg2_0x523: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1299 Tag20_Msg2_0x513: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1330 Tag51_Msg2_0x532: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1314 Tag35_Msg2_0x522: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1298 Tag19_Msg2_0x512: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1329 Tag50_Msg2_0x531: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1313 Tag34_Msg2_0x521: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1297 Tag18_Msg2_0x511: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1328 Tag49_Msg2_0x530: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1312 Tag33_Msg2_0x520: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1296 Tag17_Msg2_0x510: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1288 Tag9_Msg2_0x508: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1287 Tag8_Msg2_0x507: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1286 Tag7_Msg2_0x506: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1295 Tag16_Msg2_0x50F: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1294 Tag15_Msg2_0x50E: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1293 Tag14_Msg2_0x50D: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1292 Tag13_Msg2_0x50C: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1291 Tag12_Msg2_0x50B: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1290 Tag11_Msg2_0x50A: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1289 Tag10_Msg2_0x509: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1285 Tag6_Msg2_0x505: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1284 Tag5_Msg2_0x504: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1283 Tag4_Msg2_0x503: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1282 Tag3_Msg2_0x502: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1281 Tag2_Msg2_0x501: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1280 Tag1_Msg2_0x500: 8 Vector__XXX
+ SG_ MMR_TagRangeRate : 13|14@0+ (0.02,-163.84) [-100|50] "m/s" Vector__XXX
+ SG_ MMR_TagRangeAccel : 41|10@0+ (0.05,-25.6) [-25.6|25.55] "m/s2" Vector__XXX
+ SG_ MMR_TagPitchAngle : 34|9@0+ (0.1,-25.6) [-25.6|25.55] "deg" Vector__XXX
+ SG_ MMR_TagLateralRate : 56|8@1+ (0.2,-25.6) [-25.6|25.4] "m/s" Vector__XXX
+ SG_ MMR_FrameIdx2 : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved1 : 31|13@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Reserved : 3|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1075 Tag52_Msg1_0x433: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1059 Tag36_Msg1_0x423: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1043 Tag20_Msg1_0x413: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1087 Tag64_Msg1_0x43F: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1071 Tag48_Msg1_0x42F: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1055 Tag32_Msg1_0x41F: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1086 Tag63_Msg1_0x43E: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1070 Tag47_Msg1_0x42E: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1054 Tag31_Msg1_0x41E: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1085 Tag62_Msg1_0x43D: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1069 Tag46_Msg1_0x42D: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1053 Tag30_Msg1_0x41D: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1084 Tag61_Msg1_0x43C: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1068 Tag45_Msg1_0x42C: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1052 Tag29_Msg1_0x41C: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1083 Tag60_Msg1_0x43B: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1067 Tag44_Msg1_0x42B: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1051 Tag28_Msg1_0x41B: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1082 Tag59_Msg1_0x43A: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1066 Tag43_Msg1_0x42A: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1050 Tag27_Msg1_0x41A: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1081 Tag58_Msg1_0x439: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1065 Tag42_Msg1_0x429: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1049 Tag26_Msg1_0x419: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1080 Tag57_Msg1_0x438: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1064 Tag41_Msg1_0x428: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1048 Tag25_Msg1_0x418: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1079 Tag56_Msg1_0x437: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1063 Tag40_Msg1_0x427: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1047 Tag24_Msg1_0x417: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1078 Tag55_Msg1_0x436: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1062 Tag39_Msg1_0x426: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1046 Tag23_Msg1_0x416: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1077 Tag54_Msg1_0x435: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1061 Tag38_Msg1_0x425: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1045 Tag22_Msg1_0x415: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1076 Tag53_Msg1_0x434: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1060 Tag37_Msg1_0x424: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1044 Tag21_Msg1_0x414: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1074 Tag51_Msg1_0x432: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1058 Tag35_Msg1_0x422: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1042 Tag19_Msg1_0x412: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1073 Tag50_Msg1_0x431: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1057 Tag34_Msg1_0x421: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1041 Tag18_Msg1_0x411: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1072 Tag49_Msg1_0x430: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1056 Tag33_Msg1_0x420: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1040 Tag17_Msg1_0x410: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1032 Tag9_Msg1_0x408: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1031 Tag8_Msg1_0x407: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1030 Tag7_Msg1_0x406: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1029 Tag6_Msg1_0x405: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1028 Tag5_Msg1_0x404: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1027 Tag4_Msg1_0x403: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1026 Tag3_Msg1_0x402: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1039 Tag16_Msg1_0x40F: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1038 Tag15_Msg1_0x40E: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1037 Tag14_Msg1_0x40D: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1036 Tag13_Msg1_0x40C: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1035 Tag12_Msg1_0x40B: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1034 Tag11_Msg1_0x40A: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1033 Tag10_Msg1_0x409: 8 Vector__XXX
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1025 Tag2_Msg1_0x401: 8 Radar
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1024 Tag1_Msg1_0x400: 8 Radar
+ SG_ MMR_targetRangeRateOrig : 53|14@0+ (0.02,-163.84) [-163.84|163.82] "m/s" Vector__XXX
+ SG_ MMR_targetPower : 47|10@0+ (0.1,0) [0|102.3] "dB" Vector__XXX
+ SG_ MMR_targetRange : 28|13@0+ (0.05,0) [0|300] "m" Vector__XXX
+ SG_ MMR_targetAngle : 23|11@0+ (0.1,-102.4) [-90|90] "deg" Vector__XXX
+ SG_ MMR_targetConfidenceCoef : 8|7@1+ (1,0) [0|0] "%" Vector__XXX
+ SG_ MMR_targetUpdated : 15|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMR_targetStatus : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MMR_targetType : 4|3@1+ (1,0) [0|8] "" Vector__XXX
+ SG_ MMR_frameIdx1 : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+
+
+
+CM_ SG_ 768 CAN_YAW_RATE "Positive when clockwise vehicle rotation";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+VAL_ 768 CAN_YAW_RATE_VALID 1 "Invalid" 0 "Valid" ;
+VAL_ 768 CAN_VEHICLE_SPEED_VALID 1 "Invalid" 0 "Valid" ;
+VAL_ 1075 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1075 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1075 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1059 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1059 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1059 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1043 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1043 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1043 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1087 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1087 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1087 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1071 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1071 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1071 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1055 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1055 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1055 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1086 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1086 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1086 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1070 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1070 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1070 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1054 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1054 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1054 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1085 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1085 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1085 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1069 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1069 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1069 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1053 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1053 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1053 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1084 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1084 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1084 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1068 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1068 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1068 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1052 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1052 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1052 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1083 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1083 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1083 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1067 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1067 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1067 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1051 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1051 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1051 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1082 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1082 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1082 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1066 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1066 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1066 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1050 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1050 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1050 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1081 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1081 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1081 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1065 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1065 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1065 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1049 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1049 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1049 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1080 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1080 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1080 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1064 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1064 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1064 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1048 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1048 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1048 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1079 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1079 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1079 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1063 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1063 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1063 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1047 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1047 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1047 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1078 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1078 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1078 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1062 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1062 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1062 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1046 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1046 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1046 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1077 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1077 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1077 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1061 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1061 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1061 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1045 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1045 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1045 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1076 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1076 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1076 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1060 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1060 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1060 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1044 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1044 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1044 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1074 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1074 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1074 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1058 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1058 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1058 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1042 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1042 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1042 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1073 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1073 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1073 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1057 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1057 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1057 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1041 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1041 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1041 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1072 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1072 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1072 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1056 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1056 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1056 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1040 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1040 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1040 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1032 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1032 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1032 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1031 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1031 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1031 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1030 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1030 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1030 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1029 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1029 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1029 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1028 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1028 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1028 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1027 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1027 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1027 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1026 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1026 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1026 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1039 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1039 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1039 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1038 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1038 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1038 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1037 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1037 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1037 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1036 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1036 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1036 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1035 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1035 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1035 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1034 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1034 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1034 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1033 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1033 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1033 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1025 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1025 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1025 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+VAL_ 1024 MMR_targetUpdated 1 "updated" 0 "predicted" ;
+VAL_ 1024 MMR_targetStatus 10 "invalid" 3 "valid" 2 "unconfirmed" 1 "First detected" 0 "Empty" ;
+VAL_ 1024 MMR_targetType 7 "unclassified" 3 "lower target" 2 "upper target" 1 "ground target" 0 "UNcertain" ;
+

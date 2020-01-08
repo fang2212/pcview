@@ -39,6 +39,7 @@ class CVColor(object):
     White = (255, 255, 255)
     Grey = (120, 120, 120)
     Midgrey = (160, 160, 160)
+    LightGray = (211, 211, 211)
     Pink = (255, 0, 255)
     indigo = (0xb5, 0x51, 0x3f)
     purple = (0xb0, 0x27, 0x9c)
@@ -57,6 +58,9 @@ class FlatColor(object):  # in BGR
     alizarin = (0x3c, 0x4c, 0xe7)
     clouds = (0xf1, 0xf0, 0xec)
     concrete = (0xa6, 0xa5, 0x95)
+    Blue = (200, 0, 0)
+    dark_red = (0x0, 0x0, 0x128)
+
 
 
 class FPSCnt(object):

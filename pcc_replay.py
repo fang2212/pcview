@@ -391,6 +391,7 @@ if __name__ == "__main__":
     os.chdir(local_path)
 
     parser = argparse.ArgumentParser(description="Replay CVE log.")
+
     log = '/media/nan/860evo/data/pcviewer/20191122155613_express_q3_dist_issue/log.txt'
 
     parser.add_argument('input_path', nargs='?', default=log)
