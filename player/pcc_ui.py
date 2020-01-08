@@ -114,13 +114,13 @@ class Player(object):
                 p1 = self.transform.trans_gnd2ipm(i, -10)
                 p2 = self.transform.trans_gnd2ipm(i, 10)
                 BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
-                BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(i-1, 10), 0.3, CVColor.White, 1)
+                BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(i - 1, 10), 0.3, CVColor.White, 1)
 
         for i in range(-10, 11, 5):
             p1 = self.transform.trans_gnd2ipm(-10, i)
             p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
-            BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i-1), 0.3, CVColor.White, 1)
+            BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 0.3, CVColor.White, 1)
 
     # def show_overlook_background(self, img):
     #     """绘制俯视图的背景，包括背景图，车背景图，光线图
@@ -195,13 +195,8 @@ class Player(object):
             indent = self.get_indent(obs['source'])
         except Exception as e:
             print('Error indent', obs)
+            return
         sensor = obs.get('sensor') or obs['source'].split('.')[0]
-        # color = obs.get('color')
-        # if color:
-        #     color = self.color_seq[color]
-        # else:
-        #     color = self.color_seq[0]
-
         color = self.color_obs.get(sensor)
         if not color:
             color = self.color_obs['default']
@@ -280,6 +275,7 @@ class Player(object):
             source = obs['source']
         except Exception as e:
             print('Error, no source in', obs)
+            return
 
         id = obs['id']
         sensor = obs.get('sensor') or obs['source'].split('.')[0]
@@ -366,6 +362,7 @@ class Player(object):
         u, v = self.transform.trans_gnd2raw(x, y, h)
         color = self.color_obs.get(data['sensor']) or self.color_obs['default']
         cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
+
     # def show_tsr(self, img, position, color=CVColor.Cyan, thickness=2):
     #     """绘制tsr框
     #     Args:
@@ -621,7 +618,7 @@ class Player(object):
         vfov = 60.0
         dyaw = self.cfg.installs['rtk']['yaw'] - self.cfg.installs['video']['yaw']
         dpitch = self.cfg.installs['rtk']['pitch'] - self.cfg.installs['video']['pitch']
-        vbias = (pitch - dpitch) * self.cfg.installs['video']['cv'] / (vfov/2)
+        vbias = (pitch - dpitch) * self.cfg.installs['video']['cv'] / (vfov / 2)
         # h = int(img.shape[0] / 2 - vbias)
         h = int(img.shape[0] / 2)
         w = img.shape[1]
@@ -737,10 +734,8 @@ class Player(object):
             x = 0.001
         width = 0.5
         height = 0.5
-        ux, uy = self.transform.trans_gnd2raw(x, y,
-                                              host['hgt'] - target['hgt'] + install['video']['height'] - install['rtk'][
-                                                  'height'],
-                                              'rtk')
+        ux, uy = self.transform.trans_gnd2raw(x, y, host['hgt'] - target['hgt'] + self.cfg.install['video']['height'] -
+                                              self.cfg.install['rtk']['height'])
         w = 1200 * width / x
         if w > 50:
             w = 50
@@ -804,14 +799,14 @@ class Player(object):
         cv2.line(img, p2, p3, color, 1)
         cv2.line(img, p2, p4, color, 1)
 
-        p5 = (int(ux+80), int(uy-0.5*h-80))
-        p6 = (p5[0]+20, p5[1])
+        p5 = (int(ux + 80), int(uy - 0.5 * h - 80))
+        p6 = (p5[0] + 20, p5[1])
 
         cv2.line(img, (ux, uy), p5, color, 1)
         cv2.line(img, p5, p6, color, 1)
 
         BaseDraw.draw_text(img, 'R: {:.2f}'.format(range), p5, 0.3, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (p5[0], p5[1]-10), 0.3, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (p5[0], p5[1] - 10), 0.3, CVColor.White, 1)
         # BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
         #                    CVColor.White, 1)
         self.show_text_info(target['source'], 140, 'range: {:.3f}'.format(range))

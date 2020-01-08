@@ -2,7 +2,7 @@ from parsers.x1 import parse_x1
 from parsers.mobileye_q3 import parse_ifv300, parse_q3
 from parsers.mobileye_q2 import parse_mobileye
 from parsers.mqb_esp import parse_mqb
-from parsers.radar import parse_esr, parse_ars, parse_hmb, parse_bosch_mrr, parse_hawkeye_lmr, parse_fusion_mrr, parse_sta77, parse_xyd2
+from parsers.radar import *
 from parsers.drtk import parse_rtk
 from parsers.mobileye_q4 import parser_mbq4
 from parsers.ublox import decode_nmea
@@ -29,5 +29,7 @@ parsers_dict = {
     "mrr_fusion": parse_fusion_mrr,
     "sta77":    parse_sta77,
     "xyd2":     parse_xyd2,
+    "anc":      parse_anc,
+    "ctlrr":    parse_ctlrr,
     "default":  default_parser
 }

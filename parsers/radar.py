@@ -23,6 +23,13 @@ db_ars = cantools.database.load_file('dbc/ARS408.dbc', strict=False)
 db_mrr = cantools.database.load_file('dbc/bosch_mrr_output.dbc', strict=False)
 db_lmr = cantools.database.load_file('dbc/HETLMR.dbc', strict=False)
 db_hmb = cantools.database.load_file('dbc/szhmb.dbc', strict=False)
+# db_ctlrr = cantools.database.load_file('dbc/RD77006-CTLRR-300毫米波雷达CAN-VB_20190215.dbc', strict=False)
+db_ctlrr = cantools.database.load_file('dbc/CTLRR-320_CAN_V4.dbc', strict=False)
+# db_st24 = cantools.database.load_file('dbc/sensortech-24G.dbc', strict=False)
+db_st77 = cantools.database.load_file('dbc/sensortech-77G.dbc', strict=False)
+# db_mun = cantools.database.load_file('dbc/[muniu]RadarDataAnalysis.dbc', strict=False)
+# db_erd = cantools.database.load_file('dbc/EMRR_CAN message parse.dbc', strict=False)
+
 db_fusion_mrr = cantools.database.load_file('dbc/MRR_radar_CAN.dbc', strict=False)
 db_sta77_2 = cantools.database.load_file('dbc/sensortech-77G.dbc', strict=False)
 
@@ -163,8 +170,8 @@ def parse_esr(id, buf, ctx=None):
             # ttc_a is not robust, so only use ttc_m
             ttc = ttc_m
             # only show ego-lane and next-lane ttc
-            if fabs(y) > 6.0:
-                ttc = 7
+            # if fabs(y) > 6.0:
+            #     ttc = 7
 
             # print('ESR 0x%x' % id, r)
             # ret = {'type': 'obstacle', 'sensor': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
@@ -225,6 +232,121 @@ def parse_bosch_mrr(id, buf, ctx=None):
         pass
 
     return None
+
+
+db_anc = cantools.database.load_file('dbc/Radar51F_target.dbc', strict=False)
+ancobs = []
+
+
+def parse_anc(id, buf, ctx=None):
+    global ancobs
+    global ancobs
+    if 0x500 <= id < 0x520:
+        # tid = (id & 0x0FF) + 1
+        r = db_anc.decode_message(id, buf)
+        # range = r.get('FR_Obj%02d_Distance'%tid)
+        # angle = -r.get('FR_Obj%02d_Angle'%tid)
+        # range_rate = r.get('FR_Obj%02d_Speed'%tid)
+        # x, y = trans_polar2rcs(angle, range, install['anc'])
+        # crossrange=r.get('FR_Obj%02d_CrossRange'%tid)
+        tid = r.get('TargetId')
+        range = r.get('Distance')
+        angle_raw = r.get('Angle')
+        range_rate = r.get('Speed')
+        crossrange = r.get('Cross')
+        if abs(crossrange / range) < 1:
+            angle = asin(crossrange / range) * 180 / pi
+        else:
+            angle = angle_raw
+        # x, y = trans_polar2rcs(angle, range, install['anc'])
+        ret = {'type': 'obstacle', 'id': tid, 'range': range, 'angle': angle, 'range_rate': range_rate, 'power': angle_raw}
+        ancobs.append(ret)
+        return None
+    elif id == 0x520:
+        ret = ancobs
+        ancobs = []
+        return ret
+    else:
+        return None
+
+#
+# erdobs = []
+#
+#
+# def parse_erd(id, buf, ctx=None):
+#     global erdobs
+#     # print('0x%x' % id, r)
+#     if id >= 0x500 and id <= 0x53f:
+#         range = 0.01 * (buf[0] | (buf[1] & 0x7f) << 8)
+#         if abs(range) > 0.1:
+#             # angle=0.1*((buf[5])>>2 | ((buf[6]& 0x1f) << 6))
+#             # range_acceleration=0.05*(buf[4] | (buf[5]& 0x03) << 8)
+#             # range_rate=0.01*(buf[2] | (buf[3]& 0x3f) << 8)
+#             # power = 0.1 * ((buf[5]) >> 5 | (buf[6] & 0x7f) << 3)
+#             angle = 0.1 * ((buf[5]) >> 2 | ((buf[6] & 0x1f) << 6) - ((buf[6] & 0x1f) >> 4) * (2 ** 11))
+#             range_acceleration = 0.05 * ((buf[4] | (buf[5] & 0x03) << 8) - ((buf[5] & 0x03) >> 1) * (2 ** 10))
+#             range_rate = 0.01 * ((buf[2] | (buf[3] & 0x3f) << 8) - ((buf[3] & 0x3f) >> 5) * (2 ** 14))
+#             power = 0.1 * ((buf[6] >> 5 | (buf[7] & 0x7f) << 3) - ((buf[7] & 0x7f) >> 6) * (2 ** 10)) - 40
+#             # x, y = trans_polar2rcs(angle, range, install['erd'])
+#             ret = {'type': 'obstacle', 'id': id - 0x4ff, 'range': range, 'angle': angle, 'range_rate': range_rate, 'power': power}
+#             erdobs.append(ret)
+#         if id == 0x53f:
+#             ret = erdobs
+#             erdobs = []
+#             return ret
+#     else:
+#         return None
+
+
+def parse_ctlrr(id, buf, ctx=None):
+    global ctlrrobs
+    ids = [m.frame_id for m in db_ctlrr.messages]
+    if id not in ids:
+        return None
+    r = db_ctlrr.decode_message(id, buf)
+    # print('0x%x' % id)
+    if id == 0x710:
+        range = r.get("range")
+        range_rate = r.get("speed")
+        angle = r.get("angle")
+        tid = r.get("ID") + 200
+        snr = r.get("snr")
+        # x, y = trans_polar2rcs(angle, range, install['ctlrr'])
+        ret = {'type': 'obstacle', 'id': tid, 'range': range, 'angle': angle, 'range_rate': range_rate, 'power': snr}
+        ctlrrobs.append(ret)
+    elif id == 0x6b0:
+        range = (buf[1] << 5 | buf[2] >> 3) * 0.2
+        range_rate = ((buf[2] & 0x07) << 8 | buf[3]) * 0.2
+        if range_rate > 204.7:
+            range_rate = range_rate - 409.6
+        angle = (buf[4] << 2 | buf[5] >> 6) * 0.25
+        if angle > 127.875:
+            angle = angle - 256
+        tid = buf[0]
+        snr = buf[7] * 0.5
+        # x, y = trans_polar2rcs(angle, range, install['ctlrr'])
+        ret = {'type': 'obstacle', 'id': tid, 'range': range, 'angle': angle, 'range_rate': range_rate, 'power': snr}
+        ctlrrobs.append(ret)
+    elif id == 0x6a0:
+        # if r.get('TRACK_RANGE')>0.01:
+        #     range = r.get('TRACK_RANGE')
+        #     angle = r.get('TRACK_ANGLE')
+        #     range_rate = r.get('TRACK_RANGE_RATE')
+        #     tid = id - 0x5FF
+        #     x, y = trans_polar2rcs(angle, range, install['ctlrr'])
+        #     ret = {'type': 'obstacle', 'id': tid, 'pos_lon': x, 'pos_lat': y,
+        #                'range':range,'angle':angle,'range_rate':range_rate,'power': 0,'tgt_status': 'unknown','dyn_prop':'unknown','color': 1}
+        #     ctlrrobs.append(ret)
+        ret = ctlrrobs
+        ctlrrobs = []
+        return ret
+    else:
+        # if 'CAN_TX_VEHCILE_SPEED_CALC' in r.keys():
+        #     ret={'type': 'obstacle', 'id': 0, 'pos_lon': 0, 'pos_lat': 0,
+        #                'range':0,'angle':0,'range_rate':0,'power': 0,'tgt_status': 'unknown','dyn_prop':'unknown','color': 1,'speed':r.get('CAN_TX_VEHCILE_SPEED_CALC')}
+        #     ctlrrobs.append(ret)
+        # else:
+        return None
 
 
 def parse_hawkeye_lmr(id, buf, ctx=None):
@@ -345,8 +467,11 @@ def parse_sta77(id, buf, ctx=None):
         else:
             return None
 
+
 xydobs2 = []
-def parse_xyd2(id, buf,ctx=None):
+
+
+def parse_xyd2(id, buf, ctx=None):
     global xydobs2
     ids = [m.frame_id for m in db_xyd2.messages]
     # if id == 0x301:
@@ -364,27 +489,29 @@ def parse_xyd2(id, buf,ctx=None):
         return None
     r = db_xyd2.decode_message(id, buf)
     tgt_status = r.get('MMR_targetStatus')
-    tgt_confidence_coef=r.get('MMR_targetConfidenceCoef')
+    tgt_confidence_coef = r.get('MMR_targetConfidenceCoef')
     speed_xyd = r.get('CAN_VEHICLE_SPEED')
     if speed_xyd is not None:
-        speed_xyd = speed_xyd*3.6
+        speed_xyd = speed_xyd * 3.6
     yaw_rate_xyd = r.get('CAN_YAW_RATE')
     if tgt_status is not None:
-        if tgt_status == 'First detected' or ((tgt_status == 'unconfirmed' or  tgt_status == 'valid' ) and tgt_confidence_coef>30):
+        if tgt_status == 'First detected' or (
+                (tgt_status == 'unconfirmed' or tgt_status == 'valid') and tgt_confidence_coef > 30):
             range_raw = r.get('MMR_targetRange')
             angle_raw = r.get('MMR_targetAngle')
             range_rate = r.get('MMR_targetRangeRateOrig')
-            power=r.get('MMR_targetPower')
-            UPDATED=r.get('MMR_targetUpdated')
-            if(UPDATED=='predicted'):
-                update=0
+            power = r.get('MMR_targetPower')
+            UPDATED = r.get('MMR_targetUpdated')
+            if (UPDATED == 'predicted'):
+                update = 0
             else:
-                update =1
-            dyn_prop=r.get('MMR_targetType')
+                update = 1
+            dyn_prop = r.get('MMR_targetType')
             tid = id - 0x3FF
             ret = {'type': 'obstacle', 'sensor': 'xyd2', 'sensor_type': 'radar', 'class': 'object', 'id': tid,
                    'range': range_raw, 'angle': angle_raw, 'power': power,
-                   'tgt_status': tgt_status+'_%03d'%(tgt_confidence_coef)+'_%1d'%(update),'dyn_prop':dyn_prop,'color': 1}
+                   'tgt_status': tgt_status + '_%03d' % (tgt_confidence_coef) + '_%1d' % (update), 'dyn_prop': dyn_prop,
+                   'color': 1}
             # x, y = trans_polar2rcs(angle, range, install['xyd2'])
             # ret = {'type': 'obstacle', 'id': tid, 'pos_lon': x, 'pos_lat': y, 'range': range, 'angle': angle,
             #        'range_rate': range_rate, 'power': power,'tgt_status': tgt_status+'_%03d'%(tgt_confidence_coef)+'_%1d'%(update),'dyn_prop':dyn_prop,'color': 1}
@@ -398,7 +525,7 @@ def parse_xyd2(id, buf,ctx=None):
         # return {'speed': speed, 'yaw_rate': yaw_rate, 'type': 'obstacle', 'id': 0, 'pos_lon': 0, 'pos_lat': 0,
         #         'range': 0, 'angle': 0,'range_rate': 0, 'power': 0, 'dyn_prop': 'Stationary', 'tgt_status': 'lmr_state_00', 'color': 1}
 
-    if len(xydobs2)>0 and id == 0x43F:
+    if len(xydobs2) > 0 and id == 0x43F:
         ret = xydobs2
         xydobs2 = []
         return ret

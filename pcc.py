@@ -16,7 +16,7 @@ from multiprocessing.dummy import Process as Thread
 import cv2
 import numpy as np
 
-from config.config import local_cfg, load_cfg
+from config.config import load_cfg
 from net.ntrip_client import GGAReporter
 from player import FlowPlayer
 from player.pcc_ui import Player
@@ -180,7 +180,7 @@ class PCC(object):
         if self.ts0 == 0:
             self.ts0 = self.ts_now
 
-        if local_cfg.save.video and not self.replay:
+        if self.cfg.local_cfg.save.video and not self.replay:
             self.hub.fileHandler.insert_video(
                 {'ts': mess['ts'], 'frame_id': frame_id, 'img': imgraw, 'source': 'video'})
 
@@ -197,7 +197,7 @@ class PCC(object):
                 self.ipm = cv2.warpPerspective(img, self.m_g2i, (480, 720))
             else:
                 self.ipm = np.zeros([720, 480, 3], np.uint8)
-                self.ipm[:, :] = [100, 100, 100]
+                self.ipm[:, :] = [40, 40, 40]
 
             self.player.show_dist_mark_ipm(self.ipm)
 
@@ -547,6 +547,7 @@ class PCC(object):
         self.hub.fileHandler.start_rec(self.rlog)
         pp = self.vehicles['ego'].pinpoint
         if pp and not self.replay:
+            print('save PP.')
             self.hub.fileHandler.insert_raw(
                 (pp['ts'], pp.get('source') + '.pinpoint', compose_from_def(ub482_defs, pp)))
 
@@ -607,9 +608,9 @@ class HeadlessPCC:
             if mess is None or not mess.get('frame_id'):
                 continue
             frame_id = mess['frame_id']
-            if local_cfg.save.video:
-                self.hub.fileHandler.insert_video(
-                    {'ts': mess['ts'], 'frame_id': frame_id, 'img': mess['img'], 'source': 'video'})
+            # if self.cfg.local_cfg.save.video:
+            self.hub.fileHandler.insert_video(
+                {'ts': mess['ts'], 'frame_id': frame_id, 'img': mess['img'], 'source': 'video'})
             time.sleep(0.02)
 
 
