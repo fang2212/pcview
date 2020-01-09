@@ -14,21 +14,23 @@ pyinstaller -F pcc_replay_yj.spec
 
 if [ -d "dist/pcc_release" ]; then
 	rm -rf ./dist/pcc_release/*
-	echo "remove!!..."  	
+	echo "remove!!..."
 else
   	mkdir ./dist/pcc_release
 	echo "mkdir!!..."
 fi
 
 
-mv dist/pcc_app dist/pcc_release/
+mv dist/pcc dist/pcc_release/
 mv dist/pcc_replay dist/pcc_release/
 #mv build_info.txt dist/pcc_release/
 cp -r config dist/pcc_release/
 cp -r dbc dist/pcc_release/
 #mkdir dist/pcc/tk
 #mkdir dist/pcc/tcl
-rm dist/pcc/config/local.json
+rm dist/pcc_release/config/local.json
+python3 tools/build_info.py
+mv build_info.txt dist/pcc_release/
 
 cd dist
 tar -czvf pcc_release.tar.gz pcc_release
