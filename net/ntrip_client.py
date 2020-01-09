@@ -102,16 +102,25 @@ class GGAReporter(Process):
 
     def run(self):
         print('GGA reporter inited.')
-        reconnect = True
+        reconnect = 1
+
         lat = 22.122222
         lon = 113.566666
         while True:
             if reconnect:
-                print('GGA reporter reconnecting')
-                self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.sock.connect((self.host, self.port))
-                print('\033[94m'+'GGA reporter connected'+'\033[0m')
-                reconnect = False
+                print('GGA reporter reconnecting...', reconnect)
+                try:
+                    self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    self.sock.connect((self.host, self.port))
+                    print('\033[94m'+'GGA reporter connected'+'\033[0m')
+                    reconnect = 0
+                except Exception as e:
+                    reconnect += 1
+                    sleep_interval = 5
+                    if reconnect > 5:
+                        sleep_interval = 120
+                    time.sleep(sleep_interval)
+                    continue
             # ggastr = b''
             if self.iq.empty():
                 time.sleep(1)
@@ -125,7 +134,7 @@ class GGAReporter(Process):
             except Exception as e:
                 self.info = "error {}".format(e)
                 self.sock.close()
-                reconnect = True
+                reconnect = 1
             time.sleep(0.8)
 
 

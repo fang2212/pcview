@@ -136,7 +136,7 @@ class PCC(object):
             if not self.replay:
                 qsize = self.hub.fileHandler.raw_queue.qsize()
                 # print('raw queue size:', qsize)
-                if self.hub.fileHandler.recording and qsize > 2000:
+                if self.hub.fileHandler.is_recording and qsize > 2000:
                     print('msg_q critical, skip drawing.', qsize)
                     time.sleep(0.1)
                     continue
@@ -180,7 +180,7 @@ class PCC(object):
         if self.ts0 == 0:
             self.ts0 = self.ts_now
 
-        if self.cfg.local_cfg.save.video and not self.replay:
+        if not self.replay:
             self.hub.fileHandler.insert_video(
                 {'ts': mess['ts'], 'frame_id': frame_id, 'img': imgraw, 'source': 'video'})
 
@@ -259,7 +259,7 @@ class PCC(object):
                         d['rtkst'], d['lat'], d['lon'], d['hgt'])))
                     print('set pinpoint:', d)
 
-        if not self.replay and self.hub.fileHandler.recording:
+        if not self.replay and self.hub.fileHandler.is_recording:
             self.player.show_recording(img, self.hub.fileHandler.start_time)
 
         if self.replay:
@@ -521,13 +521,13 @@ class PCC(object):
             cv2.destroyAllWindows()
             self.exit = True
         elif key == ord('r'):
-            if self.hub.fileHandler.recording:
+            if self.hub.fileHandler.is_recording:
                 # self.recording = False
                 self.stop_rec()
             else:
                 # self.recording = True
                 self.start_rec()
-            print('toggle recording status. {}'.format(self.hub.fileHandler.recording))
+            print('toggle recording status. {}'.format(self.hub.fileHandler.is_recording))
         elif key == ord('s'):
             self.ot.save_para()
             if not self.replay:

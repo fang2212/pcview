@@ -185,7 +185,7 @@ class PinodeSink(Sink):
                 #        print str(datetime.now())
                 if result == rtcm3.Got_Undecoded:
                     # if rtcm3.Dump_Undecoded:
-                    print("Undecoded Data: " + rtcm3.ByteToHex(self.rtcm3.undecoded))
+                    print("Undecoded Data in RTCM.")
                 elif result == rtcm3.Got_Packet:
                     r = self.rtcm3.dump(False, False, False, False)
                     # sys.stdout.flush()

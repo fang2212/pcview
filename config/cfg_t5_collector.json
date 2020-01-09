@@ -7,12 +7,11 @@
             "port": 5001
         }
     },
-    "main_collector": "algo_c229",
+    "main_collector": "ffd0",
     "vehicles": {
         "ego": {
             "enable": true,
             "collectors": {
-                "algo_c229": "normal",
                 "ffd0": "normal",
                 "ffd1": "normal",
                 "ffd2": "normal",
