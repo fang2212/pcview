@@ -59,3 +59,4 @@ local.json
 dbc/*.ini
 .idea
 log_sort.txt
+/config/.stignore
