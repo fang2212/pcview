@@ -4,6 +4,7 @@ from datetime import datetime
 
 import cv2
 import numpy as np
+from math import *
 
 # from config.config import install
 from player.ui import BaseDraw, pack, logodir, CVColor, FlatColor
@@ -604,8 +605,9 @@ class Player(object):
             #                    1)
             self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']))
         dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
+        angle = obs.get('angle') if 'angle' in obs else atan2(obs['pos_lat'], obs['pos_lon']) * 180 / pi
         # BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
-        self.show_text_info(obs['source'], line + 40, 'range: {:.2f}'.format(dist))
+        self.show_text_info(obs['source'], line + 40, 'R/A: {:.2f} / {:.2f}'.format(dist, angle))
         BaseDraw.draw_up_arrow(img, indent + 100, line - 12, color, 6)
 
     def show_heading_horizen(self, img, rtk):

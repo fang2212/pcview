@@ -3,7 +3,7 @@ import subprocess
 
 
 def get_git_label():
-    return subprocess.check_output(["git", "describe"]).strip().decode()
+    return subprocess.check_output(["git", "describe", "--tag"]).strip().decode()
 
 
 if __name__ == "__main__":
