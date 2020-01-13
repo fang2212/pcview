@@ -156,6 +156,14 @@ class BaseDraw(object):
         cv2.line(img, (x2,y2-suit_len), (x2, y2), color, thickness, cv2.LINE_8, 0)
 
     @classmethod
+    def show_stop_wall(self, img, pt1, pt2, color, thickness=2):
+        pt3 = (pt1[0], pt2[1])
+        pt4 = (pt2[0], pt1[1])
+        cv2.rectangle(img, pt1, pt2, color, thickness)
+        cv2.line(img, pt1, pt2, color, thickness)
+        cv2.line(img, pt3, pt4, color, thickness)
+
+    @classmethod
     def draw_obj_rect_corn(cls, img, position, color=CVColor.Cyan, thickness=2, len_ratio=6):
         """绘制车辆框
         Args:

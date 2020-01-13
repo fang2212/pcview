@@ -228,12 +228,12 @@ class Player(object):
 
         w = self.cfg.installs['video']['fu'] * width / dist
         w = min(600, w)
-        dev = obs.get('source')
-        if dev:
-            dev = dev.split('.')[0]
-            # print(dev)
-        else:
-            dev = 'default'
+        # dev = obs.get('source')
+        # if dev:
+        #     dev = dev.split('.')[0]
+        #     print(dev)
+        # else:
+        #     dev = 'default'
         # print(x, y)
         x0, y0 = self.transform.trans_gnd2raw(x, y)
 
@@ -686,6 +686,42 @@ class Player(object):
         BaseDraw.draw_line(img, (hc + 5, h - 44), (hc - 5, h - 44), CVColor.White, 1)
         BaseDraw.draw_text(img, '{:.1f}'.format(trk_gnd), (hc - 14, h - 46), 0.4, CVColor.White, 1)
 
+    def show_warning(self, img, data):
+        sensor = data.get('sensor') or data['source'].split('.')[0]
+        color = self.color_obs.get(sensor)
+        if not color:
+            color = self.color_obs['default']
+
+        width = 3.5
+        height = 1.6
+        x, y = data['pos_lon'], 0
+        dist = (x ** 2 + y ** 2) ** 0.5
+        dist = max(0.1, dist)
+        if dist <= 0 or x <= 0:
+            return
+
+        w = self.cfg.installs['video']['fu'] * width / dist
+        w = int(w)
+
+        x0, y0 = self.transform.trans_gnd2raw(x, y)
+
+        h = int(self.cfg.installs['video']['fv'] * height / dist)
+        x1 = int(x0 - 0.5 * w)
+        y1 = int(y0 - h)
+        x2 = int(x1 + w)
+        y2 = int(y1 + h)
+
+        size = max(min(0.5 * 8 / dist, 0.5), 0.28)
+
+        # BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, 1)
+        BaseDraw.show_stop_wall(img, (x1, y1), (x2, y2), color, 1)
+        BaseDraw.draw_text(img, 'x: {:.2f}m TTC: {:.2f}'.format(x, data['TTC']), (x1 - 2, y1 - 4), size, color, 1)
+        BaseDraw.draw_alpha_rect(img, (x1, y1, w, h), 0.8, CVColor.Red)
+        self.show_text_info(data['source'], 40, 'ldw_left: {}'.format(data['ldw_left']))
+        self.show_text_info(data['source'], 60, 'ldw_tight: {}'.format(data['ldw_right']))
+        self.show_text_info(data['source'], 80, 'fcw_level: {}'.format(data['fcw_level']))
+
+
     def _show_drtk(self, img, rtk):
         # print(rtk)
         indent = self.get_indent(rtk['source'])
@@ -979,14 +1015,14 @@ class Player(object):
                                                           self.cfg.installs['video']['roll']),
                            (1180, 710), 0.3, CVColor.White, 1)
 
-    def show_warning(self, img, title):
-        # print(title)
-        if isinstance(title, list):
-            for idx, t in enumerate(title):
-                # print(idx)
-                BaseDraw.draw_text(img, t, (10, 200 + idx * 80), 2, CVColor.Red, 3)
-        else:
-            BaseDraw.draw_text(img, title, (10, 200), 2, CVColor.Red, 3)
+    # def show_warning(self, img, title):
+    #     # print(title)
+    #     if isinstance(title, list):
+    #         for idx, t in enumerate(title):
+    #             # print(idx)
+    #             BaseDraw.draw_text(img, t, (10, 200 + idx * 80), 2, CVColor.Red, 3)
+    #     else:
+    #         BaseDraw.draw_text(img, title, (10, 200), 2, CVColor.Red, 3)
 
     def show_ub482_common(self, img, data):
         indent = self.get_indent(data['source'])

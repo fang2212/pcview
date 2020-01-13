@@ -504,6 +504,8 @@ class PCC(object):
             # print(data)
             self.player.show_tsr(img, data)
             # self.pause = True
+        elif data['type'] == 'warning':
+            self.player.show_warning(img, data)
         self.specific_handle(img, data)
 
     def handle_keyboard(self):

@@ -1,4 +1,5 @@
 from parsers.x1 import parse_x1
+from parsers.x1l import parse_x1l
 from parsers.mobileye_q3 import parse_ifv300, parse_q3
 from parsers.mobileye_q2 import parse_mobileye
 from parsers.mqb_esp import parse_mqb
@@ -25,6 +26,7 @@ parsers_dict = {
     "hmb":      parse_hmb,
     "x1":       parse_x1,
     "x1_fusion": parse_x1,
+    "x1l":      parse_x1l,
     "drtk":     parse_rtk,
     "mrr_fusion": parse_fusion_mrr,
     "sta77":    parse_sta77,
