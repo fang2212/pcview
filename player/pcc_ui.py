@@ -721,6 +721,8 @@ class Player(object):
         self.show_text_info(data['source'], 40, 'ldw_left: {}'.format(data['ldw_left']))
         self.show_text_info(data['source'], 60, 'ldw_tight: {}'.format(data['ldw_right']))
         self.show_text_info(data['source'], 80, 'fcw_level: {}'.format(data['fcw_level']))
+        self.show_text_info(data['source'], 100, 'TTC: {}'.format(data['TTC']))
+        self.show_text_info(data['source'], 120, 'x: {}'.format(data['pos_lon']))
 
     def _show_drtk(self, img, rtk):
         # print(rtk)
