@@ -620,9 +620,10 @@ class Player(object):
         vfov = 60.0
         dyaw = self.cfg.installs['rtk']['yaw'] - self.cfg.installs['video']['yaw']
         dpitch = self.cfg.installs['rtk']['pitch'] - self.cfg.installs['video']['pitch']
-        vbias = (pitch - dpitch) * self.cfg.installs['video']['cv'] / (vfov / 2)
-        # h = int(img.shape[0] / 2 - vbias)
-        h = int(img.shape[0] / 2)
+        # vbias = (pitch - dpitch) * self.cfg.installs['video']['cv'] / (vfov / 2)
+        vbias = self.cfg.installs['video']['pitch'] * self.cfg.installs['video']['cv'] / (vfov / 2)
+        h = int(img.shape[0] / 2 - vbias)
+        # h = int(img.shape[0] / 2)
         w = img.shape[1]
         bias = w * dyaw / hfov
         hc = int(w / 2 + bias)
