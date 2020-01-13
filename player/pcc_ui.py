@@ -717,11 +717,10 @@ class Player(object):
         # BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, 1)
         BaseDraw.show_stop_wall(img, (x1, y1), (x2, y2), color, 1)
         BaseDraw.draw_text(img, 'x: {:.2f}m TTC: {:.2f}'.format(x, data['TTC']), (x1 - 2, y1 - 4), size, color, 1)
-        BaseDraw.draw_alpha_rect(img, (x1, y1, w, h), 0.8, CVColor.Red)
+        # BaseDraw.draw_alpha_rect(img, (x1, y1, w, h), 0.8, CVColor.Red)
         self.show_text_info(data['source'], 40, 'ldw_left: {}'.format(data['ldw_left']))
         self.show_text_info(data['source'], 60, 'ldw_tight: {}'.format(data['ldw_right']))
         self.show_text_info(data['source'], 80, 'fcw_level: {}'.format(data['fcw_level']))
-
 
     def _show_drtk(self, img, rtk):
         # print(rtk)
