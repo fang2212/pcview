@@ -74,6 +74,8 @@ class Player(object):
                           'sta77': FlatColor.wet_asphalt,
                           'mbq4': FlatColor.turquoise,
                           'xyd2': FlatColor.Blue,
+                          'anc': FlatColor.carrot,
+                          'ctlrr': FlatColor.alizarin,
                           'default': FlatColor.clouds}
 
         self.param_bg_width = 160
@@ -110,7 +112,7 @@ class Player(object):
 
     def show_dist_mark_ipm(self, img):
         show_range = 201
-        for i in range(5, show_range, 1):
+        for i in range(0, show_range, 1):
             if i % 20 == 0:
                 p1 = self.transform.trans_gnd2ipm(i, -10)
                 p2 = self.transform.trans_gnd2ipm(i, 10)
@@ -306,6 +308,10 @@ class Player(object):
             # STA 77
             if obs.get('sensor') == 'sta77':
                 BaseDraw.draw_text(img, '{:.1f}'.format(x), (u - 40, v + 5), 0.3, color, 1)
+
+            if obs.get('sensor') == 'anc':
+                BaseDraw.draw_text(img, '{:.1f}'.format(x), (u - 30, v - 5), 0.3, color, 1)
+                # BaseDraw.draw_text(img, '{:.1f}'.format(y), (u - 30, v + 5), 0.3, color, 1)
 
         else:
             if obs.get('class') == 'pedestrian' or obs.get('class') == 'PEDESTRIAN':
@@ -715,14 +721,15 @@ class Player(object):
         size = max(min(0.5 * 8 / dist, 0.5), 0.28)
 
         # BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, 1)
-        BaseDraw.show_stop_wall(img, (x1, y1), (x2, y2), color, 1)
-        BaseDraw.draw_text(img, 'x: {:.2f}m TTC: {:.2f}'.format(x, data['TTC']), (x1 - 2, y1 - 4), size, color, 1)
+        # BaseDraw.show_stop_wall(img, (x1, y1), (x2, y2), color, 1)
+        # BaseDraw.draw_text(img, 'x: {:.2f}m TTC: {:.2f}'.format(x, data['TTC']), (x1 - 2, y1 - 4), size, color, 1)
+
         # BaseDraw.draw_alpha_rect(img, (x1, y1, w, h), 0.8, CVColor.Red)
         self.show_text_info(data['source'], 40, 'ldw_left: {}'.format(data['ldw_left']))
         self.show_text_info(data['source'], 60, 'ldw_tight: {}'.format(data['ldw_right']))
         self.show_text_info(data['source'], 80, 'fcw_level: {}'.format(data['fcw_level']))
-        self.show_text_info(data['source'], 100, 'TTC: {}'.format(data['TTC']))
-        self.show_text_info(data['source'], 120, 'x: {}'.format(data['pos_lon']))
+        self.show_text_info(data['source'], 100, 'TTC: {:.2f} s'.format(data['TTC']))
+        self.show_text_info(data['source'], 120, 'x: {:.1f} m'.format(data['pos_lon']))
 
     def _show_drtk(self, img, rtk):
         # print(rtk)
