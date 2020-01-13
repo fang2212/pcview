@@ -64,6 +64,7 @@ class PCC(object):
         self.m_g2i = self.transform.calc_g2i_matrix()
         self.ipm = None
         self.show_ipm = ipm
+        self.show_ifc = True
         self.set_pinpoint = False
         self.target = None
         self.rtk_pair = [{}, {}]
@@ -306,7 +307,8 @@ class PCC(object):
         if self.to_web:
             self.web_img['now_image'] = comb.copy()
 
-        cv2.imshow('MINIEYE-CVE', comb)
+        if self.show_ifc:
+            cv2.imshow('MINIEYE-CVE', comb)
 
         if self.save_replay_video and self.replay:
             self.vw.write(comb)
@@ -552,7 +554,7 @@ class PCC(object):
                 self.start_rec()
             print('toggle recording status. {}'.format(self.hub.fileHandler.is_recording))
         elif key == ord('s'):
-            self.ot.save_para()
+            # self.ot.save_para()
             if not self.replay:
                 self.hub.fileHandler.save_param()
         elif key == ord('p'):
@@ -565,6 +567,8 @@ class PCC(object):
         elif key == ord('i'):
             self.sv_state = next(self.sideview_state)
             self.show_ipm = not self.show_ipm
+        elif key == ord('w'):
+            self.show_ifc = not self.show_ifc
 
     def start_rec(self):
         self.hub.fileHandler.start_rec(self.rlog)
