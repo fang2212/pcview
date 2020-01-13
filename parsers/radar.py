@@ -259,7 +259,7 @@ def parse_anc(id, buf, ctx=None):
         else:
             angle = angle_raw
         # x, y = trans_polar2rcs(angle, range, install['anc'])
-        ret = {'type': 'obstacle', 'id': tid, 'range': range, 'angle': angle, 'range_rate': range_rate, 'power': angle_raw}
+        ret = {'type': 'obstacle', 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle, 'range_rate': range_rate, 'power': angle_raw}
         ancobs.append(ret)
         return None
     elif id == 0x520:
