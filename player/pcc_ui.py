@@ -311,7 +311,7 @@ class Player(object):
 
             if obs.get('sensor') == 'anc':
                 BaseDraw.draw_text(img, '{:.1f}'.format(x), (u - 30, v - 5), 0.3, color, 1)
-                # BaseDraw.draw_text(img, '{:.1f}'.format(y), (u - 30, v + 5), 0.3, color, 1)
+                BaseDraw.draw_text(img, '{:.1f}'.format(y), (u - 30, v + 5), 0.3, color, 1)
 
         else:
             if obs.get('class') == 'pedestrian' or obs.get('class') == 'PEDESTRIAN':
