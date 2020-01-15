@@ -1017,14 +1017,14 @@ class Player(object):
                                                           self.cfg.installs['video']['roll']),
                            (1180, 710), 0.3, CVColor.White, 1)
 
-    # def show_warning(self, img, title):
-    #     # print(title)
-    #     if isinstance(title, list):
-    #         for idx, t in enumerate(title):
-    #             # print(idx)
-    #             BaseDraw.draw_text(img, t, (10, 200 + idx * 80), 2, CVColor.Red, 3)
-    #     else:
-    #         BaseDraw.draw_text(img, title, (10, 200), 2, CVColor.Red, 3)
+    def show_warning_ifc(self, img, title):
+        # print(title)
+        if isinstance(title, list):
+            for idx, t in enumerate(title):
+                # print(idx)
+                BaseDraw.draw_text(img, t, (10, 200 + idx * 80), 2, CVColor.Red, 3)
+        else:
+            BaseDraw.draw_text(img, title, (10, 200), 2, CVColor.Red, 3)
 
     def show_ub482_common(self, img, data):
         indent = self.get_indent(data['source'])

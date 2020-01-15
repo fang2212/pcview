@@ -269,7 +269,7 @@ class PCC(object):
         self.player.show_fps(img, 'video', fps)
 
         if not self.replay:
-            self.player.show_warning(img, self.supervisor.check())
+            self.player.show_warning_ifc(img, self.supervisor.check())
         self.player.show_intrinsic_para(img)
 
         self.player.render_text_info(img)

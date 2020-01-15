@@ -827,6 +827,22 @@ def parse_nmea_line(line, ctx):
             ctx['speed'] = r['speed']
 
 
+def parse_x1l_line(line, ctx):
+    from parsers.x1l import parse_x1l
+    cols = line.split()
+    can_port = ctx['can_port'].get('x1l')
+    if cols[2] == can_port:
+        ts = float(cols[0]) + float(cols[1]) / 1000000
+        can_id = int(cols[3], 16)
+        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        r = parse_x1l(can_id, buf, ctx)
+        if r is not None:
+            x = r['pos_lon']
+            y = 0
+            speed = 0
+            line = compose_log(ts, 'x1l.{class}.{id}'.format(**r), '{} {} {} {}'.format(y, x, speed, r['TTC']))
+
+
 def trans_line_to_asc(line, ctx):
     cols = line.split(' ')
     
@@ -2500,6 +2516,7 @@ if __name__ == "__main__":
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=None)
+    parser.add_argument('-t', '--target', help='target sensor for analyzing', default='x1')
     parser.add_argument('-q3', '--q3', help='indicator for q3 parsing', action="store_true")
     parser.add_argument('-fus', '--fusion', help='indicator for x1_fusion parsing', action="store_true")
     parser.add_argument('-rtk', '--rtk', help='indicator for rtk target parsing', action="store_true")
