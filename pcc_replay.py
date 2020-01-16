@@ -392,7 +392,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Replay CVE log.")
 
-    log = '/media/nan/860evo/data/pcviewer/20191122155613_express_q3_dist_issue/log.txt'
+    log = '/home/yj/bak/data/liuqi/suzhou/20200114112237_33577_LDW/log.txt'
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=False)
