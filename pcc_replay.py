@@ -392,7 +392,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Replay CVE log.")
 
-    log = '/media/nan/860evo/data/pcviewer/20191122155613_express_q3_dist_issue/log.txt'
+    log = '/media/nan/860evo/data/pcviewer/20191122155307_express/log.txt'
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=False)
@@ -412,6 +412,6 @@ if __name__ == "__main__":
     from parsers.parser import parsers_dict
 
     replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0)
-    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg)
+    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=True)
     pc_viewer.start()
 
