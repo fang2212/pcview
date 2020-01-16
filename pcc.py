@@ -306,9 +306,11 @@ class PCC(object):
 
         if self.to_web:
             self.web_img['now_image'] = comb.copy()
-
-        if self.show_ifc:
+        else:
             cv2.imshow('MINIEYE-CVE', comb)
+
+        # if self.show_ifc:
+        #     cv2.imshow('MINIEYE-CVE', comb)
 
         if self.save_replay_video and self.replay:
             self.vw.write(comb)

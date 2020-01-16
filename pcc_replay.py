@@ -385,6 +385,9 @@ if __name__ == "__main__":
     from config.config import *
     import sys
     import argparse
+    import webbrowser
+
+
 
     local_path = os.path.split(os.path.realpath(__file__))[0]
     # print('local_path:', local_path)
@@ -413,5 +416,8 @@ if __name__ == "__main__":
 
     replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0)
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=True)
+    # webbrowser.open("http://127.0.0.1:1234")
     pc_viewer.start()
+
+
 
