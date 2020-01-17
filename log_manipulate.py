@@ -33,6 +33,7 @@ def compose_log(ts, log_type, data):
     return log_line
 
 
+
 def time_sort(file_name, sort_itv=8000, output=None):
     """
     sort the log lines according to timestamp.
@@ -718,14 +719,6 @@ def parse_x1_line(line, ctx):
         ctx['obs_ep'][obs_type]['ts'] = ts
         # print(len(ctx['obs_ep']['x1']['data']))
         return lines
-        # if isinstance(ret, list):
-        #
-        #
-        # else:
-        #     ctx['x1_ids'].add(ret['id'])
-        #     return compose_log(ts, 'x1.{}.{}'.format(ret['class'], ret['id']),
-        #                        '{} {} {} {}'.format(ret['pos_lat'], ret['pos_lon'], (ret['vel_lon']),
-        #                                             ret.get('TTC')))
 
 
 # deprecated
@@ -821,10 +814,13 @@ def parse_q3_line(line, ctx):
 def parse_nmea_line(line, ctx):
     from parsers.ublox import parse_ublox
     cols = line.split(' ')
-    if cols[2] == 'NMEA':
+    if cols[2] == 'NMEA' or 'gps' in cols[2]:
         r = parse_ublox('NMEA', cols[3])
         if r and 'speed' in r:
-            ctx['speed'] = r['speed']
+            if 'speed' not in ctx:
+                ctx['speed'] = {}
+            ts = float(cols[0]) + float(cols[1]) / 1000000
+            ctx['speed']['gps'] = {'ts': ts, 'speed': r['speed']}
 
 
 def parse_x1l_line(line, ctx):
@@ -867,6 +863,65 @@ def trans_line_to_asc(line, ctx):
         lines += ' '.join(cols[4:])
         lines += '\n'
         return lines
+
+
+def parse_d530_line(line, ctx):
+    from parsers.df_d530 import parse_dfd530
+    cols = line.split(' ')
+    can_port = ctx['can_port'].get('d530')
+    if cols[2] == can_port:
+        ts = float(cols[0]) + float(cols[1]) / 1000000
+        can_id = int(cols[3], 16)
+        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        r = parse_dfd530(can_id, buf, ctx)
+        if not r:
+            return
+        lines = ''
+        if 'd530' not in ctx:
+            ctx['d530'] = {'aeb_level': 0, 'xbr_acc': 0}
+        x1_data = None
+        x1f_data = None
+        ars_data = None
+        if ctx['obs_ep']['x1'].get('data'):
+            for x1_obs in ctx['obs_ep']['x1'].get('data'):
+                if x1_obs.get('cipo'):
+                    x1_data = x1_obs
+                    break
+        if ctx['obs_ep']['x1_fusion'].get('data'):
+            # print('x1 fusion has data', len(ctx['obs_ep']['x1_fusion'].get('data')))
+            for x1f_obs in ctx['obs_ep']['x1_fusion'].get('data'):
+                if x1f_obs.get('cipo'):
+                    x1f_data = x1f_obs
+                    break
+        if ctx['obs_ep']['ars'].get('data'):
+            for ars_obs in ctx['obs_ep']['ars'].get('data'):
+                if ars_obs.get('cipo'):
+                    ars_data = ars_obs
+                    break
+        if 'aeb_level' in r:
+            data = r['aeb_level']
+            lines += compose_log(ts, 'd530.{}'.format(r['class']), '{}'.format(data))
+
+            if ctx['d530']['aeb_level'] == 0 and data == 1:
+                ctx['d530']['fcw1'] = {'ts': ts, 'speed': ctx['speed'], 'x1': x1_data, 'x1f': x1f_data, 'ars': ars_data}
+
+                lines += compose_log(ts, 'd530.aebw0to1', '{}'.format(data))
+
+            elif ctx['d530']['aeb_level'] == 1 and data == 2:
+                ctx['d530']['fcw2'] = {'ts': ts, 'speed': ctx['speed'], 'x1': x1_data, 'x1f': x1f_data, 'ars': ars_data}
+                lines += compose_log(ts, 'd530.aebw1to2', '{}'.format(data))
+
+        elif 'xbr_acc' in r:
+            data = r['xbr_acc']
+            lines += compose_log(ts, 'd530.{}'.format(r['class']), '{}'.format(data))
+            if data < -5.0 and ctx['d530']['xbr_acc'] > -1.0:
+                ctx['d530']['aeb'] = {'ts': ts, 'speed': ctx['speed'], 'x1': x1_data, 'x1f': x1f_data, 'ars': ars_data}
+                lines += compose_log(ts, 'd530.xbrtrigger', '{}'.format(data))
+        elif 'speed' in r:
+            if 'speed' not in ctx:
+                ctx['speed'] = {}
+            ctx['speed']['d530'] = {'ts': ts, 'speed': r['speed']}
+        ctx['d530'].update(r)
 
 
 def adj_timestamp(line, ctx, log_type='NMEA'):
@@ -1886,14 +1941,14 @@ def batch_process_2(dir_name, parsers):
         single_process(log, parsers, False)
 
 
-def batch_process_3(dir_name, sensors, parsers=None, odir=None):
+def batch_process_3(dir_name, sensors, process, parsers=None, odir=None):
     for root, dirs, files in os.walk(dir_name):
         for f in files:
             if f == 'log.txt':
                 odir = os.path.join(odir, os.path.basename(root)) if odir else None
                 log = os.path.join(root, f)
                 print(bcl.BOLD + bcl.HDR + '\nEntering dir: ' + root + bcl.ENDC)
-                single_process(log, sensors, parsers, False, analysis_dir=odir)
+                process(log, sensors, parsers, False, analysis_dir=odir)
 
 
 def collect_result(dir_name):
@@ -2296,42 +2351,16 @@ def process_by_matches(matches, names, r0, ts0, ctx, vis=False):
                 wf.write('Vx(m/s)\t{}\t{:.2f}%\n'.format(rmse_vx, pct_dvx))
 
 
-def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1tgt=None, rdrtgt=None, analysis_dir=None):
-    # log = os.path.join(dir_name, 'log.txt')
+def prep_analysis(log, ctx, anadir=None):
+    from tools.log_info import get_can_ports_and_roles
     from tools.transform import Transform
     from config.config import CVECfg
-    from tools.log_info import get_can_ports_and_roles
-    import json
-    ctx = dict()
     cfg = CVECfg()
-    ctx['obs_ep'] = dict().fromkeys(sensors)
-    for key in ctx['obs_ep']:
-        ctx['obs_ep'][key] = {'buff': deque(maxlen=10)}
-    ctx['obs_ep']['x1'] = {'buff': deque(maxlen=10)}
-    ctx['sensors'] = sensors
-    ctx['sensors'].append('x1')
-
-    parsers_choice = {'esr': parse_esr_line,
-                      'ars': parse_ars_line,
-                      'rtk': parse_rtk_target_ub482,
-                      'x1': parse_x1_line,
-                      'x1_fusion': parse_x1_fusion_line,
-                      'q3': parse_q3_line}
-
-    if not parsers:
-        parsers = [
-            dummy_parser,
-            match_obs,
-            parse_nmea_line,
-            parse_x1_line]
-        for sensor in sensors:
-            if parsers_choice.get(sensor):
-                parsers.append(parsers_choice[sensor])
-
-    if not os.path.exists(log):
-        print(bcl.FAIL + 'Invalid data path. {} does not exist.'.format(log) + bcl.ENDC)
-        return
-
+    data_dir = os.path.dirname(log)
+    # log = os.path.join(data_dir, 'log.txt')
+    analysis_dir = anadir or os.path.join(data_dir, 'analysis')
+    if not os.path.exists(analysis_dir):
+        os.mkdir(analysis_dir)
     conf_path = os.path.join(os.path.dirname(log), 'config.json')
     install_path = os.path.join(os.path.dirname(log), 'installation.json')
 
@@ -2349,60 +2378,61 @@ def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1
     else:
         print('no installation.json found in {}. exit.'.format(os.path.dirname(log)))
         return
+    # print('preparing done.', ctx.keys())
+    return analysis_dir
 
-    if rdrtgt is not None:
-        ctx['radar_target'] = rdrtgt
-    if x1tgt is not None:
-        ctx['x1_target'] = x1tgt
-    data_dir = os.path.dirname(log)
-    # log = os.path.join(data_dir, 'log.txt')
-    analysis_dir = analysis_dir or os.path.join(data_dir, 'analysis')
-    if not os.path.exists(analysis_dir):
-        os.mkdir(analysis_dir)
 
+def init_sensor_ctx(sensors, ctx):
+    ctx['obs_ep'] = dict().fromkeys(sensors)
+    for key in ctx['obs_ep']:
+        ctx['obs_ep'][key] = {'buff': deque(maxlen=10)}
+    # ctx['obs_ep']['x1'] = {'buff': deque(maxlen=10)}
+    ctx['sensors'] = sensors
+
+
+parsers_choice = {'esr': parse_esr_line,
+                      'ars': parse_ars_line,
+                      'rtk': parse_rtk_target_ub482,
+                      'x1': parse_x1_line,
+                      'x1_fusion': parse_x1_fusion_line,
+                      'q3': parse_q3_line}
+
+
+def single_process(log, sensors=['x1', 'q3', 'esr', 'rtk'], parsers=None, vis=True, x1tgt=None, rdrtgt=None, analysis_dir=None):
+    # log = os.path.join(dir_name, 'log.txt')
+    import json
+    ctx = dict()
+    init_sensor_ctx(sensors, ctx)
+    # ctx['sensors'].append('x1')
+
+    if not parsers:
+        parsers = [
+            dummy_parser,
+            match_obs,
+            parse_nmea_line,
+            parse_x1_line]
+        for sensor in sensors:
+            if parsers_choice.get(sensor):
+                parsers.append(parsers_choice[sensor])
+
+    if not os.path.exists(log):
+        print(bcl.FAIL + 'Invalid data path. {} does not exist.'.format(log) + bcl.ENDC)
+        return
+
+    analysis_dir = prep_analysis(log, ctx, analysis_dir)
     log = strip_log(log)
     r = time_sort(log, output=os.path.join(analysis_dir, 'log_sort.txt'))
     r0 = process_log(r, parsers, ctx, output=os.path.join(analysis_dir, 'log_p0.txt'))
-
-    # rfile = shutil.copy2(r, os.path.join(data_dir, 'log_process0.txt'))
     ts0 = ctx.get('ts0') or 0
     for sensor in ctx['obs_ep']:
         kw = '{}_ids'.format(sensor)
         print(kw, ctx.get(kw))
-    # print('x1_ids:', ctx['x1_ids']) if 'x1_ids' in ctx else None
-    # print('esr_ids:', ctx['esr_ids']) if 'esr_ids' in ctx else None
     print('ts0:', ts0)
 
     matches = dict()
     for sensor in sensors:
         matches[sensor] = get_matches_from_pairs(ctx['matched_ep'], ('x1', sensor))
-    # matches_esr = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'esr'))
-    # matches_q3 = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'q3'))
-    # matches_rtk = get_matches_from_pairs(ctx['matched_ep'], ('x1', 'rtk'))
 
-    # matches_comb = dict()
-    # for ts in sorted(ctx['matched_ep']):
-    #     for x1id in ctx['matched_ep'][ts]:
-    #         entry = ctx['matched_ep'][ts][x1id]
-    #         q3id = entry['q3']['id'] if 'q3' in entry else None
-    #         esrid = entry['esr']['id'] if 'esr' in entry else None
-    #         if not q3id or not esrid:
-    #             continue
-    #         if x1id not in matches_comb:
-    #             matches_comb[x1id] = dict()
-    #         q3esr = '{}_{}'.format(q3id, esrid)
-    #         if q3esr not in matches_comb[x1id]:
-    #             matches_comb[x1id][q3esr] = dict()
-    #         if 'start_ts' not in matches_comb[x1id][q3esr]:
-    #             matches_comb[x1id][q3esr]['start_ts'] = ts
-    #         else:
-    #             matches_comb[x1id][q3esr]['end_ts'] = ts
-    #         if 'count' not in matches_comb[x1id][q3esr]:
-    #             matches_comb[x1id][q3esr]['count'] = 0
-    #         matches_comb[x1id][q3esr]['count'] += 1
-
-    # print(matches_q3)
-    # print(matches_esr)
     trj_lists = dict()
     trj_list_comb = list()
     for sensor in sensors:
@@ -2410,17 +2440,7 @@ def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1
         # print('trj_'+sensor+':', trj_list)
         trj_lists[sensor] = trj_list
         trj_list_comb = merge_trajectory(trj_list_comb, trj_list)
-    # trj_list_esr = get_trajectory_from_matches(matches_esr, ('x1', 'esr'))
-    # trj_list_q3 = get_trajectory_from_matches(matches_q3, ('x1', 'q3'))
-    # trj_list_rtk = get_trajectory_from_matches(matches_rtk, ('x1', 'rtk'))
-    # trj_list_comb = merge_trajectory(trj_list_esr, trj_list_q3)
-    # trj_list_comb = merge_trajectory(trj_list_comb, trj_list_rtk)
-    # print('trj_esr:')
-    # for trj in trj_list_esr:
-    #     print(trj)
-    # print('trj_q3:')
-    # for trj in trj_list_q3:
-    #     print(trj)
+
     print('trj_comb:')
     for trj in trj_list_comb:
         print(trj)
@@ -2428,79 +2448,102 @@ def single_process(log, sensors=['q3', 'esr', 'rtk'], parsers=None, vis=True, x1
     chart_by_trj(trj_list_comb, r0, ts0)
     for sensor in sensors:
         process_error_by_matches(matches[sensor], ('x1', sensor), r0, ts0, ctx)
-    # process_error_by_matches(matches_esr, ('x1', 'esr'), r0, ts0, ctx)
-    # process_error_by_matches(matches_q3, ('x1', 'q3'), r0, ts0, ctx)
 
-    # viz_2d_trj(r0, 'rtk.5', vis=True)
 
-    # matches_comb = dict()
-    # for x1id_1 in matches_esr:
-    #     for x1id_2 in matches_q3:
-    #         if x1id_1 == x1id_2:
-    #             for esrid in list(matches_esr[x1id_1]):
-    #                 esr = matches_esr[x1id_1][esrid]
-    #                 for q3id in list(matches_q3[x1id_2]):
-    #                     q3 = matches_q3[x1id_2][q3id]
-    #                     if esr['end_ts'] > q3['start_ts'] and esr['start_ts'] < q3['end_ts']:  # overlap
-    #
-    #                         matches_comb[x1id_1] = {'esr': esrid, 'q3': q3id,
-    #                                                 'start_ts': min(q3['start_ts'], esr['start_ts']),
-    #                                                 'end_ts': max(q3['end_ts'], esr['start_ts']),
-    #                                                 'count': max(q3['count'], esr['count'])}
-    #                         print(x1id_1, esrid, q3id, min(q3['count'], esr['count']))
-                            # del matches_esr[x1id_1][esrid]
-                            # del matches_q3[x1id_2][q3id]
+def aeb_test_analysis(dir_name):
+    from tools import visual
+    import xlwt
+    # import openpyxl
 
-    # r1 = process_log(r0, [calc_delta_x1_esr], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
-    # r1 = calc_delta_x1_esr_1(ctx['matched_ep'], analysis_dir)
-    # print('x1_targets:', x1_target)
-    # print('radar_targets:', radar_target)
-    # if len(x1_target) == 0:
-    #     print('No x1 target selected, abort plotting.')
-    #     return
+    xl = xlwt.Workbook()
+    style = xlwt.XFStyle()  # 创建一个样式对象，初始化样式
 
-    # process_by_matches(matches_esr, ('x1', 'esr'), r0, ts0, ctx)
-    # process_by_matches(matches_q3, ('x1', 'q3'), r0, ts0, ctx)
+    al = xlwt.Alignment()
+    al.horz = 0x02  # 设置水平居中
+    al.vert = 0x01  # 设置垂直居中
+    style.alignment = al
 
-    """
-    for x1id in matches_comb:
-        for q3esr in matches_comb[x1id]:
-            q3id = int(q3esr.split('_')[0])
-            esrid = int(q3esr.split('_')[1])
-            entry = matches_comb[x1id][q3esr]
-            ctx['x1_tgt'] = x1id
-            ctx['esr_tgt'] = q3id
-            r1 = process_log(r0, [calc_delta_x1_esr_3], ctx, output=os.path.join(analysis_dir, 'log_p1.txt'))
-            sts = entry.get('start_ts')
-            ets = entry.get('end_ts')
-            cnt = entry.get('count')
-            if not sts or not ets or not cnt:
-                print(bcl.BOLD + 'discard match:' + bcl.ENDC, x1id, q3id, esrid, entry)
-            if cnt < 10 or ets - sts < 1.0:
-                print(bcl.BOLD + 'discard match:' + bcl.ENDC, x1id, q3id, esrid, entry)
-                continue
-            print(bcl.OKBL + 'matched(x1/esr/q3):' + bcl.ENDC, x1id, q3id, esrid, entry)
-            fig = visual.get_fig()
-            jlist = []
-            samples = {'esr.obj.{}'.format(esrid): {'x': 1}, 'x1.*.{}'.format(x1id): {'x': 1}, 'q3.*.{}'.format(q3id): {'x': 1}}
-            jlist.append(samples)
-            visual.scatter(fig, r0, samples, 'x(m)', ts0, sts, ets, vis)
-            samples = {'esr.obj.{}'.format(esrid): {'y': 0}, 'x1.*.{}'.format(x1id): {'y': 0}, 'q3.*.{}'.format(q3id): {'y': 0}}
-            jlist.append(samples)
-            visual.scatter(fig, r0, samples, 'y(m)', ts0, sts, ets, vis)
-            samples = {'esr.obj.{}'.format(esrid): {'Vx': 2}, 'x1.*.{}'.format(x1id): {'Vx': 2}, 'q3.*.{}'.format(q3id): {'Vx': 2}}
-            jlist.append(samples)
-            visual.scatter(fig, r0, samples, 'Vx(m/s)', ts0, sts, ets, vis)
-            samples = {'esr.obj.{}'.format(esrid): {'TTC_m': 3}, 'x1.*.{}'.format(x1id): {'TTC': 3}, 'q3.*.{}'.format(q3id): {'TTC': 3}}
-            visual.scatter(fig, r0, samples, 'TTC(s)', ts0, sts, ets, False)
-            jlist.append(samples)
-            pickle.dump(fig, open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_q3[{}]_xyvx.pyfig'.format(x1id, esrid, q3id)), 'wb'))
-            json.dump(jlist, open(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_q3[{}]_xyvx.json'.format(x1id, esrid, q3id)), 'w+'),
-                      indent=True)
-            fig.savefig(os.path.join(analysis_dir, 'x1[{}]_esr[{}]_q3[{}]_xyvx.png'.format(x1id, esrid, q3id)), dpi=300)
-            # fig.savefig(os.path.join(analysis_dir, '{}_xyvx.svg'.format(d)), dpi=300)
-            visual.close_fig(fig)
-    """
+    sheet = xl.add_sheet('FCW')
+    sheet.col(0).width = 450 * 20
+    sheet.write_merge(0, 2, 0, 0, 'case', style=style)
+    for idx, name in enumerate(['FCW1', 'FCW2', 'AEB']):
+        # color = 'gray50' if idx % 2 == 0 else 'white'
+        # pattern = xlwt.Pattern()
+        # pattern.pattern = xlwt.Pattern.SOLID_PATTERN
+        # pattern.pattern_fore_colour = xlwt.Style.colour_map[color]
+        # style.pattern = pattern
+        i = idx * 10 + 1
+        # print(i)
+        sheet.write_merge(0, 0, i, i+8, name, style=style)
+        sheet.write_merge(1, 2, i, i, 'ts', style=style)
+        sheet.write_merge(1, 2, i+1, i+1, 'speed', style=style)
+        sheet.write_merge(1, 1, i+2, i+4, 'X1', style=style)
+        sheet.write_merge(1, 1, i+5, i+9, 'Fusion', style=style)
+        sheet.write(2, i+2, 'id')
+        sheet.write(2, i+3, 'PosX')
+        sheet.write(2, i+4, 'TTC')
+        sheet.write(2, i+5, 'id')
+        sheet.write(2, i+6, 'v')
+        sheet.write(2, i+7, 'x')
+        sheet.write(2, i+8, 'a')
+        sheet.write(2, i+9, 'ttc')
+
+    ln = 2
+
+    for root, dirs, files in os.walk(dir_name):
+        for f in files:
+            if f == 'log.txt':
+                ctx = {}
+                # ctx['d530'] = {'aeb_level': 0, 'xbr_acc': 0}
+                # odir = os.path.join(odir, os.path.basename(root)) if odir else None
+                log = os.path.join(root, f)
+                print(bcl.BOLD + bcl.HDR + '\nEntering dir: ' + root + bcl.ENDC)
+                sensors = ['x1', 'x1_fusion', 'ars', 'd530']
+                init_sensor_ctx(sensors, ctx)
+                parsers = [parse_x1_line,
+                           parse_ars_line,
+                           parse_d530_line,
+                           parse_nmea_line]
+
+                analysis_dir = prep_analysis(log, ctx)
+                if 'd530' not in ctx['can_port']:
+                    print('d530 not configured. check config.json.')
+                    continue
+                log = strip_log(log)
+                r = time_sort(log, output=os.path.join(analysis_dir, 'log_sort.txt'))
+                r0 = process_log(r, parsers, ctx, output=os.path.join(analysis_dir, 'log_p0.txt'))
+                # print(ctx.keys())
+                ln += 1
+                sheet.write(ln, 0, os.path.basename(root))
+                # sheet.
+                if 'd530' not in ctx:
+                    print('d530 data not found in log. leaving.')
+                    continue
+                d = ctx['d530']
+
+                for idx, name in enumerate(['FCW1', 'FCW2', 'AEB']):
+                    i = idx * 10 + 1
+                    entry = name.lower()
+                    try:
+                        sheet.write(ln, i, d[entry]['ts'])
+                        sheet.write(ln, i+1, d[entry]['speed']['gps']['speed'])
+                        sheet.write(ln, i+2, d[entry]['x1']['id'])
+                        sheet.write(ln, i+3, d[entry]['x1']['pos_lon'])
+                        sheet.write(ln, i+4, d[entry]['x1']['TTC'])
+                        sheet.write(ln, i+5, d[entry]['x1f']['id'])
+                        sheet.write(ln, i+6, d[entry]['x1f']['vel_lon'])
+                        sheet.write(ln, i+7, d[entry]['x1f']['pos_lon'])
+                        sheet.write(ln, i+8, d[entry]['x1f']['acc_lon'])
+                    except Exception as e:
+                        print('error occurred when processing', r)
+                        print(e)
+                # sheet.write(ln, 9, d[entry]['x1f']['TTC'])
+
+                # print(ctx['d530'])
+                del ctx
+                # process(log, sensors, parsers, False, analysis_dir=odir)
+
+    xl.save(os.path.join(dir_name, 'fcw.xls'))
 
 
 if __name__ == "__main__":
@@ -2524,6 +2567,7 @@ if __name__ == "__main__":
     parser.add_argument('-esr', '--esr', help='indicator for aptiv esr parsing', action="store_true")
     parser.add_argument('-hil', '--hil', help='preprocess log for HIL replay', action="store_true")
     parser.add_argument('-vec', '--vector', help='preprocess log for vector canalyzer', action="store_true")
+    parser.add_argument('-aeb', '--aeb', help='preprocess log for aeb control tuning', action="store_true")
 
     args = parser.parse_args()
     sensors = []
@@ -2544,7 +2588,10 @@ if __name__ == "__main__":
         ctx = {}
         ofile = os.path.join(analysis_dir, 'log_vector.asc')
         process_log(r, [trans_line_to_asc], ctx, output=ofile)
+    elif args.aeb:
+        aeb_test_analysis(r)
     else:
+        sensors = ['x1']
         if args.q3:
             sensors.append('q3')
         if args.fusion:
@@ -2566,7 +2613,7 @@ if __name__ == "__main__":
             single_process(r, sensors, analysis_dir=analysis_dir)
         else:
             print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
-            batch_process_3(r, sensors, odir=analysis_dir)
+            batch_process_3(r, sensors, single_process, odir=analysis_dir)
 
     dt = time.time() - t0
     print(bcl.WARN + 'Processing done. Time cost: {}s'.format(dt) + bcl.ENDC)

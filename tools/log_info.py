@@ -37,7 +37,7 @@ def get_can_ports_and_roles(log):
             #     for msg in collector['can_types']:
             #         ctx['veh_roles'][msg] = collector.get('veh_tag')
         ctx['can_port'] = canports
-        print(canports)
+        print('can ports:', canports)
         return ctx
         # time.sleep(10)
 

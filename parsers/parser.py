@@ -7,6 +7,7 @@ from parsers.radar import *
 from parsers.drtk import parse_rtk
 from parsers.mobileye_q4 import parser_mbq4
 from parsers.ublox import decode_nmea
+from parsers.df_d530 import parse_dfd530
 
 
 def default_parser(id, data, type=None):
@@ -33,5 +34,6 @@ parsers_dict = {
     "xyd2":     parse_xyd2,
     "anc":      parse_anc,
     "ctlrr":    parse_ctlrr,
+    "d530":     parse_dfd530,
     "default":  default_parser
 }

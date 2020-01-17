@@ -198,7 +198,6 @@ def parse_x1(id, data, ctx=None):
             ctx.pop('fusion')
             # print('fusion', ret)
 
-
         ctx['fusion'] = {}
         ctx['fusion']['frameid'] = r['FrameID']
         ctx['fusion']['counter'] = r['Counter']
@@ -207,6 +206,7 @@ def parse_x1(id, data, ctx=None):
             return ret
 
     elif 0x400 <= id <= 0x41f:
+        # print("0x%x" % id, r)
         if 'fusion' not in ctx:
             return
         index = (id - 0x400) // 2
@@ -218,9 +218,11 @@ def parse_x1(id, data, ctx=None):
                 ctx['fusion'][index]['vel_lon'] = r['V_long_obj_' + '%02d' % (index + 1)]
                 ctx['fusion'][index]['vel_lat'] = r['V_lat_obj_' + '%02d' % (index + 1)]
                 ctx['fusion'][index]['acc_lon'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
+                ctx['fusion'][index]['TTC'] = -r['L_long_rel_' + '%02d' % (index + 1)] / r[
+                    'V_long_obj_' + '%02d' % (index + 1)] if r['V_long_obj_' + '%02d' % (index + 1)] < 0 else 7.0
                 ctx['fusion'][index]['detection_sensor'] = detection_sensor.get(
                     r['DetectionSensor_' + '%02d' % (index + 1)])
-                ctx['fusion'][index]['cipo'] = False
+                ctx['fusion'][index]['cipo'] = True if id == 0x401 else False
                 ctx['fusion'][index]['type'] = 'obstacle'
                 ctx['fusion'][index]['sensor'] = 'x1_fusion'
                 # ctx['fusion'][index]['class'] = 'fusion'
