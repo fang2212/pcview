@@ -15,10 +15,10 @@ def ping(ip):
         pass
 
 
-def nmap_scan(ip_range='192.168.98.0/24', async=False):
+def nmap_scan(ip_range='192.168.98.0/24', isasync=False):
     r = os.popen('nmap -T5 -sP {}'.format(ip_range))
     ips = []
-    if async:
+    if isasync:
         return
     for line in r:
         # print(line, end='')
@@ -47,8 +47,8 @@ def get_macs(ip_range='192.168.98.0/24'):
     return mac_ip
 
 
-def get_mac_ip(ip_range='192.168.98.0/24', async=False):
-    ips = nmap_scan(ip_range, async=async)
+def get_mac_ip(ip_range='192.168.98.0/24', isasync=False):
+    ips = nmap_scan(ip_range, isasync=isasync)
     if not ips:
         print('nmap found no device in {}.'.format(ip_range))
         return
