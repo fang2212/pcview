@@ -125,6 +125,8 @@ class Vehicle(object):
         # print('get pp target', self.pinpoint, host)
         if not host or not pp:
             return
+        if 'yaw' not in host or 'lat' not in host or 'lon' not in host:
+            return
         # print('get pp target')
         range = gps_distance(pp['lat'], pp['lon'], host['lat'], host['lon'])
         angle = gps_bearing(pp['lat'], pp['lon'], host['lat'], host['lon'])
@@ -144,7 +146,7 @@ class Vehicle(object):
         pos_y = sin(angle * pi / 180.0) * range
         delta_h = host['hgt'] - pp['hgt']
 
-        ttc = pos_x / host['hor_speed']
+        ttc = pos_x / host['hor_speed'] if host['hor_speed'] > 0 else 7
         if ttc > 7:
             ttc = 7
 

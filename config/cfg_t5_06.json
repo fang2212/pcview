@@ -2,7 +2,7 @@
     "version": 0.7,
     "modules": {
         "GGA_reporter": {
-            "enable": true,
+            "enable": false,
             "ntrip_address": "ntrip.weaty.cn",
             "port": 5001
         }
@@ -61,23 +61,23 @@
                 },
                 "video": {
                     "fu": 1458.0,
-                    "yaw": -2.2,
+                    "yaw": 0.35,
                     "fv": 1458.0,
                     "pitch": 0.3,
                     "cu": 640.0,
                     "lat_offset": 0.15,
                     "roll": 0.0,
-                    "height": 1.26,
+                    "height": 1.4,
                     "lon_offset": -1.72,
                     "cv": 360.0
                 },
                 "x1": {
                     "roll": 0.0,
-                    "lat_offset": 0.0,
+                    "lat_offset": 0.15,
                     "pitch": 0.3,
-                    "height": 1.26,
+                    "height": 1.4,
                     "lon_offset": -1.72,
-                    "yaw": -2.2
+                    "yaw": 0.35
                 }
             }
         },
