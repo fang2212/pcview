@@ -2579,13 +2579,15 @@ if __name__ == "__main__":
         analysis_dir = args.output
     else:
         analysis_dir = os.path.join(os.path.dirname(r), 'analysis')
-    if not os.path.exists(analysis_dir):
-        os.mkdir(analysis_dir)
+    # if not os.path.exists(analysis_dir):
+    #     os.mkdir(analysis_dir)
 
     if args.hil:
         trans_to_hil(r, args.output)
     elif args.vector:
         ctx = {}
+        if not os.path.exists(analysis_dir):
+            os.mkdir(analysis_dir)
         ofile = os.path.join(analysis_dir, 'log_vector.asc')
         process_log(r, [trans_line_to_asc], ctx, output=ofile)
     elif args.aeb:

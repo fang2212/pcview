@@ -238,6 +238,16 @@ def parse_x1(id, data, ctx=None):
             ctx['fusion'][index]['vis_track_id'] = r['Vis_Track_ID_' + '%02d' % (index + 1)]
             # ctx['fusion'][index]['confidence'] = r['Confidence_'+'%02d' % (index+1)]
 
+            if index >= 16:
+                ret = []
+                for key in ctx['fusion']:
+                    if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in \
+                            ctx['fusion'][key] or ctx['fusion'][key]['pos_lon'] == 0:
+                        continue
+                    obs = ctx['fusion'][key]
+                    ret.append(obs.copy())
+                return ret
+
         # if id == 0x41f:
         #     ret = []
         #     for key in ctx['fusion']:
