@@ -2,17 +2,15 @@
 
 block_cipher = None
 added_files = [
-	('/home/nan/workshop/git/pcview/config', 'config'), 
-	('/home/nan/workshop/git/pcview/dbc', 'dbc'),
-	('/home/nan/Desktop/nanomsg/nanomsg', 'nanomsg'),
-	('/home/nan/Desktop/nanomsg/_nanomsg_cpy', '_nanomsg_cpy')
+	('config', 'config'),
+	('dbc', 'dbc')
 ]
 
-a = Analysis(['/home/nan/workshop/git/pcview/pcc_replay.py'],
+a = Analysis(['pcc_replay.py'],
              pathex=['.'],
-             binaries=[('/home/nan/workshop/git/nanomsg/build/libnanomsg.so', '.')],
+             binaries=[],
              datas= added_files,
-             hiddenimports=[],
+             hiddenimports=['_nanomsg_cpy'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],

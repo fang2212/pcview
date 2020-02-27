@@ -27,7 +27,7 @@ from tools.geo import *
 from tools.match import is_near
 from tools.mytools import Supervisor
 from tools.transform import Transform, OrientTuner
-from tools.vehicle import Vehicle
+from tools.vehicle import Vehicle, get_vehicle_target
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
@@ -353,6 +353,14 @@ class PCC(object):
                     self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
             elif 'yaw' in data:
                 self.player.show_heading_horizen(img, data)
+        else:  # other vehicle
+            # print('other role:', role)
+            if self.vehicles['ego']:
+                target = get_vehicle_target(self.vehicles['ego'], self.vehicles[role])
+                # print(target)
+                if target:
+                    self.player.show_rtk_target(img, target)
+                    self.player.show_rtk_target_ipm(self.ipm, target)
             # elif 'trk_gnd' in data:
             #     self.player.show_track_gnd(img, data)
             # ppq = self.vehicles['ego'].dynamics.get('pinpoint')
@@ -370,8 +378,8 @@ class PCC(object):
             # print('rtk target cost:{}'.format(dt * 1000))
             # print(pp_target['ts'])
 
-        else:  # other vehicle
-            host = self.vehicles['ego'].get_pos()
+        # else:  # other vehicle
+        #     host = self.vehicles['ego'].get_pos()
             # if 'lat' in data and host:
             #     self.player.show_target(img, data, host)
             # pass

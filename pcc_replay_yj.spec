@@ -1,7 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
-
+#added_files = [
+#	('config', 'config'),
+#	('dbc', 'dbc'),
+#	('nanomsg', 'nanomsg'),
+#	('_nanomsg_cpy', '_nanomsg_cpy'),
+#	('web', 'web')
+#]
 
 a = Analysis(['pcc_replay.py'],
              pathex=['./'],
@@ -19,19 +25,15 @@ pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
+          a.binaries,
+          a.zipfiles,
+          a.datas,
           [],
-          exclude_binaries=True,
-          name='pcc_replay_yj',
+          name='pcc_replay',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
+          upx_exclude=[],
+          runtime_tmpdir=None,
           console=True )
-coll = COLLECT(exe,
-               a.binaries,
-               a.zipfiles,
-               a.datas,
-               strip=False,
-               upx=True,
-               upx_exclude=[],
-               name='pcc_replay_yj')

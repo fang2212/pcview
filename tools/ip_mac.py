@@ -1,5 +1,6 @@
 # import nmap
 import os
+import subprocess
 
 
 def print_ip_mac(ip_mac):
@@ -16,17 +17,20 @@ def ping(ip):
 
 
 def nmap_scan(ip_range='192.168.98.0/24', isasync=False):
-    r = os.popen('nmap -T5 -sP {}'.format(ip_range))
+    p = subprocess.Popen(['nmap', '-T5', '-sP', '{}'.format(ip_range)], stdout=subprocess.PIPE)
+    stdout = p.stdout
+    # print(stdout)
     ips = []
     if isasync:
         return
-    for line in r:
+    for bline in stdout:
+        line = bline.decode()
         # print(line, end='')
         if 'Nmap scan report for' in line:
             ip = line.split(' ')[4]
             ips.append(ip)
         pass
-    r.close()
+    # r.close()
     return ips
 
 
