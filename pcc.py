@@ -128,6 +128,9 @@ class PCC(object):
         print('entering pcc loop.')
 
         while not self.exit:
+            if not self.hub.is_alive():
+                print('hub exit running.')
+                return
             d = self.hub.pop_simple()
             if d is None or not d.get('frame_id'):
                 # time.sleep(0.01)
