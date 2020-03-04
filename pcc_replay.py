@@ -350,7 +350,7 @@ class LogPlayer(Process):
                 r = ublox.decode_nmea(cols[3])
                 r['source'] = cols[2]
                 self.cache['can'].append(r.copy())
-        print('end of log.txt.')
+        print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
         return
         # cp.disable()

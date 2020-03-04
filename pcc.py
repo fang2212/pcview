@@ -51,14 +51,13 @@ class PCC(object):
         # self.recording = False
         self.replay = replay
         self.rlog = rlog
-        self.frame_idx = 0
         self.ts0 = 0
 
         self.now_id = 0
-        self.pre_rtk = {}
+        # self.pre_rtk = {}
         self.ts_now = 0
         self.cipv = 0
-        self.msg_cnt = {}
+        # self.msg_cnt = {}
         self.transform = Transform(uniconf)
         self.m_g2i = self.transform.calc_g2i_matrix()
         self.ipm = None
@@ -73,6 +72,8 @@ class PCC(object):
         self.vehicles = {'ego': Vehicle('ego')}
         self.calib_data = dict()
         self.frame_cost = 0
+        self.frame_cost_total = 0
+        self.frame_drawn_cnt = 0
         self.video_cache = {}
         cv2.namedWindow('MINIEYE-CVE')
         cv2.namedWindow('adj')
@@ -130,6 +131,8 @@ class PCC(object):
         while not self.exit:
             if not self.hub.is_alive():
                 print('hub exit running.')
+                print('average frame cost: {:.1f}ms'.format(
+                    1000 * self.frame_cost_total / self.frame_drawn_cnt if self.frame_drawn_cnt != 0 else None))
                 return
             d = self.hub.pop_simple()
             if d is None or not d.get('frame_id'):
@@ -296,6 +299,8 @@ class PCC(object):
 
         self.handle_keyboard()
         self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
+        self.frame_drawn_cnt += 1
+        self.frame_cost_total += self.frame_cost
 
     def draw_rtk(self, img, data):
         self.player.show_drtk(img, data)
@@ -383,9 +388,9 @@ class PCC(object):
 
         # else:  # other vehicle
         #     host = self.vehicles['ego'].get_pos()
-            # if 'lat' in data and host:
-            #     self.player.show_target(img, data, host)
-            # pass
+        # if 'lat' in data and host:
+        #     self.player.show_target(img, data, host)
+        # pass
 
         # if 'lat' in data and not self.replay:
         #     if self.gga is None and self.en_gga:
