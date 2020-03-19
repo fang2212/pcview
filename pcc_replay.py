@@ -65,7 +65,7 @@ class LogPlayer(Process):
         self.last_frame = 0
         self.jpeg_extractor = jpeg_extractor(os.path.dirname(log_path) + '/video')
         self.base_dir = os.path.dirname(self.log_path)
-        self.msg_queue = Queue()
+        # self.msg_queue = Queue()
         self.cam_queue = Queue()
         self.cache = {}
         self.msg_cnt = {}
@@ -208,6 +208,7 @@ class LogPlayer(Process):
         # self.init_socket()
         # cp = cProfile.Profile()
         # cp.enable()
+
         last_fid = 0
         frame_lost = 0
         total_frame = 0
@@ -231,6 +232,10 @@ class LogPlayer(Process):
 
             if 'replay_speed' in self.d:
                 self.replay_speed = self.d['replay_speed']
+
+            if self.cam_queue.qsize() > 20:  # if cache longer than 1s then slow down the log reading
+                time.sleep(0.01)
+                # print('replay camque', self.cam_queue.qsize())
 
             # print('line {}'.format(cnt))
             cols = line.split(' ')
@@ -391,7 +396,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Replay CVE log.")
 
-    log = '/home/yj/bak/data/liuqi/suzhou/20200114112237_33577_LDW/log.txt'
+    log = '/media/nan/860evo/data/pcviewer/20191122154341_ramp_in/log.txt'
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=False)

@@ -129,7 +129,7 @@ class PCC(object):
         print('entering pcc loop.')
 
         while not self.exit:
-            if not self.hub.is_alive():
+            if not self.hub.is_alive() and self.replay:
                 print('hub exit running.')
                 print('average frame cost: {:.1f}ms'.format(
                     1000 * self.frame_cost_total / self.frame_drawn_cnt if self.frame_drawn_cnt != 0 else None))
