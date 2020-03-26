@@ -9,7 +9,7 @@ from config.config import bcl
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
 from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink
-from tools.ip_mac import get_mac_ip
+from tools.ip_mac import get_mac_ip, get_cached_macs, save_macs
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')  # logging.basicConfig函数对日志的输出格式及方式做相关配置
@@ -78,8 +78,17 @@ class Hub(Thread):
             self.online = self.direct_init(direct_cfg)
             return
 
-        print('scanning for LAN devices...')
-        self.mac_ip = get_mac_ip()
+        cached_macs = get_cached_macs(uniconf.name)
+        if not cached_macs:
+            print('scanning for LAN devices...')
+            self.mac_ip = get_mac_ip()
+            save_macs(uniconf.name, self.mac_ip)
+        else:
+            print('---- using cached mac table ----')
+            self.mac_ip = cached_macs
+            for mac in self.mac_ip:
+                print(mac, self.mac_ip[mac])
+            print('--------------------------------')
 
         self.finder.request()
         time.sleep(0.6)

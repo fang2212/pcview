@@ -1,6 +1,8 @@
 # import nmap
 import os
 import subprocess
+import json
+import time
 
 
 def print_ip_mac(ip_mac):
@@ -50,6 +52,29 @@ def get_macs(ip_range='192.168.98.0/24'):
     print_ip_mac(mac_ip)
     return mac_ip
 
+
+def get_cached_macs(cfg_name, cachefile='config/runtime/cached_macs.json', timeout=600):
+    if not os.path.exists(cachefile):
+        return
+    cached = json.load(open(cachefile))
+    if cfg_name not in cached:
+        return
+    if time.time() - cached[cfg_name]['ts'] > timeout:
+        print('mac table timed out.')
+        return
+    # print_ip_mac(cached[cfg_name]['data'])
+    return cached[cfg_name]['data']
+
+
+def save_macs(cfg_name, mac_ip, cachefile='config/runtime/cached_macs.json'):
+    if not os.path.exists(cachefile):
+        to_save = {cfg_name: {'ts': time.time(), 'data': mac_ip}}
+        json.dump(to_save, open(cachefile, 'w'), indent=True)
+    else:
+        saved = json.load(open(cachefile))
+        saved[cfg_name] = {'ts': time.time(), 'data': mac_ip}
+        json.dump(saved, open(cachefile, 'w'), indent=True)
+        
 
 def get_mac_ip(ip_range='192.168.98.0/24', isasync=False):
     ips = nmap_scan(ip_range, isasync=isasync)

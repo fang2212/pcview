@@ -2153,7 +2153,7 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
         # ts0 = ctx.get('ts0') or 0
         curve_items = list()
         # print(trj['obs'])
-        for type in sorted(trj['obs'], reverse=True):
+        for type in sorted(trj['obs'], reverse=True):  # x1 q3 esr ars rtk
             curve_items.append('{}{}'.format(type, trj['obs'][type]).replace(' ', ''))
             for id in trj['obs'][type]:
                 pattern = '{}.*.{}'.format(type, id)

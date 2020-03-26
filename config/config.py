@@ -290,6 +290,8 @@ def load_config(jsonspec):
 
 
 class CVECfg(object):
+    # cfg_name = ''
+    name = ''
     configs = []
     installs = {}
     runtime = {}
@@ -299,11 +301,16 @@ class CVECfg(object):
 
 def load_cfg(jsonspec):
     print(bcl.WARN+'using config:' + bcl.ENDC, jsonspec)
+
     # configs = []
     # install = {}
     # runtime = {}
     cve_conf = CVECfg()
     spec = json.load(open(jsonspec))
+    if 'name' not in spec:
+        name = os.path.basename(jsonspec)[:-5]
+        spec['name'] = name
+    cve_conf.name = spec['name']
     main_collector = spec.get('main_collector')
     if spec.get('version') and spec['version'] >= 0.6:
         for role in spec['vehicles']:

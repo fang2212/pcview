@@ -1,8 +1,9 @@
 {
-    "version": 0.7,
+    "version": 0.8,
+    "name": "cfg_lab",
     "modules": {
         "GGA_reporter": {
-            "enable": false,
+            "enable": true,
             "ntrip_address": "ntrip.weaty.cn",
             "port": 5001
         }
