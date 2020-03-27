@@ -432,6 +432,42 @@ def parse_sta77(id, buf, ctx=None):
             return None
 
 
+st77obs_3 = []
+
+
+# id 顺序 0x120 ... 0x15f 0x201
+def parse_sta77_3(id, buf, ctx=None):
+    global st77obs_3
+    if id == 0x201:
+        ret = st77obs_3
+        st77obs_3 = []
+        return ret
+    elif not (id & 0x001):
+        tid = buf[1]
+        range_lon = (buf[2] << 8 | buf[3])*0.1
+        range_lat = (buf[4] << 8 | buf[5])
+        if range_lat > 32767:
+            range_lat = (range_lat-65536)*0.1
+        else:
+            range_lat *= 0.1
+        range = sqrt(range_lat**2+range_lon**2)
+        angle = atan2(range_lat, range_lon)*180/pi
+        range_rate = (buf[6] << 8 | buf[7])*0.1
+        if range_lon > 0.5:
+            ret = {'type': 'obstacle', 'sensor': 'sta77_3', 'sensor_type': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
+                    'range_rate': range_rate, 'pos_lat': range_lat, 'pos_lon':range_lon, 'power': 0, 'tgt_status': 'update_99','dyn_prop': 'unknown', 'color': 7}
+            st77obs_3.append(ret)
+        return None
+    else:
+        if len(st77obs_3) > 0:
+            if (buf[5] << 8 | buf[6]) > 32767:
+                st77obs_3[-1]['power'] = ((buf[5] << 8 | buf[6])-65536)*0.1
+            else:
+                st77obs_3[-1]['power'] = (buf[5] << 8 | buf[6]) * 0.1
+            st77obs_3[-1]['tgt_status'] = 'update_%02d' % buf[0]
+        return None
+
+
 xydobs2 = []
 
 
