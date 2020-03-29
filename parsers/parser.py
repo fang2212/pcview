@@ -31,6 +31,7 @@ parsers_dict = {
     "drtk":     parse_rtk,
     "mrr_fusion": parse_fusion_mrr,
     "sta77":    parse_sta77,
+    "sta77_3":  parse_sta77_3,
     "xyd2":     parse_xyd2,
     "anc":      parse_anc,
     "ctlrr":    parse_ctlrr,
