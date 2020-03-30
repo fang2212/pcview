@@ -8,6 +8,7 @@ from parsers.drtk import parse_rtk
 from parsers.mobileye_q4 import parser_mbq4
 from parsers.ublox import decode_nmea
 from parsers.df_d530 import parse_dfd530
+from parsers.x1d3 import parse_x1d3
 
 
 def default_parser(id, data, type=None):
@@ -28,6 +29,7 @@ parsers_dict = {
     "x1":       parse_x1,
     "x1_fusion": parse_x1,
     "x1l":      parse_x1l,
+    "x1d3":     parse_x1d3,
     "drtk":     parse_rtk,
     "mrr_fusion": parse_fusion_mrr,
     "sta77":    parse_sta77,

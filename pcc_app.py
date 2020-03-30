@@ -9,7 +9,7 @@ os.chdir(local_path)
 # load_cfg(sys.argv[1])
 
 if len(sys.argv) == 1:
-    sys.argv.append('config/cfg_lab.json')
+    sys.argv.append('config/cfg_dftj_x1d3.json')
 
 if '--direct' in sys.argv:
     print('direct mode.')

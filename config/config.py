@@ -323,6 +323,7 @@ def load_cfg(jsonspec):
                 else:
                     clct['is_main'] = False
                 clct['veh_tag'] = role
+                clct['name'] = idx
                 clct['defs_path'] = def_name
                 cve_conf.configs.append(clct)
         for item in spec['vehicles']['ego']['installation']:  # TODO unify install params naming

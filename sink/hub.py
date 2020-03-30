@@ -78,7 +78,7 @@ class Hub(Thread):
             self.online = self.direct_init(direct_cfg)
             return
 
-        cached_macs = get_cached_macs(uniconf.name)
+        cached_macs = get_cached_macs(uniconf.name, timeout=60*60*24)
         if not cached_macs:
             print('scanning for LAN devices...')
             self.mac_ip = get_mac_ip()
@@ -271,7 +271,7 @@ class Hub(Thread):
                     elif 'video' in iface:
                         port = cfg['ports']['video']['port']
                         vsink = CameraSink(queue=self.cam_queue, ip=ip, port=port, channel='camera', index=idx,
-                                          fileHandler=self.fileHandler, is_main=cfg.get('is_main'))
+                                          fileHandler=self.fileHandler, is_main=cfg.get('is_main'), devname=cfg.get('name'))
                         # vsink.start()
                         # vsink = {'stype': 'camera', 'queue': self.cam_queue, 'ip': ip, 'port': port,
                         #          'channel': 'camera', 'index': idx, 'fileHandler': self.fileHandler,

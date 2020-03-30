@@ -15,7 +15,7 @@
       "enable": true,
       "port": 1207,
       "protocol": "nanomsg",
-      "topic": "ifv300"
+      "topic": "ars"
     },
     "can1": {
       "enable": true,
