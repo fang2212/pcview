@@ -301,7 +301,6 @@ class CVECfg(object):
 
 def load_cfg(jsonspec):
     print(bcl.WARN+'using config:' + bcl.ENDC, jsonspec)
-
     # configs = []
     # install = {}
     # runtime = {}
