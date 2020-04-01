@@ -132,7 +132,7 @@ class PCC(object):
             if not self.hub.is_alive() and self.replay:
                 print('hub exit running.')
                 print('average frame cost: {:.1f}ms'.format(
-                    1000 * self.frame_cost_total / self.frame_drawn_cnt if self.frame_drawn_cnt != 0 else None))
+                    1000 * self.frame_cost_total / self.frame_drawn_cnt)) if self.frame_drawn_cnt != 0 else None
                 return
             d = self.hub.pop_simple()
             if d is None or not d.get('frame_id'):

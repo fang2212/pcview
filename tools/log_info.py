@@ -78,9 +78,17 @@ def audit_can_data(log, canport, sensor, audit_lines=500, thres=0.2):
     print('failed')
 
 
-def get_connected_sensors(log):
+def get_connected_sensors(log, role='ego'):
+    """
+    acquire the connected devices of specific vehicle.
+    :param log: path to log.txt to analyze
+    :param role: specific role of the vehicle
+    :return: sensors dict
+    """
     print('analyzing for present sensors...')
-    can_ports = get_can_ports_and_roles(log)['can_port']
+    ports_and_roles = get_can_ports_and_roles(log)
+    can_ports = ports_and_roles['can_port']
+    roles = ports_and_roles['veh_roles']
     ports = {}
     sensors = {}
     for s in can_ports:
@@ -101,14 +109,28 @@ def get_connected_sensors(log):
             if 'CAN' in cols[2]:
                 sensors[cols[2]] = ports[cols[2]]
             elif 'bestpos' in cols[2]:
+                dev = '.'.join(cols[2].split('.')[:2])
+                if roles.get(dev) != role:
+                    continue
                 sensors[cols[2]] = 'bestpos'
             elif 'bestvel' in cols[2]:
+                dev = '.'.join(cols[2].split('.')[:2])
+                if roles.get(dev) != role:
+                    continue
                 sensors[cols[2]] = 'bestvel'
             elif 'heading' in cols[2]:
+                dev = '.'.join(cols[2].split('.')[:2])
+                if roles.get(dev) != role:
+                    continue
                 sensors[cols[2]] = 'heading'
             elif 'gps' in cols[2] or 'NMEA' in cols[2]:
+                if 'gps' in cols[2] and roles.get(cols[2]) != role:
+                    continue
                 sensors[cols[2]] = 'gps'
             elif 'Gsensor' in cols[2]:
+                if '.' in cols[2]:
+                    if roles.get(cols[2]) != role:
+                        continue
                 sensors[cols[2]] = 'gsensor'
 
     for kw in list(sensors):
