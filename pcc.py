@@ -41,7 +41,7 @@ def loop_traverse(items):
 
 class PCC(object):
 
-    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None):
+    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, auto_rec=False):
         # from config.config import runtime
         self.hub = hub
         self.cfg = uniconf
@@ -67,6 +67,7 @@ class PCC(object):
         self.rtk_pair = [{}, {}]
         self.ot = OrientTuner(uniconf)
         self.show_ipm_bg = False
+        self.auto_rec = auto_rec
 
         # self.ego_car = Vehicle()
         self.vehicles = {'ego': Vehicle('ego')}
@@ -164,6 +165,9 @@ class PCC(object):
                 self.player.start_time = datetime.now()
                 frame_cnt = 1
             # time.sleep(0.01)
+            if self.auto_rec:
+                self.auto_rec = False
+                self.start_rec()
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])
@@ -526,7 +530,7 @@ class PCC(object):
 
     def handle_keyboard(self):
         key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):
+        if key == ord('q') or key == 27:
             cv2.destroyAllWindows()
             # os._exit(0)
             self.exit = True
@@ -535,9 +539,6 @@ class PCC(object):
             self.pause = not self.pause
             print('Pause:', self.pause)
 
-        elif key == 27:
-            cv2.destroyAllWindows()
-            self.exit = True
         elif key == ord('r'):
             if self.hub.fileHandler.is_recording:
                 # self.recording = False

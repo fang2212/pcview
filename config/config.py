@@ -299,7 +299,7 @@ class CVECfg(object):
     local_cfg = None
 
 
-def load_cfg(jsonspec):
+def load_cfg(jsonspec, local='config/local.json'):
     print(bcl.WARN+'using config:' + bcl.ENDC, jsonspec)
     # configs = []
     # install = {}
@@ -343,9 +343,10 @@ def load_cfg(jsonspec):
         cve_conf.configs[0]['is_main'] = True
 
     # config = dic2obj(configs[0])
-    if not os.path.exists('config/local.json'):
-        shutil.copy('config/local_sample.json', 'config/local.json')
-    cve_conf.local_cfg = dic2obj(json.load(open('config/local.json')))
+    if not os.path.exists(local):
+        print('created new local cfg file.')
+        shutil.copy('config/local_sample.json', local)
+    cve_conf.local_cfg = dic2obj(json.load(open(local)))
     cve_conf.runtime['modules'] = spec['modules']
     return cve_conf
 

@@ -1,29 +1,46 @@
 import sys
 import os
-from config.config import load_cfg, get_local_cfg
+from config.config import load_cfg, dic2obj
+import argparse
+import json
 
 local_path = os.path.split(os.path.realpath(__file__))[0]
 # print('local_path:', local_path)
 os.chdir(local_path)
 
+cfgfile = 'config/cfg_lab.json'
+
+parser = argparse.ArgumentParser(description="process CVE log.")
+parser.add_argument('cfg_path', nargs='?', default=cfgfile)
+parser.add_argument('-o', '--output', default=None)
+parser.add_argument('-d', '--direct', default=None)
+parser.add_argument('-hl', '--headless', help='headless mode', action="store_true")
+parser.add_argument('-a', '--auto', help='auto recording', action="store_true")
 # load_cfg(sys.argv[1])
 
-if len(sys.argv) == 1:
-    sys.argv.append('config/cfg_lab.json')
+args = parser.parse_args()
 
-if '--direct' in sys.argv:
-    print('direct mode.')
+# if len(sys.argv) == 1:
+#     sys.argv.append(cfgfile)
+
+local_cfg = dic2obj(json.load(open('config/local.json')))
+opath = args.output or local_cfg.log_root
+local_cfg.log_root = opath
+
+cve_conf = load_cfg(args.cfg_path)
+cve_conf.local_cfg = local_cfg
+
+if args.direct:
+    print('PCC starts in direct-mode.')
     from pcc import *
 
-    cve_conf = load_cfg('config/cfg_default.json')
     # cve_conf.local_cfg = get_local_cfg()
     hub = Hub(uniconf=cve_conf, direct_cfg=sys.argv[2])
     pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf)
     pcc.start()
 
-elif '--headless' in sys.argv:
-    print('headless mode.')
-    configs, installs, runtime = load_cfg(sys.argv[1])
+elif args.headless:
+    print('PCC starts in headless-mode.')
     from pcc import *
     hub = Hub(headless=True)
     hub.start()
@@ -88,10 +105,14 @@ elif '--headless' in sys.argv:
     IOLoop.instance().start()
 
 else:
-    print('normal mode.')
-    cve_conf = load_cfg(sys.argv[1])
-    local_cfg = get_local_cfg()
+    print('PCC starts in normal mode.')
+    # cve_conf = load_cfg(args.cfg_path)
+    # local_cfg = get_local_cfg()
+    if args.auto:
+        auto_rec = True
+    else:
+        auto_rec = False
     from pcc import *
     hub = Hub(uniconf=cve_conf)
-    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf)
+    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec)
     pcc.start()
