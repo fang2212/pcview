@@ -34,6 +34,7 @@ db_xyd2 = cantools.database.load_file('dbc/[XYD]P18006Plus_Targets_CAN_V1.3.dbc'
 db_anc = cantools.database.load_file('dbc/[AZJ]Radar51F_target.dbc', strict=False)
 db_ctlrr = cantools.database.load_file('dbc/[CT]CTLRR-320_CAN_V4.dbc', strict=False)
 
+db_vfr = cantools.database.load_file('dbc/TSMTC_VFR_MR_316.dbc', strict=False)
 # trans_polar2rcs = Transform().trans_polar2rcs
 
 ars_filter = CIPOFilter()
@@ -562,5 +563,42 @@ def parse_anc(id, buf, ctx=None):
         ret = ancobs
         ancobs = []
         return ret
+    else:
+        return None
+
+
+# 北京川速雷达VFR
+vfr = dict()
+
+
+def parse_vfr(id, buf, ctx=None):
+    global vfr
+    if id == 0x7d0:
+        r = db_vfr.decode_message(id, buf)
+        if r['FrameType'] == 0:
+            vfr = dict()
+            vfr['frame_id'] = r['FrameId']
+            vfr['num_target'] = r['NumTarget']
+            vfr['target_info'] = []
+        elif r['FrameType'] == 15:
+            if not 'target_info' in vfr.keys():
+                return None
+            tid = r['Target_Id']
+            confidence = r['Target_confidence']
+            x_raw = r['Target_Y']
+            y_raw = r['Target_X']
+            vx_raw = r['Target_Vy']
+            vy_raw = r['Target_Vx']
+            range = sqrt(x_raw ** 2 + y_raw ** 2)
+            angle = atan2(y_raw, x_raw) * 180.0 / pi
+            range_rate = sqrt(vx_raw ** 2 + vy_raw ** 2)
+            ret = {'type': 'obstacle', 'sensor': 'vfr', 'sensor_type': 'radar', 'class': 'object',
+                   'id': tid, 'range': range, 'angle': angle, 'range_rate': range_rate,
+                   'power': confidence, 'tgt_status': 'unknown', 'dyn_prop': 'unknown', 'color': 2}
+            vfr['target_info'].append(ret)
+            if len(vfr['target_info']) >= vfr['num_target']:
+                ret = vfr['target_info']
+                vfr = dict()
+                return ret
     else:
         return None

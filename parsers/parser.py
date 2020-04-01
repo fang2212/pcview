@@ -36,6 +36,7 @@ parsers_dict = {
     "sta77_3":  parse_sta77_3,
     "xyd2":     parse_xyd2,
     "anc":      parse_anc,
+    "vfr":      parse_vfr,
     "ctlrr":    parse_ctlrr,
     "d530":     parse_dfd530,
     "default":  default_parser
