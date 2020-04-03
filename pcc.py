@@ -502,6 +502,9 @@ class PCC(object):
             self.player.draw_vehicle_state(img, data)
             # print(data)
             self.player.update_column_ts(data['source'], data['ts'])
+            if 'yaw_rate' in data:
+                self.player.show_host_path(img, data['speed'], data['yaw_rate'])
+                self.player.show_host_path_ipm(self.ipm, data['speed'], data['yaw_rate'])
 
         elif data['type'] == 'CIPV':
             self.cipv = data['id']
