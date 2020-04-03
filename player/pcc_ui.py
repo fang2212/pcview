@@ -119,7 +119,13 @@ class Player(object):
                 BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
                 BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(i - 1, 10), 0.3, CVColor.White, 1)
 
-        for i in range(-10, 11, 5):
+        for i in [-4*0.5, 4*0.5]:
+            p1 = self.transform.trans_gnd2ipm(-10, i)
+            p2 = self.transform.trans_gnd2ipm(show_range, i)
+            BaseDraw.draw_line(img, p1, p2, color_type=CVColor.LightRed, thickness=1)
+            BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 0.3, CVColor.White, 1)
+
+        for i in [-4*2.5, -4*1.5, 4*1.5, 4*2.5]:
             p1 = self.transform.trans_gnd2ipm(-10, i)
             p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
