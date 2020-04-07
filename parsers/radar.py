@@ -56,16 +56,19 @@ def parse_ars(id, buf, ctx=None):
         # speed
         if 'RadarDevice_Speed' in r:
             speed_ars = r['RadarDevice_Speed'] * 3.6
-            return {'type': 'vehicle_state', 'speed': speed_ars}
-
+            ctx['speed'] = speed_ars
         if ctx.get('radar_status') is None:
             pass
     elif id == 0x301:
         # yawrate
         if 'RadarDevice_YawRate' in r:
-            yaw_rate_ars = r['RadarDevice_YawRate'] / 57.3
-            # print('speed: %.1f km/h %.4f' % (speed_esr, yaw_rate_esr))
-            return {'type': 'vehicle_state', 'yaw_rate': yaw_rate_ars}
+            yaw_rate_ars = r['RadarDevice_YawRate'] / 57.3 *(-1) # 跟车身坐标系相反
+            ctx['yaw_rate'] = yaw_rate_ars
+            if ctx['speed'] is not None:
+                speed = ctx['speed']
+                ctx['speed'] = []
+                return {'type': 'vehicle_state', 'yaw_rate': yaw_rate_ars, 'speed': speed}
+
         # pass
 
     elif id == 0x60a:  # new start of scan

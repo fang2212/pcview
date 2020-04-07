@@ -1194,7 +1194,8 @@ class Player(object):
             R = spd / yr
         # print('R:', R)
 
-        for x in range(min(int(abs(R)), int(spd * 5))):
+        for x in range(min(int(abs(R)), int(spd * 10))):
+        # for x in range(0, 80):
             if yr < 0.0:
                 y = (abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
             elif yr > 0.0:
@@ -1240,15 +1241,15 @@ class Player(object):
             R = spd / yr
         # print('R:', R)
 
-        for x in range(min(int(abs(R)), int(spd * 5))):
+        for x in range(min(int(abs(R)), int(spd * 7))):
             if yr < 0.0:
                 y = (abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
             elif yr > 0.0:
                 y = -(abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
             else:
                 y = 0
-            y1 = y - 0.9
-            y2 = y + 0.9
+            y1 = y - 1.5
+            y2 = y + 1.5
             p1.append(self.transform.trans_gnd2ipm(x, y1))
             p2.append(self.transform.trans_gnd2ipm(x, y2))
 
