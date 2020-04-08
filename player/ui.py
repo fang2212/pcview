@@ -28,6 +28,7 @@ class CVColor(object):
     basic color RGB define
     '''
     Red = (0, 0, 255)
+    LightRed = (80, 80, 200)
     Green = (0, 255, 0)
     Grass = (0x50, 0xaf, 0x4c)
     Blue = (255, 0, 0)

@@ -15,7 +15,7 @@
       "enable": true,
       "port": 1207,
       "protocol": "nanomsg",
-      "topic": "x1d3"
+      "topic": "ifv300"
     },
     "can1": {
       "enable": true,
@@ -24,7 +24,7 @@
       "topic": "x1"
     },
     "gsensor": {
-      "enable": true,
+      "enable": false,
       "port": 1209,
       "protocol": "nanomsg",
       "topic": "gsensor"

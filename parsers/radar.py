@@ -53,8 +53,23 @@ def parse_ars(id, buf, ctx=None):
         #     ret = ars_filter.add_cipo(ctx['ars_obj'])
         #     print(ret)
         #     return ret
+        # speed
+        if 'RadarDevice_Speed' in r:
+            speed_ars = r['RadarDevice_Speed'] * 3.6
+            ctx['speed'] = speed_ars
         if ctx.get('radar_status') is None:
             pass
+    elif id == 0x301:
+        # yawrate
+        if 'RadarDevice_YawRate' in r:
+            yaw_rate_ars = r['RadarDevice_YawRate'] / 57.3 *(-1) # 跟车身坐标系相反
+            ctx['yaw_rate'] = yaw_rate_ars
+            if ctx['speed'] is not None:
+                speed = ctx['speed']
+                ctx['speed'] = []
+                return {'type': 'vehicle_state', 'yaw_rate': yaw_rate_ars, 'speed': speed}
+
+        # pass
 
     elif id == 0x60a:  # new start of scan
         # print('start of scan')
@@ -67,9 +82,6 @@ def parse_ars(id, buf, ctx=None):
 
         if ret:
             return ret
-
-    elif id == 0x301:
-        pass
 
     elif id == 0x60b:
         tid = r['Obj_ID']
@@ -108,6 +120,8 @@ def parse_ars(id, buf, ctx=None):
         # x, y = trans_polar2rcs(angle, range, install['ars'])
         ret = {'type': 'obstacle', 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle, 'color': 2}
         return ret
+
+
 
 
 def parse_esr(id, buf, ctx=None):

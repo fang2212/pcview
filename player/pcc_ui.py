@@ -119,7 +119,13 @@ class Player(object):
                 BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
                 BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(i - 1, 10), 0.3, CVColor.White, 1)
 
-        for i in range(-10, 11, 5):
+        for i in [-4*0.5, 4*0.5]:
+            p1 = self.transform.trans_gnd2ipm(-10, i)
+            p2 = self.transform.trans_gnd2ipm(show_range, i)
+            BaseDraw.draw_line(img, p1, p2, color_type=CVColor.LightRed, thickness=1)
+            BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 0.3, CVColor.White, 1)
+
+        for i in [-4*2.5, -4*1.5, 4*1.5, 4*2.5]:
             p1 = self.transform.trans_gnd2ipm(-10, i)
             p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
@@ -1188,7 +1194,8 @@ class Player(object):
             R = spd / yr
         # print('R:', R)
 
-        for x in range(min(int(abs(R)), int(spd * 5))):
+        for x in range(min(int(abs(R)), int(spd * 10))):
+        # for x in range(0, 80):
             if yr < 0.0:
                 y = (abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
             elif yr > 0.0:
@@ -1234,15 +1241,15 @@ class Player(object):
             R = spd / yr
         # print('R:', R)
 
-        for x in range(min(int(abs(R)), int(spd * 5))):
+        for x in range(min(int(abs(R)), int(spd * 7))):
             if yr < 0.0:
                 y = (abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
             elif yr > 0.0:
                 y = -(abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
             else:
                 y = 0
-            y1 = y - 0.9
-            y2 = y + 0.9
+            y1 = y - 1.5
+            y2 = y + 1.5
             p1.append(self.transform.trans_gnd2ipm(x, y1))
             p2.append(self.transform.trans_gnd2ipm(x, y2))
 

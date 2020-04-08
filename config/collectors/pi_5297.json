@@ -2,7 +2,6 @@
   "type": "pi_node",
   "mac": "b8:27:eb:9f:52:97",
   "ip": "192.168.98.0",
-  "force_ip": false,
   "work_mode": "collector",
   "repeater": false,
   "ports": {
