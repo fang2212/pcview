@@ -119,7 +119,13 @@ class Player(object):
                 BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
                 BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(i - 1, 10), 0.3, CVColor.White, 1)
 
-        for i in range(-10, 11, 5):
+        for i in [-4*0.5, 4*0.5]:
+            p1 = self.transform.trans_gnd2ipm(-10, i)
+            p2 = self.transform.trans_gnd2ipm(show_range, i)
+            BaseDraw.draw_line(img, p1, p2, color_type=CVColor.LightRed, thickness=1)
+            BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 0.3, CVColor.White, 1)
+
+        for i in [-4*2.5, -4*1.5, 4*1.5, 4*2.5]:
             p1 = self.transform.trans_gnd2ipm(-10, i)
             p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
@@ -521,6 +527,7 @@ class Player(object):
         BaseDraw.draw_text(img,
                            'lost frames: {}'.format(data['frame_id'] - self.video_streams[data['source']]['frame_cnt']),
                            (2, 80), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'dev: {}'.format(data['device']), (2, 100), 0.5, CVColor.White, 1)
 
     def show_frame_id(self, img, source, fn):
         # indent = self.columns['video']['indent']
@@ -1024,14 +1031,14 @@ class Player(object):
                                                           self.cfg.installs['video']['roll']),
                            (1180, 710), 0.3, CVColor.White, 1)
 
-    # def show_warning(self, img, title):
-    #     # print(title)
-    #     if isinstance(title, list):
-    #         for idx, t in enumerate(title):
-    #             # print(idx)
-    #             BaseDraw.draw_text(img, t, (10, 200 + idx * 80), 2, CVColor.Red, 3)
-    #     else:
-    #         BaseDraw.draw_text(img, title, (10, 200), 2, CVColor.Red, 3)
+    def show_warning_ifc(self, img, title):
+        # print(title)
+        if isinstance(title, list):
+            for idx, t in enumerate(title):
+                # print(idx)
+                BaseDraw.draw_text(img, t, (10, 200 + idx * 80), 2, CVColor.Red, 3)
+        else:
+            BaseDraw.draw_text(img, title, (10, 200), 2, CVColor.Red, 3)
 
     def show_ub482_common(self, img, data):
         indent = self.get_indent(data['source'])
@@ -1172,3 +1179,81 @@ class Player(object):
             color = self.color_obs['default']
 
         self.show_lane_ipm(img, data, color)
+
+    def show_host_path(self, img, spd, yr, yrbias=0.0017):
+        # if spd < 5:
+        #     return
+        spd = spd / 3.6
+
+        p1 = []
+        p2 = []
+        R = 1000
+        x0 = -1.2
+        yr = yr - yrbias
+        if yr > 0.00001 or yr < -0.00001:
+            R = spd / yr
+        # print('R:', R)
+
+        for x in range(min(int(abs(R)), int(spd * 10))):
+        # for x in range(0, 80):
+            if yr < 0.0:
+                y = (abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
+            elif yr > 0.0:
+                y = -(abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
+            else:
+                y = 0
+            y1 = y - 0.9
+            y2 = y + 0.9
+            p1.append(self.transform.trans_gnd2raw(x, y1))
+            p2.append(self.transform.trans_gnd2raw(x, y2))
+
+        for i in range(1, len(p1) - 1, 1):
+            BaseDraw.draw_line(img, p1[i], p1[i + 1], CVColor.Grass, 2)
+            BaseDraw.draw_line(img, p2[i], p2[i + 1], CVColor.Grass, 2)
+
+            if i % 20 == 0 or i == 10:
+                BaseDraw.draw_line(img, p1[i], p2[i], CVColor.Grass, 2)
+                BaseDraw.draw_text(img, '{}m'.format(i), (p1[i][0], p1[i][1] + 10), 0.5, CVColor.Green, 1)
+            # x, y, w, h = 200, 360, 880, 360
+            # pt0 = (p1[i][0] - x, p1[i][1]-y)
+            # pt1 = (p1[i+1][0] - x, p1[i+1][1] - y)
+            # pt2 = (p2[i+1][0] - x, p2[i+1][1] - y)
+            # pt3 = (p2[i][0] - x, p2[i][1] - y)
+            # roi = img[360:720, 200:1080]
+            # img1 = np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8)
+            # vtxs = np.array([[p1[i], p1[i+1], p2[i+1], p2[i]]])
+            # vtxs = np.array([[pt0, pt1, pt2, pt3]])
+            # BaseDraw.draw_alpha_rect(img, (p1[i][0], p1[i][1], abs(p2[i][0] - p1[i][0]), abs(p2[i][1] - p1[i][1])), 0.4)
+            # cv2.fillPoly(img, vtxs, (0, 200, 0))
+            # cv2.addWeighted(img, 0.9, img1, 0.2, 0, img1)
+
+    def show_host_path_ipm(self, img, spd, yr, yrbias=0.0017):
+        # if spd < 5:
+        #     return
+        spd = spd / 3.6
+
+        p1 = []
+        p2 = []
+        R = 1000
+        x0 = -1.2
+        yr = yr - yrbias
+        if yr > 0.00001 or yr < -0.00001:
+            R = spd / yr
+        # print('R:', R)
+
+        for x in range(min(int(abs(R)), int(spd * 7))):
+            if yr < 0.0:
+                y = (abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
+            elif yr > 0.0:
+                y = -(abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
+            else:
+                y = 0
+            y1 = y - 1.5
+            y2 = y + 1.5
+            p1.append(self.transform.trans_gnd2ipm(x, y1))
+            p2.append(self.transform.trans_gnd2ipm(x, y2))
+
+        for i in range(1, len(p1) - 1, 1):
+            BaseDraw.draw_line(img, p1[i], p1[i + 1], CVColor.Green, 1)
+            BaseDraw.draw_line(img, p2[i], p2[i + 1], CVColor.Green, 1)
+

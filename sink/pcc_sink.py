@@ -303,7 +303,7 @@ class GsensorSink(Sink):
 
 
 class CameraSink(Sink):
-    def __init__(self, queue, ip, port, channel, index, fileHandler, headless=False, is_main=False):
+    def __init__(self, queue, ip, port, channel, index, fileHandler, headless=False, is_main=False, devname=None):
         super(CameraSink, self).__init__(queue, ip, port, channel, index, headless)
         self.last_fid = 0
         self.fileHandler = fileHandler
@@ -311,6 +311,7 @@ class CameraSink(Sink):
         # self.index = index
         self.source = 'video.{:d}'.format(index)
         self.is_main = is_main
+        self.devname = devname
 
     def pkg_handler(self, msg):
         # print('cprocess-id:', os.getpid())
@@ -329,7 +330,7 @@ class CameraSink(Sink):
         logging.debug('cam id {}'.format(frame_id))
         # print('frame id', frame_id)
 
-        r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id, 'source': self.source, 'is_main': self.is_main}
+        r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id, 'source': self.source, 'is_main': self.is_main, 'device': self.devname}
         # print('frame id', frame_id)
         # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
 

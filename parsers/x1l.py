@@ -19,4 +19,3 @@ def parse_x1l(id, buf, ctx=None):
         # x1l_obs.append(ret)
         # print(ret)
         return ret
-    return None

@@ -2,7 +2,7 @@
     "version": 0.7,
     "modules": {
         "GGA_reporter": {
-            "enable": true,
+            "enable": false,
             "ntrip_address": "ntrip.weaty.cn",
             "port": 5001
         }

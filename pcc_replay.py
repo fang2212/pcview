@@ -65,7 +65,7 @@ class LogPlayer(Process):
         self.last_frame = 0
         self.jpeg_extractor = jpeg_extractor(os.path.dirname(log_path) + '/video')
         self.base_dir = os.path.dirname(self.log_path)
-        self.msg_queue = Queue()
+        # self.msg_queue = Queue()
         self.cam_queue = Queue()
         self.cache = {}
         self.msg_cnt = {}
@@ -134,7 +134,7 @@ class LogPlayer(Process):
         for cfg in self.cfg.configs:
             msg_types = cfg.get('msg_types')
             if not msg_types:
-                return 'ego'
+                continue
             if source in msg_types:
                 return cfg.get('veh_tag')
         return 'default'
@@ -208,6 +208,7 @@ class LogPlayer(Process):
         # self.init_socket()
         # cp = cProfile.Profile()
         # cp.enable()
+
         last_fid = 0
         frame_lost = 0
         total_frame = 0
@@ -231,6 +232,10 @@ class LogPlayer(Process):
 
             if 'replay_speed' in self.d:
                 self.replay_speed = self.d['replay_speed']
+
+            if self.cam_queue.qsize() > 20:  # if cache longer than 1s then slow down the log reading
+                time.sleep(0.01)
+                # print('replay camque', self.cam_queue.qsize())
 
             # print('line {}'.format(cnt))
             cols = line.split(' ')
@@ -350,10 +355,9 @@ class LogPlayer(Process):
                 r = ublox.decode_nmea(cols[3])
                 r['source'] = cols[2]
                 self.cache['can'].append(r.copy())
-
-            # print(r)
-
+        print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
+        return
         # cp.disable()
         # cp.print_stats()
 
@@ -392,7 +396,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Replay CVE log.")
 
-    log = '/home/yj/bak/data/mobileye/q3_fusion/20190320_fusion_q3_radar/fusion_mode/20190320171303/log.txt'
+    log = '/home/yj/bak/data/mobileye/q3_fusion/20190320_fusion_q3_radar/fusion_mode/20190320165156/log.txt'
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=False)

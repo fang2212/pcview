@@ -9,7 +9,7 @@ from config.config import bcl
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
 from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink
-from tools.ip_mac import get_mac_ip
+from tools.ip_mac import get_mac_ip, get_cached_macs, save_macs
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')  # logging.basicConfig函数对日志的输出格式及方式做相关配置
@@ -78,8 +78,17 @@ class Hub(Thread):
             self.online = self.direct_init(direct_cfg)
             return
 
-        print('scanning for LAN devices...')
-        self.mac_ip = get_mac_ip()
+        cached_macs = get_cached_macs(uniconf.name, timeout=60*60*24)
+        if not cached_macs:
+            print('scanning for LAN devices...')
+            self.mac_ip = get_mac_ip()
+            save_macs(uniconf.name, self.mac_ip)
+        else:
+            print('---- using cached mac table ----')
+            self.mac_ip = cached_macs
+            for mac in self.mac_ip:
+                print(mac, self.mac_ip[mac])
+            print('--------------------------------')
 
         self.finder.request()
         time.sleep(0.6)
@@ -175,12 +184,18 @@ class Hub(Thread):
         cfgs_online = {}
         for idx, cfg in enumerate(self.configs):  # match cfg and finder results
             mac = cfg.get('mac')
-            if mac and mac in self.mac_ip:
+            if mac and mac in self.mac_ip:  # mac matches one of the founded LAN devices
                 ip = self.mac_ip[mac]
                 cfg['ip'] = ip
                 cfg['idx'] = idx
                 cfgs_online[ip] = cfg
                 continue
+            if cfg.get('force_ip'):  # force to connect via pre-defined ip
+                if 'ip' not in cfg:
+                    print('undefined ip addr for ip-force device', cfg['mac'])
+                    continue
+                ip = cfg['ip']
+                cfgs_online[ip] = cfg
 
             for ip in self.finder.found:
                 if cfg.get('mac') == self.finder.found[ip]['mac']:
@@ -262,7 +277,7 @@ class Hub(Thread):
                     elif 'video' in iface:
                         port = cfg['ports']['video']['port']
                         vsink = CameraSink(queue=self.cam_queue, ip=ip, port=port, channel='camera', index=idx,
-                                          fileHandler=self.fileHandler, is_main=cfg.get('is_main'))
+                                          fileHandler=self.fileHandler, is_main=cfg.get('is_main'), devname=cfg.get('name'))
                         # vsink.start()
                         # vsink = {'stype': 'camera', 'queue': self.cam_queue, 'ip': ip, 'port': port,
                         #          'channel': 'camera', 'index': idx, 'fileHandler': self.fileHandler,

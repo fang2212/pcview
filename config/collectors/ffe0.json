@@ -6,7 +6,7 @@
   "repeater": false,
   "ports": {
     "video": {
-      "enable": true,
+      "enable": false,
       "port": 1200,
       "protocol": "nanomsg",
       "topic": "video"
@@ -24,7 +24,7 @@
       "topic": "x1"
     },
     "gsensor": {
-      "enable": true,
+      "enable": false,
       "port": 1209,
       "protocol": "nanomsg",
       "topic": "gsensor"

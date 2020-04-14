@@ -34,6 +34,7 @@ db_xyd2 = cantools.database.load_file('dbc/[XYD]P18006Plus_Targets_CAN_V1.3.dbc'
 db_anc = cantools.database.load_file('dbc/[AZJ]Radar51F_target.dbc', strict=False)
 db_ctlrr = cantools.database.load_file('dbc/[CT]CTLRR-320_CAN_V4.dbc', strict=False)
 
+db_vfr = cantools.database.load_file('dbc/TSMTC_VFR_MR_316.dbc', strict=False)
 # trans_polar2rcs = Transform().trans_polar2rcs
 
 ars_filter = CIPOFilter()
@@ -52,8 +53,23 @@ def parse_ars(id, buf, ctx=None):
         #     ret = ars_filter.add_cipo(ctx['ars_obj'])
         #     print(ret)
         #     return ret
+        # speed
+        if 'RadarDevice_Speed' in r:
+            speed_ars = r['RadarDevice_Speed'] * 3.6
+            ctx['speed'] = speed_ars
         if ctx.get('radar_status') is None:
             pass
+    elif id == 0x301:
+        # yawrate
+        if 'RadarDevice_YawRate' in r:
+            yaw_rate_ars = r['RadarDevice_YawRate'] / 57.3 *(-1) # 跟车身坐标系相反
+            ctx['yaw_rate'] = yaw_rate_ars
+            if ctx['speed'] is not None:
+                speed = ctx['speed']
+                ctx['speed'] = []
+                return {'type': 'vehicle_state', 'yaw_rate': yaw_rate_ars, 'speed': speed}
+
+        # pass
 
     elif id == 0x60a:  # new start of scan
         # print('start of scan')
@@ -66,9 +82,6 @@ def parse_ars(id, buf, ctx=None):
 
         if ret:
             return ret
-
-    elif id == 0x301:
-        pass
 
     elif id == 0x60b:
         tid = r['Obj_ID']
@@ -107,6 +120,8 @@ def parse_ars(id, buf, ctx=None):
         # x, y = trans_polar2rcs(angle, range, install['ars'])
         ret = {'type': 'obstacle', 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle, 'color': 2}
         return ret
+
+
 
 
 def parse_esr(id, buf, ctx=None):
@@ -432,6 +447,42 @@ def parse_sta77(id, buf, ctx=None):
             return None
 
 
+st77obs_3 = []
+
+
+# id 顺序 0x120 ... 0x15f 0x201
+def parse_sta77_3(id, buf, ctx=None):
+    global st77obs_3
+    if id == 0x201:
+        ret = st77obs_3
+        st77obs_3 = []
+        return ret
+    elif not (id & 0x001):
+        tid = buf[1]
+        range_lon = (buf[2] << 8 | buf[3])*0.1
+        range_lat = (buf[4] << 8 | buf[5])
+        if range_lat > 32767:
+            range_lat = (range_lat-65536)*0.1
+        else:
+            range_lat *= 0.1
+        range = sqrt(range_lat**2+range_lon**2)
+        angle = atan2(range_lat, range_lon)*180/pi
+        range_rate = (buf[6] << 8 | buf[7])*0.1
+        if range_lon > 0.5:
+            ret = {'type': 'obstacle', 'sensor': 'sta77_3', 'sensor_type': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
+                    'range_rate': range_rate, 'pos_lat': range_lat, 'pos_lon':range_lon, 'power': 0, 'tgt_status': 'update_99','dyn_prop': 'unknown', 'color': 7}
+            st77obs_3.append(ret)
+        return None
+    else:
+        if len(st77obs_3) > 0:
+            if (buf[5] << 8 | buf[6]) > 32767:
+                st77obs_3[-1]['power'] = ((buf[5] << 8 | buf[6])-65536)*0.1
+            else:
+                st77obs_3[-1]['power'] = (buf[5] << 8 | buf[6]) * 0.1
+            st77obs_3[-1]['tgt_status'] = 'update_%02d' % buf[0]
+        return None
+
+
 xydobs2 = []
 
 
@@ -526,5 +577,42 @@ def parse_anc(id, buf, ctx=None):
         ret = ancobs
         ancobs = []
         return ret
+    else:
+        return None
+
+
+# 北京川速雷达VFR
+vfr = dict()
+
+
+def parse_vfr(id, buf, ctx=None):
+    global vfr
+    if id == 0x7d0:
+        r = db_vfr.decode_message(id, buf)
+        if r['FrameType'] == 0:
+            vfr = dict()
+            vfr['frame_id'] = r['FrameId']
+            vfr['num_target'] = r['NumTarget']
+            vfr['target_info'] = []
+        elif r['FrameType'] == 15:
+            if not 'target_info' in vfr.keys():
+                return None
+            tid = r['Target_Id']
+            confidence = r['Target_confidence']
+            x_raw = r['Target_Y']
+            y_raw = r['Target_X']
+            vx_raw = r['Target_Vy']
+            vy_raw = r['Target_Vx']
+            range = sqrt(x_raw ** 2 + y_raw ** 2)
+            angle = atan2(y_raw, x_raw) * 180.0 / pi
+            range_rate = sqrt(vx_raw ** 2 + vy_raw ** 2)
+            ret = {'type': 'obstacle', 'sensor': 'vfr', 'sensor_type': 'radar', 'class': 'object',
+                   'id': tid, 'range': range, 'angle': angle, 'range_rate': range_rate,
+                   'power': confidence, 'tgt_status': 'unknown', 'dyn_prop': 'unknown', 'color': 2}
+            vfr['target_info'].append(ret)
+            if len(vfr['target_info']) >= vfr['num_target']:
+                ret = vfr['target_info']
+                vfr = dict()
+                return ret
     else:
         return None

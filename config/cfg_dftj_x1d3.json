@@ -1,6 +1,5 @@
 {
-    "version": 0.8,
-    "name": "cfg_lab",
+    "version": 0.7,
     "modules": {
         "GGA_reporter": {
             "enable": true,
@@ -8,16 +7,16 @@
             "port": 5001
         }
     },
-    "main_collector": "algo_626d",
+    "main_collector": "algo_2923",
     "vehicles": {
         "ego": {
             "enable": true,
             "collectors": {
-                "ffd0": "normal",
-                "algo_626d": "normal",
-                "algo_e23e": "normal",
+                "algo_2923": "normal",
                 "ffe0": "normal",
-                "55dd": "normal"
+                "ffe1": "normal",
+                "ffe3": "normal",
+                "pi_5297": "normal"
             },
             "installation": {
                 "esr": {
@@ -27,6 +26,14 @@
                     "height": 0.45,
                     "lon_offset": 0.0,
                     "yaw": -1.8
+                },
+                "ars": {
+                    "roll": 0.0,
+                    "lat_offset": 0.13,
+                    "pitch": 0.0,
+                    "height": 0.45,
+                    "lon_offset": 0.0,
+                    "yaw": 0.88
                 },
                 "lmr": {
                     "roll": 0.0,
@@ -48,36 +55,36 @@
                     "roll": 0.0,
                     "lat_offset": 0.0,
                     "pitch": -2.0,
-                    "height": 0.86,
-                    "lon_offset": -0.21,
-                    "yaw": 0.0
+                    "height": 1.54,
+                    "lon_offset": -2.04,
+                    "yaw": 0.8
                 },
                 "video": {
                     "fu": 1458.0,
-                    "yaw": 0.0,
+                    "yaw": -0.21,
                     "fv": 1458.0,
-                    "pitch": -0.0,
+                    "pitch": 5.17,
                     "cu": 640.0,
-                    "lat_offset": 0.15,
+                    "lat_offset": 0.0,
                     "roll": 0.0,
-                    "height": 1.18,
-                    "lon_offset": -1.67,
+                    "height": 1.91,
+                    "lon_offset": -0.18,
                     "cv": 360.0
                 },
                 "x1": {
                     "roll": 0.0,
-                    "lat_offset": 0.0,
-                    "pitch": 0.0,
-                    "height": 1.18,
-                    "lon_offset": -1.64,
-                    "yaw": 0.0
+                    "lat_offset": 0.15,
+                    "pitch": 0.3,
+                    "height": 1.4,
+                    "lon_offset": -1.72,
+                    "yaw": 0.35
                 }
             }
         },
-        "other": {
+        "rover": {
             "enable": false,
             "collectors": {
-                "9de8": "normal"
+                "pi_426d_rover": "normal"
             }
         }
     }
