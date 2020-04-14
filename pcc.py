@@ -337,7 +337,9 @@ class PCC(object):
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
         source = data.get('source')
+        # print(source)
         role = self.hub.get_veh_role(source)
+        # print(role)
         # self.vehicles[role].dynamics[data['type']] = data
         self.vehicles[role].update_dynamics(data)
 
@@ -373,6 +375,8 @@ class PCC(object):
                 if target:
                     self.player.show_rtk_target(img, target)
                     self.player.show_rtk_target_ipm(self.ipm, target)
+            # else:
+            #     print('no ego vehicle')
             # elif 'trk_gnd' in data:
             #     self.player.show_track_gnd(img, data)
             # ppq = self.vehicles['ego'].dynamics.get('pinpoint')

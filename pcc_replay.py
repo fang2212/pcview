@@ -134,7 +134,7 @@ class LogPlayer(Process):
         for cfg in self.cfg.configs:
             msg_types = cfg.get('msg_types')
             if not msg_types:
-                return 'ego'
+                continue
             if source in msg_types:
                 return cfg.get('veh_tag')
         return 'default'
@@ -396,7 +396,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Replay CVE log.")
 
-    log = '/home/yj/bak/data/VIO/A1M/20200401_A1M-2_深南_TSR停车_a1m_rs32_x1/x1_pcc/20200401164623/log.txt'
+    log = '/home/nan/data/20191122154341_ramp_in/log.txt'
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=False)

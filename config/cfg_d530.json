@@ -7,15 +7,16 @@
             "port": 5001
         }
     },
-    "main_collector": "algo_e420",
+    "main_collector": "ffe1",
     "vehicles": {
         "ego": {
             "enable": true,
             "collectors": {
-                "algo_e420": "normal",
+                "algo_eb96": "normal",
                 "ffe0": "normal",
                 "ffe1": "normal",
                 "ffd2": "normal",
+                "ffe3": "normal",
                 "pi_5297": "normal"
             },
             "installation": {
