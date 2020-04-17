@@ -490,7 +490,13 @@ class Player(object):
                 BaseDraw.draw_text(img, col, (indent + 22, 20), 0.5, CVColor.Cyan, 1)
             dt = self.ts_now - self.columns[col]['ts']
 
-            BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt * 1000)), (indent + 92, 20), 0.5, CVColor.White, 1)
+            if dt > 9.999:
+                delay_ms = ">9999ms"
+            elif dt < -9.999:
+                delay_ms = "<-9999ms"
+            else:
+                delay_ms = '{:>+4d}ms'.format(int(dt * 1000))
+            BaseDraw.draw_text(img, delay_ms, (indent + 92, 20), 0.5, CVColor.White, 1)
             # if col is not 'video':
             #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:

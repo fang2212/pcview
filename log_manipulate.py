@@ -2568,6 +2568,7 @@ if __name__ == "__main__":
     parser.add_argument('-hil', '--hil', help='preprocess log for HIL replay', action="store_true")
     parser.add_argument('-vec', '--vector', help='preprocess log for vector canalyzer', action="store_true")
     parser.add_argument('-aeb', '--aeb', help='preprocess log for aeb control tuning', action="store_true")
+    parser.add_argument('-cmain', '--changemain', default=None)
 
     args = parser.parse_args()
     sensors = []
