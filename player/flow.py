@@ -60,7 +60,7 @@ class FlowPlayer(object):
                 pos = vehicle['reg_rect']
                 color = CVColor.Yellow
                 BaseDraw.draw_obj_rect_corn(img, pos, color, 2)
-
+                BaseDraw.draw_obj_rect(img, vehicle['det_rect'], CVColor.Cyan, 1)
                 vid = vehicle['vehicle_id']
                 vehicle_width = "%.2f" % vehicle.get('vehicle_width', 0)
                 ttc = "%.2f" % vehicle.get('ttc', 0)
@@ -72,7 +72,7 @@ class FlowPlayer(object):
                 para_list = [
                     'v:' + str(d1),
                     # 'h:' + str(d2),
-                    # 'width:' + vehicle_width,
+                    'width:' + vehicle_width,
                     # 'type:' + str(VehicleType.get(tid)),
                     'vid:' + str(vid)
                 ]
@@ -108,6 +108,30 @@ class FlowPlayer(object):
                         BaseDraw.draw_lane_line(img, lane['perspective_view_poly_coeff'],
                                                 0.2, color, begin, end)
 
+        if self.cfg.get('show_ultrasonic', 1):
+            dis = "-"
+            if 'ultrasonic' in mess:
+                if self.cfg.get("is_single_ultrasonic", 0):
+                    if mess['ultrasonic']['can_id'] == 1281:
+                        self.ultrasonic_pair[0] = mess['ultrasonic']
+                    elif mess['ultrasonic']['can_id'] == 1282:
+                        self.ultrasonic_pair[1] = mess['ultrasonic']
+
+                    if self.ultrasonic_pair[0] and self.ultrasonic_pair[1]:
+                        if self.ultrasonic_pair[0]['distance'] and self.ultrasonic_pair[1]['distance']:
+                            dis = min(self.ultrasonic_pair[0]['distance'], self.ultrasonic_pair[1]['distance'])
+                        else:
+                            dis = max(self.ultrasonic_pair[0]['distance'], self.ultrasonic_pair[1]['distance'])
+                        dis = round(dis, 2)
+                        self.ultrasonic_pair = [{}, {}]
+                else:
+                    dis = round(mess['ultrasonic']['distance'], 2)
+            para_list = [
+                # "can_id:%d" % mess['ultrasonic']['can_id'],
+                "distance:" + '%sm' % str(dis)
+                # 'ts:' + "%.2fs" % (mess['ultrasonic']['time'] / 1000000)
+            ]
+            BaseDraw.draw_single_info(img, (1100, 0), 120, 'ultrasonic', para_list)
         return img
 
 def chr(d):
