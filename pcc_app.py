@@ -8,7 +8,7 @@ local_path = os.path.split(os.path.realpath(__file__))[0]
 # print('local_path:', local_path)
 os.chdir(local_path)
 
-cfgfile = 'config/cfg_lab.json'
+cfgfile = 'config/cfg_dftj_guojian.json'
 
 parser = argparse.ArgumentParser(description="process CVE log.")
 parser.add_argument('cfg_path', nargs='?', default=cfgfile)

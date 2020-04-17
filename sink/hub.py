@@ -184,18 +184,21 @@ class Hub(Thread):
         cfgs_online = {}
         for idx, cfg in enumerate(self.configs):  # match cfg and finder results
             mac = cfg.get('mac')
-            if mac and mac in self.mac_ip:  # mac matches one of the founded LAN devices
+            print('-------------', cfg)
+            if cfg.get('force_ip'):  # force to connect via pre-defined ip
+                print('config force ip device.')
+                if 'ip' not in cfg:
+                    print('undefined ip addr for ip-force device', cfg['mac'])
+                    continue
+                ip = cfg['ip']
+                cfg['idx'] = idx
+                cfgs_online[ip] = cfg
+            elif mac and mac in self.mac_ip:  # mac matches one of the founded LAN devices
                 ip = self.mac_ip[mac]
                 cfg['ip'] = ip
                 cfg['idx'] = idx
                 cfgs_online[ip] = cfg
                 continue
-            if cfg.get('force_ip'):  # force to connect via pre-defined ip
-                if 'ip' not in cfg:
-                    print('undefined ip addr for ip-force device', cfg['mac'])
-                    continue
-                ip = cfg['ip']
-                cfgs_online[ip] = cfg
 
             for ip in self.finder.found:
                 if cfg.get('mac') == self.finder.found[ip]['mac']:

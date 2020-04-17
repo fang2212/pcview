@@ -12,10 +12,9 @@
         "ego": {
             "enable": true,
             "collectors": {
-                "algo_eb96": "normal",
+                "algo_0122": "normal",
                 "ffe0": "normal",
                 "ffe1": "normal",
-                "ffd2": "normal",
                 "ffe3": "normal",
                 "pi_5297": "normal"
             },
@@ -30,11 +29,11 @@
                 },
                 "ars": {
                     "roll": 0.0,
-                    "lat_offset": 0.22,
+                    "lat_offset": 0.13,
                     "pitch": 0.0,
                     "height": 0.45,
                     "lon_offset": 0.0,
-                    "yaw": -1.8
+                    "yaw": 0.88
                 },
                 "lmr": {
                     "roll": 0.0,
@@ -58,18 +57,18 @@
                     "pitch": -2.0,
                     "height": 1.54,
                     "lon_offset": -2.04,
-                    "yaw": 0.8
+                    "yaw": 0.2
                 },
                 "video": {
                     "fu": 1458.0,
-                    "yaw": -3.1,
+                    "yaw": -5.5,
                     "fv": 1458.0,
-                    "pitch": 1.75,
+                    "pitch": -5.87,
                     "cu": 640.0,
-                    "lat_offset": 0.15,
+                    "lat_offset": 0.0,
                     "roll": 0.0,
                     "height": 1.91,
-                    "lon_offset": -0.2,
+                    "lon_offset": -0.18,
                     "cv": 360.0
                 },
                 "x1": {

@@ -69,6 +69,8 @@ def get_cached_macs(cfg_name, cachefile='config/runtime/cached_macs.json', timeo
 
 
 def save_macs(cfg_name, mac_ip, cachefile='config/runtime/cached_macs.json'):
+    if not os.path.exists(os.path.dirname(cachefile)):
+        os.mkdir(os.path.dirname(cachefile))
     if not os.path.exists(cachefile):
         to_save = {cfg_name: {'ts': time.time(), 'data': mac_ip}}
         json.dump(to_save, open(cachefile, 'w'), indent=True)
