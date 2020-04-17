@@ -235,7 +235,7 @@ class PCC(object):
             img_aux = np.vstack((img_aux, img_small))
 
         if 'x1_data' in mess:
-            # print('------', mess['pcv_data'])
+            print('------', mess['x1_data'])
             for data in mess['x1_data']:
                 # print(mess['x1_data'])
                 self.flow_player.draw(data, img)

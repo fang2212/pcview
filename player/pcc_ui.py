@@ -876,9 +876,9 @@ class Player(object):
         BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (p5[0], p5[1] - 10), 0.3, CVColor.White, 1)
         # BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
         #                    CVColor.White, 1)
-        self.show_text_info(target['source'], 140, 'range: {:.3f}'.format(range))
-        self.show_text_info(target['source'], 100, 'angle: {:.2f}'.format(angle))
-        self.show_text_info(target['source'], 120, 'TTC: {:.2f}'.format(target['TTC']))
+        self.show_text_info(target['source'], 240, 'range: {:.3f}'.format(range))
+        self.show_text_info(target['source'], 260, 'angle: {:.2f}'.format(angle))
+        self.show_text_info(target['source'], 280, 'TTC: {:.2f}'.format(target['TTC']))
 
     def show_ipm_target(self, img, target, host):
         range, angle = self._calc_relatives(target, host)

@@ -170,17 +170,20 @@ class LogPlayer(Process):
 
                         try:
                             data = json.loads(line)
+                            # print(data)
                         except json.JSONDecodeError as e:
                             pass
                             # print('error json line', line)
                             # continue
 
                         if 'frame_id' not in data:
+                            # print(data)
                             continue
 
                         if data['frame_id'] == res['frame_id']:
                             res['x1_data'].append(data)
                         elif data['frame_id'] < res['frame_id']:
+                            print(data['frame_id'], res['frame_id'])
                             continue
                         else:
                             self.x1_fp.seek(fx)
@@ -399,7 +402,7 @@ if __name__ == "__main__":
     log = '/media/nan/860evo/data/pcc_data/20200416193921_jt_150m_1.0/log.txt'
 
     parser.add_argument('input_path', nargs='?', default=log)
-    parser.add_argument('-o', '--output', default=False)
+    parser.add_argument('-o', '--output', default=None)
 
     args = parser.parse_args()
     source = args.input_path

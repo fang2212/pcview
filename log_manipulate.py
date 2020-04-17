@@ -2546,6 +2546,48 @@ def aeb_test_analysis(dir_name):
     xl.save(os.path.join(dir_name, 'fcw.xls'))
 
 
+def change_main_video(dir_name, main_video_name):
+    if not os.path.exists(os.path.join(dir_name, main_video_name)):
+        print('no dir found named', main_video_name, 'in', dir_name)
+        return
+
+    configs = json.load(open(os.path.join(dir_name, 'config.json')))
+    new_configs = []
+    old_main_idx = 0
+    #  change main tags in config.json
+    for cfg in configs:
+        new_configs.append(cfg)
+        if 'msg_types' in cfg and main_video_name in cfg['msg_types']:
+            if cfg['is_main']:
+                print('the given name of device is already main.')
+                return
+            print('replacing main tag in config.json')
+            new_configs[-1]['is_main'] = True
+            # print(new_configs)
+
+        elif cfg.get('is_main'):
+            old_main_idx = cfg['idx']
+            new_configs[-1]['is_main'] = False
+    # os.remove(os.path.join(dir_name, 'config.json'))
+    json.dump(new_configs, open(os.path.join(dir_name, 'config.json'), 'w'), indent=True)
+    #  change video dir names
+    os.rename(os.path.join(dir_name, 'video'), os.path.join(dir_name, 'video.{}'.format(old_main_idx)))
+    os.rename(os.path.join(dir_name, main_video_name), os.path.join(dir_name, 'video'))
+    #  change entries in log.txt
+    wf = open(os.path.join(dir_name, 'log.txt.new'), 'w')
+    with open(os.path.join(dir_name, 'log.txt')) as rf:
+        for line in rf:
+            cols = line.split(' ')
+            if cols[2] == 'camera':
+                cols[2] = 'video.{}'.format(old_main_idx)
+            elif main_video_name in cols[2]:
+                cols[2] = 'camera'
+            wf.write(' '.join(cols))
+    wf.close()
+    os.remove(os.path.join(dir_name, 'log.txt'))
+    os.rename(os.path.join(dir_name, 'log.txt.new'), os.path.join(dir_name, 'log.txt'))
+
+
 if __name__ == "__main__":
     from tools import visual
     import sys
@@ -2593,6 +2635,8 @@ if __name__ == "__main__":
         process_log(r, [trans_line_to_asc], ctx, output=ofile)
     elif args.aeb:
         aeb_test_analysis(r)
+    elif args.changemain:
+        change_main_video(r, args.changemain)
     else:
         sensors = ['x1']
         if args.q3:

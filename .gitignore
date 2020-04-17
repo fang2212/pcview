@@ -60,3 +60,4 @@ dbc/*.ini
 .idea
 log_sort.txt
 /config/.stignore
+cached_macs.json
