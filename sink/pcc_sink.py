@@ -406,6 +406,9 @@ class FlowSink(Sink):
         data = data[b'data']
         if b'frame_id' in data:
             data = msgpack.unpackb(data)
+            if b'ultrasonic' in data:
+                data[b'ultrasonic'][b'can_data'] = [x for x in data[b'ultrasonic'][b'can_data']]
+
             pcv = mytools.convert(data)
             data = json.dumps(pcv)
             self.fileHandler.insert_pcv_raw(data)

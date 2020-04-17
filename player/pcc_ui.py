@@ -706,37 +706,44 @@ class Player(object):
         if not color:
             color = self.color_obs['default']
 
-        width = 3.5
-        height = 1.6
-        x, y = data['pos_lon'], 0
-        dist = (x ** 2 + y ** 2) ** 0.5
-        dist = max(0.1, dist)
-        if dist <= 0 or x <= 0:
-            return
-
-        w = self.cfg.installs['video']['fu'] * width / dist
-        w = int(w)
-
-        x0, y0 = self.transform.trans_gnd2raw(x, y)
-
-        h = int(self.cfg.installs['video']['fv'] * height / dist)
-        x1 = int(x0 - 0.5 * w)
-        y1 = int(y0 - h)
-        x2 = int(x1 + w)
-        y2 = int(y1 + h)
-
-        size = max(min(0.5 * 8 / dist, 0.5), 0.28)
+        # width = 3.5
+        # height = 1.6
+        # x, y = data['pos_lon'], 0
+        # dist = (x ** 2 + y ** 2) ** 0.5
+        # dist = max(0.1, dist)
+        # if dist <= 0 or x <= 0:
+        #     return
+        #
+        # w = self.cfg.installs['video']['fu'] * width / dist
+        # w = int(w)
+        #
+        # x0, y0 = self.transform.trans_gnd2raw(x, y)
+        #
+        # h = int(self.cfg.installs['video']['fv'] * height / dist)
+        # x1 = int(x0 - 0.5 * w)
+        # y1 = int(y0 - h)
+        # x2 = int(x1 + w)
+        # y2 = int(y1 + h)
+        #
+        # size = max(min(0.5 * 8 / dist, 0.5), 0.28)
 
         # BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, 1)
         # BaseDraw.show_stop_wall(img, (x1, y1), (x2, y2), color, 1)
         # BaseDraw.draw_text(img, 'x: {:.2f}m TTC: {:.2f}'.format(x, data['TTC']), (x1 - 2, y1 - 4), size, color, 1)
 
         # BaseDraw.draw_alpha_rect(img, (x1, y1, w, h), 0.8, CVColor.Red)
-        self.show_text_info(data['source'], 40, 'ldw_left: {}'.format(data['ldw_left']))
-        self.show_text_info(data['source'], 60, 'ldw_tight: {}'.format(data['ldw_right']))
-        self.show_text_info(data['source'], 80, 'fcw_level: {}'.format(data['fcw_level']))
-        self.show_text_info(data['source'], 100, 'TTC: {:.2f} s'.format(data['TTC']))
-        self.show_text_info(data['source'], 120, 'x: {:.1f} m'.format(data['pos_lon']))
+        if 'ldw_left' in data:
+            self.show_text_info(data['source'], 40, 'ldw_left: {}'.format(data['ldw_left']))
+        if 'ldw_right' in data:
+            self.show_text_info(data['source'], 60, 'ldw_right: {}'.format(data['ldw_right']))
+        if 'fcw_level' in data:
+            self.show_text_info(data['source'], 80, 'fcw_level: {}'.format(data['fcw_level']))
+        if "TTC" in data:
+            self.show_text_info(data['source'], 100, 'TTC: {:.2f} s'.format(data['TTC']))
+        if 'pos_lon' in data:
+            self.show_text_info(data['source'], 120, 'x: {:.1f} m'.format(data['pos_lon']))
+        if 'vel_lat' in data:
+            self.show_text_info(data['source'], 140, 'vel_f: {:.1f} m'.format(data['vel_lon']))
 
     def _show_drtk(self, img, rtk):
         # print(rtk)
