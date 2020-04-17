@@ -396,7 +396,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Replay CVE log.")
 
-    log = '/home/nan/data/20191122154341_ramp_in/log.txt'
+    log = '/home/yj/bak/data/mobileye/q3_fusion/20190320_fusion_q3_radar/fusion_mode/20190320165156/log.txt'
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=False)
