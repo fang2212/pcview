@@ -490,7 +490,13 @@ class Player(object):
                 BaseDraw.draw_text(img, col, (indent + 22, 20), 0.5, CVColor.Cyan, 1)
             dt = self.ts_now - self.columns[col]['ts']
 
-            BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt * 1000)), (indent + 92, 20), 0.5, CVColor.White, 1)
+            if dt > 9.999:
+                delay_ms = ">9999ms"
+            elif dt < -9.999:
+                delay_ms = "<-9999ms"
+            else:
+                delay_ms = '{:>+4d}ms'.format(int(dt * 1000))
+            BaseDraw.draw_text(img, delay_ms, (indent + 92, 20), 0.5, CVColor.White, 1)
             # if col is not 'video':
             #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:
@@ -706,37 +712,44 @@ class Player(object):
         if not color:
             color = self.color_obs['default']
 
-        width = 3.5
-        height = 1.6
-        x, y = data['pos_lon'], 0
-        dist = (x ** 2 + y ** 2) ** 0.5
-        dist = max(0.1, dist)
-        if dist <= 0 or x <= 0:
-            return
-
-        w = self.cfg.installs['video']['fu'] * width / dist
-        w = int(w)
-
-        x0, y0 = self.transform.trans_gnd2raw(x, y)
-
-        h = int(self.cfg.installs['video']['fv'] * height / dist)
-        x1 = int(x0 - 0.5 * w)
-        y1 = int(y0 - h)
-        x2 = int(x1 + w)
-        y2 = int(y1 + h)
-
-        size = max(min(0.5 * 8 / dist, 0.5), 0.28)
+        # width = 3.5
+        # height = 1.6
+        # x, y = data['pos_lon'], 0
+        # dist = (x ** 2 + y ** 2) ** 0.5
+        # dist = max(0.1, dist)
+        # if dist <= 0 or x <= 0:
+        #     return
+        #
+        # w = self.cfg.installs['video']['fu'] * width / dist
+        # w = int(w)
+        #
+        # x0, y0 = self.transform.trans_gnd2raw(x, y)
+        #
+        # h = int(self.cfg.installs['video']['fv'] * height / dist)
+        # x1 = int(x0 - 0.5 * w)
+        # y1 = int(y0 - h)
+        # x2 = int(x1 + w)
+        # y2 = int(y1 + h)
+        #
+        # size = max(min(0.5 * 8 / dist, 0.5), 0.28)
 
         # BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, 1)
         # BaseDraw.show_stop_wall(img, (x1, y1), (x2, y2), color, 1)
         # BaseDraw.draw_text(img, 'x: {:.2f}m TTC: {:.2f}'.format(x, data['TTC']), (x1 - 2, y1 - 4), size, color, 1)
 
         # BaseDraw.draw_alpha_rect(img, (x1, y1, w, h), 0.8, CVColor.Red)
-        self.show_text_info(data['source'], 40, 'ldw_left: {}'.format(data['ldw_left']))
-        self.show_text_info(data['source'], 60, 'ldw_tight: {}'.format(data['ldw_right']))
-        self.show_text_info(data['source'], 80, 'fcw_level: {}'.format(data['fcw_level']))
-        self.show_text_info(data['source'], 100, 'TTC: {:.2f} s'.format(data['TTC']))
-        self.show_text_info(data['source'], 120, 'x: {:.1f} m'.format(data['pos_lon']))
+        if 'ldw_left' in data:
+            self.show_text_info(data['source'], 40, 'ldw_left: {}'.format(data['ldw_left']))
+        if 'ldw_right' in data:
+            self.show_text_info(data['source'], 60, 'ldw_right: {}'.format(data['ldw_right']))
+        if 'fcw_level' in data:
+            self.show_text_info(data['source'], 80, 'fcw_level: {}'.format(data['fcw_level']))
+        if "TTC" in data:
+            self.show_text_info(data['source'], 100, 'TTC: {:.2f} s'.format(data['TTC']))
+        if 'pos_lon' in data:
+            self.show_text_info(data['source'], 120, 'x: {:.1f} m'.format(data['pos_lon']))
+        if 'vel_lat' in data:
+            self.show_text_info(data['source'], 140, 'vel_f: {:.1f} m'.format(data['vel_lon']))
 
     def _show_drtk(self, img, rtk):
         # print(rtk)
@@ -863,9 +876,9 @@ class Player(object):
         BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (p5[0], p5[1] - 10), 0.3, CVColor.White, 1)
         # BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
         #                    CVColor.White, 1)
-        self.show_text_info(target['source'], 140, 'range: {:.3f}'.format(range))
-        self.show_text_info(target['source'], 100, 'angle: {:.2f}'.format(angle))
-        self.show_text_info(target['source'], 120, 'TTC: {:.2f}'.format(target['TTC']))
+        self.show_text_info(target['source'], 240, 'range: {:.3f}'.format(range))
+        self.show_text_info(target['source'], 260, 'angle: {:.2f}'.format(angle))
+        self.show_text_info(target['source'], 280, 'TTC: {:.2f}'.format(target['TTC']))
 
     def show_ipm_target(self, img, target, host):
         range, angle = self._calc_relatives(target, host)

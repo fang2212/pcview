@@ -142,6 +142,106 @@ def parse_ifv300(id, buf, ctx=None):
         # print("vehicle speed: {} yaw_rate: {}".format(r['CAN_VEHICLE_SPEED'], r['CAN_VEHICLE_YAW_RATE']))
         return {'type': 'vehicle_state', 'speed': r['CAN_VEHICLE_SPEED']*3.6, 'yaw_rate': r['CAN_VEHICLE_YAW_RATE']}
 
+    # q3  fusion
+    if id in [0x760, 0x765, 0x76a, 0x76f, 0x774, 0x779]:  # RT(1-6)A_DIS
+        # print('RTxA msg')
+        if ctx.get('rt') is None:
+            ctx['rt'] = []
+        idx = int((id - 0x760) / 5)
+        if idx == 0:
+            ctx['rt'].clear()
+        pf = 'RT{}A_'.format(idx + 1)
+        res = {'type': 'obstacle', 'sensor': 'ifv300', 'idx': idx, 'pos_lon': r[pf + 'L_long_rel'], 'pos_lat': r[pf + 'L_lat_rel'],
+               'a_lon': r[pf + 'A_long_obj'], 'vel_lon': r[pf + 'V_long_obj'], 'vel_lat': r[pf + 'V_lat_obj'],
+               'sensor_source': r[pf + 'DetectionSensor']}
+        ctx['rt'].append(res)
+        return
+
+    if id in [0x761, 0x766, 0x76b, 0x770, 0x775, 0x77a]:
+        # print('RTxB msg')
+        if ctx.get('rt') is None:
+            return
+        idx = int((id - 0x761) / 5)
+        pf = 'RT{}B_'.format(idx + 1)
+        if len(ctx['rt']) < idx + 1:
+            return
+        ctx['rt'][idx]['id'] = r[pf + 'TrackID']
+        ctx['rt'][idx]['status'] = r[pf + 'Status']
+        ctx['rt'][idx]['move'] = r[pf + 'Movement']
+        ctx['rt'][idx]['a_lat'] = r[pf + 'A_lat_obj']
+
+        return
+
+    if id in [0x762, 0x767, 0x76c, 0x771, 0x776, 0x77b]:
+        # print('RTxC msg')
+        if ctx.get('rt') is None:
+            return
+        idx = int((id - 0x762) / 5)
+        if len(ctx['rt']) < idx + 1 or ctx['rt'][idx].get('status') is None:
+            return
+        pf = 'RT{}C_'.format(idx + 1)
+        idx = int((id - 0x762) / 5)
+        if len(ctx['rt']) < idx + 1:
+            return
+        ctx['rt'][idx]['vis_id'] = r[pf + 'visTrkID']
+        ctx['rt'][idx]['width'] = r[pf + 'Width']
+        ctx['rt'][idx]['class'] = r[pf + 'MC_object_class']
+        ctx['rt'][idx]['color'] = 5
+
+        ret = ctx['rt'][idx]
+        if ret['status'] in ['updated', 'coasted', 'new coasted', 'new updated', 'new', 'merged']:
+            # print('rt', ret)
+            return ret
+
+    if id in [0x740, 0x745, 0x74a, 0x74f]:
+        # print('RTSxA msg')
+        if ctx.get('rts') is None:
+            ctx['rts'] = []
+        idx = int((id - 0x740) / 5)
+        pf = 'RTS{}A_'.format(idx + 1)
+        if idx == 0:
+            ctx['rts'].clear()
+        res = {'type': 'obstacle', 'idx': idx, 'id': r[pf + 'TrackID'], 'pos_lon': r[pf + 'L_long_rel'],
+               'pos_lat': r[pf + 'L_lat_rel'], 'a_lon': r[pf + 'A_long_obj'], 'status': r[pf + 'Status'],
+               'sensor': r[pf + 'DetectionSensor'], 'color': 6}
+        ctx['rts'].append(res)
+        return
+
+    if id in [0x741, 0x746, 0x74b, 0x750]:
+        # print('RTSxB msg')
+        if ctx.get('rts') is None:
+            return
+        idx = int((id - 0x741) / 5)
+        pf = 'RTS{}B_'.format(idx + 1)
+        if len(ctx['rts']) < idx + 1:
+            return
+        ctx['rts'][idx]['vel_lon'] = r[pf + 'V_long_obj']
+        ctx['rts'][idx]['vel_lat'] = r[pf + 'V_lat_obj']
+        ctx['rts'][idx]['a_lat'] = r[pf + 'A_lat_obj']
+        ctx['rts'][idx]['move'] = r[pf + 'Movement']
+        return
+
+    if id in [0x742, 0x747, 0x74c, 0x751]:
+        # print('RTSxC msg')
+        if ctx.get('rts') is None:
+            return
+        idx = int((id - 0x742) / 5)
+        pf = 'RTS{}C_'.format(idx + 1)
+        if len(ctx['rts']) < idx + 1:
+            return
+        ctx['rts'][idx]['width'] = r[pf + 'Width']
+        ctx['rts'][idx]['vis_id'] = r[pf + 'visTrkID']
+        ctx['rts'][idx]['class'] = r[pf + 'MC_object_class']
+
+        ret = ctx['rts'][idx]
+        if ret['status'] in ['updated', 'coasted', 'new coasted', 'new updated', 'new', 'merged']:
+            # print('rts', ret)
+            return ret
+
+    if 0x105 == id:
+        # print(r)
+        pass
+
 obs1 = {}
 lanes1 = {}
 numofobs = 0

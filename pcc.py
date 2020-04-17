@@ -230,11 +230,12 @@ class PCC(object):
                     {'ts': video['ts'], 'frame_id': video['frame_id'], 'img': img_raw, 'source': video['source']})
             self.video_cache[source]['updated'] = False
             img_small = cv2.resize(img_raw, (427, 240))
+            video['device'] = "x1d3"
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
 
         if 'x1_data' in mess:
-            # print('------', mess['pcv_data'])
+            print('------', mess['x1_data'])
             for data in mess['x1_data']:
                 # print(mess['x1_data'])
                 self.flow_player.draw(data, img)

@@ -170,17 +170,20 @@ class LogPlayer(Process):
 
                         try:
                             data = json.loads(line)
+                            # print(data)
                         except json.JSONDecodeError as e:
                             pass
                             # print('error json line', line)
                             # continue
 
                         if 'frame_id' not in data:
+                            # print(data)
                             continue
 
                         if data['frame_id'] == res['frame_id']:
                             res['x1_data'].append(data)
                         elif data['frame_id'] < res['frame_id']:
+                            print(data['frame_id'], res['frame_id'])
                             continue
                         else:
                             self.x1_fp.seek(fx)
