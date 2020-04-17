@@ -60,7 +60,7 @@ class FlowPlayer(object):
                 pos = vehicle['reg_rect']
                 color = CVColor.Yellow
                 BaseDraw.draw_obj_rect_corn(img, pos, color, 2)
-
+                BaseDraw.draw_obj_rect(img, vehicle['det_rect'], CVColor.Cyan, 1)
                 vid = vehicle['vehicle_id']
                 vehicle_width = "%.2f" % vehicle.get('vehicle_width', 0)
                 ttc = "%.2f" % vehicle.get('ttc', 0)
@@ -72,7 +72,7 @@ class FlowPlayer(object):
                 para_list = [
                     'v:' + str(d1),
                     # 'h:' + str(d2),
-                    # 'width:' + vehicle_width,
+                    'width:' + vehicle_width,
                     # 'type:' + str(VehicleType.get(tid)),
                     'vid:' + str(vid)
                 ]
