@@ -111,15 +111,16 @@ class PCC(object):
         self.flow_player = FlowPlayer()
 
         self.save_replay_video = save_replay_video
+        self.vw = None
 
-        if save_replay_video and replay:
-            if isinstance(save_replay_video, str):
-                odir = save_replay_video
-            else:
-                odir = os.path.dirname(self.rlog)
-            self.vw = VideoRecorder(odir, fps=20)
-            self.vw.set_writer("replay-render", 1760, 720)
-            print('--------save replay video', odir)
+        # if save_replay_video and replay:
+        #     if isinstance(save_replay_video, str):
+        #         odir = save_replay_video
+        #     else:
+        #         odir = os.path.dirname(self.rlog)
+        #     self.vw = VideoRecorder(odir, fps=20)
+        #     self.vw.set_writer("replay-render", 1760, 960)
+        #     print('--------save replay video', odir)
 
     def start(self):
         print('starting hub')
@@ -235,7 +236,7 @@ class PCC(object):
             img_aux = np.vstack((img_aux, img_small))
 
         if 'x1_data' in mess:
-            print('------', mess['x1_data'])
+            # print('------', mess['x1_data'])
             for data in mess['x1_data']:
                 # print(mess['x1_data'])
                 self.flow_player.draw(data, img)
@@ -299,6 +300,15 @@ class PCC(object):
         cv2.imshow('MINIEYE-CVE', comb)
 
         if self.save_replay_video and self.replay:
+            # print(comb.shape)
+            if not self.vw:
+                if isinstance(self.save_replay_video, str):
+                    odir = self.save_replay_video
+                else:
+                    odir = os.path.dirname(self.rlog)
+                self.vw = VideoRecorder(odir, fps=20)
+                self.vw.set_writer("replay-render", comb.shape[1], comb.shape[0])
+                print('--------save replay video', odir)
             self.vw.write(comb)
             # print(comb.shape)
 

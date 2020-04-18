@@ -13,6 +13,8 @@ from multiprocessing import Process, Queue, freeze_support
 import json
 from parsers import ublox
 from recorder.convert import *
+from collections import deque
+import shutil
 
 
 def jpeg_extractor(video_dir):
@@ -78,6 +80,7 @@ class LogPlayer(Process):
         self.ctrl_q = Queue()
         self.type_roles = {}
         self.cfg = uniconf
+        self.pcv_cache = deque(maxlen=500)
 
         self.last_time = 0
         self.hz = 20
@@ -170,7 +173,9 @@ class LogPlayer(Process):
 
                         try:
                             data = json.loads(line)
-                            # print(data)
+                            # self.pcv_cache.append(data)
+                            # list(self.pcv_cache).sort(key=lambda x: x['frame_id'])
+                            # print(data['frame_id'], len(data))
                         except json.JSONDecodeError as e:
                             pass
                             # print('error json line', line)
@@ -179,11 +184,14 @@ class LogPlayer(Process):
                         if 'frame_id' not in data:
                             # print(data)
                             continue
-
-                        if data['frame_id'] == res['frame_id']:
+                        if 'create_ts' in data:  # camera frame comes much earlier than other frames in x1d3
+                            continue
+                        if 'ultrasonic' in data:
+                            res['x1_data'].append(data)
+                        elif data['frame_id'] == res['frame_id']:
                             res['x1_data'].append(data)
                         elif data['frame_id'] < res['frame_id']:
-                            print(data['frame_id'], res['frame_id'])
+                            # print(data['frame_id'], res['frame_id'])
                             continue
                         else:
                             self.x1_fp.seek(fx)
@@ -365,14 +373,20 @@ class LogPlayer(Process):
         # cp.print_stats()
 
 
-def prep_replay(source):
+def prep_replay(source, ns=False):
     if os.path.isdir(source):
         loglist = sorted(os.listdir(source), reverse=True)
         source = os.path.join(os.path.join(source, loglist[0]), 'log.txt')
 
     r_sort = os.path.join(os.path.dirname(source), 'log_sort.txt')
-    if not os.path.exists(r_sort):
-        r_sort = mytools.sort_big_file(source)
+
+    if os.path.exists(r_sort):
+        pass
+    else:
+        if ns:
+            r_sort = source
+        else:
+            r_sort = mytools.sort_big_file(source)
 
     config_path = os.path.join(os.path.dirname(source), 'config.json')
     install_path = os.path.join(os.path.dirname(source), 'installation.json')
@@ -403,10 +417,18 @@ if __name__ == "__main__":
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=False)
+    parser.add_argument('-r', '--render', action='store_true')
+    parser.add_argument('-ns', '--nosort', action="store_true")
 
     args = parser.parse_args()
     source = args.input_path
-    odir = args.output
+    if args.render:
+        if args.output:
+            odir = args.output
+        else:
+            odir = os.path.dirname(source)
+    else:
+        odir = None
 
     freeze_support()
     # source = sys.argv[1]
@@ -414,7 +436,8 @@ if __name__ == "__main__":
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
 
     from tools import mytools
-    r_sort, cfg = prep_replay(source)
+    ns = args.nosort
+    r_sort, cfg = prep_replay(source, ns=ns)
     from pcc import PCC
     from parsers.parser import parsers_dict
 

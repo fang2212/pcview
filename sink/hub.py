@@ -184,7 +184,7 @@ class Hub(Thread):
         cfgs_online = {}
         for idx, cfg in enumerate(self.configs):  # match cfg and finder results
             mac = cfg.get('mac')
-            print('-------------', cfg)
+            # print('-------------', cfg)
             if cfg.get('force_ip'):  # force to connect via pre-defined ip
                 print('config force ip device.')
                 if 'ip' not in cfg:

@@ -752,7 +752,7 @@ def parse_x1_fusion_line(line, ctx):
             # print(r)
             if 'no vehicle' in r['class']:
                 continue
-            if r['sensor'] is not 'x1_fusion':
+            if r['sensor'] != 'x1_fusion':
                 return
 
             x, y = ctx['trans'].compensate_param_rcs(r['pos_lon'], r['pos_lat'], 'x1')
