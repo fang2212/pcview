@@ -22,6 +22,8 @@ def parser_mbq4(id, buf, ctx):
         return None
 
     r = db_q4.decode_message(id, buf)
+    if ctx and ctx.get('parser_mode') == 'direct':
+        return r
     if not r:
         return None
     # print(r)

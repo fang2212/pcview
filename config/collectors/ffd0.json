@@ -1,7 +1,7 @@
 {
   "type": "x1_collector",
   "mac": "00:0c:18:ef:ff:d0",
-  "ip": "192.168.98.0",
+  "ip": "192.168.98.217",
   "work_mode": "collector",
   "repeater": false,
   "ports": {
@@ -15,7 +15,7 @@
       "enable": true,
       "port": 1207,
       "protocol": "nanomsg",
-      "topic": "ifv300"
+      "topic": "vfr"
     },
     "can1": {
       "enable": true,

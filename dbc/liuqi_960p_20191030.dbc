@@ -1,0 +1,124 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Vehicle ADAS
+VAL_TABLE_ func_switch_status 3 "not available" 2 "error" 1 "pressed" 0 "not pressed" ;
+VAL_TABLE_ lane_departure_imminent 3 "not used" 2 "reserved" 1 "imminengt" 0 "not imminengt" ;
+VAL_TABLE_ FCW_warning_level 15 "don't care/ take no action" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "warning level 7" 6 "warning level 6" 5 "warning level 5" 4 "warning level 4" 3 "warning level 3" 2 "warning level 2" 1 "warning level 1" 0 "no warning" ;
+VAL_TABLE_ func_warning_level 3 "reserved" 2 "warning level 2" 1 "warning level 1" 0 "no warning" ;
+VAL_TABLE_ tsr_warning_level 7 "waring level 7(>35km/h)" 6 "waring level 1(25-30km/h)" 5 "waring level 1(20-25km/h)" 4 "waring level 1(15-20km/h)" 3 "waring level 1(10-15km/h)" 2 "waring level 1(5-10km/h)" 1 "waring level 1(0-5km/h)" 0 "no warning" ;
+VAL_TABLE_ lane_departure_indication_enable 3 "not used" 2 "reserved" 1 "enabled" 0 "disabled" ;
+VAL_TABLE_ lane_tracking_state 3 "don't care/take no action" 2 "reserved" 1 "tranking lane side" 0 "not tracking lane side" ;
+VAL_TABLE_ IHC_Mainbeam_request 3 "not available" 2 "error" 1 "high beam on" 0 "high beam off" ;
+VAL_TABLE_ func_system_state 15 "reserved" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "active" 3 "active(no intervention)" 2 "standby" 1 "off" 0 "unavailable state" ;
+VAL_TABLE_ camera_error_state 3 "not available" 2 "camera blocked" 1 "error" 0 "normal" ;
+
+
+BO_ 2566799649 LCLightingCommand: 8 Vector__XXX
+ SG_ RightTurnSignalLights : 12|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ LeftTurnSignalLights : 14|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 2365484270 TCO1: 8 Vector__XXX
+ SG_ TachographVehicleSpeed : 48|16@1+ (0.00390625,0) [0|255.99609375] ""  ADAS
+
+BO_ 2566849768 Camera: 8 ADAS
+ SG_ IHC_mainbeam_Request : 14|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ IHC_system_state : 16|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ TSR_system_state : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ PCW_system_state : 10|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ FCW_HW_system_state : 6|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ LDW_system_state : 2|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ camera_error_status : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 2566806504 FLI2: 8 ADAS
+ SG_ HW_warning_level : 10|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ TSR_warning_level : 20|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TSR_targetspeed_request : 12|8@1+ (1,0) [0|0] "km/h" Vector__XXX
+ SG_ PCW_warning_level : 8|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ lane_tracking_status_right_side : 2|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ lane_tracking_status_left_side : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ lane_departure_indication_enable : 6|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 2431649768 FLI1: 8 ADAS
+ SG_ Target_Vehicle_PosX : 16|12@1+ (0.0625,0) [0|250] "m" Vector__XXX
+ SG_ CAN_VIS_OBS_TTC_WITH_ACC : 32|10@1+ (0.01,0) [0|10] "sec" Vector__XXX
+ SG_ lane_departure_imminent_left : 6|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ lane_departure_imminent_right : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ FCW_warning_level : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+
+BO_ 2566849006 SC_Switch: 8 Vehicle
+ SG_ TSR_switch_status : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ IHC_switch_status : 18|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ FCW_switch_status : 16|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ LDW_switch_status : 14|2@1+ (1,0) [0|3] "" Vector__XXX
+
+
+
+CM_ BO_ 2566849768 "dlc:8bytes; period:100ms";
+CM_ BO_ 2566806504 "dlc:8byte; period:100ms";
+CM_ BO_ 2431649768 "dlc:8bytes; period:50ms";
+CM_ BO_ 2566849006 "dlc:8bytes; period:100ms";
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "cyclic","spontaneous","cyclicIfActive","spontaneousWithDelay","immediate";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 2 50000;
+BA_DEF_DEF_  "GenMsgSendType" "cyclic";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "GenMsgCycleTime" 50;
+BA_ "GenMsgCycleTime" BO_ 2566799649 100;
+BA_ "GenMsgCycleTime" BO_ 2566849768 100;
+BA_ "GenMsgCycleTime" BO_ 2566806504 100;
+VAL_ 2566799649 RightTurnSignalLights 3 "Not Available" 2 "Fault Detected" 1 "Activated" 0 "De-activated" ;
+VAL_ 2566799649 LeftTurnSignalLights 3 "Not Available" 2 "Fault Detected" 1 "Activated" 0 "De-activated" ;
+VAL_ 2566849768 IHC_mainbeam_Request 3 "not available" 2 "error" 1 "high beam on" 0 "high beam off" ;
+VAL_ 2566849768 IHC_system_state 15 "reserved" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "active" 3 "active(no intervention)" 2 "standby" 1 "off" 0 "unavailable state" ;
+VAL_ 2566849768 TSR_system_state 15 "reserved" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "active" 3 "active(no intervention)" 2 "standby" 1 "off" 0 "unavailable state" ;
+VAL_ 2566849768 PCW_system_state 15 "reserved" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "active" 3 "active(no intervention)" 2 "standby" 1 "off" 0 "unavailable state" ;
+VAL_ 2566849768 FCW_HW_system_state 15 "reserved" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "active" 3 "work" 2 "standby" 1 "off" 0 "unavailable state" ;
+VAL_ 2566849768 LDW_system_state 15 "reserved" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "active" 3 "active(no intervention)" 2 "standby" 1 "off" 0 "unavailable state" ;
+VAL_ 2566849768 camera_error_status 3 "not available" 2 "camera blocked" 1 "service required" 0 "no error" ;
+VAL_ 2566806504 HW_warning_level 3 "reserved" 2 "warning level 2" 1 "warning level 1" 0 "no warning" ;
+VAL_ 2566806504 TSR_warning_level 7 "waring level 7(>35km/h)" 6 "waring level 1(25-30km/h)" 5 "waring level 1(20-25km/h)" 4 "waring level 1(15-20km/h)" 3 "waring level 1(10-15km/h)" 2 "waring level 1(5-10km/h)" 1 "waring level 1(0-5km/h)" 0 "no warning" ;
+VAL_ 2566806504 PCW_warning_level 3 "reserved" 2 "warning level 2" 1 "warning level 1" 0 "no warning" ;
+VAL_ 2566806504 lane_tracking_status_right_side 3 "don't care/take no action" 2 "reserved" 1 "tranking lane side" 0 "not tracking lane side" ;
+VAL_ 2566806504 lane_tracking_status_left_side 3 "don't care/take no action" 2 "reserved" 1 "tranking lane side" 0 "not tracking lane side" ;
+VAL_ 2566806504 lane_departure_indication_enable 3 "not used" 2 "reserved" 1 "enabled" 0 "disabled" ;
+VAL_ 2431649768 lane_departure_imminent_left 3 "not used" 2 "reserved" 1 "imminengt" 0 "not imminengt" ;
+VAL_ 2431649768 lane_departure_imminent_right 3 "not used" 2 "reserved" 1 "imminengt" 0 "not imminengt" ;
+VAL_ 2431649768 FCW_warning_level 15 "reserved" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "reserved" 2 "warning level 2" 1 "warning level 1" 0 "no warning" ;
+VAL_ 2566849006 TSR_switch_status 3 "not available" 2 "error" 1 "pressed" 0 "not pressed" ;
+VAL_ 2566849006 IHC_switch_status 3 "not available" 2 "error" 1 "pressed" 0 "not pressed" ;
+VAL_ 2566849006 FCW_switch_status 3 "not available" 2 "error" 1 "pressed" 0 "not pressed" ;
+VAL_ 2566849006 LDW_switch_status 3 "not available" 2 "error" 1 "pressed" 0 "not pressed" ;
+

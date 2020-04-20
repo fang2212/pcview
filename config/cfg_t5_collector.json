@@ -1,0 +1,90 @@
+{
+    "version": 0.7,
+    "modules": {
+        "GGA_reporter": {
+            "enable": false,
+            "ntrip_address": "ntrip.weaty.cn",
+            "port": 5001
+        }
+    },
+    "main_collector": "ffd0",
+    "vehicles": {
+        "ego": {
+            "enable": true,
+            "collectors": {
+                "ffd0": "normal",
+                "ffd1": "normal",
+                "ffd2": "normal",
+                "pi_00d2": "normal"
+            },
+            "installation": {
+                "esr": {
+                    "roll": 0.0,
+                    "lat_offset": 0.22,
+                    "pitch": 0.0,
+                    "height": 0.45,
+                    "lon_offset": 0.0,
+                    "yaw": -1.8
+                },
+                "ars": {
+                    "roll": 0.0,
+                    "lat_offset": 0.22,
+                    "pitch": 0.0,
+                    "height": 0.45,
+                    "lon_offset": 0.0,
+                    "yaw": 0.0
+                },
+                "lmr": {
+                    "roll": 0.0,
+                    "lat_offset": -0.3,
+                    "pitch": 0.0,
+                    "height": 0.45,
+                    "lon_offset": 0.0,
+                    "yaw": -1.0
+                },
+                "ifv300": {
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "pitch": 0.0,
+                    "height": 1.18,
+                    "lon_offset": -1.64,
+                    "yaw": 0.0
+                },
+                "rtk": {
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "pitch": -2.0,
+                    "height": 0.86,
+                    "lon_offset": -0.21,
+                    "yaw": 0.0
+                },
+                "video": {
+                    "fu": 1458.0,
+                    "yaw": 2.3,
+                    "fv": 1458.0,
+                    "pitch": 0.83,
+                    "cu": 640.0,
+                    "lat_offset": 0.15,
+                    "roll": 0.0,
+                    "height": 1.4,
+                    "lon_offset": -1.72,
+                    "cv": 360.0
+                },
+                "x1": {
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "pitch": 0.3,
+                    "height": 1.26,
+                    "lon_offset": -1.72,
+                    "yaw": 0.0
+                }
+            }
+        },
+        "other": {
+            "enable": false,
+            "collectors": {
+                "9de8": "normal"
+            }
+        }
+    }
+}

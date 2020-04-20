@@ -1,0 +1,165 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Send_A Receive_B
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ measCnt : 0|16@0+ (1,0) [0|65535] "" Vector__XXX
+ SG_ resv_2 : 0|2@0- (1,0) [0|0] "" Vector__XXX
+ SG_ New_Signal_71 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ radarSendGeneralInfo : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ radarSendQualityInfo : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ radarSendExtendInfo : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ autoAlignEnable : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ installLateralMountingOffset : 0|8@0- (0.01,0) [-1.28|1.27] "m" Vector__XXX
+ SG_ installAngleMisalignment : 0|8@0- (0.25,0) [-32|31.75] "" Vector__XXX
+ SG_ radarSendGeneralInfo : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ radarSendQualityInfo : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ radarSendExtendInfo : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ errorNVMWrite : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ errorNVMRead : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ errorMotionRxState : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ autoAngleAlignment : 0|8@0- (0.25,0) [-32|31.75] "" Vector__XXX
+ SG_ installLateralMountingOffset : 0|8@0- (0.01,0) [-1.28|1.27] "m" Vector__XXX
+ SG_ installAngleMisalignment : 0|8@0- (0.25,0) [-32|31.75] "" Vector__XXX
+ SG_ radarMode : 0|4@0+ (1,0) [0|15] "" Vector__XXX
+ SG_ estimatedSpeedCfg : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ outputMode : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ errorRadarFailed : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ errorRadarBlocked : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ errorOverTemp : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ errorComm : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ measCnt : 0|16@0+ (1,0) [0|65535] "" Vector__XXX
+ SG_ estimatedSpeedCfg : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ radarMode : 0|4@0+ (1,0) [0|15] "" Vector__XXX
+ SG_ outputMode : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 0 New_Message_20: 8 Vector__XXX
+ SG_ New_Signal_70 : 32|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1760 trkExtendInfo: 8 Vector__XXX
+ SG_ objWidth : 63|8@0+ (0.2,0) [0|51] "m" Vector__XXX
+ SG_ objLength : 55|8@0+ (0.2,0) [0|51] "m" Vector__XXX
+ SG_ objClass : 26|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1744 trkQualityInfo: 8 Vector__XXX
+ SG_ objMeasState : 52|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ objProbOfExist : 55|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1728 trkGeneralInfo: 8 Vector__XXX
+ SG_ ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ objVreLat : 45|9@0- (0.25,0) [-64|63.75] "m/s" Vector__XXX
+ SG_ ObjVerLong : 39|10@0- (0.25,0) [-128|127.75] "" Vector__XXX
+ SG_ objRCS : 63|8@0- (0.5,0) [-64|63.5] "dbm2" Vector__XXX
+ SG_ ObjDisLong : 15|13@0- (0.2,319.2) [-500|1138.2] "m" Vector__XXX
+ SG_ objDisLat : 18|11@0- (0.2,0) [-204.8|204.6] "" Vector__XXX
+
+BO_ 528 radarStatus1: 8 Send_A
+ SG_ radarErrorCode : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1012 radarCfg3: 8 Send_A
+ SG_ negativeAngleOffsetCfg : 47|8@0+ (0.1,16) [16|41.5] "deg" Vector__XXX
+ SG_ positiveAngleOffsetCfg : 39|8@0+ (0.1,16) [16|41.5] "deg" Vector__XXX
+
+BO_ 1010 radarCfg2: 8 Send_A
+ SG_ radarTxCfg : 17|2@0+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 1014 carYawRate: 8 Vector__XXX
+ SG_ carYawRate : 16|16@1- (0.01,0) [-327.68|327.67] "deg/s"  Receive_B
+
+BO_ 1808 rawObjList: 8 Send_A
+ SG_ snr : 63|8@0+ (0.5,0) [0|0] "" Vector__XXX
+ SG_ attribute : 50|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ resv_2 : 52|2@0- (1,0) [0|0] "" Vector__XXX
+ SG_ latVel : 45|9@0- (0.2,0) [-51.2|51] "m/s" Vector__XXX
+ SG_ angle : 39|10@0- (0.25,0) [-128|127.75] "deg" Vector__XXX
+ SG_ speed : 18|11@0- (0.2,0) [-204.8|204.6] "m/s" Vector__XXX
+ SG_ range : 15|13@0+ (0.2,0) [0|0] "m" Vector__XXX
+ SG_ ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1536 rawListInfo: 8 Send_A
+ SG_ protVersion : 31|4@0+ (1,0) [0|15] "" Vector__XXX
+ SG_ measCnt : 15|16@0+ (1,0) [0|65535] "" Vector__XXX
+ SG_ objNum : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1712 trkObjList: 8 Send_A
+ SG_ snr : 63|8@0+ (0.5,0) [0|0] "" Vector__XXX
+ SG_ attribute : 50|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ resv_2 : 52|2@0- (1,0) [0|0] "" Vector__XXX
+ SG_ latVel : 45|9@0- (0.2,0) [-51.2|51] "m/s" Vector__XXX
+ SG_ angle : 39|10@0- (0.25,0) [-128|127.75] "deg" Vector__XXX
+ SG_ speed : 18|11@0- (0.2,0) [-204.8|204.6] "m/s" Vector__XXX
+ SG_ range : 15|13@0+ (0.2,0) [0|1638.2] "m" Vector__XXX
+ SG_ ID : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1696 trkListInfo: 8 Send_A
+ SG_ protVersion : 31|4@0+ (1,0) [0|15] "" Vector__XXX
+ SG_ measCnt : 15|16@0+ (1,0) [0|65535] "" Vector__XXX
+ SG_ objNum : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 2032 fcwID: 8 Send_A
+ SG_ ID2 : 23|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ ID1 : 15|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ ID0 : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1776 fcwInfo: 8 Send_A
+ SG_ petTime : 39|16@0+ (0.01,0) [0|655.35] "s" Vector__XXX
+ SG_ ttcTime : 7|16@0+ (0.01,0) [0|655.35] "s" Vector__XXX
+
+BO_ 1013 carVelocity: 8 Vector__XXX
+ SG_ carDirection : 29|1@1+ (1,0) [0|1] ""  Receive_B
+ SG_ carVelocity : 0|15@1+ (0.01,0) [0|327.67] "km/h"  Receive_B
+
+
+
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "NodeLayerModules" "CANoeILNLVector.dll";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+

@@ -28,6 +28,7 @@ class CVColor(object):
     basic color RGB define
     '''
     Red = (0, 0, 255)
+    LightRed = (80, 80, 200)
     Green = (0, 255, 0)
     Grass = (0x50, 0xaf, 0x4c)
     Blue = (255, 0, 0)
@@ -39,6 +40,7 @@ class CVColor(object):
     White = (255, 255, 255)
     Grey = (120, 120, 120)
     Midgrey = (160, 160, 160)
+    LightGray = (211, 211, 211)
     Pink = (255, 0, 255)
     indigo = (0xb5, 0x51, 0x3f)
     purple = (0xb0, 0x27, 0x9c)
@@ -57,6 +59,9 @@ class FlatColor(object):  # in BGR
     alizarin = (0x3c, 0x4c, 0xe7)
     clouds = (0xf1, 0xf0, 0xec)
     concrete = (0xa6, 0xa5, 0x95)
+    Blue = (200, 0, 0)
+    dark_red = (0x0, 0x0, 0x128)
+
 
 
 class FPSCnt(object):
@@ -150,6 +155,14 @@ class BaseDraw(object):
         # 右下角
         cv2.line(img, (x2-suit_len,y2), (x2, y2), color, thickness, cv2.LINE_8, 0)
         cv2.line(img, (x2,y2-suit_len), (x2, y2), color, thickness, cv2.LINE_8, 0)
+
+    @classmethod
+    def show_stop_wall(self, img, pt1, pt2, color, thickness=2):
+        pt3 = (pt1[0], pt2[1])
+        pt4 = (pt2[0], pt1[1])
+        cv2.rectangle(img, pt1, pt2, color, thickness)
+        cv2.line(img, pt1, pt2, color, thickness)
+        cv2.line(img, pt3, pt4, color, thickness)
 
     @classmethod
     def draw_obj_rect_corn(cls, img, position, color=CVColor.Cyan, thickness=2, len_ratio=6):

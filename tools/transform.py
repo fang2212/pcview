@@ -9,7 +9,7 @@
 
 import json
 import os
-from math import sin, cos, pi, atan2
+from math import *
 
 import cv2
 import numpy as np
@@ -20,58 +20,40 @@ import numpy as np
 
 class OrientTuner(object):
     def __init__(self, uniconf):
-        installs = uniconf.installs
-        self.yaw = installs['video']['yaw']
-        self.pitch = installs['video']['pitch']
-        self.roll = installs['video']['roll']
-        self.esr_yaw = installs['esr']['yaw']
+        self.init_value = {}
+        for sensor in uniconf.installs:
+            self.init_value[sensor] = {}
+            for item in uniconf.installs[sensor]:
+                self.init_value[sensor][item] = uniconf.installs[sensor][item]
         self.transform = Transform(uniconf)
-        # self.installs = installs
         self.cfg = uniconf
 
-    def update_yaw(self, x):
-        # self.yaw = self.installs['video']['yaw'] - 0.01 * (x - 500)
-        self.cfg.installs['video']['yaw'] = self.yaw - 0.01 * (x - 500)
+    def update_yaw(self, x, sensor='video'):
+        self.cfg.installs[sensor]['yaw'] = self.init_value[sensor]['yaw'] - 0.01 * (x - 500)
+        self.update_r2i()
+
+    def update_pitch(self, x, sensor='video'):
+        self.cfg.installs[sensor]['pitch'] = self.init_value[sensor]['pitch'] - 0.01 * (x - 500)
+        self.update_r2i()
+
+    def update_roll(self, x, sensor='video'):
+        self.cfg.installs[sensor]['roll'] = self.init_value[sensor]['roll'] - 0.01 * (x - 500)
+        self.update_r2i()
+
+    def update_r2i(self):
+        self.transform.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'],
+                                    self.cfg.installs['video']['roll'])
+        print('current yaw:{} pitch:{} roll:{}'.format(self.cfg.installs['video']['yaw'],
+                                                       self.cfg.installs['video']['pitch'],
+                                                       self.cfg.installs['video']['roll']))
+
+    # def update_esr_yaw(self, x):
+    #     self.esr_yaw = self.installs['esr']['yaw'] - 0.01 * (x - 500)
         # self.pitch = install['video']['pitch']
         # self.roll = install['video']['roll']
 
-        self.transform.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'],
-                                    self.cfg.installs['video']['roll'])
-        print('current yaw:{} pitch:{} roll:{}'.format(self.cfg.installs['video']['yaw'],
-                                                       self.cfg.installs['video']['pitch'],
-                                                       self.cfg.installs['video']['roll']))
-
-    def update_pitch(self, x):
-        # self.yaw = install['video']['yaw']
-        # self.pitch = self.installs['video']['pitch'] - 0.01 * (x - 500)
-        self.cfg.installs['video']['pitch'] = self.pitch - 0.01 * (x - 500)
-        # self.roll = install['video']['roll']
-
-        self.transform.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'],
-                                    self.cfg.installs['video']['roll'])
-        print('current yaw:{} pitch:{} roll:{}'.format(self.cfg.installs['video']['yaw'],
-                                                       self.cfg.installs['video']['pitch'],
-                                                       self.cfg.installs['video']['roll']))
-
-    def update_roll(self, x):
-        # self.yaw = install['video']['yaw']
-        # self.roll = self.installs['video']['roll'] - 0.01 * (x - 500)
-        self.cfg.installs['video']['roll'] = self.roll - 0.01 * (x - 500)
-        # self.roll = install['video']['roll']
-
-        self.transform.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'],
-                                    self.cfg.installs['video']['roll'])
-        print('current yaw:{} pitch:{} roll:{}'.format(self.cfg.installs['video']['yaw'],
-                                                       self.cfg.installs['video']['pitch'],
-                                                       self.cfg.installs['video']['roll']))
-
-    def update_esr_yaw(self, x):
-        self.esr_yaw = self.installs['esr']['yaw'] - 0.01 * (x - 500)
-        # self.pitch = install['video']['pitch']
-        # self.roll = install['video']['roll']
-
-        self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
-        print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
+        # self.transform.update_m_r2i(self.yaw, self.pitch, self.roll)
+        # print('current yaw:{} pitch:{} roll:{}'.format(self.yaw, self.pitch, self.roll))
 
     # def save_para(self):
     #     self.installs['video']['yaw'] = self.yaw
@@ -96,7 +78,7 @@ class Transform:
         cu = installs['video']['cu']
         cv = installs['video']['cv']
 
-        self.x_limits = [0, 180]
+        self.x_limits = [-5, 200]
         self.y_limits = [-15, 15]
         self.ipm_width = 480
         self.ipm_height = 720
@@ -129,29 +111,47 @@ class Transform:
     def update_m_r2i(self, y, p, r):
         self.m_R_w2i = self.calc_m_w2i(y, p, r)
 
-    def getp_ifc_from_poly(self, coefs, r=60, step=0.1, sensor=None):
+    def getp_ifc_from_poly(self, coefs, step=0.1, start=0, end=60, sensor=None):
         a0, a1, a2, a3 = coefs
         p = []
-
-        for x in np.arange(0, r, step):
-            y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
-            if sensor:
-                x, y = self.compensate_param_rcs(x, y, sensor)
-            tx, ty = self.trans_gnd2raw(x, y)
+        if step <= 0:
+            # print('ivalid step', step)
+            return
+        x = np.arange(start, end, step)
+        y = a0 + a1 * x + a2 * np.power(x, 2) + a3 * np.power(x, 3)
+        for i, item in enumerate(x):
+            u, v = self.compensate_param_rcs(x[i], y[i], sensor)
+            tx, ty = self.trans_gnd2raw(u, v)
             p.append((int(tx), int(ty)))
         return p
+
+        # for x in np.arange(start, end, step):
+        #     y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
+        #     if sensor:
+        #         x, y = self.compensate_param_rcs(x, y, sensor)
+        #     tx, ty = self.trans_gnd2raw(x, y)
+        #     p.append((int(tx), int(ty)))
+        # return p
 
     def getp_ipm_from_poly(self, coefs, step=0.1, start=0, end=60, sensor=None):
         a0, a1, a2, a3 = coefs
         p = []
 
-        for x in np.arange(start, end, step):
-            y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
-            if sensor:
-                x, y = self.compensate_param_rcs(x, y, sensor)
-            tx, ty = self.trans_gnd2ipm(x, y)
+        x = np.arange(start, end, step)
+        y = a0 + a1 * x + a2 * np.power(x, 2) + a3 * np.power(x, 3)
+        for i, item in enumerate(x):
+            u, v = self.compensate_param_rcs(x[i], y[i], sensor)
+            tx, ty = self.trans_gnd2ipm(u, v)
             p.append((int(tx), int(ty)))
         return p
+
+        # for x in np.arange(start, end, step):
+        #     y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
+        #     if sensor:
+        #         x, y = self.compensate_param_rcs(x, y, sensor)
+        #     tx, ty = self.trans_gnd2ipm(x, y)
+        #     p.append((int(tx), int(ty)))
+        # return p
 
     def getp_gnd_from_poly(self, coefs, r=60, step=0.1, dev='ifv300'):
         a0, a1, a2, a3 = coefs
@@ -164,27 +164,31 @@ class Transform:
             p.append((xg, yg))
         return p
 
-    def trans_gnd2raw(self, x, y, h=None, dev='ifv300'):
+    def trans_gnd2raw(self, x, y, h=None):
         if h is None:
             h = 0
         h1 = self.camera_height - h
-        x = x - self.cfg.installs['video']['lon_offset'] + self.cfg.installs[dev]['lon_offset']
-        y = y - self.cfg.installs['video']['lat_offset'] + self.cfg.installs[dev]['lat_offset']
+        # x = x - self.cfg.installs['video']['lon_offset'] + self.cfg.installs[dev]['lon_offset']
+        # y = y - self.cfg.installs['video']['lat_offset'] + self.cfg.installs[dev]['lat_offset']
+        x = x - self.cfg.installs['video']['lon_offset']
+        y = y - self.cfg.installs['video']['lat_offset']
         p_xyz = np.array([x, y, h1])
         uv_t = np.dot(self.m_R_w2i, p_xyz)
         uv_new = uv_t / uv_t[2]
         # if uv_new[0] > 10000:
-        #     print(x, y)
         #     uv_new[0] = 10000
-        # if uv_new[1] > 10000: uv_new[1] = 10000
+        # if uv_new[1] > 10000:
+        #     uv_new[1] = 10000
         return int(uv_new[0]), int(uv_new[1])
 
-    def transf_gnd2raw(self, x, y, h=None, dev='ifv300'):
+    def transf_gnd2raw(self, x, y, h=None):
         if h is None:
-            h = self.camera_height
-        x = x - self.cfg.installs['video']['lon_offset'] + self.cfg.installs[dev]['lon_offset']
-        y = y - self.cfg.installs['video']['lat_offset'] + self.cfg.installs[dev]['lat_offset']
-        p_xyz = np.array([x, y, h])
+            h = 0
+        # x = x - self.cfg.installs['video']['lon_offset'] + self.cfg.installs[dev]['lon_offset']
+        # y = y - self.cfg.installs['video']['lat_offset'] + self.cfg.installs[dev]['lat_offset']
+        x = x - self.cfg.installs['video']['lon_offset']
+        y = y - self.cfg.installs['video']['lat_offset']
+        p_xyz = np.array([x, y, self.camera_height - h])
         uv_t = np.dot(self.m_R_w2i, p_xyz)
         uv_new = uv_t / uv_t[2]
         return uv_new[0], uv_new[1]
@@ -223,15 +227,15 @@ class Transform:
         return self.trans_polar2rcs(angle, range, sensor)
 
     def trans_rcs2polar(self, x, y):
-        range = (x ** 2 + y ** 2) ** 0.5
+        range = sqrt(x ** 2 + y ** 2)
         angle = atan2(y, x) * 180 / pi
         return range, angle
 
     def calc_g2i_matrix(self):
-        p0 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[0], dev='default')
-        p1 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[1], dev='default')
-        p2 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[1], dev='default')
-        p3 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[0], dev='default')
+        p0 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[0])
+        p1 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[1])
+        p2 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[1])
+        p3 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[0])
         src = np.array([p0, p1, p2, p3], np.float32)
         dst = np.array([[0, 0], [self.ipm_width - 1, 0], [self.ipm_width - 1, self.ipm_height - 1],
                         [0, self.ipm_height - 1]], np.float32)

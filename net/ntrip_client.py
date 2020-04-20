@@ -73,9 +73,11 @@ class NTRIPClient(Process):
 
 def generate_gga(lat=22.32112, lon=113.565668):
     t_st = datetime.datetime.utcnow().strftime("%H%M%S.00,")
-    ll_st = "{},N,{},E,".format(lat * 100, lon * 100)
+    latstr = '{:2d}{:2.4f}'.format(int(lat), 60 * (lat - int(lat)))
+    lonstr = '{:3d}{:2.4f}'.format(int(lon), 60 * (lon - int(lon)))
+    ll_st = "{},N,{},E,".format(latstr, lonstr)
     gga_str = "$GPGGA," + t_st + ll_st + "1,04,4.4,3.428,M,-3.428,M,0.0,0000"
-    gga_str += '*%02X' % nmea_checksum(gga_str[1:])
+    gga_str += '*%02X' % nmea_checksum(gga_str[1:]) + '\r\n'
     # gga_str = "GPGGA,133622.69,2232.1120000,N,11356.5668000,E,1,00,1.0,3.428,M,-3.428,M,0.0,"
     # print gga_str
     return gga_str
@@ -102,30 +104,39 @@ class GGAReporter(Process):
 
     def run(self):
         print('GGA reporter inited.')
-        reconnect = True
+        reconnect = 1
+
         lat = 22.122222
         lon = 113.566666
         while True:
             if reconnect:
-                print('GGA reporter reconnecting')
-                self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.sock.connect((self.host, self.port))
-                print('\033[94m'+'GGA reporter connected'+'\033[0m')
-                reconnect = False
+                print('GGA reporter reconnecting...', reconnect)
+                try:
+                    self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    self.sock.connect((self.host, self.port))
+                    print('\033[94m' + 'GGA reporter connected' + '\033[0m')
+                    reconnect = 0
+                except Exception as e:
+                    reconnect += 1
+                    sleep_interval = 5
+                    if reconnect > 5:
+                        sleep_interval = 120
+                    time.sleep(sleep_interval)
+                    continue
             # ggastr = b''
             if self.iq.empty():
                 time.sleep(1)
                 continue
             while not self.iq.empty():
                 lat, lon = self.iq.get()
-            print('\033[94m'+'GGA updated:'+'\033[0m', lat, lon)
+            print('\033[94m' + 'GGA updated:' + '\033[0m', lat, lon)
             ggastr = generate_gga(lat, lon).encode('utf8')
             try:
                 self.sock.sendall(ggastr)
             except Exception as e:
                 self.info = "error {}".format(e)
                 self.sock.close()
-                reconnect = True
+                reconnect = 1
             time.sleep(0.8)
 
 

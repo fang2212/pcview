@@ -290,19 +290,26 @@ def load_config(jsonspec):
 
 
 class CVECfg(object):
+    # cfg_name = ''
+    name = ''
     configs = []
     installs = {}
     runtime = {}
+    versions = {}
     local_cfg = None
 
 
-def load_cfg(jsonspec):
+def load_cfg(jsonspec, local='config/local.json'):
     print(bcl.WARN+'using config:' + bcl.ENDC, jsonspec)
     # configs = []
     # install = {}
     # runtime = {}
     cve_conf = CVECfg()
     spec = json.load(open(jsonspec))
+    if 'name' not in spec:
+        name = os.path.basename(jsonspec)[:-5]
+        spec['name'] = name
+    cve_conf.name = spec['name']
     main_collector = spec.get('main_collector')
     if spec.get('version') and spec['version'] >= 0.6:
         for role in spec['vehicles']:
@@ -315,6 +322,7 @@ def load_cfg(jsonspec):
                 else:
                     clct['is_main'] = False
                 clct['veh_tag'] = role
+                clct['name'] = idx
                 clct['defs_path'] = def_name
                 cve_conf.configs.append(clct)
         for item in spec['vehicles']['ego']['installation']:  # TODO unify install params naming
@@ -335,9 +343,10 @@ def load_cfg(jsonspec):
         cve_conf.configs[0]['is_main'] = True
 
     # config = dic2obj(configs[0])
-    if not os.path.exists('config/local.json'):
-        shutil.copy('config/local_sample.json', 'config/local.json')
-    cve_conf.local_cfg = dic2obj(json.load(open('config/local.json')))
+    if not os.path.exists(local):
+        print('created new local cfg file.')
+        shutil.copy('config/local_sample.json', local)
+    cve_conf.local_cfg = dic2obj(json.load(open(local)))
     cve_conf.runtime['modules'] = spec['modules']
     return cve_conf
 
@@ -359,6 +368,18 @@ def load_installation(jsonspec):
     print(bcl.WARN + 'installation:' + bcl.ENDC)
     print(spec)
     return spec
+
+
+def get_pcc_version():
+    if os.path.exists('build_info.txt'):
+        with open('build_info.txt') as rf:
+            build_time = rf.readline()
+            git_desc = rf.readline()
+            return {'build_time': build_time, 'git_desc': git_desc}
+    else:
+        from tools.build_info import get_git_label
+        git_desc = get_git_label()
+        return {'git_desc': git_desc}
 
 
 class bcl:

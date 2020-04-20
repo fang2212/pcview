@@ -1,10 +1,15 @@
 from parsers.x1 import parse_x1
+from parsers.x1l import parse_x1l
 from parsers.mobileye_q3 import parse_ifv300, parse_q3
 from parsers.mobileye_q2 import parse_mobileye
 from parsers.mqb_esp import parse_mqb
-from parsers.radar import parse_esr, parse_ars, parse_hmb, parse_bosch_mrr, parse_hawkeye_lmr, parse_fusion_mrr, parse_sta77
+from parsers.radar import *
 from parsers.drtk import parse_rtk
 from parsers.mobileye_q4 import parser_mbq4
+from parsers.ublox import decode_nmea
+from parsers.df_d530 import parse_dfd530
+from parsers.x1d3 import parse_x1d3
+
 
 def default_parser(id, data, type=None):
     return None
@@ -22,8 +27,17 @@ parsers_dict = {
     "lmr":      parse_hawkeye_lmr,
     "hmb":      parse_hmb,
     "x1":       parse_x1,
-    "rtk":      parse_rtk,
+    "x1_fusion": parse_x1,
+    "x1l":      parse_x1l,
+    "x1d3":     parse_x1d3,
+    "drtk":     parse_rtk,
     "mrr_fusion": parse_fusion_mrr,
-    "sta77": parse_sta77,
+    "sta77":    parse_sta77,
+    "sta77_3":  parse_sta77_3,
+    "xyd2":     parse_xyd2,
+    "anc":      parse_anc,
+    "vfr":      parse_vfr,
+    "ctlrr":    parse_ctlrr,
+    "d530":     parse_dfd530,
     "default":  default_parser
 }

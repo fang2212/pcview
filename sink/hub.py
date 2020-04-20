@@ -9,7 +9,7 @@ from config.config import bcl
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
 from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink
-from tools.ip_mac import get_mac_ip
+from tools.ip_mac import get_mac_ip, get_cached_macs, save_macs
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')  # logging.basicConfig函数对日志的输出格式及方式做相关配置
@@ -24,29 +24,8 @@ class CollectorNode(kProcess):
 
         print('Inited collector node', os.getpid())
         for sink in self.sinks:
-            # if 'Flow' in sink.__class__.__name__:
-            #     import asyncio
-            #     from tornado.platform.asyncio import AnyThreadEventLoopPolicy
-            #     asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
             sink.start()
 
-            # stype = sink.get('stype')
-            # del sink['stype']
-            # if stype == 'flow':
-            #
-            #     inst = FlowSink(**sink)
-            # elif stype == 'pi':
-            #     inst = PinodeSink(**sink)
-            # elif stype == 'can':
-            #     inst = CANSink(**sink)
-            # elif stype == 'imu':
-            #     inst = GsensorSink(**sink)
-            # elif stype == 'camera':
-            #     inst = CameraSink(**sink)
-            # else:
-            #     inst = CANSink(**sink)
-            # print('Initialized collector sink:', stype)
-            # inst.start()
         while True:
             time.sleep(0.5)
             # for sink in self.sinks:
@@ -80,8 +59,6 @@ class Hub(Thread):
         # self.msg_cnt['frame'] = 0
         self.msg_types = []
         self.type_roles = dict()
-        print('scanning for LAN devices...')
-        self.mac_ip = get_mac_ip()
 
         for msg_type in ['frame', 'can', 'gsensor', 'rtk', 'x1_data', 'video_aux']:
             self.cache[msg_type] = []
@@ -97,26 +74,21 @@ class Hub(Thread):
             self.fileHandler.start()
             # self.fileHandler.start_rec()
 
-        if direct_cfg is not None:
-            import json
-            cfg = json.load(open(direct_cfg))
-            ip = cfg['ip']
-            mac = cfg['mac']
-            # self.collectors[ip] = {'mac': mac}
-            # self.collectors[ip]['sinks'] = {}
-            print('initializing direct connect to {} {}'.format(ip, mac))
-            sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera', index=0,
-                              fileHandler=self.fileHandler)
-            sink.start()
-            # self.collectors[ip]['sinks']['video'] = sink
-            # self.collectors[ip]['idx'] = 0
-            # self.collectors[ip]['sinks'].update(self.fpga_handle(cfg, self.msg_queue, ip, index=0))
-            self.msg_types = []
-            self.msg_types.append(cfg['can_types']['can0'][0] + '.0')
-            self.msg_types.append(cfg['can_types']['can1'][0] + '.0')
-
-            print(self.msg_types)
+        if direct_cfg is not None:  # direct mode
+            self.online = self.direct_init(direct_cfg)
             return
+
+        cached_macs = get_cached_macs(uniconf.name, timeout=60*60*24)
+        if not cached_macs:
+            print('scanning for LAN devices...')
+            self.mac_ip = get_mac_ip()
+            save_macs(uniconf.name, self.mac_ip)
+        else:
+            print('---- using cached mac table ----')
+            self.mac_ip = cached_macs
+            for mac in self.mac_ip:
+                print(mac, self.mac_ip[mac])
+            print('--------------------------------')
 
         self.finder.request()
         time.sleep(0.6)
@@ -154,11 +126,74 @@ class Hub(Thread):
                     self.type_roles[source] = role
                     return role
 
+    def direct_init(self, direct_cfg):
+        import json
+        cfg = json.load(open(direct_cfg))
+        ip = cfg['ip']
+        mac = cfg['mac']
+        sinks = []
+        cfgs_online = {ip: cfg}
+        cfgs_online[ip]['msg_types'] = []
+        # self.collectors[ip] = {'mac': mac}
+        # self.collectors[ip]['sinks'] = {}
+        print('initializing direct connect to {} {}'.format(ip, mac))
+
+        if 'can_type' in cfg:
+            sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera', index=0,
+                              fileHandler=self.fileHandler, is_main=True)
+            sink.start()
+            self.fpga_handle(cfg, self.msg_queue, ip)
+        elif 'ports' in cfg:
+            for iface in cfg['ports']:
+                if 'can' in iface:
+                    chn = cfg['ports'][iface]
+                    cansink = CANSink(self.msg_queue, ip=ip, port=chn['port'], channel=iface, type=[chn['topic']],
+                                      index=0, fileHandler=self.fileHandler, isheadless=self.headless)
+
+                    cansink.start()
+                    cfgs_online[ip]['msg_types'].append('video.0')
+                    cfgs_online[ip]['msg_types'].append(chn['topic'] + '.0')
+                    # sinks.append(cansink)
+                elif 'gsensor' in iface:
+                    chn = cfg['ports'][iface]
+                    gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=chn['port'], channel=iface, index=0,
+                                        fileHandler=self.fileHandler, isheadless=self.headless)
+                    gsink.start()
+                    # print('gsensor found')
+                    # sinks.append(gsink)
+                    cfgs_online[ip]['msg_types'].append('gsensor.0')
+
+                elif 'video' in iface:
+                    protocol = cfg['ports'][iface].get('protocol')
+                    if protocol == 'nanomsg':
+                        sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera', index=0,
+                                          fileHandler=self.fileHandler, is_main=True)
+                        sink.start()
+                    elif protocol == 'libflow':
+                        port = cfg['ports'][iface]['port']
+                        sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.cam_queue, ip=ip, port=port,
+                                        channel=iface, index=0, fileHandler=self.fileHandler, is_main=True)
+                        sink.start()
+                    cfgs_online[ip]['msg_types'].append('video.0')
+
+        # node = CollectorNode(sinks)
+        # node.start()
+        return cfgs_online
+
     def init_collectors(self):
         cfgs_online = {}
         for idx, cfg in enumerate(self.configs):  # match cfg and finder results
             mac = cfg.get('mac')
-            if mac and mac in self.mac_ip:
+            # print('-------------', cfg)
+            if cfg.get('force_ip'):  # force to connect via pre-defined ip
+                print('config force ip device.')
+                if 'ip' not in cfg:
+                    print('undefined ip addr for ip-force device', cfg['mac'])
+                    continue
+                ip = cfg['ip']
+                cfg['idx'] = idx
+                cfgs_online[ip] = cfg
+            elif mac and mac in self.mac_ip:  # mac matches one of the founded LAN devices
                 ip = self.mac_ip[mac]
                 cfg['ip'] = ip
                 cfg['idx'] = idx
@@ -192,7 +227,7 @@ class Hub(Thread):
             cfgs_online[ip]['msg_types'] = []
             if cfg.get('type') == 'x1_algo':
                 for item in cfg['ports']:
-                    if not cfg['ports'][item].get('enable'):
+                    if not cfg['ports'][item].get('enable') and not cfg.get('is_main'):
                         continue
                     port = cfg['ports'][item]['port']
                     sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.cam_queue, ip=ip, port=port, channel=item,
@@ -219,7 +254,7 @@ class Hub(Thread):
                     cfgs_online[ip]['msg_types'].append(name + '.{}'.format(idx))
             elif cfg.get('type') == 'x1_collector':
                 for iface in cfg['ports']:
-                    if not cfg['ports'][iface].get('enable'):
+                    if not cfg['ports'][iface].get('enable') and not cfg.get('is_main'):
                         continue
                     if 'can' in iface:
                         chn = cfg['ports'][iface]
@@ -245,7 +280,7 @@ class Hub(Thread):
                     elif 'video' in iface:
                         port = cfg['ports']['video']['port']
                         vsink = CameraSink(queue=self.cam_queue, ip=ip, port=port, channel='camera', index=idx,
-                                          fileHandler=self.fileHandler, is_main=cfg.get('is_main'))
+                                          fileHandler=self.fileHandler, is_main=cfg.get('is_main'), devname=cfg.get('name'))
                         # vsink.start()
                         # vsink = {'stype': 'camera', 'queue': self.cam_queue, 'ip': ip, 'port': port,
                         #          'channel': 'camera', 'index': idx, 'fileHandler': self.fileHandler,
@@ -305,12 +340,14 @@ class Hub(Thread):
         res = {}
         if not self.cam_queue.empty():
             frame_id, data, msg_type = self.cam_queue.get()
+            # print(frame_id, len(data), msg_type)
             # fileHandler.insert_raw((data['ts'], 'camera', '{}'.format(frame_id)))
             is_main = data.get('is_main')
             if not is_main:
                 self.cache['video_aux'].append(data)
                 # self.msg_cnt['video']['rev'] += 1
                 # self.msg_cnt['video']['show'] += 1
+                # print('not main video stream')
                 return
             res['ts'] = data['ts']
             res['img'] = data['img']

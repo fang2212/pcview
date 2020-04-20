@@ -1,0 +1,33 @@
+{
+  "type": "x1_collector",
+  "mac": "00:0c:18:ef:ff:e3",
+  "ip": "192.168.98.0",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": false,
+      "port": 1200,
+      "protocol": "nanomsg",
+      "topic": "video"
+    },
+    "can0": {
+      "enable": true,
+      "port": 1207,
+      "protocol": "nanomsg",
+      "topic": "x1d3"
+    },
+    "can1": {
+      "enable": true,
+      "port": 1208,
+      "protocol": "nanomsg",
+      "topic": "sta77_3"
+    },
+    "gsensor": {
+      "enable": true,
+      "port": 1209,
+      "protocol": "nanomsg",
+      "topic": "gsensor"
+    }
+  }
+}
