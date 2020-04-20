@@ -12,7 +12,7 @@
         "ego": {
             "enable": true,
             "collectors": {
-                "algo_0122": "normal",
+                "algo_0122": "force_ip:192.168.0.233",
                 "ffed": "normal",
                 "ffe0": "normal",
                 "ffd1": "normal",
