@@ -16,7 +16,7 @@ class Supervisor(Thread):
             self.result.clear()
             for checker in self.checkers:
                 ret = checker()
-                if ret.get('status') is not 'ok':
+                if ret.get('status') != 'ok':
                     self.result.append(ret.get('info'))
             time.sleep(1)
 

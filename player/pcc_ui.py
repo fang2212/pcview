@@ -196,7 +196,7 @@ class Player(object):
             self.show_parameters_background(img, (x0, y0, x1 if x1 <= 1280 else 1280, y1))
 
             BaseDraw.draw_text(img, col, (indent + 12, 20), 0.5, CVColor.Cyan, 1)
-            if col is not 'video':
+            if col != 'video':
                 cv2.rectangle(img, (indent, 0), (indent + 140, 20), self.columns[col]['color'], -1)
 
     def show_obs(self, img, obs, thickness=2):
@@ -479,7 +479,7 @@ class Player(object):
             #         cv2.rectangle(img, (indent + 1, 1), (indent + 159, 24), self.columns[col]['color'], -1)
             self.show_parameters_background(img, (x0, y0, w if w <= 1280 else 1280, h))
 
-            if col is not 'video':
+            if col != 'video':
                 color_lg = self.columns[col].get('color')
                 if color_lg is not None:
                     cv2.rectangle(img, (indent + 1, 1), (indent + 19, 24), self.columns[col]['color'], -1)
