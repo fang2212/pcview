@@ -13,6 +13,8 @@ from multiprocessing import Process, Queue, freeze_support
 import json
 from parsers import ublox
 from recorder.convert import *
+from collections import deque
+import shutil
 
 
 def jpeg_extractor(video_dir):
@@ -65,7 +67,7 @@ class LogPlayer(Process):
         self.last_frame = 0
         self.jpeg_extractor = jpeg_extractor(os.path.dirname(log_path) + '/video')
         self.base_dir = os.path.dirname(self.log_path)
-        self.msg_queue = Queue()
+        # self.msg_queue = Queue()
         self.cam_queue = Queue()
         self.cache = {}
         self.msg_cnt = {}
@@ -78,6 +80,7 @@ class LogPlayer(Process):
         self.ctrl_q = Queue()
         self.type_roles = {}
         self.cfg = uniconf
+        self.pcv_cache = deque(maxlen=500)
 
         self.last_time = 0
         self.hz = 20
@@ -134,7 +137,7 @@ class LogPlayer(Process):
         for cfg in self.cfg.configs:
             msg_types = cfg.get('msg_types')
             if not msg_types:
-                return 'ego'
+                continue
             if source in msg_types:
                 return cfg.get('veh_tag')
         return 'default'
@@ -170,17 +173,25 @@ class LogPlayer(Process):
 
                         try:
                             data = json.loads(line)
+                            # self.pcv_cache.append(data)
+                            # list(self.pcv_cache).sort(key=lambda x: x['frame_id'])
+                            # print(data['frame_id'], len(data))
                         except json.JSONDecodeError as e:
                             pass
                             # print('error json line', line)
                             # continue
 
                         if 'frame_id' not in data:
+                            # print(data)
                             continue
-
-                        if data['frame_id'] == res['frame_id']:
+                        if 'create_ts' in data:  # camera frame comes much earlier than other frames in x1d3
+                            continue
+                        if 'ultrasonic' in data:
+                            res['x1_data'].append(data)
+                        elif data['frame_id'] == res['frame_id']:
                             res['x1_data'].append(data)
                         elif data['frame_id'] < res['frame_id']:
+                            # print(data['frame_id'], res['frame_id'])
                             continue
                         else:
                             self.x1_fp.seek(fx)
@@ -208,6 +219,7 @@ class LogPlayer(Process):
         # self.init_socket()
         # cp = cProfile.Profile()
         # cp.enable()
+
         last_fid = 0
         frame_lost = 0
         total_frame = 0
@@ -231,6 +243,10 @@ class LogPlayer(Process):
 
             if 'replay_speed' in self.d:
                 self.replay_speed = self.d['replay_speed']
+
+            if self.cam_queue.qsize() > 20:  # if cache longer than 1s then slow down the log reading
+                time.sleep(0.01)
+                # print('replay camque', self.cam_queue.qsize())
 
             # print('line {}'.format(cnt))
             cols = line.split(' ')
@@ -350,22 +366,27 @@ class LogPlayer(Process):
                 r = ublox.decode_nmea(cols[3])
                 r['source'] = cols[2]
                 self.cache['can'].append(r.copy())
-
-            # print(r)
-
+        print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
+        return
         # cp.disable()
         # cp.print_stats()
 
 
-def prep_replay(source):
+def prep_replay(source, ns=False):
     if os.path.isdir(source):
         loglist = sorted(os.listdir(source), reverse=True)
         source = os.path.join(os.path.join(source, loglist[0]), 'log.txt')
 
     r_sort = os.path.join(os.path.dirname(source), 'log_sort.txt')
-    if not os.path.exists(r_sort):
-        r_sort = mytools.sort_big_file(source)
+
+    if os.path.exists(r_sort):
+        pass
+    else:
+        if ns:
+            r_sort = source
+        else:
+            r_sort = mytools.sort_big_file(source)
 
     config_path = os.path.join(os.path.dirname(source), 'config.json')
     install_path = os.path.join(os.path.dirname(source), 'installation.json')
@@ -385,9 +406,6 @@ if __name__ == "__main__":
     from config.config import *
     import sys
     import argparse
-    import webbrowser
-
-
 
     local_path = os.path.split(os.path.realpath(__file__))[0]
     # print('local_path:', local_path)
@@ -395,14 +413,22 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Replay CVE log.")
 
-    log = '/media/nan/860evo/data/pcviewer/20191122155307_express/log.txt'
+    log = '/home/nan/data/20191122154341_ramp_in/log.txt'
 
     parser.add_argument('input_path', nargs='?', default=log)
     parser.add_argument('-o', '--output', default=False)
+    parser.add_argument('-r', '--render', action='store_true')
+    parser.add_argument('-ns', '--nosort', action="store_true")
 
     args = parser.parse_args()
     source = args.input_path
-    odir = args.output
+    if args.render:
+        if args.output:
+            odir = args.output
+        else:
+            odir = os.path.dirname(source)
+    else:
+        odir = None
 
     freeze_support()
     # source = sys.argv[1]
@@ -410,14 +436,12 @@ if __name__ == "__main__":
     # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
 
     from tools import mytools
-    r_sort, cfg = prep_replay(source)
+    ns = args.nosort
+    r_sort, cfg = prep_replay(source, ns=ns)
     from pcc import PCC
     from parsers.parser import parsers_dict
 
     replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0)
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=True)
-    # webbrowser.open("http://127.0.0.1:1234")
     pc_viewer.start()
-
-
 

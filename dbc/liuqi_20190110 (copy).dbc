@@ -60,6 +60,17 @@ BO_ 2431649768 FLI1: 8 Vector__XXX
 
 BA_DEF_ BO_  "GenMsgCycleTime" INT 2 50000;
 BA_DEF_DEF_  "GenMsgCycleTime" 100;
+BA_ "GenMsgCycleTime" BO_ 2431649768 50;
+VAL_ 2566849000 Camera_State 2 "camera blocked" 1 "error" 0 "normal" ;
+VAL_ 2566806504 Rlane_Detect 3 "Don't Care/take no action" 2 "Reserved" 1 "Tracking Right side" 0 "Not Tracking Right side" ;
+VAL_ 2566806504 Llane_Detect 3 "Don't Care/take no action" 2 "Reserved" 1 "Tracking Right side" 0 "Not Tracking Right side" ;
+VAL_ 2566806504 LDW_Status 3 "Don't Care/take no action" 2 "Reserved" 1 "enabled" 0 "disabled" ;
 VAL_ 2566806504 Buzzing 6 "PCW" 5 "FCW" 4 "TSR" 3 "HMW" 2 "RLDW" 1 "LLDW" 0 "NO WARN" ;
-
+VAL_ 2566806504 HMW_Level 3 "Reserved" 2 "Warning level 2" 1 "Warning level 1" 0 "No Warning" ;
+VAL_ 2566806504 PCW_warn 1 "Warning" 0 "No Warning" ;
+VAL_ 2566806504 PCW_Detect 1 "Warning" 0 " No Warning" ;
+VAL_ 2566806504 HMW_Status 1 "display" 0 "no display" ;
+VAL_ 2431649768 FCW_Warn 1 "warning" 0 "no warning" ;
+VAL_ 2431649768 LLDW_Warn 1 "Imminent" 0 "Not imminent" ;
+VAL_ 2431649768 RLDW_Warn 1 "imminent" 0 "Not imminent" ;
 

@@ -303,7 +303,7 @@ class GsensorSink(Sink):
 
 
 class CameraSink(Sink):
-    def __init__(self, queue, ip, port, channel, index, fileHandler, headless=False, is_main=False):
+    def __init__(self, queue, ip, port, channel, index, fileHandler, headless=False, is_main=False, devname=None):
         super(CameraSink, self).__init__(queue, ip, port, channel, index, headless)
         self.last_fid = 0
         self.fileHandler = fileHandler
@@ -311,6 +311,7 @@ class CameraSink(Sink):
         # self.index = index
         self.source = 'video.{:d}'.format(index)
         self.is_main = is_main
+        self.devname = devname
 
     def pkg_handler(self, msg):
         # print('cprocess-id:', os.getpid())
@@ -329,7 +330,7 @@ class CameraSink(Sink):
         logging.debug('cam id {}'.format(frame_id))
         # print('frame id', frame_id)
 
-        r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id, 'source': self.source, 'is_main': self.is_main}
+        r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id, 'source': self.source, 'is_main': self.is_main, 'device': self.devname}
         # print('frame id', frame_id)
         # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
 
@@ -388,8 +389,17 @@ class FlowSink(Sink):
     def pkg_handler(self, msg):
         data = msgpack.unpackb(msg.data)
         # print('-----', data[b'topic'])
-        if data[b'topic'] == b'finish':
+        topic = None
+        if b'topic' in data and data[b'topic'] == b'finish':
             buf = data[b'data']
+            topic = 'finish'
+        elif 'topic' in data and data['topic'] == 'finish':
+            buf = data['data']
+            topic = 'finish'
+        else:
+            pass
+
+        if topic == 'finish':
             if b'rc_fusion' in buf:
                 buf = msgpack.unpackb(buf)
                 data = buf[b'rc_fusion']
@@ -400,15 +410,23 @@ class FlowSink(Sink):
                 data = buf[b'calib_params']
                 buf = msgpack.packb(data, use_bin_type=True)
                 self.fileHandler.insert_fusion_raw(buf)
-
             return 'fusion_data', data
-        data = data[b'data']
+
+        if b'data' in data:
+            data = data[b'data']
+        elif 'data' in data:
+            data = data['data']
+
         if b'frame_id' in data:
             data = msgpack.unpackb(data)
+            if b'ultrasonic' in data:
+                data[b'ultrasonic'][b'can_data'] = [x for x in data[b'ultrasonic'][b'can_data']]
+
             pcv = mytools.convert(data)
             data = json.dumps(pcv)
             self.fileHandler.insert_pcv_raw(data)
             return 'x1_data', pcv
+
 
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
         if frame_id - self.last_fid != 1:

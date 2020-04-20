@@ -17,7 +17,7 @@ import cv2
 import sys
 import numpy as np
 
-from config.config import load_cfg
+from config.config import local_cfg, load_cfg
 from net.ntrip_client import GGAReporter
 from player import FlowPlayer
 from player.pcc_ui import Player
@@ -28,7 +28,7 @@ from tools.geo import *
 from tools.match import is_near
 from tools.mytools import Supervisor
 from tools.transform import Transform, OrientTuner
-from tools.vehicle import Vehicle
+from tools.vehicle import Vehicle, get_vehicle_target
 from multiprocessing import Queue
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
@@ -42,7 +42,7 @@ def loop_traverse(items):
 
 class PCC(object):
 
-    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=False):
+    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=False, auto_rec=False):
         # from config.config import runtime
         self.hub = hub
         self.cfg = uniconf
@@ -56,25 +56,27 @@ class PCC(object):
         self.ts0 = 0
 
         self.now_id = 0
-        self.pre_rtk = {}
+        #self.pre_rtk = {}
         self.ts_now = 0
         self.cipv = 0
-        self.msg_cnt = {}
+        #self.msg_cnt = {}
         self.transform = Transform(uniconf)
         self.m_g2i = self.transform.calc_g2i_matrix()
         self.ipm = None
         self.show_ipm = ipm
-        self.show_ifc = True
         self.set_pinpoint = False
         self.target = None
         self.rtk_pair = [{}, {}]
         self.ot = OrientTuner(uniconf)
         self.show_ipm_bg = False
+        self.auto_rec = auto_rec
 
         # self.ego_car = Vehicle()
         self.vehicles = {'ego': Vehicle('ego')}
         self.calib_data = dict()
         self.frame_cost = 0
+        self.frame_cost_total = 0
+        self.frame_drawn_cnt = 0
         self.video_cache = {}
         cv2.namedWindow('MINIEYE-CVE')
         cv2.namedWindow('adj')
@@ -112,6 +114,7 @@ class PCC(object):
 
         self.save_replay_video = save_replay_video
         self.to_web = to_web
+        self.vw = None
         self.vs = None
         if to_web:
             from video_server import VideoServer
@@ -120,14 +123,10 @@ class PCC(object):
             self.vs = VideoServer()
             self.vs.start()
 
-        if save_replay_video and replay:
-            if isinstance(save_replay_video, str):
-                odir = save_replay_video
-            else:
-                odir = os.path.dirname(self.rlog)
-            self.vw = VideoRecorder(odir, fps=20)
-            self.vw.set_writer("replay-render", 1760, 720)
-            print('--------save replay video', odir)
+        # if self.save_replay_video and self.replay:
+        #     self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
+        #     self.vw.set_writer("replay-render", 1760, 720)
+        #     print('--------save replay video', os.path.dirname(self.rlog))
 
         def exit_for_signal(signal_num, frame):
             if self.vs:
@@ -139,7 +138,6 @@ class PCC(object):
 
 
     def start(self):
-        print('starting hub')
         self.hub.start()
         self.player.start_time = datetime.now()
         frame_cnt = 0
@@ -147,6 +145,11 @@ class PCC(object):
         print('entering pcc loop.')
 
         while not self.exit:
+            if not self.hub.is_alive() and self.replay:
+                print('hub exit running.')
+                print('average frame cost: {:.1f}ms'.format(
+                    1000 * self.frame_cost_total / self.frame_drawn_cnt)) if self.frame_drawn_cnt != 0 else None
+                return
             d = self.hub.pop_simple()
             if d is None or not d.get('frame_id'):
                 # time.sleep(0.01)
@@ -177,6 +180,9 @@ class PCC(object):
                 self.player.start_time = datetime.now()
                 frame_cnt = 1
             # time.sleep(0.01)
+            if self.auto_rec:
+                self.auto_rec = False
+                self.start_rec()
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])
@@ -239,11 +245,12 @@ class PCC(object):
                     {'ts': video['ts'], 'frame_id': video['frame_id'], 'img': img_raw, 'source': video['source']})
             self.video_cache[source]['updated'] = False
             img_small = cv2.resize(img_raw, (427, 240))
+            video['device'] = "x1d3"
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
 
         if 'x1_data' in mess:
-            # print('------', mess['pcv_data'])
+            # print('------', mess['x1_data'])
             for data in mess['x1_data']:
                 # print(mess['x1_data'])
                 self.flow_player.draw(data, img)
@@ -306,18 +313,29 @@ class PCC(object):
 
         if self.to_web:
             self.web_img['now_image'] = comb.copy()
-        else:
-            cv2.imshow('MINIEYE-CVE', comb)
 
-        # if self.show_ifc:
-        #     cv2.imshow('MINIEYE-CVE', comb)
+        cv2.imshow('MINIEYE-CVE', comb)
 
         if self.save_replay_video and self.replay:
+            # print(comb.shape)
+            if not self.vw:
+                if isinstance(self.save_replay_video, str):
+                    odir = self.save_replay_video
+                else:
+                    odir = os.path.dirname(self.rlog)
+                self.vw = VideoRecorder(odir, fps=20)
+                self.vw.set_writer("replay-render", comb.shape[1], comb.shape[0])
+                print('--------save replay video', odir)
             self.vw.write(comb)
+
+        # if self.save_replay_video and self.replay:
+        #     self.vw.write(comb)
             # print(comb.shape)
 
         self.handle_keyboard()
         self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
+        self.frame_drawn_cnt += 1
+        self.frame_cost_total += self.frame_cost
 
     def draw_rtk(self, img, data):
         self.player.show_drtk(img, data)
@@ -350,7 +368,9 @@ class PCC(object):
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
         source = data.get('source')
+        # print(source)
         role = self.hub.get_veh_role(source)
+        # print(role)
         # self.vehicles[role].dynamics[data['type']] = data
         self.vehicles[role].update_dynamics(data)
 
@@ -378,6 +398,16 @@ class PCC(object):
                     self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
             elif 'yaw' in data:
                 self.player.show_heading_horizen(img, data)
+        else:  # other vehicle
+            # print('other role:', role)
+            if self.vehicles['ego']:
+                target = get_vehicle_target(self.vehicles['ego'], self.vehicles[role])
+                # print(target)
+                if target:
+                    self.player.show_rtk_target(img, target)
+                    self.player.show_rtk_target_ipm(self.ipm, target)
+            # else:
+            #     print('no ego vehicle')
             # elif 'trk_gnd' in data:
             #     self.player.show_track_gnd(img, data)
             # ppq = self.vehicles['ego'].dynamics.get('pinpoint')
@@ -395,11 +425,11 @@ class PCC(object):
             # print('rtk target cost:{}'.format(dt * 1000))
             # print(pp_target['ts'])
 
-        else:  # other vehicle
-            host = self.vehicles['ego'].get_pos()
-            # if 'lat' in data and host:
-            #     self.player.show_target(img, data, host)
-            # pass
+        # else:  # other vehicle
+        #     host = self.vehicles['ego'].get_pos()
+        # if 'lat' in data and host:
+        #     self.player.show_target(img, data, host)
+        # pass
 
         # if 'lat' in data and not self.replay:
         #     if self.gga is None and self.en_gga:
@@ -479,7 +509,7 @@ class PCC(object):
     def draw_can_data(self, img, data):
         # print(data)
         if 'type' not in data:
-            print('data invalid', data)
+            print('data invalid: no type', data)
             return
         role = self.hub.get_veh_role(data.get('source'))
         if role not in self.vehicles:
@@ -507,6 +537,9 @@ class PCC(object):
             self.player.draw_vehicle_state(img, data)
             # print(data)
             self.player.update_column_ts(data['source'], data['ts'])
+            if 'yaw_rate' in data:
+                # self.player.show_host_path(img, data['speed'], data['yaw_rate'])
+                self.player.show_host_path_ipm(self.ipm, data['speed'], data['yaw_rate'])
 
         elif data['type'] == 'CIPV':
             self.cipv = data['id']
@@ -535,7 +568,7 @@ class PCC(object):
 
     def handle_keyboard(self):
         key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):
+        if key == ord('q') or key == 27:
             cv2.destroyAllWindows()
             # os._exit(0)
             self.exit = True
@@ -544,9 +577,6 @@ class PCC(object):
             self.pause = not self.pause
             print('Pause:', self.pause)
 
-        elif key == 27:
-            cv2.destroyAllWindows()
-            self.exit = True
         elif key == ord('r'):
             if self.hub.fileHandler.is_recording:
                 # self.recording = False
@@ -556,7 +586,7 @@ class PCC(object):
                 self.start_rec()
             print('toggle recording status. {}'.format(self.hub.fileHandler.is_recording))
         elif key == ord('s'):
-            # self.ot.save_para()
+            self.ot.save_para()
             if not self.replay:
                 self.hub.fileHandler.save_param()
         elif key == ord('p'):
@@ -569,8 +599,6 @@ class PCC(object):
         elif key == ord('i'):
             self.sv_state = next(self.sideview_state)
             self.show_ipm = not self.show_ipm
-        elif key == ord('w'):
-            self.show_ifc = not self.show_ifc
 
     def start_rec(self):
         self.hub.fileHandler.start_rec(self.rlog)

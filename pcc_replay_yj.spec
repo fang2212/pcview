@@ -1,13 +1,19 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
-
+#added_files = [
+#	('config', 'config'),
+#	('dbc', 'dbc'),
+#	('nanomsg', 'nanomsg'),
+#	('_nanomsg_cpy', '_nanomsg_cpy'),
+#	('web', 'web')
+#]
 
 a = Analysis(['pcc_replay.py'],
              pathex=['./'],
              binaries=[],
-             datas= [],
-             hiddenimports=['_nanomsg_cpy'],
+             datas=[],
+             hiddenimports=['_nanomsg_cpy', 'pkg_resources.py2_warn'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -24,7 +30,6 @@ exe = EXE(pyz,
           a.datas,
           [],
           name='pcc_replay',
-		  icon='collection.ico',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -32,4 +37,3 @@ exe = EXE(pyz,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=True )
-

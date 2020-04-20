@@ -7,12 +7,12 @@
             "port": 5001
         }
     },
-    "main_collector": "algo_0122",
+    "main_collector": "algo_c229",
     "vehicles": {
         "ego": {
             "enable": true,
             "collectors": {
-                "algo_0122": "normal",
+                "algo_c229": "normal",
                 "ffd0": "normal",
                 "ffd1": "normal",
                 "ffd2": "normal",
@@ -55,36 +55,36 @@
                     "roll": 0.0,
                     "lat_offset": 0.0,
                     "pitch": -2.0,
-                    "height": 0.86,
-                    "lon_offset": -0.21,
-                    "yaw": 0.0
+                    "height": 1.54,
+                    "lon_offset": -2.04,
+                    "yaw": 0.8
                 },
                 "video": {
                     "fu": 1458.0,
-                    "yaw": -2.2,
+                    "yaw": 1.94,
                     "fv": 1458.0,
-                    "pitch": 0.3,
+                    "pitch": 1.18,
                     "cu": 640.0,
                     "lat_offset": 0.15,
                     "roll": 0.0,
-                    "height": 1.26,
+                    "height": 1.4,
                     "lon_offset": -1.72,
                     "cv": 360.0
                 },
                 "x1": {
                     "roll": 0.0,
-                    "lat_offset": 0.0,
+                    "lat_offset": 0.15,
                     "pitch": 0.3,
-                    "height": 1.26,
+                    "height": 1.4,
                     "lon_offset": -1.72,
-                    "yaw": -2.2
+                    "yaw": 0.35
                 }
             }
         },
-        "other": {
+        "rover": {
             "enable": false,
             "collectors": {
-                "9de8": "normal"
+                "pi_426d_rover": "normal"
             }
         }
     }

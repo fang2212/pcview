@@ -119,7 +119,13 @@ class Player(object):
                 BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
                 BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(i - 1, 10), 0.3, CVColor.White, 1)
 
-        for i in range(-10, 11, 5):
+        for i in [-4*0.5, 4*0.5]:
+            p1 = self.transform.trans_gnd2ipm(-10, i)
+            p2 = self.transform.trans_gnd2ipm(show_range, i)
+            BaseDraw.draw_line(img, p1, p2, color_type=CVColor.LightRed, thickness=1)
+            BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 0.3, CVColor.White, 1)
+
+        for i in [-4*2.5, -4*1.5, 4*1.5, 4*2.5]:
             p1 = self.transform.trans_gnd2ipm(-10, i)
             p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
@@ -484,7 +490,13 @@ class Player(object):
                 BaseDraw.draw_text(img, col, (indent + 22, 20), 0.5, CVColor.Cyan, 1)
             dt = self.ts_now - self.columns[col]['ts']
 
-            BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt * 1000)), (indent + 92, 20), 0.5, CVColor.White, 1)
+            if dt > 9.999:
+                delay_ms = ">9999ms"
+            elif dt < -9.999:
+                delay_ms = "<-9999ms"
+            else:
+                delay_ms = '{:>+4d}ms'.format(int(dt * 1000))
+            BaseDraw.draw_text(img, delay_ms, (indent + 92, 20), 0.5, CVColor.White, 1)
             # if col is not 'video':
             #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:
@@ -521,6 +533,7 @@ class Player(object):
         BaseDraw.draw_text(img,
                            'lost frames: {}'.format(data['frame_id'] - self.video_streams[data['source']]['frame_cnt']),
                            (2, 80), 0.5, CVColor.White, 1)
+        BaseDraw.draw_text(img, 'dev: {}'.format(data['device']), (2, 100), 0.5, CVColor.White, 1)
 
     def show_frame_id(self, img, source, fn):
         # indent = self.columns['video']['indent']
@@ -699,37 +712,44 @@ class Player(object):
         if not color:
             color = self.color_obs['default']
 
-        width = 3.5
-        height = 1.6
-        x, y = data['pos_lon'], 0
-        dist = (x ** 2 + y ** 2) ** 0.5
-        dist = max(0.1, dist)
-        if dist <= 0 or x <= 0:
-            return
-
-        w = self.cfg.installs['video']['fu'] * width / dist
-        w = int(w)
-
-        x0, y0 = self.transform.trans_gnd2raw(x, y)
-
-        h = int(self.cfg.installs['video']['fv'] * height / dist)
-        x1 = int(x0 - 0.5 * w)
-        y1 = int(y0 - h)
-        x2 = int(x1 + w)
-        y2 = int(y1 + h)
-
-        size = max(min(0.5 * 8 / dist, 0.5), 0.28)
+        # width = 3.5
+        # height = 1.6
+        # x, y = data['pos_lon'], 0
+        # dist = (x ** 2 + y ** 2) ** 0.5
+        # dist = max(0.1, dist)
+        # if dist <= 0 or x <= 0:
+        #     return
+        #
+        # w = self.cfg.installs['video']['fu'] * width / dist
+        # w = int(w)
+        #
+        # x0, y0 = self.transform.trans_gnd2raw(x, y)
+        #
+        # h = int(self.cfg.installs['video']['fv'] * height / dist)
+        # x1 = int(x0 - 0.5 * w)
+        # y1 = int(y0 - h)
+        # x2 = int(x1 + w)
+        # y2 = int(y1 + h)
+        #
+        # size = max(min(0.5 * 8 / dist, 0.5), 0.28)
 
         # BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, 1)
         # BaseDraw.show_stop_wall(img, (x1, y1), (x2, y2), color, 1)
         # BaseDraw.draw_text(img, 'x: {:.2f}m TTC: {:.2f}'.format(x, data['TTC']), (x1 - 2, y1 - 4), size, color, 1)
 
         # BaseDraw.draw_alpha_rect(img, (x1, y1, w, h), 0.8, CVColor.Red)
-        self.show_text_info(data['source'], 40, 'ldw_left: {}'.format(data['ldw_left']))
-        self.show_text_info(data['source'], 60, 'ldw_tight: {}'.format(data['ldw_right']))
-        self.show_text_info(data['source'], 80, 'fcw_level: {}'.format(data['fcw_level']))
-        self.show_text_info(data['source'], 100, 'TTC: {:.2f} s'.format(data['TTC']))
-        self.show_text_info(data['source'], 120, 'x: {:.1f} m'.format(data['pos_lon']))
+        if 'ldw_left' in data:
+            self.show_text_info(data['source'], 40, 'ldw_left: {}'.format(data['ldw_left']))
+        if 'ldw_right' in data:
+            self.show_text_info(data['source'], 60, 'ldw_right: {}'.format(data['ldw_right']))
+        if 'fcw_level' in data:
+            self.show_text_info(data['source'], 80, 'fcw_level: {}'.format(data['fcw_level']))
+        if "TTC" in data:
+            self.show_text_info(data['source'], 100, 'TTC: {:.2f} s'.format(data['TTC']))
+        if 'pos_lon' in data:
+            self.show_text_info(data['source'], 120, 'x: {:.1f} m'.format(data['pos_lon']))
+        if 'vel_lat' in data:
+            self.show_text_info(data['source'], 140, 'vel_f: {:.1f} m'.format(data['vel_lon']))
 
     def _show_drtk(self, img, rtk):
         # print(rtk)
@@ -856,9 +876,9 @@ class Player(object):
         BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (p5[0], p5[1] - 10), 0.3, CVColor.White, 1)
         # BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
         #                    CVColor.White, 1)
-        self.show_text_info(target['source'], 140, 'range: {:.3f}'.format(range))
-        self.show_text_info(target['source'], 100, 'angle: {:.2f}'.format(angle))
-        self.show_text_info(target['source'], 120, 'TTC: {:.2f}'.format(target['TTC']))
+        self.show_text_info(target['source'], 240, 'range: {:.3f}'.format(range))
+        self.show_text_info(target['source'], 260, 'angle: {:.2f}'.format(angle))
+        self.show_text_info(target['source'], 280, 'TTC: {:.2f}'.format(target['TTC']))
 
     def show_ipm_target(self, img, target, host):
         range, angle = self._calc_relatives(target, host)
@@ -1172,3 +1192,81 @@ class Player(object):
             color = self.color_obs['default']
 
         self.show_lane_ipm(img, data, color)
+
+    def show_host_path(self, img, spd, yr, yrbias=0.0017):
+        # if spd < 5:
+        #     return
+        spd = spd / 3.6
+
+        p1 = []
+        p2 = []
+        R = 1000
+        x0 = -1.2
+        yr = yr - yrbias
+        if yr > 0.00001 or yr < -0.00001:
+            R = spd / yr
+        # print('R:', R)
+
+        for x in range(min(int(abs(R)), int(spd * 10))):
+        # for x in range(0, 80):
+            if yr < 0.0:
+                y = (abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
+            elif yr > 0.0:
+                y = -(abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
+            else:
+                y = 0
+            y1 = y - 0.9
+            y2 = y + 0.9
+            p1.append(self.transform.trans_gnd2raw(x, y1))
+            p2.append(self.transform.trans_gnd2raw(x, y2))
+
+        for i in range(1, len(p1) - 1, 1):
+            BaseDraw.draw_line(img, p1[i], p1[i + 1], CVColor.Grass, 2)
+            BaseDraw.draw_line(img, p2[i], p2[i + 1], CVColor.Grass, 2)
+
+            if i % 20 == 0 or i == 10:
+                BaseDraw.draw_line(img, p1[i], p2[i], CVColor.Grass, 2)
+                BaseDraw.draw_text(img, '{}m'.format(i), (p1[i][0], p1[i][1] + 10), 0.5, CVColor.Green, 1)
+            # x, y, w, h = 200, 360, 880, 360
+            # pt0 = (p1[i][0] - x, p1[i][1]-y)
+            # pt1 = (p1[i+1][0] - x, p1[i+1][1] - y)
+            # pt2 = (p2[i+1][0] - x, p2[i+1][1] - y)
+            # pt3 = (p2[i][0] - x, p2[i][1] - y)
+            # roi = img[360:720, 200:1080]
+            # img1 = np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8)
+            # vtxs = np.array([[p1[i], p1[i+1], p2[i+1], p2[i]]])
+            # vtxs = np.array([[pt0, pt1, pt2, pt3]])
+            # BaseDraw.draw_alpha_rect(img, (p1[i][0], p1[i][1], abs(p2[i][0] - p1[i][0]), abs(p2[i][1] - p1[i][1])), 0.4)
+            # cv2.fillPoly(img, vtxs, (0, 200, 0))
+            # cv2.addWeighted(img, 0.9, img1, 0.2, 0, img1)
+
+    def show_host_path_ipm(self, img, spd, yr, yrbias=0.0017):
+        # if spd < 5:
+        #     return
+        spd = spd / 3.6
+
+        p1 = []
+        p2 = []
+        R = 1000
+        x0 = -1.2
+        yr = yr - yrbias
+        if yr > 0.00001 or yr < -0.00001:
+            R = spd / yr
+        # print('R:', R)
+
+        for x in range(min(int(abs(R)), int(spd * 7))):
+            if yr < 0.0:
+                y = (abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
+            elif yr > 0.0:
+                y = -(abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
+            else:
+                y = 0
+            y1 = y - 1.5
+            y2 = y + 1.5
+            p1.append(self.transform.trans_gnd2ipm(x, y1))
+            p2.append(self.transform.trans_gnd2ipm(x, y2))
+
+        for i in range(1, len(p1) - 1, 1):
+            BaseDraw.draw_line(img, p1[i], p1[i + 1], CVColor.Green, 1)
+            BaseDraw.draw_line(img, p2[i], p2[i + 1], CVColor.Green, 1)
+

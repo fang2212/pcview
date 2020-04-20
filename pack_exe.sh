@@ -34,6 +34,8 @@ mv build_info.txt dist/pcc_release/
 
 cd dist
 tar -czvf pcc_release.tar.gz pcc_release
+mkdir ~/release
+cp pcc_release.tar.gz ~/release/"PCC_$(date "+%Y%m%d%H%M%S").tar.gz"
 
 echo "removing build dirs..."
 #rm -r dist

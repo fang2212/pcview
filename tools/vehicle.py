@@ -125,6 +125,8 @@ class Vehicle(object):
         # print('get pp target', self.pinpoint, host)
         if not host or not pp:
             return
+        if 'yaw' not in host or 'lat' not in host or 'lon' not in host:
+            return
         # print('get pp target')
         range = gps_distance(pp['lat'], pp['lon'], host['lat'], host['lon'])
         angle = gps_bearing(pp['lat'], pp['lon'], host['lat'], host['lon'])
@@ -144,7 +146,7 @@ class Vehicle(object):
         pos_y = sin(angle * pi / 180.0) * range
         delta_h = host['hgt'] - pp['hgt']
 
-        ttc = pos_x / host['hor_speed']
+        ttc = pos_x / host['hor_speed'] if host['hor_speed'] > 0 else 7
         if ttc > 7:
             ttc = 7
 
@@ -154,6 +156,7 @@ class Vehicle(object):
 
 
 def get_vehicle_target(host, target):
+    import tools.transform as trans
     host_dyn = host.get_dynamics(('lat', 'lon', 'hgt', 'pitch', 'yaw', 'hor_speed', 'trk_gnd'))
     target_dyn = target.get_dynamics(('lat', 'lon', 'hgt', 'hor_speed', 'trk_gnd'))
     if not host_dyn or not target_dyn:
@@ -162,18 +165,25 @@ def get_vehicle_target(host, target):
     range = gps_distance(target_dyn['lat'], target_dyn['lon'], host_dyn['lat'], host_dyn['lon'])
     angle = gps_bearing(target_dyn['lat'], target_dyn['lon'], host_dyn['lat'], host_dyn['lon'])
     angle = angle - host_dyn['yaw']
-    velN = target_dyn['hor_speed']*cos(target_dyn['trk_gnd'] * pi / 180.0) - host_dyn['hor_speed']*cos(host_dyn['trk_gnd'] * pi / 180.0)
-    velE = target_dyn['hor_speed']*sin(target_dyn['trk_gnd'] * pi / 180.0) - host_dyn['hor_speed']*sin(host_dyn['trk_gnd'] * pi / 180.0)
-    trk = atan2(velE, velN) * 180.0 / pi
-    if trk < 0:
-        trk = trk + 360.0
-    vel = (velE**2 + velN**2)**0.5
-    vel_x = vel * sin(trk * pi / 180)
-    vel_y = vel * cos(trk * pi / 180)
+
+    trk_host = host_dyn['trk_gnd'] + 180.0
+    if trk_host > 360:
+        trk_host = trk_host - 360.0
+    velN = - host_dyn['hor_speed'] * cos(host_dyn['trk_gnd'] * pi / 180.0)
+    velE = - host_dyn['hor_speed'] * sin(host_dyn['trk_gnd'] * pi / 180.0)
+    # vel_x = host_dyn['hor_speed'] * sin(trk_host * pi / 180)
+    # vel_y = host_dyn['hor_speed'] * cos(trk_host * pi / 180)
+    theta = host_dyn['trk_gnd'] - host_dyn['yaw']
+    vel_x = host_dyn['hor_speed'] * cos(theta * pi / 180)
+    vel_y = host_dyn['hor_speed'] * sin(theta * pi / 180)
     pos_x = cos(angle * pi / 180.0) * range
     pos_y = sin(angle * pi / 180.0) * range
-    delta_h = host_dyn['hgt'] - target_dyn['hgt']
+    delta_h = target_dyn['hgt'] - host_dyn['hgt']
 
-    return {'ts': host['ts'], 'source': target['source'], 'type': 'rtktarget', 'range': range, 'angle': angle,
+    ttc = pos_x / host_dyn['hor_speed'] if host_dyn['hor_speed'] > 0 else 7
+    if ttc > 7:
+        ttc = 7
+
+    return {'ts': target_dyn['ts'], 'source': target.source, 'type': 'rtktarget', 'range': range, 'angle': angle,
             'delta_hgt': delta_h, 'pos_lat': pos_y, 'pos_lon': pos_x, 'vel_lat': vel_y, 'vel_lon': vel_x,
-            'TTC': pos_x / vel_x}
+            'TTC': ttc}

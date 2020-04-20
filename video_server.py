@@ -8,7 +8,6 @@ server_dict = Manager().dict()
 
 server_dict['now_image'] = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
 
-
 def bgr2jpg(img):
     return cv2.imencode('.jpg', img)[1].tostring()
 
@@ -19,11 +18,9 @@ def get_image():
         frame = bgr2jpg(now_image)
         yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-
 @app.route('/')
 def index():
     return render_template('pcc.html')
-
 
 @app.route('/video_feed')
 def video_feed():
