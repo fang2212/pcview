@@ -1,0 +1,15 @@
+{
+  "type": "x1_algo",
+  "ip": "192.168.98.27",
+  "mac": "5a:31:f3:1e:eb:96",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": false,
+      "port": 24011,
+      "protocol": "libflow",
+      "topic": "video"
+    }
+  }
+}

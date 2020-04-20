@@ -1,0 +1,207 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: ETC VCU EMS EBS
+
+
+BO_ 2566838551 Switch: 1 Vector__XXX
+ SG_ AEB_function_switch : 0|1@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2431649768 Sensor_status: 1 Vector__XXX
+ SG_ Video_error_status : 2|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Radar_error_status : 0|2@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2365484270 TOC1: 2 Vector__XXX
+ SG_ Tachograph : 48|16@1+ (0.00390625,0) [0|255.99609375] "km/h" Vector__XXX
+
+BO_ 2565867787 VDC2: 8 Vector__XXX
+ SG_ VDC2_StrWhlAngTurnCounter : 16|6@1+ (1,-32) [-32|31] ""  VCU
+ SG_ VDC2_YawRate : 24|16@1+ (0.0001220703125,-3.92) [-3.92|4.0798779296875] "rad/s"  VCU
+ SG_ VDC2_StrWhlAngSensorType : 22|2@1+ (1,0) [0|3] ""  VCU
+ SG_ VDC2_SteerWheelAngle : 0|16@1+ (0.0009765625,-31.374) [-31.374|32.6250234375] "rad"  VCU
+ SG_ VDC2_LngtAcc : 56|8@1+ (0.1,-12.5) [-12.5|13] "m/s^2"  VCU
+ SG_ VDC2_LateralAcc : 40|16@1+ (0.00048828125,-15.687) [-15.687|16.31251171875] "m/s^2"  VCU
+
+BO_ 2566844672 CCVS1: 8 EMS
+ SG_ CCVS1_VehicleSpeed : 8|16@1+ (0.00390625,0) [0|255.99609375] "km/h"  VCU
+ SG_ CCVS1_ParkingBrakeSwitch : 2|2@1+ (1,0) [0|3] ""  VCU
+
+BO_ 2349534208 AEB2: 8 EBS
+ SG_ AEB2_Checksum : 60|4@1+ (1,0) [0|15] ""  VCU
+ SG_ AEB2_Counter : 56|4@1+ (1,0) [0|15] ""  VCU
+ SG_ AEB2_AEBOnOffReq : 0|2@1+ (1,0) [0|3] ""  VCU
+
+BO_ 2364541955 ETC8: 8 ETC
+ SG_ ETC8_TrqConvRatio : 0|16@1+ (0.001,0) [0|65.535] ""  VCU
+ SG_ ETC8_InputSpeed : 16|16@1+ (0.125,0) [0|8191.875] "rpm"  VCU
+
+BO_ 2566801923 ETC7: 8 ETC
+ SG_ ETC7_ReadyForBrakeRelease : 0|2@1+ (1,0) [0|3] ""  VCU
+
+BO_ 2364539648 EEC2: 8 EMS
+ SG_ EEC2_AccelPedalPos2 : 32|8@1+ (0.4,0) [0|102] "%"  VCU
+ SG_ EEC2_AccelPedalPos1 : 8|8@1+ (0.4,0) [0|0] "%"  VCU
+
+BO_ 2566831883 EBC2: 8 EBS
+ SG_ EBC2_FrontAxleSpeed : 0|16@1+ (0.00390625,0) [0|0] "km/h"  VCU
+ SG_ EBC2_RelativeSpeed_FL : 16|8@1+ (0.0625,-7.8125) [0|0] "km/h"  VCU
+ SG_ EBC2_RelativeSpeed_FR : 24|8@1+ (0.0625,-7.8125) [0|0] "km/h"  VCU
+ SG_ EBC2_RelativeSpeed_RL1 : 32|8@1+ (0.0625,-7.8125) [0|0] "km/h"  VCU
+ SG_ EBC2_RelativeSpeed_RR1 : 40|8@1+ (0.0625,-7.8125) [0|0] "km/h"  VCU
+ SG_ EBC2_RelativeSpeed_RL2 : 48|8@1+ (0.0625,-7.8125) [0|0] "km/h"  VCU
+ SG_ EBC2_RelativeSpeed_RR2 : 56|8@1+ (0.0625,-7.8125) [0|0] "km/h"  VCU
+
+BO_ 2566767627 EBC5: 8 EBS
+ SG_ EBS5_XBRSystemState : 10|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBS5_XBRActiveCtrlMode : 12|4@1+ (1,0) [0|0] ""  VCU
+ SG_ EBS5_XBRAccLimit : 16|8@1+ (0.1,-12.5) [0|0] "m/s^2"  VCU
+ SG_ EBS5_PrkngBrakeActived : 26|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBS5_HillHolderMode : 5|3@1+ (1,0) [0|0] ""  VCU
+ SG_ EBS5_FoundationBrakeUse : 8|2@1+ (1,0) [0|0] ""  VCU
+
+BO_ 2364539395 ETC1: 8 ETC
+ SG_ ETC1_ShiftInProcessStatus : 4|2@1+ (1,0) [0|0] ""  VCU
+ SG_ ETC1_InputShaftSpeed : 40|16@1+ (0.125,0) [0|0] "rpm"  VCU
+ SG_ ETC1_EngagedStatus : 0|2@1+ (1,0) [0|0] ""  VCU
+
+BO_ 2566708224 CCVS3: 8 EMS
+ SG_ CCVS3_AEBSReadState : 24|2@1+ (1,0) [0|0] ""  VCU
+
+BO_ 2364551144 AEB1: 8 VCU
+ SG_ AEB1_TTC : 16|8@1+ (0.05,0) [0|0] "s"  EMS
+ SG_ AEB1_RelObjBendoff : 11|3@1+ (1,0) [0|0] ""  EMS
+ SG_ AEB1_RelObjDetect : 8|3@1+ (1,0) [0|0] ""  EMS
+ SG_ AEB1_ColWrnLevel : 4|4@1+ (1,0) [0|0] ""  EMS
+ SG_ AEB1_SysMode : 0|4@1+ (1,0) [0|0] ""  EMS
+
+BO_ 2349075454 XBR: 8 VCU
+ SG_ XBR_XBRPriority : 18|2@1+ (1,0) [0|3] ""  EMS
+ SG_ XBR_XBRMessageCounter : 56|4@1+ (1,0) [0|15] ""  EMS
+ SG_ XBR_XBRMessageChecksum : 60|4@1+ (1,0) [0|15] ""  EMS
+ SG_ XBR_XBREBIMode : 16|2@1+ (1,0) [0|3] ""  EMS
+ SG_ XBR_XBRCtrlMode : 20|2@1+ (1,0) [0|3] ""  EMS
+ SG_ XBR_ExtlAccelerationDemand : 0|16@1+ (0.00048828125,-15.687) [-10|10] "m/s^2"  EMS
+
+BO_ 2364539904 EEC1: 8 EMS
+ SG_ EEC1_EngDemandPercentTorque : 56|8@1+ (1,-125) [0|0] "%"  VCU
+ SG_ EEC1_EngStarterMode : 48|4@1+ (1,0) [0|0] ""  VCU
+ SG_ SrcAddrssOfCtrllngDvcForEngCtrl : 40|8@1+ (1,0) [0|0] ""  VCU
+ SG_ EEC1_EngSpeed : 24|16@1+ (0.125,0) [0|0] "rpm"  VCU
+ SG_ EEC1_ActualEngPercentTorque : 16|8@1+ (1,-125) [0|0] "%"  VCU
+ SG_ EEC1_DriversDemandEngTorque : 8|8@1+ (1,-125) [0|0] "%"  VCU
+ SG_ EEC1_EngTorqueMode : 0|4@1+ (1,0) [0|0] ""  VCU
+
+BO_ 2565865739 EBC1: 8 EBS
+ SG_ EBC1_TrctrMntdTrilerABSWarnSig : 62|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_TrailerABSStatus : 60|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_HaltBrakeSwitch : 58|2@1+ (1,0) [0|0] ""  VCU
+ SG_ SrcAddrssOfCtrllngDvcFrBrkCntrl : 48|8@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_ATC_ASRInformationSignal : 46|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_ABS_EBSAmberWarningSignal : 44|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_EBSRedWarningSignal : 42|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_ABSFullyOperational : 40|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_EngRetarderSelection : 32|8@1+ (0.4,0) [0|0] "%"  VCU
+ SG_ EBC1_RemoteAccelEnableSwitch : 30|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_EngAuxEngShutdownSwitch : 28|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_EngDerateSwitch : 26|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_AccelInterlockSwitch : 24|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_TractionCtrlOverrideSwitch : 22|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_ASRHillHolderSwitch : 20|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_ASROffroadSwitch : 18|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_ABSOffroadSwitch : 16|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_BrakePedalPos : 8|8@1+ (0.4,0) [0|0] "%"  VCU
+ SG_ EBC1_EBSBrakeSwitch : 6|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_AntiLockBrakingActive : 4|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_ASRBrakeCtrlActive : 2|2@1+ (1,0) [0|0] ""  VCU
+ SG_ EBC1_ASREngCtrlActive : 0|2@1+ (1,0) [0|0] ""  VCU
+
+BO_ 2348810252 TSC1_E: 8 VCU
+ SG_ TSC1_ControlPurpose : 35|5@1+ (1,0) [0|0] ""  EMS
+ SG_ TSC1_TransmissionRate : 32|3@1+ (1,0) [0|0] ""  EMS
+ SG_ TSC1_EngRqedTorque_TorqueLimit : 24|8@1+ (1,-125) [0|0] "%"  EMS
+ SG_ TSC1_EngRqedSpeed_SpeedLimit : 8|16@1+ (0.125,0) [0|0] "rpm"  EMS
+ SG_ TSC1_OverrideCtrlModePriority : 4|2@1+ (1,0) [0|0] ""  EMS
+ SG_ TSC1_EngRqedSpeedCtrlConditions : 2|2@1+ (1,0) [0|3] ""  EMS
+ SG_ TSC1_EngOverrideCtrlMode : 0|2@1+ (1,0) [0|0] ""  EMS
+
+
+
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic";
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","J1939PG";
+BA_DEF_  "ProtocolType" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 10000;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "VFrameFormat" "J1939PG";
+BA_DEF_DEF_  "ProtocolType" "";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "BusType" "";
+BA_ "BusType" "CAN";
+BA_ "ProtocolType" "J1939";
+BA_ "VFrameFormat" BO_ 2566838551 3;
+BA_ "GenMsgCycleTime" BO_ 2431649768 50;
+BA_ "VFrameFormat" BO_ 2431649768 3;
+BA_ "VFrameFormat" BO_ 2365484270 3;
+BA_ "GenMsgCycleTime" BO_ 2565867787 10;
+BA_ "VFrameFormat" BO_ 2565867787 3;
+BA_ "GenMsgCycleTime" BO_ 2566844672 100;
+BA_ "VFrameFormat" BO_ 2566844672 3;
+BA_ "GenMsgCycleTime" BO_ 2349534208 50;
+BA_ "VFrameFormat" BO_ 2349534208 3;
+BA_ "GenMsgCycleTime" BO_ 2364541955 100;
+BA_ "VFrameFormat" BO_ 2364541955 3;
+BA_ "GenMsgCycleTime" BO_ 2566801923 100;
+BA_ "VFrameFormat" BO_ 2566801923 3;
+BA_ "GenMsgCycleTime" BO_ 2364539648 20;
+BA_ "VFrameFormat" BO_ 2364539648 3;
+BA_ "GenMsgCycleTime" BO_ 2566831883 100;
+BA_ "VFrameFormat" BO_ 2566831883 3;
+BA_ "GenMsgCycleTime" BO_ 2566767627 100;
+BA_ "VFrameFormat" BO_ 2566767627 3;
+BA_ "GenMsgCycleTime" BO_ 2364539395 10;
+BA_ "VFrameFormat" BO_ 2364539395 3;
+BA_ "GenMsgCycleTime" BO_ 2566708224 1000;
+BA_ "VFrameFormat" BO_ 2566708224 3;
+BA_ "GenMsgCycleTime" BO_ 2364551144 50;
+BA_ "VFrameFormat" BO_ 2364551144 3;
+BA_ "GenMsgCycleTime" BO_ 2349075454 200;
+BA_ "VFrameFormat" BO_ 2349075454 3;
+BA_ "GenMsgCycleTime" BO_ 2364539904 10;
+BA_ "VFrameFormat" BO_ 2364539904 3;
+BA_ "GenMsgCycleTime" BO_ 2565865739 100;
+BA_ "VFrameFormat" BO_ 2565865739 3;
+BA_ "GenMsgCycleTime" BO_ 2348810252 200;
+BA_ "VFrameFormat" BO_ 2348810252 3;
+

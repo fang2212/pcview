@@ -1,0 +1,28 @@
+{
+  "type": "pi_node",
+  "mac": "2e:22:a3:26:cc:4d",
+  "ip": "192.168.98.180",
+  "force_ip": true,
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "gps": {
+      "enable": true,
+      "port": 1210,
+      "protocol": "nanomsg",
+      "topic": "nmea"
+    },
+    "rtcm": {
+      "enable": true,
+      "port": 1220,
+      "protocol": "nanomsg",
+      "topic": "rtcm"
+    },
+    "rtk": {
+      "enable": true,
+      "port": 1240,
+      "protocol": "nanomsg",
+      "topic": "ub482"
+    }
+  }
+}

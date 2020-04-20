@@ -1,0 +1,86 @@
+VERSION "HIPBNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY/4/%%%/4/'%**4YYY///"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: TSMTC_output
+
+
+BO_ 2000 VFR_MR_316_OUT: 8 TSMTC_output
+ SG_ Target_Y m15 : 47|12@0+ (0.1,0) [0|409.5] "m" Vector__XXX
+ SG_ Target_X m15 : 23|12@0+ (0.1,-204.8) [-204.8|204.7] "m" Vector__XXX
+ SG_ Target_Vy m15 : 51|12@0+ (0.1,-204.8) [-204.8|204.7] "m/s" Vector__XXX
+ SG_ Target_Vx m15 : 27|12@0+ (0.1,-204.8) [-204.8|204.7] "m/s" Vector__XXX
+ SG_ Target_Id m15 : 3|8@0+ (1,0) [0|127] "" Vector__XXX
+ SG_ Target_confidence m15 : 11|4@0+ (0.1,0) [0|1] "" Vector__XXX
+ SG_ FirmwareVersion m1 : 3|12@0+ (1,0) [0|4095] "" Vector__XXX
+ SG_ maxVelocity m1 : 31|8@0+ (1,0) [0|255] "Km/h" Vector__XXX
+ SG_ maxRange m1 : 23|8@0+ (1,0) [0|255] "m" Vector__XXX
+ SG_ FramePeriod m0 : 43|8@0+ (1,0) [0|255] "ms" Vector__XXX
+ SG_ NumTarget m0 : 35|8@0+ (1,0) [0|127] "" Vector__XXX
+ SG_ FrameId m0 : 3|32@0+ (1,0) [-1|0] "" Vector__XXX
+ SG_ FrameType M : 7|4@0+ (1,0) [0|15] "" Vector__XXX
+
+
+
+CM_ SG_ 2000 Target_Y "目标的纵向位置";
+CM_ SG_ 2000 Target_X "目标的横向位置，以右为正";
+CM_ SG_ 2000 Target_Vy "目标的纵向速度";
+CM_ SG_ 2000 Target_Vx "目标的横向速度，以右为正";
+CM_ SG_ 2000 Target_Id "目标序号";
+CM_ SG_ 2000 FirmwareVersion "版本号（e.g. 0x206表示版本号为0206）";
+CM_ SG_ 2000 maxVelocity "最大测速";
+CM_ SG_ 2000 maxRange "最大测距";
+CM_ SG_ 2000 FramePeriod "帧周期";
+CM_ SG_ 2000 NumTarget "该帧所包含的目标个数";
+CM_ SG_ 2000 FrameId "帧序号";
+CM_ SG_ 2000 FrameType "帧类型";
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType";
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 0;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 0;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","not_used","not_used","not_used","not_used","Cyclic","not_used","IfActive","NoMsgSendType";
+BA_DEF_ BU_  "NmStationAddress" HEX 0 0;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgSendType" "NoMsgSendType";
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_  "BusType" "CAN";
+BA_ "DBName" "VFR_MR_316";
+SIG_GROUP_ 2000 TrjList 1 : Target_Vx Target_Vy Target_Y Target_X Target_confidence Target_Id;
+SIG_GROUP_ 2000 description2 1 : FirmwareVersion maxVelocity maxRange;
+SIG_GROUP_ 2000 description1 1 : FramePeriod NumTarget FrameId;
+
