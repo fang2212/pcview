@@ -3,6 +3,7 @@ import os
 from config.config import load_cfg, dic2obj
 import argparse
 import json
+import cv2
 
 local_path = os.path.split(os.path.realpath(__file__))[0]
 # print('local_path:', local_path)
@@ -16,6 +17,7 @@ parser.add_argument('-o', '--output', default=None)
 parser.add_argument('-d', '--direct', default=None)
 parser.add_argument('-hl', '--headless', help='headless mode', action="store_true")
 parser.add_argument('-a', '--auto', help='auto recording', action="store_true")
+parser.add_argument('-w', '--web', help='web ui', action="store_true")
 # load_cfg(sys.argv[1])
 
 args = parser.parse_args()
@@ -103,6 +105,13 @@ elif args.headless:
     ], debug=False)
     app.listen(9999)
     IOLoop.instance().start()
+
+elif args.web:
+    print('PCC starts in webui mode.')
+    from pcc import *
+    hub = Hub(uniconf=cve_conf)
+    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=False, to_web=True)
+    pcc.start()
 
 else:
     print('PCC starts in normal mode.')

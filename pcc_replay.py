@@ -56,7 +56,7 @@ def jpeg_extractor(video_dir):
 
 class LogPlayer(Process):
 
-    def __init__(self, log_path, uniconf=None, start_frame=0, ratio=1.0):
+    def __init__(self, log_path, uniconf=None, start_frame=0, ratio=1.0, loop=False):
         Process.__init__(self)
         # self.daemon = False
         self.time_aligned = True
@@ -65,7 +65,7 @@ class LogPlayer(Process):
         self.socks = {}
         self.t0 = 0
         self.last_frame = 0
-        self.jpeg_extractor = jpeg_extractor(os.path.dirname(log_path) + '/video')
+        self.jpeg_extractor = None
         self.base_dir = os.path.dirname(self.log_path)
         # self.msg_queue = Queue()
         self.cam_queue = Queue()
@@ -84,17 +84,21 @@ class LogPlayer(Process):
 
         self.last_time = 0
         self.hz = 20
+        self.loop = loop
 
         self.buf = []
         self.replay_speed = 1
         self.now_frame_id = 0
-
         self.x1_log = os.path.dirname(log_path) + '/pcv_log.txt'
+        self.init_env()
+
+    def init_env(self):
+        self.jpeg_extractor = jpeg_extractor(os.path.dirname(self.log_path) + '/video')
         self.x1_fp = None
         if os.path.exists(self.x1_log):
             self.x1_fp = open(self.x1_log, 'r')
 
-        for idx, cfg in enumerate(uniconf.configs):
+        for idx, cfg in enumerate(self.cfg.configs):
             if 'can_types' in cfg:
                 cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
                 cantypes1 = ' '.join(cfg['can_types']['can1']) + '.{:01}'.format(idx)
@@ -219,7 +223,14 @@ class LogPlayer(Process):
         # self.init_socket()
         # cp = cProfile.Profile()
         # cp.enable()
+        if self.loop:
+            while True:
+                self._do_replay()
+                print('replay start over.')
+                self.init_env()
+        self._do_replay()
 
+    def _do_replay(self):
         last_fid = 0
         frame_lost = 0
         total_frame = 0
@@ -419,6 +430,7 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--output', default=False)
     parser.add_argument('-r', '--render', action='store_true')
     parser.add_argument('-ns', '--nosort', action="store_true")
+    parser.add_argument('-l', '--loop', action="store_true")
 
     args = parser.parse_args()
     source = args.input_path
@@ -441,7 +453,7 @@ if __name__ == "__main__":
     from pcc import PCC
     from parsers.parser import parsers_dict
 
-    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0)
+    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0, loop=args.loop)
     pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=True)
     pc_viewer.start()
 

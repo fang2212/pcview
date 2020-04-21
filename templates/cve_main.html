@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>minieye cve</title>
+    <style type="text/css">
+        body {
+            background-color: #efefef;
+        }
+
+        #TabMain {
+            width: 100%;
+            height: 1080px;
+            margin: 0 auto;
+            margin-top: 2px;
+        }
+
+        .tabItemContainer {
+            width: 80px;
+            height: 1080px;
+            float: left;
+        }
+
+        .tabBodyContainer {
+            /*width: 1600px;*/
+            height: 1080px;
+            float: left;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            -webkit-border-radius: 0 5px 5px 0;
+            -moz-border-radius: 0 5px 5px 0;
+            border-radius: 0 5px 5px 0;
+            margin-left: 1px;
+        }
+
+        .tabItemContainer > li {
+            list-style: none;
+            text-align: center;
+        }
+
+        .tabItemContainer > li > a {
+            float: left;
+            width: 100%;
+            padding: 30px 0 30px 0;
+            font: 16px "微软雅黑", Arial, Helvetica, sans-serif;
+            color: #808080;
+            cursor: pointer;
+            text-decoration: none;
+            border: 1px solid transparent;
+        }
+
+        .tabItemCurrent {
+            background-color: #fff;
+            border: 1px solid #ccc !important;
+            border-right: 1px solid #fff !important;
+            position: relative;
+            -webkit-border-radius: 5px 0 0 5px;
+            -moz-border-radius: 5px 0 0 5px;
+            border-radius: 5px 0 0 5px;
+        }
+
+        .tabItemContainer > li > a:hover {
+            color: #333;
+        }
+
+        .tabBodyItem {
+            position: absolute;
+            width: 100%;
+            height: 1080px;
+            display: none;
+        }
+
+        .tabBodyItem > p {
+            font: 13px "微软雅黑", Arial, Helvetica, sans-serif;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .tabBodyItem > p > a {
+            text-decoration: none;
+            color: #0F3;
+        }
+
+        .tabBodyCurrent {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div id="TabMain">
+    <div class="tabItemContainer">
+        <li><a class="tabItemCurrent">PCC</a></li>
+        <li><a>Curves</a></li>
+        <li><a>Status</a></li>
+        <li><a>Setting</a></li>
+        <li><a>Logs</a></li>
+    </div>
+    <div class="tabBodyContainer">
+        <div class="tabBodyItem tabBodyCurrent">
+            <div>
+                <img src="{{ url_for('video_feed') }}">
+            </div>
+            <div id="control">
+                <view class="bt1">
+                    <input type="button" id="start" value="start" onclick="start()"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto; color:#f2f2f2; background:#385f9e;"/>
+                </view>
+                <view class="bt2">
+                    <input type="button" id="pause" value="pause" onclick="pause()"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
+                </view>
+
+
+            </div>
+            <script type="text/javascript">
+                function start() {
+                    $.post("/control/start", "data_to_backend", function (data) {
+                    });
+                }
+
+                function pause() {
+                    $.post("/control/pause", "data_to_backend", function (data) {
+                    });
+                }
+
+                function keypress(keycode) {
+                    $.post("/control/"+keycode, "data_to_backend", function (data) {
+                    });
+
+                }
+
+
+            </script>
+
+        </div>
+        <div class="tabBodyItem">
+            <p>display the realtime curves</p>
+            <p></p>
+        </div>
+        <div class="tabBodyItem">
+            <p>status</p>
+            <p></p>
+        </div>
+        <div class="tabBodyItem">
+            <p>settings</p>
+            <p></p>
+        </div>
+        <div class="tabBodyItem">
+            <p>PCC logs</p>
+            <p></p>
+        </div>
+    </div>
+    <script src="static/jquery.min.js">
+    </script>
+</div>
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        SidebarTabHandler.Init();
+    });
+    var SidebarTabHandler = {
+        Init: function () {
+            $(".tabItemContainer>li").click(function () {
+                $(".tabItemContainer>li>a").removeClass("tabItemCurrent");
+                $(".tabBodyItem").removeClass("tabBodyCurrent");
+                $(this).find("a").addClass("tabItemCurrent");
+                $($(".tabBodyItem")[$(this).index()]).addClass("tabBodyCurrent");
+            });
+        }
+    }
+    $(document).keyup(function (event) {
+        //判断回车键的code
+        // alert(event.keyCode)
+        keypress(event.keyCode)
+        if (event.keyCode == 13) {
+            //如果确定点击了回车键，那么就调用方法
+            // sign_in();
+            //模拟点击按钮
+            // $('#sign_in_button').click();
+        }
+
+    });
+</script>
+
+
+</body>
+</html>

@@ -6,7 +6,7 @@
   "repeater": false,
   "ports": {
     "video": {
-      "enable": false,
+      "enable": true,
       "port": 1200,
       "protocol": "nanomsg",
       "topic": "video"

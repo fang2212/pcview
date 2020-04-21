@@ -120,6 +120,7 @@ class PCC(object):
             from video_server import VideoServer
             import video_server
             self.web_img = video_server.server_dict
+            self.ctrl_q = video_server.ctrl_q
             self.vs = VideoServer()
             self.vs.start()
 
@@ -313,8 +314,8 @@ class PCC(object):
 
         if self.to_web:
             self.web_img['now_image'] = comb.copy()
-
-        cv2.imshow('MINIEYE-CVE', comb)
+        else:
+            cv2.imshow('MINIEYE-CVE', comb)
 
         if self.save_replay_video and self.replay:
             # print(comb.shape)
@@ -568,6 +569,14 @@ class PCC(object):
 
     def handle_keyboard(self):
         key = cv2.waitKey(1) & 0xFF
+        cmd = self.ctrl_q.get() if not self.ctrl_q.empty() else None
+        if cmd:
+            if cmd.get('cmd') == 'pause':
+                key = 32
+            elif cmd.get('cmd') == 'start':
+                pass
+            else:
+                key = int(cmd.get('cmd'))
         if key == ord('q') or key == 27:
             cv2.destroyAllWindows()
             # os._exit(0)
