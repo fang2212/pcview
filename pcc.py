@@ -569,14 +569,15 @@ class PCC(object):
 
     def handle_keyboard(self):
         key = cv2.waitKey(1) & 0xFF
-        cmd = self.ctrl_q.get() if not self.ctrl_q.empty() else None
-        if cmd:
-            if cmd.get('cmd') == 'pause':
-                key = 32
-            elif cmd.get('cmd') == 'start':
-                pass
-            else:
-                key = int(cmd.get('cmd'))
+        if self.to_web:
+            cmd = self.ctrl_q.get() if not self.ctrl_q.empty() else None
+            if cmd:
+                if cmd.get('cmd') == 'pause':
+                    key = 32
+                elif cmd.get('cmd') == 'start':
+                    pass
+                else:
+                    key = int(cmd.get('cmd'))
         if key == ord('q') or key == 27:
             cv2.destroyAllWindows()
             # os._exit(0)
