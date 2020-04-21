@@ -124,7 +124,8 @@
                 }
 
                 function keypress(keycode) {
-                    $.post("/control/"+keycode, "data_to_backend", function (data) {
+                    var realkey = String.fromCharCode(keycode)
+                    $.post("/control/"+realkey, "data_to_backend", function (data) {
                     });
 
                 }

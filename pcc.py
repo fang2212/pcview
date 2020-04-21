@@ -577,7 +577,7 @@ class PCC(object):
                 elif cmd.get('cmd') == 'start':
                     pass
                 else:
-                    key = int(cmd.get('cmd'))
+                    key = ord(cmd)
         if key == ord('q') or key == 27:
             cv2.destroyAllWindows()
             # os._exit(0)
