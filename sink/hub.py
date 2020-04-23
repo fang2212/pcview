@@ -42,7 +42,7 @@ class Hub(Thread):
         self.headless = headless
         # print(self.headless)
         self.msg_queue = kQueue()
-        self.cam_queue = kQueue()
+        # self.cam_queue = kQueue()
         # self.sink = {}
         self.cache = {}
         self.time_aligned = True
@@ -139,7 +139,7 @@ class Hub(Thread):
         print('initializing direct connect to {} {}'.format(ip, mac))
 
         if 'can_type' in cfg:
-            sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera', index=0,
+            sink = CameraSink(queue=self.msg_queue, ip=ip, port=1200, channel='camera', index=0,
                               fileHandler=self.fileHandler, is_main=True)
             sink.start()
             self.fpga_handle(cfg, self.msg_queue, ip)
@@ -166,12 +166,12 @@ class Hub(Thread):
                 elif 'video' in iface:
                     protocol = cfg['ports'][iface].get('protocol')
                     if protocol == 'nanomsg':
-                        sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera', index=0,
+                        sink = CameraSink(queue=self.msg_queue, ip=ip, port=1200, channel='camera', index=0,
                                           fileHandler=self.fileHandler, is_main=True)
                         sink.start()
                     elif protocol == 'libflow':
                         port = cfg['ports'][iface]['port']
-                        sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.cam_queue, ip=ip, port=port,
+                        sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port,
                                         channel=iface, index=0, fileHandler=self.fileHandler, is_main=True)
                         sink.start()
                     cfgs_online[ip]['msg_types'].append('video.0')
@@ -230,7 +230,7 @@ class Hub(Thread):
                     if not cfg['ports'][item].get('enable') and not cfg.get('is_main'):
                         continue
                     port = cfg['ports'][item]['port']
-                    sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.cam_queue, ip=ip, port=port, channel=item,
+                    sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
                                     index=idx, fileHandler=self.fileHandler, is_main=cfg.get('is_main'))
                     # sink.start()
                     # sink = {'stype': 'flow', 'msg_queue': self.msg_queue, 'cam_queue': self.cam_queue, 'ip': ip,
@@ -279,7 +279,7 @@ class Hub(Thread):
                         cfgs_online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                     elif 'video' in iface:
                         port = cfg['ports']['video']['port']
-                        vsink = CameraSink(queue=self.cam_queue, ip=ip, port=port, channel='camera', index=idx,
+                        vsink = CameraSink(queue=self.msg_queue, ip=ip, port=port, channel='camera', index=idx,
                                           fileHandler=self.fileHandler, is_main=cfg.get('is_main'), devname=cfg.get('name'))
                         # vsink.start()
                         # vsink = {'stype': 'camera', 'queue': self.cam_queue, 'ip': ip, 'port': port,
@@ -372,3 +372,16 @@ class Hub(Thread):
                 self.cache[channel].append(msg_data)
             self.msg_cnt[channel]['recv'] += 1
             self.msg_cnt[channel]['ts'] = time.time()
+
+    def pop_common(self):
+        res = {}
+        if not self.msg_queue.empty():
+            fid, data, msg_type = self.msg_queue.get()
+            # res['ts'] = data['ts']
+            # res['data'] = data
+            # res['frame_id'] = fid
+            return fid, data, msg_type
+            # is_main = data.get('is_main')
+            # if not is_main and 'video' in data['source']:
+            #     self.cache['video_aux'].append(data)
+            #     return

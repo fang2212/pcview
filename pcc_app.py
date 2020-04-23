@@ -4,6 +4,7 @@ from config.config import load_cfg, dic2obj
 import argparse
 import json
 import cv2
+from pcc import *
 
 local_path = os.path.split(os.path.realpath(__file__))[0]
 # print('local_path:', local_path)
@@ -34,7 +35,6 @@ cve_conf.local_cfg = local_cfg
 
 if args.direct:
     print('PCC starts in direct-mode.')
-    from pcc import *
 
     # cve_conf.local_cfg = get_local_cfg()
     hub = Hub(uniconf=cve_conf, direct_cfg=sys.argv[2])
@@ -43,7 +43,7 @@ if args.direct:
 
 elif args.headless:
     print('PCC starts in headless-mode.')
-    from pcc import *
+
     hub = Hub(headless=True)
     hub.start()
     pcc = HeadlessPCC(hub)
@@ -108,7 +108,6 @@ elif args.headless:
 
 elif args.web:
     print('PCC starts in webui mode.')
-    from pcc import *
     hub = Hub(uniconf=cve_conf)
     pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=False, to_web=True)
     pcc.start()
@@ -121,7 +120,6 @@ else:
         auto_rec = True
     else:
         auto_rec = False
-    from pcc import *
     hub = Hub(uniconf=cve_conf)
     pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec)
     pcc.start()

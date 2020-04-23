@@ -71,13 +71,16 @@ class PCC(object):
         self.show_ipm_bg = False
         self.auto_rec = auto_rec
 
-        # self.ego_car = Vehicle()
+        self.refresh_rate = 50
+        self.display_interval = 1.0 / self.refresh_rate
         self.vehicles = {'ego': Vehicle('ego')}
         self.calib_data = dict()
         self.frame_cost = 0
         self.frame_cost_total = 0
         self.frame_drawn_cnt = 0
         self.video_cache = {}
+        self.cache = {}
+        self.init_cache()
         cv2.namedWindow('MINIEYE-CVE')
         cv2.namedWindow('adj')
         # cv2.resizeWindow('adj', 600, 600)
@@ -137,12 +140,19 @@ class PCC(object):
         for sig in [signal.SIGINT, signal.SIGTERM]:
             signal.signal(sig, exit_for_signal)
 
+    def init_cache(self):
+        self.cache.clear()
+        self.cache['info'] = {}
+        self.cache['ts'] = 0
+        self.cache['img'] = open('static/img/no_video.jpg', 'rb').read()
+        self.cache['frame_id'] = 0
 
     def start(self):
         self.hub.start()
         self.player.start_time = datetime.now()
         frame_cnt = 0
         data_cnt = 0
+        last_ts = time.time()
         print('entering pcc loop.')
 
         while not self.exit:
@@ -151,10 +161,12 @@ class PCC(object):
                 print('average frame cost: {:.1f}ms'.format(
                     1000 * self.frame_cost_total / self.frame_drawn_cnt)) if self.frame_drawn_cnt != 0 else None
                 return
-            d = self.hub.pop_simple()
-            if d is None or not d.get('frame_id'):
-                # time.sleep(0.01)
-                continue
+            # d = self.hub.pop_simple()  # receive
+            d = self.hub.pop_common()
+            # print(d)
+            # if d is None or not d.get('frame_id'):
+            #     # time.sleep(0.01)
+            #     continue
             # print('pcc frame cnt:', frame_cnt)
             if not self.replay:
                 qsize = self.hub.fileHandler.raw_queue.qsize()
@@ -164,7 +176,22 @@ class PCC(object):
                     time.sleep(0.1)
                     continue
             # print('pre draw')
-            self.draw(d, frame_cnt)
+            # if self.cache_data(d):
+            if self.cache_data_common(d):
+                frame_cnt += 1
+                if frame_cnt > 500:
+                    self.player.start_time = datetime.now()
+                    frame_cnt = 1
+            if time.time() - last_ts < self.display_interval:
+                time.sleep(0.001)
+                # print('wait to refresh', self.display_interval)
+                continue
+            last_ts = time.time()
+            self.draw(self.cache, frame_cnt)  # render
+            for key in self.cache['info']:
+                if self.cache['info'][key].get('integrity') == 'divided':
+                    self.cache[key].clear()
+            # self.init_cache()
             # print('after draw')
             while self.replay and self.pause:
                 self.draw(d, frame_cnt)
@@ -176,24 +203,67 @@ class PCC(object):
                     frame_cnt += self.hub.d['replay_speed'] - 1
                     # print(frame_cnt)
             # self.draw(d, frame_cnt)
-            frame_cnt += 1
-            if frame_cnt > 500:
-                self.player.start_time = datetime.now()
-                frame_cnt = 1
+
             # time.sleep(0.01)
             if self.auto_rec:
                 self.auto_rec = False
                 self.start_rec()
 
+    def cache_data(self, data):
+        if not data:
+            return
+        self.cache = data
+        if 'video_aux' in data:
+            # print(mess['video_aux'])
+            for video in data['video_aux']:
+                if len(video) > 0:
+                    self.video_cache[video['source']] = video
+                    self.video_cache[video['source']]['updated'] = True
+        return True
+
+    def cache_data_common(self, d):
+        if not d:
+            return
+        fid, data, msg_type = d
+        if msg_type not in self.cache:
+            self.cache[msg_type] = []
+            self.cache['info'][msg_type] = {}
+        if isinstance(data, list):
+            # print('msg data list')
+            self.cache[msg_type] = data
+            self.cache['info'][msg_type]['integrity'] = 'framed'
+        elif isinstance(data, dict):
+            # print(data)
+            if 'video' in data['source']:
+                is_main = data.get('is_main')
+                if not is_main:
+                    self.video_cache[data['source']] = data['img']
+                    self.video_cache[data['source']]['updated'] = True
+                else:
+                    self.cache['img'] = data['img']
+                    try:
+                        self.cache['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
+                    except Exception as e:
+                        print('img decode error:', e)
+                        return
+                    self.cache['frame_id'] = fid
+                    self.cache['ts'] = data['ts']
+                    self.cache['updated'] = True
+                    return True
+            else:
+                self.cache[msg_type].append(data)
+                self.cache['info'][msg_type]['integrity'] = 'divided'
+
     def draw(self, mess, frame_cnt):
         # print(mess[''])
         t0 = time.time()
-        try:
-            imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
-            img = imgraw.copy()
-        except Exception as e:
-            print(e)
-            return
+        # try:
+        #     imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
+        #     img = imgraw.copy()
+        # except Exception as e:
+        #     print(e)
+        #     return
+        img = mess['img_raw'].copy()
 
         frame_id = mess['frame_id']
         self.now_id = frame_id
@@ -206,9 +276,9 @@ class PCC(object):
         if self.ts0 == 0:
             self.ts0 = self.ts_now
 
-        if not self.replay:
+        if not self.replay and mess.get('updated'):
             self.hub.fileHandler.insert_video(
-                {'ts': mess['ts'], 'frame_id': frame_id, 'img': imgraw, 'source': 'video'})
+                {'ts': mess['ts'], 'frame_id': frame_id, 'img': mess['img_raw'], 'source': 'video'})
 
         # self.player.show_columns(img)
         if self.vehicles['ego'].dynamics.get('pinpoint'):
@@ -228,12 +298,12 @@ class PCC(object):
             self.player.show_dist_mark_ipm(self.ipm)
 
         img_aux = np.zeros([0, 427, 3], np.uint8)
-        if 'video_aux' in mess:
-            # print(mess['video_aux'])
-            for video in mess['video_aux']:
-                if len(video) > 0:
-                    self.video_cache[video['source']] = video
-                    self.video_cache[video['source']]['updated'] = True
+        # if 'video_aux' in mess:
+        #     # print(mess['video_aux'])
+        #     for video in mess['video_aux']:
+        #         if len(video) > 0:
+        #             self.video_cache[video['source']] = video
+        #             self.video_cache[video['source']]['updated'] = True
 
         for idx, source in enumerate(self.video_cache):
             if idx > 2:

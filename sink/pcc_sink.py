@@ -348,7 +348,7 @@ class FlowSink(Sink):
         self.cam_queue = cam_queue
         self.msg_queue = msg_queue
         self.is_main = is_main
-        self.source = 'video.{:d}'.format(index)
+        self.source = 'libflow.{:d}'.format(index)
 
     async def _run(self):
         session = aiohttp.ClientSession()
@@ -423,6 +423,8 @@ class FlowSink(Sink):
                 data[b'ultrasonic'][b'can_data'] = [x for x in data[b'ultrasonic'][b'can_data']]
 
             pcv = mytools.convert(data)
+            pcv['source'] = self.source
+            pcv['type'] = 'algo_debug'
             data = json.dumps(pcv)
             self.fileHandler.insert_pcv_raw(data)
             return 'x1_data', pcv

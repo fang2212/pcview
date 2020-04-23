@@ -490,10 +490,12 @@ class Player(object):
                 BaseDraw.draw_text(img, col, (indent + 22, 20), 0.5, CVColor.Cyan, 1)
             dt = self.ts_now - self.columns[col]['ts']
 
-            if dt > 9.999:
-                delay_ms = ">9999ms"
-            elif dt < -9.999:
-                delay_ms = "<-9999ms"
+            if dt > 999:
+                delay_ms = ">+999s"
+            elif dt < -999:
+                delay_ms = "<-999s"
+            elif dt >= 1 or dt <= -1:
+                delay_ms = "{:+4d}s".format(int(dt))
             else:
                 delay_ms = '{:>+4d}ms'.format(int(dt * 1000))
             BaseDraw.draw_text(img, delay_ms, (indent + 92, 20), 0.5, CVColor.White, 1)
