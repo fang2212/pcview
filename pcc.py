@@ -200,8 +200,10 @@ class PCC(object):
                 self.draw(self.cache, frame_cnt)
                 self.hub.pause(True)
                 time.sleep(0.1)
-            for key in self.cache['misc']:
-                self.cache['misc'][key].clear()
+
+            # for source in list(self.cache['misc']):
+            #     for entity in self.cache['misc'][source]:
+            #         if self.cache['misc'][source][entity]['ts']
             if self.replay:
                 self.hub.pause(False)
                 if self.hub.d:
@@ -231,12 +233,16 @@ class PCC(object):
             return
         fid, data, source = d
         if source not in self.cache['misc']:
-            self.cache['misc'][source] = []
+            self.cache['misc'][source] = {}
             self.cache['info'][source] = {}
         if isinstance(data, list):
             # print('msg data list')
-            self.cache['misc'][source].extend(data)
-            self.cache['info'][source]['integrity'] = 'framed'
+            for d in data:
+                dtype = d.get('type') if 'type' in d else 'notype'
+                id = str(d.get('id')) if 'id' in d else 'noid'
+                entity = d['source'] + '.' + dtype + '.' + id
+                self.cache['misc'][source][entity] = d
+                self.cache['info'][source]['integrity'] = 'framed'
         elif isinstance(data, dict):
             # print(data)
             if 'video' in data['type']:
@@ -258,7 +264,10 @@ class PCC(object):
                     self.cache['updated'] = True
                     return True
             else:
-                self.cache['misc'][source].append(data)
+                dtype = data.get('type') if 'type' in data else 'notype'
+                id = str(data.get('id')) if 'id' in data else 'noid'
+                entity = data['source'] + '.' + dtype + '.' + id
+                self.cache['misc'][source][entity] = data
                 self.cache['info'][source]['integrity'] = 'divided'
 
     def draw(self, mess, frame_cnt):
@@ -340,10 +349,15 @@ class PCC(object):
         # cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
         if misc_data:
             # print('can0 data')
-            for source in mess['misc']:
-                for d in mess['misc'][source]:
-                    if not self.draw_can_data(img, d):
+            for source in list(mess['misc']):
+                for entity in list(mess['misc'][source]):
+                    dt = self.ts_now - mess['misc'][source][entity]['ts']
+                    if dt > 0.2 or dt < -0.2:
+                        del mess['misc'][source][entity]
+                        continue
+                    if not self.draw_can_data(img, mess['misc'][source][entity]):
                         print('draw misc data exited, source:', source)
+                    # print(entity)
                 # if 'type' in d:
                 #     if d['type'] == 'rtk':
                 #         cache[d['source']] = d

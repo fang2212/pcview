@@ -9,7 +9,7 @@
 
 import struct
 import time
-from multiprocessing import Process, Queue, freeze_support
+from multiprocessing import Process, Queue, Manager, freeze_support
 import json
 from threading import Thread
 from parsers import ublox
@@ -96,8 +96,9 @@ class LogPlayer(Process):
         self.log_path = log_path
         self.start_frame = start_frame
         self.socks = {}
-        self.t0 = 0  # time when start replaying
-        self.ts0 = 0  # start ts of log
+        self.shared = Manager().dict()
+        self.shared['t0'] = 0  # time when start replaying
+        self.shared['ts0'] = 0  # start ts of log
         self.last_frame = 0
         self.jpeg_extractor = None
         self.base_dir = os.path.dirname(self.log_path)
@@ -124,15 +125,15 @@ class LogPlayer(Process):
         self.replay_speed = 1
         self.now_frame_id = 0
         self.x1_log = os.path.dirname(log_path) + '/pcv_log.txt'
-        self.init_env()
+        # self.init_env()
 
     def init_env(self):
+        self.shared['replay_sync'] = True
+        while not self.msg_queue.empty():
+            self.msg_queue.get()
         self.jpeg_extractor = jpeg_extractor(os.path.dirname(self.log_path) + '/video')
         self.x1_fp = None
-        self.t0 = 0
-        with open(self.log_path) as rf:
-            cols = rf.readline().split(' ')
-            self.ts0 = float(cols[0]) + float(cols[1]) / 1000000
+        # self.shared['t0'] = 0
 
         if os.path.exists(self.x1_log):
             self.x1_fp = open(self.x1_log, 'r')
@@ -171,6 +172,13 @@ class LogPlayer(Process):
             if len(self.parser[can]) == 0:
                 self.parser[can] = [parsers_dict['default']]
         self.cache['can'] = []
+
+        self.shared['t0'] = time.time()
+        print('t0 set to', self.shared['t0'])
+        with open(self.log_path) as rf:
+            cols = rf.readline().split(' ')
+            self.shared['ts0'] = float(cols[0]) + float(cols[1]) / 1000000
+        self.shared['replay_sync'] = False
 
     def get_veh_role(self, source):
         if not source:
@@ -253,10 +261,10 @@ class LogPlayer(Process):
             time.sleep(0.001)
 
     def pop_common(self):
-        if not self.t0:
-            self.t0 = time.time()
-            # print('t0 set to', self.t0)
-        if not self.msg_queue.empty():
+        # if not self.shared['t0']:
+        #     self.shared['t0'] = time.time()
+        #     print('t0 set to', self.shared['t0'])
+        if not self.msg_queue.empty() and not self.shared['replay_sync']:
             frame_id, data, msg_type = self.msg_queue.get()
             # print(data)
             try:
@@ -264,12 +272,18 @@ class LogPlayer(Process):
             except KeyError as e:
                 print(data)
                 raise e
-            dt = tsnow - self.ts0 - (time.time() - self.t0)
+            dt = tsnow - self.shared['ts0'] - (time.time() - self.shared['t0'])
+            # print(tsnow, self.shared['ts0'], time.time(), self.shared['t0'])
+            # print(self.msg_queue.qsize())
             if dt > 0.0002:  # smallest interval that sleep can actually delay
-                # print('sleep', dt)
+                print('sleep', dt)
+                # print(data)
                 time.sleep(dt)
             # print('pop common', frame_id, len(data))
             return frame_id, data, msg_type
+        else:
+            print('msg empty sleep 0.01')
+            time.sleep(0.01)
 
     def pause(self, pause):
         if pause:
@@ -285,11 +299,13 @@ class LogPlayer(Process):
             while True:
                 self._do_replay()
                 print('replay start over.')
-                self.init_env()
-                # print(self.ts0, self.t0)
+                time.sleep(0.5)
+                # self.init_env()
+                # print(self.shared['ts0'], self.shared['t0'])
         self._do_replay()
 
     def _do_replay(self):
+        self.init_env()
         last_fid = 0
         frame_lost = 0
         total_frame = 0
@@ -312,8 +328,12 @@ class LogPlayer(Process):
             if line == '':
                 continue
 
-            if 'replay_speed' in self.d:
-                self.replay_speed = self.d['replay_speed']
+            while self.msg_queue.full():
+                # print('msg queue full, sleep 0.01')
+                time.sleep(0.01)
+
+            # if 'replay_speed' in self.d:
+            #     self.replay_speed = self.d['replay_speed']
 
             # if self.cam_queue.qsize() > 20:  # if cache longer than 1s then slow down the log reading
             #     time.sleep(0.01)
@@ -354,7 +374,7 @@ class LogPlayer(Process):
                 # self.cache['can'] = []
                 # print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
 
-            if lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
+            if self.now_frame_id < self.start_frame:
                 continue
 
             if 'CAN' in cols[2]:
@@ -498,6 +518,7 @@ if __name__ == "__main__":
     parser.add_argument('-r', '--render', action='store_true')
     parser.add_argument('-ns', '--nosort', action="store_true")
     parser.add_argument('-l', '--loop', action="store_true")
+    parser.add_argument('-w', '--web', action="store_true")
 
     args = parser.parse_args()
     source = args.input_path
@@ -521,6 +542,6 @@ if __name__ == "__main__":
     from parsers.parser import parsers_dict
 
     replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0, loop=args.loop)
-    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=True)
+    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=args.web)
     pc_viewer.start()
 
