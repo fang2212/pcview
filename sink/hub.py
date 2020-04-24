@@ -339,8 +339,8 @@ class Hub(Thread):
     def pop_simple(self, pause=False):
         res = {}
         if not self.cam_queue.empty():
-            frame_id, data, msg_type = self.cam_queue.get()
-            # print(frame_id, len(data), msg_type)
+            frame_id, data, source = self.cam_queue.get()
+            # print(frame_id, len(data), source)
             # fileHandler.insert_raw((data['ts'], 'camera', '{}'.format(frame_id)))
             is_main = data.get('is_main')
             if not is_main:
@@ -376,11 +376,16 @@ class Hub(Thread):
     def pop_common(self):
         res = {}
         if not self.msg_queue.empty():
-            fid, data, msg_type = self.msg_queue.get()
+            try:
+                r = self.msg_queue.get()
+                fid, data, source = r
+            except ValueError as e:
+                print(r)
+                raise e
             # res['ts'] = data['ts']
             # res['data'] = data
             # res['frame_id'] = fid
-            return fid, data, msg_type
+            return fid, data, source
             # is_main = data.get('is_main')
             # if not is_main and 'video' in data['source']:
             #     self.cache['video_aux'].append(data)

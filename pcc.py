@@ -71,7 +71,7 @@ class PCC(object):
         self.show_ipm_bg = False
         self.auto_rec = auto_rec
 
-        self.refresh_rate = 50
+        self.refresh_rate = 20
         self.display_interval = 1.0 / self.refresh_rate
         self.vehicles = {'ego': Vehicle('ego')}
         self.calib_data = dict()
@@ -81,16 +81,19 @@ class PCC(object):
         self.video_cache = {}
         self.cache = {}
         self.init_cache()
-        cv2.namedWindow('MINIEYE-CVE')
-        cv2.namedWindow('adj')
+        if not to_web:
+            cv2.namedWindow('MINIEYE-CVE')
+            cv2.setMouseCallback('MINIEYE-CVE', self.left_click, '1234')
+            cv2.namedWindow('adj')
+            cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
+            cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
+            cv2.createTrackbar('Roll  ', 'adj', 500, 1000, self.ot.update_roll)
         # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
         self.sv_state = 'ipm'
         # self.rt_param = self.cfg.runtime
         # cv2.namedWindow('video_aux')
-        cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
-        cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
-        cv2.createTrackbar('Roll  ', 'adj', 500, 1000, self.ot.update_roll)
+
         # cv2.createTrackbar('ESR_y', 'adj', 500, 1000, self.ot.update_esr_yaw)
         if not replay:
             self.supervisor = Supervisor([self.check_status,
@@ -104,10 +107,10 @@ class PCC(object):
             def update_speed(x):
                 self.hub.d['replay_speed'] = 1 if x // 10 < 1 else x // 10
                 print('replay-speed is', self.hub.d['replay_speed'])
+            if not to_web:
+                cv2.createTrackbar('replay-speed', 'adj', 10, 50, update_speed)
 
-            cv2.createTrackbar('replay-speed', 'adj', 10, 50, update_speed)
 
-        cv2.setMouseCallback('MINIEYE-CVE', self.left_click, '1234')
         self.gga = None
         if not self.replay:
             self.en_gga = self.cfg.runtime['modules']['GGA_reporter']['enable']
@@ -142,9 +145,11 @@ class PCC(object):
 
     def init_cache(self):
         self.cache.clear()
+        self.cache['misc'] = {}
         self.cache['info'] = {}
         self.cache['ts'] = 0
         self.cache['img'] = open('static/img/no_video.jpg', 'rb').read()
+        self.cache['img_raw'] = cv2.imdecode(np.fromstring(self.cache['img'], np.uint8), cv2.IMREAD_COLOR)
         self.cache['frame_id'] = 0
 
     def start(self):
@@ -188,15 +193,15 @@ class PCC(object):
                 continue
             last_ts = time.time()
             self.draw(self.cache, frame_cnt)  # render
-            for key in self.cache['info']:
-                if self.cache['info'][key].get('integrity') == 'divided':
-                    self.cache[key].clear()
-            # self.init_cache()
-            # print('after draw')
+            # for key in self.cache['info']:
+            #     if self.cache['info'][key].get('integrity') == 'divided':
+
             while self.replay and self.pause:
-                self.draw(d, frame_cnt)
+                self.draw(self.cache, frame_cnt)
                 self.hub.pause(True)
                 time.sleep(0.1)
+            for key in self.cache['misc']:
+                self.cache['misc'][key].clear()
             if self.replay:
                 self.hub.pause(False)
                 if self.hub.d:
@@ -209,35 +214,37 @@ class PCC(object):
                 self.auto_rec = False
                 self.start_rec()
 
-    def cache_data(self, data):
-        if not data:
-            return
-        self.cache = data
-        if 'video_aux' in data:
-            # print(mess['video_aux'])
-            for video in data['video_aux']:
-                if len(video) > 0:
-                    self.video_cache[video['source']] = video
-                    self.video_cache[video['source']]['updated'] = True
-        return True
+    # def cache_data(self, data):
+    #     if not data:
+    #         return
+    #     self.cache = data
+    #     if 'video_aux' in data:
+    #         # print(mess['video_aux'])
+    #         for video in data['video_aux']:
+    #             if len(video) > 0:
+    #                 self.video_cache[video['source']] = video
+    #                 self.video_cache[video['source']]['updated'] = True
+    #     return True
 
     def cache_data_common(self, d):
         if not d:
             return
-        fid, data, msg_type = d
-        if msg_type not in self.cache:
-            self.cache[msg_type] = []
-            self.cache['info'][msg_type] = {}
+        fid, data, source = d
+        if source not in self.cache['misc']:
+            self.cache['misc'][source] = []
+            self.cache['info'][source] = {}
         if isinstance(data, list):
             # print('msg data list')
-            self.cache[msg_type] = data
-            self.cache['info'][msg_type]['integrity'] = 'framed'
+            self.cache['misc'][source].extend(data)
+            self.cache['info'][source]['integrity'] = 'framed'
         elif isinstance(data, dict):
             # print(data)
-            if 'video' in data['source']:
+            if 'video' in data['type']:
                 is_main = data.get('is_main')
                 if not is_main:
-                    self.video_cache[data['source']] = data['img']
+                    if data['source'] not in self.video_cache:
+                        self.video_cache[data['source']] = {}
+                    self.video_cache[data['source']] = data
                     self.video_cache[data['source']]['updated'] = True
                 else:
                     self.cache['img'] = data['img']
@@ -251,8 +258,8 @@ class PCC(object):
                     self.cache['updated'] = True
                     return True
             else:
-                self.cache[msg_type].append(data)
-                self.cache['info'][msg_type]['integrity'] = 'divided'
+                self.cache['misc'][source].append(data)
+                self.cache['info'][source]['integrity'] = 'divided'
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])
@@ -263,7 +270,11 @@ class PCC(object):
         # except Exception as e:
         #     print(e)
         #     return
-        img = mess['img_raw'].copy()
+        try:
+            img = mess['img_raw'].copy()
+        except Exception as e:
+            print(mess)
+            raise e
 
         frame_id = mess['frame_id']
         self.now_id = frame_id
@@ -272,7 +283,7 @@ class PCC(object):
         self.player.update_column_ts('video', mess['ts'])
         # print(mess)
         # print(frame_id, img.shape)
-        can_data = mess.get('can')
+        misc_data = mess.get('misc')
         if self.ts0 == 0:
             self.ts0 = self.ts_now
 
@@ -327,12 +338,12 @@ class PCC(object):
                 self.flow_player.draw(data, img)
 
         # cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
-        if can_data:
+        if misc_data:
             # print('can0 data')
-            for d in mess['can']:
-                if not d:
-                    continue
-                self.draw_can_data(img, d)
+            for source in mess['misc']:
+                for d in mess['misc'][source]:
+                    if not self.draw_can_data(img, d):
+                        print('draw misc data exited, source:', source)
                 # if 'type' in d:
                 #     if d['type'] == 'rtk':
                 #         cache[d['source']] = d
@@ -636,6 +647,7 @@ class PCC(object):
         elif data['type'] == 'warning':
             self.player.show_warning(img, data)
         self.specific_handle(img, data)
+        return True
 
     def handle_keyboard(self):
         key = cv2.waitKey(1) & 0xFF

@@ -66,7 +66,7 @@ class Sink(Thread):
             dt = time.time() - t0
             # print(self.dev, self.type, self.channel, 'dt: {:.5f}'.format(dt))
             if r is not None and not self.isheadless:
-                self.queue.put((*r, self.cls))
+                self.queue.put((r))
             # time.sleep(0.01)
 
     def pkg_handler(self, msg_buf):
@@ -172,7 +172,7 @@ class PinodeSink(Sink):
                 self.fileHandler.insert_raw((time.time(), r['source'], msg.decode().strip()))
                 # print(time.time(), r['ts_origin'])
 
-        return self.channel, data
+        return self.channel, data, self.source
 
     def decode_pinode_res(self, resname, msg):
         if resname == 'rtk':
@@ -279,7 +279,7 @@ class CANSink(Sink):
             r['source'] = self.source
             # print(r['source'])
         # print(r)
-        return can_id, r
+        return can_id, r, self.source
 
 
 class GsensorSink(Sink):
@@ -330,11 +330,11 @@ class CameraSink(Sink):
         logging.debug('cam id {}'.format(frame_id))
         # print('frame id', frame_id)
 
-        r = {'ts': timestamp, 'img': jpg, 'frame_id': frame_id, 'source': self.source, 'is_main': self.is_main, 'device': self.devname}
+        r = {'ts': timestamp, 'type': 'video', 'img': jpg, 'frame_id': frame_id, 'source': self.source, 'is_main': self.is_main, 'device': self.devname}
         # print('frame id', frame_id)
         # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
 
-        return frame_id, r
+        return frame_id, r, self.source
 
 
 class FlowSink(Sink):
@@ -427,7 +427,7 @@ class FlowSink(Sink):
             pcv['type'] = 'algo_debug'
             data = json.dumps(pcv)
             self.fileHandler.insert_pcv_raw(data)
-            return 'x1_data', pcv
+            return 'x1_data', pcv, self.source
 
 
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
@@ -441,7 +441,7 @@ class FlowSink(Sink):
                         aiohttp.WSMsgType.ERROR):
             return None
 
-        r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'source': self.source, 'is_main': self.is_main}
+        r = {'ts': ts, 'img': jpg, 'frame_id': frame_id,'type': 'video', 'source': self.source, 'is_main': self.is_main}
         # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
         return frame_id, r
 
@@ -451,6 +451,7 @@ class RTKSink(Sink):
     def __init__(self, queue, ip, port, msg_type, index, fileHandler, isheadless=False):
         Sink.__init__(self, queue, ip, port, msg_type, index, isheadless)
         self.fileHandler = fileHandler
+        self.source = 'drtk'
 
     def _init_port(self):
         # self._socket = can.interface.Bus()
@@ -501,7 +502,7 @@ class RTKSink(Sink):
                             r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4], r['sat'][5], r['gdop'],
                             r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'], r['prn']
                         )))
-                    return msgid, r
+                    return msgid, r, self.source
             else:
                 # print('0x{:04x}'.format(msgid), msg)
                 pass

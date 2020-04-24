@@ -102,7 +102,7 @@
             </div>
             <div id="control">
                 <view class="bt1">
-                    <input type="button" id="start" value="start" onclick="start()"
+                    <input type="button" id="refresh" value="refresh" onclick="refresh()"
                            style=" width:300px; height:80px;  margin-left:auto; margin-right:auto; color:#ffffff; background:#1abc9c;"/>
                 </view>
                 <view class="bt2">
@@ -121,9 +121,8 @@
 
             </div>
             <script type="text/javascript">
-                function start() {
-                    $.post("/control/start", "data_to_backend", function (data) {
-                    });
+                function refresh() {
+                    window.location.reload();
                 }
 
                 function pause() {
@@ -133,15 +132,20 @@
 
                 function keypressd(key) {
 
-                    $.post("/control/"+key, "data_to_backend", function (data) {
+                    $.post("/control/" + key, "data_to_backend", function (data) {
                     });
 
                 }
 
                 function keypress(keycode) {
-                    var realkey = String.fromCharCode(keycode)
-                    $.post("/control/"+realkey, "data_to_backend", function (data) {
-                    });
+                    if (keycode === 32) {
+                        pause();
+                    } else {
+                        var realkey = String.fromCharCode(keycode)
+                        $.post("/control/" + realkey, "data_to_backend", function (data) {
+                        });
+                    }
+
 
                 }
 

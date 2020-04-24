@@ -11,6 +11,7 @@ import struct
 import time
 from multiprocessing import Process, Queue, freeze_support
 import json
+from threading import Thread
 from parsers import ublox
 from recorder.convert import *
 from collections import deque
@@ -54,21 +55,54 @@ def jpeg_extractor(video_dir):
                     fid = None
 
 
+class PcvParser(Thread):
+    def __init__(self, x1_fp):
+        super(PcvParser, self).__init__()
+        self.x1_fp = x1_fp
+        self.cache = deque(maxlen=3000)
+        self.req_fid = 0
+        self.start()
+
+    def run(self):
+        current_fid = 0
+        for line in self.x1_fp:
+            if data['frame_id'] - self.req_fid > 50:
+                time.sleep(0.1)
+                continue
+            try:
+                data = json.loads(line)
+                self.cache.append(data)
+            except json.JSONDecodeError as e:
+                continue
+
+    def get_frame(self, fid):
+        self.req_fid = fid
+        res = []
+        for data in list(self.cache):
+            if data['frame_id'] < fid:
+                self.cache.popleft()
+            elif data['frame_id'] == fid:
+                res.append(data)
+
+        return res
+
+
 class LogPlayer(Process):
 
     def __init__(self, log_path, uniconf=None, start_frame=0, ratio=1.0, loop=False):
-        Process.__init__(self)
+        super(LogPlayer, self).__init__()
         # self.daemon = False
         self.time_aligned = True
         self.log_path = log_path
         self.start_frame = start_frame
         self.socks = {}
-        self.t0 = 0
+        self.t0 = 0  # time when start replaying
+        self.ts0 = 0  # start ts of log
         self.last_frame = 0
         self.jpeg_extractor = None
         self.base_dir = os.path.dirname(self.log_path)
-        # self.msg_queue = Queue()
-        self.cam_queue = Queue()
+        self.msg_queue = Queue(maxsize=50)
+        # self.cam_queue = Queue()
         self.cache = {}
         self.msg_cnt = {}
         self.msg_cnt['frame'] = 0
@@ -80,7 +114,7 @@ class LogPlayer(Process):
         self.ctrl_q = Queue()
         self.type_roles = {}
         self.cfg = uniconf
-        self.pcv_cache = deque(maxlen=500)
+        # self.pcv_cache = deque(maxlen=500)
 
         self.last_time = 0
         self.hz = 20
@@ -95,6 +129,11 @@ class LogPlayer(Process):
     def init_env(self):
         self.jpeg_extractor = jpeg_extractor(os.path.dirname(self.log_path) + '/video')
         self.x1_fp = None
+        self.t0 = 0
+        with open(self.log_path) as rf:
+            cols = rf.readline().split(' ')
+            self.ts0 = float(cols[0]) + float(cols[1]) / 1000000
+
         if os.path.exists(self.x1_log):
             self.x1_fp = open(self.x1_log, 'r')
 
@@ -213,6 +252,25 @@ class LogPlayer(Process):
         else:
             time.sleep(0.001)
 
+    def pop_common(self):
+        if not self.t0:
+            self.t0 = time.time()
+            # print('t0 set to', self.t0)
+        if not self.msg_queue.empty():
+            frame_id, data, msg_type = self.msg_queue.get()
+            # print(data)
+            try:
+                tsnow = data['ts'] if isinstance(data, dict) else data[0]['ts']
+            except KeyError as e:
+                print(data)
+                raise e
+            dt = tsnow - self.ts0 - (time.time() - self.t0)
+            if dt > 0.0002:  # smallest interval that sleep can actually delay
+                # print('sleep', dt)
+                time.sleep(dt)
+            # print('pop common', frame_id, len(data))
+            return frame_id, data, msg_type
+
     def pause(self, pause):
         if pause:
             self.ctrl_q.put({'action': 'pause'})
@@ -228,6 +286,7 @@ class LogPlayer(Process):
                 self._do_replay()
                 print('replay start over.')
                 self.init_env()
+                # print(self.ts0, self.t0)
         self._do_replay()
 
     def _do_replay(self):
@@ -236,6 +295,7 @@ class LogPlayer(Process):
         total_frame = 0
         rtk_dec = False
         lcnt = 0
+        # pcv = PcvParser(self.x1_fp)
         rf = open(self.log_path)
         for line in rf:
             if not self.ctrl_q.empty():
@@ -255,8 +315,8 @@ class LogPlayer(Process):
             if 'replay_speed' in self.d:
                 self.replay_speed = self.d['replay_speed']
 
-            if self.cam_queue.qsize() > 20:  # if cache longer than 1s then slow down the log reading
-                time.sleep(0.01)
+            # if self.cam_queue.qsize() > 20:  # if cache longer than 1s then slow down the log reading
+            #     time.sleep(0.01)
                 # print('replay camque', self.cam_queue.qsize())
 
             # print('line {}'.format(cnt))
@@ -286,9 +346,12 @@ class LogPlayer(Process):
                 self.now_frame_id = frame_id
                 # print(lcnt, frame_id, self.replay_speed)
                 r = {'ts': ts, 'img': jpg}
-                self.cam_queue.put((frame_id, r, 'camera', self.cache.copy()))
-                self.cache.clear()
-                self.cache['can'] = []
+                r['is_main'] = True
+                r['source'] = 'video'
+                r['type'] = 'video'
+                self.msg_queue.put((frame_id, r, 'camera'))
+                # self.cache.clear()
+                # self.cache['can'] = []
                 # print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
 
             if lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
@@ -314,31 +377,31 @@ class LogPlayer(Process):
 
                 if isinstance(r, list):
                     # print('r is list')
-                    for obs in r:
-                        obs['ts'] = ts
+                    for idx, obs in enumerate(r):
+                        r[idx]['ts'] = ts
                         # obs['source'] = self.msg_types[int(msg_type[3])]
-                        obs['source'] = self.can_types[msg_type]
+                        r[idx]['source'] = self.can_types[msg_type]
 
                 else:
                     # print('r is not list')
                     r['ts'] = ts
                     # r['source'] = self.msg_types[int(msg_type[3])]
                     r['source'] = self.can_types[msg_type]
+                # print(r)
+                self.msg_queue.put((can_id, r.copy(), self.can_types[msg_type]))
 
-                # self.msg_queue.put((can_id, r, 'can'))
+                # if isinstance(r, list):
+                #     # print('msg data list')
+                #     self.cache['can'].extend(r.copy())
+                # elif isinstance(r, dict):
+                #     self.cache['can'].append(r.copy())
 
-                if isinstance(r, list):
-                    # print('msg data list')
-                    self.cache['can'].extend(r.copy())
-                elif isinstance(r, dict):
-                    self.cache['can'].append(r.copy())
-
-            if cols[2] == 'Gsensor':
+            elif cols[2] == 'Gsensor':
                 data = [int(x) for x in cols[3:9]]
                 msg = struct.pack('<BBhIdhhhhhhhq', 0, 0, 0, 0, ts, data[3], data[4], data[5], data[0], data[1], data[2],
                                   int((float(cols[9]) - 36.53) * 340), 0)
 
-            if 'rtk' in cols[2] and 'sol' in cols[2]:
+            elif 'rtk' in cols[2] and 'sol' in cols[2]:  # old d-rtk
                 rtk_dec = True
                 source = '.'.join(cols[2].split('.')[0:2])
                 r = {'type': 'rtk', 'source': source, 'ts': ts, 'ts_origin': ts}
@@ -352,8 +415,9 @@ class LogPlayer(Process):
                     vehstate = {'type': 'vehicle_state', 'pitch': r['pitch'], 'yaw': r['yaw'], 'ts': ts}
                 else:
                     vehstate = None
-                self.cache['can'].extend([r, vehstate])
-                # self.msg_queue.put((0xc7, [r, vehstate], 'can'))
+                # self.cache['can'].extend([r, vehstate])
+                # print(r)
+                self.msg_queue.put((0xc7, [r, vehstate], source))
 
             # if 'rtk.target' in cols[2]:
             #     range = float(cols[3])
@@ -362,8 +426,9 @@ class LogPlayer(Process):
             #     r = {'source': cols[2], 'type': cols[2], 'ts': ts, 'range': range, 'angle': angle, 'height': height}
             #     self.cache['can'].append(r.copy())
 
-            if 'rtk' in cols[2]:
+            elif 'rtk' in cols[2]:  # new ub482
                 kw = cols[2].split('.')[-1]
+                source = '.'.join(cols[2].split('.')[0:2])
                 if kw in ub482_defs:
                     r = decode_with_def(ub482_defs, line)
                     if not r:
@@ -371,12 +436,14 @@ class LogPlayer(Process):
                     r['ts'] = ts
                     r['type'] = kw
                     r['source'] = '.'.join(cols[2].split('.')[:2])
-                    self.cache['can'].append(r.copy())
+                    # self.cache['can'].append(r.copy())
+                    self.msg_queue.put((0xc7, r, source))
 
-            if 'NMEA' in cols[2] or 'gps' in cols[2]:
+            elif 'NMEA' in cols[2] or 'gps' in cols[2]:
                 r = ublox.decode_nmea(cols[3])
                 r['source'] = cols[2]
-                self.cache['can'].append(r.copy())
+                # self.cache['can'].append(r.copy())
+                self.msg_queue.put((0x00, r, cols[2]))
         print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
         return
