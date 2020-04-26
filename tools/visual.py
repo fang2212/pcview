@@ -119,18 +119,18 @@ def scatter(fig, file_name, labels=None, ytag=None, ts0=0, start_ts=None, end_ts
     # ax_idx += 1
 
 
-# def trj_2d(fig, file_name, labels=None, vis=True):
-#     x = []
-#     y = []
-#     with open(file_name) as rf:
-#         for idx, line in enumerate(rf):
-#             cols = line.split(' ')
-#             ts_now = float(cols[0]) + float(cols[1]) / 1000000
-#
-#             for label in labels:
-#                 match = match_label(label, cols[2])
-#                 if match:
-#
+
+def trj_2d(fig, trjs, vis=True):
+    ax = fig.add_subplot()
+    # print(xlist)
+    # print(ylist)
+    for label in sorted(trjs.keys()):
+        xlist = trjs[label]['x']
+        ylist = trjs[label]['y']
+        ax.plot(xlist, ylist, '.')
+    ax.legend(sorted(trjs.keys()))
+    if vis:
+        plt.show()
 
 
 def calc_rmse(predictions, targets):

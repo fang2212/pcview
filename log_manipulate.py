@@ -2209,10 +2209,6 @@ def viz_2d_trj(r0, source, vis=False):
     visual.trj_2d(fig, xlist, ylist, vis)
     fig.close()
 
-            # for label in labels:
-            #     match = match_label(label, cols[2])
-            #     if match:
-
 
 def process_error_by_matches(matches, names, r0, ts0, ctx, vis=False):
     type1, type2 = names
