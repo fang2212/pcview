@@ -119,7 +119,6 @@ def scatter(fig, file_name, labels=None, ytag=None, ts0=0, start_ts=None, end_ts
     # ax_idx += 1
 
 
-
 def trj_2d(fig, trjs, vis=True):
     ax = fig.add_subplot()
     # print(xlist)
@@ -127,7 +126,7 @@ def trj_2d(fig, trjs, vis=True):
     for label in sorted(trjs.keys()):
         xlist = trjs[label]['x']
         ylist = trjs[label]['y']
-        ax.plot(xlist, ylist, '.')
+        ax.plot(xlist, ylist, '.-')
     ax.legend(sorted(trjs.keys()))
     if vis:
         plt.show()

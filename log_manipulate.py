@@ -2626,6 +2626,7 @@ if __name__ == "__main__":
     parser.add_argument('-hil', '--hil', help='preprocess log for HIL replay', action="store_true")
     parser.add_argument('-vec', '--vector', help='preprocess log for vector canalyzer', action="store_true")
     parser.add_argument('-aeb', '--aeb', help='preprocess log for aeb control tuning', action="store_true")
+    parser.add_argument('-trj', '--trj', help='visualize rtk trajectory', action="store_true")
     parser.add_argument('-cmain', '--changemain', default=None)
 
     args = parser.parse_args()
@@ -2653,6 +2654,8 @@ if __name__ == "__main__":
         aeb_test_analysis(r)
     elif args.changemain:
         change_main_video(r, args.changemain)
+    elif args.trj:
+        viz_2d_trj(r)
     else:
         sensors = ['x1']
         if args.q3:
