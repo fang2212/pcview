@@ -269,9 +269,10 @@ class LogPlayer(Process):
             # print(data)
             try:
                 tsnow = data['ts'] if isinstance(data, dict) else data[0]['ts']
-            except KeyError as e:
-                print(data)
-                raise e
+            except Exception as e:
+                print('error in pop_common:', data)
+                return
+                # raise e
             dt = tsnow - self.shared['ts0'] - (time.time() - self.shared['t0'])
             # print(tsnow, self.shared['ts0'], time.time(), self.shared['t0'])
             # print(self.msg_queue.qsize())

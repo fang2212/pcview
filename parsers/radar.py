@@ -64,7 +64,7 @@ def parse_ars(id, buf, ctx=None):
         if 'RadarDevice_YawRate' in r:
             yaw_rate_ars = r['RadarDevice_YawRate'] / 57.3 *(-1) # 跟车身坐标系相反
             ctx['yaw_rate'] = yaw_rate_ars
-            if ctx['speed'] is not None:
+            if ctx.get('speed'):
                 speed = ctx['speed']
                 ctx['speed'] = []
                 return {'type': 'vehicle_state', 'yaw_rate': yaw_rate_ars, 'speed': speed}
