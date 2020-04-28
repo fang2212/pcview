@@ -353,6 +353,7 @@ class PCC(object):
             # print('can0 data')
             for source in list(mess['misc']):
                 for entity in list(mess['misc'][source]):
+                    # print(entity)
                     dt = self.ts_now - mess['misc'][source][entity]['ts']
                     if dt > 0.2 or dt < -0.2:
                         del mess['misc'][source][entity]

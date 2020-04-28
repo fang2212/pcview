@@ -389,6 +389,7 @@ class FlowSink(Sink):
     def pkg_handler(self, msg):
         data = msgpack.unpackb(msg.data)
         # print('-----', data[b'topic'])
+        ts = time.time()
         topic = None
         if b'topic' in data and data[b'topic'] == b'finish':
             buf = data[b'data']
@@ -425,10 +426,10 @@ class FlowSink(Sink):
             pcv = mytools.convert(data)
             pcv['source'] = self.source
             pcv['type'] = 'algo_debug'
+            pcv['ts'] = ts
             data = json.dumps(pcv)
             self.fileHandler.insert_pcv_raw(data)
             return 'x1_data', pcv, self.source
-
 
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
         if frame_id - self.last_fid != 1:
