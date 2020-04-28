@@ -47,14 +47,14 @@ def parse_ifv300(id, buf, ctx=None):
     if 'VIS_LANE_RIGHT_INDIVID_A0' in r:
         # print("0x%x" % id, r)
         if r['VIS_LANE_RIGHT_INDIVID_RANGE'] > 0:
-            return {'type': 'lane', 'class': 'right_indiv', 'a0': r['VIS_LANE_RIGHT_INDIVID_A0'],
+            return {'type': 'lane', 'id': 0, 'class': 'right_indiv', 'a0': r['VIS_LANE_RIGHT_INDIVID_A0'],
                     'a1': r['VIS_LANE_RIGHT_INDIVID_A1'],
                     'a2': r['VIS_LANE_RIGHT_INDIVID_A2'], 'a3': r['VIS_LANE_RIGHT_INDIVID_A3'],
                     'range': r['VIS_LANE_RIGHT_INDIVID_RANGE'], 'color': 5}
     if 'VIS_LANE_LEFT_INDIVID_A0' in r:
         # print("0x%x" % id, r)
         if r['VIS_LANE_LEFT_INDIVID_RANGE'] > 0:
-            return {'type': 'lane', 'class': 'left_indiv', 'a0': r['VIS_LANE_LEFT_INDIVID_A0'],
+            return {'type': 'lane', 'id': 1, 'class': 'left_indiv', 'a0': r['VIS_LANE_LEFT_INDIVID_A0'],
                     'a1': r['VIS_LANE_LEFT_INDIVID_A1'],
                     'a2': r['VIS_LANE_LEFT_INDIVID_A2'], 'a3': r['VIS_LANE_LEFT_INDIVID_A3'],
                     'range': r['VIS_LANE_LEFT_INDIVID_RANGE'], 'color': 5}
@@ -62,7 +62,7 @@ def parse_ifv300(id, buf, ctx=None):
     if 'VIS_LANE_NEIGHBOR_RIGHT_A0' in r:
         # print("0x%x" % id, r)
         if r['VIS_LANE_NEIGHBOR_RIGHT_RANGE'] > 0:
-            return {'type': 'lane', 'class': 'left_indiv', 'a0': r['VIS_LANE_NEIGHBOR_RIGHT_A0'],
+            return {'type': 'lane', 'id': 2, 'class': 'left_indiv', 'a0': r['VIS_LANE_NEIGHBOR_RIGHT_A0'],
                     'a1': r['VIS_LANE_NEIGHBOR_RIGHT_A1'],
                     'a2': r['VIS_LANE_NEIGHBOR_RIGHT_A2'], 'a3': r['VIS_LANE_NEIGHBOR_RIGHT_A3'],
                     'range': r['VIS_LANE_NEIGHBOR_RIGHT_RANGE'], 'color': 5}
@@ -70,7 +70,7 @@ def parse_ifv300(id, buf, ctx=None):
     if 'VIS_LANE_NEIGHBOR_LEFT_A0' in r:
         # print("0x%x" % id, r)
         if r['VIS_LANE_NEIGHBOR_LEFT_RANGE'] > 0:
-            return {'type': 'lane', 'class': 'left_indiv', 'a0': r['VIS_LANE_NEIGHBOR_LEFT_A0'],
+            return {'type': 'lane', 'id': 3, 'class': 'left_indiv', 'a0': r['VIS_LANE_NEIGHBOR_LEFT_A0'],
                     'a1': r['VIS_LANE_NEIGHBOR_LEFT_A1'],
                     'a2': r['VIS_LANE_NEIGHBOR_LEFT_A2'], 'a3': r['VIS_LANE_NEIGHBOR_LEFT_A3'],
                     'range': r['VIS_LANE_NEIGHBOR_LEFT_RANGE'], 'color': 5}

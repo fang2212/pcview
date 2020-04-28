@@ -127,6 +127,7 @@ class PCC(object):
             import video_server
             self.web_img = video_server.server_dict
             self.ctrl_q = video_server.ctrl_q
+            self.web_msg_q = video_server.msg_q
             self.vs = VideoServer()
             self.vs.start()
 
@@ -192,6 +193,7 @@ class PCC(object):
                 # print('wait to refresh', self.display_interval)
                 continue
             last_ts = time.time()
+            # self.web_msg_q.put(self.cache['misc'])
             self.draw(self.cache, frame_cnt)  # render
             # for key in self.cache['info']:
             #     if self.cache['info'][key].get('integrity') == 'divided':
@@ -357,6 +359,8 @@ class PCC(object):
                         continue
                     if not self.draw_can_data(img, mess['misc'][source][entity]):
                         print('draw misc data exited, source:', source)
+                    # if self.to_web and not self.web_msg_q.full():
+                    #     self.web_msg_q.put(mess['misc'][source][entity])
                     # print(entity)
                 # if 'type' in d:
                 #     if d['type'] == 'rtk':

@@ -146,7 +146,6 @@
                         });
                     }
 
-
                 }
 
 
@@ -160,6 +159,9 @@
         <div class="tabBodyItem">
             <p>status</p>
             <p></p>
+            <h2>Receive:</h2>
+            <div id="log"></div>
+            <textarea id='log_text' style="width: 600px; height: 500px"> </textarea>
         </div>
         <div class="tabBodyItem">
             <p>settings</p>
@@ -172,10 +174,55 @@
     </div>
     <script src="static/jquery.min.js">
     </script>
+    <script src="static/socket.io.js">
+    </script>
 </div>
 <script type="text/javascript">
-    $(document).ready(function (e) {
+
+    $(document).ready(function () {
         SidebarTabHandler.Init();
+        namespace = '/test';
+        var socket = io(namespace);
+
+        socket.on('connect', function () {
+            socket.emit('my_event', {data: 'I\'m connected!'});
+        });
+
+        socket.on('misc', function (msg, cb) {
+            var datatype = msg.data.type
+            var logtxt = document.getElementById('log_text')
+            // $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data.type).html());
+            // logtxt.append(msg.type + ': ' + msg.data.type + ' ' + msg.data.source + '\n')
+            // var max_len = 500
+            // if (logtxt.value.length > max_len){
+            //     logtxt.value = logtxt.value.substring(logtxt.value.length-max_len, logtxt.value.length)
+            // }
+            // if (logtxt.value.length > 500) {
+            //     logtxt.pop('\n')
+            // }
+            for (let source in msg.data){
+                // var src = source.toString()
+                // logtxt.append(msg.data[source] + '\n')
+                // var
+                // let data = msg.data.source
+                // for (let entity in msg.data[source]){
+                    // logtxt.append(entity + '\n')
+                    // let data = msg.data[source][entity]
+                    // logtxt.append(data['ts']+ ': ' + data.type + ' ' + entity + '\n')
+                // }
+                // if (source.indexOf("ars") > -1 ) {
+                //     logtxt.append(msg.source.type + ': ' + msg.source.id + ' ' + msg.data.source + '\n')
+                // }
+            }
+
+            logtxt.scrollTop = logtxt.scrollHeight
+            if (cb)
+                cb();
+        });
+
+        socket.on('img', function(msg, cb){
+
+        });
     });
     var SidebarTabHandler = {
         Init: function () {
@@ -187,18 +234,14 @@
             });
         }
     }
-    $(document).keyup(function (event) {
-        //判断回车键的code
-        // alert(event.keyCode)
-        keypress(event.keyCode)
-        if (event.keyCode == 13) {
-            //如果确定点击了回车键，那么就调用方法
-            // sign_in();
-            //模拟点击按钮
-            // $('#sign_in_button').click();
-        }
+    function checkMaxInput(txt)
 
-    });
+{
+       if (txt.value.length > 666)
+       txt.value = txt.value.substring(0, 666);
+}
+
+
 </script>
 
 

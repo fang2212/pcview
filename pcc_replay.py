@@ -266,6 +266,8 @@ class LogPlayer(Process):
         #     print('t0 set to', self.shared['t0'])
         if not self.msg_queue.empty() and not self.shared['replay_sync']:
             frame_id, data, msg_type = self.msg_queue.get()
+            if not data:
+                return
             # print(data)
             try:
                 tsnow = data['ts'] if isinstance(data, dict) else data[0]['ts']
@@ -277,13 +279,13 @@ class LogPlayer(Process):
             # print(tsnow, self.shared['ts0'], time.time(), self.shared['t0'])
             # print(self.msg_queue.qsize())
             if dt > 0.0002:  # smallest interval that sleep can actually delay
-                print('sleep', dt)
+                # print('sleep', dt)
                 # print(data)
                 time.sleep(dt)
             # print('pop common', frame_id, len(data))
             return frame_id, data, msg_type
         else:
-            print('msg empty sleep 0.01')
+            # print('msg empty sleep 0.01')
             time.sleep(0.01)
 
     def pause(self, pause):
