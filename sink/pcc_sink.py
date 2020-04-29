@@ -195,6 +195,7 @@ class PinodeSink(Sink):
             if r:
                 r['type'] = 'rtcm'
                 r['len'] = len(msg)
+                r['ts'] = time.time()
                 return r
         elif resname == 'gps':
             # print(msg)

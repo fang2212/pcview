@@ -26,7 +26,9 @@ def msg_send_task():
             if not data:
                 continue
             try:
-                socketio.emit('misc', {'type': 'misc_data', 'data': data}, namespace='/test')
+                topic, msg = data
+                # print(topic, data)
+                socketio.emit(topic, {'data': msg}, namespace='/test')
             except Exception as e:
                 print(data)
                 raise e
@@ -82,7 +84,7 @@ def get_image():
 
 @app.route('/')
 def index():
-    return render_template('cve_main.html')
+    return render_template('cve_main_bootstrap.html')
 
 
 @app.route('/video_feed')
@@ -118,6 +120,15 @@ class VideoServer(Process):
         super().__init__()
         self.daemon = True
         self.port = port
+
     def run(self):
         app.logger.setLevel(logging.ERROR)
         socketio.run(app, host='0.0.0.0', port=self.port, log_output='/dev/null')
+
+    def ws_send(self, topic, msg, cb=None):
+        if not topic or not msg:
+            return
+        try:
+            socketio.emit(topic, msg, namespace='/test', callback=cb)
+        except Exception as e:
+            print(e)

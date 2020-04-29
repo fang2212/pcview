@@ -12,12 +12,16 @@ class Supervisor(Thread):
         self.result = []
 
     def run(self):
+        print('supervisor inited.')
         while True:
             self.result.clear()
             for checker in self.checkers:
-                ret = checker()
-                if ret.get('status') != 'ok':
-                    self.result.append(ret.get('info'))
+                try:
+                    ret = checker()
+                    if ret.get('status') != 'ok':
+                        self.result.append(ret.get('info'))
+                except Exception as e:
+                    pass
             time.sleep(1)
 
     def check(self):

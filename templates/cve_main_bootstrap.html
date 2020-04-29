@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <!--    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>-->
+    <script src="/static/jquery-3.4.1.js"></script>
+    <!--    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">-->
+
+    <!--    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+    <script src="/static/socket.io.js"></script>
+    <!--    <link rel="'stylesheet" href="/static/bootstrap-material-design.css">-->
+    <!--    <script src="/static/bootstrap-material-design.js"></script>-->
+    <link rel="stylesheet"
+          href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
+          integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
+    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"
+            integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
+            crossorigin="anonymous"></script>
+    <title>Minieye CVE</title>
+</head>
+
+<body>
+<div class="row">
+    <div id="tabs" class="list-group col-md-4 col-xs-4" style="max-width: 200px; margin-left: 18px">
+        <!--tab里面的值应与下面标签页的id一致-->
+        <a tab="tab-item1" href="#" class="tab list-group-item active">PCC</a>
+        <a tab="tab-item2" href="#" class="tab list-group-item">Devices</a>
+        <a tab="tab-item3" href="#" class="tab list-group-item">Curves</a>
+        <a tab="tab-item4" href="#" class="tab list-group-item">Status</a>
+        <a tab="tab-item5" href="#" class="tab list-group-item">Settings</a>
+        <a tab="tab-item6" href="#" class="tab list-group-item">Logs</a>
+
+    </div>
+    <div class="col-md-8 col-xs-4">
+        <!--id与上面标签里面的tab一致-->
+        <div id="tab-item1" class="tab-item">
+            <div>
+                <img src="{{ url_for('video_feed') }}">
+            </div>
+            <div id="control">
+                <view>
+                    <input type="button" id="refresh" value="refresh" onclick="refresh()"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto; color:#ffffff; background:#1abc9c;"/>
+                </view>
+                <view>
+                    <input type="button" id="pause" value="pause" onclick="pause()"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
+                </view>
+                <view>
+                    <input type="button" id="bt3" value="Record/Stop" onclick="keypressd('r')"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
+                </view>
+                <view>
+                    <input type="button" id="bt4" value="Pinpoint" onclick="keypressd('p')"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
+                </view>
+
+            </div>
+            <script type="text/javascript">
+                function refresh() {
+                    window.location.reload();
+                }
+
+                function pause() {
+                    $.post("/control/pause", "data_to_backend", function (data) {
+                    });
+                }
+
+                function keypressd(key) {
+                    $.post("/control/" + key, "data_to_backend", function (data) {
+                    });
+                }
+
+                function keypress(keycode) {
+                    if (keycode === 32) {
+                        pause();
+                    } else {
+                        var realkey = String.fromCharCode(keycode)
+                        $.post("/control/" + realkey, "data_to_backend", function (data) {
+                        });
+                    }
+
+                }
+
+
+            </script>
+        </div>
+        <div id="tab-item2" class="tab-item">
+            <h5 style="margin-left: 30px; margin-top: 20px">Devices found:</h5>
+            <div id="devices-pool" style="display: flex; flex-wrap: wrap;"></div>
+        </div>
+        <div id="tab-item3" class="tab-item">
+            tab2
+        </div>
+        <div id="tab-item4" class="tab-item">
+            tab4
+        </div>
+        <div id="tab-item5" class="tab-item">
+            tab5
+        </div>
+        <div id="tab-item6" class="tab-item">
+            <h2>Receive:</h2>
+            <div id="log"></div>
+            <textarea id='log_text' style="width: 600px; height: 500px"> </textarea>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    //事件委托给父级div来处理
+    // $(document).ready(function () {
+    //     $(".tab-item").hide();
+    //     $("#tab-item1").show();
+    // });
+    $(document).ready(function () {
+        $(".tab-item").hide();
+        $("#tab-item1").show();
+        $("#tabs").on("click", "a", function (event) {
+            let target = $(event.target);
+            $(".tab-item").hide();
+            $(".tab").removeClass("active");
+            //添加css样式
+            target.addClass("active");
+            //取自定义字段里面的值(即a标签里面的tab字段)
+            //tab字段里面存的是各个标签页的id, 以此来控制显示和隐藏
+            $("#" + target.attr("tab")).show();
+        });
+        var namespace = '/test';
+        var socket = io(namespace);
+
+        socket.on('connect', function () {
+            socket.emit('my_event', {data: 'I\'m connected!'});
+        });
+
+        socket.on('misc', function (msg, cb) {
+            var datatype = msg.data.type
+            var logtxt = document.getElementById('log_text')
+            // $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data.type).html());
+            // logtxt.append(msg.type + ': ' + msg.data.type + ' ' + msg.data.source + '\n')
+            // var max_len = 500
+            // if (logtxt.value.length > max_len){
+            //     logtxt.value = logtxt.value.substring(logtxt.value.length-max_len, logtxt.value.length)
+            // }
+            // if (logtxt.value.length > 500) {
+            //     logtxt.pop('\n')
+            // }
+            logtxt.append("received msg" + '\n')
+            for (let source in msg.data) {
+                // var src = source.toString()
+                // logtxt.append(msg.data[source] + '\n')
+                // var
+                // let data = msg.data.source
+                // for (let entity in msg.data[source]){
+                // logtxt.append(entity + '\n')
+                // let data = msg.data[source][entity]
+                // logtxt.append(data['ts']+ ': ' + data.type + ' ' + entity + '\n')
+                // }
+                // if (source.indexOf("ars") > -1 ) {
+                //     logtxt.append(msg.source.type + ': ' + msg.source.id + ' ' + msg.data.source + '\n')
+                // }
+            }
+
+            logtxt.scrollTop = logtxt.scrollHeight;
+            if (cb)
+                cb();
+        });
+
+        socket.on('img', function (msg, cb) {
+
+        });
+
+        socket.on('devices', function (msg, cb) {
+            // testJson()
+            let logtxt = document.getElementById('log_text');
+            let content = document.getElementById("devices-pool");
+            let data = msg.data;
+            // delCards(content);
+            // content.remove()
+            // let tags = content.getElementsByClassName('card')
+
+            // for (var i = 0; i < tags.length; i++) {
+            //     content.removeChild(tags[i]);
+            //     logtxt.append("remove tag" + i + '\n');
+            // }
+            content.innerHTML = ""
+
+            for (let ip in data) {
+                // for (let i=0; i<5; i++) {
+                let dev = data[ip]
+                let idx = dev['idx'];
+                let type = dev['type'];
+                // let idx = i;
+                let mac = dev["mac"];
+                // let mac = 'aa:bb:cc:dd:ee:ff';
+                let is_main = dev['is_main'];
+
+                // logtxt.append("found ip " + mac + ' idx: ' + idx + '\n');
+                let newCard = document.createElement("view");
+                newCard.className = "card";
+                // newCard.style = "max-width: 33%";
+                newCard.id = "dev_" + idx;
+                // newCard.style.maxWidth = "33%";
+                newCard.style.minHeight = '280px'
+                newCard.style.width = "400px";
+                newCard.style.marginLeft = "30px";
+                newCard.style.marginTop = "20px";
+                let common_info =
+                    '<div>\n' +
+                    '    <h5 class="card-title" style="display: inline-block;">Device ' + idx + '  ' + '</h5>\n' +
+                    '    <h6 class="card-subtitle text-muted" style="display: inline-block;float:right">' + type + '</h6>\n' +
+                    '</div>\n' +
+                    '<div>\n' +
+                    '    <h6 class="card-subtitle mb-2 text-muted">MAC:' + mac + '</h6>\n' +
+                    '    <h6 class="card-subtitle mb-2 text-muted">IP:' + ip + '</h6>\n' +
+                    '    <h6 class="card-subtitle mb-2 text-muted">is_main:' + is_main + '</h6>\n' +
+                    '</div>';
+                let links =
+                    '<div style="position: absolute; bottom: 12px">\n' +
+                    '    <a href="#" class="card-link"> 编辑config</a>\n' +
+                    '    <a href="#" class="card-link">删除设备</a>\n' +
+                    '    <a href="#" class="card-link">添加到曲线</a>\n' +
+                    '</div>\n';
+                let ports = '<div>\n'
+                for (let port in dev['ports']){
+                    ports +=
+                        '<li>' + port + ': ' + dev['ports'][port]['topic'] + ' on ' + dev['ports'][port]['port'] + '</li>\n';
+                }
+                ports += '</div>\n';
+                newCard.innerHTML =
+
+                    '<div class="card-body" style="position: relative">\n' +
+                        common_info +
+                        ports +
+                        links +
+                    '</div>\n';
+
+
+                content.appendChild(newCard)
+            }
+            logtxt.scrollTop = logtxt.scrollHeight;
+        });
+    });
+
+
+</script>
+
+
+</body>
+
+</html>

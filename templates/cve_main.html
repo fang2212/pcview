@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>minieye cve</title>
+    <link rel="'stylesheet" href="/static/bootstrap-material-design.css">
+    <link rel="'stylesheet" href="/static/style.css">
     <style type="text/css">
         body {
             background-color: #efefef;
@@ -22,7 +24,7 @@
         }
 
         .tabBodyContainer {
-            /*width: 1600px;*/
+            width: 1800px;
             height: 1080px;
             float: left;
             background-color: #fff;
@@ -94,8 +96,10 @@
         <li><a>Status</a></li>
         <li><a>Setting</a></li>
         <li><a>Logs</a></li>
+        <li><a>Devices</a></li>
     </div>
     <div class="tabBodyContainer">
+
         <div class="tabBodyItem tabBodyCurrent">
             <div>
                 <img src="{{ url_for('video_feed') }}">
@@ -118,7 +122,6 @@
                            style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
                 </view>
 
-
             </div>
             <script type="text/javascript">
                 function refresh() {
@@ -131,10 +134,8 @@
                 }
 
                 function keypressd(key) {
-
                     $.post("/control/" + key, "data_to_backend", function (data) {
                     });
-
                 }
 
                 function keypress(keycode) {
@@ -171,11 +172,18 @@
             <p>PCC logs</p>
             <p></p>
         </div>
+        <div class="tabBodyItem" id="device_tab">
+            <p>Devices</p>
+            <p></p>
+        </div>
     </div>
-    <script src="static/jquery.min.js">
+    <script src="/static/jquery.min.js">
     </script>
-    <script src="static/socket.io.js">
+    <script src="/static/socket.io.js">
     </script>
+    <script src="/static/bootstrap-material-design.js"></script>
+
+
 </div>
 <script type="text/javascript">
 
@@ -200,28 +208,64 @@
             // if (logtxt.value.length > 500) {
             //     logtxt.pop('\n')
             // }
-            for (let source in msg.data){
+            logtxt.append("received msg" + '\n')
+            for (let source in msg.data) {
                 // var src = source.toString()
                 // logtxt.append(msg.data[source] + '\n')
                 // var
                 // let data = msg.data.source
                 // for (let entity in msg.data[source]){
-                    // logtxt.append(entity + '\n')
-                    // let data = msg.data[source][entity]
-                    // logtxt.append(data['ts']+ ': ' + data.type + ' ' + entity + '\n')
+                // logtxt.append(entity + '\n')
+                // let data = msg.data[source][entity]
+                // logtxt.append(data['ts']+ ': ' + data.type + ' ' + entity + '\n')
                 // }
                 // if (source.indexOf("ars") > -1 ) {
                 //     logtxt.append(msg.source.type + ': ' + msg.source.id + ' ' + msg.data.source + '\n')
                 // }
             }
 
-            logtxt.scrollTop = logtxt.scrollHeight
+            logtxt.scrollTop = logtxt.scrollHeight;
             if (cb)
                 cb();
         });
 
-        socket.on('img', function(msg, cb){
+        socket.on('img', function (msg, cb) {
 
+        });
+
+        socket.on('devices', function (msg, cb) {
+            // testJson()
+            let logtxt = document.getElementById('log_text');
+            let content = document.getElementById("device_tab");
+            let data = msg.data;
+            // delCards(content);
+            // content.remove()
+            let tags = content.getElementsByClassName('card')
+            for (var i = 0; i < tags.length; i++) {
+                content.removeChild(tags[i]);
+            }
+            for (let ip in data) {
+                let idx = data[ip]['idx'];
+                let mac = data[ip]["mac"];
+                logtxt.append("found ip " + mac + ' idx: ' + idx + '\n');
+                let newCard = document.createElement("div");
+                newCard.className = "card";
+                // newCard.style = "max-width: 33%";
+                newCard.id = "dev_" + idx;
+                newCard.style.maxWidth = "33%";
+                newCard.style.width = "400px";
+                newCard.style.marginLeft = "30px";
+                newCard.innerHTML = '<div class="card-body">\n' +
+                    '                    <h5 class="card-title">Device:' + idx + 'mac:' + mac+'</h5>\n' +
+                    '                    <h6 class="card-subtitle mb-2 text-muted">未执行分析</h6>\n' +
+                    '                    <a href="analysis/pcc" class="card-link">查看图表</a>\n' +
+                    '                    <a href="/task/20200428120303-SIM-AEB-1242fakeman-test/result/pcc_data/can_merge.log" class="card-link">查看分析log</a>\n' +
+                    '                        <a href="analysis/pcc/run" class="card-link">重做分析</a>\n' +
+                    '                </div>\n' +
+                    '            </div>';
+                content.appendChild(newCard)
+            }
+            logtxt.scrollTop = logtxt.scrollHeight;
         });
     });
     var SidebarTabHandler = {
@@ -233,13 +277,34 @@
                 $($(".tabBodyItem")[$(this).index()]).addClass("tabBodyCurrent");
             });
         }
-    }
-    function checkMaxInput(txt)
+    };
 
-{
-       if (txt.value.length > 666)
-       txt.value = txt.value.substring(0, 666);
-}
+    function checkMaxInput(txt) {
+        if (txt.value.length > 666)
+            txt.value = txt.value.substring(0, 666);
+    }
+
+    function testJson(json) {
+        let logtxt = document.getElementById('log_text');
+        var packJson = [
+            {"name": "nikita", "password": "1111"},
+            {"name": "tony", "password": "2222"}
+
+        ];
+
+        for (var p in packJson) {
+
+            logtxt.append(packJson[p].name + " " + packJson[p].password + '\n');
+
+        }
+    }
+
+    function delCards(parentElement) {
+        let tags = parentElement.getElementsByTagName('div')
+        for (let i = 0; i < tags.length; i++) {
+            parentElement.removeChild(tags[i]);
+        }
+    }
 
 
 </script>

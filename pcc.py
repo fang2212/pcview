@@ -54,7 +54,7 @@ class PCC(object):
         self.rlog = rlog
         self.frame_idx = 0
         self.ts0 = 0
-
+        self.to_web = to_web
         self.now_id = 0
         #self.pre_rtk = {}
         self.ts_now = 0
@@ -97,7 +97,8 @@ class PCC(object):
         # cv2.createTrackbar('ESR_y', 'adj', 500, 1000, self.ot.update_esr_yaw)
         if not replay:
             self.supervisor = Supervisor([self.check_status,
-                                          self.hub.fileHandler.check_file])
+                                          self.hub.fileHandler.check_file,
+                                         self.send_online_devices])
             self.supervisor.start()
             # self.gga = GGAReporter('ntrip.weaty.cn', 5001)
             # self.gga.start()
@@ -109,7 +110,6 @@ class PCC(object):
                 print('replay-speed is', self.hub.d['replay_speed'])
             if not to_web:
                 cv2.createTrackbar('replay-speed', 'adj', 10, 50, update_speed)
-
 
         self.gga = None
         if not self.replay:
@@ -354,7 +354,11 @@ class PCC(object):
             for source in list(mess['misc']):
                 for entity in list(mess['misc'][source]):
                     # print(entity)
-                    dt = self.ts_now - mess['misc'][source][entity]['ts']
+                    try:
+                        dt = self.ts_now - mess['misc'][source][entity]['ts']
+                    except KeyError as e:
+                        print('error: no ts in', source, entity)
+                        # raise e
                     if dt > 0.2 or dt < -0.2:
                         del mess['misc'][source][entity]
                         continue
@@ -730,6 +734,15 @@ class PCC(object):
     def check_status(self):
         if not self.hub.time_aligned:
             return {'status': 'fail', 'info': 'collectors\' time not aligned!'}
+        return {'status': 'ok', 'info': 'oj8k'}
+
+    def send_online_devices(self):
+        if not self.to_web:
+            return
+        msg = self.hub.online
+        # self.vs.ws_send('devices', msg)
+        self.web_msg_q.put(('devices', msg))
+        # print('sent online devices')
         return {'status': 'ok', 'info': 'oj8k'}
 
     def calib_esr(self, ofile='esr_clb.txt'):

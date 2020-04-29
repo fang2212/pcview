@@ -116,6 +116,10 @@ class Hub(Thread):
 
         print('hub init done')
 
+    def run(self):
+        self.finder.request()
+        time.sleep(1)
+
     def get_veh_role(self, source):
         if source in self.type_roles:
             return self.type_roles[source]
