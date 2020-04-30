@@ -246,6 +246,19 @@
         });
     });
 
+    $(document).keyup(function (event) {
+        //判断回车键的code
+        // alert(event.keyCode)
+        keypress(event.keyCode)
+        if (event.keyCode == 13) {
+            //如果确定点击了回车键，那么就调用方法
+            // sign_in();
+            //模拟点击按钮
+            // $('#sign_in_button').click();
+        }
+
+    });
+
 
 </script>
 
