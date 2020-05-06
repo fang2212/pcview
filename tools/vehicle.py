@@ -155,8 +155,8 @@ class Vehicle(object):
                 'TTC': ttc}
 
 
-def get_vehicle_target(host, target):
-    import tools.transform as trans
+def get_rover_target(host, target):
+    # import tools.transform as trans
     host_dyn = host.get_dynamics(('lat', 'lon', 'hgt', 'pitch', 'yaw', 'hor_speed', 'trk_gnd'))
     target_dyn = target.get_dynamics(('lat', 'lon', 'hgt', 'hor_speed', 'trk_gnd'))
     if not host_dyn or not target_dyn:
@@ -169,18 +169,18 @@ def get_vehicle_target(host, target):
     trk_host = host_dyn['trk_gnd'] + 180.0
     if trk_host > 360:
         trk_host = trk_host - 360.0
-    velN = - host_dyn['hor_speed'] * cos(host_dyn['trk_gnd'] * pi / 180.0)
-    velE = - host_dyn['hor_speed'] * sin(host_dyn['trk_gnd'] * pi / 180.0)
-    # vel_x = host_dyn['hor_speed'] * sin(trk_host * pi / 180)
-    # vel_y = host_dyn['hor_speed'] * cos(trk_host * pi / 180)
-    theta = host_dyn['trk_gnd'] - host_dyn['yaw']
-    vel_x = host_dyn['hor_speed'] * cos(theta * pi / 180)
-    vel_y = host_dyn['hor_speed'] * sin(theta * pi / 180)
+    velN = - host_dyn['hor_speed'] * cos(host_dyn['trk_gnd'] * pi / 180.0) + target_dyn['hor_speed'] * cos(
+        target_dyn['trk_gnd'] * pi / 180.0)
+    velE = - host_dyn['hor_speed'] * sin(host_dyn['trk_gnd'] * pi / 180.0) + target_dyn['hor_speed'] * sin(
+        target_dyn['trk_gnd'] * pi / 180.0)
+
+    vel_x = velN * cos(host_dyn['yaw'] * pi / 180) + velE * sin(host_dyn['yaw'] * pi / 180)
+    vel_y = velN * sin(host_dyn['yaw'] * pi / 180) + velE * cos(host_dyn['yaw'] * pi / 180)
     pos_x = cos(angle * pi / 180.0) * range
     pos_y = sin(angle * pi / 180.0) * range
     delta_h = target_dyn['hgt'] - host_dyn['hgt']
 
-    ttc = pos_x / host_dyn['hor_speed'] if host_dyn['hor_speed'] > 0 else 7
+    ttc = pos_x / -vel_x if vel_x < 0 else 7
     if ttc > 7:
         ttc = 7
 

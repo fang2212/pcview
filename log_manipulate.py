@@ -506,7 +506,7 @@ def parse_drtk_target(file_name):
 
 def parse_rtk_target_ub482(line, ctx):
     from recorder.convert import ub482_defs, decode_with_def
-    from tools.vehicle import Vehicle, get_vehicle_target
+    from tools.vehicle import Vehicle, get_rover_target
     cols = line.split(' ')
     ts = float(cols[0]) + float(cols[1]) / 1000000
     if 'rtk' not in cols[2]:
@@ -549,7 +549,7 @@ def parse_rtk_target_ub482(line, ctx):
                 continue
             if not ego_car or not ctx['rtksol']['vehicles'][role]:
                 continue
-            t = get_vehicle_target(ego_car, ctx['rtksol']['vehicles'][role])
+            t = get_rover_target(ego_car, ctx['rtksol']['vehicles'][role])
             if t:
                 epoch.append(t)
     ctx['rtksol']['vehicles'][role].update_dynamics(r)

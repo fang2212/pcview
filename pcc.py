@@ -27,7 +27,7 @@ from tools.geo import *
 from tools.match import is_near
 from tools.mytools import Supervisor
 from tools.transform import Transform, OrientTuner
-from tools.vehicle import Vehicle, get_vehicle_target
+from tools.vehicle import Vehicle, get_rover_target
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
@@ -381,7 +381,7 @@ class PCC(object):
         else:  # other vehicle
             # print('other role:', role)
             if self.vehicles['ego']:
-                target = get_vehicle_target(self.vehicles['ego'], self.vehicles[role])
+                target = get_rover_target(self.vehicles['ego'], self.vehicles[role])
                 # print(target)
                 if target:
                     self.player.show_rtk_target(img, target)
