@@ -124,7 +124,8 @@ elif args.web:  # start webui PCC
     server = VideoServer()
     pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
     server.start()
-    init_checkers(pcc)
+    sup = init_checkers(pcc)
+    # sup.add_check_task(list_recorded_data)
     pcc.start()
 
 else:  # normal standalone PCC
@@ -137,5 +138,5 @@ else:  # normal standalone PCC
         auto_rec = False
     hub = Hub(uniconf=cve_conf)
     pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec)
-    init_checkers(pcc)
+    sup = init_checkers(pcc)
     pcc.start()

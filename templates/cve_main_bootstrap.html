@@ -25,7 +25,7 @@
 
 <body>
 <div class="row">
-    <div id="tabs" class="list-group col-md-4 col-xs-4" style="max-width: 200px; margin-left: 18px">
+    <div id="tabs" class="list-group col-md-4 col-xs-4" style="max-width: 100px; margin-left: 18px">
         <!--tab里面的值应与下面标签页的id一致-->
         <a tab="tab-item1" href="#" class="tab list-group-item active">Viz</a>
         <a tab="tab-item2" href="#" class="tab list-group-item">Devices</a>
@@ -109,8 +109,25 @@
             <textarea id='log_text' style="width: 600px; height: 500px"> </textarea>
         </div>
         <div id="tab-item7" class="tab-item">
-            <h2>logged data:</h2>
-            <div id="logged"></div>
+            <h2>Recorded data:</h2>
+            <div id="'log_path"></div>
+            <div id="logged">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">name</th>
+                        <th scope="col">log size</th>
+                        <th scope="col">modify time</th>
+                        <th scope="col">info</th>
+                        <th scope="col">data valid</th>
+                        <th scope="col">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="records">
+
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
@@ -183,6 +200,7 @@
             // testJson()
             let logtxt = document.getElementById('log_text');
             let content = document.getElementById("devices-pool");
+
             let data = msg.data;
             // delCards(content);
             // content.remove()
@@ -231,7 +249,7 @@
                     '    <a href="#" class="card-link">添加到曲线</a>\n' +
                     '</div>\n';
                 let ports = '<div>\n'
-                for (let port in dev['ports']){
+                for (let port in dev['ports']) {
                     ports +=
                         '<li>' + port + ': ' + dev['ports'][port]['topic'] + ' on ' + dev['ports'][port]['port'] + '</li>\n';
                 }
@@ -239,15 +257,50 @@
                 newCard.innerHTML =
 
                     '<div class="card-body" style="position: relative">\n' +
-                        common_info +
-                        ports +
-                        links +
+                    common_info +
+                    ports +
+                    links +
                     '</div>\n';
 
 
                 content.appendChild(newCard)
             }
             logtxt.scrollTop = logtxt.scrollHeight;
+        });
+
+        socket.on('recorded', function (msg, cb) {
+            let logtxt = document.getElementById('log_text');
+            let content = document.getElementById("records");
+            let log_path = document.getElementById("log_path");
+            // log_path.innerHTML = "<a>"+msg.path+"</a>\n";
+            let data = msg.data;
+
+            content.innerHTML = "";
+            for (let record in data) {
+                // logtxt.append(data[record]['name'] + '\n');
+
+
+                let newLine = document.createElement("tr")
+                newLine.innerHTML =
+                    "      <th scope=\"row\">"+data[record]['name']+"</th>\n" +
+                    "      <td>"+ data[record]['log_size'] +"</td>\n" +
+                    "      <td>"+data[record]['mtime']+"</td>\n" +
+                    "      <td class=\"text-info\">None</td>\n" +
+                    "      <td>yes</td>\n" +
+                    "      <td>\n" +
+                    "        <div class=\"btn-group-raised btn-group-toggle\">\n" +
+                    "          <a href=\"/download/"+data[record]['name']+"\" class=\"btn btn-primary\">Download</a>\n" +
+                    // "          <a href=\"/action/replay/"+data[record]['name']+"\" class=\"btn btn-primary\">Replay</a>\n" +
+                    // "          <a href=\"/action/analyze/"+data[record]['name']+"\" class=\"btn btn-primary\">Analyze</a>\n" +
+                    "        </div>\n" +
+                    "      </td>\n"
+
+                content.appendChild(newLine)
+            }
+            logtxt.scrollTop = logtxt.scrollHeight;
+            // logtxt.append('received record list.\n')
+
+
         });
     });
 

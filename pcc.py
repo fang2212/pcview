@@ -124,6 +124,7 @@ class PCC(object):
             self.web_img = video_server.server_dict
             self.ctrl_q = video_server.ctrl_q
             self.web_msg_q = video_server.msg_q
+            # video_server.local_path = uniconf.local_cfg.log_root
             self.vs = to_web
             # self.vs.start()
 
@@ -132,13 +133,13 @@ class PCC(object):
         #     self.vw.set_writer("replay-render", 1760, 720)
         #     print('--------save replay video', os.path.dirname(self.rlog))
 
-        def exit_for_signal(signal_num, frame):
-            if self.vs:
-                self.vs.terminate()
-            print("exit by signal")
-            sys.exit(0)
-        for sig in [signal.SIGINT, signal.SIGTERM]:
-            signal.signal(sig, exit_for_signal)
+        # def exit_for_signal(signal_num, frame):
+        #     if self.vs:
+        #         self.vs.terminate()
+        #     print("exit by signal")
+        #     sys.exit(0)
+        # for sig in [signal.SIGINT, signal.SIGTERM]:
+        #     signal.signal(sig, exit_for_signal)
 
     def init_cache(self):
         self.cache.clear()
@@ -680,10 +681,11 @@ class PCC(object):
                 else:
                     key = ord(cmd['cmd'].lower())
         if key == ord('q') or key == 27:
-            cv2.destroyAllWindows()
+            if not self.to_web:
+                cv2.destroyAllWindows()
             # os._exit(0)
             self.exit = True
-            sys.exit(0)
+            # sys.exit(0)
         elif key == 32:  # space
             self.pause = not self.pause
             print('Pause:', self.pause)

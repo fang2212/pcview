@@ -211,7 +211,7 @@ class LogPlayer(Process):
             'x1_data': []
         }
 
-        if not self.cam_queue.empty():
+        if not self.cam_queue.empty() or self.shared.get('terminate'):
             frame_id, data, msg_type, cache = self.cam_queue.get()
             # print(frame_id, msg_type)
             res['ts'] = data['ts']
@@ -560,7 +560,11 @@ if __name__ == "__main__":
         server = VideoServer()
         pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=server)
         server.start()
+        pcc.start()
+        while True:
+            time.sleep(1)
     else:
         pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg)
-    pcc.start()
+        pcc.start()
+
 
