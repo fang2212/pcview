@@ -5,6 +5,7 @@ import argparse
 import json
 import cv2
 from pcc import *
+from tools.mytools import Supervisor
 
 local_path = os.path.split(os.path.realpath(__file__))[0]
 # print('local_path:', local_path)
@@ -32,6 +33,16 @@ local_cfg.log_root = opath
 
 cve_conf = load_cfg(args.cfg_path)
 cve_conf.local_cfg = local_cfg
+
+
+def init_checkers(pcc):
+    supervisor = Supervisor()
+    supervisor.add_check_task(pcc.check_status)
+    supervisor.add_check_task(pcc.hub.fileHandler.check_file)
+    supervisor.add_check_task(pcc.send_online_devices)
+    supervisor.start()
+    return supervisor
+
 
 if args.direct:
     print('PCC starts in direct-mode.')
@@ -106,13 +117,17 @@ elif args.headless:
     app.listen(9999)
     IOLoop.instance().start()
 
-elif args.web:
+elif args.web:  # start webui PCC
+    from video_server import VideoServer
     print('PCC starts in webui mode.')
     hub = Hub(uniconf=cve_conf)
-    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=False, to_web=True)
+    server = VideoServer()
+    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
+    server.start()
+    init_checkers(pcc)
     pcc.start()
 
-else:
+else:  # normal standalone PCC
     print('PCC starts in normal mode.')
     # cve_conf = load_cfg(args.cfg_path)
     # local_cfg = get_local_cfg()
@@ -122,4 +137,5 @@ else:
         auto_rec = False
     hub = Hub(uniconf=cve_conf)
     pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec)
+    init_checkers(pcc)
     pcc.start()

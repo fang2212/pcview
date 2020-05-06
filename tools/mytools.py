@@ -8,21 +8,33 @@ import time
 class Supervisor(Thread):
     def __init__(self, checkers=[]):
         super(Supervisor, self).__init__()
-        self.checkers = checkers
+        # self.checkers = checkers
+        self.checkers = []
         self.result = []
 
     def run(self):
-        print('supervisor inited.')
+        print('supervisor inited with {} tasks.'.format(len(self.checkers)))
+
         while True:
             self.result.clear()
+            ts_now = time.time()
+            wait_until = 1.0
             for checker in self.checkers:
                 try:
-                    ret = checker()
-                    if ret.get('status') != 'ok':
-                        self.result.append(ret.get('info'))
+                    if ts_now > checker['next_check']:
+                        ret = checker['checker']()
+                        if ret.get('status') != 'ok':
+                            self.result.append(ret.get('info'))
+                        checker['next_check'] = ts_now + checker['interval']
+                        wait_until = min(wait_until, checker['interval'] + ts_now - time.time())
                 except Exception as e:
                     pass
-            time.sleep(1)
+            if wait_until > 0.002:
+                time.sleep(wait_until)
+            self.check()
+
+    def add_check_task(self, func, interval=1):  # interval in s
+        self.checkers.append({'checker': func, 'interval': interval, 'next_check': 0})
 
     def check(self):
         return self.result

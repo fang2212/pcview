@@ -87,6 +87,16 @@ class PcvParser(Thread):
         return res
 
 
+def list_recorded_data(log_path='~/data/pcc'):
+    dirs = os.listdir(log_path)
+    recorded_data = list()
+    for dir in dirs:
+        path = os.path.join(log_path, dir)
+        recorded_data.append({'name': dir, 'path': path})
+
+    return recorded_data
+
+
 class LogPlayer(Process):
 
     def __init__(self, log_path, uniconf=None, start_frame=0, ratio=1.0, loop=False):
@@ -545,6 +555,12 @@ if __name__ == "__main__":
     from parsers.parser import parsers_dict
 
     replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0, loop=args.loop)
-    pc_viewer = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=args.web)
-    pc_viewer.start()
+    if args.web:
+        from video_server import VideoServer
+        server = VideoServer()
+        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=server)
+        server.start()
+    else:
+        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg)
+    pcc.start()
 

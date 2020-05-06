@@ -26,7 +26,7 @@ from recorder.convert import *
 from sink.hub import Hub
 from tools.geo import *
 from tools.match import is_near
-from tools.mytools import Supervisor
+# from tools.mytools import Supervisor
 from tools.transform import Transform, OrientTuner
 from tools.vehicle import Vehicle, get_vehicle_target
 from multiprocessing import Queue
@@ -42,7 +42,7 @@ def loop_traverse(items):
 
 class PCC(object):
 
-    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=False, auto_rec=False):
+    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=None, auto_rec=False):
         # from config.config import runtime
         self.hub = hub
         self.cfg = uniconf
@@ -54,7 +54,7 @@ class PCC(object):
         self.rlog = rlog
         self.frame_idx = 0
         self.ts0 = 0
-        self.to_web = to_web
+
         self.now_id = 0
         #self.pre_rtk = {}
         self.ts_now = 0
@@ -81,13 +81,7 @@ class PCC(object):
         self.video_cache = {}
         self.cache = {}
         self.init_cache()
-        if not to_web:
-            cv2.namedWindow('MINIEYE-CVE')
-            cv2.setMouseCallback('MINIEYE-CVE', self.left_click, '1234')
-            cv2.namedWindow('adj')
-            cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
-            cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
-            cv2.createTrackbar('Roll  ', 'adj', 500, 1000, self.ot.update_roll)
+
         # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
         self.sv_state = 'ipm'
@@ -95,14 +89,8 @@ class PCC(object):
         # cv2.namedWindow('video_aux')
 
         # cv2.createTrackbar('ESR_y', 'adj', 500, 1000, self.ot.update_esr_yaw)
-        if not replay:
-            self.supervisor = Supervisor([self.check_status,
-                                          self.hub.fileHandler.check_file,
-                                         self.send_online_devices])
-            self.supervisor.start()
-            # self.gga = GGAReporter('ntrip.weaty.cn', 5001)
-            # self.gga.start()
-        else:
+
+        if replay:
             self.hub.d = Manager().dict()
 
             def update_speed(x):
@@ -119,17 +107,25 @@ class PCC(object):
         self.flow_player = FlowPlayer()
 
         self.save_replay_video = save_replay_video
-        self.to_web = to_web
         self.vw = None
         self.vs = None
-        if to_web:
-            from video_server import VideoServer
+        if not to_web:
+            self.to_web = False
+            cv2.namedWindow('MINIEYE-CVE')
+            cv2.setMouseCallback('MINIEYE-CVE', self.left_click, '1234')
+            cv2.namedWindow('adj')
+            cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
+            cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
+            cv2.createTrackbar('Roll  ', 'adj', 500, 1000, self.ot.update_roll)
+        else:
+            self.to_web = True
+            # from video_server import VideoServer
             import video_server
             self.web_img = video_server.server_dict
             self.ctrl_q = video_server.ctrl_q
             self.web_msg_q = video_server.msg_q
-            self.vs = VideoServer()
-            self.vs.start()
+            self.vs = to_web
+            # self.vs.start()
 
         # if self.save_replay_video and self.replay:
         #     self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
@@ -399,8 +395,8 @@ class PCC(object):
         fps = self.player.cal_fps(frame_cnt)
         self.player.show_fps(img, 'video', fps)
 
-        if not self.replay:
-            self.player.show_warning_ifc(img, self.supervisor.check())
+        # if not self.replay:
+        #     self.player.show_warning_ifc(img, self.supervisor.check())
         self.player.show_intrinsic_para(img)
 
         self.player.render_text_info(img)
