@@ -84,8 +84,9 @@ def time_sort(file_name, sort_itv=8000, output=None):
 
 
 def process_log(file_name, parsers, ctx, startf=None, endf=None, output=None):
+    import tempfile
     print('processing log: {}'.format(file_name))
-    out_file = output or '/tmp/log_processed_{}.txt'.format(int(time.time()))
+    out_file = output or tempfile.NamedTemporaryFile().name
     wf = open(out_file, 'w')
     if startf is not None and endf is not None:
         pstate = False

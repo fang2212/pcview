@@ -151,7 +151,15 @@
             //取自定义字段里面的值(即a标签里面的tab字段)
             //tab字段里面存的是各个标签页的id, 以此来控制显示和隐藏
             $("#" + target.attr("tab")).show();
+            if (target.attr("tab") === "tab-item7"){
+                req_recorded_data();
+            }
         });
+
+        function req_recorded_data() {
+            $.post("/require/records", "", function () {});
+        }
+
         var namespace = '/test';
         var socket = io(namespace);
 

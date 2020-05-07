@@ -157,6 +157,16 @@ def control_obj(cmd, item):
     return redirect("/")
 
 
+@app.route("/require/<item>", methods=['GET', 'POST'])
+def require(item):
+    if item == 'records':
+        recorded_data = list_recorded_data(local_path)
+        print('recorded data:', recorded_data)
+        socketio.emit('recorded', {'data': recorded_data, 'path': local_path}, namespace='/test')
+
+    return 200
+
+
 @app.route("/download/<item>", methods=['GET', 'POST'])
 def download(item):
     print('downloading', item)
@@ -178,7 +188,7 @@ def download(item):
 @socketio.on('connect', namespace='/test')
 def test_connect():
     socketio.start_background_task(msg_send_task)
-    socketio.start_background_task(recorded_data_check_task)
+    # socketio.start_background_task(recorded_data_check_task)
     print('socketio client connected.')
     emit('my_response', {'data': 'Connected', 'count': 0})
 
