@@ -29,23 +29,27 @@
         <!--tab里面的值应与下面标签页的id一致-->
         <a tab="tab-item1" href="#" class="tab list-group-item active">Viz</a>
         <a tab="tab-item2" href="#" class="tab list-group-item">Devices</a>
-        <a tab="tab-item3" href="#" class="tab list-group-item">Curves</a>
+        <a tab="tab-item3" href="#" class="tab list-group-item">Configs</a>
         <a tab="tab-item4" href="#" class="tab list-group-item">Status</a>
         <a tab="tab-item5" href="#" class="tab list-group-item">Settings</a>
         <a tab="tab-item6" href="#" class="tab list-group-item">Logs</a>
         <a tab="tab-item7" href="#" class="tab list-group-item">Data</a>
 
     </div>
-    <div class="col-md-8 col-xs-4">
+    <div class="col-md-10 col-xs-4">
         <!--id与上面标签里面的tab一致-->
         <div id="tab-item1" class="tab-item">
             <div>
                 <img src="{{ url_for('video_feed') }}">
             </div>
-            <div id="control">
+            <div id="control", style="position:fixed; bottom:0; opacity: 0.5">
                 <view>
                     <input type="button" id="refresh" value="refresh" onclick="refresh()"
                            style=" width:300px; height:80px;  margin-left:auto; margin-right:auto; color:#ffffff; background:#1abc9c;"/>
+                </view>
+                <view>
+                    <input type="button" id="collect" value="Restart PCC" onclick="back_to_collector()"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
                 </view>
                 <view>
                     <input type="button" id="pause" value="pause" onclick="pause()"
@@ -64,6 +68,11 @@
             <script type="text/javascript">
                 function refresh() {
                     window.location.reload();
+                }
+
+                function back_to_collector() {
+                    $.post("/control/reset", "", function (data) {
+                    });
                 }
 
                 function pause() {
@@ -259,7 +268,7 @@
                 let ports = '<div>\n'
                 for (let port in dev['ports']) {
                     ports +=
-                        '<li>' + port + ': ' + dev['ports'][port]['topic'] + ' on ' + dev['ports'][port]['port'] + '</li>\n';
+                        '<li>' + port + ': ' + '<b>'+ dev['ports'][port]['topic']+'</b>' + ' on ' + dev['ports'][port]['port'] + '</li>\n';
                 }
                 ports += '</div>\n';
                 newCard.innerHTML =
@@ -298,7 +307,7 @@
                     "      <td>\n" +
                     "        <div class=\"btn-group-raised btn-group-toggle\">\n" +
                     "          <a href=\"/download/"+data[record]['name']+"\" class=\"btn btn-primary\">Download</a>\n" +
-                    // "          <a href=\"/action/replay/"+data[record]['name']+"\" class=\"btn btn-primary\">Replay</a>\n" +
+                    "          <a href=\"/action/replay/"+data[record]['name']+"\" class=\"btn btn-primary\">Replay</a>\n" +
                     // "          <a href=\"/action/analyze/"+data[record]['name']+"\" class=\"btn btn-primary\">Analyze</a>\n" +
                     "        </div>\n" +
                     "      </td>\n"

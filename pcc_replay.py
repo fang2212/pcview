@@ -16,6 +16,10 @@ from parsers import ublox
 from recorder.convert import *
 from collections import deque
 import shutil
+import os
+from config.config import CVECfg, load_config, load_installation
+from parsers.parser import parsers_dict
+from config.config import *
 
 
 def jpeg_extractor(video_dir):
@@ -514,8 +518,6 @@ def prep_replay(source, ns=False):
 
 
 if __name__ == "__main__":
-    from config.config import *
-    import sys
     import argparse
 
     local_path = os.path.split(os.path.realpath(__file__))[0]
@@ -552,14 +554,14 @@ if __name__ == "__main__":
     ns = args.nosort
     r_sort, cfg = prep_replay(source, ns=ns)
     from pcc import PCC
-    from parsers.parser import parsers_dict
 
     replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0, loop=args.loop)
     if args.web:
-        from video_server import VideoServer
-        server = VideoServer()
+        from video_server import PccServer
+        server = PccServer()
         pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=server)
         server.start()
+        print(os.getpid())
         pcc.start()
         while True:
             time.sleep(1)

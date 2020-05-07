@@ -154,17 +154,20 @@ def control_obj(cmd, item):
     elif cmd == 'analyze':
         print('analyze on web.')
 
+    ctrl_q.put({'action': cmd, 'obj': item, 'initiator': 'web-local'})
+
     return redirect("/")
 
 
 @app.route("/require/<item>", methods=['GET', 'POST'])
 def require(item):
+    # print('-----------------------------------------------------------------------', os.getpid())
     if item == 'records':
         recorded_data = list_recorded_data(local_path)
         print('recorded data:', recorded_data)
         socketio.emit('recorded', {'data': recorded_data, 'path': local_path}, namespace='/test')
 
-    return 200
+    return 'ok', 200
 
 
 @app.route("/download/<item>", methods=['GET', 'POST'])
@@ -198,14 +201,14 @@ def test_disconnect():
     print('Client disconnected', request.sid)
 
 
-class VideoServer(Process):
+class PccServer(Process):
     def __init__(self, port=1234):
         super().__init__()
         self.daemon = True
         self.port = port
 
     def run(self):
-        app.logger.setLevel(logging.ERROR)
+        # app.logger.setLevel(logging.ERROR)
         socketio.run(app, host='0.0.0.0', port=self.port, log_output='/dev/null')
 
     def ws_send(self, topic, msg, cb=None):

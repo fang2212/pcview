@@ -40,9 +40,9 @@ def loop_traverse(items):
             yield item
 
 
-class PCC(object):
-
+class PCC(Thread):
     def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=None, auto_rec=False):
+        super(PCC, self).__init__()
         # from config.config import runtime
         self.hub = hub
         self.cfg = uniconf
@@ -122,8 +122,8 @@ class PCC(object):
             # from video_server import VideoServer
             import video_server
             self.web_img = video_server.server_dict
-            self.ctrl_q = video_server.ctrl_q
-            self.web_msg_q = video_server.msg_q
+            # self.ctrl_q = video_server.ctrl_q
+            self.o_msg_q = video_server.msg_q
             # video_server.local_path = uniconf.local_cfg.log_root
             self.vs = to_web
             # self.vs.start()
@@ -150,8 +150,8 @@ class PCC(object):
         self.cache['img_raw'] = cv2.imdecode(np.fromstring(self.cache['img'], np.uint8), cv2.IMREAD_COLOR)
         self.cache['frame_id'] = 0
 
-    def start(self):
-        self.hub.start()
+    def run(self):
+        # self.hub.start()
         self.player.start_time = datetime.now()
         frame_cnt = 0
         data_cnt = 0
@@ -190,7 +190,7 @@ class PCC(object):
                 # print('wait to refresh', self.display_interval)
                 continue
             last_ts = time.time()
-            # self.web_msg_q.put(self.cache['misc'])
+            # self.o_msg_q.put(self.cache['misc'])
             self.draw(self.cache, frame_cnt)  # render
             # for key in self.cache['info']:
             #     if self.cache['info'][key].get('integrity') == 'divided':
@@ -249,8 +249,14 @@ class PCC(object):
                 if not is_main:
                     if data['source'] not in self.video_cache:
                         self.video_cache[data['source']] = {}
+                    data['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
                     self.video_cache[data['source']] = data
                     self.video_cache[data['source']]['updated'] = True
+
+                    self.hub.fileHandler.insert_video(
+                        {'ts': data['ts'], 'frame_id': data['frame_id'], 'img': data['img_raw'],
+                         'source': data['source']})
+
                 else:
                     self.cache['img'] = data['img']
                     try:
@@ -261,6 +267,9 @@ class PCC(object):
                     self.cache['frame_id'] = fid
                     self.cache['ts'] = data['ts']
                     self.cache['updated'] = True
+                    if not self.replay:
+                        self.hub.fileHandler.insert_video(
+                            {'ts': data['ts'], 'frame_id': fid, 'img': self.cache['img_raw'], 'source': 'video'})
                     return True
             else:
                 dtype = data.get('type') if 'type' in data else 'notype'
@@ -295,9 +304,9 @@ class PCC(object):
         if self.ts0 == 0:
             self.ts0 = self.ts_now
 
-        if not self.replay and mess.get('updated'):
-            self.hub.fileHandler.insert_video(
-                {'ts': mess['ts'], 'frame_id': frame_id, 'img': mess['img_raw'], 'source': 'video'})
+        # if not self.replay and mess.get('updated'):
+        #     self.hub.fileHandler.insert_video(
+        #         {'ts': mess['ts'], 'frame_id': frame_id, 'img': mess['img_raw'], 'source': 'video'})
 
         # self.player.show_columns(img)
         if self.vehicles['ego'].dynamics.get('pinpoint'):
@@ -329,12 +338,12 @@ class PCC(object):
                 continue
             video = self.video_cache[source]
             # print('incoming video', video['source'])
-            img_raw = cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR)
-            if self.video_cache[source]['updated']:
-                self.hub.fileHandler.insert_video(
-                    {'ts': video['ts'], 'frame_id': video['frame_id'], 'img': img_raw, 'source': video['source']})
+            # img_raw = cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR)
+            # if self.video_cache[source]['updated']:
+            #     self.hub.fileHandler.insert_video(
+            #         {'ts': video['ts'], 'frame_id': video['frame_id'], 'img': img_raw, 'source': video['source']})
             self.video_cache[source]['updated'] = False
-            img_small = cv2.resize(img_raw, (427, 240))
+            img_small = cv2.resize(video['img_raw'], (427, 240))
             video['device'] = "x1d3"
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
@@ -361,8 +370,8 @@ class PCC(object):
                         continue
                     if not self.draw_can_data(img, mess['misc'][source][entity]):
                         print('draw misc data exited, source:', source)
-                    # if self.to_web and not self.web_msg_q.full():
-                    #     self.web_msg_q.put(mess['misc'][source][entity])
+                    # if self.to_web and not self.o_msg_q.full():
+                    #     self.o_msg_q.put(mess['misc'][source][entity])
                     # print(entity)
                 # if 'type' in d:
                 #     if d['type'] == 'rtk':
@@ -376,16 +385,16 @@ class PCC(object):
         #     d = cache[type]
         #     self.draw_can_data(img, d)
 
-        if 'rtk' in mess and mess['rtk']:  # usb pcan rtk
-            for d in mess['rtk']:
-                # print('----------- rtk')
-                self.draw_rtk(img, d)
-                if self.set_pinpoint:
-                    self.set_pinpoint = False
-                    self.target = {'lat': d['lat'], 'lon': d['lon'], 'hgt': d['hgt'], 'rtkst': d['rtkst']}
-                    self.hub.fileHandler.insert_raw((d['ts'], 'rtkpin', '{} {} {} {}'.format(
-                        d['rtkst'], d['lat'], d['lon'], d['hgt'])))
-                    print('set pinpoint:', d)
+        # if 'rtk' in mess and mess['rtk']:  # usb pcan rtk
+        #     for d in mess['rtk']:
+        #         # print('----------- rtk')
+        #         self.draw_rtk(img, d)
+        #         if self.set_pinpoint:
+        #             self.set_pinpoint = False
+        #             self.target = {'lat': d['lat'], 'lon': d['lon'], 'hgt': d['hgt'], 'rtkst': d['rtkst']}
+        #             self.hub.fileHandler.insert_raw((d['ts'], 'rtkpin', '{} {} {} {}'.format(
+        #                 d['rtkst'], d['lat'], d['lon'], d['hgt'])))
+        #             print('set pinpoint:', d)
 
         if not self.replay and self.hub.fileHandler.is_recording:
             self.player.show_recording(img, self.hub.fileHandler.start_time)
@@ -671,15 +680,18 @@ class PCC(object):
 
     def handle_keyboard(self):
         key = cv2.waitKey(1) & 0xFF
-        if self.to_web:
-            cmd = self.ctrl_q.get() if not self.ctrl_q.empty() else None
-            if cmd:
-                if cmd.get('cmd') == 'pause':
-                    key = 32
-                elif cmd.get('cmd') == 'start':
-                    pass
-                else:
-                    key = ord(cmd['cmd'].lower())
+        # if self.to_web:
+        #     cmd = self.ctrl_q.get() if not self.ctrl_q.empty() else None
+        #     if cmd:
+        #         if cmd.get('cmd') == 'pause':
+        #             key = 32
+        #         elif cmd.get('cmd') == 'start':
+        #             pass
+        #         else:
+        #             key = ord(cmd['cmd'].lower())
+        self.control(key)
+
+    def control(self, key):
         if key == ord('q') or key == 27:
             if not self.to_web:
                 cv2.destroyAllWindows()
@@ -739,7 +751,8 @@ class PCC(object):
             return
         msg = self.hub.online
         # self.vs.ws_send('devices', msg)
-        self.web_msg_q.put(('devices', msg))
+        if self.o_msg_q and not self.o_msg_q.full():
+            self.o_msg_q.put(('devices', msg))
         # print('sent online devices')
         return {'status': 'ok', 'info': 'oj8k'}
 

@@ -118,15 +118,55 @@ elif args.headless:
     IOLoop.instance().start()
 
 elif args.web:  # start webui PCC
-    from video_server import VideoServer
+    from video_server import PccServer, ctrl_q
     print('PCC starts in webui mode.')
     hub = Hub(uniconf=cve_conf)
-    server = VideoServer()
+
+    server = PccServer()
     pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
+    hub.start()
     server.start()
+    # print('-----------------------------------------------------------------------', os.getpid())
     sup = init_checkers(pcc)
     # sup.add_check_task(list_recorded_data)
     pcc.start()
+    while True:
+        if not ctrl_q.empty():
+            ctrl = ctrl_q.get()
+            if ctrl['action'] == 'control':
+                key = None
+                if ctrl.get('cmd') == 'pause':
+                    key = 32
+                elif ctrl.get('cmd') == 'start':
+                    pass
+                elif ctrl.get('cmd') == 'reset':
+                    pcc.control(ord('q'))
+                    # hub = Hub(uniconf=cve_conf)
+                    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
+                    pcc.start()
+                else:
+                    key = ord(ctrl['cmd'].lower())
+
+                if key is not None:
+                    pcc.control(key)
+            elif ctrl['action'] == 'replay':
+                pcc.control(ord('q'))
+                print('---------------------------------------------------------\n'
+                      'pcc exited\n'
+                      '----------------------------------------------------------')
+                rlog = os.path.join(local_cfg.log_root, ctrl['obj'], 'log.txt')
+                from pcc_replay import LogPlayer, prep_replay
+                r_sort, cve_conf = prep_replay(rlog, ns=True)
+                replayer = LogPlayer(r_sort, cve_conf, ratio=0.2, start_frame=0, loop=True)
+                pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, uniconf=cve_conf, to_web=server)
+                replayer.start()
+                pcc.start()
+                pass
+            elif ctrl['action'] == 'analyze':
+                pass
+
+        else:
+            time.sleep(0.1)
 
 else:  # normal standalone PCC
     print('PCC starts in normal mode.')
@@ -138,5 +178,6 @@ else:  # normal standalone PCC
         auto_rec = False
     hub = Hub(uniconf=cve_conf)
     pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec)
+    hub.start()
     sup = init_checkers(pcc)
     pcc.start()
