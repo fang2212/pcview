@@ -167,8 +167,9 @@ elif args.web:  # start webui PCC
 
             elif ctrl['action'] == 'delete':
                 dir_path = os.path.join(local_cfg.log_root, ctrl['obj'])
-                os.remove(dir_path)
-                print("deleted {} from web control.".format(ctrl['obj']))
+                if os.path.exists(dir_path):
+                    os.rmdir(dir_path)
+                    print("deleted {} from web control.".format(ctrl['obj']))
 
         else:
             time.sleep(0.1)
