@@ -165,10 +165,6 @@
             }
         });
 
-        function req_recorded_data() {
-            $.post("/require/records", "", function () {});
-        }
-
         var namespace = '/test';
         var socket = io(namespace);
 
@@ -321,11 +317,16 @@
         });
     });
 
+    function req_recorded_data() {
+            $.post("/require/records", "", function () {});
+        }
+
     function del_confirm(name) {
         var r=confirm("confirm deletion?")
         if (r==true){
             $.post("/action/delete/"+name, "", function (data) {
                     });
+            req_recorded_data();
         }
     }
 
