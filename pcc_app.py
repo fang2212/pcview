@@ -165,6 +165,11 @@ elif args.web:  # start webui PCC
             elif ctrl['action'] == 'analyze':
                 pass
 
+            elif ctrl['action'] == 'delete':
+                dir_path = os.path.join(local_cfg.log_root, ctrl['obj'])
+                os.remove(dir_path)
+                print("deleted {] from web control.".format(ctrl['obj']))
+
         else:
             time.sleep(0.1)
 

@@ -149,11 +149,6 @@ def control(cmd):
 
 @app.route("/action/<cmd>/<item>", methods=['GET', 'POST'])
 def control_obj(cmd, item):
-    if cmd == 'replay':
-        print('replay on web.')
-    elif cmd == 'analyze':
-        print('analyze on web.')
-
     ctrl_q.put({'action': cmd, 'obj': item, 'initiator': 'web-local'})
 
     return redirect("/")
