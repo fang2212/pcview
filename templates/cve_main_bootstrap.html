@@ -324,7 +324,7 @@
     function del_confirm(name) {
         var r=confirm("confirm deletion?")
         if (r==true){
-            $.post("/action/delete/{}"+name, "", function (data) {
+            $.post("/action/delete/"+name, "", function (data) {
                     });
         }
     }
