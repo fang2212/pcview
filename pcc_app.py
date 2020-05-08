@@ -6,6 +6,7 @@ import json
 import cv2
 from pcc import *
 from tools.mytools import Supervisor
+import shutil
 
 local_path = os.path.split(os.path.realpath(__file__))[0]
 # print('local_path:', local_path)
@@ -168,7 +169,7 @@ elif args.web:  # start webui PCC
             elif ctrl['action'] == 'delete':
                 dir_path = os.path.join(local_cfg.log_root, ctrl['obj'])
                 if os.path.exists(dir_path):
-                    os.rmdir(dir_path)
+                    shutil.rmtree(dir_path)
                     print("deleted {} from web control.".format(ctrl['obj']))
 
         else:
