@@ -69,6 +69,11 @@ def list_recorded_data(log_path='/home/nan/data/pcc'):
     return recorded_data
 
 
+def send_records():
+    recorded_data = list_recorded_data(local_path)
+    print('recorded data:', recorded_data)
+    socketio.emit('recorded', {'data': recorded_data, 'path': local_path}, namespace='/test')
+
 def recorded_data_check_task(log_path=local_path):
     while True:
         recorded_data = list_recorded_data(log_path)
@@ -158,9 +163,7 @@ def control_obj(cmd, item):
 def require(item):
     # print('-----------------------------------------------------------------------', os.getpid())
     if item == 'records':
-        recorded_data = list_recorded_data(local_path)
-        print('recorded data:', recorded_data)
-        socketio.emit('recorded', {'data': recorded_data, 'path': local_path}, namespace='/test')
+        send_records()
 
     return 'ok', 200
 

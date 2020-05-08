@@ -119,11 +119,12 @@ elif args.headless:
     IOLoop.instance().start()
 
 elif args.web:  # start webui PCC
-    from video_server import PccServer, ctrl_q
+    # from video_server import PccServer, ctrl_q
+    import video_server
     print('PCC starts in webui mode.')
     hub = Hub(uniconf=cve_conf)
 
-    server = PccServer()
+    server = video_server.PccServer()
     pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
     hub.start()
     server.start()
@@ -132,8 +133,8 @@ elif args.web:  # start webui PCC
     # sup.add_check_task(list_recorded_data)
     pcc.start()
     while True:
-        if not ctrl_q.empty():
-            ctrl = ctrl_q.get()
+        if not video_server.ctrl_q.empty():
+            ctrl = video_server.ctrl_q.get()
             if ctrl['action'] == 'control':
                 key = None
                 if ctrl.get('cmd') == 'pause':
@@ -171,6 +172,7 @@ elif args.web:  # start webui PCC
                 if os.path.exists(dir_path):
                     shutil.rmtree(dir_path)
                     print("deleted {} from web control.".format(ctrl['obj']))
+                    video_server.send_records()
 
         else:
             time.sleep(0.1)
