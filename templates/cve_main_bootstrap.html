@@ -308,7 +308,7 @@
                     "        <div class=\"btn-group-raised btn-group-toggle\">\n" +
                     "          <a href=\"/download/"+data[record]['name']+"\" class=\"btn btn-primary\">Download</a>\n" +
                     "          <a href=\"/action/replay/"+data[record]['name']+"\" class=\"btn btn-primary\">Replay</a>\n" +
-                    // "          <a href=\"/action/analyze/"+data[record]['name']+"\" class=\"btn btn-primary\">Analyze</a>\n" +
+                    "          <a onclick=\"del_confirm("+data[record]['name']+")\" class=\"btn btn-primary\">Delete</a>\n" +
                     "        </div>\n" +
                     "      </td>\n"
 
@@ -320,6 +320,14 @@
 
         });
     });
+
+    function del_confirm(name) {
+        var r=confirm("confirm deletion?")
+        if (r==true){
+            $.post("/action/delete/{}"+name, "", function (data) {
+                    });
+        }
+    }
 
     $(document).keyup(function (event) {
         //判断回车键的code
