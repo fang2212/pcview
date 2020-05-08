@@ -3,8 +3,9 @@ opencv-python
 python-can
 pyserial
 tornado
-nanomsg==1.0
 msgpack
 websockets
 cantools
 aiohttp
+flask
+flask-socketio

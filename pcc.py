@@ -150,6 +150,16 @@ class PCC(Thread):
         self.cache['img_raw'] = cv2.imdecode(np.fromstring(self.cache['img'], np.uint8), cv2.IMREAD_COLOR)
         self.cache['frame_id'] = 0
 
+    def clean_cache(self):
+        try:
+            for source in list(self.cache['misc']):
+                for entity in self.cache['misc'][source]:
+                    if self.ts_now - self.cache['misc'][source][entity]['ts'] > 0.5:
+                        self.cache['misc'][source][entity].clear()
+        except Exception as e:
+            print(e)
+            pass
+
     def run(self):
         # self.hub.start()
         self.player.start_time = datetime.now()
@@ -164,6 +174,7 @@ class PCC(Thread):
                 print('average frame cost: {:.1f}ms'.format(
                     1000 * self.frame_cost_total / self.frame_drawn_cnt)) if self.frame_drawn_cnt != 0 else None
                 return
+            t0 = time.time()
             # d = self.hub.pop_simple()  # receive
             d = self.hub.pop_common()
             # print(d)
@@ -200,9 +211,7 @@ class PCC(Thread):
                 self.hub.pause(True)
                 time.sleep(0.1)
 
-            # for source in list(self.cache['misc']):
-            #     for entity in self.cache['misc'][source]:
-            #         if self.cache['misc'][source][entity]['ts']
+            self.clean_cache()
             if self.replay:
                 self.hub.pause(False)
                 if self.hub.d:
