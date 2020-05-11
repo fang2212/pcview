@@ -1,4 +1,3 @@
-import logging
 import os
 import time
 from multiprocessing import Process as kProcess
@@ -10,9 +9,6 @@ from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
 from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink
 from tools.ip_mac import get_mac_ip, get_cached_macs, save_macs
-
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')  # logging.basicConfig函数对日志的输出格式及方式做相关配置
 
 
 class CollectorNode(kProcess):

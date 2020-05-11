@@ -1,6 +1,6 @@
-from flask import Flask, render_template, Response, stream_with_context, jsonify, request, redirect, send_file
+from flask import Flask, render_template, Response, session, jsonify, request, redirect, send_file
 from flask_socketio import SocketIO, emit
-from multiprocessing import Process, Manager, Queue
+from multiprocessing import Process, Queue
 import cv2
 import time
 import os
@@ -9,24 +9,39 @@ from io import BytesIO
 import zipfile
 import json
 
+
+async_mode = None
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-app.logger.setLevel('ERROR')
-socketio = SocketIO(app)
-socketio.server.logger.setLevel(logging.ERROR)
+# app.logger.setLevel('ERROR')
+socketio = SocketIO(app, async_mode=async_mode)
+# socketio.server.logger.setLevel(logging.ERROR)
 
-server_dict = Manager().dict()
+# server_dict = Manager().dict()
 
-server_dict['now_image'] = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
+# server_dict['now_image'] = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
 
 ctrl_q = Queue(maxsize=20)
 msg_q = Queue(maxsize=200)
+img_q = Queue(maxsize=20)
 local_path = json.load(open('config/local.json'))['log_root']
+
+profile_data = {}
+def push_profile_dt(src, dt):
+    if src not in profile_data:
+        profile_data[src] = {'up_since': time.time(), 'sum_t': 0, 'next_push': 0}
+
+    profile_data[src]['sub_t'] += dt
+
+    if time.time() > profile_data[src]['next_push']:
+        msg_q.put(('misc', ))
+
 
 
 def msg_send_task():
     while True:
         if not msg_q.empty():
+            t0 = time.time()
             data = msg_q.get()
             if not data:
                 continue
@@ -37,6 +52,8 @@ def msg_send_task():
             except Exception as e:
                 print(data)
                 raise e
+            dt = time.time() - t0
+
         else:
             socketio.sleep(0.01)
 
@@ -71,8 +88,9 @@ def list_recorded_data(log_path='/home/nan/data/pcc'):
 
 def send_records():
     recorded_data = list_recorded_data(local_path)
-    print('recorded data:', recorded_data)
+    # print('recorded data:', recorded_data)
     socketio.emit('recorded', {'data': recorded_data, 'path': local_path}, namespace='/test')
+
 
 def recorded_data_check_task(log_path=local_path):
     while True:
@@ -91,17 +109,6 @@ def ws_send(topic, msg, cb=None):
         print(e)
 
 
-def msg_send_task1():
-    """Example of how to send server generated events to clients."""
-    count = 0
-    while True:
-        socketio.sleep(0.05)
-        count += 1
-        print('sockerio server sent msg 1')
-        socketio.emit('misc',
-                      {'type': 'log', 'data': {'type': 'lane', 'source': 'x1.2', 'info': 'Server generated event'},
-                       'count': count}, namespace='/test')
-
 
 def bgr2jpg(img):
     return cv2.imencode('.jpg', img)[1].tostring()
@@ -116,24 +123,33 @@ def bgr2png(img):
 def get_image():
     while True:
         try:
-            now_image = server_dict['now_image']
+            # now_image = server_dict['now_image']
             # if not now_image:
-                # time.sleep(0.2)
+            #     frame = open('static/img/no_video.png', 'rb').read()
+            #     time.sleep(0.2)
                 # continue
             # frame = bgr2jpg(now_image)
             # frame = bgr2bmp(now_image)
-            frame = bgr2png(now_image)
+            # else:
+            # frame = bgr2png(now_image)
+            if not img_q.empty():
+                frame = bgr2png(img_q.get())
+                socketio.sleep(0)
+            else:
+                frame = open('static/img/no_video.png', 'rb').read()
+                socketio.sleep(0.5)
             # yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
             # yield (b'--frame\r\n' + b'Content-Type: image/bmp\r\n\r\n' + frame + b'\r\n')
             yield (b'--frame\r\n' + b'Content-Type: image/png\r\n\r\n' + frame + b'\r\n')
+            # socketio.sleep(0)
         except Exception as e:
             print(e)
-            time.sleep(0.2)
+            socketio.sleep(0.2)
 
 
 @app.route('/')
 def index():
-    return render_template('cve_main_bootstrap.html')
+    return render_template('cve_main.html', async_mode=socketio.async_mode)
 
 
 @app.route('/video_feed')
@@ -199,6 +215,18 @@ def test_disconnect():
     print('Client disconnected', request.sid)
 
 
+@socketio.on('my_ping', namespace='/test')
+def ping_pong():
+    emit('my_pong')
+
+
+@socketio.on('my_event', namespace='/test')
+def test_message(message):
+    session['receive_count'] = session.get('receive_count', 0) + 1
+    emit('my_response',
+         {'data': message['data'], 'count': session['receive_count']})
+
+
 class PccServer(Process):
     def __init__(self, port=1234):
         super().__init__()
@@ -207,7 +235,7 @@ class PccServer(Process):
 
     def run(self):
         # app.logger.setLevel(logging.ERROR)
-        socketio.run(app, host='0.0.0.0', port=self.port, log_output='/dev/null')
+        socketio.run(app, host='0.0.0.0', port=self.port)
 
     def ws_send(self, topic, msg, cb=None):
         if not topic or not msg:
@@ -221,3 +249,12 @@ class PccServer(Process):
         socketio.start_background_task(task)
         print('background task started:', task.__name__)
 
+
+if __name__ == "__main__":
+    server = PccServer()
+    server.start()
+    cnt = 0
+    while True:
+        cnt += 1
+        time.sleep(1)
+        # print("running", cnt)

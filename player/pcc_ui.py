@@ -1,4 +1,3 @@
-import logging
 import time
 from datetime import datetime
 
@@ -10,10 +9,6 @@ from math import *
 from player.ui import BaseDraw, pack, logodir, CVColor, FlatColor
 from tools.geo import gps_bearing, gps_distance
 from tools.transform import Transform
-
-# logging.basicConfig函数对日志的输出格式及方式做相关配置
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 
 class InfoCard(object):

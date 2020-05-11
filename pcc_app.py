@@ -68,7 +68,6 @@ elif args.headless:
     from tornado.web import Application, RequestHandler, StaticFileHandler
     from tornado.ioloop import IOLoop
 
-
     class IndexHandler(RequestHandler):
         def post(self):
             action = self.get_body_argument('action')
@@ -122,12 +121,12 @@ elif args.web:  # start webui PCC
     # from video_server import PccServer, ctrl_q
     import video_server
     print('PCC starts in webui mode.')
-    hub = Hub(uniconf=cve_conf)
-
     server = video_server.PccServer()
+    server.start()
+    hub = Hub(uniconf=cve_conf)
     pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
     hub.start()
-    server.start()
+
     # print('-----------------------------------------------------------------------', os.getpid())
     sup = init_checkers(pcc)
     # sup.add_check_task(list_recorded_data)

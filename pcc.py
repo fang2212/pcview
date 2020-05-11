@@ -30,8 +30,8 @@ from tools.match import is_near
 from tools.transform import Transform, OrientTuner
 from tools.vehicle import Vehicle, get_vehicle_target
 from multiprocessing import Queue
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
+# logging.basicConfig(level=logging.INFO,
+#                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 
 def loop_traverse(items):
@@ -121,9 +121,10 @@ class PCC(Thread):
             self.to_web = True
             # from video_server import VideoServer
             import video_server
-            self.web_img = video_server.server_dict
+            # self.web_img = video_server.server_dict
             # self.ctrl_q = video_server.ctrl_q
             self.o_msg_q = video_server.msg_q
+            self.o_img_q = video_server.img_q
             # video_server.local_path = uniconf.local_cfg.log_root
             self.vs = to_web
             # self.vs.start()
@@ -201,10 +202,18 @@ class PCC(Thread):
                 # print('wait to refresh', self.display_interval)
                 continue
             last_ts = time.time()
-            # self.o_msg_q.put(self.cache['misc'])
-            self.draw(self.cache, frame_cnt)  # render
-            # for key in self.cache['info']:
-            #     if self.cache['info'][key].get('integrity') == 'divided':
+            self.handle_keyboard()
+            if self.to_web:
+                self.o_msg_q.put(('misc', self.cache['misc']))
+            img_rendered = self.draw(self.cache, frame_cnt)  # render
+            if self.to_web:
+                # self.web_img['now_image'] = comb.copy()
+                if not self.o_img_q.full():
+                    self.o_img_q.put(img_rendered)
+            else:
+                cv2.imshow('MINIEYE-CVE', img_rendered)
+
+            self.save_rendered(img_rendered)
 
             while self.replay and self.pause:
                 self.draw(self.cache, frame_cnt)
@@ -212,6 +221,7 @@ class PCC(Thread):
                 time.sleep(0.1)
 
             self.clean_cache()
+
             if self.replay:
                 self.hub.pause(False)
                 if self.hub.d:
@@ -223,18 +233,6 @@ class PCC(Thread):
             if self.auto_rec:
                 self.auto_rec = False
                 self.start_rec()
-
-    # def cache_data(self, data):
-    #     if not data:
-    #         return
-    #     self.cache = data
-    #     if 'video_aux' in data:
-    #         # print(mess['video_aux'])
-    #         for video in data['video_aux']:
-    #             if len(video) > 0:
-    #                 self.video_cache[video['source']] = video
-    #                 self.video_cache[video['source']]['updated'] = True
-    #     return True
 
     def cache_data_common(self, d):
         if not d:
@@ -270,6 +268,7 @@ class PCC(Thread):
                     self.cache['img'] = data['img']
                     try:
                         self.cache['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
+                        # self.o_img_q.put(data['img'])
                     except Exception as e:
                         print('img decode error:', e)
                         return
@@ -297,7 +296,11 @@ class PCC(Thread):
         #     print(e)
         #     return
         try:
-            img = mess['img_raw'].copy()
+            if 'img_raw' in mess and mess['img_raw'].any():
+                img = mess['img_raw'].copy()
+            else:
+                mess['img_raw'] = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
+                img = mess['img_raw'].copy()
         except Exception as e:
             print(mess)
             raise e
@@ -379,31 +382,6 @@ class PCC(Thread):
                         continue
                     if not self.draw_can_data(img, mess['misc'][source][entity]):
                         print('draw misc data exited, source:', source)
-                    # if self.to_web and not self.o_msg_q.full():
-                    #     self.o_msg_q.put(mess['misc'][source][entity])
-                    # print(entity)
-                # if 'type' in d:
-                #     if d['type'] == 'rtk':
-                #         cache[d['source']] = d
-                #     else:
-                #         self.draw_can_data(img, d)
-                # else:
-                #     tt = 1
-
-        # for type in cache:
-        #     d = cache[type]
-        #     self.draw_can_data(img, d)
-
-        # if 'rtk' in mess and mess['rtk']:  # usb pcan rtk
-        #     for d in mess['rtk']:
-        #         # print('----------- rtk')
-        #         self.draw_rtk(img, d)
-        #         if self.set_pinpoint:
-        #             self.set_pinpoint = False
-        #             self.target = {'lat': d['lat'], 'lon': d['lon'], 'hgt': d['hgt'], 'rtkst': d['rtkst']}
-        #             self.hub.fileHandler.insert_raw((d['ts'], 'rtkpin', '{} {} {} {}'.format(
-        #                 d['rtkst'], d['lat'], d['lon'], d['hgt'])))
-        #             print('set pinpoint:', d)
 
         if not self.replay and self.hub.fileHandler.is_recording:
             self.player.show_recording(img, self.hub.fileHandler.start_time)
@@ -431,11 +409,13 @@ class PCC(Thread):
             padding = np.zeros((img.shape[0] - img_aux.shape[0], img_aux.shape[1], 3), np.uint8)
             comb = np.hstack((img, np.vstack((img_aux, padding))))
 
-        if self.to_web:
-            self.web_img['now_image'] = comb.copy()
-        else:
-            cv2.imshow('MINIEYE-CVE', comb)
+        self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
+        self.frame_drawn_cnt += 1
+        self.frame_cost_total += self.frame_cost
 
+        return comb
+
+    def save_rendered(self, img_rendered):
         if self.save_replay_video and self.replay:
             # print(comb.shape)
             if not self.vw:
@@ -444,18 +424,9 @@ class PCC(Thread):
                 else:
                     odir = os.path.dirname(self.rlog)
                 self.vw = VideoRecorder(odir, fps=20)
-                self.vw.set_writer("replay-render", comb.shape[1], comb.shape[0])
+                self.vw.set_writer("replay-render", img_rendered.shape[1], img_rendered.shape[0])
                 print('--------save replay video', odir)
-            self.vw.write(comb)
-
-        # if self.save_replay_video and self.replay:
-        #     self.vw.write(comb)
-            # print(comb.shape)
-
-        self.handle_keyboard()
-        self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
-        self.frame_drawn_cnt += 1
-        self.frame_cost_total += self.frame_cost
+            self.vw.write(img_rendered)
 
     def draw_rtk(self, img, data):
         self.player.show_drtk(img, data)
@@ -626,6 +597,9 @@ class PCC(Thread):
         # if data['source'] == 'rtk.2' and data['velN']**2 + data['velE']**2 + data['velD']**2 < 0.001:
         #     self.calib_esr()
 
+    def analyze_profile(self, img, data):
+        self.o_msg_q.put(('profiling', data))
+
     def draw_can_data(self, img, data):
         # print(data)
         if 'type' not in data:
@@ -684,20 +658,13 @@ class PCC(Thread):
             # self.pause = True
         elif data['type'] == 'warning':
             self.player.show_warning(img, data)
+        elif data['type'] == 'profiling':
+            self.analyze_profile(img, data)
         self.specific_handle(img, data)
         return True
 
     def handle_keyboard(self):
         key = cv2.waitKey(1) & 0xFF
-        # if self.to_web:
-        #     cmd = self.ctrl_q.get() if not self.ctrl_q.empty() else None
-        #     if cmd:
-        #         if cmd.get('cmd') == 'pause':
-        #             key = 32
-        #         elif cmd.get('cmd') == 'start':
-        #             pass
-        #         else:
-        #             key = ord(cmd['cmd'].lower())
         self.control(key)
 
     def control(self, key):

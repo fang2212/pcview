@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import struct
 import time
 # from multiprocessing import Process
@@ -17,10 +16,6 @@ from parsers.parser import parsers_dict
 from recorder.convert import *
 from tools import mytools
 
-# logging.basicConfig函数对日志的输出格式及方式做相关配置
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
-
 
 class Sink(Thread):
     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
@@ -33,9 +28,11 @@ class Sink(Thread):
         self.index = index
         self.cls = msg_type
         self.isheadless = isheadless
+        self.profile_intv = 1
         if 'can' in msg_type:
             self.cls = 'can'
             # print(self.type, 'start.')
+        self.source = 'general_dev.{}'.format(index)
 
     def _init_port(self):
         self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
@@ -53,7 +50,10 @@ class Sink(Thread):
         self.ss = None
 
     def run(self):
+        time0 = time.time()
         self._init_port()
+        pt_sum = 0
+        next_check = 0
         # if 'can' in self.type:
         #     print(self.type, 'start.')
         while True:
@@ -64,10 +64,15 @@ class Sink(Thread):
             t0 = time.time()
             r = self.pkg_handler(buf)
             dt = time.time() - t0
+            pt_sum += dt
             # print(self.dev, self.type, self.channel, 'dt: {:.5f}'.format(dt))
             if r is not None and not self.isheadless:
                 self.queue.put((r))
             # time.sleep(0.01)
+            if t0 > next_check:
+                profile_info = {'type': 'profiling', 'source': self.source, 'pt_sum': pt_sum, 'uptime': t0-time0, 'ts': t0}
+                self.queue.put((0, profile_info, self.source))
+                next_check = t0 + self.profile_intv
 
     def pkg_handler(self, msg_buf):
         pass
@@ -328,7 +333,7 @@ class CameraSink(Sink):
         # print(app1, frame_id_jfif)
         timestamp, = struct.unpack('<d', msg[8:16])
 
-        logging.debug('cam id {}'.format(frame_id))
+        # logging.debug('cam id {}'.format(frame_id))
         # print('frame id', frame_id)
 
         r = {'ts': timestamp, 'type': 'video', 'img': jpg, 'frame_id': frame_id, 'source': self.source, 'is_main': self.is_main, 'device': self.devname}
@@ -339,7 +344,6 @@ class CameraSink(Sink):
 
 
 class FlowSink(Sink):
-
     def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, isheadless=False, is_main=False):
         super(FlowSink, self).__init__(cam_queue, ip, port, channel, index, isheadless)
         self.last_fid = 0

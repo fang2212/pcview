@@ -1,123 +1,334 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>minieye cve</title>
-    <link rel="'stylesheet" href="/static/bootstrap-material-design.css">
-    <link rel="'stylesheet" href="/static/style.css">
-    <style type="text/css">
-        body {
-            background-color: #efefef;
+    <title>Flask-SocketIO Test</title>
+    <script src="/static/js/jquery-3.4.1.js"></script>
+    <script src="/static/js/socket.io.js"></script>
+    <script src="/static/js/popper.js" crossorigin="anonymous"></script>
+    <script src="/static/js/bootstrap-material-design.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap-material-design.css">
+    <link rel="shortcut icon" type="image/png" href="/static/img/favicon.png" id="favicon">
+    <!--    <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>-->
+    <!--    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>-->
+    <script type="text/javascript" charset="utf-8">
+        var profile_data = {};
+        $(document).ready(function () {
+            var current_tab = "tab-item1";
+            var pp_delay = 0;
+
+            $(".tab-item").hide();
+            $("#tab-item1").show();
+            $("#tabs").on("click", "a", function (event) {
+                let target = $(event.target);
+                $(".tab-item").hide();
+                $(".tab").removeClass("active");
+                //添加css样式
+                target.addClass("active");
+                current_tab = target.attr("tab");
+                //取自定义字段里面的值(即a标签里面的tab字段)
+                //tab字段里面存的是各个标签页的id, 以此来控制显示和隐藏
+                $("#" + target.attr("tab")).show();
+                if (target.attr("tab") === "tab-item7") {
+                    req_recorded_data();
+                }
+            });
+            // Use a "/test" namespace.
+            // An application can open a connection on multiple namespaces, and
+            // Socket.IO will multiplex all those connections on a single
+            // physical channel. If you don't care about multiple channels, you
+            // can set the namespace to an empty string.
+            namespace = '/test';
+
+            // Connect to the Socket.IO server.
+            // The connection URL has the following format, relative to the current page:
+            //     http[s]://<domain>:<port>[/<namespace>]
+            var socket = io(namespace);
+
+            // Event handler for new connections.
+            // The callback function is invoked when a connection with the
+            // server is established.
+            socket.on('connect', function () {
+                socket.emit('my_event', {data: 'I\'m connected!'});
+            });
+
+            // Event handler for server sent data.
+            // The callback function is invoked whenever the server emits data
+            // to the client. The data is then displayed in the "Received"
+            // section of the page.
+            socket.on('my_response', function (msg, cb) {
+                $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data).html());
+                if (cb)
+                    cb();
+            });
+
+            // Interval function that tests message latency by sending a "ping"
+            // message. The server then responds with a "pong" message and the
+            // round trip time is measured.
+            var ping_pong_times = [];
+            var start_time;
+            window.setInterval(function () {
+                start_time = (new Date).getTime();
+                socket.emit('my_ping');
+            }, 1000);
+
+            // Handler for the "pong" message. When the pong is received, the
+            // time from the ping is stored, and the average of the last 30
+            // samples is average and displayed.
+            socket.on('my_pong', function () {
+                var latency = (new Date).getTime() - start_time;
+                ping_pong_times.push(latency);
+                ping_pong_times = ping_pong_times.slice(-30); // keep last 30 samples
+                var sum = 0;
+                for (var i = 0; i < ping_pong_times.length; i++)
+                    sum += ping_pong_times[i];
+                pp_delay = Math.round(10 * sum / ping_pong_times.length) / 10;
+                if (current_tab === "tab-item4") {
+                    $('#ping-pong').text(pp_delay);
+                    // console.log(pp_delay)
+                }
+
+
+            });
+
+            socket.on('profiling', function (msg, cb) {
+            let data = msg.data;
+            profile_data[data['source']] = {'duty': data['pt_sum'] / data['uptime']};
+
+            let content = document.getElementById("profile-statistics");
+            content.innerHTML = "";
+
+            for (let p in profile_data) {
+
+                let newLine = document.createElement("tr");
+                newLine.innerHTML =
+                    "      <th scope=\"row\">" + p + "</th>\n" +
+                    "      <td>" + profile_data[p]['duty'] + "</td>\n";
+
+                content.appendChild(newLine);
+            }
+        });
+
+            socket.on('img', function (msg, cb) {
+                // console.log('received img ' + msg.data.length)
+                // var blob = new Blob([msg.data], {"type": "image\/png"});
+                // var src = window.URL.createObjectURL(blob);
+                // let img = document.getElementById('video_feed');
+                // img.src = src;
+                // img.onload = function () {
+                //     window.URL.revokeObjectURL(src);
+                // };
+
+            });
+
+            socket.on('devices', function (msg, cb) {
+                // testJson()
+                let logtxt = document.getElementById('log_text');
+                let content = document.getElementById("devices-pool");
+
+                let data = msg.data;
+                // delCards(content);
+                // content.remove()
+                // let tags = content.getElementsByClassName('card')
+
+                // for (var i = 0; i < tags.length; i++) {
+                //     content.removeChild(tags[i]);
+                //     logtxt.append("remove tag" + i + '\n');
+                // }
+                content.innerHTML = "";
+
+                for (let ip in data) {
+                    // for (let i=0; i<5; i++) {
+                    let dev = data[ip]
+                    let idx = dev['idx'];
+                    let type = dev['type'];
+                    // let idx = i;
+                    let mac = dev["mac"];
+                    // let mac = 'aa:bb:cc:dd:ee:ff';
+                    let is_main = dev['is_main'];
+
+                    // logtxt.append("found ip " + mac + ' idx: ' + idx + '\n');
+                    let newCard = document.createElement("view");
+                    newCard.className = "card";
+                    // newCard.style = "max-width: 33%";
+                    newCard.id = "dev_" + idx;
+                    // newCard.style.maxWidth = "33%";
+                    newCard.style.minHeight = '280px'
+                    newCard.style.width = "400px";
+                    newCard.style.marginLeft = "30px";
+                    newCard.style.marginTop = "20px";
+                    let common_info =
+                        '<div>\n' +
+                        '    <h5 class="card-title" style="display: inline-block;">Device ' + idx + '  ' + '</h5>\n' +
+                        '    <h6 class="card-subtitle text-muted" style="display: inline-block;float:right">' + type + '</h6>\n' +
+                        '</div>\n' +
+                        '<div>\n' +
+                        '    <h6 class="card-subtitle mb-2 text-muted">MAC:' + mac + '</h6>\n' +
+                        '    <h6 class="card-subtitle mb-2 text-muted">IP:' + ip + '</h6>\n' +
+                        '    <h6 class="card-subtitle mb-2 text-muted">is_main:' + is_main + '</h6>\n' +
+                        '</div>';
+                    let links =
+                        '<div style="position: absolute; bottom: 12px">\n' +
+                        '    <a href="#" class="card-link"> 编辑config</a>\n' +
+                        '    <a href="#" class="card-link">删除设备</a>\n' +
+                        '    <a href="#" class="card-link">添加到曲线</a>\n' +
+                        '</div>\n';
+                    let ports = '<div>\n'
+                    for (let port in dev['ports']) {
+                        ports +=
+                            '<li>' + port + ': ' + '<b>' + dev['ports'][port]['topic'] + '</b>' + ' on ' + dev['ports'][port]['port'] + '</li>\n';
+                    }
+                    ports += '</div>\n';
+                    newCard.innerHTML =
+
+                        '<div class="card-body" style="position: relative">\n' +
+                        common_info +
+                        ports +
+                        links +
+                        '</div>\n';
+
+
+                    content.appendChild(newCard)
+                }
+                logtxt.scrollTop = logtxt.scrollHeight;
+            });
+
+            socket.on('recorded', function (msg, cb) {
+                let logtxt = document.getElementById('log_text');
+                let content = document.getElementById("records");
+                let log_path = document.getElementById("log_path");
+                // log_path.innerHTML = "<a>"+msg.path+"</a>\n";
+                let data = msg.data;
+
+                content.innerHTML = "";
+                for (let record in data) {
+                    // logtxt.append(data[record]['name'] + '\n');
+
+
+                    let newLine = document.createElement("tr")
+                    newLine.innerHTML =
+                        "      <th scope=\"row\">" + data[record]['name'] + "</th>\n" +
+                        "      <td>" + data[record]['log_size'] + "</td>\n" +
+                        "      <td>" + data[record]['mtime'] + "</td>\n" +
+                        "      <td class=\"text-info\">None</td>\n" +
+                        "      <td>yes</td>\n" +
+                        "      <td>\n" +
+                        "        <div class=\"btn-group-raised btn-group-toggle\">\n" +
+                        "          <a href=\"/download/" + data[record]['name'] + "\" class=\"btn btn-primary\">Download</a>\n" +
+                        "          <a href=\"/action/replay/" + data[record]['name'] + "\" class=\"btn btn-primary\">Replay</a>\n" +
+                        "          <a onclick=\"del_confirm(" + data[record]['name'] + ")\" class=\"btn btn-primary\">Delete</a>\n" +
+                        "        </div>\n" +
+                        "      </td>\n"
+
+                    content.appendChild(newLine)
+                }
+                logtxt.scrollTop = logtxt.scrollHeight;
+                // logtxt.append('received record list.\n')
+
+
+            });
+
+            // Handlers for the different forms in the page.
+            // These accept data from the user and send it to the server in a
+            // variety of ways
+            $('form#emit').submit(function (event) {
+                socket.emit('my_event', {data: $('#emit_data').val()});
+                return false;
+            });
+            $('form#broadcast').submit(function (event) {
+                socket.emit('my_broadcast_event', {data: $('#broadcast_data').val()});
+                return false;
+            });
+            $('form#join').submit(function (event) {
+                socket.emit('join', {room: $('#join_room').val()});
+                return false;
+            });
+            $('form#leave').submit(function (event) {
+                socket.emit('leave', {room: $('#leave_room').val()});
+                return false;
+            });
+            $('form#send_room').submit(function (event) {
+                socket.emit('my_room_event', {room: $('#room_name').val(), data: $('#room_data').val()});
+                return false;
+            });
+            $('form#close').submit(function (event) {
+                socket.emit('close_room', {room: $('#close_room').val()});
+                return false;
+            });
+            $('form#disconnect').submit(function (event) {
+                socket.emit('disconnect_request');
+                return false;
+            });
+        });
+
+        function req_recorded_data() {
+            $.post("/require/records", "", function () {
+            });
         }
 
-        #TabMain {
-            width: 100%;
-            height: 1080px;
-            margin: 0 auto;
-            margin-top: 2px;
+        function del_confirm(name) {
+            var r = confirm("confirm deletion?")
+            if (r == true) {
+                $.post("/action/delete/" + name, "", function (data) {
+                });
+                // req_recorded_data();
+            }
         }
 
-        .tabItemContainer {
-            width: 80px;
-            height: 1080px;
-            float: left;
-        }
+        $(document).keyup(function (event) {
+            //判断回车键的code
+            // alert(event.keyCode)
+            keypress(event.keyCode)
+            if (event.keyCode == 13) {
+                //如果确定点击了回车键，那么就调用方法
+                // sign_in();
+                //模拟点击按钮
+                // $('#sign_in_button').click();
+            }
 
-        .tabBodyContainer {
-            width: 1800px;
-            height: 1080px;
-            float: left;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            -webkit-border-radius: 0 5px 5px 0;
-            -moz-border-radius: 0 5px 5px 0;
-            border-radius: 0 5px 5px 0;
-            margin-left: 1px;
-        }
+        });
 
-        .tabItemContainer > li {
-            list-style: none;
-            text-align: center;
-        }
-
-        .tabItemContainer > li > a {
-            float: left;
-            width: 100%;
-            padding: 30px 0 30px 0;
-            font: 16px "微软雅黑", Arial, Helvetica, sans-serif;
-            color: #808080;
-            cursor: pointer;
-            text-decoration: none;
-            border: 1px solid transparent;
-        }
-
-        .tabItemCurrent {
-            background-color: #fff;
-            border: 1px solid #ccc !important;
-            border-right: 1px solid #fff !important;
-            position: relative;
-            -webkit-border-radius: 5px 0 0 5px;
-            -moz-border-radius: 5px 0 0 5px;
-            border-radius: 5px 0 0 5px;
-        }
-
-        .tabItemContainer > li > a:hover {
-            color: #333;
-        }
-
-        .tabBodyItem {
-            position: absolute;
-            width: 100%;
-            height: 1080px;
-            display: none;
-        }
-
-        .tabBodyItem > p {
-            font: 13px "微软雅黑", Arial, Helvetica, sans-serif;
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .tabBodyItem > p > a {
-            text-decoration: none;
-            color: #0F3;
-        }
-
-        .tabBodyCurrent {
-            display: block;
-        }
-    </style>
+    </script>
 </head>
 <body>
-<div id="TabMain">
-    <div class="tabItemContainer">
-        <li><a class="tabItemCurrent">PCC</a></li>
-        <li><a>Curves</a></li>
-        <li><a>Status</a></li>
-        <li><a>Setting</a></li>
-        <li><a>Logs</a></li>
-        <li><a>Devices</a></li>
-    </div>
-    <div class="tabBodyContainer">
+<div class="row">
+    <div id="tabs" class="list-group col-md-4 col-xs-4" style="max-width: 100px; margin-left: 18px">
+        <!--tab里面的值应与下面标签页的id一致-->
+        <a tab="tab-item1" href="#" class="tab list-group-item active">Viz</a>
+        <a tab="tab-item2" href="#" class="tab list-group-item">Devices</a>
+        <a tab="tab-item3" href="#" class="tab list-group-item">Configs</a>
+        <a tab="tab-item4" href="#" class="tab list-group-item">Status</a>
+        <a tab="tab-item5" href="#" class="tab list-group-item">Settings</a>
+        <a tab="tab-item6" href="#" class="tab list-group-item">Logs</a>
+        <a tab="tab-item7" href="#" class="tab list-group-item">Data</a>
 
-        <div class="tabBodyItem tabBodyCurrent">
+    </div>
+    <div class="col-md-10 col-xs-4">
+        <!--id与上面标签里面的tab一致-->
+        <div id="tab-item1" class="tab-item">
+
             <div>
+<!--                <img id="video_feed">-->
                 <img src="{{ url_for('video_feed') }}">
             </div>
-            <div id="control">
-                <view class="bt1">
+
+            <div id="control" , style="position:fixed; bottom:0; opacity: 0.5">
+                <view>
                     <input type="button" id="refresh" value="refresh" onclick="refresh()"
                            style=" width:300px; height:80px;  margin-left:auto; margin-right:auto; color:#ffffff; background:#1abc9c;"/>
                 </view>
-                <view class="bt2">
+                <view>
+                    <input type="button" id="collect" value="Restart PCC" onclick="back_to_collector()"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
+                </view>
+                <view>
                     <input type="button" id="pause" value="pause" onclick="pause()"
                            style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
                 </view>
-                <view class="bt3">
+                <view>
                     <input type="button" id="bt3" value="Record/Stop" onclick="keypressd('r')"
                            style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
                 </view>
-                <view class="bt4">
+                <view>
                     <input type="button" id="bt4" value="Pinpoint" onclick="keypressd('p')"
                            style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
                 </view>
@@ -126,6 +337,11 @@
             <script type="text/javascript">
                 function refresh() {
                     window.location.reload();
+                }
+
+                function back_to_collector() {
+                    $.post("/control/reset", "", function (data) {
+                    });
                 }
 
                 function pause() {
@@ -151,164 +367,92 @@
 
 
             </script>
+        </div>
+        <div id="tab-item2" class="tab-item">
+            <h5 style="margin-left: 30px; margin-top: 20px">Devices found:</h5>
+            <div id="devices-pool" style="display: flex; flex-wrap: wrap;"></div>
+        </div>
+        <div id="tab-item3" class="tab-item">
+            <h5 style="margin-left: 30px; margin-top: 20px">Profiling:</h5>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">sink name</th>
+                    <th scope="col">duty</th>
+                </tr>
+                </thead>
+                <tbody id="profile-statistics">
 
+                </tbody>
+            </table>
         </div>
-        <div class="tabBodyItem">
-            <p>display the realtime curves</p>
-            <p></p>
-        </div>
-        <div class="tabBodyItem">
-            <p>status</p>
-            <p></p>
-            <h2>Receive:</h2>
+        <div id="tab-item4" class="tab-item">
+            <h1>websocket test</h1>
+            <p>Async mode is: <b>{{ async_mode }}</b></p>
+            <p>Average ping/pong latency: <b><span id="ping-pong"></span>ms</b></p>
+            <h2>Send:</h2>
+            <form id="emit" method="POST" action='#'>
+                <input type="text" name="emit_data" id="emit_data" placeholder="Message">
+                <input type="submit" value="Echo">
+            </form>
+            <form id="broadcast" method="POST" action='#'>
+                <input type="text" name="broadcast_data" id="broadcast_data" placeholder="Message">
+                <input type="submit" value="Broadcast">
+            </form>
+            <form id="join" method="POST" action='#'>
+                <input type="text" name="join_room" id="join_room" placeholder="Room Name">
+                <input type="submit" value="Join Room">
+            </form>
+            <form id="leave" method="POST" action='#'>
+                <input type="text" name="leave_room" id="leave_room" placeholder="Room Name">
+                <input type="submit" value="Leave Room">
+            </form>
+            <form id="send_room" method="POST" action='#'>
+                <input type="text" name="room_name" id="room_name" placeholder="Room Name">
+                <input type="text" name="room_data" id="room_data" placeholder="Message">
+                <input type="submit" value="Send to Room">
+            </form>
+            <form id="close" method="POST" action="#">
+                <input type="text" name="close_room" id="close_room" placeholder="Room Name">
+                <input type="submit" value="Close Room">
+            </form>
+            <form id="disconnect" method="POST" action="#">
+                <input type="submit" value="Disconnect">
+            </form>
             <div id="log"></div>
+        </div>
+        <div id="tab-item5" class="tab-item">
+            tab5
+        </div>
+        <div id="tab-item6" class="tab-item">
+            <h2>Receive:</h2>
+            <div id="log1"></div>
             <textarea id='log_text' style="width: 600px; height: 500px"> </textarea>
         </div>
-        <div class="tabBodyItem">
-            <p>settings</p>
-            <p></p>
+        <div id="tab-item7" class="tab-item">
+            <h2>Recorded data:</h2>
+            <div id="'log_path"></div>
+            <div id="logged">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">name</th>
+                        <th scope="col">log size</th>
+                        <th scope="col">modify time</th>
+                        <th scope="col">info</th>
+                        <th scope="col">data valid</th>
+                        <th scope="col">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="records">
+
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="tabBodyItem">
-            <p>PCC logs</p>
-            <p></p>
-        </div>
-        <div class="tabBodyItem" id="device_tab">
-            <p>Devices</p>
-            <p></p>
-        </div>
+
     </div>
-    <script src="/static/jquery.min.js">
-    </script>
-    <script src="/static/socket.io.js">
-    </script>
-    <script src="/static/bootstrap-material-design.js"></script>
-
-
 </div>
-<script type="text/javascript">
-
-    $(document).ready(function () {
-        SidebarTabHandler.Init();
-        namespace = '/test';
-        var socket = io(namespace);
-
-        socket.on('connect', function () {
-            socket.emit('my_event', {data: 'I\'m connected!'});
-        });
-
-        socket.on('misc', function (msg, cb) {
-            var datatype = msg.data.type
-            var logtxt = document.getElementById('log_text')
-            // $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data.type).html());
-            // logtxt.append(msg.type + ': ' + msg.data.type + ' ' + msg.data.source + '\n')
-            // var max_len = 500
-            // if (logtxt.value.length > max_len){
-            //     logtxt.value = logtxt.value.substring(logtxt.value.length-max_len, logtxt.value.length)
-            // }
-            // if (logtxt.value.length > 500) {
-            //     logtxt.pop('\n')
-            // }
-            logtxt.append("received msg" + '\n')
-            for (let source in msg.data) {
-                // var src = source.toString()
-                // logtxt.append(msg.data[source] + '\n')
-                // var
-                // let data = msg.data.source
-                // for (let entity in msg.data[source]){
-                // logtxt.append(entity + '\n')
-                // let data = msg.data[source][entity]
-                // logtxt.append(data['ts']+ ': ' + data.type + ' ' + entity + '\n')
-                // }
-                // if (source.indexOf("ars") > -1 ) {
-                //     logtxt.append(msg.source.type + ': ' + msg.source.id + ' ' + msg.data.source + '\n')
-                // }
-            }
-
-            logtxt.scrollTop = logtxt.scrollHeight;
-            if (cb)
-                cb();
-        });
-
-        socket.on('img', function (msg, cb) {
-
-        });
-
-        socket.on('devices', function (msg, cb) {
-            // testJson()
-            let logtxt = document.getElementById('log_text');
-            let content = document.getElementById("device_tab");
-            let data = msg.data;
-            // delCards(content);
-            // content.remove()
-            let tags = content.getElementsByClassName('card')
-            for (var i = 0; i < tags.length; i++) {
-                content.removeChild(tags[i]);
-            }
-            for (let ip in data) {
-                let idx = data[ip]['idx'];
-                let mac = data[ip]["mac"];
-                logtxt.append("found ip " + mac + ' idx: ' + idx + '\n');
-                let newCard = document.createElement("div");
-                newCard.className = "card";
-                // newCard.style = "max-width: 33%";
-                newCard.id = "dev_" + idx;
-                newCard.style.maxWidth = "33%";
-                newCard.style.width = "400px";
-                newCard.style.marginLeft = "30px";
-                newCard.innerHTML = '<div class="card-body">\n' +
-                    '                    <h5 class="card-title">Device:' + idx + 'mac:' + mac+'</h5>\n' +
-                    '                    <h6 class="card-subtitle mb-2 text-muted">未执行分析</h6>\n' +
-                    '                    <a href="analysis/pcc" class="card-link">查看图表</a>\n' +
-                    '                    <a href="/task/20200428120303-SIM-AEB-1242fakeman-test/result/pcc_data/can_merge.log" class="card-link">查看分析log</a>\n' +
-                    '                        <a href="analysis/pcc/run" class="card-link">重做分析</a>\n' +
-                    '                </div>\n' +
-                    '            </div>';
-                content.appendChild(newCard)
-            }
-            logtxt.scrollTop = logtxt.scrollHeight;
-        });
-    });
-    var SidebarTabHandler = {
-        Init: function () {
-            $(".tabItemContainer>li").click(function () {
-                $(".tabItemContainer>li>a").removeClass("tabItemCurrent");
-                $(".tabBodyItem").removeClass("tabBodyCurrent");
-                $(this).find("a").addClass("tabItemCurrent");
-                $($(".tabBodyItem")[$(this).index()]).addClass("tabBodyCurrent");
-            });
-        }
-    };
-
-    function checkMaxInput(txt) {
-        if (txt.value.length > 666)
-            txt.value = txt.value.substring(0, 666);
-    }
-
-    function testJson(json) {
-        let logtxt = document.getElementById('log_text');
-        var packJson = [
-            {"name": "nikita", "password": "1111"},
-            {"name": "tony", "password": "2222"}
-
-        ];
-
-        for (var p in packJson) {
-
-            logtxt.append(packJson[p].name + " " + packJson[p].password + '\n');
-
-        }
-    }
-
-    function delCards(parentElement) {
-        let tags = parentElement.getElementsByTagName('div')
-        for (let i = 0; i < tags.length; i++) {
-            parentElement.removeChild(tags[i]);
-        }
-    }
-
-
-</script>
-
 
 </body>
 </html>

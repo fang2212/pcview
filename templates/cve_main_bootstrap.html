@@ -6,20 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-    <!--    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>-->
-    <script src="/static/jquery-3.4.1.js"></script>
-    <!--    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">-->
-
-    <!--    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
-    <script src="/static/socket.io.js"></script>
-    <!--    <link rel="'stylesheet" href="/static/bootstrap-material-design.css">-->
-    <!--    <script src="/static/bootstrap-material-design.js"></script>-->
-    <link rel="stylesheet"
-          href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
-          integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
-    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"
-            integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
-            crossorigin="anonymous"></script>
+    <script src="/static/js/jquery-3.4.1.js"></script>
+    <script src="/static/js/socket.io.js"></script>
+    <script src="/static/js/popper.js" crossorigin="anonymous"></script>
+    <script src="/static/js/bootstrap-material-design.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap-material-design.css">
+    <link rel="shortcut icon" type="image/png" href="/static/img/favicon.png" id="favicon">
+    <!--        <script src="/static/popper.js" ></script>-->
+    <!--        <script src="/static/bootstrap-material-design.js" ></script>-->
+    <!--    <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"-->
+    <!--            integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"-->
+    <!--            crossorigin="anonymous"></script>-->
+    <!--    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"-->
+    <!--            integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"-->
+    <!--            crossorigin="anonymous"></script>-->
+    <!--    <script>$(document).ready(function () {-->
+    <!--        $('body').bootstrapMaterialDesign();-->
+    <!--    });</script>-->
     <title>Minieye CVE</title>
 </head>
 
@@ -42,7 +45,7 @@
             <div>
                 <img src="{{ url_for('video_feed') }}">
             </div>
-            <div id="control", style="position:fixed; bottom:0; opacity: 0.5">
+            <div id="control" , style="position:fixed; bottom:0; opacity: 0.5">
                 <view>
                     <input type="button" id="refresh" value="refresh" onclick="refresh()"
                            style=" width:300px; height:80px;  margin-left:auto; margin-right:auto; color:#ffffff; background:#1abc9c;"/>
@@ -104,7 +107,19 @@
             <div id="devices-pool" style="display: flex; flex-wrap: wrap;"></div>
         </div>
         <div id="tab-item3" class="tab-item">
-            tab2
+            <p>Average ping/pong latency: <b><span id="ping-pong"></span>ms</b></p>
+            <h5 style="margin-left: 30px; margin-top: 20px">Profiling:</h5>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">sink name</th>
+                    <th scope="col">duty</th>
+                </tr>
+                </thead>
+                <tbody id="profile-statistics">
+
+                </tbody>
+            </table>
         </div>
         <div id="tab-item4" class="tab-item">
             tab4
@@ -143,12 +158,14 @@
 </div>
 
 <script>
-    //事件委托给父级div来处理
-    // $(document).ready(function () {
-    //     $(".tab-item").hide();
-    //     $("#tab-item1").show();
-    // });
+
+    var profile_data = {};
+    var current_tab = "tab-item1";
+
     $(document).ready(function () {
+
+        // $('body').bootstrapMaterialDesign();
+
         $(".tab-item").hide();
         $("#tab-item1").show();
         $("#tabs").on("click", "a", function (event) {
@@ -157,10 +174,11 @@
             $(".tab").removeClass("active");
             //添加css样式
             target.addClass("active");
+            current_tab = target.attr("tab");
             //取自定义字段里面的值(即a标签里面的tab字段)
             //tab字段里面存的是各个标签页的id, 以此来控制显示和隐藏
             $("#" + target.attr("tab")).show();
-            if (target.attr("tab") === "tab-item7"){
+            if (target.attr("tab") === "tab-item7") {
                 req_recorded_data();
             }
         });
@@ -172,8 +190,31 @@
             socket.emit('my_event', {data: 'I\'m connected!'});
         });
 
+        // Interval function that tests message latency by sending a "ping"
+        // message. The server then responds with a "pong" message and the
+        // round trip time is measured.
+        var ping_pong_times = [];
+        var start_time;
+        window.setInterval(function () {
+            start_time = (new Date).getTime();
+            socket.emit('my_ping');
+        }, 1000);
+
+        // Handler for the "pong" message. When the pong is received, the
+        // time from the ping is stored, and the average of the last 30
+        // samples is average and displayed.
+        socket.on('my_pong', function () {
+            var latency = (new Date).getTime() - start_time;
+            ping_pong_times.push(latency);
+            ping_pong_times = ping_pong_times.slice(-30); // keep last 30 samples
+            var sum = 0;
+            for (var i = 0; i < ping_pong_times.length; i++)
+                sum += ping_pong_times[i];
+            $('#ping-pong').text(Math.round(10 * sum / ping_pong_times.length) / 10);
+        });
+
         socket.on('misc', function (msg, cb) {
-            var datatype = msg.data.type
+            var datatype = msg.data.type;
             var logtxt = document.getElementById('log_text')
             // $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data.type).html());
             // logtxt.append(msg.type + ': ' + msg.data.type + ' ' + msg.data.source + '\n')
@@ -209,6 +250,24 @@
 
         });
 
+        socket.on('profiling', function (msg, cb) {
+            let data = msg.data;
+            profile_data[data['source']] = {'duty': data['pt_sum'] / data['uptime']};
+
+            let content = document.getElementById("profile-statistics");
+            content.innerHTML = "";
+
+            for (let p in profile_data) {
+
+                let newLine = document.createElement("tr");
+                newLine.innerHTML =
+                    "      <th scope=\"row\">" + p + "</th>\n" +
+                    "      <td>" + profile_data[p]['duty'] + "</td>\n";
+
+                content.appendChild(newLine);
+            }
+        });
+
         socket.on('devices', function (msg, cb) {
             // testJson()
             let logtxt = document.getElementById('log_text');
@@ -223,7 +282,7 @@
             //     content.removeChild(tags[i]);
             //     logtxt.append("remove tag" + i + '\n');
             // }
-            content.innerHTML = ""
+            content.innerHTML = "";
 
             for (let ip in data) {
                 // for (let i=0; i<5; i++) {
@@ -264,7 +323,7 @@
                 let ports = '<div>\n'
                 for (let port in dev['ports']) {
                     ports +=
-                        '<li>' + port + ': ' + '<b>'+ dev['ports'][port]['topic']+'</b>' + ' on ' + dev['ports'][port]['port'] + '</li>\n';
+                        '<li>' + port + ': ' + '<b>' + dev['ports'][port]['topic'] + '</b>' + ' on ' + dev['ports'][port]['port'] + '</li>\n';
                 }
                 ports += '</div>\n';
                 newCard.innerHTML =
@@ -295,16 +354,16 @@
 
                 let newLine = document.createElement("tr")
                 newLine.innerHTML =
-                    "      <th scope=\"row\">"+data[record]['name']+"</th>\n" +
-                    "      <td>"+ data[record]['log_size'] +"</td>\n" +
-                    "      <td>"+data[record]['mtime']+"</td>\n" +
+                    "      <th scope=\"row\">" + data[record]['name'] + "</th>\n" +
+                    "      <td>" + data[record]['log_size'] + "</td>\n" +
+                    "      <td>" + data[record]['mtime'] + "</td>\n" +
                     "      <td class=\"text-info\">None</td>\n" +
                     "      <td>yes</td>\n" +
                     "      <td>\n" +
                     "        <div class=\"btn-group-raised btn-group-toggle\">\n" +
-                    "          <a href=\"/download/"+data[record]['name']+"\" class=\"btn btn-primary\">Download</a>\n" +
-                    "          <a href=\"/action/replay/"+data[record]['name']+"\" class=\"btn btn-primary\">Replay</a>\n" +
-                    "          <a onclick=\"del_confirm("+data[record]['name']+")\" class=\"btn btn-primary\">Delete</a>\n" +
+                    "          <a href=\"/download/" + data[record]['name'] + "\" class=\"btn btn-primary\">Download</a>\n" +
+                    "          <a href=\"/action/replay/" + data[record]['name'] + "\" class=\"btn btn-primary\">Replay</a>\n" +
+                    "          <a onclick=\"del_confirm(" + data[record]['name'] + ")\" class=\"btn btn-primary\">Delete</a>\n" +
                     "        </div>\n" +
                     "      </td>\n"
 
@@ -318,14 +377,15 @@
     });
 
     function req_recorded_data() {
-            $.post("/require/records", "", function () {});
-        }
+        $.post("/require/records", "", function () {
+        });
+    }
 
     function del_confirm(name) {
-        var r=confirm("confirm deletion?")
-        if (r==true){
-            $.post("/action/delete/"+name, "", function (data) {
-                    });
+        var r = confirm("confirm deletion?")
+        if (r == true) {
+            $.post("/action/delete/" + name, "", function (data) {
+            });
             // req_recorded_data();
         }
     }
@@ -346,6 +406,11 @@
 
 </script>
 
+
+<!--<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>-->
+<!--<script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>-->
+<!--<script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>-->
+<!--<script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>-->
 
 </body>
 

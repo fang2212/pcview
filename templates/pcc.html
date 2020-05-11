@@ -1,42 +1,326 @@
+<!DOCTYPE HTML>
 <html>
 <head>
-    <title>minieye cve</title>
-    <style type="text/css">
-        div, img {
-            width: 100%;
-        }
+    <title>Flask-SocketIO Test</title>
+    <script src="/static/jquery-3.4.1.js"></script>
+    <script src="/static/socket.io.js"></script>
+    <script src="/static/popper.js" crossorigin="anonymous"></script>
+    <script src="/static/bootstrap-material-design.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/bootstrap-material-design.css">
+    <link rel="shortcut icon" type="image/png" href="/static/img/favicon.png" id="favicon">
+    {#    <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>#}
+    {#    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>#}
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function () {
+            var current_tab = "tab-item1";
+            var pp_delay = 0;
 
-    </style>
-    <script src="static/jquery.min.js">
+            $(".tab-item").hide();
+            $("#tab-item1").show();
+            $("#tabs").on("click", "a", function (event) {
+                let target = $(event.target);
+                $(".tab-item").hide();
+                $(".tab").removeClass("active");
+                //添加css样式
+                target.addClass("active");
+                current_tab = target.attr("tab");
+                //取自定义字段里面的值(即a标签里面的tab字段)
+                //tab字段里面存的是各个标签页的id, 以此来控制显示和隐藏
+                $("#" + target.attr("tab")).show();
+                if (target.attr("tab") === "tab-item7") {
+                    {#req_recorded_data();#}
+                }
+            });
+            // Use a "/test" namespace.
+            // An application can open a connection on multiple namespaces, and
+            // Socket.IO will multiplex all those connections on a single
+            // physical channel. If you don't care about multiple channels, you
+            // can set the namespace to an empty string.
+            namespace = '/test';
+
+            // Connect to the Socket.IO server.
+            // The connection URL has the following format, relative to the current page:
+            //     http[s]://<domain>:<port>[/<namespace>]
+            var socket = io(namespace);
+
+            // Event handler for new connections.
+            // The callback function is invoked when a connection with the
+            // server is established.
+            socket.on('connect', function () {
+                socket.emit('my_event', {data: 'I\'m connected!'});
+            });
+
+            // Event handler for server sent data.
+            // The callback function is invoked whenever the server emits data
+            // to the client. The data is then displayed in the "Received"
+            // section of the page.
+            socket.on('my_response', function (msg, cb) {
+                $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data).html());
+                if (cb)
+                    cb();
+            });
+
+            // Interval function that tests message latency by sending a "ping"
+            // message. The server then responds with a "pong" message and the
+            // round trip time is measured.
+            var ping_pong_times = [];
+            var start_time;
+            window.setInterval(function () {
+                start_time = (new Date).getTime();
+                socket.emit('my_ping');
+            }, 1000);
+
+            // Handler for the "pong" message. When the pong is received, the
+            // time from the ping is stored, and the average of the last 30
+            // samples is average and displayed.
+            socket.on('my_pong', function () {
+                var latency = (new Date).getTime() - start_time;
+                ping_pong_times.push(latency);
+                ping_pong_times = ping_pong_times.slice(-30); // keep last 30 samples
+                var sum = 0;
+                for (var i = 0; i < ping_pong_times.length; i++)
+                    sum += ping_pong_times[i];
+                pp_delay = Math.round(10 * sum / ping_pong_times.length) / 10;
+                if (current_tab === "tab-item4"){
+                    $('#ping-pong').text(pp_delay);
+                    {#console.log(pp_delay)#}
+                }
+
+
+            });
+
+            socket.on('recorded', function (msg, cb) {
+            let logtxt = document.getElementById('log_text');
+            let content = document.getElementById("records");
+            let log_path = document.getElementById("log_path");
+            // log_path.innerHTML = "<a>"+msg.path+"</a>\n";
+            let data = msg.data;
+
+            content.innerHTML = "";
+            for (let record in data) {
+                // logtxt.append(data[record]['name'] + '\n');
+
+
+                let newLine = document.createElement("tr")
+                newLine.innerHTML =
+                    "      <th scope=\"row\">" + data[record]['name'] + "</th>\n" +
+                    "      <td>" + data[record]['log_size'] + "</td>\n" +
+                    "      <td>" + data[record]['mtime'] + "</td>\n" +
+                    "      <td class=\"text-info\">None</td>\n" +
+                    "      <td>yes</td>\n" +
+                    "      <td>\n" +
+                    "        <div class=\"btn-group-raised btn-group-toggle\">\n" +
+                    "          <a href=\"/download/" + data[record]['name'] + "\" class=\"btn btn-primary\">Download</a>\n" +
+                    "          <a href=\"/action/replay/" + data[record]['name'] + "\" class=\"btn btn-primary\">Replay</a>\n" +
+                    "          <a onclick=\"del_confirm(" + data[record]['name'] + ")\" class=\"btn btn-primary\">Delete</a>\n" +
+                    "        </div>\n" +
+                    "      </td>\n"
+
+                content.appendChild(newLine)
+            }
+            logtxt.scrollTop = logtxt.scrollHeight;
+            // logtxt.append('received record list.\n')
+
+
+        });
+
+            // Handlers for the different forms in the page.
+            // These accept data from the user and send it to the server in a
+            // variety of ways
+            $('form#emit').submit(function (event) {
+                socket.emit('my_event', {data: $('#emit_data').val()});
+                return false;
+            });
+            $('form#broadcast').submit(function (event) {
+                socket.emit('my_broadcast_event', {data: $('#broadcast_data').val()});
+                return false;
+            });
+            $('form#join').submit(function (event) {
+                socket.emit('join', {room: $('#join_room').val()});
+                return false;
+            });
+            $('form#leave').submit(function (event) {
+                socket.emit('leave', {room: $('#leave_room').val()});
+                return false;
+            });
+            $('form#send_room').submit(function (event) {
+                socket.emit('my_room_event', {room: $('#room_name').val(), data: $('#room_data').val()});
+                return false;
+            });
+            $('form#close').submit(function (event) {
+                socket.emit('close_room', {room: $('#close_room').val()});
+                return false;
+            });
+            $('form#disconnect').submit(function (event) {
+                socket.emit('disconnect_request');
+                return false;
+            });
+        });
+
     </script>
-
 </head>
-
 <body>
-<div>
-    <img src="{{ url_for('video_feed') }}">
-</div>
-<div id="control">
-<view class="bt1">
-    <input type="button"  id="start" value="start" onclick="start()"
-                   style=" width:300px; height:80px;  margin-left:auto; margin-right:auto; color:#f2f2f2; background:#385f9e;"/>
-</view>
-    <view class="bt2">
-    <input type="button"  id="pause" value="pause" onclick="pause()"
-                   style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
-</view>
+<div class="row">
+    <div id="tabs" class="list-group col-md-4 col-xs-4" style="max-width: 100px; margin-left: 18px">
+        <!--tab里面的值应与下面标签页的id一致-->
+        <a tab="tab-item1" href="#" class="tab list-group-item active">Viz</a>
+        <a tab="tab-item2" href="#" class="tab list-group-item">Devices</a>
+        <a tab="tab-item3" href="#" class="tab list-group-item">Configs</a>
+        <a tab="tab-item4" href="#" class="tab list-group-item">Status</a>
+        <a tab="tab-item5" href="#" class="tab list-group-item">Settings</a>
+        <a tab="tab-item6" href="#" class="tab list-group-item">Logs</a>
+        <a tab="tab-item7" href="#" class="tab list-group-item">Data</a>
+
+    </div>
+    <div class="col-md-10 col-xs-4">
+        <!--id与上面标签里面的tab一致-->
+        <div id="tab-item1" class="tab-item">
+            {#            <div>#}
+            {#                <img src="{{ url_for('video_feed') }}">#}
+            {#            </div>#}
+            <div id="control" , style="position:fixed; bottom:0; opacity: 0.5">
+                <view>
+                    <input type="button" id="refresh" value="refresh" onclick="refresh()"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto; color:#ffffff; background:#1abc9c;"/>
+                </view>
+                <view>
+                    <input type="button" id="collect" value="Restart PCC" onclick="back_to_collector()"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
+                </view>
+                <view>
+                    <input type="button" id="pause" value="pause" onclick="pause()"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
+                </view>
+                <view>
+                    <input type="button" id="bt3" value="Record/Stop" onclick="keypressd('r')"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
+                </view>
+                <view>
+                    <input type="button" id="bt4" value="Pinpoint" onclick="keypressd('p')"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
+                </view>
+
+            </div>
+            <script type="text/javascript">
+                function refresh() {
+                    window.location.reload();
+                }
+
+                function back_to_collector() {
+                    $.post("/control/reset", "", function (data) {
+                    });
+                }
+
+                function pause() {
+                    $.post("/control/pause", "data_to_backend", function (data) {
+                    });
+                }
+
+                function keypressd(key) {
+                    $.post("/control/" + key, "data_to_backend", function (data) {
+                    });
+                }
+
+                function keypress(keycode) {
+                    if (keycode === 32) {
+                        pause();
+                    } else {
+                        var realkey = String.fromCharCode(keycode)
+                        $.post("/control/" + realkey, "data_to_backend", function (data) {
+                        });
+                    }
+
+                }
 
 
+            </script>
+        </div>
+        <div id="tab-item2" class="tab-item">
+            <h5 style="margin-left: 30px; margin-top: 20px">Devices found:</h5>
+            <div id="devices-pool" style="display: flex; flex-wrap: wrap;"></div>
+        </div>
+        <div id="tab-item3" class="tab-item">
+            <h5 style="margin-left: 30px; margin-top: 20px">Profiling:</h5>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">sink name</th>
+                    <th scope="col">duty</th>
+                </tr>
+                </thead>
+                <tbody id="profile-statistics">
+
+                </tbody>
+            </table>
+        </div>
+        <div id="tab-item4" class="tab-item">
+            <h1>Flask-SocketIO Test</h1>
+            <p>Async mode is: <b>{{ async_mode }}</b></p>
+            <p>Average ping/pong latency: <b><span id="ping-pong"></span>ms</b></p>
+            <h2>Send:</h2>
+            <form id="emit" method="POST" action='#'>
+                <input type="text" name="emit_data" id="emit_data" placeholder="Message">
+                <input type="submit" value="Echo">
+            </form>
+            <form id="broadcast" method="POST" action='#'>
+                <input type="text" name="broadcast_data" id="broadcast_data" placeholder="Message">
+                <input type="submit" value="Broadcast">
+            </form>
+            <form id="join" method="POST" action='#'>
+                <input type="text" name="join_room" id="join_room" placeholder="Room Name">
+                <input type="submit" value="Join Room">
+            </form>
+            <form id="leave" method="POST" action='#'>
+                <input type="text" name="leave_room" id="leave_room" placeholder="Room Name">
+                <input type="submit" value="Leave Room">
+            </form>
+            <form id="send_room" method="POST" action='#'>
+                <input type="text" name="room_name" id="room_name" placeholder="Room Name">
+                <input type="text" name="room_data" id="room_data" placeholder="Message">
+                <input type="submit" value="Send to Room">
+            </form>
+            <form id="close" method="POST" action="#">
+                <input type="text" name="close_room" id="close_room" placeholder="Room Name">
+                <input type="submit" value="Close Room">
+            </form>
+            <form id="disconnect" method="POST" action="#">
+                <input type="submit" value="Disconnect">
+            </form>
+            <h2>Receive:</h2>
+            <div id="log"></div>
+        </div>
+        <div id="tab-item5" class="tab-item">
+            tab5
+        </div>
+        <div id="tab-item6" class="tab-item">
+            <h2>Receive:</h2>
+            <div id="log1"></div>
+            <textarea id='log_text' style="width: 600px; height: 500px"> </textarea>
+        </div>
+        <div id="tab-item7" class="tab-item">
+            <h2>Recorded data:</h2>
+            <div id="'log_path"></div>
+            <div id="logged">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">name</th>
+                        <th scope="col">log size</th>
+                        <th scope="col">modify time</th>
+                        <th scope="col">info</th>
+                        <th scope="col">data valid</th>
+                        <th scope="col">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="records">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
 </div>
+
 </body>
-<script type="text/javascript">
-    function start() {
-        $.post("/control/start", "data_to_backend", function (data) {});
-    }
-    function pause() {
-        $.post("/control/pause", "data_to_backend", function (data) {});
-    }
-</script>
 </html>
-
-

@@ -559,14 +559,17 @@ if __name__ == "__main__":
     if args.web:
         from video_server import PccServer
         server = PccServer()
-        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=server)
         server.start()
+        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=server)
         print(os.getpid())
+        replayer.start()
         pcc.start()
         while True:
             time.sleep(1)
     else:
         pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg)
+        replayer.start()
         pcc.start()
+
 
 
