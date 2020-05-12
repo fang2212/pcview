@@ -23,8 +23,10 @@ socketio = SocketIO(app, async_mode=async_mode)
 
 ctrl_q = Queue(maxsize=20)
 msg_q = Queue(maxsize=200)
-img_q = Queue(maxsize=20)
+img_q = Queue(maxsize=5)
 local_path = json.load(open('config/local.json'))['log_root']
+
+no_frame = open('static/img/no_video.png', 'rb').read()
 
 profile_data = {}
 def push_profile_dt(src, dt):
@@ -36,6 +38,15 @@ def push_profile_dt(src, dt):
     if time.time() > profile_data[src]['next_push']:
         msg_q.put(('misc', ))
 
+
+def log2web(msg):
+    if not isinstance(msg, str):
+        return
+    msg_q.put(('log', msg+'\n'))
+
+
+def send_delay(name, delay):
+    msg_q.put(('delay', {'name': name, 'delay': delay}))
 
 
 def msg_send_task():
@@ -109,42 +120,31 @@ def ws_send(topic, msg, cb=None):
         print(e)
 
 
+def bgr2img(ftype, img):
+    return cv2.imencode('.'+ftype, img)[1].tostring()
 
-def bgr2jpg(img):
-    return cv2.imencode('.jpg', img)[1].tostring()
-
-def bgr2bmp(img):
-    return cv2.imencode('.bmp', img)[1].tostring()
-
-def bgr2png(img):
-    return cv2.imencode('.png', img)[1].tostring()
-
-
+img_type = 'jpg'
 def get_image():
+    fscost = 0
     while True:
         try:
-            # now_image = server_dict['now_image']
-            # if not now_image:
-            #     frame = open('static/img/no_video.png', 'rb').read()
-            #     time.sleep(0.2)
-                # continue
-            # frame = bgr2jpg(now_image)
-            # frame = bgr2bmp(now_image)
-            # else:
-            # frame = bgr2png(now_image)
             if not img_q.empty():
-                frame = bgr2png(img_q.get())
+                t0 = time.time()
+                frame = bgr2img(img_type, img_q.get())
                 socketio.sleep(0)
+                dt = time.time() - t0
+                fscost = fscost*0.9 +dt*0.1
+                # log2web('frame send dt:{:.2f} q:{}'.format(dt*1000, img_q.qsize()))
+                send_delay('frame_send_cost', '{:.1f}'.format(fscost*1000))
             else:
-                frame = open('static/img/no_video.png', 'rb').read()
-                socketio.sleep(0.5)
-            # yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-            # yield (b'--frame\r\n' + b'Content-Type: image/bmp\r\n\r\n' + frame + b'\r\n')
-            yield (b'--frame\r\n' + b'Content-Type: image/png\r\n\r\n' + frame + b'\r\n')
+                # frame = no_frame
+                socketio.sleep(0.01)
+                continue
+            yield b'--frame\r\n' + 'Content-Type: image/{}\r\n\r\n'.format(img_type).encode() + frame + b'\r\n'
             # socketio.sleep(0)
         except Exception as e:
             print(e)
-            socketio.sleep(0.2)
+            socketio.sleep(0.1)
 
 
 @app.route('/')
@@ -179,6 +179,15 @@ def control_obj(cmd, item):
 def require(item):
     # print('-----------------------------------------------------------------------', os.getpid())
     if item == 'records':
+        send_records()
+
+    return 'ok', 200
+
+
+@app.route("/require/<dev_type>/<obj>/<item>", methods=['GET', 'POST'])
+def require_type_item(dev_type, obj, item):
+    # print('-----------------------------------------------------------------------', os.getpid())
+    if dev_type == 'records':
         send_records()
 
     return 'ok', 200

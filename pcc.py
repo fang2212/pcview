@@ -205,6 +205,7 @@ class PCC(Thread):
             self.handle_keyboard()
             if self.to_web:
                 self.o_msg_q.put(('misc', self.cache['misc']))
+                self.o_msg_q.put(('delay', {'name': 'frame_render_cost', 'delay': '{:.1f}'.format(self.frame_cost*1000)}))
             img_rendered = self.draw(self.cache, frame_cnt)  # render
             if self.to_web:
                 # self.web_img['now_image'] = comb.copy()
@@ -299,6 +300,7 @@ class PCC(Thread):
             if 'img_raw' in mess and mess['img_raw'].any():
                 img = mess['img_raw'].copy()
             else:
+                return
                 mess['img_raw'] = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
                 img = mess['img_raw'].copy()
         except Exception as e:
