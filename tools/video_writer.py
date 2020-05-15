@@ -222,6 +222,8 @@ class MJPEGWriter(object):
             self.fp.flush()
 
     def finish_video(self):
+        if not self.fp:
+            return
         self._end_chunk()  # movi
         self.write_index()
         cpos = self.fp.tell()
@@ -233,6 +235,9 @@ class MJPEGWriter(object):
         self._end_chunk()  # RIFF
         self.fp.flush()
         self.fp.close()
+
+    def release(self):
+        self.finish_video()
 
 
 if __name__ == "__main__":

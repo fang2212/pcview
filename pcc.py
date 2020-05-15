@@ -301,6 +301,7 @@ class PCC(Thread):
 
                 else:
                     self.cache['img'] = data['img']
+                    self.cache['img_raw'] = None
                     try:
                         pass
                         # self.cache['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
@@ -332,7 +333,7 @@ class PCC(Thread):
         #     print(e)
         #     return
         try:
-            if 'img_raw' in mess and mess['img_raw'].any():
+            if 'img_raw' in mess and mess['img_raw'] is not None:
                 img = mess['img_raw'].copy()
             else:
                 # return
