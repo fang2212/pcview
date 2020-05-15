@@ -8,8 +8,9 @@ from datetime import datetime
 from multiprocessing import Queue, Value
 from multiprocessing.dummy import Process as Thread
 from collections import deque
-
+from tools.video_writer import MJPEGWriter
 import cv2
+import numpy as np
 
 # from config.config import local_cfg, configs, install
 
@@ -22,6 +23,7 @@ class FileHandler(Thread):
         self.ctrl_queue = Queue()
         # self.image_queue = Queue()
         self.video_queue = Queue(maxsize=40)
+        self.jpg_queue = Queue(maxsize=50)
         self.raw_queue = Queue(maxsize=7000)
         self.pcv_queue = Queue(maxsize=5000)
 
@@ -140,6 +142,9 @@ class FileHandler(Thread):
                     while not self.video_queue.empty():
                         self.video_queue.get()
 
+                    while not self.jpg_queue.empty():
+                        self.jpg_queue.get()
+
                     while not self.raw_queue.empty():
                         self.raw_queue.get()
 
@@ -178,6 +183,45 @@ class FileHandler(Thread):
                     # fusion_fp.flush()
             t2 = time.time()
             # print('filehandler...', video_path, self.video_queue.qsize())
+            while self.uniconf.local_cfg.save.video and not self.jpg_queue.empty() and path:
+                res = self.jpg_queue.get()
+                ts = res['ts']
+                frame_id = res['frame_id']
+                data = res['jpg']
+                source = res['source']
+                if source not in video_streams:
+                    vpath = os.path.join(path, source)
+                    if not os.path.exists(vpath):
+                        os.mkdir(vpath)
+                    video_streams[source] = {'video_path': vpath, 'frame_cnt': 0, 'frame_reset': True,
+                                             'video_writer': None}
+
+                if video_streams[source]['frame_cnt'] % self._max_cnt == 0 or video_streams[source]['frame_reset']:
+                    video_streams[source]['frame_reset'] = False
+                    video_streams[source]['frame_cnt'] = 0
+                    vpath = os.path.join(video_streams[source]['video_path'], 'camera_{:08d}.avi'.format(frame_id))
+                    print("video start over.", video_streams[source]['frame_cnt'], vpath)
+                    img = cv2.imdecode(np.fromstring(data, np.uint8), cv2.IMREAD_COLOR)
+                    h, w, c = img.shape
+                    if video_streams[source]['video_writer']:
+                        # video_streams[source]['video_writer'].flush()
+                        video_streams[source]['video_writer'].finish_video()
+                    video_streams[source]['video_writer'] = MJPEGWriter(vpath, w, h, 20)
+                    video_streams[source]['video_writer'].write_header()
+                video_streams[source]['video_writer'].write_frame(data)
+                tv_s = int(ts)
+                tv_us = (ts - tv_s) * 1000000
+                kw = 'camera' if source == 'video' else source
+                log_line = "%.10d %.6d " % (tv_s, tv_us) + kw + ' ' + '{}'.format(frame_id) + "\n"
+                if raw_fp:
+                    raw_fp.write(log_line)
+                    raw_write += 1
+
+                if pcv_fp:
+                    pcv_fp.write(json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n")
+
+                video_streams[source]['frame_cnt'] += 1
+
             while self.uniconf.local_cfg.save.video and not self.video_queue.empty() and path:
                 res = self.video_queue.get()
                 ts = res['ts']
@@ -190,13 +234,7 @@ class FileHandler(Thread):
                         os.mkdir(vpath)
                     video_streams[source] = {'video_path': vpath, 'frame_cnt': 0, 'frame_reset': True,
                                              'video_writer': None}
-                # print(data.shape)
 
-                # video_path = video_streams[source]['video_path']
-                # frame_cnt = video_streams[source]['frame_cnt']
-                # frame_reset = video_streams[source]['frame_reset']
-                # video_writer = video_streams[source]['video_writer']
-                # print(source)
                 h, w, c = data.shape
                 # print(self.frame_cnt)
                 if video_streams[source]['frame_cnt'] % self._max_cnt == 0 or video_streams[source]['frame_reset']:
@@ -317,6 +355,10 @@ class FileHandler(Thread):
         # print('------------------')
         if self.uniconf.local_cfg.save.video and self.is_recording:
             self.video_queue.put(msg)
+
+    def insert_jpg(self, msg):
+        if self.uniconf.local_cfg.save.video and self.is_recording:
+            self.jpg_queue.put(msg)
 
     def insert_raw(self, msg):
         # print(self.is_recording, 'log recording----')

@@ -92,17 +92,19 @@
 
             socket.on('profiling', function (msg, cb) {
             let data = msg.data;
-            profile_data[data['source']] = {'duty': data['pt_sum'] / data['uptime']};
+            profile_data[data['source']] = {'duty': data['pt_sum'] / data['uptime'], 'pid': data['pid']};
+
 
             let content = document.getElementById("profile-statistics");
             content.innerHTML = "";
 
             for (let p in profile_data) {
-
+                console.log(p + ' ' + profile_data[p]['pid']);
                 let newLine = document.createElement("tr");
                 newLine.innerHTML =
                     "      <th scope=\"row\">" + p + "</th>\n" +
                     "      <td>" + profile_data[p]['duty'] + "</td>\n";
+                "      <td>" + profile_data[p]['pid'] + "</td>\n";
 
                 content.appendChild(newLine);
             }
@@ -390,6 +392,7 @@
                 <tr>
                     <th scope="col">sink name</th>
                     <th scope="col">duty</th>
+                    <th scope="col">pid</th>
                 </tr>
                 </thead>
                 <tbody id="profile-statistics">

@@ -81,6 +81,7 @@ class PCC(Thread):
         self.video_cache = {}
         self.cache = {}
         self.init_cache()
+        self.run_cost = 0.05
 
         # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
@@ -161,13 +162,24 @@ class PCC(Thread):
             print(e)
             pass
 
+    def adjust_interval(self):
+
+        # if self.display_interval * 0.7 < self.run_cost < self.display_interval * 1.1:
+        #     return
+        self.display_interval = max(self.display_interval, self.run_cost) + 0.005
+        if self.display_interval > 1.0:
+            self.display_interval = 1.0
+        elif self.display_interval < 0.02:
+            self.display_interval = 0.02
+        print('Adjusting refresh interval to', self.display_interval)
+
     def run(self):
         # self.hub.start()
         self.player.start_time = datetime.now()
         frame_cnt = 0
         data_cnt = 0
         last_ts = time.time()
-        print('entering pcc loop.')
+        print('entering pcc loop. pid', os.getpid())
 
         while not self.exit:
             if not self.hub.is_alive() and self.replay:
@@ -177,19 +189,17 @@ class PCC(Thread):
                 return
             t0 = time.time()
             # d = self.hub.pop_simple()  # receive
+
             d = self.hub.pop_common()
+            if not d:
+                continue
+            t1 = time.time()
             # print(d)
             # if d is None or not d.get('frame_id'):
             #     # time.sleep(0.01)
             #     continue
             # print('pcc frame cnt:', frame_cnt)
-            if not self.replay:
-                qsize = self.hub.fileHandler.raw_queue.qsize()
-                # print('raw queue size:', qsize)
-                if self.hub.fileHandler.is_recording and qsize > 2000:
-                    print('msg_q critical, skip drawing.', qsize)
-                    time.sleep(0.1)
-                    continue
+
             # print('pre draw')
             # if self.cache_data(d):
             if self.cache_data_common(d):
@@ -197,24 +207,42 @@ class PCC(Thread):
                 if frame_cnt > 500:
                     self.player.start_time = datetime.now()
                     frame_cnt = 1
+            # iqsize = self.hub.msg_queue.qsize()
+            # print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1 - t0) * 1000), d[2], len(d[1]))
+            # continue
+            t2 = time.time()
+            if not self.replay:
+                qsize = self.hub.fileHandler.raw_queue.qsize()
+                # print('raw queue size:', qsize)
+                if self.hub.fileHandler.is_recording and qsize > 2000:
+                    print('msg_q critical, skip drawing.', qsize)
+                    # time.sleep(0.1)
+                    continue
+                iqsize = self.hub.msg_queue.qsize()
+                if iqsize > 1000:
+                    print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1-t0)*1000), d[2], sys.getsizeof(d[1]))
+                    self.adjust_interval()
+                    continue
+
+            # render begins
+            self.handle_keyboard()
             if time.time() - last_ts < self.display_interval:
-                time.sleep(0.001)
+                # time.sleep(0.001)
                 # print('wait to refresh', self.display_interval)
                 continue
             last_ts = time.time()
-            self.handle_keyboard()
-            if self.to_web:
-                self.o_msg_q.put(('misc', self.cache['misc']))
-                self.o_msg_q.put(('delay', {'name': 'frame_render_cost', 'delay': '{:.1f}'.format(self.frame_cost*1000)}))
             img_rendered = self.draw(self.cache, frame_cnt)  # render
             if self.to_web:
                 # self.web_img['now_image'] = comb.copy()
+                self.o_msg_q.put(
+                    ('delay', {'name': 'frame_render_cost', 'delay': '{:.1f}'.format(self.frame_cost * 1000)}))
                 if not self.o_img_q.full():
                     self.o_img_q.put(img_rendered)
             else:
                 cv2.imshow('MINIEYE-CVE', img_rendered)
 
             self.save_rendered(img_rendered)
+            t3 = time.time()
 
             while self.replay and self.pause:
                 self.draw(self.cache, frame_cnt)
@@ -231,9 +259,15 @@ class PCC(Thread):
             # self.draw(d, frame_cnt)
 
             # time.sleep(0.01)
+
             if self.auto_rec:
                 self.auto_rec = False
                 self.start_rec()
+            t4 = time.time()
+            runtime_delay = {''}
+            print('pcc time cost:popping:{:.2f}ms caching:{:.2f}ms rendering:{:.2f}ms total:{:.2f}ms '.format(1000*(t1-t0), 1000*(t2-t1), 1000*(t3-t2), 1000*(t4-t0)), d[2])
+            self.run_cost = self.run_cost * 0.9 + (t4-t0) * 0.1
+
 
     def cache_data_common(self, d):
         if not d:
@@ -254,21 +288,22 @@ class PCC(Thread):
             # print(data)
             if 'video' in data['type']:
                 is_main = data.get('is_main')
+                if not self.replay:
+                    self.hub.fileHandler.insert_jpg(
+                        {'ts': data['ts'], 'frame_id': data['frame_id'], 'jpg': data['img'],
+                         'source': 'video' if is_main else data['source']})
                 if not is_main:
                     if data['source'] not in self.video_cache:
                         self.video_cache[data['source']] = {}
-                    data['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
+                    # data['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
                     self.video_cache[data['source']] = data
                     self.video_cache[data['source']]['updated'] = True
-
-                    self.hub.fileHandler.insert_video(
-                        {'ts': data['ts'], 'frame_id': data['frame_id'], 'img': data['img_raw'],
-                         'source': data['source']})
 
                 else:
                     self.cache['img'] = data['img']
                     try:
-                        self.cache['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
+                        pass
+                        # self.cache['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
                         # self.o_img_q.put(data['img'])
                     except Exception as e:
                         print('img decode error:', e)
@@ -276,9 +311,9 @@ class PCC(Thread):
                     self.cache['frame_id'] = fid
                     self.cache['ts'] = data['ts']
                     self.cache['updated'] = True
-                    if not self.replay:
-                        self.hub.fileHandler.insert_video(
-                            {'ts': data['ts'], 'frame_id': fid, 'img': self.cache['img_raw'], 'source': 'video'})
+                    # if not self.replay:
+                    #     self.hub.fileHandler.insert_video(
+                    #         {'ts': data['ts'], 'frame_id': fid, 'img': self.cache['img_raw'], 'source': 'video'})
                     return True
             else:
                 dtype = data.get('type') if 'type' in data else 'notype'
@@ -300,7 +335,7 @@ class PCC(Thread):
             if 'img_raw' in mess and mess['img_raw'].any():
                 img = mess['img_raw'].copy()
             else:
-                return
+                # return
                 mess['img_raw'] = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
                 img = mess['img_raw'].copy()
         except Exception as e:
@@ -357,7 +392,7 @@ class PCC(Thread):
             #     self.hub.fileHandler.insert_video(
             #         {'ts': video['ts'], 'frame_id': video['frame_id'], 'img': img_raw, 'source': video['source']})
             self.video_cache[source]['updated'] = False
-            img_small = cv2.resize(video['img_raw'], (427, 240))
+            img_small = cv2.resize(cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR), (427, 240))
             video['device'] = "x1d3"
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))

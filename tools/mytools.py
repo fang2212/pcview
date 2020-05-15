@@ -3,6 +3,7 @@ import threading
 import functools
 from multiprocessing.dummy import Process as Thread
 import time
+import psutil
 
 
 class Supervisor(Thread):
@@ -122,6 +123,10 @@ def sort_big_file(filename, file_splits=10, my_cmp=None):
     new_path = os.path.dirname(buf_path[0]) + '/log_sort.txt'
     os.rename(buf_path[0], new_path)
     return new_path
+
+
+def check_cpu_time():
+    return psutil.cpu_percent(interval=20, percpu=False)
 
 
 def __judge(filename):

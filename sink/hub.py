@@ -374,7 +374,7 @@ class Hub(Thread):
             self.msg_cnt[channel]['ts'] = time.time()
 
     def pop_common(self):
-        res = {}
+        # res = {}
         if not self.msg_queue.empty():
             try:
                 r = self.msg_queue.get()

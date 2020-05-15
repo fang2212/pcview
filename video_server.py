@@ -208,7 +208,7 @@ def download(item):
             for filename in filenames:
                 zf.write(os.path.join(path, filename), os.path.join(fpath, filename))
     memfile.seek(0)
-    return send_file(memfile, attachment_filename='pcc_{}'.format(item), as_attachment=True)
+    return send_file(memfile, attachment_filename='pcc_{}.zip'.format(item), as_attachment=True)
 
 
 @socketio.on('connect', namespace='/test')

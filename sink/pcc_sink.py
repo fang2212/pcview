@@ -4,7 +4,7 @@ import struct
 import time
 # from multiprocessing import Process
 from threading import Thread
-
+import os
 import aiohttp
 import can
 import msgpack
@@ -54,6 +54,7 @@ class Sink(Thread):
         self._init_port()
         pt_sum = 0
         next_check = 0
+        self.pid = os.getpid()
         # if 'can' in self.type:
         #     print(self.type, 'start.')
         while True:
@@ -70,7 +71,7 @@ class Sink(Thread):
                 self.queue.put((r))
             # time.sleep(0.01)
             if t0 > next_check:
-                profile_info = {'type': 'profiling', 'source': self.source, 'pt_sum': pt_sum, 'uptime': t0-time0, 'ts': t0}
+                profile_info = {'type': 'profiling', 'source': self.source, 'pt_sum': pt_sum, 'uptime': t0-time0, 'ts': t0, 'pid': os.getpid()}
                 self.queue.put((0, profile_info, self.source))
                 next_check = t0 + self.profile_intv
 

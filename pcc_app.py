@@ -36,6 +36,7 @@ cve_conf = load_cfg(args.cfg_path)
 cve_conf.local_cfg = local_cfg
 
 
+
 def init_checkers(pcc):
     supervisor = Supervisor()
     supervisor.add_check_task(pcc.check_status)
