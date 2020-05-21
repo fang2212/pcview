@@ -67,13 +67,21 @@ class Sink(Thread):
             dt = time.time() - t0
             pt_sum += dt
             # print(self.dev, self.type, self.channel, 'dt: {:.5f}'.format(dt))
-            if r is not None and not self.isheadless:
+            if r is not None:
+                if isinstance(r[1], dict):
+                    r[1]['ts_arrival'] = t0
+                elif isinstance(r[1], list):
+                    for item in r[1]:
+                        item['ts_arrival'] = t0
+                else:
+                    print(r)
                 self.queue.put((r))
+
             # time.sleep(0.01)
-            if t0 > next_check:
-                profile_info = {'type': 'profiling', 'source': self.source, 'pt_sum': pt_sum, 'uptime': t0-time0, 'ts': t0, 'pid': os.getpid()}
-                self.queue.put((0, profile_info, self.source))
-                next_check = t0 + self.profile_intv
+            # if t0 > next_check:
+            #     profile_info = {'type': 'profiling', 'source': self.source, 'pt_sum': pt_sum, 'uptime': t0-time0, 'ts': t0, 'pid': os.getpid()}
+            #     self.queue.put((0, profile_info, self.source))
+            #     next_check = t0 + self.profile_intv
 
     def pkg_handler(self, msg_buf):
         pass
@@ -144,9 +152,10 @@ class PinodeSink(Sink):
         # print(queue, ip, port, channel, index, resname, fileHandler, isheadless)
 
     def pkg_handler(self, msg):
-        # print('hahahahha')
-        msg = memoryview(msg).tobytes()
+        # print('-----------------------------------------hahahahha')
 
+        msg = memoryview(msg).tobytes()
+        # print(self.resname, msg)
         data = self.decode_pinode_res(self.resname, msg)
         if not data:
             return
@@ -159,9 +168,10 @@ class PinodeSink(Sink):
             if r.get('sensor') == 'm8n':
                 r['source'] = 'gps.{:d}'.format(self.index)
             if r['type'] in ub482_defs:
+                # print(r)
                 self.fileHandler.insert_raw((r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
 
-            elif r['type'] == 'rtk':
+            elif r['type'] == 'rtk':  # old d-rtk
                 timestamp = r['ts_origin']
                 self.fileHandler.insert_raw((timestamp, r['source'] + '.sol',
                                              '{} {} {:.8f} {:.8f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}'.format(
@@ -191,7 +201,8 @@ class PinodeSink(Sink):
                 #        print str(datetime.now())
                 if result == rtcm3.Got_Undecoded:
                     # if rtcm3.Dump_Undecoded:
-                    print("Undecoded Data in RTCM.")
+                    # print("Undecoded Data in RTCM.")
+                    pass
                 elif result == rtcm3.Got_Packet:
                     r = self.rtcm3.dump(False, False, False, False)
                     # sys.stdout.flush()
@@ -409,12 +420,12 @@ class FlowSink(Sink):
         if topic == 'finish':
             if b'rc_fusion' in buf:
                 buf = msgpack.unpackb(buf)
-                data = buf[b'rc_fusion']
+                data = buf['rc_fusion']
                 buf = msgpack.packb(data, use_bin_type=True)
                 self.fileHandler.insert_fusion_raw(buf)
             elif b'calib_params' in buf:
                 buf = msgpack.unpackb(buf)
-                data = buf[b'calib_params']
+                data = buf['calib_params']
                 buf = msgpack.packb(data, use_bin_type=True)
                 self.fileHandler.insert_fusion_raw(buf)
             return 'fusion_data', data

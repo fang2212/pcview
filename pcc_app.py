@@ -1,5 +1,8 @@
 import sys
 import os
+local_path = os.path.split(os.path.realpath(__file__))[0]
+os.chdir(local_path)
+
 from config.config import load_cfg, dic2obj
 import argparse
 import json
@@ -8,9 +11,7 @@ from pcc import *
 from tools.mytools import Supervisor
 import shutil
 
-local_path = os.path.split(os.path.realpath(__file__))[0]
-# print('local_path:', local_path)
-os.chdir(local_path)
+
 
 cfgfile = 'config/cfg_lab.json'
 
@@ -36,12 +37,12 @@ cve_conf = load_cfg(args.cfg_path)
 cve_conf.local_cfg = local_cfg
 
 
-
 def init_checkers(pcc):
     supervisor = Supervisor()
     supervisor.add_check_task(pcc.check_status)
     supervisor.add_check_task(pcc.hub.fileHandler.check_file)
-    supervisor.add_check_task(pcc.send_online_devices)
+    supervisor.add_check_task(pcc.send_online_devices, interval=0.5)
+    supervisor.add_check_task(pcc.adjust_interval)
     supervisor.start()
     return supervisor
 

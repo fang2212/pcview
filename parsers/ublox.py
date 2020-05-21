@@ -44,7 +44,8 @@ def decode_nmea(nmeastr):
         # fileHandler.insert_raw((time.time(), 'gps-speed', str(r['speed'])))
         # print('speed', r['speed'])
         # print(fields)
-        return r
+        if r:
+            return r
 
 
 def parse_ublox(protocol, data, ctx=None):

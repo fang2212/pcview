@@ -103,7 +103,7 @@ class Hub(Thread):
         print(bcl.OKGR + '---------------- collectors online ---------------' + bcl.ENDC)
         for ip in self.online:
             ol = self.online[ip]
-            print('index {}'.format(ol['idx']), bcl.OKBL + ip + bcl.ENDC, ol.get('mac'))
+            print('index {}'.format(ol['idx']), bcl.OKBL + ip + bcl.ENDC, ol.get('mac'), 'type:', ol['type'])
             print('definition:', ol['defs_path'])
             for iface in ol['ports']:
                 print('--', iface, ol['ports'][iface]['topic'] + '.{}'.format(ol['idx']),
@@ -218,12 +218,12 @@ class Hub(Thread):
             #         cfg['idx'] = idx
             #         cfgs_online[ip] = cfg
             #         break
-
+        sinks = []
         for ip in cfgs_online:  # initialize online collectors
             cfg = cfgs_online[ip]
             ip = cfg['ip']
             idx = cfg['idx']
-            sinks = []
+
             cfgs_online[ip]['msg_types'] = []
             if cfg.get('type') == 'x1_algo':
                 for item in cfg['ports']:
@@ -240,12 +240,13 @@ class Hub(Thread):
                     cfgs_online[ip]['msg_types'].append(item + '.{}'.format(idx))
 
             elif cfg.get('type') == 'pi_node':
-                for name in self.finder.found[ip]['ports']:
+                for name in cfg['ports']:
                     if not cfg['ports'][name].get('enable'):
                         continue
-                    port = self.finder.found[ip]['ports'][name]
+                    port = cfg['ports'][name]['port']
                     pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=name,
                                         fileHandler=self.fileHandler, isheadless=self.headless)
+                    print('added sink pinode', ip, port, name)
                     # pisink.start()
                     # pisink = {'stype': 'pi', 'queue': self.msg_queue, 'ip': ip, 'port': port, 'channel': 'can',
                     #           'index': idx, 'resname': 'name', 'fileHandler': self.fileHandler,
@@ -298,10 +299,8 @@ class Hub(Thread):
                     sink.start()
                     # sinks.append(sink)
                     # self.collectors[ip]['sinks']['video'] = sink
-            node = CollectorNode(sinks)
-            node.start()
-            # for sink in sinks:
-            #     sink.start()
+        node = CollectorNode(sinks)
+        node.start()
         return cfgs_online
 
     def fpga_handle(self, cfg, msg_queue, ip, index=0):

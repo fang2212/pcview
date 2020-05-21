@@ -1,5 +1,4 @@
 numpy
-opencv-python
 python-can
 pyserial
 tornado
@@ -9,3 +8,5 @@ cantools
 aiohttp
 flask
 flask-socketio
+psutil
+eventlet

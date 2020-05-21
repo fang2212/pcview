@@ -154,24 +154,87 @@ class PCC(Thread):
 
     def clean_cache(self):
         try:
+            ts_now = time.time()
             for source in list(self.cache['misc']):
-                for entity in self.cache['misc'][source]:
-                    if self.ts_now - self.cache['misc'][source][entity]['ts'] > 0.5:
-                        self.cache['misc'][source][entity].clear()
+                for entity in list(self.cache['misc'][source]):
+                    ts_a = self.cache['misc'][source][entity].get('ts_arrival')
+                    if not ts_a or ts_now - ts_a > max(3*self.display_interval, 0.4):
+                        del self.cache['misc'][source][entity]
         except Exception as e:
-            print(e)
+            print('error when clean cache:', entity)
             pass
 
-    def adjust_interval(self):
+    def cache_data(self, d):
+        if not d:
+            return
+        fid, data, source = d
+        if source not in self.cache['misc']:
+            self.cache['misc'][source] = {}
+            self.cache['info'][source] = {}
+        if isinstance(data, list):
+            # print('msg data list')
+            for d in data:
+                dtype = d.get('type') if 'type' in d else 'notype'
+                id = str(d.get('id')) if 'id' in d else 'noid'
+                entity = dtype + '.' + id
+                # if d['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint']:
+                #     print(entity, '-------------------------------------')
+                self.cache['misc'][source][entity] = d
+                self.cache['info'][source]['integrity'] = 'framed'
+        elif isinstance(data, dict):
+            # print(data)
+            if 'video' in data['type']:
+                is_main = data.get('is_main')
+                if not self.replay:
+                    self.hub.fileHandler.insert_jpg(
+                        {'ts': data['ts'], 'frame_id': data['frame_id'], 'jpg': data['img'],
+                         'source': 'video' if is_main else data['source']})
+                if not is_main:
+                    if data['source'] not in self.video_cache:
+                        self.video_cache[data['source']] = {}
+                    # data['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
+                    self.video_cache[data['source']] = data
+                    self.video_cache[data['source']]['updated'] = True
 
-        # if self.display_interval * 0.7 < self.run_cost < self.display_interval * 1.1:
-        #     return
-        self.display_interval = max(self.display_interval, self.run_cost) + 0.005
+                else:
+                    self.cache['img'] = data['img']
+                    self.cache['img_raw'] = None
+                    try:
+                        pass
+                        # self.cache['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
+                        # self.o_img_q.put(data['img'])
+                    except Exception as e:
+                        print('img decode error:', e)
+                        return
+                    self.cache['frame_id'] = fid
+                    self.cache['ts'] = data['ts']
+                    self.cache['updated'] = True
+                    # if not self.replay:
+                    #     self.hub.fileHandler.insert_video(
+                    #         {'ts': data['ts'], 'frame_id': fid, 'img': self.cache['img_raw'], 'source': 'video'})
+                    return True
+            else:
+                dtype = data.get('type') if 'type' in data else 'notype'
+                id = str(data.get('id')) if 'id' in data else 'noid'
+                entity = data['source'] + '.' + dtype + '.' + id
+                self.cache['misc'][source][entity] = data
+                self.cache['info'][source]['integrity'] = 'divided'
+
+    def adjust_interval(self):
+        iqsize = self.hub.msg_queue.qsize()
+        if iqsize > 240:
+            self.display_interval = max(self.display_interval, self.run_cost) + 0.005
+        elif iqsize < 1 and self.run_cost < self.display_interval:
+            self.display_interval = self.display_interval - 0.005
+        else:
+            return {'status': 'ok'}
+
         if self.display_interval > 1.0:
             self.display_interval = 1.0
-        elif self.display_interval < 0.02:
-            self.display_interval = 0.02
-        print('Adjusting refresh interval to', self.display_interval)
+        elif self.display_interval < 0.05:
+            self.display_interval = 0.05
+        print('refresh interval set to', self.display_interval,'hub qsize:', iqsize)
+        return {'status': 'ok'}
 
     def run(self):
         # self.hub.start()
@@ -202,7 +265,7 @@ class PCC(Thread):
 
             # print('pre draw')
             # if self.cache_data(d):
-            if self.cache_data_common(d):
+            if self.cache_data(d):
                 frame_cnt += 1
                 if frame_cnt > 500:
                     self.player.start_time = datetime.now()
@@ -220,8 +283,8 @@ class PCC(Thread):
                     continue
                 iqsize = self.hub.msg_queue.qsize()
                 if iqsize > 1000:
-                    print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1-t0)*1000), d[2], sys.getsizeof(d[1]))
-                    self.adjust_interval()
+                    # print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1-t0)*1000), d[2], sys.getsizeof(d[1]))
+                    # self.adjust_interval()
                     continue
 
             # render begins
@@ -264,64 +327,14 @@ class PCC(Thread):
                 self.auto_rec = False
                 self.start_rec()
             t4 = time.time()
-            runtime_delay = {''}
-            print('pcc time cost:popping:{:.2f}ms caching:{:.2f}ms rendering:{:.2f}ms total:{:.2f}ms '.format(1000*(t1-t0), 1000*(t2-t1), 1000*(t3-t2), 1000*(t4-t0)), d[2])
+            runtime_delay = {'frame_render_cost'}
+            if self.to_web:
+                # self.web_img['now_image'] = comb.copy()
+                self.o_msg_q.put(('delay', {'name': 'frame_popping_cost', 'delay': '{:.1f}'.format(1000*(t2-t1))}))
+                self.o_msg_q.put(('delay', {'name': 'frame_caching_cost', 'delay': '{:.1f}'.format(1000 * (t1 - t0))}))
+                self.o_msg_q.put(('delay', {'name': 'refreshing_rate', 'delay': '{:.1f}'.format(1.0/self.display_interval)}))
+            # print('pcc time cost:popping:{:.2f}ms caching:{:.2f}ms rendering:{:.2f}ms total:{:.2f}ms '.format(1000*(t1-t0), 1000*(t2-t1), 1000*(t3-t2), 1000*(t4-t0)), d[2])
             self.run_cost = self.run_cost * 0.9 + (t4-t0) * 0.1
-
-
-    def cache_data_common(self, d):
-        if not d:
-            return
-        fid, data, source = d
-        if source not in self.cache['misc']:
-            self.cache['misc'][source] = {}
-            self.cache['info'][source] = {}
-        if isinstance(data, list):
-            # print('msg data list')
-            for d in data:
-                dtype = d.get('type') if 'type' in d else 'notype'
-                id = str(d.get('id')) if 'id' in d else 'noid'
-                entity = d['source'] + '.' + dtype + '.' + id
-                self.cache['misc'][source][entity] = d
-                self.cache['info'][source]['integrity'] = 'framed'
-        elif isinstance(data, dict):
-            # print(data)
-            if 'video' in data['type']:
-                is_main = data.get('is_main')
-                if not self.replay:
-                    self.hub.fileHandler.insert_jpg(
-                        {'ts': data['ts'], 'frame_id': data['frame_id'], 'jpg': data['img'],
-                         'source': 'video' if is_main else data['source']})
-                if not is_main:
-                    if data['source'] not in self.video_cache:
-                        self.video_cache[data['source']] = {}
-                    # data['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
-                    self.video_cache[data['source']] = data
-                    self.video_cache[data['source']]['updated'] = True
-
-                else:
-                    self.cache['img'] = data['img']
-                    self.cache['img_raw'] = None
-                    try:
-                        pass
-                        # self.cache['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
-                        # self.o_img_q.put(data['img'])
-                    except Exception as e:
-                        print('img decode error:', e)
-                        return
-                    self.cache['frame_id'] = fid
-                    self.cache['ts'] = data['ts']
-                    self.cache['updated'] = True
-                    # if not self.replay:
-                    #     self.hub.fileHandler.insert_video(
-                    #         {'ts': data['ts'], 'frame_id': fid, 'img': self.cache['img_raw'], 'source': 'video'})
-                    return True
-            else:
-                dtype = data.get('type') if 'type' in data else 'notype'
-                id = str(data.get('id')) if 'id' in data else 'noid'
-                entity = data['source'] + '.' + dtype + '.' + id
-                self.cache['misc'][source][entity] = data
-                self.cache['info'][source]['integrity'] = 'divided'
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])
@@ -415,9 +428,9 @@ class PCC(Thread):
                     except KeyError as e:
                         print('error: no ts in', source, entity)
                         # raise e
-                    if dt > 0.2 or dt < -0.2:
-                        del mess['misc'][source][entity]
-                        continue
+                    # if dt > 0.2 or dt < -0.2:
+                    #     del mess['misc'][source][entity]
+                    #     continue
                     if not self.draw_can_data(img, mess['misc'][source][entity]):
                         print('draw misc data exited, source:', source)
 
@@ -636,7 +649,8 @@ class PCC(Thread):
         #     self.calib_esr()
 
     def analyze_profile(self, img, data):
-        self.o_msg_q.put(('profiling', data))
+        if self.to_web:
+            self.o_msg_q.put(('profiling', data))
 
     def draw_can_data(self, img, data):
         # print(data)

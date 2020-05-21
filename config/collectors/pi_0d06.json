@@ -1,27 +1,27 @@
 {
-    "type": "pi_node",
-    "mac": "b8:27:eb:e8:0d:06",
-    "ip": "192.168.98.0",
-    "work_mode": "collector",
-    "repeater": false,
-    "ports": {
-        "gps": {
-            "enable": true,
-            "port": 1210,
-            "protocol": "nanomsg",
-            "topic": "nmea"
-        },
-        "rtcm": {
-            "enable": true,
-            "port": 1220,
-            "protocol": "nanomsg",
-            "topic": "rtcm"
-        },
-        "rtk": {
-            "enable": true,
-            "port": 1240,
-            "protocol": "nanomsg",
-            "topic": "ub482"
-        }
+  "type": "pi_node",
+  "mac": "b8:27:eb:e8:0d:06",
+  "ip": "192.168.98.0",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "rtk": {
+      "enable": true,
+      "port": 1210,
+      "protocol": "nanomsg",
+      "topic": "nmea"
+    },
+    "gps": {
+      "enable": true,
+      "port": 1220,
+      "protocol": "nanomsg",
+      "topic": "rtcm"
+    },
+    "rtcm": {
+      "enable": true,
+      "port": 1240,
+      "protocol": "nanomsg",
+      "topic": "ub482"
     }
+  }
 }

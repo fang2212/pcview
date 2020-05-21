@@ -5,19 +5,19 @@
   "work_mode": "collector",
   "repeater": false,
   "ports": {
-    "gps": {
+    "rtk": {
       "enable": true,
       "port": 1210,
       "protocol": "nanomsg",
       "topic": "nmea"
     },
-    "rtcm": {
+    "gps": {
       "enable": true,
       "port": 1220,
       "protocol": "nanomsg",
       "topic": "rtcm"
     },
-    "rtk": {
+    "rtcm": {
       "enable": true,
       "port": 1240,
       "protocol": "nanomsg",
