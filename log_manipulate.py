@@ -507,7 +507,7 @@ def parse_drtk_target(file_name):
 
 def parse_rtk_target_ub482(line, ctx):
     from recorder.convert import ub482_defs, decode_with_def
-    from tools.vehicle import Vehicle, get_vehicle_target
+    from tools.vehicle import Vehicle, get_rover_target
     cols = line.split(' ')
     ts = float(cols[0]) + float(cols[1]) / 1000000
     if 'rtk' not in cols[2]:
@@ -550,7 +550,7 @@ def parse_rtk_target_ub482(line, ctx):
                 continue
             if not ego_car or not ctx['rtksol']['vehicles'][role]:
                 continue
-            t = get_vehicle_target(ego_car, ctx['rtksol']['vehicles'][role])
+            t = get_rover_target(ego_car, ctx['rtksol']['vehicles'][role])
             if t:
                 epoch.append(t)
     ctx['rtksol']['vehicles'][role].update_dynamics(r)
@@ -572,6 +572,7 @@ def parse_rtk_target_ub482(line, ctx):
     if ppt:
         # print(ppt)
         ppt['id'] = int(idx)
+        ppt['cipo'] = True
         x, y = ctx['trans'].trans_polar2rcs(ppt['angle'], ppt['range'], 'rtk')
         epoch.append(ppt)
         lines += compose_log(ts, 'rtk.ppt.{}'.format(idx), '{} {} {vel_lon} {TTC}'.format(y, x,**ppt))
@@ -880,43 +881,49 @@ def parse_d530_line(line, ctx):
         lines = ''
         if 'd530' not in ctx:
             ctx['d530'] = {'aeb_level': 0, 'xbr_acc': 0}
-        x1_data = None
-        x1f_data = None
-        ars_data = None
-        if ctx['obs_ep']['x1'].get('data'):
-            for x1_obs in ctx['obs_ep']['x1'].get('data'):
-                if x1_obs.get('cipo'):
-                    x1_data = x1_obs
-                    break
-        if ctx['obs_ep']['x1_fusion'].get('data'):
-            # print('x1 fusion has data', len(ctx['obs_ep']['x1_fusion'].get('data')))
-            for x1f_obs in ctx['obs_ep']['x1_fusion'].get('data'):
-                if x1f_obs.get('cipo'):
-                    x1f_data = x1f_obs
-                    break
-        if ctx['obs_ep']['ars'].get('data'):
-            for ars_obs in ctx['obs_ep']['ars'].get('data'):
-                if ars_obs.get('cipo'):
-                    ars_data = ars_obs
-                    break
+        # x1_data = None
+        # x1f_data = None
+        # ars_data = None
+        data = {'x1': None, 'x1_fusion': None, 'ars': None, 'rtk': None}
+        for sensor in data:
+            if ctx['obs_ep'][sensor].get('data'):
+                for obs in ctx['obs_ep'][sensor].get('data'):
+                    if obs.get('cipo'):
+                        data[sensor] = obs
+        # if ctx['obs_ep']['x1'].get('data'):
+        #     for x1_obs in ctx['obs_ep']['x1'].get('data'):
+        #         if x1_obs.get('cipo'):
+        #             x1_data = x1_obs
+        #             break
+        # if ctx['obs_ep']['x1_fusion'].get('data'):
+        #     # print('x1 fusion has data', len(ctx['obs_ep']['x1_fusion'].get('data')))
+        #     for x1f_obs in ctx['obs_ep']['x1_fusion'].get('data'):
+        #         if x1f_obs.get('cipo'):
+        #             x1f_data = x1f_obs
+        #             break
+        # if ctx['obs_ep']['ars'].get('data'):
+        #     for ars_obs in ctx['obs_ep']['ars'].get('data'):
+        #         if ars_obs.get('cipo'):
+        #             ars_data = ars_obs
+        #             break
         if 'aeb_level' in r:
             data = r['aeb_level']
             lines += compose_log(ts, 'd530.{}'.format(r['class']), '{}'.format(data))
 
             if ctx['d530']['aeb_level'] == 0 and data == 1:
-                ctx['d530']['fcw1'] = {'ts': ts, 'speed': ctx['speed'], 'x1': x1_data, 'x1f': x1f_data, 'ars': ars_data}
+                ctx['d530']['fcw1'] = {'ts': ts, 'speed': ctx['speed'], 'x1': data['x1'], 'x1f': data['x1_fusion'], 'ars': data['ars'], 'rtk': data['rtk']}
 
                 lines += compose_log(ts, 'd530.aebw0to1', '{}'.format(data))
 
             elif ctx['d530']['aeb_level'] == 1 and data == 2:
-                ctx['d530']['fcw2'] = {'ts': ts, 'speed': ctx['speed'], 'x1': x1_data, 'x1f': x1f_data, 'ars': ars_data}
+                ctx['d530']['fcw2'] = {'ts': ts, 'speed': ctx['speed'], 'x1': data['x1'], 'x1f': data['x1_fusion'], 'ars': data['ars'], 'rtk': data['rtk']}
                 lines += compose_log(ts, 'd530.aebw1to2', '{}'.format(data))
 
         elif 'xbr_acc' in r:
             data = r['xbr_acc']
             lines += compose_log(ts, 'd530.{}'.format(r['class']), '{}'.format(data))
             if data < -5.0 and ctx['d530']['xbr_acc'] > -1.0:
-                ctx['d530']['aeb'] = {'ts': ts, 'speed': ctx['speed'], 'x1': x1_data, 'x1f': x1f_data, 'ars': ars_data}
+                ctx['d530']['aeb'] = {'ts': ts, 'speed': ctx['speed'], 'x1': data['x1'], 'x1f': data['x1_fusion'], 'ars': data['ars'], 'rtk': data['rtk']}
                 lines += compose_log(ts, 'd530.xbrtrigger', '{}'.format(data))
         elif 'speed' in r:
             if 'speed' not in ctx:
@@ -2176,7 +2183,6 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
         # continue
 
 
-
 def viz_2d_trj(r0, source='rtk.6', vis=True):
     from recorder.convert import ub482_defs, decode_with_def
     from tools.geo import gps_bearing, gps_distance
@@ -2229,6 +2235,10 @@ def viz_2d_trj(r0, source='rtk.6', vis=True):
     # visual.trj_2d(fig, xlist, ylist, vis)
     visual.trj_2d(fig, trjs, vis)
     fig.close()
+
+            # for label in labels:
+            #     match = match_label(label, cols[2])
+            #     if match:
 
 
 def process_error_by_matches(matches, names, r0, ts0, ctx, vis=False):
@@ -2520,7 +2530,8 @@ def aeb_test_analysis(dir_name):
                 parsers = [parse_x1_line,
                            parse_ars_line,
                            parse_d530_line,
-                           parse_nmea_line]
+                           parse_nmea_line,
+                           parse_rtk_target_ub482]
 
                 analysis_dir = prep_analysis(log, ctx)
                 if 'd530' not in ctx['can_port']:

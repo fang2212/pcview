@@ -276,7 +276,7 @@ def parse_bosch_mrr(id, buf, ctx=None):
 #             return ret
 #     else:
 #         return None
-
+ctlrrobs=[]
 def parse_ctlrr(id, buf, ctx=None):
     global ctlrrobs
     ids = [m.frame_id for m in db_ctlrr.messages]
