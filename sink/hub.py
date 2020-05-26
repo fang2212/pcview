@@ -37,7 +37,7 @@ class Hub(Thread):
         Thread.__init__(self)
         self.headless = headless
         # print(self.headless)
-        self.msg_queue = kQueue()
+        self.msg_queue = kQueue(maxsize=3000)
         # self.cam_queue = kQueue()
         # self.sink = {}
         self.cache = {}
@@ -193,7 +193,7 @@ class Hub(Thread):
                 ip = cfg['ip']
                 cfg['idx'] = idx
                 cfgs_online[ip] = cfg
-            elif mac and mac in self.mac_ip:  # mac matches one of the founded LAN devices
+            elif mac and self.mac_ip and mac in self.mac_ip:  # mac matches one of the founded LAN devices
                 ip = self.mac_ip[mac]
                 cfg['ip'] = ip
                 cfg['idx'] = idx

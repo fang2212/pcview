@@ -75,7 +75,11 @@ class Sink(Thread):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                self.queue.put((r))
+                if not self.queue.full():
+                    self.queue.put((r))
+                else:
+                    time.sleep(0.01)
+                    continue
 
             # time.sleep(0.01)
             # if t0 > next_check:

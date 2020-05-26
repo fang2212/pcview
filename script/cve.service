@@ -1,0 +1,14 @@
+[Unit]
+Description=test deamon
+After=rc-local.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/pi/work/pcview
+ExecStart=/usr/bin/python3 pcc_app.py -w
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

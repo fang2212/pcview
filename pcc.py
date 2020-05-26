@@ -82,6 +82,7 @@ class PCC(Thread):
         self.cache = {}
         self.init_cache()
         self.run_cost = 0.05
+        self.stuck_cnt = 0
 
         # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
@@ -252,40 +253,34 @@ class PCC(Thread):
                 return
             t0 = time.time()
             # d = self.hub.pop_simple()  # receive
+            try:
+                d = self.hub.pop_common()
+                if not d:
+                    continue
+                t1 = time.time()
 
-            d = self.hub.pop_common()
-            if not d:
+                if self.cache_data(d):
+                    frame_cnt += 1
+                    if frame_cnt > 500:
+                        self.player.start_time = datetime.now()
+                        frame_cnt = 1
+
+                t2 = time.time()
+                if not self.replay:
+                    qsize = self.hub.fileHandler.raw_queue.qsize()
+                    # print('raw queue size:', qsize)
+                    if self.hub.fileHandler.is_recording and qsize > 2000:
+                        print('msg_q critical, skip drawing.', qsize)
+                        # time.sleep(0.1)
+                        continue
+                    iqsize = self.hub.msg_queue.qsize()
+                    if iqsize > 1000:
+                        # print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1-t0)*1000), d[2], sys.getsizeof(d[1]))
+                        # self.adjust_interval()
+                        continue
+            except Exception as e:
+                print('pcc run error:', e)
                 continue
-            t1 = time.time()
-            # print(d)
-            # if d is None or not d.get('frame_id'):
-            #     # time.sleep(0.01)
-            #     continue
-            # print('pcc frame cnt:', frame_cnt)
-
-            # print('pre draw')
-            # if self.cache_data(d):
-            if self.cache_data(d):
-                frame_cnt += 1
-                if frame_cnt > 500:
-                    self.player.start_time = datetime.now()
-                    frame_cnt = 1
-            # iqsize = self.hub.msg_queue.qsize()
-            # print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1 - t0) * 1000), d[2], len(d[1]))
-            # continue
-            t2 = time.time()
-            if not self.replay:
-                qsize = self.hub.fileHandler.raw_queue.qsize()
-                # print('raw queue size:', qsize)
-                if self.hub.fileHandler.is_recording and qsize > 2000:
-                    print('msg_q critical, skip drawing.', qsize)
-                    # time.sleep(0.1)
-                    continue
-                iqsize = self.hub.msg_queue.qsize()
-                if iqsize > 1000:
-                    # print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1-t0)*1000), d[2], sys.getsizeof(d[1]))
-                    # self.adjust_interval()
-                    continue
 
             # render begins
             self.handle_keyboard()
@@ -770,6 +765,10 @@ class PCC(Thread):
             print('left btn down', x, y)
 
     def check_status(self):
+        if self.hub.msg_queue.full():
+            self.stuck_cnt += 1
+        else:
+            self.stuck_cnt = 0
         if not self.hub.time_aligned:
             return {'status': 'fail', 'info': 'collectors\' time not aligned!'}
         return {'status': 'ok', 'info': 'oj8k'}

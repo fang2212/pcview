@@ -62,7 +62,7 @@ def get_cached_macs(cfg_name, cachefile='config/runtime/cached_macs.json', timeo
     if time.time() - cached[cfg_name]['ts'] > timeout:
         print('mac table timed out.')
         return
-    if len(cached[cfg_name]['data']) <= 2:
+    if not cached[cfg_name]['data'] or len(cached[cfg_name]['data']) <= 2:
         return
     # print_ip_mac(cached[cfg_name]['data'])
     return cached[cfg_name]['data']

@@ -36,6 +36,24 @@ local_cfg.log_root = opath
 cve_conf = load_cfg(args.cfg_path)
 cve_conf.local_cfg = local_cfg
 
+_startup_cwd = os.getcwd()
+
+
+def respawn(self=None):
+    """Re-execute the current process.
+
+    This must be called from the main thread, because certain platforms
+    (OS X) don't allow execv to be called in a child thread very well.
+    """
+    args = sys.argv[:]
+    # self.log('Re-spawning %s' % ' '.join(args))
+    args.insert(0, sys.executable)
+    if sys.platform == 'win32':
+        args = ['"%s"' % arg for arg in args]
+
+    os.chdir(_startup_cwd)
+    os.execv(sys.executable, args)
+
 
 def init_checkers(pcc):
     supervisor = Supervisor()
@@ -134,6 +152,10 @@ elif args.web:  # start webui PCC
     # sup.add_check_task(list_recorded_data)
     pcc.start()
     while True:
+        if pcc.stuck_cnt > 10:
+            print('pcc stuck count:', pcc.stuck_cnt)
+            print('PCC stuck. restarting now.')
+            respawn()
         if not video_server.ctrl_q.empty():
             ctrl = video_server.ctrl_q.get()
             if ctrl['action'] == 'control':
@@ -191,3 +213,4 @@ else:  # normal standalone PCC
     hub.start()
     sup = init_checkers(pcc)
     pcc.start()
+    pcc.join()
