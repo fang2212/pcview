@@ -349,7 +349,8 @@ class PCC(Thread):
                 img = mess['img_raw'].copy()
         except Exception as e:
             print(mess)
-            raise e
+            # raise e
+            return
 
         frame_id = mess['frame_id']
         self.now_id = frame_id

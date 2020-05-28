@@ -79,7 +79,6 @@ class MJPEGWriter(object):
         self.frame_size = []
         self.chunk_idxes = []
 
-
     def _put(self, b):
         if self.fp is not None:
             self.fp.write(b)
@@ -197,6 +196,8 @@ class MJPEGWriter(object):
         self._put(b'movi')
 
     def write_frame(self, jpg):
+        if len(jpg) == 0:
+           print('write frame error: jpg len is 0.')
         cptr = self.fp.tell()
         self._chunk(b'00dc')
         # self._put(b'00dc')
@@ -254,7 +255,9 @@ if __name__ == "__main__":
         file_done = False
         video_files = sorted([x for x in os.listdir(video_dir) if x.endswith('.avi')])
         for file in video_files:
+            print('start reading video:', file)
             file_done = False
+            fcnt = 0
             fid = int(file.split('.')[0].split('_')[1])
             with open(os.path.join(video_dir, file), 'rb') as vf:
                 while True:
@@ -264,22 +267,31 @@ if __name__ == "__main__":
                         read = vf.read(buf_len)
                         if len(read) == 0:
                             file_done = True
+                            buf = b''
+                            print('video file {} comes to an end. {} frames extracted'.format(file, fcnt))
+                            # print(a, b)
                             break
                         buf += read
-                        a = buf.find(b'\xff\xd8')
-                        b = buf.find(b'\xff\xd9')
+                        if a == -1:
+                            a = buf.find(b'\xff\xd8')
+                        if b == -1:
+                            b = buf.find(b'\xff\xd9')
 
                     if file_done:
                         break
+                    # print(fid, a, b)
                     jpg = buf[a:b + 2]
                     buf = buf[b + 2:]
+                    fcnt += 1
                     # fid = int.from_bytes(jpg[24:28], byteorder="little")
+                    if not jpg:
+                        print('extracted empty frame:', fid, a, b)
                     yield fid, jpg
                     if fid is not None:
                         fid = None
 
 
-    jpgs = jpeg_extractor('/home/nan/data/pcc_test/video')
+    jpgs = jpeg_extractor('/home/nan/data/temp')
     mw = MJPEGWriter('/home/nan/data/pcc_test/test.avi', 1280, 720, 20)
     mw.write_header()
     for fid, jpg in jpgs:

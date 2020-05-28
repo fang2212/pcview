@@ -35,6 +35,7 @@ def jpeg_extractor(video_dir):
     video_files = sorted([x for x in os.listdir(video_dir) if x.endswith('.avi')])
     for file in video_files:
         file_done = False
+        fcnt = 0
         fid = int(file.split('.')[0].split('_')[1])
         with open(os.path.join(video_dir, file), 'rb') as vf:
             while True:
@@ -44,6 +45,8 @@ def jpeg_extractor(video_dir):
                     read = vf.read(buf_len)
                     if len(read) == 0:
                         file_done = True
+                        buf = b''
+                        print('video file {} comes to an end. {} frames extracted'.format(file, fcnt))
                         break
                     buf += read
                     a = buf.find(b'\xff\xd8')
@@ -53,7 +56,10 @@ def jpeg_extractor(video_dir):
                     break
                 jpg = buf[a:b + 2]
                 buf = buf[b + 2:]
-                # fid = int.from_bytes(jpg[24:28], byteorder="little")
+                fcnt += 1
+                jfid = int.from_bytes(jpg[24:28], byteorder="little")
+                if not jpg:
+                    print('extracted empty frame:', fid)
                 yield fid, jpg
                 if fid is not None:
                     fid = None
