@@ -119,6 +119,7 @@ class FileHandler(Thread):
                 elif ctrl['act'] == 'stop':
                     raw_fp.flush()
                     raw_fp.close()
+                    path = None
                     raw_fp = None
                     for video in video_streams:
                         video_streams[video]['video_writer'].release()
