@@ -7,16 +7,16 @@
             "port": 5001
         }
     },
-    "main_collector": "algo_0122",
+    "main_collector": "ffd0",
     "vehicles": {
         "ego": {
             "enable": true,
             "collectors": {
                 "algo_0122": "force_ip:192.168.0.233",
                 "ffed": "normal",
-                "ffe0": "normal",
+                "ffd0": "normal",
                 "ffd1": "normal",
-                "pi_ba29": "normal",
+                "pi_gateway": "normal",
                 "pi_0d06": "normal",
                 "pi_5297": "normal"
             },
@@ -63,9 +63,9 @@
                 },
                 "video": {
                     "fu": 1458.0,
-                    "yaw": 2.25,
+                    "yaw": 2.95,
                     "fv": 1458.0,
-                    "pitch": -0.4,
+                    "pitch": -0.98,
                     "cu": 640.0,
                     "lat_offset": 0.15,
                     "roll": 1.0,

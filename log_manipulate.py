@@ -813,6 +813,34 @@ def parse_q3_line(line, ctx):
             #                    '{} {}'.format(ret['pos_lat'], ret['pos_lon']))
 
 
+def parse_q3_lane(line, ctx):
+    from parsers.mobileye_q3 import parse_ifv300
+    cols = line.split(' ')
+    ts = float(cols[0]) + float(cols[1]) / 1000000
+    can_port = ctx['can_port'].get('ifv300')
+    if 'q3_lane' not in ctx:
+        ctx['q3_lane'] = {}
+    if can_port is None:
+        return
+    if can_port in cols[2] or can_port.lower() in cols[2]:
+        can_id = int(cols[3], 16)
+        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        ret = parse_ifv300(can_id, buf, ctx)
+        # print(can_port, buf, r)
+
+        if not ret:
+            return
+        # print(ret)
+        if 'type' in ret and ret['type'] == 'vehicle_state':
+            # print(ret['speed'])
+            ctx['q3_speed'] = ret['speed']/3.6
+        if ret['type'] not in ['lane']:
+            return
+        ctx['q3_lane'][ret['id']] = ret
+        # return compose_log(ts, 'q3.{}.{}'.format(ret['class'], ret['id']),
+        #                    '{} {}'.format(ret['pos_lat'], ret['pos_lon']))
+
+
 def parse_nmea_line(line, ctx):
     from parsers.ublox import parse_ublox
     cols = line.split(' ')
