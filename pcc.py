@@ -337,7 +337,9 @@ class PCC(Thread):
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])
+        ts_ana = []
         t0 = time.time()
+        ts_ana.append(('draw start', t0))
         # try:
         #     imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
         #     img = imgraw.copy()
@@ -356,6 +358,8 @@ class PCC(Thread):
             print(mess)
             # raise e
             return
+        # ts_fdec = time.time()
+        ts_ana.append(('frame decode', time.time()))
 
         frame_id = mess['frame_id']
         self.now_id = frame_id
@@ -406,15 +410,16 @@ class PCC(Thread):
             video['device'] = "x1d3"
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
-        t1 = time.time()
+        # t1 = time.time()
+        ts_ana.append(('other frame decode', time.time()))
 
         if 'x1_data' in mess:
             # print('------', mess['x1_data'])
             for data in mess['x1_data']:
                 # print(mess['x1_data'])
                 self.flow_player.draw(data, img)
-        t2 = time.time()
-
+        # t2 = time.time()
+        ts_ana.append(('pcv_data', time.time()))
         # cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
         misc_data = mess.get('misc')
         if misc_data:
@@ -433,8 +438,8 @@ class PCC(Thread):
                     if not self.draw_can_data(img, mess['misc'][source][entity]):
                         print('draw misc data exited, source:', source)
 
-        t3 = time.time()
-
+        # t3 = time.time()
+        ts_ana.append(('misc_data', time.time()))
         if not self.replay and self.hub.fileHandler.is_recording:
             self.player.show_recording(img, self.hub.fileHandler.start_time)
 
@@ -465,9 +470,14 @@ class PCC(Thread):
         self.frame_drawn_cnt += 1
         self.frame_cost_total += self.frame_cost
 
-        t4 = time.time()
-        print('pcc draw cost: video:{:.2f}ms x1_data:{:.2f}ms misc:{:.2f}ms other:{:.2f}ms total:{:.2f}ms'.format(1000*(t1-t0), 1000*(t2-t1), 1000*(t3-t2), 1000*(t4-t3), 1000*(t4-t0),))
-
+        # t4 = time.time()
+        ts_ana.append(('others', time.time()))
+        # print('pcc draw cost: video:{:.2f}ms x1_data:{:.2f}ms misc:{:.2f}ms other:{:.2f}ms total:{:.2f}ms'.format(1000*(ts_fdec-t0), 1000*(t2-t1), 1000*(t3-t2), 1000*(t4-t3), 1000*(t4-t0),))
+        print('-------------time analysis---------------')
+        for idx, ts in enumerate(ts_ana):
+            if idx > 0:
+                print(ts[0], '{:.2f}ms'.format(1000*(ts[1]-ts_ana[idx-1][1])))
+        print('total: {:.2f}'.format(1000*(ts_ana[-1][1]-ts_ana[0][1])))
         return comb
 
     def save_rendered(self, img_rendered):
