@@ -342,26 +342,25 @@ class Player(object):
             BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
 
             # for now: only mbq4 used
-            a0, a1, a2, a3 = ratios
-            if abs(a0) < 5:
-                x = 12
-            else:
-                x = 25
-            y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
-            # install_para = install[data['source'].split('.')[0]]
-            # x, y = self.transform.compensate_param_rcs(x, y, install_para)
-            tx, ty = self.transform.trans_gnd2raw(x, y)
-            text_step = 15
-            if 'type_class' in data:
-                BaseDraw.draw_text(img, 'class: ' + data['type_class'], (tx - 50, ty), 0.5, color, 1)
+        a0, a1, a2, a3 = ratios
+        if abs(a0) < 5:
+            x = 12
+        else:
+            x = 25
+        y = a0 + a1 * x + a2 * x ** 2 + a3 * x ** 3
 
-            if 'prediction_source' in data:
-                BaseDraw.draw_text(img, 'predict: ' + data['prediction_source'], (tx - 50, ty + text_step), 0.5, color,
-                                   1)
+        tx, ty = self.transform.trans_gnd2raw(x, y)
+        text_step = 15
+        if 'type_class' in data:
+            BaseDraw.draw_text(img, 'class: ' + data['type_class'], (tx - 50, ty), 0.5, color, 1)
 
-            if 'probability' in data:
-                BaseDraw.draw_text(img, 'prob: ' + str('%.2f' % data['probability']), (tx - 50, ty + text_step * 2),
-                                   0.5, color, 1)
+        if 'prediction_source' in data:
+            BaseDraw.draw_text(img, 'predict: ' + data['prediction_source'], (tx - 50, ty + text_step), 0.5, color,
+                               1)
+
+        if 'probability' in data:
+            BaseDraw.draw_text(img, 'prob: ' + str('%.2f' % data['probability']), (tx - 50, ty + text_step * 2),
+                               0.5, color, 1)
 
     def show_tsr(self, img, data):
         x = data.get('pos_lon')

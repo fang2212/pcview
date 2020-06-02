@@ -7,6 +7,7 @@
 @Create Time:     2019/8/29 上午10:38   
 """
 import cantools
+import time
 
 db_q4 = cantools.database.load_file('dbc/q4/Car_sensor_V1.3.dbc', strict=False)
 db_q4.add_dbc_file('dbc/q4/Lanes_V1.8_fix.dbc')
@@ -14,14 +15,16 @@ db_q4.add_dbc_file('dbc/q4/Objects_V1.4.dbc')
 db_q4.add_dbc_file('dbc/q4/TSR_V1.3.dbc')
 
 obs = {}
+ids = [m.frame_id for m in db_q4.messages]
 
 
 def parser_mbq4(id, buf, ctx):
-    ids = [m.frame_id for m in db_q4.messages]
     if id not in ids:
         return None
-
+    # t0 = time.time()
     r = db_q4.decode_message(id, buf)
+    # dt = time.time() - t0
+    # print('q4 decode cost: {:.2f}ms'.format(dt*1000))
     if ctx and ctx.get('parser_mode') == 'direct':
         return r
     if not r:
@@ -80,6 +83,7 @@ def parser_mbq4(id, buf, ctx):
         if (id-0x141 + 1)%4 == 0:
             tt = len(ctx[lane_type])
             if len(ctx[lane_type]) >= 5 and ctx[lane_type]['track_ID'] > 0:
+                ctx[lane_type]['id'] = lane_type
                 ctx[lane_type]['color'] = 8
                 ctx[lane_type]['type'] = 'lane'
                 ctx[lane_type]['class'] = lane_type
@@ -129,14 +133,14 @@ def parser_mbq4(id, buf, ctx):
             ctx[cur_id_key]['width'] = r['OBJ_Width']
             ctx[cur_id_key]['length'] = r['OBJ_Length']
             ctx[cur_id_key]['height'] = r['OBJ_Width']  # for test
-            ctx[cur_id_key]['abs_long_velocity'] = r['OBJ_Abs_Long_Velocity']
+            ctx[cur_id_key]['vel_lon_abs'] = r['OBJ_Abs_Long_Velocity']
 
         # Data C
         if 'OBJ_Abs_Lat_Velocity' in r:
             if 'id' not in ctx[cur_id_key]:
                 return
-            ctx[cur_id_key]['abs_lat_velocity'] = r['OBJ_Abs_Lat_Velocity']
-            ctx[cur_id_key]['abs_long_acc'] = r['OBJ_Abs_Long_Acc']
+            ctx[cur_id_key]['vel_lat_abs'] = r['OBJ_Abs_Lat_Velocity']
+            ctx[cur_id_key]['acc_lon_abs'] = r['OBJ_Abs_Long_Acc']
             ctx[cur_id_key]['pos_lon'] = r['OBJ_Long_Distance']
 
         # Data D

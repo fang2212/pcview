@@ -30,6 +30,8 @@ from tools.match import is_near
 from tools.transform import Transform, OrientTuner
 from tools.vehicle import Vehicle, get_rover_target
 from multiprocessing import Queue
+
+
 # logging.basicConfig(level=logging.INFO,
 #                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
@@ -41,7 +43,8 @@ def loop_traverse(items):
 
 
 class PCC(Thread):
-    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=None, auto_rec=False):
+    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=None,
+                 auto_rec=False):
         super(PCC, self).__init__()
         # from config.config import runtime
         self.hub = hub
@@ -56,10 +59,10 @@ class PCC(Thread):
         self.ts0 = 0
 
         self.now_id = 0
-        #self.pre_rtk = {}
+        # self.pre_rtk = {}
         self.ts_now = 0
         self.cipv = 0
-        #self.msg_cnt = {}
+        # self.msg_cnt = {}
         self.transform = Transform(uniconf)
         self.m_g2i = self.transform.calc_g2i_matrix()
         self.ipm = None
@@ -71,7 +74,7 @@ class PCC(Thread):
         self.show_ipm_bg = False
         self.auto_rec = auto_rec
 
-        self.refresh_rate = 20
+        self.refresh_rate = 10
         self.display_interval = 1.0 / self.refresh_rate
         self.vehicles = {'ego': Vehicle('ego')}
         self.calib_data = dict()
@@ -98,6 +101,7 @@ class PCC(Thread):
             def update_speed(x):
                 self.hub.d['replay_speed'] = 1 if x // 10 < 1 else x // 10
                 print('replay-speed is', self.hub.d['replay_speed'])
+
             if not to_web:
                 cv2.createTrackbar('replay-speed', 'adj', 10, 50, update_speed)
 
@@ -159,7 +163,7 @@ class PCC(Thread):
             for source in list(self.cache['misc']):
                 for entity in list(self.cache['misc'][source]):
                     ts_a = self.cache['misc'][source][entity].get('ts_arrival')
-                    if not ts_a or ts_now - ts_a > max(3*self.display_interval, 0.4):
+                    if not ts_a or ts_now - ts_a > max(3 * self.display_interval, 0.4):
                         del self.cache['misc'][source][entity]
         except Exception as e:
             print('error when clean cache:', entity)
@@ -186,10 +190,10 @@ class PCC(Thread):
             # print(data)
             if 'video' in data['type']:
                 is_main = data.get('is_main')
-                if not self.replay:
-                    self.hub.fileHandler.insert_jpg(
-                        {'ts': data['ts'], 'frame_id': data['frame_id'], 'jpg': data['img'],
-                         'source': 'video' if is_main else data['source']})
+                # if not self.replay:
+                    # self.hub.fileHandler.insert_jpg(
+                    #     {'ts': data['ts'], 'frame_id': data['frame_id'], 'jpg': data['img'],
+                    #      'source': 'video' if is_main else data['source']})
                 if not is_main:
                     if data['source'] not in self.video_cache:
                         self.video_cache[data['source']] = {}
@@ -210,9 +214,6 @@ class PCC(Thread):
                     self.cache['frame_id'] = fid
                     self.cache['ts'] = data['ts']
                     self.cache['updated'] = True
-                    # if not self.replay:
-                    #     self.hub.fileHandler.insert_video(
-                    #         {'ts': data['ts'], 'frame_id': fid, 'img': self.cache['img_raw'], 'source': 'video'})
                     return True
             else:
                 dtype = data.get('type') if 'type' in data else 'notype'
@@ -223,7 +224,7 @@ class PCC(Thread):
 
     def adjust_interval(self):
         iqsize = self.hub.msg_queue.qsize()
-        if iqsize > 240:
+        if iqsize > 1000:
             self.display_interval = max(self.display_interval, self.run_cost) + 0.005
         elif iqsize < 1 and self.run_cost < self.display_interval:
             self.display_interval = self.display_interval - 0.005
@@ -234,7 +235,7 @@ class PCC(Thread):
             self.display_interval = 1.0
         elif self.display_interval < 0.05:
             self.display_interval = 0.05
-        print('refresh interval set to', self.display_interval,'hub qsize:', iqsize)
+        print('refresh interval set to', self.display_interval, 'hub qsize:', iqsize)
         return {'status': 'ok'}
 
     def run(self):
@@ -274,7 +275,7 @@ class PCC(Thread):
                         # time.sleep(0.1)
                         continue
                     iqsize = self.hub.msg_queue.qsize()
-                    if iqsize > 1000:
+                    if iqsize > 2000:
                         # print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1-t0)*1000), d[2], sys.getsizeof(d[1]))
                         # self.adjust_interval()
                         continue
@@ -290,6 +291,7 @@ class PCC(Thread):
                 continue
             last_ts = time.time()
             img_rendered = self.draw(self.cache, frame_cnt)  # render
+            ts_render = time.time()
             if self.to_web:
                 # self.web_img['now_image'] = comb.copy()
                 self.o_msg_q.put(
@@ -325,11 +327,13 @@ class PCC(Thread):
             runtime_delay = {'frame_render_cost'}
             if self.to_web:
                 # self.web_img['now_image'] = comb.copy()
-                self.o_msg_q.put(('delay', {'name': 'frame_popping_cost', 'delay': '{:.1f}'.format(1000*(t2-t1))}))
+                self.o_msg_q.put(('delay', {'name': 'frame_popping_cost', 'delay': '{:.1f}'.format(1000 * (t2 - t1))}))
                 self.o_msg_q.put(('delay', {'name': 'frame_caching_cost', 'delay': '{:.1f}'.format(1000 * (t1 - t0))}))
-                self.o_msg_q.put(('delay', {'name': 'refreshing_rate', 'delay': '{:.1f}'.format(1.0/self.display_interval)}))
-            # print('pcc time cost:popping:{:.2f}ms caching:{:.2f}ms rendering:{:.2f}ms total:{:.2f}ms '.format(1000*(t1-t0), 1000*(t2-t1), 1000*(t3-t2), 1000*(t4-t0)), d[2])
-            self.run_cost = self.run_cost * 0.9 + (t4-t0) * 0.1
+                self.o_msg_q.put(
+                    ('delay', {'name': 'refreshing_rate', 'delay': '{:.1f}'.format(1.0 / self.display_interval)}))
+            # print('pcc time cost:popping:{:.2f}ms caching:{:.2f}ms rendering:{:.2f}ms display:{:.2f}ms total:{:.2f}ms iqsize:{}'.format(
+            #     1000 * (t1 - t0), 1000 * (t2 - t1), 1000 * (ts_render - t2), 1000 * (t3 - ts_render), 1000 * (t4 - t0), self.hub.msg_queue.qsize()), d[2])
+            self.run_cost = self.run_cost * 0.9 + (t4 - t0) * 0.1
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])
@@ -343,6 +347,7 @@ class PCC(Thread):
         try:
             if 'img_raw' in mess and mess['img_raw'] is not None:
                 img = mess['img_raw'].copy()
+                # print('reuse video.')
             else:
                 # return
                 mess['img_raw'] = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
@@ -359,7 +364,7 @@ class PCC(Thread):
         self.player.update_column_ts('video', mess['ts'])
         # print(mess)
         # print(frame_id, img.shape)
-        misc_data = mess.get('misc')
+
         if self.ts0 == 0:
             self.ts0 = self.ts_now
 
@@ -396,24 +401,22 @@ class PCC(Thread):
             if idx > 2:
                 continue
             video = self.video_cache[source]
-            # print('incoming video', video['source'])
-            # img_raw = cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR)
-            # if self.video_cache[source]['updated']:
-            #     self.hub.fileHandler.insert_video(
-            #         {'ts': video['ts'], 'frame_id': video['frame_id'], 'img': img_raw, 'source': video['source']})
             self.video_cache[source]['updated'] = False
             img_small = cv2.resize(cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR), (427, 240))
             video['device'] = "x1d3"
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
+        t1 = time.time()
 
         if 'x1_data' in mess:
             # print('------', mess['x1_data'])
             for data in mess['x1_data']:
                 # print(mess['x1_data'])
                 self.flow_player.draw(data, img)
+        t2 = time.time()
 
         # cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
+        misc_data = mess.get('misc')
         if misc_data:
             # print('can0 data')
             for source in list(mess['misc']):
@@ -429,6 +432,8 @@ class PCC(Thread):
                     #     continue
                     if not self.draw_can_data(img, mess['misc'][source][entity]):
                         print('draw misc data exited, source:', source)
+
+        t3 = time.time()
 
         if not self.replay and self.hub.fileHandler.is_recording:
             self.player.show_recording(img, self.hub.fileHandler.start_time)
@@ -459,6 +464,9 @@ class PCC(Thread):
         self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
         self.frame_drawn_cnt += 1
         self.frame_cost_total += self.frame_cost
+
+        t4 = time.time()
+        print('pcc draw cost: video:{:.2f}ms x1_data:{:.2f}ms misc:{:.2f}ms other:{:.2f}ms total:{:.2f}ms'.format(1000*(t1-t0), 1000*(t2-t1), 1000*(t3-t2), 1000*(t4-t3), 1000*(t4-t0),))
 
         return comb
 

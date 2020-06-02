@@ -290,9 +290,10 @@ if __name__ == "__main__":
                     if fid is not None:
                         fid = None
 
-
-    jpgs = jpeg_extractor('/home/nan/data/temp')
-    mw = MJPEGWriter('/home/nan/data/pcc_test/test.avi', 1280, 720, 20)
+    video_dir = '/home/nan/data/20191122154341_ramp_in/video'
+    jpgs = jpeg_extractor(video_dir)
+    output_file = os.path.join(video_dir, 'camera_0000_remux.avi')
+    mw = MJPEGWriter(output_file, 1280, 720, 20)
     mw.write_header()
     for fid, jpg in jpgs:
         mw.write_frame(jpg)

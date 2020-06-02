@@ -342,17 +342,20 @@ class CameraSink(Sink):
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         df = frame_id - self.last_fid
         if df != 1:
-            print("\r{} frame jump at {}".format(df-1, frame_id), end='')
+            print("\r{} frame jump at {}".format(df - 1, frame_id), end='')
         self.last_fid = frame_id
         app1 = jpg.find(b'\xff\xe1')
         frame_id_jfif = int.from_bytes(jpg[24:28], byteorder="little")
         # print(app1, frame_id_jfif)
         timestamp, = struct.unpack('<d', msg[8:16])
+        self.fileHandler.insert_jpg(
+            {'ts': timestamp, 'frame_id': frame_id, 'jpg': jpg, 'source': 'video' if self.is_main else self.source})
 
         # logging.debug('cam id {}'.format(frame_id))
         # print('frame id', frame_id)
 
-        r = {'ts': timestamp, 'type': 'video', 'img': jpg, 'frame_id': frame_id, 'source': self.source, 'is_main': self.is_main, 'device': self.devname}
+        r = {'ts': timestamp, 'type': 'video', 'img': jpg, 'frame_id': frame_id, 'source': self.source,
+             'is_main': self.is_main, 'device': self.devname}
         # print('frame id', frame_id)
         # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
 
@@ -463,7 +466,8 @@ class FlowSink(Sink):
                         aiohttp.WSMsgType.ERROR):
             return None
 
-        r = {'ts': ts, 'img': jpg, 'frame_id': frame_id,'type': 'video', 'source': self.source, 'is_main': self.is_main}
+        r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
+             'is_main': self.is_main}
         # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
         return frame_id, r
 
