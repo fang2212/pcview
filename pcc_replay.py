@@ -141,10 +141,14 @@ class LogPlayer(Process):
         self.hz = 20
         self.loop = loop
 
+        self.last_ts = 0
+
         self.buf = []
-        self.replay_speed = 1
+        self.replay_speed = 2  # 2x speed replay
         self.now_frame_id = 0
         self.x1_log = os.path.dirname(log_path) + '/pcv_log.txt'
+        self.pause_state = False
+        self.paused_t = 0
         # self.init_env()
 
     def init_env(self):
@@ -281,6 +285,9 @@ class LogPlayer(Process):
             time.sleep(0.001)
 
     def pop_common(self):
+        ts_n = time.time()
+        # print('pop interval: {:.2f}ms'.format(1000*(ts_n-self.last_ts)))
+        self.last_ts = ts_n
         # if not self.shared['t0']:
         #     self.shared['t0'] = time.time()
         #     print('t0 set to', self.shared['t0'])
@@ -295,24 +302,31 @@ class LogPlayer(Process):
                 print('error in pop_common:', data)
                 return
                 # raise e
-            dt = tsnow - self.shared['ts0'] - (time.time() - self.shared['t0'])
+            dt = (tsnow - self.shared['ts0'])/self.replay_speed - (time.time() - self.paused_t - self.shared['t0'])
             # print(tsnow, self.shared['ts0'], time.time(), self.shared['t0'])
             # print(self.msg_queue.qsize())
             if dt > 0.0002:  # smallest interval that sleep can actually delay
                 # print('sleep', dt)
                 # print(data)
+                pass
                 time.sleep(dt)
             # print('pop common', frame_id, len(data))
             return frame_id, data, msg_type
         else:
             # print('msg empty sleep 0.01')
-            time.sleep(0.01)
+            time.sleep(0.001)
 
     def pause(self, pause):
         if pause:
+            self.pause_state = True
+            self.last_pause_ts = time.time()
             self.ctrl_q.put({'action': 'pause'})
         else:
+            self.pause_state = False
             self.ctrl_q.put({'action': 'resume'})
+
+    def add_pause(self, t):
+        self.paused_t += t
 
     def run(self):
         # self.init_socket()

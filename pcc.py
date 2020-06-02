@@ -35,6 +35,7 @@ from multiprocessing import Queue
 # logging.basicConfig(level=logging.INFO,
 #                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
+sample_jpg = open('/home/nan/workshop/git/pcview/static/img/no_video.jpg', 'rb').read()
 
 def loop_traverse(items):
     while True:
@@ -74,7 +75,7 @@ class PCC(Thread):
         self.show_ipm_bg = False
         self.auto_rec = auto_rec
 
-        self.refresh_rate = 10
+        self.refresh_rate = 20
         self.display_interval = 1.0 / self.refresh_rate
         self.vehicles = {'ego': Vehicle('ego')}
         self.calib_data = dict()
@@ -260,7 +261,8 @@ class PCC(Thread):
                     continue
                 t1 = time.time()
 
-                if self.cache_data(d):
+                new_frame = self.cache_data(d)
+                if new_frame:
                     frame_cnt += 1
                     if frame_cnt > 500:
                         self.player.start_time = datetime.now()
@@ -283,69 +285,70 @@ class PCC(Thread):
                 print('pcc run error:', e)
                 continue
 
-            # render begins
-            self.handle_keyboard()
-            if time.time() - last_ts < self.display_interval:
-                # time.sleep(0.001)
-                # print('wait to refresh', self.display_interval)
-                continue
-            last_ts = time.time()
-            img_rendered = self.draw(self.cache, frame_cnt)  # render
-            ts_render = time.time()
-            if self.to_web:
-                # self.web_img['now_image'] = comb.copy()
-                self.o_msg_q.put(
-                    ('delay', {'name': 'frame_render_cost', 'delay': '{:.1f}'.format(self.frame_cost * 1000)}))
-                if not self.o_img_q.full():
-                    self.o_img_q.put(img_rendered)
-            else:
-                cv2.imshow('MINIEYE-CVE', img_rendered)
-
-            self.save_rendered(img_rendered)
-            t3 = time.time()
-
-            while self.replay and self.pause:
-                self.draw(self.cache, frame_cnt)
-                self.hub.pause(True)
-                time.sleep(0.1)
-
-            self.clean_cache()
-
-            if self.replay:
-                self.hub.pause(False)
-                if self.hub.d:
-                    frame_cnt += self.hub.d['replay_speed'] - 1
-                    # print(frame_cnt)
-            # self.draw(d, frame_cnt)
-
-            # time.sleep(0.01)
-
-            if self.auto_rec:
-                self.auto_rec = False
-                self.start_rec()
-            t4 = time.time()
-            runtime_delay = {'frame_render_cost'}
             if self.to_web:
                 # self.web_img['now_image'] = comb.copy()
                 self.o_msg_q.put(('delay', {'name': 'frame_popping_cost', 'delay': '{:.1f}'.format(1000 * (t2 - t1))}))
                 self.o_msg_q.put(('delay', {'name': 'frame_caching_cost', 'delay': '{:.1f}'.format(1000 * (t1 - t0))}))
                 self.o_msg_q.put(
                     ('delay', {'name': 'refreshing_rate', 'delay': '{:.1f}'.format(1.0 / self.display_interval)}))
-            # print('pcc time cost:popping:{:.2f}ms caching:{:.2f}ms rendering:{:.2f}ms display:{:.2f}ms total:{:.2f}ms iqsize:{}'.format(
-            #     1000 * (t1 - t0), 1000 * (t2 - t1), 1000 * (ts_render - t2), 1000 * (t3 - ts_render), 1000 * (t4 - t0), self.hub.msg_queue.qsize()), d[2])
+
+            # render begins
+            if time.time() - last_ts > self.display_interval:
+                self.handle_keyboard()
+                # time.sleep(0.001)
+                # print('wait to refresh', self.display_interval)
+                last_ts = time.time()
+                self.render(frame_cnt)
+
+            t4 = time.time()
+            runtime_delay = {'frame_render_cost'}
+            # print('pcc time cost:popping:{:.2f}ms caching:{:.2f}ms rendering:{:.2f}ms total:{:.2f}ms iqsize:{}'.format(
+            #     1000 * (t1 - t0), 1000 * (t2 - t1), 1000 * (t4 - t2), 1000 * (t4 - t0), self.hub.msg_queue.qsize()), d[2])
             self.run_cost = self.run_cost * 0.9 + (t4 - t0) * 0.1
+
+    def render(self, frame_cnt):
+        img_rendered = self.draw(self.cache, frame_cnt)  # render
+        ts_render = time.time()
+        if self.to_web:
+            # self.web_img['now_image'] = comb.copy()
+            self.o_msg_q.put(
+                ('delay', {'name': 'frame_render_cost', 'delay': '{:.1f}'.format(self.frame_cost * 1000)}))
+            if not self.o_img_q.full():
+                self.o_img_q.put(img_rendered)
+        else:
+            cv2.imshow('MINIEYE-CVE', img_rendered)
+
+        self.save_rendered(img_rendered)
+        t3 = time.time()
+
+        while self.replay and self.pause:
+            self.handle_keyboard()
+            self.draw(self.cache, frame_cnt)
+            self.hub.pause(True)
+            time.sleep(0.1)
+
+        self.clean_cache()
+
+        if self.replay:
+            self.hub.pause(False)
+            if self.hub.d:
+                frame_cnt += self.hub.d['replay_speed'] - 1
+                # print(frame_cnt)
+        # self.draw(d, frame_cnt)
+
+        # time.sleep(0.01)
+
+        if self.auto_rec:
+            self.auto_rec = False
+            self.start_rec()
+
 
     def draw(self, mess, frame_cnt):
         # print(mess[''])
         ts_ana = []
         t0 = time.time()
         ts_ana.append(('draw start', t0))
-        # try:
-        #     imgraw = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
-        #     img = imgraw.copy()
-        # except Exception as e:
-        #     print(e)
-        #     return
+
         try:
             if 'img_raw' in mess and mess['img_raw'] is not None:
                 img = mess['img_raw'].copy()
@@ -355,7 +358,7 @@ class PCC(Thread):
                 mess['img_raw'] = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
                 img = mess['img_raw'].copy()
         except Exception as e:
-            print(mess)
+            print('img decode error', mess)
             # raise e
             return
         # ts_fdec = time.time()
@@ -392,15 +395,9 @@ class PCC(Thread):
                 self.ipm[:, :] = [40, 40, 40]
 
             self.player.show_dist_mark_ipm(self.ipm)
+        ts_ana.append(('prep ipm', time.time()))
 
         img_aux = np.zeros([0, 427, 3], np.uint8)
-        # if 'video_aux' in mess:
-        #     # print(mess['video_aux'])
-        #     for video in mess['video_aux']:
-        #         if len(video) > 0:
-        #             self.video_cache[video['source']] = video
-        #             self.video_cache[video['source']]['updated'] = True
-
         for idx, source in enumerate(self.video_cache):
             if idx > 2:
                 continue
@@ -473,11 +470,11 @@ class PCC(Thread):
         # t4 = time.time()
         ts_ana.append(('others', time.time()))
         # print('pcc draw cost: video:{:.2f}ms x1_data:{:.2f}ms misc:{:.2f}ms other:{:.2f}ms total:{:.2f}ms'.format(1000*(ts_fdec-t0), 1000*(t2-t1), 1000*(t3-t2), 1000*(t4-t3), 1000*(t4-t0),))
-        print('-------------time analysis---------------')
-        for idx, ts in enumerate(ts_ana):
-            if idx > 0:
-                print(ts[0], '{:.2f}ms'.format(1000*(ts[1]-ts_ana[idx-1][1])))
-        print('total: {:.2f}'.format(1000*(ts_ana[-1][1]-ts_ana[0][1])))
+        # print('-------------time analysis---------------')
+        # for idx, ts in enumerate(ts_ana):
+        #     if idx > 0:
+        #         print(ts[0], '{:.2f}ms'.format(1000*(ts[1]-ts_ana[idx-1][1])))
+        # print('total: {:.2f}'.format(1000*(ts_ana[-1][1]-ts_ana[0][1])))
         return comb
 
     def save_rendered(self, img_rendered):
@@ -743,6 +740,11 @@ class PCC(Thread):
         elif key == 32:  # space
             self.pause = not self.pause
             print('Pause:', self.pause)
+            if self.pause:
+                self.pause_t = time.time()
+            else:
+                paused_t = time.time() - self.pause_t
+                self.hub.add_pause(paused_t)
 
         elif key == ord('r'):
             if self.hub.fileHandler.is_recording:
