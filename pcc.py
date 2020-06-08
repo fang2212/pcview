@@ -35,7 +35,7 @@ from multiprocessing import Queue
 # logging.basicConfig(level=logging.INFO,
 #                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
-sample_jpg = open('/home/nan/workshop/git/pcview/static/img/no_video.jpg', 'rb').read()
+#sample_jpg = open('/home/nan/workshop/git/pcview/static/img/no_video.jpg', 'rb').read()
 
 def loop_traverse(items):
     while True:
@@ -87,6 +87,7 @@ class PCC(Thread):
         self.init_cache()
         self.run_cost = 0.05
         self.stuck_cnt = 0
+        self.statistics = {}
 
         # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
@@ -225,7 +226,8 @@ class PCC(Thread):
 
     def adjust_interval(self):
         iqsize = self.hub.msg_queue.qsize()
-        if iqsize > 1000:
+        self.statistics['pcc_inq_size'] = iqsize
+        if iqsize > 300:
             self.display_interval = max(self.display_interval, self.run_cost) + 0.005
         elif iqsize < 1 and self.run_cost < self.display_interval:
             self.display_interval = self.display_interval - 0.005
@@ -271,6 +273,7 @@ class PCC(Thread):
                 t2 = time.time()
                 if not self.replay:
                     qsize = self.hub.fileHandler.raw_queue.qsize()
+                    self.statistics['fileHandler_rawq_size'] = qsize
                     # print('raw queue size:', qsize)
                     if self.hub.fileHandler.is_recording and qsize > 2000:
                         print('msg_q critical, skip drawing.', qsize)
@@ -285,12 +288,6 @@ class PCC(Thread):
                 print('pcc run error:', e)
                 continue
 
-            if self.to_web:
-                # self.web_img['now_image'] = comb.copy()
-                self.o_msg_q.put(('delay', {'name': 'frame_popping_cost', 'delay': '{:.1f}'.format(1000 * (t2 - t1))}))
-                self.o_msg_q.put(('delay', {'name': 'frame_caching_cost', 'delay': '{:.1f}'.format(1000 * (t1 - t0))}))
-                self.o_msg_q.put(
-                    ('delay', {'name': 'refreshing_rate', 'delay': '{:.1f}'.format(1.0 / self.display_interval)}))
 
             # render begins
             if time.time() - last_ts > self.display_interval:
@@ -301,7 +298,11 @@ class PCC(Thread):
                 self.render(frame_cnt)
 
             t4 = time.time()
-            runtime_delay = {'frame_render_cost'}
+
+            self.statistics['frame_popping_cost'] = '{:.2f}'.format(1000 * (t1 - t0))
+            self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (t2 - t1))
+            self.statistics['frame_rendering_cost'] = '{:.2f}'.format(1000 * (t4 - t2))
+            self.statistics['refreshing_rate'] = '{:.1f}'.format(1.0 / self.display_interval)
             # print('pcc time cost:popping:{:.2f}ms caching:{:.2f}ms rendering:{:.2f}ms total:{:.2f}ms iqsize:{}'.format(
             #     1000 * (t1 - t0), 1000 * (t2 - t1), 1000 * (t4 - t2), 1000 * (t4 - t0), self.hub.msg_queue.qsize()), d[2])
             self.run_cost = self.run_cost * 0.9 + (t4 - t0) * 0.1
@@ -311,8 +312,9 @@ class PCC(Thread):
         ts_render = time.time()
         if self.to_web:
             # self.web_img['now_image'] = comb.copy()
-            self.o_msg_q.put(
-                ('delay', {'name': 'frame_render_cost', 'delay': '{:.1f}'.format(self.frame_cost * 1000)}))
+            # self.o_msg_q.put(
+            #     ('delay', {'name': 'frame_render_cost', 'delay': '{:.1f}'.format(self.frame_cost * 1000)}))
+            self.statistics['frame_total_cost'] = '{:.2f}ms'.format(self.frame_cost * 1000)
             if not self.o_img_q.full():
                 self.o_img_q.put(img_rendered)
         else:
@@ -549,6 +551,8 @@ class PCC(Thread):
                     self.gga.start()
                 if self.gga is not None and not self.replay:
                     self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
+                    if data['pos_type'] != 'NONE':
+                        self.statistics['GGA_report_coord'] = 'Lat:{lat:.8f}  Lon:{lon:.8f}  Hgt:{hgt:.3f}'.format(**data)
             elif 'yaw' in data:
                 self.player.show_heading_horizen(img, data)
         else:  # other vehicle
@@ -803,6 +807,18 @@ class PCC(Thread):
             self.o_msg_q.put(('devices', msg))
         # print('sent online devices')
         return {'status': 'ok', 'info': 'oj8k'}
+
+    def send_statistics(self):
+        if not self.to_web:
+            return
+
+        for item in self.statistics:
+            self.o_msg_q.put(('delay', {'name': item, 'value': '{}'.format(self.statistics[item])}))
+        # self.web_img['now_image'] = comb.copy()
+        # self.o_msg_q.put(('delay', {'name': 'frame_popping_cost', 'delay': '{:.1f}'.format(1000 * (t2 - t1))}))
+        # self.o_msg_q.put(('delay', {'name': 'frame_caching_cost', 'delay': '{:.1f}'.format(1000 * (t1 - t0))}))
+        # self.o_msg_q.put(
+        #     ('delay', {'name': 'refreshing_rate', 'delay': '{:.1f}'.format(1.0 / self.display_interval)}))
 
     def calib_esr(self, ofile='esr_clb.txt'):
         if 'rtk' not in self.calib_data:

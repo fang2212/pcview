@@ -61,6 +61,7 @@ def init_checkers(pcc):
     supervisor.add_check_task(pcc.hub.fileHandler.check_file)
     supervisor.add_check_task(pcc.send_online_devices, interval=0.5)
     supervisor.add_check_task(pcc.adjust_interval)
+    supervisor.add_check_task(pcc.send_statistics, interval=0.5)
     supervisor.start()
     return supervisor
 

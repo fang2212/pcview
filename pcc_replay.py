@@ -348,6 +348,7 @@ class LogPlayer(Process):
         total_frame = 0
         rtk_dec = False
         lcnt = 0
+        fid_forward = 0
         # pcv = PcvParser(self.x1_fp)
         rf = open(self.log_path)
         for line in rf:
@@ -389,12 +390,21 @@ class LogPlayer(Process):
                 last_fid = frame_id
 
                 try:
-                    fid, jpg = next(self.jpeg_extractor)
+                    if frame_id >= fid_forward:
+                        fid, jpg = next(self.jpeg_extractor)
+                    else:
+                        fid = fid_forward
+                        jpg = None
                 except StopIteration as e:
                     print('images run out.')
                     return
                 if fid and fid != frame_id:
                     print(bcl.FAIL+'raw fid differs from log:'+bcl.ENDC, fid, frame_id)
+                    if fid < frame_id:
+                        for i in range(frame_id - fid):
+                            _, jpg = next(self.jpeg_extractor)
+                    else:
+                        fid_forward = fid
                 lcnt += 1
                 if jpg is None or lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
                     self.now_frame_id = frame_id

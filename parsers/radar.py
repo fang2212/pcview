@@ -122,8 +122,6 @@ def parse_ars(id, buf, ctx=None):
         return ret
 
 
-
-
 def parse_esr(id, buf, ctx=None):
     global esrobs
     ids = [m.frame_id for m in db_esr.messages]

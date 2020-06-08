@@ -220,11 +220,14 @@ class Player(object):
             x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], sensor)
             dist = (x ** 2 + y ** 2) ** 0.5
 
-        else:
+        elif 'range' in obs:
             # print(obs['source'].split('.')[0])
             # x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
             dist = obs['range']
             x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], sensor)
+        else:
+            print('no x dis in obs:', obs)
+            return
         dist = max(0.1, dist)
         if dist <= 0 or x <= 0:
             return

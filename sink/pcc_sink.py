@@ -4,12 +4,14 @@ import struct
 import time
 # from multiprocessing import Process
 from threading import Thread
+from multiprocessing import Value
 import os
 import aiohttp
 import can
 import msgpack
 
-import nanomsg
+# import nanomsg
+import pynng
 from parsers import ublox, rtcm3
 from parsers.drtk import V1_msg, v1_handlers
 from parsers.parser import parsers_dict
@@ -35,14 +37,19 @@ class Sink(Thread):
         self.source = 'general_dev.{}'.format(index)
 
     def _init_port(self):
-        self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
-        nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
-        nanomsg.wrapper.nn_connect(self._socket, "tcp://%s:%s" % (self.dev, self.channel,))
+        address = "tcp://%s:%s" % (self.dev, self.channel,)
+        self._socket = pynng.Sub0(dial=address, topics=b'')
+        self._socket.recv_buffer_size = 1
+        # self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
+        # nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
+        # nanomsg.wrapper.nn_connect(self._socket, address)
         # self._socket = Socket(SUB)
         # self._socket.connect("tcp://%s:%s" % (self.dev, self.channel,))
 
     def read(self):
-        bs = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
+        # bs = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
+        bs = self._socket.recv()
+        # print(self._socket.recv_buffer_size)
         return bs
         # return self._socket.recv()
 
@@ -50,6 +57,8 @@ class Sink(Thread):
         self.ss = None
 
     def run(self):
+        pid = os.getpid()
+        print('sink {} pid:'.format(self.source), pid)
         time0 = time.time()
         self._init_port()
         pt_sum = 0
@@ -90,56 +99,56 @@ class Sink(Thread):
     def pkg_handler(self, msg_buf):
         pass
 
-
-class SinkThread(Thread):
-    def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
-        super(SinkThread, self).__init__()
-        self.deamon = True
-        self.dev = ip
-        self.channel = port
-        self.queue = queue
-        self.type = msg_type
-        self.index = index
-        self.cls = msg_type
-        self.isheadless = isheadless
-        if 'can' in msg_type:
-            self.cls = 'can'
-            # print(self.type, 'start.')
-
-    def _init_port(self):
-        self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
-        nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
-        nanomsg.wrapper.nn_connect(self._socket, "tcp://%s:%s" % (self.dev, self.channel,))
-        # self._socket = Socket(SUB)
-        # self._socket.connect("tcp://%s:%s" % (self.dev, self.channel,))
-
-    def read(self):
-        bs = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
-        return bs
-        # return self._socket.recv()
-
-    def _init_local_socket(self):
-        self.ss = None
-
-    def run(self):
-        self._init_port()
-        # if 'can' in self.type:
-        #     print(self.type, 'start.')
-        while True:
-            buf = self.read()
-            if not buf:
-                time.sleep(0.001)
-                continue
-            t0 = time.time()
-            r = self.pkg_handler(buf)
-            dt = time.time() - t0
-            # print(self.dev, self.type, self.channel, 'dt: {:.5f}'.format(dt))
-            if r is not None and not self.isheadless:
-                self.queue.put((*r, self.cls))
-            # time.sleep(0.01)
-
-    def pkg_handler(self, msg_buf):
-        pass
+#
+# class SinkThread(Thread):
+#     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
+#         super(SinkThread, self).__init__()
+#         self.deamon = True
+#         self.dev = ip
+#         self.channel = port
+#         self.queue = queue
+#         self.type = msg_type
+#         self.index = index
+#         self.cls = msg_type
+#         self.isheadless = isheadless
+#         if 'can' in msg_type:
+#             self.cls = 'can'
+#             # print(self.type, 'start.')
+#
+#     def _init_port(self):
+#         self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
+#         nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
+#         nanomsg.wrapper.nn_connect(self._socket, "tcp://%s:%s" % (self.dev, self.channel,))
+#         # self._socket = Socket(SUB)
+#         # self._socket.connect("tcp://%s:%s" % (self.dev, self.channel,))
+#
+#     def read(self):
+#         bs = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
+#         return bs
+#         # return self._socket.recv()
+#
+#     def _init_local_socket(self):
+#         self.ss = None
+#
+#     def run(self):
+#         self._init_port()
+#         # if 'can' in self.type:
+#         #     print(self.type, 'start.')
+#         while True:
+#             buf = self.read()
+#             if not buf:
+#                 time.sleep(0.001)
+#                 continue
+#             t0 = time.time()
+#             r = self.pkg_handler(buf)
+#             dt = time.time() - t0
+#             # print(self.dev, self.type, self.channel, 'dt: {:.5f}'.format(dt))
+#             if r is not None and not self.isheadless:
+#                 self.queue.put((*r, self.cls))
+#             # time.sleep(0.01)
+#
+#     def pkg_handler(self, msg_buf):
+#         pass
 
 
 class PinodeSink(Sink):
@@ -244,9 +253,11 @@ class CANSink(Sink):
         self.temp_ts = {'CAN1': 0, 'CAN2': 0}
         self.source = '{}.{:d}'.format(type[0], index)
         self.context = {'source': self.source}
+        self.parse_switch = Value('i', 1)
 
     def read(self):
-        msg = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
+        # msg = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
+        msg = self._socket.recv()
         msg = memoryview(msg).tobytes()
         dlc = msg[3]
         # print(dlc)
@@ -254,6 +265,12 @@ class CANSink(Sink):
         timestamp, = struct.unpack('<d', msg[8:16])
         data = msg[16:]
         return can_id, timestamp, data
+
+    def disable_parsing(self):
+        self.parse_switch.value = 0
+
+    def enable_parsing(self):
+        self.parse_switch.value = 1
 
     def pkg_handler(self, msg):
 
@@ -278,7 +295,8 @@ class CANSink(Sink):
         #         self.temp_ts['CAN2'] = 0
         #         self.temp_ts['CAN1'] = 0
         #         print('dt: {:2.05f}s'.format(dt))
-
+        if self.parse_switch.value == 0:
+            return
         r = None
         for parser in self.parser:
             # print(parser)

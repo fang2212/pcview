@@ -137,14 +137,20 @@
 
             socket.on('delay', function (msg, cb) {
                 let data = msg.data;
+                let mcontent = document.getElementById('statistics')
                 if(data['name'] === 'frame_send_cost'){
                     $('#fsend_cost').text(data['delay']);
                 }
-                else if(data['name'] === 'frame_render_cost'){
-                    $('#frender_cost').text(data['delay']);
+                else if(data['name'] === 'frame_rendering_cost'){
+                    $('#frender_cost').text(data['value']);
                 }
                 else{
-                    $('#'+data['name']).text(data['delay']);
+                    if (!(document.getElementById(data['name']))){
+                        let newLine = document.createElement("view");
+                        newLine.innerHTML = "<p>"+ data['name']+": <b><span id=\""+ data['name']+"\"></span></b></p>"
+                        mcontent.appendChild(newLine)
+                    }
+                    $('#'+data['name']).text(data['value']);
                 }
                 });
 
@@ -401,14 +407,17 @@
             </table>
         </div>
         <div id="tab-item4" class="tab-item">
-            <h1>websocket test</h1>
-            <p>Async mode is: <b>{{ async_mode }}</b></p>
+            <h1>Statistics</h1>
+            <div id="statistics">
+                <p>Async mode is: <b>{{ async_mode }}</b></p>
             <p>Average ping/pong latency: <b><span id="ping-pong"></span>ms</b></p>
             <p>Frame sending cost: <b><span id="fsend_cost"></span>ms</b></p>
             <p>Frame render cost: <b><span id="frender_cost"></span>ms</b></p>
             <p>Frame caching cost: <b><span id="frame_caching_cost"></span>ms</b></p>
             <p>Frame popping cost: <b><span id="frame_popping_cost"></span>ms</b></p>
             <p>Refreshing rate: <b><span id="refreshing_rate"></span>Hz</b></p>
+            </div>
+            <h1>websocket test</h1>
             <h2>Send:</h2>
             <form id="emit" method="POST" action='#'>
                 <input type="text" name="emit_data" id="emit_data" placeholder="Message">

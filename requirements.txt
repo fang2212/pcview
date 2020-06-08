@@ -1,3 +1,4 @@
+pynng
 numpy
 python-can
 pyserial
