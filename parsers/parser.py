@@ -5,7 +5,7 @@ from parsers.mobileye_q2 import parse_mobileye
 from parsers.mqb_esp import parse_mqb
 from parsers.radar import *
 from parsers.drtk import parse_rtk
-from parsers.mobileye_q4 import parser_mbq4
+from parsers.mobileye_q4 import parser_mbq4, parser_mbq4_lane_tsr
 from parsers.ublox import decode_nmea
 from parsers.df_d530 import parse_dfd530
 from parsers.x1d3 import parse_x1d3
@@ -20,6 +20,7 @@ parsers_dict = {
     "ifv300":   parse_ifv300,
     "mbq2":     parse_mobileye,
     "mbq4":     parser_mbq4,
+    "mbq4_lane": parser_mbq4_lane_tsr,
     "esr":      parse_esr,
     "ars":      parse_ars,
     "mqb":      parse_mqb,

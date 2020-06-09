@@ -290,8 +290,11 @@ class Player(object):
             # x = obs['pos_lon']
             # y = obs['pos_lat']
             x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], sensor)
-        else:
+        elif 'range' in obs:
             x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], sensor)
+        else:
+            print('no distance in obs', obs)
+            return
         u, v = self.transform.trans_gnd2ipm(x, y)
 
         color = self.color_obs.get(sensor) or self.color_obs['default']

@@ -7,11 +7,11 @@
 @Create Time:     2019/8/29 上午10:38   
 """
 import cantools
-import canmatrix
+# import canmatrix
 # import decimal
 import time
-from canard import can, bus
-from canard.file import jsondb
+# from canard import can, bus
+# from canard.file import jsondb
 
 db_q4 = cantools.db.load_file('dbc/q4/Car_sensor_V1.3.dbc', strict=False)
 db_q4.add_dbc_file('dbc/q4/Lanes_V1.8_fix.dbc')
@@ -174,6 +174,8 @@ def parser_mbq4(id, buf, ctx):
 
         if (id-0x141 + 1) % 4 == 0 and 'track_ID' in ctx['q4_lane'][lane_type] and 'marker_width' in ctx['q4_lane'][lane_type]:
             tt = len(ctx['q4_lane'][lane_type])
+            if 'a0' not in ctx['q4_lane'][lane_type] or 'a2' not in ctx['q4_lane'][lane_type]:
+                return
             if len(ctx['q4_lane'][lane_type]) >= 5 and ctx['q4_lane'][lane_type]['track_ID'] > 0:
                 ctx['q4_lane'][lane_type]['id'] = lane_type
                 ctx['q4_lane'][lane_type]['color'] = 8
@@ -207,6 +209,9 @@ def parser_mbq4(id, buf, ctx):
         if 'OBJ_ID' in r:
             if r['OBJ_Existence_Probability'] == 0:
                 return
+            ctx['q4_obs'][cur_id_key]['color'] = 8
+            ctx['q4_obs'][cur_id_key]['type'] = 'obstacle'
+            ctx['q4_obs'][cur_id_key]['sensor'] = 'mbq4'
             ctx['q4_rcnt'] = r['Rolling_Counter']
             ctx['q4_obs'][cur_id_key]['id'] = r['OBJ_ID']
             ctx['q4_obs'][cur_id_key]['probability'] = r['OBJ_Existence_Probability']
@@ -321,6 +326,8 @@ def parser_mbq4_lane_tsr(id, buf, ctx):
         r = db_lane.decode_message(id, buf)
     elif id in ids_tsr:
         r = db_tsr
+    else:
+        return
     # return
     ctx['q4_parse_cnt'] += 1
     dt = time.time() - t0

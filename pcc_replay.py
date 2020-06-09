@@ -20,6 +20,7 @@ import os
 from config.config import CVECfg, load_config, load_installation
 from parsers.parser import parsers_dict
 from config.config import *
+# from numba import jit
 
 
 def jpeg_extractor(video_dir):
@@ -65,34 +66,45 @@ def jpeg_extractor(video_dir):
                     fid = None
 
 
-class PcvParser(Thread):
+class PcvParser(object):
     def __init__(self, x1_fp):
         super(PcvParser, self).__init__()
         self.x1_fp = x1_fp
-        self.cache = deque(maxlen=3000)
+        # self.cache = deque(maxlen=3000)
+        self.cache = {}
         self.req_fid = 0
-        self.start()
+        # self.start()
 
-    def run(self):
-        current_fid = 0
-        for line in self.x1_fp:
-            if data['frame_id'] - self.req_fid > 50:
-                time.sleep(0.1)
-                continue
-            try:
-                data = json.loads(line)
-                self.cache.append(data)
-            except json.JSONDecodeError as e:
-                continue
+    # def run(self):
+    #     current_fid = 0
+    #     for line in self.x1_fp:
+    #         if data['frame_id'] - self.req_fid > 50:
+    #             time.sleep(0.1)
+    #             continue
+    #         try:
+    #             data = json.loads(line)
+    #             self.cache.append(data)
+    #         except json.JSONDecodeError as e:
+    #             continue
+    def read(self):
+        line = self.x1_fp.readline().strip()
+
+        try:
+            data = json.loads(line)
+            if data['frame_id'] not in self.cache:
+                self.cache[data['frame_id']] = {}
+            for key in data:
+                self.cache[data['frame_id']][key] = data[key]
+
+            if len(self.cache) > 1000:
+                for fid in range(data['frame_id']-1000, data['frame_id']-600):
+                    if fid in self.cache:
+                        del self.cache[fid]
+        except Exception as e:
+            print('pcv decode error', e)
 
     def get_frame(self, fid):
-        self.req_fid = fid
-        res = []
-        for data in list(self.cache):
-            if data['frame_id'] < fid:
-                self.cache.popleft()
-            elif data['frame_id'] == fid:
-                res.append(data)
+        res = self.cache.get(fid)
 
         return res
 
@@ -296,11 +308,12 @@ class LogPlayer(Process):
             if not data:
                 return
             # print(data)
-            try:
-                tsnow = data['ts'] if isinstance(data, dict) else data[0]['ts']
-            except Exception as e:
-                print('error in pop_common:', data)
-                return
+            tsnow = data['ts'] if isinstance(data, dict) else data[0]['ts']
+            # try:
+            #     tsnow = data['ts'] if isinstance(data, dict) else data[0]['ts']
+            # except Exception as e:
+            #     print('error in pop_common:', data)
+            #     return
                 # raise e
             dt = (tsnow - self.shared['ts0'])/self.replay_speed - (time.time() - self.paused_t - self.shared['t0'])
             # print(tsnow, self.shared['ts0'], time.time(), self.shared['t0'])
@@ -341,6 +354,7 @@ class LogPlayer(Process):
                 # print(self.shared['ts0'], self.shared['t0'])
         self._do_replay()
 
+    # @jit(nopython=True)
     def _do_replay(self):
         self.init_env()
         last_fid = 0
@@ -395,7 +409,7 @@ class LogPlayer(Process):
                     else:
                         fid = fid_forward
                         jpg = None
-                except StopIteration as e:
+                except StopIteration:
                     print('images run out.')
                     return
                 if fid and fid != frame_id:
