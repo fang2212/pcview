@@ -13,11 +13,11 @@ import time
 from canard import can, bus
 from canard.file import jsondb
 
-# db_q4 = cantools.db.load_file('dbc/q4/Car_sensor_V1.3.dbc', strict=False)
-# db_q4.add_dbc_file('dbc/q4/Lanes_V1.8_fix.dbc')
-# db_q4.add_dbc_file('dbc/q4/Objects_V1.4.dbc')
-# db_q4.add_dbc_file('dbc/q4/TSR_V1.3.dbc')
-db_q4 = cantools.db.load_file('dbc/q4/EyeQ4_all.dbc', strict=False)
+db_q4 = cantools.db.load_file('dbc/q4/Car_sensor_V1.3.dbc', strict=False)
+db_q4.add_dbc_file('dbc/q4/Lanes_V1.8_fix.dbc')
+db_q4.add_dbc_file('dbc/q4/Objects_V1.4.dbc')
+db_q4.add_dbc_file('dbc/q4/TSR_V1.3.dbc')
+# db_q4 = cantools.db.load_file('dbc/q4/EyeQ4_all.dbc', strict=False)
 # with open('dbc/q4/EyeQ4_all.dbc', 'w') as wf:
 #     wf.write(db_q4.as_dbc_string())
 db_car = cantools.db.load_file('dbc/q4/Car_sensor_V1.3.dbc', strict=False)
