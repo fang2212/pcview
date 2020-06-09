@@ -20,6 +20,7 @@ import os
 from config.config import CVECfg, load_config, load_installation
 from parsers.parser import parsers_dict
 from config.config import *
+from tools.log_info import *
 # from numba import jit
 
 
@@ -73,6 +74,7 @@ class PcvParser(object):
         # self.cache = deque(maxlen=3000)
         self.cache = {}
         self.req_fid = 0
+        self.cur_fid = 0
         # self.start()
 
     # def run(self):
@@ -91,10 +93,17 @@ class PcvParser(object):
 
         try:
             data = json.loads(line)
+            if 'ultrasonic' in data:
+                self.cache[self.cur_fid].append(data)
+                return self.cur_fid
+            else:
+                self.cur_fid = data['frame_id']
+            # print(data['frame_id'])
             if data['frame_id'] not in self.cache:
-                self.cache[data['frame_id']] = {}
+                self.cache[data['frame_id']] = {'type': 'pcv_data'}
             for key in data:
                 self.cache[data['frame_id']][key] = data[key]
+            # self.cache[data['frame_id']].append(data)
 
             if len(self.cache) > 1000:
                 for fid in range(data['frame_id']-1000, data['frame_id']-600):
@@ -103,7 +112,17 @@ class PcvParser(object):
         except Exception as e:
             print('pcv decode error', e)
 
+        return data['frame_id']
+
     def get_frame(self, fid):
+        max_search = 50
+        for i in range(max_search):
+            rfid = self.read()
+            if fid not in self.cache:
+                rfid = self.read()
+            elif rfid > fid:
+                break
+
         res = self.cache.get(fid)
 
         return res
@@ -158,7 +177,6 @@ class LogPlayer(Process):
         self.buf = []
         self.replay_speed = 2  # 2x speed replay
         self.now_frame_id = 0
-        self.x1_log = os.path.dirname(log_path) + '/pcv_log.txt'
         self.pause_state = False
         self.paused_t = 0
         # self.init_env()
@@ -168,11 +186,18 @@ class LogPlayer(Process):
         while not self.msg_queue.empty():
             self.msg_queue.get()
         self.jpeg_extractor = jpeg_extractor(os.path.dirname(self.log_path) + '/video')
-        self.x1_fp = None
+        # self.x1_fp = None
         # self.shared['t0'] = 0
+        self.main_idx = get_main_index(self.log_path)
+        main_dev = get_main_dev(self.log_path)
+        x1_log = os.path.dirname(self.log_path) + '/pcv_log.txt'
+        if main_dev and main_dev['type'] == 'x1_algo' and os.path.exists(x1_log):
+            self.x1_parser = PcvParser(open(x1_log))
+        else:
+            self.x1_parser = None
 
-        if os.path.exists(self.x1_log):
-            self.x1_fp = open(self.x1_log, 'r')
+        # if os.path.exists(self.x1_log):
+        #     self.x1_fp = open(self.x1_log, 'r')
 
         for idx, cfg in enumerate(self.cfg.configs):
             if 'can_types' in cfg:
@@ -229,72 +254,72 @@ class LogPlayer(Process):
                 return cfg.get('veh_tag')
         return 'default'
 
-    def pop_simple(self, pause=False):
-        res = {
-            'frame_id': None,
-            'img': None,
-            'can': {},
-            'x1_data': []
-        }
-
-        if not self.cam_queue.empty() or self.shared.get('terminate'):
-            frame_id, data, msg_type, cache = self.cam_queue.get()
-            # print(frame_id, msg_type)
-            res['ts'] = data['ts']
-            res['img'] = data['img']
-            res['frame_id'] = frame_id
-
-            if res['img'] is not None:
-                for key in list(cache):
-                    res[key] = cache[key].copy()
-                    # print(key, cache[key])
-                    cache[key] = []
-                self.msg_cnt['frame'] += 1
-
-                while True:
-                    if self.x1_fp is None:
-                        break
-                    try:
-                        fx = self.x1_fp.tell()
-                        line = self.x1_fp.readline().strip()
-
-                        try:
-                            data = json.loads(line)
-                            # self.pcv_cache.append(data)
-                            # list(self.pcv_cache).sort(key=lambda x: x['frame_id'])
-                            # print(data['frame_id'], len(data))
-                        except json.JSONDecodeError as e:
-                            pass
-                            # print('error json line', line)
-                            # continue
-
-                        if 'frame_id' not in data:
-                            # print(data)
-                            continue
-                        if 'create_ts' in data:  # camera frame comes much earlier than other frames in x1d3
-                            continue
-                        if 'ultrasonic' in data:
-                            res['x1_data'].append(data)
-                        elif data['frame_id'] == res['frame_id']:
-                            res['x1_data'].append(data)
-                        elif data['frame_id'] < res['frame_id']:
-                            # print(data['frame_id'], res['frame_id'])
-                            continue
-                        else:
-                            self.x1_fp.seek(fx)
-                            break
-                    except StopIteration as e:
-                        break
-
-                now = time.time()
-                if now - self.last_time < 1.0 / self.hz:
-                    time.sleep(1.0 / self.hz + self.last_time - now)
-                self.last_time = time.time()
-                return res
-            else:
-                print('error decode img', frame_id, len(data))
-        else:
-            time.sleep(0.001)
+    # def pop_simple(self, pause=False):
+    #     res = {
+    #         'frame_id': None,
+    #         'img': None,
+    #         'can': {},
+    #         'x1_data': []
+    #     }
+    #
+    #     if not self.cam_queue.empty() or self.shared.get('terminate'):
+    #         frame_id, data, msg_type, cache = self.cam_queue.get()
+    #         # print(frame_id, msg_type)
+    #         res['ts'] = data['ts']
+    #         res['img'] = data['img']
+    #         res['frame_id'] = frame_id
+    #
+    #         if res['img'] is not None:
+    #             for key in list(cache):
+    #                 res[key] = cache[key].copy()
+    #                 # print(key, cache[key])
+    #                 cache[key] = []
+    #             self.msg_cnt['frame'] += 1
+    #
+    #             while True:
+    #                 if self.x1_fp is None:
+    #                     break
+    #                 try:
+    #                     fx = self.x1_fp.tell()
+    #                     line = self.x1_fp.readline().strip()
+    #
+    #                     try:
+    #                         data = json.loads(line)
+    #                         # self.pcv_cache.append(data)
+    #                         # list(self.pcv_cache).sort(key=lambda x: x['frame_id'])
+    #                         # print(data['frame_id'], len(data))
+    #                     except json.JSONDecodeError as e:
+    #                         pass
+    #                         # print('error json line', line)
+    #                         # continue
+    #
+    #                     if 'frame_id' not in data:
+    #                         # print(data)
+    #                         continue
+    #                     if 'create_ts' in data:  # camera frame comes much earlier than other frames in x1d3
+    #                         continue
+    #                     if 'ultrasonic' in data:
+    #                         res['x1_data'].append(data)
+    #                     elif data['frame_id'] == res['frame_id']:
+    #                         res['x1_data'].append(data)
+    #                     elif data['frame_id'] < res['frame_id']:
+    #                         # print(data['frame_id'], res['frame_id'])
+    #                         continue
+    #                     else:
+    #                         self.x1_fp.seek(fx)
+    #                         break
+    #                 except StopIteration as e:
+    #                     break
+    #
+    #             now = time.time()
+    #             if now - self.last_time < 1.0 / self.hz:
+    #                 time.sleep(1.0 / self.hz + self.last_time - now)
+    #             self.last_time = time.time()
+    #             return res
+    #         else:
+    #             print('error decode img', frame_id, len(data))
+    #     else:
+    #         time.sleep(0.001)
 
     def pop_common(self):
         ts_n = time.time()
@@ -431,6 +456,14 @@ class LogPlayer(Process):
                 r['source'] = 'video'
                 r['type'] = 'video'
                 self.msg_queue.put((frame_id, r, 'camera'))
+
+                if self.x1_parser:
+                    res = self.x1_parser.get_frame(frame_id)
+                    if res:
+                        res['ts'] = ts
+                        res['source'] = 'x1_data.{}'.format(self.main_idx)
+                        # print(res)
+                        self.msg_queue.put((frame_id, res, res['source']))
                 # self.cache.clear()
                 # self.cache['can'] = []
                 # print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())

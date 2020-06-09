@@ -426,15 +426,15 @@ class PCC(Thread):
             for source in list(mess['misc']):
                 for entity in list(mess['misc'][source]):
                     # print(entity)
-                    try:
-                        dt = self.ts_now - mess['misc'][source][entity]['ts']
-                    except KeyError as e:
-                        print('error: no ts in', source, entity)
-                        # raise e
+                    # try:
+                    #     dt = self.ts_now - mess['misc'][source][entity]['ts']
+                    # except KeyError as e:
+                    #     print('error: no ts in', source, entity)
+                    #     raise e
                     # if dt > 0.2 or dt < -0.2:
                     #     del mess['misc'][source][entity]
                     #     continue
-                    if not self.draw_can_data(img, mess['misc'][source][entity]):
+                    if not self.draw_misc_data(img, mess['misc'][source][entity]):
                         print('draw misc data exited, source:', source)
 
         # t3 = time.time()
@@ -667,7 +667,7 @@ class PCC(Thread):
         if self.to_web:
             self.o_msg_q.put(('profiling', data))
 
-    def draw_can_data(self, img, data):
+    def draw_misc_data(self, img, data):
         # print(data)
         if 'type' not in data:
             print('data invalid: no type', data)
@@ -676,7 +676,11 @@ class PCC(Thread):
         if role not in self.vehicles:
             self.vehicles[role] = Vehicle(role)
 
-        if data['type'] == 'obstacle':
+        if data['type'] == 'pcv_data':
+            # print('pcv_data', data)
+            self.flow_player.draw(data, img)
+
+        elif data['type'] == 'obstacle':
             # dummy0 = {'type': 'obstacle', 'id': 20, 'source': 'x1.1', 'pos_lat': 0, 'pos_lon': 60, 'color': 1}
             # dummy1 = {'type': 'obstacle', 'id': 20, 'source': 'esr.0', 'sensor': 'radar', 'pos_lat': 0, 'pos_lon': 60, 'color': 2}
             # self.player.show_obs(img, dummy0)

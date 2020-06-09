@@ -151,3 +151,12 @@ def get_main_index(log):
         if collector.get('is_main'):
             return collector['idx']
 
+
+def get_main_dev(log):
+    idx = get_main_index(log)
+    if idx is None:
+        return
+    cfg_path = os.path.join(os.path.dirname(log), 'config.json')
+    cfg = json.load(open(cfg_path))
+    return cfg[idx]
+
