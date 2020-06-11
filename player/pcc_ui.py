@@ -217,6 +217,8 @@ class Player(object):
         if 'pos_lon' in obs:
             # x = obs['pos_lon']
             # y = obs['pos_lat']
+            if 'pos_lat' not in obs:
+                print('no pos_lat', obs)
             x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], sensor)
             dist = (x ** 2 + y ** 2) ** 0.5
 

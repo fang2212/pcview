@@ -221,7 +221,7 @@ def parser_mbq4(id, buf, ctx):
             ctx['q4_obs'][cur_id_key]['motion_status'] = r['OBJ_Motion_Status']
             ctx['q4_obs'][cur_id_key]['brake_light'] = r['OBJ_Brake_Light']
             ctx['q4_obs'][cur_id_key]['turn_right'] = r['OBJ_Turn_Indicator_Right']
-            ctx['q4_obs'][cur_id_key]['turn_ledt'] = r['OBJ_Turn_Indicator_Left']
+            ctx['q4_obs'][cur_id_key]['turn_left'] = r['OBJ_Turn_Indicator_Left']
             # print('ID: ', r['OBJ_ID'], 'class', ctx['q4_obs'][cur_id_key]['class'])
 
         # Data B
