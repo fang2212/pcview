@@ -295,6 +295,8 @@ class PCC(Thread):
                 # time.sleep(0.001)
                 # print('wait to refresh', self.display_interval)
                 last_ts = time.time()
+                if not self.replay:
+                    self.hub.parse_can_msgs()
                 self.render(frame_cnt)
 
             t4 = time.time()

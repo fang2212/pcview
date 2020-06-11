@@ -26,7 +26,7 @@ msg_q = Queue(maxsize=200)
 img_q = Queue(maxsize=5)
 local_path = json.load(open('config/local.json'))['log_root']
 
-no_frame = open('static/img/no_video.png', 'rb').read()
+no_frame = open('static/img/no_video.jpg', 'rb').read()
 
 profile_data = {}
 def push_profile_dt(src, dt):

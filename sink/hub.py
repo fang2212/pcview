@@ -391,3 +391,8 @@ class Hub(Thread):
             # if not is_main and 'video' in data['source']:
             #     self.cache['video_aux'].append(data)
             #     return
+
+    def parse_can_msgs(self):
+        for sink in self.sinks:
+            if sink.type == 'can_sink':
+                sink.parse_event.set()

@@ -4,19 +4,26 @@ import struct
 import time
 # from multiprocessing import Process
 from threading import Thread
-from multiprocessing import Value
+from multiprocessing import Value, Event
 import os
 import aiohttp
 import can
 import msgpack
 
-# import nanomsg
-import pynng
+try:
+    import pynng
+    nn_impl = 'pynng'
+except ModuleNotFoundError:
+    nn_impl = 'nanomsg'
+    import nanomsg
+
+# import pynng
 from parsers import ublox, rtcm3
 from parsers.drtk import V1_msg, v1_handlers
 from parsers.parser import parsers_dict
 from recorder.convert import *
 from tools import mytools
+from collections import deque
 
 
 class Sink(Thread):
@@ -38,17 +45,19 @@ class Sink(Thread):
 
     def _init_port(self):
         address = "tcp://%s:%s" % (self.dev, self.channel,)
-        self._socket = pynng.Sub0(dial=address, topics=b'')
-        self._socket.recv_buffer_size = 1
-        # self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
-        # nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
-        # nanomsg.wrapper.nn_connect(self._socket, address)
-        # self._socket = Socket(SUB)
-        # self._socket.connect("tcp://%s:%s" % (self.dev, self.channel,))
+        if nn_impl == 'pynng':
+            self._socket = pynng.Sub0(dial=address, topics=b'')
+            self._socket.recv_buffer_size = 1
+        else:
+            self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
+            nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
+            nanomsg.wrapper.nn_connect(self._socket, address)
 
     def read(self):
-        # bs = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
-        bs = self._socket.recv()
+        if nn_impl == 'pynng':
+            bs = self._socket.recv()
+        else:
+            bs = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
         # print(self._socket.recv_buffer_size)
         return bs
         # return self._socket.recv()
@@ -160,6 +169,7 @@ class PinodeSink(Sink):
         self.context = {'source': self.source}
         self.resname = resname
         self.fileHandler = fileHandler
+        self.type = 'pi_sink'
         if resname == 'rtcm':
             self.rtcm3 = rtcm3.RTCM3()
         # print(queue, ip, port, channel, index, resname, fileHandler, isheadless)
@@ -253,18 +263,22 @@ class CANSink(Sink):
         self.temp_ts = {'CAN1': 0, 'CAN2': 0}
         self.source = '{}.{:d}'.format(type[0], index)
         self.context = {'source': self.source}
-        self.parse_switch = Value('i', 1)
+        # self.parse_switch = Value('i', 1)
+        self.buf = deque(maxlen=200)
+        self.parse_event = Event()
+        self.type = 'can_sink'
+        self.parse_event.set()
 
-    def read(self):
-        # msg = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
-        msg = self._socket.recv()
-        msg = memoryview(msg).tobytes()
-        dlc = msg[3]
-        # print(dlc)
-        can_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
-        timestamp, = struct.unpack('<d', msg[8:16])
-        data = msg[16:]
-        return can_id, timestamp, data
+    # def read(self):
+    #     msg = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
+    #     # msg = self._socket.recv()
+    #     msg = memoryview(msg).tobytes()
+    #     dlc = msg[3]
+    #     # print(dlc)
+    #     can_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
+    #     timestamp, = struct.unpack('<d', msg[8:16])
+    #     data = msg[16:]
+    #     return can_id, timestamp, data
 
     def disable_parsing(self):
         self.parse_switch.value = 0
@@ -276,7 +290,13 @@ class CANSink(Sink):
 
         lst = time.time()
 
-        can_id, timestamp, data = msg
+        # can_id, timestamp, data = msg
+        msg = memoryview(msg).tobytes()
+        dlc = msg[3]
+        # print(dlc)
+        can_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
+        timestamp, = struct.unpack('<d', msg[8:16])
+        data = msg[16:]
         id = '0x%x' % can_id
         # print(data)
 
@@ -295,37 +315,53 @@ class CANSink(Sink):
         #         self.temp_ts['CAN2'] = 0
         #         self.temp_ts['CAN1'] = 0
         #         print('dt: {:2.05f}s'.format(dt))
-        if self.parse_switch.value == 0:
-            return
-        r = None
-        for parser in self.parser:
-            # print(parser)
-            r = parser(can_id, data, self.context)
-            if r is not None:
-                break
+        self.buf.append((can_id, data))
+        # if self.parse_switch.value == 0:
+        #     return
+        if self.parse_event.is_set():
+            self.parse_event.clear()
+            # r = None
+            ret = []
+                # print(parser)
+            for i in range(len(self.buf)):
+                can_id, data = self.buf.popleft()
+                for parser in self.parser:
+                    r = parser(can_id, data, self.context)
+                    if r is not None:
+                        if isinstance(r, list):
+                            for obs in r:
+                                obs['ts'] = timestamp
+                                obs['source'] = self.source
+                            ret.extend(r)
+                        elif isinstance(r, dict):
+                            r['ts'] = timestamp
+                            r['source'] = self.source
+                            ret.append(r)
+                        break
 
-        # print(r)
-        if r is None:
-            return None
-        if isinstance(r, list):
-            # print('r is list')
-            for obs in r:
-                obs['ts'] = timestamp
-                obs['source'] = self.source
-                # print(obs)
-        else:
-            # print('r is not list')
-            r['ts'] = timestamp
-            r['source'] = self.source
-            # print(r['source'])
-        # print(r)
-        return can_id, r, self.source
+            # # print(r)
+            # if r is None:
+            #     return None
+            # if isinstance(r, list):
+            #     # print('r is list')
+            #     for obs in r:
+            #         obs['ts'] = timestamp
+            #         obs['source'] = self.source
+            #         # print(obs)
+            # else:
+            #     # print('r is not list')
+            #     r['ts'] = timestamp
+            #     r['source'] = self.source
+            #     # print(r['source'])
+            # # print(r)
+            return can_id, ret, self.source
 
 
 class GsensorSink(Sink):
     def __init__(self, queue, ip, port, channel, index, fileHandler, isheadless=False):
         super(GsensorSink, self).__init__(queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
+        self.type = 'gsensor_sink'
 
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
@@ -352,6 +388,7 @@ class CameraSink(Sink):
         self.source = 'video.{:d}'.format(index)
         self.is_main = is_main
         self.devname = devname
+        self.type = 'cam_sink'
 
     def pkg_handler(self, msg):
         # print('cprocess-id:', os.getpid())
@@ -390,6 +427,7 @@ class FlowSink(Sink):
         self.cam_queue = cam_queue
         self.msg_queue = msg_queue
         self.is_main = is_main
+        self.type = 'flow_sink'
         self.source = 'libflow.{:d}'.format(index)
 
     async def _run(self):

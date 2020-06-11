@@ -7,8 +7,8 @@
 # @File    : net/ntrip_client.py
 # @Desc    :
 
-import nanomsg
-from nanomsg import Socket, PAIR, PUB, SUB
+# import nanomsg
+# from nanomsg import Socket, PAIR, PUB, SUB
 import time
 import serial
 from multiprocessing.dummy import Queue, Process
@@ -22,53 +22,53 @@ from functools import reduce
 def nmea_checksum(nmea_str):
     return reduce(operator.xor, map(ord, nmea_str), 0)
 
+#
+# def run_client(addr='tcp://192.168.98.231:5010'):
+#     with Socket(SUB) as ssub:
+#         ssub.connect(addr)
+#         while True:
+#             data = ssub.recv()
+#             print(data)
 
-def run_client(addr='tcp://192.168.98.231:5010'):
-    with Socket(SUB) as ssub:
-        ssub.connect(addr)
-        while True:
-            data = ssub.recv()
-            print(data)
+#
+# def run_client_ll(addr):
+#     q = Queue()
+#     ntrip = NTRIPClient(addr, q)
+#     ntrip.start()
+#     while True:
+#         try:
+#             print('attempting serial comm: ttyACM0...')
+#             ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=0.5)
+#         except Exception as e:
+#             time.sleep(3)
+#             continue
+#         print('connected ttyACM0.')
+#         break
+#     while True:
+#         if q.empty():
+#             time.sleep(0.001)
+#             continue
+#         msg = q.get()
+#         # msg = memoryview(data).tobytes()
+#         print(len(msg), 'bytes received.')
+#         ser.write(msg)
 
-
-def run_client_ll(addr):
-    q = Queue()
-    ntrip = NTRIPClient(addr, q)
-    ntrip.start()
-    while True:
-        try:
-            print('attempting serial comm: ttyACM0...')
-            ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=0.5)
-        except Exception as e:
-            time.sleep(3)
-            continue
-        print('connected ttyACM0.')
-        break
-    while True:
-        if q.empty():
-            time.sleep(0.001)
-            continue
-        msg = q.get()
-        # msg = memoryview(data).tobytes()
-        print(len(msg), 'bytes received.')
-        ser.write(msg)
-
-
-class NTRIPClient(Process):
-    def __init__(self, addr, queue):
-        Process.__init__(self)
-        self.queue = queue
-        self.addr = addr
-
-    def run(self):
-        socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
-        nanomsg.wrapper.nn_setsockopt(socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
-        nanomsg.wrapper.nn_connect(socket, self.addr)
-        while True:
-            data = nanomsg.wrapper.nn_recv(socket, 0)[1]
-            msg = memoryview(data).tobytes()
-            self.queue.put(msg)
-            print(len(msg), 'bytes received.')
+#
+# class NTRIPClient(Process):
+#     def __init__(self, addr, queue):
+#         Process.__init__(self)
+#         self.queue = queue
+#         self.addr = addr
+#
+#     def run(self):
+#         socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
+#         nanomsg.wrapper.nn_setsockopt(socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
+#         nanomsg.wrapper.nn_connect(socket, self.addr)
+#         while True:
+#             data = nanomsg.wrapper.nn_recv(socket, 0)[1]
+#             msg = memoryview(data).tobytes()
+#             self.queue.put(msg)
+#             print(len(msg), 'bytes received.')
 
 
 def generate_gga(lat=22.32112, lon=113.565668):
@@ -139,31 +139,32 @@ class GGAReporter(Process):
                 reconnect = 1
             time.sleep(0.8)
 
-
-def test_rtk_caster(addr):
-    from parsers import rtcm3
-    sock = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
-    nanomsg.wrapper.nn_setsockopt(sock, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
-    nanomsg.wrapper.nn_connect(sock, addr)
-    time.sleep(0.5)
-    gga = GGAReporter('ntrip.weaty.cn')
-    gga.start()
-    print('start recving rtcm.')
-    last_time = 0
-
-    while True:
-        data = nanomsg.wrapper.nn_recv(sock, 0)[1]
-        if not data:
-            time.sleep(0.01)
-            continue
-        msg = memoryview(data).tobytes()
-        print(len(msg), 'bytes RTCM received.')
-        now = time.time()
-        if now - last_time > 1.0:
-            gga.set_pos(22.123456, 113.123456)
-            last_time = now
+#
+# def test_rtk_caster(addr):
+#     from parsers import rtcm3
+#     sock = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
+#     nanomsg.wrapper.nn_setsockopt(sock, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
+#     nanomsg.wrapper.nn_connect(sock, addr)
+#     time.sleep(0.5)
+#     gga = GGAReporter('ntrip.weaty.cn')
+#     gga.start()
+#     print('start recving rtcm.')
+#     last_time = 0
+#
+#     while True:
+#         data = nanomsg.wrapper.nn_recv(sock, 0)[1]
+#         if not data:
+#             time.sleep(0.01)
+#             continue
+#         msg = memoryview(data).tobytes()
+#         print(len(msg), 'bytes RTCM received.')
+#         now = time.time()
+#         if now - last_time > 1.0:
+#             gga.set_pos(22.123456, 113.123456)
+#             last_time = now
 
 
 if __name__ == "__main__":
+    pass
     # run_client_ll('tcp://42.159.10.237:5010')
-    test_rtk_caster('tcp://ntrip.weaty.cn:5010')
+    # test_rtk_caster('tcp://ntrip.weaty.cn:5010')
