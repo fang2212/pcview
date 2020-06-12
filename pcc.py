@@ -175,6 +175,8 @@ class PCC(Thread):
         if not d:
             return
         fid, data, source = d
+        # if 'type' not in data:
+        #     print(data)
         if source not in self.cache['misc']:
             self.cache['misc'][source] = {}
             self.cache['info'][source] = {}
@@ -286,6 +288,7 @@ class PCC(Thread):
                         continue
             except Exception as e:
                 print('pcc run error:', e)
+                raise e
                 continue
 
 
