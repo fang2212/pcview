@@ -41,8 +41,8 @@ class Sink(Thread):
         self.cls = msg_type
         self.isheadless = isheadless
         self.profile_intv = 1
-        if 'can' in msg_type:
-            self.cls = 'can'
+        # if 'can' in msg_type:
+        #     self.cls = 'can'
             # print(self.type, 'start.')
         self.source = 'general_dev.{}'.format(index)
 
@@ -195,7 +195,8 @@ class PinodeSink(Sink):
                 r['source'] = 'gps.{:d}'.format(self.index)
             if r['type'] in ub482_defs:
                 # print(r)
-                self.fileHandler.insert_raw((r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
+                if self.fileHandler.is_recording:
+                    self.fileHandler.insert_raw((r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
 
             elif r['type'] == 'rtk':  # old d-rtk
                 timestamp = r['ts_origin']
@@ -267,7 +268,7 @@ class CANSink(Sink):
         self.source = '{}.{:d}'.format(type[0], index)
         self.context = {'source': self.source}
         # self.parse_switch = Value('i', 1)
-        self.buf = deque(maxlen=20)
+        self.buf = deque(maxlen=2000)
         self.parse_event = Event()
         self.type = 'can_sink'
         self.parse_event.set()
@@ -283,11 +284,11 @@ class CANSink(Sink):
     #     data = msg[16:]
     #     return can_id, timestamp, data
 
-    def disable_parsing(self):
-        self.parse_switch.value = 0
-
-    def enable_parsing(self):
-        self.parse_switch.value = 1
+    # def disable_parsing(self):
+    #     self.parse_switch.value = 0
+    #
+    # def enable_parsing(self):
+    #     self.parse_switch.value = 1
 
     def pkg_handler(self, msg):
 
@@ -304,7 +305,7 @@ class CANSink(Sink):
         # print(data)
 
         # print('can', id)
-        if self.type == 'can0':
+        if self.cls == 'can0':
             log_type = 'CAN' + '{:01d}'.format(self.index * 2)
         else:
             log_type = 'CAN' + '{:01d}'.format(self.index * 2 + 1)
@@ -318,45 +319,49 @@ class CANSink(Sink):
         #         self.temp_ts['CAN2'] = 0
         #         self.temp_ts['CAN1'] = 0
         #         print('dt: {:2.05f}s'.format(dt))
-        self.buf.append((can_id, data))
+
         # if self.parse_switch.value == 0:
         #     return
-        if self.parse_event.is_set():
-            self.parse_event.clear()
-            # r = None
-            ret = []
-                # print(parser)
-            for i in range(len(self.buf)):
-                can_id, data = self.buf.popleft()
-                for parser in self.parser:
-                    r = parser(can_id, data, self.context)
-                    if r is not None:
-                        if isinstance(r, list):
-                            for obs in r:
-                                obs['ts'] = timestamp
-                                obs['source'] = self.source
-                            ret.extend(r)
-                        elif isinstance(r, dict):
-                            r['ts'] = timestamp
-                            r['source'] = self.source
-                            ret.append(r)
-                        break
-
-            # # print(r)
-            # if r is None:
-            #     return None
-            # if isinstance(r, list):
-            #     # print('r is list')
-            #     for obs in r:
-            #         obs['ts'] = timestamp
-            #         obs['source'] = self.source
-            #         # print(obs)
-            # else:
-            #     # print('r is not list')
-            #     r['ts'] = timestamp
-            #     r['source'] = self.source
-            #     # print(r['source'])
-            # # print(r)
+        # self.buf.append((can_id, data))
+        if not self.parse_event.is_set():
+            return
+        # else:
+        #     self.parse_event.clear()
+        #     # r = None
+        # ret = []
+        #     # print(parser)
+        # for i in range(len(self.buf)):
+        #     can_id, data = self.buf.popleft()
+        #     for parser in self.parser:
+        #         r = parser(can_id, data, self.context)
+        #         if r is not None:
+        #             if isinstance(r, list):
+        #                 for obs in r:
+        #                     obs['ts'] = timestamp
+        #                     obs['source'] = self.source
+        #                 ret.extend(r)
+        #             elif isinstance(r, dict):
+        #                 r['ts'] = timestamp
+        #                 r['source'] = self.source
+        #                 ret.append(r)
+        #             break
+        for parser in self.parser:
+            ret = parser(can_id, data, self.context)
+            # print(r)
+            if ret is None:
+                return None
+            if isinstance(ret, list):
+                # print('r is list')
+                for obs in ret:
+                    obs['ts'] = timestamp
+                    obs['source'] = self.source
+                    # print(obs)
+            else:
+                # print('r is not list')
+                ret['ts'] = timestamp
+                ret['source'] = self.source
+                # print(r['source'])
+            # print(r)
             return can_id, ret, self.source
 
 
@@ -395,6 +400,7 @@ class CameraSink(Sink):
 
     def pkg_handler(self, msg):
         # print('cprocess-id:', os.getpid())
+        t0 = time.time()
         msg = memoryview(msg).tobytes()
         jpg = msg[16:]
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
@@ -416,6 +422,8 @@ class CameraSink(Sink):
              'is_main': self.is_main, 'device': self.devname}
         # print('frame id', frame_id)
         # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
+        # dt = time.time() - t0
+        # print('camera sink pkg handling cost: {:.2f}ms'.format(dt*1000))
 
         return frame_id, r, self.source
 

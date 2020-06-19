@@ -18,7 +18,8 @@
                 "algo_e23e": "normal",
                 "ffe0": "normal",
                 "55dd": "normal",
-                "pi_gateway": "normal"
+                "pi_gateway": "normal",
+                "virtual0": "normal"
             },
             "installation": {
                 "esr": {

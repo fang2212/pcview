@@ -16,6 +16,7 @@ import signal
 import cv2
 import sys
 import numpy as np
+from turbojpeg import TurboJPEG
 
 from config.config import local_cfg, load_cfg
 from net.ntrip_client import GGAReporter
@@ -88,6 +89,9 @@ class PCC(Thread):
         self.run_cost = 0.05
         self.stuck_cnt = 0
         self.statistics = {}
+        self.enable_auto_interval_adjust = True
+        self.parse_state = True
+        self.jpeg_dec = TurboJPEG()
 
         # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
@@ -227,6 +231,8 @@ class PCC(Thread):
                 self.cache['info'][source]['integrity'] = 'divided'
 
     def adjust_interval(self):
+        if not self.enable_auto_interval_adjust:
+            return
         iqsize = self.hub.msg_queue.qsize()
         self.statistics['pcc_inq_size'] = iqsize
         if iqsize > 300:
@@ -280,7 +286,7 @@ class PCC(Thread):
                     if self.hub.fileHandler.is_recording and qsize > 2000:
                         print('msg_q critical, skip drawing.', qsize)
                         # time.sleep(0.1)
-                        continue
+                        # continue
                     iqsize = self.hub.msg_queue.qsize()
                     if iqsize > 2000:
                         # print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1-t0)*1000), d[2], sys.getsizeof(d[1]))
@@ -298,8 +304,8 @@ class PCC(Thread):
                 # time.sleep(0.001)
                 # print('wait to refresh', self.display_interval)
                 last_ts = time.time()
-                if not self.replay:
-                    self.hub.parse_can_msgs()
+                # if not self.replay:
+                #     self.hub.parse_can_msgs()
                 self.render(frame_cnt)
 
             t4 = time.time()
@@ -349,7 +355,6 @@ class PCC(Thread):
             self.auto_rec = False
             self.start_rec()
 
-
     def draw(self, mess, frame_cnt):
         # print(mess[''])
         ts_ana = []
@@ -362,7 +367,8 @@ class PCC(Thread):
                 # print('reuse video.')
             else:
                 # return
-                mess['img_raw'] = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
+                # mess['img_raw'] = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
+                mess['img_raw'] = self.jpeg_dec.decode(mess['img'])
                 img = mess['img_raw'].copy()
         except Exception as e:
             print('img decode error', mess)
@@ -411,6 +417,7 @@ class PCC(Thread):
             video = self.video_cache[source]
             self.video_cache[source]['updated'] = False
             img_small = cv2.resize(cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR), (427, 240))
+            img_small = cv2.resize(self.jpeg_dec.decode(video['img']), (427, 240))
             video['device'] = "x1d3"
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
@@ -781,6 +788,17 @@ class PCC(Thread):
         elif key == ord('i'):
             self.sv_state = next(self.sideview_state)
             self.show_ipm = not self.show_ipm
+        elif key == ord('2'):
+            print('add time.')
+            self.enable_auto_interval_adjust = False
+            self.display_interval = self.display_interval + 0.005
+        elif key == ord('1'):
+            print('decrease time.')
+            self.enable_auto_interval_adjust = False
+            self.display_interval = self.display_interval - 0.005
+        elif key == ord('t'):
+            self.parse_state = not self.parse_state
+            self.hub.parse_can_msgs(self.parse_state)
 
     def start_rec(self):
         self.hub.fileHandler.start_rec(self.rlog)

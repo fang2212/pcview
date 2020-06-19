@@ -11,6 +11,9 @@
 import json
 import os
 import shutil
+import platform
+
+machine_arch = platform.machine()
 
 collector0 = {
     "ip": "192.168.0.233",
@@ -348,6 +351,10 @@ def load_cfg(jsonspec, local='config/local.json'):
         shutil.copy('config/local_sample.json', local)
     cve_conf.local_cfg = dic2obj(json.load(open(local)))
     cve_conf.runtime['modules'] = spec['modules']
+    if machine_arch == 'x86_64':
+        cve_conf.runtime['low_profile'] = False
+    else:
+        cve_conf.runtime['low_profile'] = True
     return cve_conf
 
 

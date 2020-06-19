@@ -2,7 +2,8 @@ def load_log_defs(def_file):
     defs = dict()
     with open(def_file) as rf:
         for line in rf:
-            fields = line.split(' ')
+            line = line.strip()
+            fields = line.split()
             defs[fields[0]] = dict()
             defs[fields[0]]['items'] = list()
             defs[fields[0]]['string'] = ' '.join(fields[1:]).strip()
@@ -15,8 +16,12 @@ def load_log_defs(def_file):
 def compose_from_def(defs, r):
     if 'type' not in r or r['type'] not in defs:
         return None
-
-    return defs[r['type']]['string'].format(**r)
+    try:
+        ret = defs[r['type']]['string'].format(**r)
+    except Exception as e:
+        print('logdef compose error,', r)
+        raise e
+    return ret
 
 
 def decode_with_def(defs, line):
@@ -48,4 +53,13 @@ def decode_with_def(defs, line):
     return r
 
 
-ub482_defs = load_log_defs('config/logdefs/ub482.logdef')
+if __name__ == '__main__':
+    ub482_defs = load_log_defs('../config/logdefs/ub482.logdef')
+    line = '1574408859 799999 rtk.5.bestpos SOL_COMPUTED SINGLE 31.410537 120.574382 18.052400 8.144500 WGS84 1.184800 1.279800 2.921200 0.000000 0.000000 37 24 6'
+
+    decoded = decode_with_def(ub482_defs, line)
+    print('decoded:', decoded)
+    encoded = compose_from_def(ub482_defs, decoded)
+    print('encoded:', encoded)
+else:
+    ub482_defs = load_log_defs('config/logdefs/ub482.logdef')

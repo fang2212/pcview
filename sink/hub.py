@@ -289,6 +289,52 @@ class Hub(Thread):
                         #          'channel': 'camera', 'index': idx, 'fileHandler': self.fileHandler,
                         #          'is_main': cfg.get('is_main')}
                         self.sinks.append(vsink)
+
+            elif cfg.get('type') == 'general':
+                for iface in cfg['ports']:
+                    if not cfg['ports'][iface].get('enable') and not is_main:
+                        continue
+                    if 'can' in iface:
+                        chn = cfg['ports'][iface]
+                        cansink = CANSink(self.msg_queue, ip=ip, port=chn['port'], channel=iface, type=[chn['topic']],
+                                              index=idx, fileHandler=self.fileHandler, isheadless=self.headless)
+
+                        # cansink.start()
+                        # cansink = {'stype': 'can', 'queue': self.msg_queue, 'ip': ip, 'port': chn['port'],
+                        #            'channel': iface, 'type': [chn['topic']], 'index': idx,
+                        #            'fileHandler': self.fileHandler, 'isheadless': self.headless}
+                        self.sinks.append(cansink)
+                        cfgs_online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
+                    elif 'gsensor' in iface:
+                        chn = cfg['ports'][iface]
+                        gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=chn['port'], channel=iface, index=idx,
+                                                      fileHandler=self.fileHandler, isheadless=self.headless)
+                        # gsink.start()
+                        # gsink = {'stype': 'imu', 'queue': self.msg_queue, 'ip': ip, 'port': chn['port'],
+                        #          'channel': iface, 'index': idx, 'fileHandler': self.fileHandler,
+                        #          'isheadless': self.headless}
+                        self.sinks.append(gsink)
+                        cfgs_online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
+                    elif 'video' in iface:
+                        port = cfg['ports']['video']['port']
+                        vsink = CameraSink(queue=self.msg_queue, ip=ip, port=port, channel='camera', index=idx,
+                                          fileHandler=self.fileHandler, is_main=cfg.get('is_main'), devname=cfg.get('name'))
+                        # vsink.start()
+                        # vsink = {'stype': 'camera', 'queue': self.cam_queue, 'ip': ip, 'port': port,
+                        #          'channel': 'camera', 'index': idx, 'fileHandler': self.fileHandler,
+                        #          'is_main': cfg.get('is_main')}
+                        self.sinks.append(vsink)
+                    elif 'rtk' in iface or 'gps' in iface:
+                        port = cfg['ports'][iface]['port']
+                        pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=iface,
+                                            fileHandler=self.fileHandler, isheadless=self.headless)
+                        print('added sink pinode', ip, port, iface)
+                        # pisink.start()
+                        # pisink = {'stype': 'pi', 'queue': self.msg_queue, 'ip': ip, 'port': port, 'channel': 'can',
+                        #           'index': idx, 'resname': 'name', 'fileHandler': self.fileHandler,
+                        #           'isheadless': self.headless}
+                        self.sinks.append(pisink)
+                        cfgs_online[ip]['msg_types'].append(iface + '.{}'.format(idx))
             else:  # no type, default is x1 collector
                 continue
                 self.fpga_handle(cfg, self.msg_queue, ip, index=idx)
@@ -392,7 +438,10 @@ class Hub(Thread):
             #     self.cache['video_aux'].append(data)
             #     return
 
-    def parse_can_msgs(self):
+    def parse_can_msgs(self, status):
         for sink in self.sinks:
             if sink.type == 'can_sink':
-                sink.parse_event.set()
+                if status:
+                    sink.parse_event.set()
+                else:
+                    sink.parse_event.clear()

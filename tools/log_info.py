@@ -33,7 +33,7 @@ def get_can_ports_and_roles(log):
 
             if type1 and type1 not in canports:
                 canports[type1] = 'CAN{}'.format(idx * 2 + 1)
-            # if 'can_types' in collector:
+            # if 'can_types' in collector:h
             #     for msg in collector['can_types']:
             #         ctx['veh_roles'][msg] = collector.get('veh_tag')
         ctx['can_port'] = canports
@@ -160,3 +160,35 @@ def get_main_dev(log):
     cfg = json.load(open(cfg_path))
     return cfg[idx]
 
+
+def get_ports(log):
+    ports = {}
+    with open(log) as rf:
+        line_cnt = 0
+        for line in rf:
+            cols = line.strip().split(' ')
+            if 'rtk.' in cols[2]:
+                cols[2] = '.'.join(cols[2].split('.')[:2])
+            ports[cols[2]] = ports[cols[2]] + 1 if cols[2] in ports else 1
+
+    return list(ports.keys())
+
+
+def get_ports_topics(log):
+    ports = get_ports(log)
+    conf_path = os.path.join(os.path.dirname(log), 'config.json')
+    if os.path.exists(conf_path):
+        ports_topics = dict.fromkeys(ports)
+        # print(ports_topics)
+        configs = json.load(open(conf_path))
+        for idx, collector in enumerate(configs):
+            if 'msg_types' not in collector:  # configured not used device
+                continue
+            if 'can0' in collector['ports']:
+                can0_key = 'CAN{}'.format(idx * 2)
+                can1_key = 'CAN{}'.format(idx * 2 + 1)
+                if can0_key in ports_topics:
+                    ports_topics[can0_key] = collector['ports']['can0']['topic']
+                if can1_key in ports_topics:
+                    ports_topics[can1_key] = collector['ports']['can1']['topic']
+        return ports_topics

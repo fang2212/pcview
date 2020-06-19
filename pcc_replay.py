@@ -134,9 +134,53 @@ def list_recorded_data(log_path='~/data/pcc'):
     return recorded_data
 
 
+class ThreadGateway(Thread):
+    def __init__(self, name=None, group=None, target=None, args=(), kwargs=None, *, daemon=None):
+        super(ThreadGateway, self).__init__(target=target)
+        self.received = 0
+        self.sent = 0
+        self.last_update = 0.0
+        self.setName(name)
+        self.info = None
+
+
+from nanomsg import Socket, PUB
+class NNSender(ThreadGateway):
+    def __init__(self, port=5010, name='NNSender'):
+        super(NNSender, self).__init__(name)
+        addr = 'tcp://0.0.0.0:{}'.format(port)
+        self.port = port
+        self.sndq = Queue()
+        self.addr = addr
+
+    def run(self):
+        with Socket(PUB) as spub:
+            spub.bind(self.addr)
+            print('started NN PUB server on', self.addr)
+            while True:
+                if not self.sndq.empty():
+                    data = self.sndq.get()
+                    self.received += len(data)
+                    spub.send(data)
+                    self.sent += len(data)
+                    self.last_update = time.ctime()
+                else:
+                    time.sleep(0.1)
+
+
+class sched_nn_sender(Process):
+    def __init__(self):
+        super(sched_nn_sender, self).__init__()
+
+# def generate_dev_conf(log, opath):
+#     ports_topics = get_ports_topics(log)
+#     cfg = {}
+#     cfg
+#
+
 class LogPlayer(Process):
 
-    def __init__(self, log_path, uniconf=None, start_frame=0, ratio=1.0, loop=False):
+    def __init__(self, log_path, uniconf=None, start_frame=0, ratio=1.0, loop=False, nnsend=False):
         super(LogPlayer, self).__init__()
         # self.daemon = False
         self.time_aligned = True
@@ -171,11 +215,22 @@ class LogPlayer(Process):
         self.last_ts = 0
 
         self.buf = []
-        self.replay_speed = 2  # 2x speed replay
+        self.replay_speed = 1  # 2x speed replay
         self.now_frame_id = 0
         self.pause_state = False
         self.paused_t = 0
         # self.init_env()
+        self.nnsend = nnsend
+        if nnsend:
+            self.senders = {}
+            port_start = 6000
+            p_t = get_ports_topics(log_path)
+            # print(p_t)
+            for idx, key in enumerate(p_t):
+                port_num = port_start + idx
+                print(port_num, key, p_t.get(key))
+                self.senders[key] = NNSender(port_num)
+                self.senders[key].start()
 
     def init_env(self):
         self.shared['replay_sync'] = True
@@ -393,6 +448,13 @@ class LogPlayer(Process):
                         res['source'] = 'x1_data.{}'.format(self.main_idx)
                         # print(res)
                         self.msg_queue.put((frame_id, res, res['source']))
+
+                if self.nnsend:
+                    msg = b'0000' + frame_id.to_bytes(4, 'little') + struct.pack('<d', ts) + jpg
+                    sender = self.senders.get(cols[2])
+                    if sender:
+                        # print('sending frame', frame_id)
+                        sender.sndq.put(msg)
                 # self.cache.clear()
                 # self.cache['can'] = []
                 # print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
@@ -406,7 +468,11 @@ class LogPlayer(Process):
                 if int(cols[3], 16) == 0xc7 and rtk_dec:
                     continue
                 data = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
-                msg = b'0000' + can_id + struct.pack('<d', ts) + data
+                if self.nnsend:
+                    msg = b'0000' + can_id + struct.pack('<d', ts) + data
+                    sender = self.senders.get(cols[2])
+                    if sender:
+                        sender.sndq.put(msg)
 
                 # print(cols[2], '0x{:03x}'.format(int(cols[3], 16)), ts)
                 for parser in self.parser[msg_type]:
@@ -482,11 +548,22 @@ class LogPlayer(Process):
                     # self.cache['can'].append(r.copy())
                     self.msg_queue.put((0xc7, r, source))
 
+                    if self.nnsend:
+                        msg = json.dumps(r)
+                        sender = self.senders.get('.'.join(cols[2].split('.')[:2]))
+                        if sender:
+                            sender.sndq.put(msg)
+
             elif 'NMEA' in cols[2] or 'gps' in cols[2]:
                 r = ublox.decode_nmea(cols[3])
                 r['source'] = cols[2]
                 # self.cache['can'].append(r.copy())
                 self.msg_queue.put((0x00, r, cols[2]))
+                if self.nnsend:
+                    msg = json.dumps(r)
+                    sender = self.senders.get('.'.join(cols[2].split('.')[:2]))
+                    if sender:
+                        sender.sndq.put(msg)
         print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
         return
@@ -541,6 +618,7 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--loop', action="store_true")
     parser.add_argument('-w', '--web', action="store_true")
     parser.add_argument('-v', '--virtual', action="store_true")
+    parser.add_argument('-s', '--send', action="store_true")
 
     args = parser.parse_args()
     source = args.input_path
@@ -562,7 +640,7 @@ if __name__ == "__main__":
     r_sort, cfg = prep_replay(source, ns=ns)
     from pcc import PCC
 
-    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0, loop=args.loop)
+    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0, loop=args.loop, nnsend=args.send)
     if args.web:
         from video_server import PccServer
         server = PccServer()

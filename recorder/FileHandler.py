@@ -24,7 +24,7 @@ class FileHandler(Thread):
         # self.image_queue = Queue()
         self.video_queue = Queue(maxsize=40)
         self.jpg_queue = Queue(maxsize=50)
-        self.raw_queue = Queue(maxsize=7000)
+        self.raw_queue = Queue(maxsize=90000)
         self.pcv_queue = Queue(maxsize=5000)
 
         self.fusion_queue = Queue(maxsize=5000)
