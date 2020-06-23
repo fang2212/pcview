@@ -16,7 +16,7 @@ import signal
 import cv2
 import sys
 import numpy as np
-from turbojpeg import TurboJPEG
+# from turbojpeg import TurboJPEG
 
 from config.config import local_cfg, load_cfg
 from net.ntrip_client import GGAReporter
@@ -91,7 +91,7 @@ class PCC(Thread):
         self.statistics = {}
         self.enable_auto_interval_adjust = True
         self.parse_state = True
-        self.jpeg_dec = TurboJPEG()
+        # self.jpeg_dec = TurboJPEG()
 
         # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
@@ -367,8 +367,8 @@ class PCC(Thread):
                 # print('reuse video.')
             else:
                 # return
-                # mess['img_raw'] = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
-                mess['img_raw'] = self.jpeg_dec.decode(mess['img'])
+                mess['img_raw'] = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
+                # mess['img_raw'] = self.jpeg_dec.decode(mess['img'])
                 img = mess['img_raw'].copy()
         except Exception as e:
             print('img decode error', mess)
@@ -417,7 +417,7 @@ class PCC(Thread):
             video = self.video_cache[source]
             self.video_cache[source]['updated'] = False
             img_small = cv2.resize(cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR), (427, 240))
-            img_small = cv2.resize(self.jpeg_dec.decode(video['img']), (427, 240))
+            # img_small = cv2.resize(self.jpeg_dec.decode(video['img']), (427, 240))
             video['device'] = "x1d3"
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))

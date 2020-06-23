@@ -355,6 +355,23 @@ def load_cfg(jsonspec, local='config/local.json'):
         cve_conf.runtime['low_profile'] = False
     else:
         cve_conf.runtime['low_profile'] = True
+        try:
+            udevs = os.listdir('/media/')
+            if not udevs:
+                raise FileNotFoundError
+            dir_found = False
+            for udev in udevs:
+                lpath = os.path.join('/media', udev, 'cve_data')
+                if os.path.exists(lpath):
+                    cve_conf.local_cfg.log_root = lpath
+                    dir_found = True
+                    break
+            if not dir_found:
+                lpath = os.path.join('/media', udevs[0], 'cve_data')
+                os.mkdir(lpath)
+                cve_conf.local_cfg.log_root = lpath
+        except FileNotFoundError:
+            print('no media folder found. using home dir as default.')
     return cve_conf
 
 
