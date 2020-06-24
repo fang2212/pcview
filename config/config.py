@@ -363,11 +363,13 @@ def load_cfg(jsonspec, local='config/local.json'):
             for udev in udevs:
                 lpath = os.path.join('/media', udev, 'cve_data')
                 if os.path.exists(lpath):
+                    print('found cve dir')
                     cve_conf.local_cfg.log_root = lpath
                     dir_found = True
                     break
             if not dir_found:
                 lpath = os.path.join('/media', udevs[0], 'cve_data')
+                print('creating cve dir')
                 os.mkdir(lpath)
                 cve_conf.local_cfg.log_root = lpath
         except FileNotFoundError:
