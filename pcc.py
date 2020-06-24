@@ -770,9 +770,14 @@ class PCC(Thread):
             if self.hub.fileHandler.is_recording:
                 # self.recording = False
                 self.stop_rec()
+                self.parse_state = True
+                self.hub.parse_can_msgs(self.parse_state)
+
             else:
                 # self.recording = True
                 self.start_rec()
+                self.parse_state = False
+                self.hub.parse_can_msgs(self.parse_state)
             print('toggle recording status. {}'.format(self.hub.fileHandler.is_recording))
         elif key == ord('s'):
             self.ot.save_para()
