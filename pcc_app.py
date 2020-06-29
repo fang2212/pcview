@@ -10,7 +10,9 @@ import cv2
 from pcc import *
 from tools.mytools import Supervisor
 import shutil
+import platform
 
+machine_arch = platform.machine()
 
 
 cfgfile = 'config/cfg_lab.json'
@@ -25,16 +27,39 @@ parser.add_argument('-w', '--web', help='web ui', action="store_true")
 # load_cfg(sys.argv[1])
 
 args = parser.parse_args()
-
+mount_root = '/mnt/'
 # if len(sys.argv) == 1:
 #     sys.argv.append(cfgfile)
-
 local_cfg = dic2obj(json.load(open('config/local.json')))
-opath = args.output or local_cfg.log_root
-local_cfg.log_root = opath
-
+# if machine_arch != 'x86_64':
+try:
+    udevs = os.listdir(mount_root)
+    if not udevs:
+        raise FileNotFoundError
+    dir_found = False
+    for udev in udevs:
+        lpath = os.path.join(mount_root, udev, 'cve_data')
+        if os.path.exists(lpath):
+            print('found cve dir', lpath)
+            local_cfg.log_root = lpath
+            dir_found = True
+            break
+    if not dir_found:
+        lpath = os.path.join(mount_root, udevs[0], 'cve_data')
+        print('creating cve dir')
+        os.mkdir(lpath)
+        local_cfg.log_root = lpath
+except FileNotFoundError:
+    print('no media folder found. using home dir as default.')
+# else:
+#     print('x86_64 architect found, using high profile.')
+# opath = args.output or local_cfg.log_root
+# local_cfg.log_root = opath
+if args.output:
+    local_cfg.log_root = args.output
 cve_conf = load_cfg(args.cfg_path)
 cve_conf.local_cfg = local_cfg
+print(cve_conf.local_cfg.log_root)
 
 _startup_cwd = os.getcwd()
 
@@ -141,7 +166,7 @@ elif args.headless:
 elif args.web:  # start webui PCC
     # from video_server import PccServer, ctrl_q
     import video_server
-    print('PCC starts in webui mode.')
+    print('PCC starts in webui mode. architect:', machine_arch)
     server = video_server.PccServer()
     server.start()
     hub = Hub(uniconf=cve_conf)

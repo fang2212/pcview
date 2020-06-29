@@ -72,8 +72,8 @@ class FileHandler(Thread):
         # can_queue = deque(maxlen=2000)
         # print('inner id:', os.getpid())
         state = 'stop'
-        origin_stdout = sys.stdout
-        key_msg_cache = deque(maxlen=50)
+        # origin_stdout = sys.stdout
+        # key_msg_cache = deque(maxlen=50)
 
         while True:
             raw_write = 0
@@ -140,20 +140,25 @@ class FileHandler(Thread):
 
                     # sys.stdout = origin_stdout
                     state = 'stop'
-                    while not self.video_queue.empty():
-                        self.video_queue.get()
+                    self.jpg_queue.queue.clear()
+                    self.video_queue.queue.clear()
+                    self.raw_queue.queue.clear()
+                    self.pcv_queue.queue.clear()
+                    self.fusion_queue.queue.clear()
+                    # while not self.video_queue.empty():
+                    #     self.video_queue.get()
 
-                    while not self.jpg_queue.empty():
-                        self.jpg_queue.get()
+                    # while not self.jpg_queue.empty():
+                    #     self.jpg_queue.get()
 
-                    while not self.raw_queue.empty():
-                        self.raw_queue.get()
+                    # while not self.raw_queue.empty():
+                    #     self.raw_queue.get()
 
-                    while not self.pcv_queue.empty():
-                        self.pcv_queue.get()
+                    # while not self.pcv_queue.empty():
+                    #     self.pcv_queue.get()
 
-                    while not self.fusion_queue.empty():
-                        self.fusion_queue.get()
+                    # while not self.fusion_queue.empty():
+                    #     self.fusion_queue.get()
             t1 = time.time()
 
             # print(self.video_path)
@@ -273,7 +278,7 @@ class FileHandler(Thread):
             if t3 - t0 < 0.001:
                 time.sleep(0.01)
             # else:
-            if raw_write > 50:
+            if raw_write > 500:
                 raw_write = 0
                 raw_fp.flush()
             if pcv_write:
@@ -364,7 +369,7 @@ class FileHandler(Thread):
     def insert_raw(self, msg):
         # print(self.is_recording, 'log recording----')
         # print(self.is_recording)
-        timestamp, log_type, data = msg
+        # timestamp, log_type, data = msg
 
         if self.uniconf.local_cfg.save.raw and self.is_recording and not self.raw_queue.full():
             self.raw_queue.put(msg)

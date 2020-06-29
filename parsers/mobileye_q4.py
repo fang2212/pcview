@@ -102,10 +102,10 @@ def parser_mbq4(id, buf, ctx):
     ctx['q4_parse_time'] += dt
     # if ctx['q4_parse_cnt'] == 3000:
     #     print('q4 parse 3000 frames cost:', '{:.2f}ms'.format(ctx['q4_parse_time']*1000))
-    if time.time() - ctx['q4_t0'] >= 1.0:
-        print('q4 parse frames cost in 1000ms:', '{:.2f}ms'.format(ctx['q4_parse_time'] * 1000))
-        ctx['q4_parse_time'] = 0
-        ctx['q4_t0'] = time.time()
+    # if time.time() - ctx['q4_t0'] >= 1.0:
+    #     print('q4 parse frames cost in 1000ms:', '{:.2f}ms'.format(ctx['q4_parse_time'] * 1000))
+    #     ctx['q4_parse_time'] = 0
+    #     ctx['q4_t0'] = time.time()
     # print('q4 decode cost: {:.2f}ms'.format(dt*1000))
     if ctx and ctx.get('parser_mode') == 'direct':
         return r

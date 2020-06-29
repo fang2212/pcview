@@ -76,17 +76,30 @@ class Sink(Thread):
         pt_sum = 0
         next_check = 0
         self.pid = os.getpid()
+        last_ts = 0
+        msg_cnt = 0
+        throuput = 0
         # if 'can' in self.type:
         #     print(self.type, 'start.')
         while True:
+
             buf = self.read()
             if not buf:
                 time.sleep(0.01)
                 continue
             t0 = time.time()
+            msg_cnt += 1
+            # throuput += len(buf)
             r = self.pkg_handler(buf)
-            dt = time.time() - t0
-            pt_sum += dt
+            # dt = time.time() - t0
+            # t1 = time.time()
+            # pt_sum += t1 - t0
+            # if t1 - last_ts >= 1.0:
+            #     print('{} sink total cost in last sec: {:.2f}ms, cnt{}, throuput{}'.format(self.source, pt_sum*1000, msg_cnt, throuput))
+            #     pt_sum = 0
+            #     last_ts = t1
+            #     msg_cnt = 0
+            #     # throuput = 0
             # print(self.dev, self.type, self.channel, 'dt: {:.5f}'.format(dt))
             if r is not None:
                 if isinstance(r[1], dict):
@@ -272,6 +285,8 @@ class CANSink(Sink):
         self.parse_event = Event()
         self.type = 'can_sink'
         self.parse_event.set()
+        self.log_types = {'can0': 'CAN' + '{:01d}'.format(self.index * 2), 'can1': 'CAN' + '{:01d}'.format(self.index * 2 + 1)}
+        self.log_type = self.log_types.get(self.cls)
 
     # def read(self):
     #     msg = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
@@ -292,24 +307,28 @@ class CANSink(Sink):
 
     def pkg_handler(self, msg):
 
-        lst = time.time()
-
+        # lst = time.time()
         # can_id, timestamp, data = msg
         msg = memoryview(msg).tobytes()
-        dlc = msg[3]
+        # dlc = msg[3]
         # print(dlc)
+        # msg = msg.decode()
         can_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
-        timestamp, = struct.unpack('<d', msg[8:16])
+
+        # can_id = struct.unpack('<I', msg[4:8])
+        timestamp = struct.unpack('<d', msg[8:16])[0]
         data = msg[16:]
         id = '0x%x' % can_id
         # print(data)
 
         # print('can', id)
-        if self.cls == 'can0':
-            log_type = 'CAN' + '{:01d}'.format(self.index * 2)
-        else:
-            log_type = 'CAN' + '{:01d}'.format(self.index * 2 + 1)
-        log_bytes = ' '.join(['{:02X}'.format(d) for d in data])
+        # if self.cls == 'can0':
+        #     log_type = 'CAN' + '{:01d}'.format(self.index * 2)
+        # else:
+        #     log_type = 'CAN' + '{:01d}'.format(self.index * 2 + 1)
+        log_type = self.log_type
+        # log_bytes = ' '.join(['{:02X}'.format(d) for d in data])
+        log_bytes = data.hex()
         # print('CAN sink save raw.', self.source)
         self.fileHandler.insert_raw((timestamp, log_type, id + ' ' + log_bytes))
         # if can_id == 0x7fe:  # timestamp sync test

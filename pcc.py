@@ -30,6 +30,7 @@ from tools.match import is_near
 # from tools.mytools import Supervisor
 from tools.transform import Transform, OrientTuner
 from tools.vehicle import Vehicle, get_rover_target
+from tools.cpu_mem_info import *
 from multiprocessing import Queue
 
 
@@ -77,6 +78,8 @@ class PCC(Thread):
         self.auto_rec = auto_rec
 
         self.refresh_rate = 20
+        if uniconf.runtime.get('low_profile'):
+            self.refresh_rate = 5
         self.display_interval = 1.0 / self.refresh_rate
         self.vehicles = {'ego': Vehicle('ego')}
         self.calib_data = dict()
@@ -241,11 +244,15 @@ class PCC(Thread):
             self.display_interval = self.display_interval - 0.005
         else:
             return {'status': 'ok'}
+        if self.cfg.runtime.get('low_profile'):
+            ll = 0.2
+        else:
+            ll = 0.05
 
         if self.display_interval > 1.0:
             self.display_interval = 1.0
-        elif self.display_interval < 0.05:
-            self.display_interval = 0.05
+        elif self.display_interval < ll:
+            self.display_interval = ll
         print('refresh interval set to', self.display_interval, 'hub qsize:', iqsize)
         return {'status': 'ok'}
 
@@ -282,16 +289,16 @@ class PCC(Thread):
                 if not self.replay:
                     qsize = self.hub.fileHandler.raw_queue.qsize()
                     self.statistics['fileHandler_rawq_size'] = qsize
-                    # print('raw queue size:', qsize)
-                    if self.hub.fileHandler.is_recording and qsize > 2000:
-                        print('msg_q critical, skip drawing.', qsize)
-                        # time.sleep(0.1)
-                        # continue
-                    iqsize = self.hub.msg_queue.qsize()
-                    if iqsize > 2000:
-                        # print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1-t0)*1000), d[2], sys.getsizeof(d[1]))
-                        # self.adjust_interval()
-                        continue
+                #     # print('raw queue size:', qsize)
+                #     if self.hub.fileHandler.is_recording and qsize > 2000:
+                #         print('msg_q critical, skip drawing.', qsize)
+                #         # time.sleep(0.1)
+                #         continue
+                #     iqsize = self.hub.msg_queue.qsize()
+                #     if iqsize > 2000:
+                #         # print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1-t0)*1000), d[2], sys.getsizeof(d[1]))
+                #         # self.adjust_interval()
+                #         continue
             except Exception as e:
                 print('pcc run error:', e)
                 raise e
@@ -306,7 +313,11 @@ class PCC(Thread):
                 last_ts = time.time()
                 # if not self.replay:
                 #     self.hub.parse_can_msgs()
-                self.render(frame_cnt)
+                if self.statistics['fileHandler_rawq_size'] > 10000:
+                    show = False
+                else:
+                    show = True
+                self.render(frame_cnt, show)
 
             t4 = time.time()
 
@@ -318,20 +329,21 @@ class PCC(Thread):
             #     1000 * (t1 - t0), 1000 * (t2 - t1), 1000 * (t4 - t2), 1000 * (t4 - t0), self.hub.msg_queue.qsize()), d[2])
             self.run_cost = self.run_cost * 0.9 + (t4 - t0) * 0.1
 
-    def render(self, frame_cnt):
-        img_rendered = self.draw(self.cache, frame_cnt)  # render
-        ts_render = time.time()
-        if self.to_web:
-            # self.web_img['now_image'] = comb.copy()
-            # self.o_msg_q.put(
-            #     ('delay', {'name': 'frame_render_cost', 'delay': '{:.1f}'.format(self.frame_cost * 1000)}))
-            self.statistics['frame_total_cost'] = '{:.2f}ms'.format(self.frame_cost * 1000)
-            if not self.o_img_q.full():
-                self.o_img_q.put(img_rendered)
-        else:
-            cv2.imshow('MINIEYE-CVE', img_rendered)
+    def render(self, frame_cnt, show=True):
+        if show:
+            img_rendered = self.draw(self.cache, frame_cnt)  # render
+            # ts_render = time.time()
+            if self.to_web:
+                # self.web_img['now_image'] = comb.copy()
+                # self.o_msg_q.put(
+                #     ('delay', {'name': 'frame_render_cost', 'delay': '{:.1f}'.format(self.frame_cost * 1000)}))
+                self.statistics['frame_total_cost'] = '{:.2f}ms'.format(self.frame_cost * 1000)
+                if not self.o_img_q.full():
+                    self.o_img_q.put(img_rendered)
+            else:
+                cv2.imshow('MINIEYE-CVE', img_rendered)
 
-        self.save_rendered(img_rendered)
+            self.save_rendered(img_rendered)
         t3 = time.time()
 
         while self.replay and self.pause:
@@ -843,6 +855,8 @@ class PCC(Thread):
     def send_statistics(self):
         if not self.to_web:
             return
+
+        self.statistics['cpu_mem_info'] = 'cpu_used: {}% mem_used {}% cpu_temp: {}c'.format(get_cpu_pct(), get_mem_pct(), get_cpu_temp())
 
         for item in self.statistics:
             self.o_msg_q.put(('delay', {'name': item, 'value': '{}'.format(self.statistics[item])}))
