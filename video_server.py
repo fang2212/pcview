@@ -90,7 +90,10 @@ def list_recorded_data(log_path='/home/nan/data/pcc'):
     for dir in dirs:
         path = os.path.join(log_path, dir)
         log = os.path.join(log_path, dir, 'log.txt')
-        log_size = os.path.getsize(log)
+        if os.path.exists(log):
+            log_size = os.path.getsize(log)
+        else:
+            log_size = 0
         mtime = modify_time(path)
         recorded_data.append({'name': dir, 'path': path, 'log_size': sizeConvert(log_size), 'mtime': mtime})
 

@@ -287,7 +287,7 @@ class PCC(Thread):
 
                 t2 = time.time()
                 if not self.replay:
-                    qsize = self.hub.fileHandler.raw_queue.qsize()
+                    qsize = self.hub.fileHandler.log_q.qsize()
                     self.statistics['fileHandler_rawq_size'] = qsize
                 #     # print('raw queue size:', qsize)
                 #     if self.hub.fileHandler.is_recording and qsize > 2000:
