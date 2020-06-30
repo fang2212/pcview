@@ -467,7 +467,10 @@ class LogPlayer(Process):
                 can_id = int(cols[3], 16).to_bytes(4, 'little')
                 if int(cols[3], 16) == 0xc7 and rtk_dec:
                     continue
-                data = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+                if len(cols[4]) > 2:
+                    data = bytes().fromhex(cols[4])
+                else:
+                    data = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
                 if self.nnsend:
                     msg = b'0000' + can_id + struct.pack('<d', ts) + data
                     sender = self.senders.get(cols[2])

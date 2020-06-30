@@ -91,24 +91,24 @@
             });
 
             socket.on('profiling', function (msg, cb) {
-            let data = msg.data;
-            profile_data[data['source']] = {'duty': data['pt_sum'] / data['uptime'], 'pid': data['pid']};
+                let data = msg.data;
+                profile_data[data['source']] = {'duty': data['pt_sum'] / data['uptime'], 'pid': data['pid']};
 
 
-            let content = document.getElementById("profile-statistics");
-            content.innerHTML = "";
+                let content = document.getElementById("profile-statistics");
+                content.innerHTML = "";
 
-            for (let p in profile_data) {
-                console.log(p + ' ' + profile_data[p]['pid']);
-                let newLine = document.createElement("tr");
-                newLine.innerHTML =
-                    "      <th scope=\"row\">" + p + "</th>\n" +
-                    "      <td>" + profile_data[p]['duty'] + "</td>\n";
-                "      <td>" + profile_data[p]['pid'] + "</td>\n";
+                for (let p in profile_data) {
+                    console.log(p + ' ' + profile_data[p]['pid']);
+                    let newLine = document.createElement("tr");
+                    newLine.innerHTML =
+                        "      <th scope=\"row\">" + p + "</th>\n" +
+                        "      <td>" + profile_data[p]['duty'] + "</td>\n";
+                    "      <td>" + profile_data[p]['pid'] + "</td>\n";
 
-                content.appendChild(newLine);
-            }
-        });
+                    content.appendChild(newLine);
+                }
+            });
 
             socket.on('img', function (msg, cb) {
                 // console.log('received img ' + msg.data.length)
@@ -129,7 +129,7 @@
                 logtxt.append(data);
                 // if (logtxt.value().length > 1000){
                 //     $('#log_text').val("");
-                    // logtxt.val(logtxt.value.slice(logtxt.value().length-1000))
+                // logtxt.val(logtxt.value.slice(logtxt.value().length-1000))
                 // }
 
                 logtxt.scrollTop = logtxt.scrollHeight;
@@ -138,21 +138,19 @@
             socket.on('delay', function (msg, cb) {
                 let data = msg.data;
                 let mcontent = document.getElementById('statistics')
-                if(data['name'] === 'frame_send_cost'){
+                if (data['name'] === 'frame_send_cost') {
                     $('#fsend_cost').text(data['delay']);
-                }
-                else if(data['name'] === 'frame_rendering_cost'){
+                } else if (data['name'] === 'frame_rendering_cost') {
                     $('#frender_cost').text(data['value']);
-                }
-                else{
-                    if (!(document.getElementById(data['name']))){
+                } else {
+                    if (!(document.getElementById(data['name']))) {
                         let newLine = document.createElement("view");
-                        newLine.innerHTML = "<p>"+ data['name']+": <b><span id=\""+ data['name']+"\"></span></b></p>"
+                        newLine.innerHTML = "<p>" + data['name'] + ": <b><span id=\"" + data['name'] + "\"></span></b></p>"
                         mcontent.appendChild(newLine)
                     }
-                    $('#'+data['name']).text(data['value']);
+                    $('#' + data['name']).text(data['value']);
                 }
-                });
+            });
 
 
             socket.on('devices', function (msg, cb) {
@@ -326,7 +324,7 @@
         <div id="tab-item1" class="tab-item">
 
             <div>
-<!--                <img id="video_feed">-->
+                <!--                <img id="video_feed">-->
                 <img src="{{ url_for('video_feed') }}">
             </div>
 
@@ -349,6 +347,10 @@
                 </view>
                 <view>
                     <input type="button" id="bt4" value="Pinpoint" onclick="keypressd('p')"
+                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
+                </view>
+                <view>
+                    <input type="button" id="bt5" value="Fullscreen" onclick="requestFullScreen()"
                            style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
                 </view>
 
@@ -384,6 +386,30 @@
 
                 }
 
+                //进入全屏
+                function requestFullScreen() {
+                    var de = document.documentElement;
+                    if (de.requestFullscreen) {
+                        de.requestFullscreen();
+                    } else if (de.mozRequestFullScreen) {
+                        de.mozRequestFullScreen();
+                    } else if (de.webkitRequestFullScreen) {
+                        de.webkitRequestFullScreen();
+                    }
+                }
+
+                //退出全屏
+                function exitFullscreen() {
+                    var de = document;
+                    if (de.exitFullscreen) {
+                        de.exitFullscreen();
+                    } else if (de.mozCancelFullScreen) {
+                        de.mozCancelFullScreen();
+                    } else if (de.webkitCancelFullScreen) {
+                        de.webkitCancelFullScreen();
+                    }
+                }
+
 
             </script>
         </div>
@@ -410,12 +436,12 @@
             <h1>Statistics</h1>
             <div id="statistics">
                 <p>Async mode is: <b>{{ async_mode }}</b></p>
-            <p>Average ping/pong latency: <b><span id="ping-pong"></span>ms</b></p>
-            <p>Frame sending cost: <b><span id="fsend_cost"></span>ms</b></p>
-            <p>Frame render cost: <b><span id="frender_cost"></span>ms</b></p>
-            <p>Frame caching cost: <b><span id="frame_caching_cost"></span>ms</b></p>
-            <p>Frame popping cost: <b><span id="frame_popping_cost"></span>ms</b></p>
-            <p>Refreshing rate: <b><span id="refreshing_rate"></span>Hz</b></p>
+                <p>Average ping/pong latency: <b><span id="ping-pong"></span>ms</b></p>
+                <p>Frame sending cost: <b><span id="fsend_cost"></span>ms</b></p>
+                <p>Frame render cost: <b><span id="frender_cost"></span>ms</b></p>
+                <p>Frame caching cost: <b><span id="frame_caching_cost"></span>ms</b></p>
+                <p>Frame popping cost: <b><span id="frame_popping_cost"></span>ms</b></p>
+                <p>Refreshing rate: <b><span id="refreshing_rate"></span>Hz</b></p>
             </div>
             <h1>websocket test</h1>
             <h2>Send:</h2>

@@ -288,7 +288,7 @@ class PCC(Thread):
                 t2 = time.time()
                 if not self.replay:
                     qsize = self.hub.fileHandler.log_q.qsize()
-                    self.statistics['fileHandler_rawq_size'] = qsize
+                    self.statistics['fileHandler_log_q_size'] = qsize
                 #     # print('raw queue size:', qsize)
                 #     if self.hub.fileHandler.is_recording and qsize > 2000:
                 #         print('msg_q critical, skip drawing.', qsize)
@@ -313,7 +313,7 @@ class PCC(Thread):
                 last_ts = time.time()
                 # if not self.replay:
                 #     self.hub.parse_can_msgs()
-                if self.statistics['fileHandler_rawq_size'] > 10000:
+                if not self.replay and self.statistics['fileHandler_log_q_size'] > 10000:
                     show = False
                 else:
                     show = True
@@ -782,14 +782,15 @@ class PCC(Thread):
             if self.hub.fileHandler.is_recording:
                 # self.recording = False
                 self.stop_rec()
-                self.parse_state = True
+                # self.parse_state = True
                 self.hub.parse_can_msgs(self.parse_state)
 
             else:
                 # self.recording = True
                 self.start_rec()
-                self.parse_state = False
-                self.hub.parse_can_msgs(self.parse_state)
+                # self.parse_state = False
+                if self.cfg.runtime.get('low_profile'):
+                    self.hub.parse_can_msgs(False)
             print('toggle recording status. {}'.format(self.hub.fileHandler.is_recording))
         elif key == ord('s'):
             self.ot.save_para()

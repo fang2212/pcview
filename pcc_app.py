@@ -170,7 +170,7 @@ elif args.web:  # start webui PCC
     server = video_server.PccServer()
     server.start()
     hub = Hub(uniconf=cve_conf)
-    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
     hub.start()
 
     # print('-----------------------------------------------------------------------', os.getpid())
@@ -193,7 +193,7 @@ elif args.web:  # start webui PCC
                 elif ctrl.get('cmd') == 'reset':
                     pcc.control(ord('q'))
                     # hub = Hub(uniconf=cve_conf)
-                    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
+                    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
                     pcc.start()
                 else:
                     key = ord(ctrl['cmd'].lower())
