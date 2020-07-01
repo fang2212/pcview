@@ -304,6 +304,24 @@
 
         });
 
+
+        function resize() {
+            let s = window.innerWidth / 1920;
+            if (s < 1.0) {
+                document.body.style.transformOrigin = '0 0';
+                document.body.style.transform = 'scale(' + s + ',' + s + ')';
+                document.body.style.width = window.innerWidth / s + 'px';
+                document.body.style.height = window.innerHeight / s + 'px';
+                console.log('rescaled width ' + s)
+            }
+
+        }
+
+        window.onresize = function () {
+            resize();
+        }
+        resize();
+
     </script>
 </head>
 <body>
@@ -317,6 +335,10 @@
         <a tab="tab-item5" href="#" class="tab list-group-item">Settings</a>
         <a tab="tab-item6" href="#" class="tab list-group-item">Logs</a>
         <a tab="tab-item7" href="#" class="tab list-group-item">Data</a>
+        <view>
+            <input type="button" id="bt5" value="Fullscreen" onclick="requestFullScreen()"
+                   style=" width:100px; height:60px;  margin-left:auto; margin-right:auto; position:fixed; bottom:0"/>
+        </view>
 
     </div>
     <div class="col-md-10 col-xs-4">
@@ -349,10 +371,7 @@
                     <input type="button" id="bt4" value="Pinpoint" onclick="keypressd('p')"
                            style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
                 </view>
-                <view>
-                    <input type="button" id="bt5" value="Fullscreen" onclick="requestFullScreen()"
-                           style=" width:300px; height:80px;  margin-left:auto; margin-right:auto;"/>
-                </view>
+
 
             </div>
             <script type="text/javascript">

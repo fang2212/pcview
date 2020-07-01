@@ -166,6 +166,7 @@ elif args.headless:
 elif args.web:  # start webui PCC
     # from video_server import PccServer, ctrl_q
     import video_server
+    video_server.set_local_path(local_cfg.log_root)
     print('PCC starts in webui mode. architect:', machine_arch)
     server = video_server.PccServer()
     server.start()

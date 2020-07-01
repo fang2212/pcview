@@ -29,6 +29,12 @@ local_path = json.load(open('config/local.json'))['log_root']
 no_frame = open('static/img/no_video.jpg', 'rb').read()
 
 profile_data = {}
+
+
+def set_local_path(path):
+    global local_path
+    local_path = path
+
 def push_profile_dt(src, dt):
     if src not in profile_data:
         profile_data[src] = {'up_since': time.time(), 'sum_t': 0, 'next_push': 0}
