@@ -427,16 +427,10 @@ class Hub(Thread):
                 r = self.msg_queue.get()
                 fid, data, source = r
             except ValueError as e:
+                print('error when pop data:')
                 print(r)
                 raise e
-            # res['ts'] = data['ts']
-            # res['data'] = data
-            # res['frame_id'] = fid
             return fid, data, source
-            # is_main = data.get('is_main')
-            # if not is_main and 'video' in data['source']:
-            #     self.cache['video_aux'].append(data)
-            #     return
 
     def parse_can_msgs(self, status):
         for sink in self.sinks:

@@ -287,6 +287,7 @@ class CANSink(Sink):
         self.parse_event.set()
         self.log_types = {'can0': 'CAN' + '{:01d}'.format(self.index * 2), 'can1': 'CAN' + '{:01d}'.format(self.index * 2 + 1)}
         self.log_type = self.log_types.get(self.cls)
+        # self.log_type = '{}.{}'.format(self.cls, self.index)
 
     # def read(self):
     #     msg = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
@@ -431,14 +432,14 @@ class CameraSink(Sink):
         frame_id_jfif = int.from_bytes(jpg[24:28], byteorder="little")
         # print(app1, frame_id_jfif)
         timestamp, = struct.unpack('<d', msg[8:16])
-        self.fileHandler.insert_jpg(
-            {'ts': timestamp, 'frame_id': frame_id, 'jpg': jpg, 'source': 'video' if self.is_main else self.source})
+
 
         # logging.debug('cam id {}'.format(frame_id))
         # print('frame id', frame_id)
 
         r = {'ts': timestamp, 'type': 'video', 'img': jpg, 'frame_id': frame_id, 'source': self.source,
              'is_main': self.is_main, 'device': self.devname}
+        self.fileHandler.insert_jpg(r)
         # print('frame id', frame_id)
         # self.fileHandler.insert_raw((timestamp, 'camera', '{}'.format(frame_id)))
         # dt = time.time() - t0
@@ -458,7 +459,7 @@ class FlowSink(Sink):
         self.msg_queue = msg_queue
         self.is_main = is_main
         self.type = 'flow_sink'
-        self.source = 'libflow.{:d}'.format(index)
+        self.source = 'x1_algo.{:d}'.format(index)
 
     async def _run(self):
         session = aiohttp.ClientSession()
@@ -554,6 +555,7 @@ class FlowSink(Sink):
 
         r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
              'is_main': self.is_main}
+        self.fileHandler.insert_jpg(r)
         # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
         return frame_id, r
 

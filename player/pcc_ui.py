@@ -177,7 +177,7 @@ class Player(object):
 
     def show_parameters_background(self, img, rect):
         """左上角参数背景图"""
-        BaseDraw.draw_alpha_rect(img, rect, 0.4)
+        BaseDraw.draw_alpha_rect(img, rect, 0.6, CVColor.Black)
 
     def show_columns(self, img):
         w = self.param_bg_width
@@ -1197,7 +1197,7 @@ class Player(object):
 
         self.show_lane_ipm(img, data, color)
 
-    def show_host_path(self, img, spd, yr, yrbias=0.0017):
+    def show_host_path(self, img, spd, yr, yrbias=0.0017, cipv_dist=200.0):
         # if spd < 5:
         #     return
         spd = spd / 3.6
@@ -1211,7 +1211,7 @@ class Player(object):
             R = spd / yr
         # print('R:', R)
 
-        for x in range(min(int(abs(R)), int(spd * 10))):
+        for x in range(0, min(int(abs(R)), int(spd * 6), cipv_dist), 5):
         # for x in range(0, 80):
             if yr < 0.0:
                 y = (abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
@@ -1224,13 +1224,15 @@ class Player(object):
             p1.append(self.transform.trans_gnd2raw(x, y1))
             p2.append(self.transform.trans_gnd2raw(x, y2))
 
-        for i in range(1, len(p1) - 1, 1):
-            BaseDraw.draw_line(img, p1[i], p1[i + 1], CVColor.Grass, 2)
-            BaseDraw.draw_line(img, p2[i], p2[i + 1], CVColor.Grass, 2)
+        for i in range(0, len(p1) - 1, 1):
+            # BaseDraw.draw_line(img, p1[i], p1[i + 1], CVColor.Grass, 2)
+            # BaseDraw.draw_line(img, p2[i], p2[i + 1], CVColor.Grass, 2)
+            # alpha = (1 - i / len(p1)) * 0.4
+            BaseDraw.draw_alpha_poly(img, np.array([p1[i], p1[i + 1], p2[i + 1], p2[i]]), 0.2, FlatColor.emerald)
 
-            if i % 20 == 0 or i == 10:
-                BaseDraw.draw_line(img, p1[i], p2[i], CVColor.Grass, 2)
-                BaseDraw.draw_text(img, '{}m'.format(i), (p1[i][0], p1[i][1] + 10), 0.5, CVColor.Green, 1)
+            # if i % 20 == 0 or i == 10:
+            #     BaseDraw.draw_line(img, p1[i], p2[i], CVColor.Grass, 2)
+            #     BaseDraw.draw_text(img, '{}m'.format(i), (p1[i][0], p1[i][1] + 10), 0.5, CVColor.Green, 1)
             # x, y, w, h = 200, 360, 880, 360
             # pt0 = (p1[i][0] - x, p1[i][1]-y)
             # pt1 = (p1[i+1][0] - x, p1[i+1][1] - y)
@@ -1248,29 +1250,54 @@ class Player(object):
         # if spd < 5:
         #     return
         spd = spd / 3.6
+        veh_w = 1.86
 
         p1 = []
         p2 = []
         R = 1000
+        R1 = 1000
+        R2 = 1000
         x0 = -1.2
         yr = yr - yrbias
         if yr > 0.00001 or yr < -0.00001:
             R = spd / yr
+            if R > 0:
+                R1 = R - veh_w/2
+                R2 = R + veh_w/2
+                # print(R1)
+
+            else:
+                R1 = R + veh_w/2
+                R2 = R - veh_w/2
+
         # print('R:', R)
 
-        for x in range(min(int(abs(R)), int(spd * 7))):
+        for x in range(min(int(abs(R)), int(spd * 6))):
             if yr < 0.0:
-                y = (abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
+                # R1 = R - 0.9
+                # R2 = R + 0.9
+                y = (abs(R1 ** 2 - (x - x0) ** 2)) ** 0.5 + R1
+                # y1 = (abs(R1 ** 2 - (x - x0) ** 2)) ** 0.5 + R1
+                # y2 = (abs(R2 ** 2 - (x - x0) ** 2)) ** 0.5 + R2
             elif yr > 0.0:
-                y = -(abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
+                # R1 = R + 0.9
+                # R2 = R - 0.9
+                y = -(abs(R1 ** 2 - (x - x0) ** 2)) ** 0.5 + R1
+                # y1 = -(abs(R1 ** 2 - (x - x0) ** 2)) ** 0.5 + R1
+                # y2 = -(abs(R2 ** 2 - (x - x0) ** 2)) ** 0.5 + R2
             else:
                 y = 0
-            y1 = y - 1.5
-            y2 = y + 1.5
+                # y1 = 0
+                # y2 = 0
+            y1 = y - 1
+            y2 = y + 1
             p1.append(self.transform.trans_gnd2ipm(x, y1))
             p2.append(self.transform.trans_gnd2ipm(x, y2))
 
         for i in range(1, len(p1) - 1, 1):
-            BaseDraw.draw_line(img, p1[i], p1[i + 1], CVColor.Green, 1)
-            BaseDraw.draw_line(img, p2[i], p2[i + 1], CVColor.Green, 1)
+            # BaseDraw.draw_line(img, p1[i], p1[i + 1], CVColor.Green, 1)
+            # BaseDraw.draw_line(img, p2[i], p2[i + 1], CVColor.Green, 1)
+            alpha = (1 - i/len(p1)) * 0.4
+            BaseDraw.draw_alpha_poly(img, np.array([p1[i], p1[i+1], p2[i+1], p2[i]]), alpha, FlatColor.emerald)
+            # cv2.fillConvexPoly(img, np.array([p1[i], p1[i+1], p2[i+1], p2[i]]), CVColor.Green)
 

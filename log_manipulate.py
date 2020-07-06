@@ -83,6 +83,14 @@ def time_sort(file_name, sort_itv=8000, output=None):
     return os.path.abspath(out_file)
 
 
+def decode_can_hex(cols):
+    if len(cols[4]) > 2:
+        buf = bytes().fromhex(cols[4])
+    else:
+        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+    return buf
+
+
 def process_log(file_name, parsers, ctx, startf=None, endf=None, output=None):
     import tempfile
     print('processing log: {}'.format(file_name))
@@ -411,7 +419,7 @@ def parse_q3_speed(file_name):
             if cols[2] == 'CAN0':
                 can_id = int(cols[3], 16)
                 if can_id == 0x440:
-                    buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+                    buf = decode_can_hex(cols)
                     r = db.decode_message(can_id, buf)
                     speed = r['CAN_VEHICLE_SPEED'] * 3.6
                     cols[2] = 'speed'
@@ -437,7 +445,7 @@ def parse_drtk(file_name):
                 if can_id == 0xc7:
                     if not ctx.get(cols[2]):
                         ctx[cols[2]] = {}
-                    buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+                    buf = decode_can_hex(cols)
                     res = parse_rtk(can_id, buf, ctx[cols[2]])
                     if res:
                         if isinstance(res, list):
@@ -595,7 +603,7 @@ def parse_esr_line(line, ctx):
         ctx['esr_ids'] = set()
     if can_port in cols[2] or can_port.lower() in cols[2]:
         can_id = int(cols[3], 16)
-        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        buf = decode_can_hex(cols)
         r = parse_esr(can_id, buf, ctx)
         # print(can_port, buf, r)
         if not r or isinstance(r, dict):
@@ -636,7 +644,7 @@ def parse_ars_line(line, ctx):
 
     if can_port in cols[2] or can_port.lower() in cols[2]:
         can_id = int(cols[3], 16)
-        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        buf = decode_can_hex(cols)
         r = parse_ars(can_id, buf, ctx)
         # print(can_port, buf, r)
         if not r or isinstance(r, dict):
@@ -666,7 +674,7 @@ def parse_lmr_line(line, ctx, can_port='CAN2'):
     ts = float(cols[0]) + float(cols[1]) / 1000000
     if can_port in cols[2]:
         can_id = int(cols[3], 16)
-        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        buf = decode_can_hex(cols)
         r = parse_hawkeye_lmr(can_id, buf, ctx)
         # print(can_port, buf, r)
         if not r:
@@ -687,7 +695,7 @@ def parse_x1_line(line, ctx):
     ts = float(cols[0]) + float(cols[1]) / 1000000
     if can_port in cols[2] or can_port.lower() in cols[2]:
         can_id = int(cols[3], 16)
-        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        buf = decode_can_hex(cols)
         ret = parse_x1(can_id, buf, ctx)
         # print(ret)
         speed = ctx.get('speed') or 0
@@ -735,7 +743,7 @@ def parse_x1_fusion_line(line, ctx):
     ts = float(cols[0]) + float(cols[1]) / 1000000
     if can_port in cols[2] or can_port.lower() in cols[2]:
         can_id = int(cols[3], 16)
-        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        buf = decode_can_hex(cols)
         ret = parse_x1(can_id, buf, ctx)
         # print(ret)
         speed = ctx.get('speed') or 0
@@ -775,7 +783,7 @@ def parse_q3_line(line, ctx):
         return
     if can_port in cols[2] or can_port.lower() in cols[2]:
         can_id = int(cols[3], 16)
-        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        buf = decode_can_hex(cols)
         ret = parse_ifv300(can_id, buf, ctx)
         # print(can_port, buf, r)
 
@@ -824,7 +832,7 @@ def parse_q3_lane(line, ctx):
         return
     if can_port in cols[2] or can_port.lower() in cols[2]:
         can_id = int(cols[3], 16)
-        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        buf = decode_can_hex(cols)
         ret = parse_ifv300(can_id, buf, ctx)
         # print(can_port, buf, r)
 
@@ -860,7 +868,7 @@ def parse_x1l_line(line, ctx):
     if cols[2] == can_port:
         ts = float(cols[0]) + float(cols[1]) / 1000000
         can_id = int(cols[3], 16)
-        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        buf = decode_can_hex(cols)
         r = parse_x1l(can_id, buf, ctx)
         if r is not None:
             x = r['pos_lon']
@@ -902,7 +910,7 @@ def parse_d530_line(line, ctx):
     if cols[2] == can_port:
         ts = float(cols[0]) + float(cols[1]) / 1000000
         can_id = int(cols[3], 16)
-        buf = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+        buf = decode_can_hex(cols)
         r = parse_dfd530(can_id, buf, ctx)
         if not r:
             return
@@ -1047,7 +1055,7 @@ def trans_to_hil(log, output=None):
                 return r['speed']
     elif kw in parser.parsers_dict:
         def spd_parser(cols):
-            data = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+            data = decode_can_hex(cols)
             can_id = int(cols[3], 16)
             can_parser = parser.parsers_dict.get(kw)
             r = can_parser(can_id, data, ctx)

@@ -64,7 +64,7 @@ class PCC(Thread):
         self.now_id = 0
         # self.pre_rtk = {}
         self.ts_now = 0
-        self.cipv = 0
+        self.cipv = {}
         # self.msg_cnt = {}
         self.transform = Transform(uniconf)
         self.m_g2i = self.transform.calc_g2i_matrix()
@@ -716,6 +716,8 @@ class PCC(Thread):
                 # self.player.show_ipm_obs(self.ipm, dummy0)
                 # self.player.show_ipm_obs(self.ipm, dummy1)
                 self.player.show_ipm_obs(self.ipm, data)
+            if data.get('cipo'):
+                self.cipv = data
         # lane
         elif data['type'] == 'lane':
             self.player.draw_lane_r(img, data, )
@@ -727,11 +729,11 @@ class PCC(Thread):
             # print(data)
             self.player.update_column_ts(data['source'], data['ts'])
             if 'yaw_rate' in data:
-                # self.player.show_host_path(img, data['speed'], data['yaw_rate'])
+                # self.player.show_host_path(img, data['speed'], data['yaw_rate'], self.cipv)
                 self.player.show_host_path_ipm(self.ipm, data['speed'], data['yaw_rate'])
 
         elif data['type'] == 'CIPV':
-            self.cipv = data['id']
+            self.cipv = data
 
         elif data['type'] == 'rtk':
             # print('------------', data['type'])

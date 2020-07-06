@@ -238,13 +238,34 @@ class BaseDraw(object):
                                        0.2, color, begin, end)
 
     @classmethod
-    def draw_alpha_rect(cls, image_content, rect, alpha, color = CVColor.White, line_width = 0):
+    def draw_alpha_rect(cls, image_content, rect, alpha, color=CVColor.White, line_width=0):
         x, y, w, h = rect
-        img = np.zeros((h, w, 3), np.uint8)
+        mask = np.zeros((h, w, 3), np.uint8)
+        mask[:] = color
+        # mask = np.full((h, w), color)
         roi = image_content[y:y+h, x:x+w]
-        cv2.addWeighted(img, 1.0-alpha, roi, alpha, 0.0, roi)
+        cv2.addWeighted(mask, alpha, roi, 1.0-alpha, 0.0, roi)
         if line_width > 0:
             cv2.rectangle(image_content, (x, y), (x+w, y+h), color, line_width)
+
+    @classmethod
+    def draw_alpha_poly(cls, image_content, poly, alpha, color=CVColor.Black):
+        # x, y, w, h = rect
+        # if not isinstance(poly, np.array):
+        #     print('input param poly must be numpy array.')
+        #     return
+        xmin = np.min(poly[:, 0])
+        ymin = np.min(poly[:, 1])
+        xmax = np.max(poly[:, 0])
+        ymax = np.max(poly[:, 1])
+        poly[:, 0] -= xmin
+        poly[:, 1] -= ymin
+        mask = image_content[ymin:ymax, xmin:xmax].copy()
+        cv2.fillConvexPoly(mask, poly, color)
+
+        # mask = np.full((h, w), color)
+        roi = image_content[ymin:ymax, xmin:xmax]
+        cv2.addWeighted(mask, alpha, roi, 1.0 - alpha, 0.0, roi)
 
     @classmethod
     def draw_polylines(cls, img, pts, color, thickness=2):

@@ -207,10 +207,14 @@ class FileHandler(Thread):
                     res = msg
                     ts = res['ts']
                     frame_id = res['frame_id']
-                    data = res['jpg']
+                    data = res['img']
                     source = res['source']
+                    is_main = res.get('is_main')
                     if source not in video_streams:
-                        vpath = os.path.join(path, source)
+                        if is_main:
+                            vpath = os.path.join(path, 'video')
+                        else:
+                            vpath = os.path.join(path, source)
                         if not os.path.exists(vpath):
                             os.mkdir(vpath)
                         video_streams[source] = {'video_path': vpath, 'frame_cnt': 0, 'frame_reset': True,
@@ -231,7 +235,7 @@ class FileHandler(Thread):
                     video_streams[source]['video_writer'].write_frame(data)
                     tv_s = int(ts)
                     tv_us = (ts - tv_s) * 1000000
-                    kw = 'camera' if source == 'video' else source
+                    kw = 'camera' if is_main else source
                     log_line = "%.10d %.6d " % (tv_s, tv_us) + kw + ' ' + '{}'.format(frame_id) + "\n"
                     if raw_fp:
                         raw_fp.write(log_line)

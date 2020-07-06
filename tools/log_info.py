@@ -59,7 +59,10 @@ def audit_can_data(log, canport, sensor, audit_lines=500, thres=0.2):
             continue
         if cols[2] == canport:
             line_cnt += 1
-            data = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
+            if len(cols[4]) > 2:
+                data = bytes().fromhex(cols[4])
+            else:
+                data = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
             can_id = int(cols[3], 16)
             r = parser(can_id, data, ctx)
             if r:
