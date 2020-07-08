@@ -238,7 +238,8 @@
                     // logtxt.append(data[record]['name'] + '\n');
 
 
-                    let newLine = document.createElement("tr")
+                    let newLine = document.createElement("tr");
+                    let item_name = "\"" + data[record]['name'] + "\"";
                     newLine.innerHTML =
                         "      <th scope=\"row\">" + data[record]['name'] + "</th>\n" +
                         "      <td>" + data[record]['log_size'] + "</td>\n" +
@@ -249,10 +250,10 @@
                         "        <div class=\"btn-group-raised btn-group-toggle\">\n" +
                         "          <a href=\"/download/" + data[record]['name'] + "\" class=\"btn btn-primary\">Download</a>\n" +
                         "          <a href=\"/action/replay/" + data[record]['name'] + "\" class=\"btn btn-primary\">Replay</a>\n" +
-                        "          <a onclick=\"del_confirm(" + data[record]['name'] + ")\" class=\"btn btn-primary\">Delete</a>\n" +
-                        "          <a onclick=\"add_comment(" + data[record]['name'] + ")\" class=\"btn btn-primary\">Comment</a>\n" +
+                        "          <a onclick='del_confirm(" + item_name + ")' class=\"btn btn-primary\">Delete</a>\n" +
+                        "          <a onclick='rename_log(" + item_name + ")' class=\"btn btn-primary\">Rename</a>\n" +
                         "        </div>\n" +
-                        "      </td>\n"
+                        "      </td>\n";
 
                     content.appendChild(newLine)
                 }
@@ -289,18 +290,19 @@
             if (r == true) {
                 $.post("/action/delete/" + name, "", function (data) {
                 });
-                // req_recorded_data();
+                setTimeout(req_recorded_data,500)
             }
         }
 
-        function add_comment(name) {
-            var r = prompt("comment:", name);
-            console.log("add comment "+ r)
+        function rename_log(name) {
+            var r = prompt("rename:", name);
+            console.log("add rename "+ r)
             if (r != null && r !== "") {
                 $.post("/action/rename/" + name, r, function (reData) {
                 });
+                setTimeout(req_recorded_data,500)
             }
-            // req_recorded_data();
+
         }
 
         $(document).keyup(function (event) {
