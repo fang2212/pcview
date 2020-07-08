@@ -1,0 +1,27 @@
+{
+  "type": "x1_algo",
+  "ip": "192.168.98.102",
+  "mac": "5a:31:90:5d:03:a3",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": true,
+      "port": 24011,
+      "protocol": "libflow",
+      "topic": "video"
+    },
+    "x1-fusion": {
+      "enable": true,
+      "port": 24015,
+      "protocol": "libflow",
+      "topic": "x1-fusion"
+    },
+    "gsensor": {
+      "enable": true,
+      "port": 2407,
+      "protocol": "libflow",
+      "topic": "gsensor"
+    }
+  }
+}
