@@ -179,7 +179,17 @@ def control(cmd):
 
 @app.route("/action/<cmd>/<item>", methods=['GET', 'POST'])
 def control_obj(cmd, item):
-    ctrl_q.put({'action': cmd, 'obj': item, 'initiator': 'web-local'})
+    if cmd == 'rename':
+        data = request.get_data(as_text=True)
+        # print(data)
+        log_path = os.path.join(local_path, item)
+        if os.path.exists(log_path):
+            # pass
+            new_log_path = os.path.join(local_path, data)
+            os.rename(log_path, new_log_path)
+            print('renamed log', log_path, 'to', new_log_path)
+    else:
+        ctrl_q.put({'action': cmd, 'obj': item, 'initiator': 'web-local'})
 
     return redirect("/")
 

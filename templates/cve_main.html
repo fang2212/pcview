@@ -229,8 +229,9 @@
                 let logtxt = document.getElementById('log_text');
                 let content = document.getElementById("records");
                 let log_path = document.getElementById("log_path");
-                // log_path.innerHTML = "<a>"+msg.path+"</a>\n";
+                log_path.innerText = ' ' + msg.data.length + ' logs at ' + msg.path;
                 let data = msg.data;
+                let path = msg.path;
 
                 content.innerHTML = "";
                 for (let record in data) {
@@ -249,6 +250,7 @@
                         "          <a href=\"/download/" + data[record]['name'] + "\" class=\"btn btn-primary\">Download</a>\n" +
                         "          <a href=\"/action/replay/" + data[record]['name'] + "\" class=\"btn btn-primary\">Replay</a>\n" +
                         "          <a onclick=\"del_confirm(" + data[record]['name'] + ")\" class=\"btn btn-primary\">Delete</a>\n" +
+                        "          <a onclick=\"add_comment(" + data[record]['name'] + ")\" class=\"btn btn-primary\">Comment</a>\n" +
                         "        </div>\n" +
                         "      </td>\n"
 
@@ -283,12 +285,22 @@
         }
 
         function del_confirm(name) {
-            var r = confirm("confirm deletion?")
+            var r = confirm("confirm deletion?");
             if (r == true) {
                 $.post("/action/delete/" + name, "", function (data) {
                 });
                 // req_recorded_data();
             }
+        }
+
+        function add_comment(name) {
+            var r = prompt("comment:", name);
+            console.log("add comment "+ r)
+            if (r != null && r !== "") {
+                $.post("/action/rename/" + name, r, function (reData) {
+                });
+            }
+            // req_recorded_data();
         }
 
         $(document).keyup(function (event) {
@@ -486,8 +498,8 @@
             <textarea id='log_text' style="width: 600px; height: 500px"> </textarea>
         </div>
         <div id="tab-item7" class="tab-item">
-            <h2>Recorded data:</h2>
-            <div id="'log_path"></div>
+            <h2>Recorded data</h2><a id="log_path"></a>
+            {#            <div id="'log_path"></div>#}
             <div id="logged">
                 <table class="table">
                     <thead>

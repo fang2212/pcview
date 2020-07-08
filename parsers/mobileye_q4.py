@@ -56,6 +56,8 @@ def parser_mbq4(id, buf, ctx):
     # return {'type': 'vehicle_state', 'yaw_rate': 0.7, 'speed': 1.0}
     t0 = time.time()
     r = db_q4.decode_message(id, buf)
+    # print('0x{:x}'.format(id), r)
+
 
     # if id in ids_lane:
     #     r = db_lane.decode_message(id, buf)
@@ -80,7 +82,7 @@ def parser_mbq4(id, buf, ctx):
     #     for sig in signals:
     #         r[sig.name] = sig.value
     #         # print(sig)
-    # print('0x{:x}'.format(id), r)
+    #
     # # return
 
 

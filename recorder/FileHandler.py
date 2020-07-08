@@ -297,7 +297,7 @@ class FileHandler(Thread):
             if t3 - t0 < 0.001:
                 time.sleep(0.01)
             # else:
-            if raw_write > 500:
+            if raw_write > 100:
                 raw_write = 0
                 raw_fp.flush()
             if pcv_write:

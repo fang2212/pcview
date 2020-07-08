@@ -495,7 +495,11 @@ class FlowSink(Sink):
         from tornado.platform.asyncio import AnyThreadEventLoopPolicy
         asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self._run())
+        try:
+            loop.run_until_complete(self._run())
+        except Exception as e:
+            print('error when initiating flow sink on', self.ip, self.port)
+            print(e)
 
     def pkg_handler(self, msg):
         data = msgpack.unpackb(msg.data)

@@ -1,7 +1,7 @@
 {
-  "type": "pi_node",
-  "mac": "b8:27:eb:e8:0d:06",
-  "ip": "192.168.50.114",
+  "type": "general",
+  "mac": "34:48:ed:07:51:ac",
+  "ip": "192.168.98.123",
   "force_ip": true,
   "work_mode": "collector",
   "repeater": false,
@@ -18,11 +18,23 @@
       "protocol": "nanomsg",
       "topic": "rtcm"
     },
-    "rtcm": {
+    "video": {
       "enable": true,
-      "port": 1240,
+      "port": 6000,
       "protocol": "nanomsg",
       "topic": "ub482"
+    },
+    "can0": {
+      "enable": true,
+      "port": 6003,
+      "protocol": "nanomsg",
+      "topic": "ars"
+    },
+    "can1": {
+      "enable": true,
+      "port": 6001,
+      "protocol": "nanomsg",
+      "topic": "mbq4"
     }
   }
 }

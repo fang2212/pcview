@@ -180,7 +180,7 @@ class sched_nn_sender(Process):
 
 class LogPlayer(Process):
 
-    def __init__(self, log_path, uniconf=None, start_frame=0, ratio=1.0, loop=False, nnsend=False):
+    def __init__(self, log_path, uniconf=None, start_frame=0, ratio=1.0, loop=False, nnsend=False, nosort=False):
         super(LogPlayer, self).__init__()
         # self.daemon = False
         self.time_aligned = True
@@ -220,6 +220,7 @@ class LogPlayer(Process):
         self.pause_state = False
         self.paused_t = 0
         # self.init_env()
+        self.nosort = nosort
         self.nnsend = nnsend
         if nnsend:
             self.senders = {}
@@ -327,7 +328,7 @@ class LogPlayer(Process):
             dt = (tsnow - self.shared['ts0'])/self.replay_speed - (time.time() - self.paused_t - self.shared['t0'])
             # print(tsnow, self.shared['ts0'], time.time(), self.shared['t0'])
             # print(self.msg_queue.qsize())
-            if dt > 0.0002:  # smallest interval that sleep can actually delay
+            if not self.nosort and dt > 0.0002:  # smallest interval that sleep can actually delay
                 # print('sleep', dt)
                 # print(data)
                 pass

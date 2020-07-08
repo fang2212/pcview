@@ -1272,7 +1272,7 @@ class Player(object):
 
         # print('R:', R)
 
-        for x in range(min(int(abs(R)), int(spd * 6))):
+        for x in range(0, min(int(abs(R)), int(spd * 6)), 5):
             if yr < 0.0:
                 # R1 = R - 0.9
                 # R2 = R + 0.9
@@ -1294,7 +1294,7 @@ class Player(object):
             p1.append(self.transform.trans_gnd2ipm(x, y1))
             p2.append(self.transform.trans_gnd2ipm(x, y2))
 
-        for i in range(1, len(p1) - 1, 1):
+        for i in range(0, len(p1) - 1, 1):
             # BaseDraw.draw_line(img, p1[i], p1[i + 1], CVColor.Green, 1)
             # BaseDraw.draw_line(img, p2[i], p2[i + 1], CVColor.Green, 1)
             alpha = (1 - i/len(p1)) * 0.4
