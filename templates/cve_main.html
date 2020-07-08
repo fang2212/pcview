@@ -296,7 +296,7 @@
 
         function rename_log(name) {
             var r = prompt("rename:", name);
-            console.log("add rename "+ r)
+            console.log("add rename "+ r);
             if (r != null && r !== "") {
                 $.post("/action/rename/" + name, r, function (reData) {
                 });
