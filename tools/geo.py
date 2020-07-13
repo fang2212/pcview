@@ -4,11 +4,180 @@ from __future__ import print_function
 '''common utility functions'''
 
 import math, os
+import numpy as np
 
 radius_of_earth = 6378137.0  # in meters
-speedOfLight = 299792458.0  # in m/s
-gpsPi = 3.1415926535898  # Definition of Pi used in the GPS coordinate system
+c_light = 299792458.0  # in m/s
+pi = 3.1415926535897932384626433832795  # Definition of Pi used in the GPS coordinate system
+deg2rad = (pi / 180.0)
+rad2deg = (180.0 / pi)
+arcs = (3600.0 * 180.0 / pi)
 
+a_wgs84 = 6378137.0  # long radius of earth ellipsoid
+b_wgs84 = 6356752.314245  # short radius of earth ellipsoid
+e_wgs84 = ((a_wgs84 * a_wgs84 - b_wgs84 * b_wgs84) ** 0.5) / a_wgs84  # first eccentricity
+f_wgs84 = 1.0 / 298.257223563  # Flattening
+omega_wgs = 7.2921151467e-5  # the earth rotation rate
+e2 = 0.00669437999013
+
+
+def blh2xyz(latitude, longitude, height):
+    """Convert BLH coordinates to XYZ.
+    return tuple(X, Y, Z).
+    Example 1, convert BJFS(Beijing, China) BLH to XYZ:
+    XYZ position calculated by TEQC software:
+    - X: -2148748
+    - Y: 4426656
+    - Z: 4044670
+    # >>> x, y, z = blh2xyz(39.608611, 115.892456, 108.0420)
+    # >>> round(x), round(y), round(z)
+    (-2148748, 4426656, 4044670)
+    Example 2, convert BOGT(Bogota, Colombia) BLH to XYZ:
+    XYZ position calculated by TEQC software:
+    - X: 1744394
+    - Y: -6116025
+    - Z: 512728
+    # >>> x, y, z = blh2xyz(4.640045, -74.080950, 2563.1791)
+    # >>> round(x), round(y), round(z)
+    (1744394, -6116025, 512728)
+    """
+    # convert angle unit to radians
+    latitude = math.radians(latitude)
+    longitude = math.radians(longitude)
+
+    e = math.sqrt(1 - (b_wgs84**2)/(a_wgs84**2))
+    N = a_wgs84 / math.sqrt(1 - e**2 * math.sin(latitude)**2)
+    # calculate X, Y, Z
+    X = (N + height) * math.cos(latitude) * math.cos(longitude)
+    Y = (N + height) * math.cos(latitude) * math.sin(longitude)
+    Z = (N * (1 - e**2) + height) * math.sin(latitude)
+
+    return X, Y, Z
+
+
+def xyz2blh(x, y, z):
+    """Convert XYZ coordinates to BLH,
+    return tuple(latitude, longitude, height).
+    Example 1, convert BJFS(Beijing, China) XYZ to BLH:
+    BLH position calculated by TEQC software:
+    - latitute: 39.6086
+    - longitude: 115.8928
+    - height: 112.78
+    # >>> lat, lon, hgt = xyz2blh(-2148778.283, 4426643.490, 4044675.194)
+    # >>> round(lat, 4), round(lon, 4), round(hgt, 2)
+    (39.6086, 115.8928, 112.78)
+    Example 2, convert BOGT(Bogota, Colombia) XYZ to BLH:
+    BLH position calculated by TEQC software:
+    - latitute: 4.6401
+    - longitude: -74.0806
+    - height: 2585.69
+    # >>> lat, lon, hgt = xyz2blh(1744433.521, -6116034.660, 512736.584)
+    # >>> round(lat, 4), round(lon, 4), round(hgt, 2)
+    (4.6401, -74.0806, 2585.69)
+    """
+    e = math.sqrt(1 - (b_wgs84**2)/(a_wgs84**2))
+    # calculate longitude, in radians
+    longitude = math.atan2(y, x)
+
+    # calculate latitude, in radians
+    xy_hypot = math.hypot(x, y)
+
+    lat0 = 0
+    latitude = math.atan(z / xy_hypot)
+
+    while abs(latitude - lat0) > 1E-9:
+        lat0 = latitude
+        N = a_wgs84 / math.sqrt(1 - e**2 * math.sin(lat0)**2)
+        latitude = math.atan((z + e**2 * N * math.sin(lat0)) / xy_hypot)
+    # calculate height, in meters
+    height = z / math.sin(latitude) - N * (1 - e**2)
+    # convert angle unit to degrees
+    longitude = math.degrees(longitude)
+    latitude = math.degrees(latitude)
+
+    return latitude, longitude, height
+
+
+def xyz2neu(x0, y0, z0, x, y, z):
+    """Convert cartesian coordinate system to site-center system.
+    Input paraments:
+    - x0, y0, z0: coordinate of centra site,
+    - x, y, z: coordinate to be converted.
+    Example: Use coordinate of BJFS IGS site
+    # >>> north, east, up = xyz2neu(-2148747.998, 4426652.444, 4044675.151,
+    # ... -2148745.727, 4426649.545, 4044668.469)
+    # >>> round(north, 2), round(east, 2), round(up, 2)
+    (-2.85, -0.78, -7.03)
+    """
+    # calculate the lat, lon and height of center site
+    lat, lon, _ = xyz2blh(x0, y0, z0)
+    # convert angle unit to radians
+    lat, lon = math.radians(lat), math.radians(lon)
+    # calculate NEU
+    north = (-math.sin(lat) * math.cos(lon) * (x - x0) -
+             math.sin(lat) * math.sin(lon) * (y - y0) +
+             math.cos(lat) * (z - z0))
+    east = -math.sin(lon) * (x - x0) + math.cos(lon) * (y - y0)
+    up = (math.cos(lat) * math.cos(lon) * (x - x0) +
+          math.cos(lat) * math.sin(lon) * (y - y0) +
+          math.sin(lat) * (z - z0))
+
+    return north, east, up
+
+
+def ned2blh(blh0: np.array, ned: np.array) -> np.array:
+    """
+    calculates the blh coordinate of the given ned target
+    """
+    blh0[0] = blh0[0] * deg2rad
+    lat0 = blh0[0]
+    blh0[1] = blh0[1] * deg2rad
+    drinv = np.zeros((3, 3))
+    rm = a_wgs84 * (1 - e2) / pow(1 - e2 * math.sin(lat0) * math.sin(lat0), 1.5)
+    rn = a_wgs84 / math.sqrt(1 - e2 * math.sin(lat0) * math.sin(lat0))
+    drinv[0, 0] = 1 / (rm + blh0[2])
+    drinv[1, 1] = 1 / (rn + blh0[2]) / math.cos(lat0)
+    drinv[2, 2] = -1
+    target_blh = np.dot(drinv, ned) + blh0
+    target_blh[0] = target_blh[0] * rad2deg
+    target_blh[1] = target_blh[1] * rad2deg
+    return target_blh
+
+
+def enu2blh(blh0: np.array, enu: np.array) -> np.array:
+    """
+    calculates the blh coordinate of the given ned target
+    """
+    blh0[0] = blh0[0] * deg2rad
+    lat0 = blh0[0]
+    blh0[1] = blh0[1] * deg2rad
+    drinv = np.zeros((3, 3))
+    rm = a_wgs84 * (1 - e2) / pow(1 - e2 * math.sin(lat0) * math.sin(lat0), 1.5)
+    rn = a_wgs84 / math.sqrt(1 - e2 * math.sin(lat0) * math.sin(lat0))
+    drinv[0, 0] = 1 / (rn + blh0[2]) / math.cos(lat0)
+    drinv[1, 1] = 1 / (rm + blh0[2])
+    drinv[2, 2] = 1
+    target_blh = np.dot(drinv, enu) + blh0
+    target_blh[0] = target_blh[0] * rad2deg
+    target_blh[1] = target_blh[1] * rad2deg
+    return target_blh
+
+
+def body2enu(target_pos: np.array, body_atti: np.array):
+    """
+    target_pos: target position in (front, right, up) axis
+    body_atti: (yaw, pitch, roll) rotation to NED
+    """
+    pass
+
+
+def body2enu_2d(target_pos: np.array, body_atti: np.array):
+    pass
+
+
+
+def body2blh(pos_body: np.array, atti_body: np.array, target_body: np.array):
+    pass
 
 def gps_distance(lat1, lon1, lat2, lon2):
     '''return distance between two points in meters,
@@ -65,7 +234,6 @@ class PosLLH:
         from math import sqrt, pow, sin, cos
         a = 6378137.0
         e = 8.1819190842622e-2
-        pi = gpsPi
 
         lat = self.lat * (pi / 180.0)
         lon = self.lon * (pi / 180.0)
@@ -175,7 +343,7 @@ class PosVector:
 	   The pos2 position should be the satellite
         '''
         OMGE = 7.2921151467e-5  # earth angular velocity (IS-GPS) (rad/s)
-        return OMGE * (pos2.X * self.Y - pos2.Y * self.X) / speedOfLight
+        return OMGE * (pos2.X * self.Y - pos2.Y * self.X) / c_light
 
     def distanceSagnac(self, pos2):
         '''return distance taking into account Sagnac effect. Based
@@ -260,8 +428,12 @@ def loadObject(filename):
 
 
 if __name__ == '__main__':
-    llh = PosLLH(22.540219, 113.947425, 115.347)
-    ecef = llh.ToECEF()
-    print(ecef)
-    ecef1 = PosVector(40557340.0, 5386562.5, 2429815.25)
-    print(ecef.ToLLH())
+    a = np.array([114.0, 22.0, 1.0])
+    ned = np.array([10, 5, -2.0])
+    t = ned2blh(a, ned)
+    print(t)
+    # llh = PosLLH(22.540219, 113.947425, 115.347)
+    # ecef = llh.ToECEF()
+    # print(ecef)
+    # ecef1 = PosVector(40557340.0, 5386562.5, 2429815.25)
+    # print(ecef.ToLLH())

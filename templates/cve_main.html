@@ -241,19 +241,20 @@
                     let newLine = document.createElement("tr");
                     let item_name = "\"" + data[record]['name'] + "\"";
                     newLine.innerHTML =
-                        "      <th scope=\"row\">" + data[record]['name'] + "</th>\n" +
-                        "      <td>" + data[record]['log_size'] + "</td>\n" +
-                        "      <td>" + data[record]['mtime'] + "</td>\n" +
-                        "      <td class=\"text-info\">None</td>\n" +
-                        "      <td>yes</td>\n" +
-                        "      <td>\n" +
-                        "        <div class=\"btn-group-raised btn-group-toggle\">\n" +
-                        "          <a href=\"/download/" + data[record]['name'] + "\" class=\"btn btn-primary\">Download</a>\n" +
-                        "          <a href=\"/action/replay/" + data[record]['name'] + "\" class=\"btn btn-primary\">Replay</a>\n" +
-                        "          <a onclick='del_confirm(" + item_name + ")' class=\"btn btn-primary\">Delete</a>\n" +
-                        "          <a onclick='rename_log(" + item_name + ")' class=\"btn btn-primary\">Rename</a>\n" +
-                        "        </div>\n" +
-                        "      </td>\n";
+                        "      <th scope=\"row\">" + data[record]['name'] +
+                    "          <button onclick='rename_log(" + item_name + ")' class=\"btn btn-outline \">Rename</button>\n" +
+                    "</th>\n" +
+                    "      <td>" + data[record]['log_size'] + "</td>\n" +
+                    "      <td>" + data[record]['mtime'] + "</td>\n" +
+                    "      <td class=\"text-info\">None</td>\n" +
+                    "      <td>yes</td>\n" +
+                    "      <td>\n" +
+                    "        <div class=\"btn-group-raised btn-group-toggle\">\n" +
+                    "          <a href=\"/download/" + data[record]['name'] + "\" class=\"btn btn-primary\">Download</a>\n" +
+                    "          <a href=\"/action/replay/" + data[record]['name'] + "\" class=\"btn btn-primary\">Replay</a>\n" +
+                    "          <a onclick='del_confirm(" + item_name + ")' class=\"btn btn-primary\">Delete</a>\n" +
+                    "        </div>\n" +
+                    "      </td>\n";
 
                     content.appendChild(newLine)
                 }
@@ -290,17 +291,17 @@
             if (r == true) {
                 $.post("/action/delete/" + name, "", function (data) {
                 });
-                setTimeout(req_recorded_data,500)
+                setTimeout(req_recorded_data, 500)
             }
         }
 
         function rename_log(name) {
             var r = prompt("rename:", name);
-            console.log("add rename "+ r);
+            console.log("add rename " + r);
             if (r != null && r !== "") {
                 $.post("/action/rename/" + name, r, function (reData) {
                 });
-                setTimeout(req_recorded_data,500)
+                setTimeout(req_recorded_data, 500)
             }
 
         }
