@@ -144,12 +144,12 @@ class Vehicle(object):
         vel_y = host['hor_speed'] * sin(theta * pi / 180)
         pos_x = cos(angle * pi / 180.0) * range
         pos_y = sin(angle * pi / 180.0) * range
-        delta_h = host['hgt'] - pp['hgt']
+        delta_h = pp['hgt'] - host['hgt']
 
         ttc = pos_x / host['hor_speed'] if host['hor_speed'] > 0 else 7
         if ttc > 7:
             ttc = 7
-
+        # print('get pinpoint target', pos_x, pos_y, delta_h)
         return {'ts': host['ts'], 'source': self.source, 'type': 'rtktarget', 'range': range, 'angle': angle,
                 'delta_hgt': delta_h, 'pos_lat': pos_y, 'pos_lon': pos_x, 'vel_lat': vel_y, 'vel_lon': vel_x,
                 'TTC': ttc}

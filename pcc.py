@@ -663,6 +663,19 @@ class PCC(Thread):
             self.player.show_rtcm(data)
             print('station loc:', data['lat'], data['lon'])
 
+    def process_tsr(self, img, data):
+        ego_pose = self.vehicles['ego'].get_pos()
+        if not ego_pose:
+            print('no pose when process tsr')
+            return
+        ego_blh = np.array([ego_pose['lat'], ego_pose['lon'], ego_pose['hgt']])
+        ego_atti = np.array([ego_pose['yaw'], 0, 0])
+        target = np.array([data['pos_lat'], data['pos_lon'], data['pos_hgt']])  # target position in (right, front, up) order
+        lat, lon, hgt = body2blh(ego_blh, ego_atti, target)
+        self.vehicles['ego'].set_pinpoint({'type': 'pinpoint', 'lat': lat, 'lon': lon, 'hgt': hgt})
+        # print(lat, lon, hgt, 'ego yaw:', ego_pose['yaw'], data)
+        self.player.show_tsr(img, data)
+
     def specific_handle(self, img, data):
         src = data.get('source')
         if not src:
@@ -751,7 +764,8 @@ class PCC(Thread):
             self.player.update_column_ts(data['source'], data['ts'])
         elif data['type'] == 'traffic_sign':
             # print(data)
-            self.player.show_tsr(img, data)
+            self.process_tsr(img, data)
+            # self.player.show_tsr(img, data)
             # self.pause = True
         elif data['type'] == 'warning':
             self.player.show_warning(img, data)

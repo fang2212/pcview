@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-'''common utility functions'''
+"""common utility functions"""
 
 import math, os
+from math import *
 import numpy as np
 
 radius_of_earth = 6378137.0  # in meters
 c_light = 299792458.0  # in m/s
-pi = 3.1415926535897932384626433832795  # Definition of Pi used in the GPS coordinate system
+# pi = 3.1415926535897932384626433832795  # Definition of Pi used in the GPS coordinate system
 deg2rad = (pi / 180.0)
 rad2deg = (180.0 / pi)
 arcs = (3600.0 * 180.0 / pi)
@@ -45,12 +46,12 @@ def blh2xyz(latitude, longitude, height):
     latitude = math.radians(latitude)
     longitude = math.radians(longitude)
 
-    e = math.sqrt(1 - (b_wgs84**2)/(a_wgs84**2))
-    N = a_wgs84 / math.sqrt(1 - e**2 * math.sin(latitude)**2)
+    e = math.sqrt(1 - (b_wgs84 ** 2) / (a_wgs84 ** 2))
+    N = a_wgs84 / math.sqrt(1 - e ** 2 * math.sin(latitude) ** 2)
     # calculate X, Y, Z
     X = (N + height) * math.cos(latitude) * math.cos(longitude)
     Y = (N + height) * math.cos(latitude) * math.sin(longitude)
-    Z = (N * (1 - e**2) + height) * math.sin(latitude)
+    Z = (N * (1 - e ** 2) + height) * math.sin(latitude)
 
     return X, Y, Z
 
@@ -75,7 +76,7 @@ def xyz2blh(x, y, z):
     # >>> round(lat, 4), round(lon, 4), round(hgt, 2)
     (4.6401, -74.0806, 2585.69)
     """
-    e = math.sqrt(1 - (b_wgs84**2)/(a_wgs84**2))
+    e = math.sqrt(1 - (b_wgs84 ** 2) / (a_wgs84 ** 2))
     # calculate longitude, in radians
     longitude = math.atan2(y, x)
 
@@ -87,10 +88,10 @@ def xyz2blh(x, y, z):
 
     while abs(latitude - lat0) > 1E-9:
         lat0 = latitude
-        N = a_wgs84 / math.sqrt(1 - e**2 * math.sin(lat0)**2)
-        latitude = math.atan((z + e**2 * N * math.sin(lat0)) / xy_hypot)
+        N = a_wgs84 / math.sqrt(1 - e ** 2 * math.sin(lat0) ** 2)
+        latitude = math.atan((z + e ** 2 * N * math.sin(lat0)) / xy_hypot)
     # calculate height, in meters
-    height = z / math.sin(latitude) - N * (1 - e**2)
+    height = z / math.sin(latitude) - N * (1 - e ** 2)
     # convert angle unit to degrees
     longitude = math.degrees(longitude)
     latitude = math.degrees(latitude)
@@ -129,18 +130,19 @@ def ned2blh(blh0: np.array, ned: np.array) -> np.array:
     """
     calculates the blh coordinate of the given ned target
     """
-    blh0[0] = blh0[0] * deg2rad
-    lat0 = blh0[0]
-    blh0[1] = blh0[1] * deg2rad
+    _blh0 = blh0.copy()
+    _blh0[0] = radians(_blh0[0])
+    lat0 = _blh0[0]
+    _blh0[1] = radians(_blh0[1])
     drinv = np.zeros((3, 3))
     rm = a_wgs84 * (1 - e2) / pow(1 - e2 * math.sin(lat0) * math.sin(lat0), 1.5)
     rn = a_wgs84 / math.sqrt(1 - e2 * math.sin(lat0) * math.sin(lat0))
-    drinv[0, 0] = 1 / (rm + blh0[2])
-    drinv[1, 1] = 1 / (rn + blh0[2]) / math.cos(lat0)
+    drinv[0, 0] = 1 / (rm + _blh0[2])
+    drinv[1, 1] = 1 / (rn + _blh0[2]) / math.cos(lat0)
     drinv[2, 2] = -1
-    target_blh = np.dot(drinv, ned) + blh0
-    target_blh[0] = target_blh[0] * rad2deg
-    target_blh[1] = target_blh[1] * rad2deg
+    target_blh = np.dot(drinv, ned) + _blh0
+    target_blh[0] = degrees(target_blh[0])
+    target_blh[1] = degrees(target_blh[1])
     return target_blh
 
 
@@ -148,41 +150,89 @@ def enu2blh(blh0: np.array, enu: np.array) -> np.array:
     """
     calculates the blh coordinate of the given ned target
     """
-    blh0[0] = blh0[0] * deg2rad
-    lat0 = blh0[0]
-    blh0[1] = blh0[1] * deg2rad
+    _blh0 = blh0.copy()
+    _blh0[0] = _blh0[0] * deg2rad
+    lat0 = _blh0[0]
+    _blh0[1] = _blh0[1] * deg2rad
     drinv = np.zeros((3, 3))
     rm = a_wgs84 * (1 - e2) / pow(1 - e2 * math.sin(lat0) * math.sin(lat0), 1.5)
     rn = a_wgs84 / math.sqrt(1 - e2 * math.sin(lat0) * math.sin(lat0))
-    drinv[0, 0] = 1 / (rn + blh0[2]) / math.cos(lat0)
-    drinv[1, 1] = 1 / (rm + blh0[2])
+    drinv[0, 0] = 1 / (rn + _blh0[2]) / math.cos(lat0)
+    drinv[1, 1] = 1 / (rm + _blh0[2])
     drinv[2, 2] = 1
-    target_blh = np.dot(drinv, enu) + blh0
-    target_blh[0] = target_blh[0] * rad2deg
-    target_blh[1] = target_blh[1] * rad2deg
+    target_blh = np.dot(drinv, enu) + _blh0
+    target_blh[0] = degrees(target_blh[0])
+    target_blh[1] = degrees(target_blh[1])
     return target_blh
+
+
+def dcm_enu2body(body_atti: np.array):
+    yaw = radians(body_atti[0])
+    pitch = radians(body_atti[1])
+    roll = radians(body_atti[2])
+
+    cn1 = np.array([[cos(yaw), sin(yaw), 0],
+                    [-sin(yaw), cos(yaw), 0],
+                    [0, 0, 1]])
+    c12 = np.array([[1, 0, 0],
+                    [0, cos(pitch), sin(pitch)],
+                    [0, -sin(pitch), cos(pitch)]])
+    c23 = np.array([[cos(roll), 0, -sin(roll)],
+                    [0, 1, 0],
+                    [sin(roll), 0, cos(roll)]])
+    cnb = np.dot(c23, np.dot(c12, cn1))
+    return cnb
+
+
+# def dcm_body2enu(body_atti: np.array):
+#     yaw = radians(body_atti[0])
+#     pitch = radians(body_atti[1])
+#     roll = radians(body_atti[2])
+#     cbn = np.array([[cos(pitch) * cos(roll)]])
+
+
+def enu2body(target_enu: np.array, body_atti: np.array):
+    cnb = dcm_enu2body(body_atti)
+    target_pos = np.dot(cnb, target_enu)
+
+    return target_pos
 
 
 def body2enu(target_pos: np.array, body_atti: np.array):
     """
-    target_pos: target position in (front, right, up) axis
-    body_atti: (yaw, pitch, roll) rotation to NED
-    """
-    pass
+        target_pos: target position in (right, front, up) axis
+        body_atti: (yaw, pitch, roll) rotation to NED
+        """
+    cnb = dcm_enu2body(body_atti)
+    # cbn = cnb.T
+    target_enu = np.matmul(cnb.T, target_pos)
+    return target_enu
 
 
-def body2enu_2d(target_pos: np.array, body_atti: np.array):
-    pass
-
+def body2enu_2d(target_pos: np.array, yaw: float):
+    n = target_pos[0] * cos(radians(yaw)) - target_pos[1] * sin(radians(yaw))
+    e = target_pos[0] * sin(radians(yaw)) + target_pos[1] * cos(radians(yaw))
+    return e, n, 0
 
 
 def body2blh(pos_body: np.array, atti_body: np.array, target_body: np.array):
-    pass
+    # from tools import geo2
+    e, n, u = body2enu(target_body, atti_body)
+    target_blh = ned2blh(pos_body, np.array([n, e, -u]))
+    # target_blh = geo2.enu_to_blh(e, n, u, pos_body[0], pos_body[1], pos_body[2])
+    return target_blh
+
+
+def body2blh_2d(pos_body: np.array, atti_body: np.array, target_body: np.array):
+    e, n, _ = body2enu_2d(target_body, atti_body[0])
+    target_blh = ned2blh(pos_body, np.array([n, e, 0]))
+    return target_blh
+
 
 def gps_distance(lat1, lon1, lat2, lon2):
-    '''return distance between two points in meters,
+    """return distance between two points in meters,
     coordinates are in degrees
-    thanks to http://www.movable-type.co.uk/scripts/latlong.html'''
+    thanks to http://www.movable-type.co.uk/scripts/latlong.html"""
     from math import radians, cos, sin, sqrt, atan2
     lat1 = radians(lat1)
     lat2 = radians(lat2)
@@ -197,9 +247,10 @@ def gps_distance(lat1, lon1, lat2, lon2):
 
 
 def gps_bearing(lat1, lon1, lat2, lon2):
-    '''return bearing between two points in degrees, in range 0-360
-    thanks to http://www.movable-type.co.uk/scripts/latlong.html'''
-    from math import sin, cos, atan2, radians, degrees
+    """return bearing between two points in degrees, in range 0-360
+    thanks to http://www.movable-type.co.uk/scripts/latlong.html
+    direction: pos1 -> pos2, angle from north to direction vector"""
+    # from math import sin, cos, atan2, radians, degrees
     lat1 = radians(lat1)
     lat2 = radians(lat2)
     lon1 = radians(lon1)
@@ -215,7 +266,7 @@ def gps_bearing(lat1, lon1, lat2, lon2):
 
 
 class PosLLH:
-    '''a class for latitude/longitude/altitude'''
+    """a class for latitude/longitude/altitude"""
 
     def __init__(self, lat, lon, alt):
         self.lat = lat
@@ -226,11 +277,11 @@ class PosLLH:
         return '(%.8f, %.8f, %.8f)' % (self.lat, self.lon, self.alt)
 
     def ToECEF(self):
-        '''convert from lat/lon/alt to ECEF
+        """convert from lat/lon/alt to ECEF
 
         Thanks to Nicolas Hennion
         http://www.nicolargo.com/dev/xyz2lla/
-        '''
+        """
         from math import sqrt, pow, sin, cos
         a = 6378137.0
         e = 8.1819190842622e-2
@@ -247,20 +298,20 @@ class PosLLH:
         return PosVector(x, y, z)
 
     def distance(self, pos):
-        '''return distance to another position'''
+        """return distance to another position"""
         if isinstance(pos, PosLLH):
             pos = pos.ToECEF()
         return self.ToECEF().distance(pos)
 
     def distanceXY(self, pos):
-        '''return distance to another position'''
+        """return distance to another position"""
         if isinstance(pos, PosLLH):
             pos = pos.ToECEF()
         return self.ToECEF().distanceXY(pos)
 
 
 class PosVector:
-    '''a X/Y/Z vector class, used for ECEF positions'''
+    """a X/Y/Z vector class, used for ECEF positions"""
 
     def __init__(self, X, Y, Z, extra=None):
         self.X = float(X)
@@ -307,8 +358,8 @@ class PosVector:
         return llh1.distance(llh2)
 
     def bearing(self, pos):
-        '''return bearing between two points in degrees, in range 0-360
-        thanks to http://www.movable-type.co.uk/scripts/latlong.html'''
+        """return bearing between two points in degrees, in range 0-360
+        thanks to http://www.movable-type.co.uk/scripts/latlong.html"""
         from math import sin, cos, atan2, radians, degrees
         llh1 = self.ToLLH()
         llh2 = pos.ToLLH()
@@ -327,43 +378,43 @@ class PosVector:
         return bearing
 
     def offsetXY(self, pos):
-        '''
-	return offset X,Y in meters to pos
-	'''
-        from math import sin, cos, radians
+        """
+        return offset X,Y in meters to pos
+        """
+        # from math import sin, cos, radians
         distance = self.distanceXY(pos)
         bearing = self.bearing(pos)
         x = distance * sin(radians(bearing))
         y = distance * cos(radians(bearing))
-        return (x, y)
+        return x, y
 
     def SagnacCorrection(self, pos2):
-        '''return the Sagnac range correction. Based
+        """return the Sagnac range correction. Based
            on on RTCM2.3 appendix C. Note that this is not a symmetric error!
-	   The pos2 position should be the satellite
-        '''
+        The pos2 position should be the satellite
+        """
         OMGE = 7.2921151467e-5  # earth angular velocity (IS-GPS) (rad/s)
         return OMGE * (pos2.X * self.Y - pos2.Y * self.X) / c_light
 
     def distanceSagnac(self, pos2):
-        '''return distance taking into account Sagnac effect. Based
+        """return distance taking into account Sagnac effect. Based
            on geodist() in rtklib. Note that this is not a symmetric distance!
-	   The pos2 position should be the satellite
+        The pos2 position should be the satellite
 
-	   Note that the Sagnac distance is an alternative to rotating
-	   the satellite positions using
-	   rangeCorrection.correctPosition(). Only one of them should
-	   be used
-        '''
+        Note that the Sagnac distance is an alternative to rotating
+        the satellite positions using
+        rangeCorrection.correctPosition(). Only one of them should
+        be used"""
+
         return self.distance(pos2) + self.SagnacCorrection(pos2)
 
     def ToLLH(self):
-        '''convert from ECEF to lat/lon/alt
+        """convert from ECEF to lat/lon/alt
 
         Thanks to Nicolas Hennion
         http://www.nicolargo.com/dev/xyz2lla/
-        '''
-        from math import sqrt, pow, cos, sin, pi, atan2
+        """
+        # from math import sqrt, pow, cos, sin, pi, atan2
 
         a = radius_of_earth
         e = 8.1819190842622e-2
@@ -382,7 +433,7 @@ class PosVector:
 
 
 def ParseLLH(pos_string):
-    '''parse a lat,lon,alt string and return a PosLLH'''
+    """parse a lat,lon,alt string and return a PosLLH"""
     a = pos_string.split(',')
     if len(a) != 3:
         return None
@@ -390,7 +441,7 @@ def ParseLLH(pos_string):
 
 
 def correctWeeklyTime(time):
-    '''correct the time accounting for beginning or end of week crossover'''
+    """correct the time accounting for beginning or end of week crossover"""
     half_week = 302400  # seconds
     corrTime = time
     if time > half_week:
@@ -401,13 +452,13 @@ def correctWeeklyTime(time):
 
 
 def gpsTimeToTime(week, sec):
-    '''convert GPS week and TOW to a time in seconds since 1970'''
+    """convert GPS week and TOW to a time in seconds since 1970"""
     epoch = 86400 * (10 * 365 + (1980 - 1969) / 4 + 1 + 6 - 2)
     return epoch + 86400 * 7 * week + sec
 
 
 def saveObject(filename, object):
-    '''save an object to a file'''
+    """save an object to a file"""
     import pickle
     h = open(filename + '.tmp', mode='wb')
     pickle.dump(object, h)
@@ -416,7 +467,7 @@ def saveObject(filename, object):
 
 
 def loadObject(filename):
-    '''load an object from a file'''
+    """load an object from a file"""
     import pickle
     try:
         h = open(filename, mode='rb')
@@ -428,10 +479,22 @@ def loadObject(filename):
 
 
 if __name__ == '__main__':
-    a = np.array([114.0, 22.0, 1.0])
-    ned = np.array([10, 5, -2.0])
-    t = ned2blh(a, ned)
-    print(t)
+    ego_blh = np.array([22.542966, 113.940537, 10.0])
+    a = np.array([10.88, 23, 1])
+    atti = np.array([90, 6.0, 1.0])
+    enu = body2enu(a, atti)
+    body = enu2body(enu, atti)
+    print('enu:', enu, 'body:', body)
+    target_blh = body2blh(ego_blh, atti, a)
+    print(target_blh, ego_blh)
+    dist = gps_distance(ego_blh[0], ego_blh[1], target_blh[0], target_blh[1])
+    angle = gps_bearing(target_blh[0], target_blh[1], ego_blh[0], ego_blh[1])
+    # angle = gps_bearing(22.00014632, 114.0, ego_blh[0], ego_blh[1])
+    print(angle)
+    angle = angle - atti[0]
+    pos_y = cos(angle * pi / 180.0) * dist
+    pos_x = sin(angle * pi / 180.0) * dist
+    print(pos_x, pos_y)
     # llh = PosLLH(22.540219, 113.947425, 115.347)
     # ecef = llh.ToECEF()
     # print(ecef)
