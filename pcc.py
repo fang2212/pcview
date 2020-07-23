@@ -6,32 +6,32 @@ __version__ = '0.1.0'
 __progname__ = 'run'
 
 import base64
-import logging
+# import logging
 import time
 from datetime import datetime
 from math import fabs
 from multiprocessing import Manager
 from multiprocessing.dummy import Process as Thread
-import signal
+# import signal
 import cv2
-import sys
-import numpy as np
+# import sys
+# import numpy as np
 # from turbojpeg import TurboJPEG
 
-from config.config import local_cfg, load_cfg
+from config.config import load_cfg
 from net.ntrip_client import GGAReporter
 from player import FlowPlayer
 from player.pcc_ui import Player
 from recorder import VideoRecorder
 from recorder.convert import *
-from sink.hub import Hub
+# from sink.hub import Hub
 from tools.geo import *
 from tools.match import is_near
 # from tools.mytools import Supervisor
 from tools.transform import Transform, OrientTuner
 from tools.vehicle import Vehicle, get_rover_target
 from tools.cpu_mem_info import *
-from multiprocessing import Queue
+# from multiprocessing import Queue
 
 
 # logging.basicConfig(level=logging.INFO,
@@ -106,13 +106,13 @@ class PCC(Thread):
 
         if replay:
             self.hub.d = Manager().dict()
-
-            def update_speed(x):
-                self.hub.d['replay_speed'] = 1 if x // 10 < 1 else x // 10
-                print('replay-speed is', self.hub.d['replay_speed'])
-
-            if not to_web:
-                cv2.createTrackbar('replay-speed', 'adj', 10, 50, update_speed)
+        #
+        #     def update_speed(x):
+        #         self.hub.d['replay_speed'] = 1 if x // 10 < 1 else x // 10
+        #         print('replay-speed is', self.hub.d['replay_speed'])
+        #
+        #     if not to_web:
+        #         cv2.createTrackbar('replay-speed', 'adj', 10, 50, update_speed)
 
         self.gga = None
         if not self.replay:
