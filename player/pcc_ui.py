@@ -610,16 +610,20 @@ class Player(object):
             return
 
         color = self.color_obs['rtk']
-        if obs.get('class') == 'pedestrian':
+        line = 100
+        if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
+            line = 160
+            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']))
+        elif obs.get('class') == 'pedestrian':
             line = 40
             # BaseDraw.draw_text(img, 'CIPPed: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
             self.show_text_info(obs['source'], line, 'CIPPed: {}'.format(obs['id']))
         elif obs.get('class') == 'object':
-            line = 100
+            # line = 100
             # BaseDraw.draw_text(img, 'CIPO: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
             self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']))
         else:
-            line = 100
+            # line = 100
             # BaseDraw.draw_text(img, 'CIPVeh: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
             self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']))
 
