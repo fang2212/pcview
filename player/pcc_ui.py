@@ -507,8 +507,10 @@ class Player(object):
                 # print(col, height, entry['buffer'])
                 style = entry['buffer'][height]['style']
                 style_list = {'normal': None, 'warning': CVColor.Yellow, 'fail': CVColor.Red, 'pass': CVColor.Green}
-                if style_list.get(style):
+                if isinstance(style, str) and style_list.get(style):
                     color = style_list.get(style)
+                elif isinstance(style, tuple):
+                    color = style
                 else:
                     color = CVColor.White
                 line_len = len(entry['buffer'][height]['text'])
@@ -611,9 +613,11 @@ class Player(object):
 
         color = self.color_obs['rtk']
         line = 100
+        style = 'normal'
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
             line = 160
-            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']))
+            style = self.color_obs.get('x1')
+            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
         elif obs.get('class') == 'pedestrian':
             line = 40
             # BaseDraw.draw_text(img, 'CIPPed: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
@@ -630,11 +634,11 @@ class Player(object):
         if 'TTC' in obs:
             # BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line + 20), 0.5, CVColor.White,
             #                    1)
-            self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']))
+            self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), style)
         dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
         angle = obs.get('angle') if 'angle' in obs else atan2(obs['pos_lat'], obs['pos_lon']) * 180 / pi
         # BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
-        self.show_text_info(obs['source'], line + 40, 'R/A: {:.2f} / {:.2f}'.format(dist, angle))
+        self.show_text_info(obs['source'], line + 40, 'R/A: {:.2f} / {:.2f}'.format(dist, angle), style)
         BaseDraw.draw_up_arrow(img, indent + 100, line - 12, color, 6)
 
     def show_heading_horizen(self, img, rtk):
