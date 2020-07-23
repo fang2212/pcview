@@ -238,7 +238,7 @@ class BaseDraw(object):
                                        0.2, color, begin, end)
 
     @classmethod
-    def draw_alpha_rect(cls, image_content, rect, alpha, color=CVColor.White, line_width=0):
+    def draw_alpha_rect(cls, image_content, rect, alpha, color=CVColor.Black, line_width=0):
         x, y, w, h = rect
         mask = np.zeros((h, w, 3), np.uint8)
         mask[:] = color
