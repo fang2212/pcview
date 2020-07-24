@@ -621,8 +621,9 @@ if __name__ == "__main__":
     parser.add_argument('-ns', '--nosort', action="store_true")
     parser.add_argument('-l', '--loop', action="store_true")
     parser.add_argument('-w', '--web', action="store_true")
-    parser.add_argument('-v', '--virtual', action="store_true")
     parser.add_argument('-s', '--send', action="store_true")
+    parser.add_argument('-sf', '--start_frame', default=0)
+    parser.add_argument('-ef', '--end_frame', default=None)
 
     args = parser.parse_args()
     source = args.input_path
