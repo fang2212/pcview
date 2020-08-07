@@ -15,11 +15,11 @@
                 "algo_03a3": "normal",
                 "skoda_ffd0": "normal",
                 "skoda_ffd1": "normal",
-		"skoda_ffd2": "normal",
+		        "skoda_ffd2": "normal",
                 "pi_ba29": "normal",
                 "pi_0d06": "normal",
                 "pi_gateway": "normal",
-                "pi_5297": "normal"
+                "pi_9de8": "normal"
             },
             "installation": {
                 "esr": {
@@ -87,7 +87,6 @@
         "other": {
             "enable": false,
             "collectors": {
-                "9de8": "normal"
             }
         }
     }

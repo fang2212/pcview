@@ -1071,7 +1071,7 @@ class Player(object):
         # print(data['type'], data['ts'], data['sol_stat'], data['pos_type'])
         # self.update_column_ts(data['source'], data['ts'])
         color = CVColor.White
-        style_list = {'NONE': 'fail', 'DOPPLER_VELOCITY': 'pass', 'NARROW_INT': 'pass'}
+        style_list = {'NONE': 'fail', 'DOPPLER_VELOCITY': 'pass', 'NARROW_INT': 'pass', 'INS_RTKFIXED': 'pass'}
         if data['type'] == 'bestpos':
             # BaseDraw.draw_text(img, '{}'.format(data['pos_type']), (indent + 142, 40), 0.5, color, 1)
             # BaseDraw.draw_text(img, 'lat: {:.8f}'.format(data['lat']), (indent + 142, 60), 0.5, color, 1)

@@ -180,12 +180,13 @@ class sched_nn_sender(Process):
 
 class LogPlayer(Process):
 
-    def __init__(self, log_path, uniconf=None, start_frame=0, ratio=1.0, loop=False, nnsend=False, nosort=False):
+    def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, ratio=1.0, loop=False, nnsend=False, nosort=False):
         super(LogPlayer, self).__init__()
+        self.start_frame = int(start_frame) if start_frame else 0
+        self.end_frame = int(end_frame) if end_frame else 9999999999999
         # self.daemon = False
         self.time_aligned = True
         self.log_path = log_path
-        self.start_frame = start_frame
         self.socks = {}
         self.shared = Manager().dict()
         self.shared['t0'] = 0  # time when start replaying
@@ -645,7 +646,7 @@ if __name__ == "__main__":
     r_sort, cfg = prep_replay(source, ns=ns)
     from pcc import PCC
 
-    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=0, loop=args.loop, nnsend=args.send)
+    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=args.start_frame, end_frame=args.end_frame, loop=args.loop, nnsend=args.send)
     if args.web:
         from video_server import PccServer
         server = PccServer()
