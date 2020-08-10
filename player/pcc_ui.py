@@ -37,7 +37,7 @@ class Player(object):
         self.video_streams = {'video': {}}
 
         self.indent = 160
-        self.columns = {'video': {'indent': 0, 'buffer': {}, 'ts': 0}}
+        self.columns = {'video': {'indent': 0, 'y0': 0, 'buffer': {}, 'ts': 0}}
         self.param_bg_width = 160
         self.ts_now = 0
         self.rtk = {}
@@ -86,7 +86,7 @@ class Player(object):
             # del self.columns[i]
             return
         else:
-            self.columns[msg_type] = {'indent': self.indent}
+            self.columns[msg_type] = {'indent': self.indent, 'y0': 0}
             # if 'rtk' in msg_type:
             #     self.indent += 300
             # else:
@@ -114,13 +114,13 @@ class Player(object):
                 BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
                 BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(i - 1, 10), 0.3, CVColor.White, 1)
 
-        for i in [-4*0.5, 4*0.5]:
+        for i in [-4 * 0.5, 4 * 0.5]:
             p1 = self.transform.trans_gnd2ipm(-10, i)
             p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.LightRed, thickness=1)
             BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 0.3, CVColor.White, 1)
 
-        for i in [-4*2.5, -4*1.5, 4*1.5, 4*2.5]:
+        for i in [-4 * 2.5, -4 * 1.5, 4 * 1.5, 4 * 2.5]:
             p1 = self.transform.trans_gnd2ipm(-10, i)
             p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
@@ -179,20 +179,20 @@ class Player(object):
         """左上角参数背景图"""
         BaseDraw.draw_alpha_rect(img, rect, 0.6, CVColor.Black)
 
-    def show_columns(self, img):
-        w = self.param_bg_width
-        # self.show_parameters_background(img, (0, 0, w if w <= 1280 else 1280, 150))
-        for col in self.columns:
-            indent = self.columns[col]['indent']
-            x0 = indent
-            y0 = 0
-            x1 = indent + 140
-            y1 = max(self.columns[col]['buffer']) if self.columns[col]['buffer'] else 0
-            self.show_parameters_background(img, (x0, y0, x1 if x1 <= 1280 else 1280, y1))
-
-            BaseDraw.draw_text(img, col, (indent + 12, 20), 0.5, CVColor.Cyan, 1)
-            if col != 'video':
-                cv2.rectangle(img, (indent, 0), (indent + 140, 20), self.columns[col]['color'], -1)
+    # def show_columns(self, img):
+    #     w = self.param_bg_width
+    #     # self.show_parameters_background(img, (0, 0, w if w <= 1280 else 1280, 150))
+    #     for col in self.columns:
+    #         indent = self.columns[col]['indent']
+    #         x0 = indent
+    #         y0 = 0
+    #         x1 = indent + 140
+    #         y1 = max(self.columns[col]['buffer']) if self.columns[col]['buffer'] else 0
+    #         self.show_parameters_background(img, (x0, y0, x1 if x1 <= 1280 else 1280, y1))
+    #
+    #         BaseDraw.draw_text(img, col, (indent + 12, 20), 0.5, CVColor.Cyan, 1)
+    #         if col != 'video':
+    #             cv2.rectangle(img, (indent, 0), (indent + 140, 20), self.columns[col]['color'], -1)
 
     def show_obs(self, img, obs, thickness=2):
         try:
@@ -466,30 +466,43 @@ class Player(object):
     def render_text_info(self, img):
         # self.show_columns(img)
         # print(len(self.columns))
+        smallest_h = 200
+        shortest_col = None
         for col in self.columns:
             entry = self.columns[col]
             indent = self.columns[col]['indent']
             x0 = indent
-            y0 = 0
+            y0 = self.columns[col]['y0']
             w = 160
+            if x0 + w > 1280:
+                y0 = smallest_h
+                self.columns[col]['y0'] = y0
+                x0 = self.columns[shortest_col]['indent']
+                self.columns[col]['indent'] = x0
             h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 24
             h = 24 if h == 0 else h
+            if h + y0 < smallest_h:
+                smallest_h = h + y0
+                shortest_col = col
 
             # if col is not 'video':
             #     color_lg = self.columns[col].get('color')
             #     if color_lg is not None:
             #         cv2.rectangle(img, (indent + 1, 1), (indent + 159, 24), self.columns[col]['color'], -1)
+            # print(x0, y0, w, h)
             self.show_parameters_background(img, (x0, y0, w if w <= 1280 else 1280, h))
 
             if col != 'video':
                 color_lg = self.columns[col].get('color')
+                if color_lg is None:
+                    color_lg = CVColor.LightGray
                 if color_lg is not None:
-                    cv2.rectangle(img, (indent + 1, 1), (indent + 19, 24), self.columns[col]['color'], -1)
-                    cv2.rectangle(img, (x0, y0), (x0 + w - 2, y0 + h), self.columns[col]['color'], 2)
+                    cv2.rectangle(img, (indent + 1, y0 + 1), (indent + 19, y0 + 24), color_lg, -1)
+                    cv2.rectangle(img, (x0, y0), (x0 + w - 2, y0 + h), color_lg, 2)
             if 'ifv300' in col:
-                BaseDraw.draw_text(img, 'q3', (indent + 22, 20), 0.5, CVColor.Cyan, 1)
+                BaseDraw.draw_text(img, 'q3', (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
             else:
-                BaseDraw.draw_text(img, col, (indent + 22, 20), 0.5, CVColor.Cyan, 1)
+                BaseDraw.draw_text(img, col, (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
             dt = self.ts_now - self.columns[col]['ts']
 
             if dt > 999:
@@ -500,7 +513,7 @@ class Player(object):
                 delay_ms = "{:+4d}s".format(int(dt))
             else:
                 delay_ms = '{:>+4d}ms'.format(int(dt * 1000))
-            BaseDraw.draw_text(img, delay_ms, (indent + 92, 20), 0.5, CVColor.White, 1)
+            BaseDraw.draw_text(img, delay_ms, (indent + 92, y0 + 20), 0.5, CVColor.White, 1)
             # if col is not 'video':
             #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:
@@ -516,7 +529,8 @@ class Player(object):
                 line_len = len(entry['buffer'][height]['text'])
                 size = min(0.5 * 16 / line_len, 0.5)
                 size = max(0.24, size)
-                BaseDraw.draw_text(img, entry['buffer'][height]['text'], (entry['indent'] + 2, height), size, color, 1)
+                BaseDraw.draw_text(img, entry['buffer'][height]['text'], (entry['indent'] + 2, height + y0), size,
+                                   color, 1)
 
     def show_video_info(self, img, data):
         tnow = time.time()
@@ -1220,7 +1234,7 @@ class Player(object):
         # print('R:', R)
 
         for x in range(0, min(int(abs(R)), int(spd * 6), cipv_dist), 5):
-        # for x in range(0, 80):
+            # for x in range(0, 80):
             if yr < 0.0:
                 y = (abs(R ** 2 - (x - x0) ** 2)) ** 0.5 + R
             elif yr > 0.0:
@@ -1270,13 +1284,13 @@ class Player(object):
         if yr > 0.00001 or yr < -0.00001:
             R = spd / yr
             if R > 0:
-                R1 = R - veh_w/2
-                R2 = R + veh_w/2
+                R1 = R - veh_w / 2
+                R2 = R + veh_w / 2
                 # print(R1)
 
             else:
-                R1 = R + veh_w/2
-                R2 = R - veh_w/2
+                R1 = R + veh_w / 2
+                R2 = R - veh_w / 2
 
         # print('R:', R)
 
@@ -1305,7 +1319,6 @@ class Player(object):
         for i in range(0, len(p1) - 1, 1):
             # BaseDraw.draw_line(img, p1[i], p1[i + 1], CVColor.Green, 1)
             # BaseDraw.draw_line(img, p2[i], p2[i + 1], CVColor.Green, 1)
-            alpha = (1 - i/len(p1)) * 0.4
-            BaseDraw.draw_alpha_poly(img, np.array([p1[i], p1[i+1], p2[i+1], p2[i]]), alpha, FlatColor.emerald)
+            alpha = (1 - i / len(p1)) * 0.4
+            BaseDraw.draw_alpha_poly(img, np.array([p1[i], p1[i + 1], p2[i + 1], p2[i]]), alpha, FlatColor.emerald)
             # cv2.fillConvexPoly(img, np.array([p1[i], p1[i+1], p2[i+1], p2[i]]), CVColor.Green)
-
