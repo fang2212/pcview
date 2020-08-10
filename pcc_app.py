@@ -171,13 +171,15 @@ elif args.web:  # start webui PCC
     server = video_server.PccServer()
     server.start()
     hub = Hub(uniconf=cve_conf)
+
     pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
+    pcc_thread = Thread(target=pcc.start)
     hub.start()
 
     # print('-----------------------------------------------------------------------', os.getpid())
     sup = init_checkers(pcc)
     # sup.add_check_task(list_recorded_data)
-    pcc.start()
+    pcc_thread.start()
     while True:
         if pcc.stuck_cnt > 10:
             print('pcc stuck count:', pcc.stuck_cnt)
@@ -195,7 +197,8 @@ elif args.web:  # start webui PCC
                     pcc.control(ord('q'))
                     # hub = Hub(uniconf=cve_conf)
                     pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
-                    pcc.start()
+                    pcc_thread = Thread(target=pcc.start)
+                    pcc_thread.start()
                 else:
                     key = ord(ctrl['cmd'].lower())
 
@@ -212,7 +215,8 @@ elif args.web:  # start webui PCC
                 replayer = LogPlayer(r_sort, cve_conf, ratio=0.2, start_frame=0, loop=True)
                 pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, uniconf=cve_conf, to_web=server)
                 replayer.start()
-                pcc.start()
+                pcc_thread = Thread(target=pcc.start)
+                pcc_thread.start()
                 pass
             elif ctrl['action'] == 'analyze':
                 pass
@@ -240,4 +244,4 @@ else:  # normal standalone PCC
     hub.start()
     sup = init_checkers(pcc)
     pcc.start()
-    pcc.join()
+    # pcc.join()

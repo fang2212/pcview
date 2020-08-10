@@ -45,7 +45,7 @@ def loop_traverse(items):
             yield item
 
 
-class PCC(Thread):
+class PCC(object):
     def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=None,
                  auto_rec=False):
         super(PCC, self).__init__()
@@ -256,7 +256,7 @@ class PCC(Thread):
         print('refresh interval set to', self.display_interval, 'hub qsize:', iqsize)
         return {'status': 'ok'}
 
-    def run(self):
+    def start(self):
         # self.hub.start()
         self.player.start_time = datetime.now()
         frame_cnt = 0
