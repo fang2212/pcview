@@ -123,11 +123,15 @@ def trj_2d(fig, trjs, vis=True):
     ax = fig.add_subplot()
     # print(xlist)
     # print(ylist)
-    for label in sorted(trjs.keys()):
-        xlist = trjs[label]['x']
-        ylist = trjs[label]['y']
-        ax.plot(xlist, ylist, '.-')
-    ax.legend(sorted(trjs.keys()))
+    legends = []
+    for src in trjs:
+        for label in sorted(trjs[src].keys()):
+            entry = src + '.' + label
+            legends.append(entry)
+            xlist = trjs[src][label]['x']
+            ylist = trjs[src][label]['y']
+            ax.plot(xlist, ylist, '.')
+    ax.legend(legends)
     if vis:
         plt.show()
 

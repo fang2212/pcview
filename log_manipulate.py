@@ -2219,14 +2219,14 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
         # continue
 
 
-def viz_2d_trj(r0, source='rtk.6', vis=True):
+def viz_2d_trj(r0, source=None, vis=True):
     from recorder.convert import ub482_defs, decode_with_def
     from tools.geo import gps_bearing, gps_distance
 
     xlist = []
     ylist = []
     trjs = {}
-    obs_cnt = 0
+    obs_cnt = {}
     point0 = None
     with open(r0) as rf:
         for idx, line in enumerate(rf):
@@ -2241,14 +2241,17 @@ def viz_2d_trj(r0, source='rtk.6', vis=True):
             if 'bestpos' in cols[2]:
                 _, idx, kw = cols[2].split('.')
                 src = _ + '.' + idx
+                if src not in trjs:
+                    trjs[src] = {}
+                    obs_cnt[src] = 0
                 sol_stt = cols[4]
 
-                if src == source:
+                if not source or (source and src == source):
                     r = decode_with_def(ub482_defs, line)
-                    if sol_stt not in trjs:
-                        trjs[sol_stt] = {'x': [], 'y': [], 'cnt': 0}
-                    trjs[sol_stt]['cnt'] += 1
-                    obs_cnt += 1
+                    if sol_stt not in trjs[src]:
+                        trjs[src][sol_stt] = {'x': [], 'y': [], 'cnt': 0}
+                    trjs[src][sol_stt]['cnt'] += 1
+                    obs_cnt[src] += 1
                     if not r:
                         continue
                     if sol_stt == 'NONE':
@@ -2260,13 +2263,14 @@ def viz_2d_trj(r0, source='rtk.6', vis=True):
                     range = gps_distance(point0['lat'], point0['lon'], r['lat'], r['lon'])
                     x = cos(angle * pi / 180.0) * range
                     y = sin(angle * pi / 180.0) * range
-                    trjs[sol_stt]['x'].append(x)
-                    trjs[sol_stt]['y'].append(y)
+                    trjs[src][sol_stt]['x'].append(x)
+                    trjs[src][sol_stt]['y'].append(y)
                     # xlist.append(x)
                     # ylist.append(y)
-    for sol_stt in trjs:
-        pct = trjs[sol_stt]['cnt'] / obs_cnt * 100.0
-        print('#obs in rtk {}: {}  {:.2f}%'.format(sol_stt, trjs[sol_stt]['cnt'], pct))
+    for src in trjs:
+        for sol_stt in trjs[src]:
+            pct = trjs[src][sol_stt]['cnt'] / obs_cnt[src] * 100.0
+            print('#obs in {} {}: {}  {:.2f}%'.format(src, sol_stt, trjs[src][sol_stt]['cnt'], pct))
     fig = visual.get_fig()
     # visual.trj_2d(fig, xlist, ylist, vis)
     visual.trj_2d(fig, trjs, vis)
