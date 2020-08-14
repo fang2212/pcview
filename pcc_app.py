@@ -11,6 +11,7 @@ from pcc import *
 from tools.mytools import Supervisor
 import shutil
 import platform
+from sink.hub import Hub
 
 machine_arch = platform.machine()
 
