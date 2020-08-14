@@ -13,7 +13,7 @@ import cantools
 # db_x1 = cantools.database.load_file('dbc/MINIEYE_CAR.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/MINIEYE_PED.dbc')
 # db_x1.add_dbc_file('dbc/MINIEYE_LANE.dbc')
-db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190715.dbc', strict=False)
+db_x1j = cantools.database.load_file('dbc/X1_AEB_20200812.dbc', strict=False)
 
 cipv = {}
 cipp = {}
@@ -21,10 +21,10 @@ x1_lane = {}
 
 
 def parse_x1j(id, data, ctx=None):
-    ids = [m.frame_id for m in db_x1.messages]
+    ids = [m.frame_id for m in db_x1j.messages]
     if id not in ids:
         return None
-    r = db_x1.decode_message(id, data)
+    r = db_x1j.decode_message(id, data)
     if ctx and ctx.get('parser_mode') == 'direct':
         return r
     # print("0x%x" % id, r)
@@ -70,7 +70,7 @@ def parse_x1j(id, data, ctx=None):
     elif 0x770 <= id <= 0x777:
         # other car
         index = id - 0x770 + 1
-        obs_num = r['Addition_Vehicle_Number_' + str(index)]
+        # obs_num = r['Addition_Vehicle_Number_' + str(index)]
         # x1_obs_list = []
         x1j_obs = {}
         suffix = 'AdditionVehicle' + str(index)
@@ -82,7 +82,7 @@ def parse_x1j(id, data, ctx=None):
         x1j_obs['pos_lat'] = r[suffix + '_PosY']
         x1j_obs['vel_lon'] = r[suffix + '_VelX']
         x1j_obs['vel_lat'] = r[suffix + '_VelY']
-        x1j_obs['status'] = r[suffix + 'Status']
+        x1j_obs['status'] = r[suffix + '_Status']
 
         x1j_obs['ttc'] = 7
         x1j_obs['vel_lon'] = 0
