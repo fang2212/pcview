@@ -586,7 +586,8 @@ class PCC(object):
                 # print(target)
                 if target:
                     self.player.show_rtk_target(img, target)
-                    self.player.show_rtk_target_ipm(self.ipm, target)
+                    if self.show_ipm:
+                        self.player.show_rtk_target_ipm(self.ipm, target)
             # else:
             #     print('no ego vehicle')
             # elif 'trk_gnd' in data:
@@ -601,7 +602,8 @@ class PCC(object):
         if pp_target:
             # t0 = time.time()
             self.player.show_rtk_target(img, pp_target)
-            self.player.show_rtk_target_ipm(self.ipm, pp_target)
+            if self.show_ipm:
+                self.player.show_rtk_target_ipm(self.ipm, pp_target)
             # dt = time.time() - t0
             # print('rtk target cost:{}'.format(dt * 1000))
             # print(pp_target['ts'])
@@ -741,7 +743,7 @@ class PCC(object):
             self.player.draw_vehicle_state(img, data)
             # print(data)
             self.player.update_column_ts(data['source'], data['ts'])
-            if 'yaw_rate' in data and not self.cfg.runtime.get('low_profile'):
+            if 'yaw_rate' in data and self.show_ipm and not self.cfg.runtime.get('low_profile'):
                 # self.player.show_host_path(img, data['speed'], data['yaw_rate'], self.cipv)
                 self.player.show_host_path_ipm(self.ipm, data['speed'], data['yaw_rate'])
 
