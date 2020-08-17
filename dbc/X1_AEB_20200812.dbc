@@ -1,0 +1,379 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: ADAS MINIEYE_TRANSMITTER
+
+
+BO_ 30 CalibFrame: 8 Vector__XXX
+ SG_ cali_err : 8|8@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ CalibRoll : 48|16@1- (0.001,0) [-10|10] "" Vector__XXX
+ SG_ CalibYaw : 32|16@1- (0.001,0) [-10|10] "" Vector__XXX
+ SG_ CalibPitch : 16|16@1- (0.001,0) [-10|10] "" Vector__XXX
+ SG_ CalibStatus : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 29 Version_frame: 8 Vector__XXX
+ SG_ CameraStatus : 60|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ CameraCovered : 62|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ SoftwareVersion : 0|48@1+ (1,0) [0|281474976710655] "" Vector__XXX
+
+BO_ 1528 Frameid_Lane: 8 MINIEYE_TRANSMITTER
+ SG_ turn_right : 33|1@1+ (1,0) [0|1] ""  ADAS
+ SG_ turn_left : 32|1@1+ (1,0) [0|1] ""  ADAS
+ SG_ frameid_lane : 0|32@1+ (1,0) [0|4294967295] ""  ADAS
+
+BO_ 1919 Frameid_PED: 8 MINIEYE_TRANSMITTER
+ SG_ frameid_ped : 0|32@1+ (1,0) [0|4294967295] ""  ADAS
+
+BO_ 1903 Frameid_Car: 8 MINIEYE_TRANSMITTER
+ SG_ speed : 32|8@1+ (1,0) [0|255] "km/h"  ADAS
+ SG_ frameid_car : 0|32@1+ (1,0) [0|4294967295] ""  ADAS
+
+BO_ 1901 KeyCarFrameA1: 8 MINIEYE_TRANSMITTER
+ SG_ on_route : 1|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ TargetVehicle_Status : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ TargetVehicle_Width : 24|8@1+ (0.05,0) [0|12.5] "M" Vector__XXX
+ SG_ FCW : 0|1@1+ (1,0) [0|1] ""  ADAS
+ SG_ Vehicle_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ TargetVehicle_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  ADAS
+ SG_ TargetVehicle_PosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "m"  ADAS
+ SG_ TargetVehicle_Type : 48|3@1+ (1,0) [0|7] ""  ADAS
+
+BO_ 1902 KeyCarFrameA2: 8 MINIEYE_TRANSMITTER
+ SG_ TargetVehicle_VelY : 48|12@1- (0.0625,0) [-127.93|127.93] "m/sec" Vector__XXX
+ SG_ TargetVehicle_TTC : 0|10@1+ (0.01,0) [0|10] "sec"  ADAS
+ SG_ TargetVehicle_VelX : 16|12@1- (0.0625,0) [-127.93|127.93] "m/sec"  ADAS
+ SG_ TargetVehicle_AccelX : 32|10@1- (0.03,0) [-14.97|14.97] "m/sec^2"  ADAS
+ SG_ TargetVehicle_Confidence : 10|6@1+ (0.02,0) [0|1] ""  ADAS
+
+BO_ 1904 OtherCarFrame1: 8 MINIEYE_TRANSMITTER
+ SG_ Addition_Vehicle_Number_1 : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ AdditionVehicle1_Status : 28|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ AdditionVehicle1_VelY : 54|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ AdditionVehicle1_VelX : 42|12@1- (0.0625,0) [-128|127.9375] "m" Vector__XXX
+ SG_ Vehicle1_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionVehicle1_PosX : 16|12@1+ (0.0625,0) [0|250] "Meter"  ADAS
+ SG_ AdditionVehicle1_PosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  ADAS
+ SG_ AdditionVehicle1_Type : 8|3@1+ (1,0) [0|5] ""  ADAS
+
+BO_ 1905 OtherCarFrame2: 8 MINIEYE_TRANSMITTER
+ SG_ Addition_Vehicle_Number_2 : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ AdditionVehicle2_Status : 28|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ AdditionVehicle2_VelY : 54|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ AdditionVehicle2_VelX : 42|12@1- (0.0625,0) [-128|127.9375] "m" Vector__XXX
+ SG_ Vehicle2_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionVehicle2_PosX : 16|12@1+ (0.0625,0) [0|250] "Meter"  ADAS
+ SG_ AdditionVehicle2_PosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  ADAS
+ SG_ AdditionVehicle2_Type : 8|3@1+ (1,0) [0|5] ""  ADAS
+
+BO_ 1906 OtherCarFrame3: 8 MINIEYE_TRANSMITTER
+ SG_ Addition_Vehicle_Number_3 : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ AdditionVehicle3_Status : 28|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ AdditionVehicle3_VelY : 54|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ AdditionVehicle3_VelX : 42|12@1- (0.0625,0) [-128|127.9375] "m" Vector__XXX
+ SG_ Vehicle3_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionVehicle3_PosX : 16|12@1+ (0.0625,0) [0|250] "Meter"  ADAS
+ SG_ AdditionVehicle3_PosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  ADAS
+ SG_ AdditionVehicle3_Type : 8|3@1+ (1,0) [0|5] ""  ADAS
+
+BO_ 1907 OtherCarFrame4: 8 MINIEYE_TRANSMITTER
+ SG_ Addition_Vehicle_Number_4 : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ AdditionVehicle4_Status : 28|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ AdditionVehicle4_VelY : 54|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ AdditionVehicle4_VelX : 42|12@1- (0.0625,0) [-128|127.9375] "m" Vector__XXX
+ SG_ Vehicle4_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionVehicle4_PosX : 16|12@1+ (0.0625,0) [0|250] "Meter"  ADAS
+ SG_ AdditionVehicle4_PosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  ADAS
+ SG_ AdditionVehicle4_Type : 8|3@1+ (1,0) [0|5] ""  ADAS
+
+BO_ 1908 OtherCarFrame5: 8 MINIEYE_TRANSMITTER
+ SG_ Addition_Vehicle_Number_5 : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ AdditionVehicle5_Status : 28|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ AdditionVehicle5_VelY : 54|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ AdditionVehicle5_VelX : 42|12@1- (0.0625,0) [-128|127.9375] "m" Vector__XXX
+ SG_ Vehicle5_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionVehicle5_PosX : 16|12@1+ (0.0625,0) [0|250] "Meter"  ADAS
+ SG_ AdditionVehicle5_PosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  ADAS
+ SG_ AdditionVehicle5_Type : 8|3@1+ (1,0) [0|5] ""  ADAS
+
+BO_ 1909 OtherCarFrame6: 8 MINIEYE_TRANSMITTER
+ SG_ Addition_Vehicle_Number_6 : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ AdditionVehicle6_Status : 28|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ AdditionVehicle6_VelY : 54|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ AdditionVehicle6_VelX : 42|12@1- (0.0625,0) [-128|127.9375] "m" Vector__XXX
+ SG_ Vehicle6_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionVehicle6_PosX : 16|12@1+ (0.0625,0) [0|250] "Meter"  ADAS
+ SG_ AdditionVehicle6_PosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  ADAS
+ SG_ AdditionVehicle6_Type : 8|3@1+ (1,0) [0|5] ""  ADAS
+
+BO_ 1910 OtherCarFrame7: 8 MINIEYE_TRANSMITTER
+ SG_ Addition_Vehicle_Number_7 : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ AdditionVehicle7_Status : 28|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ AdditionVehicle7_VelY : 54|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ AdditionVehicle7_VelX : 42|12@1- (0.0625,0) [-128|127.9375] "m" Vector__XXX
+ SG_ Vehicle7_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionVehicle7_PosX : 16|12@1+ (0.0625,0) [0|250] "Meter"  ADAS
+ SG_ AdditionVehicle7_PosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  ADAS
+ SG_ AdditionVehicle7_Type : 8|3@1+ (1,0) [0|5] ""  ADAS
+
+BO_ 1911 OtherCarFrame8: 8 MINIEYE_TRANSMITTER
+ SG_ Addition_Vehicle_Number_8 : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ AdditionVehicle8_Status : 28|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ AdditionVehicle8_VelY : 54|10@1- (0.0625,0) [-32|31.9375] "m" Vector__XXX
+ SG_ AdditionVehicle8_VelX : 42|12@1- (0.0625,0) [-128|127.9375] "m" Vector__XXX
+ SG_ Vehicle8_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionVehicle8_PosX : 16|12@1+ (0.0625,0) [0|250] "Meter"  ADAS
+ SG_ AdditionVehicle8_PosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  ADAS
+ SG_ AdditionVehicle8_Type : 8|3@1+ (1,0) [0|5] ""  ADAS
+
+BO_ 1520 Lane1FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Lane1_Type : 0|4@1+ (1,0) [0|15] ""  ADAS
+ SG_ Lane1_Quality : 4|2@1+ (1,0) [0|3] ""  ADAS
+ SG_ Lane1_Position : 8|16@1- (0.00390625,0) [-128|128] "Meter"  ADAS
+ SG_ Lane1_Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter"  ADAS
+ SG_ Lane1_CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2"  ADAS
+ SG_ Lane1_WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter"  ADAS
+
+BO_ 1521 Lane1FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ Lane1_HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian"  ADAS
+ SG_ Lane1_ViewRangeStart : 16|8@1+ (0.5,0) [0|127.5] ""  ADAS
+ SG_ Lane1_ViewRangeEnd : 24|8@1+ (0.5,0) [0|127.5] ""  ADAS
+ SG_ Lane1_LineCrossing : 32|1@1+ (1,0) [0|1] ""  ADAS
+
+BO_ 1522 Lane2FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Lane2_Type : 0|4@1+ (1,0) [0|15] ""  ADAS
+ SG_ Lane2_Quality : 4|2@1+ (1,0) [0|3] ""  ADAS
+ SG_ Lane2_Position : 8|16@1- (0.00390625,0) [-128|128] "Meter"  ADAS
+ SG_ Lane2_Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter"  ADAS
+ SG_ Lane2_CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2"  ADAS
+ SG_ Lane2_WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter"  ADAS
+
+BO_ 1523 Lane2FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ Lane2_HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian"  ADAS
+ SG_ Lane2_ViewRangeStart : 16|8@1+ (0.5,0) [0|127.5] ""  ADAS
+ SG_ Lane2_ViewRangeEnd : 24|8@1+ (0.5,0) [0|127.5] ""  ADAS
+ SG_ Lane2_LineCrossing : 32|1@1+ (1,0) [0|1] ""  ADAS
+
+BO_ 1524 Lane3FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Lane3_Type : 0|4@1+ (1,0) [0|15] ""  ADAS
+ SG_ Lane3_Quality : 4|2@1+ (1,0) [0|3] ""  ADAS
+ SG_ Lane3_Position : 8|16@1- (0.00390625,0) [-128|128] "Meter"  ADAS
+ SG_ Lane3_Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter"  ADAS
+ SG_ Lane3_CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2"  ADAS
+ SG_ Lane3_WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter"  ADAS
+
+BO_ 1525 Lane3FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ Lane3_HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian"  ADAS
+ SG_ Lane3_ViewRangeStart : 16|8@1+ (0.5,0) [0|127.5] ""  ADAS
+ SG_ Lane3_ViewRangeEnd : 24|8@1+ (0.5,0) [0|127.5] ""  ADAS
+ SG_ Lane3_LineCrossing : 32|1@1+ (1,0) [0|1] ""  ADAS
+
+BO_ 1526 Lane4FrameC: 8 MINIEYE_TRANSMITTER
+ SG_ Lane4_Type : 0|4@1+ (1,0) [0|15] ""  ADAS
+ SG_ Lane4_Quality : 4|2@1+ (1,0) [0|3] ""  ADAS
+ SG_ Lane4_Position : 8|16@1- (0.00390625,0) [-128|128] "Meter"  ADAS
+ SG_ Lane4_Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter"  ADAS
+ SG_ Lane4_CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2"  ADAS
+ SG_ Lane4_WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter"  ADAS
+
+BO_ 1527 Lane4FrameD: 8 MINIEYE_TRANSMITTER
+ SG_ Lane4_HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian"  ADAS
+ SG_ Lane4_ViewRangeStart : 16|8@1+ (0.5,0) [0|127.5] ""  ADAS
+ SG_ Lane4_ViewRangeEnd : 24|8@1+ (0.5,0) [0|127.5] ""  ADAS
+ SG_ Lane4_LineCrossing : 32|1@1+ (1,0) [0|1] ""  ADAS
+
+BO_ 1914 PED_Frame_C: 8 MINIEYE_TRANSMITTER
+ SG_ TargetPedestrian_TTC : 30|10@1+ (0.01,0) [0|10] "s"  ADAS
+ SG_ TargetPedestrian_ID : 0|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ TargetPedestrian_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  ADAS
+ SG_ TargetPedestrian_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  ADAS
+ SG_ TargetPedestrian_VelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec"  ADAS
+ SG_ TargetPedestrian_VelY : 52|8@1- (0.0625,0) [-8|7.9375] "m/sec"  ADAS
+ SG_ TargetPedestrian_Type : 60|3@1+ (1,0) [0|7] ""  ADAS
+
+BO_ 1915 PED1_Frame_D: 8 MINIEYE_TRANSMITTER
+ SG_ AdditionPedestrianNumber1 : 0|2@1+ (1,0) [0|2] ""  ADAS
+ SG_ AdditionPedestrian1_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionPedestrian1_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  ADAS
+ SG_ AdditionPedestrian1_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  ADAS
+ SG_ TargetPedestrian1_Type : 30|3@1+ (1,0) [0|7] ""  ADAS
+ SG_ AdditionPedestrian2_ID : 33|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionPedestrian2_PosX : 39|12@1+ (0.0625,0) [0|250] "m"  ADAS
+ SG_ AdditionPedestrian2_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m"  ADAS
+ SG_ TargetPedestrian2_Type : 61|3@1+ (1,0) [0|7] ""  ADAS
+
+BO_ 1916 PED2_Frame_D: 8 MINIEYE_TRANSMITTER
+ SG_ AdditionPedestrianNumber2 : 0|2@1+ (1,0) [0|2] ""  ADAS
+ SG_ AdditionPedestrian3_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionPedestrian3_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  ADAS
+ SG_ AdditionPedestrian3_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  ADAS
+ SG_ TargetPedestrian3_Type : 30|3@1+ (1,0) [0|7] ""  ADAS
+ SG_ AdditionPedestrian4_ID : 33|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionPedestrian4_PosX : 39|12@1+ (0.0625,0) [0|250] "m"  ADAS
+ SG_ AdditionPedestrian4_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m"  ADAS
+ SG_ TargetPedestrian4_Type : 61|3@1+ (1,0) [0|7] ""  ADAS
+
+BO_ 1917 PED3_Frame_D: 8 MINIEYE_TRANSMITTER
+ SG_ AdditionPedestrianNumber3 : 0|2@1+ (1,0) [0|2] ""  ADAS
+ SG_ AdditionPedestrian5_ID : 2|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionPedestrian5_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  ADAS
+ SG_ AdditionPedestrian5_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  ADAS
+ SG_ TargetPedestrian5_Type : 30|3@1+ (1,0) [0|7] ""  ADAS
+ SG_ AdditionPedestrian6_ID : 33|6@1+ (1,0) [0|63] ""  ADAS
+ SG_ AdditionPedestrian6_PosX : 39|12@1+ (0.0625,0) [0|250] "m"  ADAS
+ SG_ AdditionPedestrian6_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m"  ADAS
+ SG_ TargetPedestrian6_Type : 61|3@1+ (1,0) [0|7] ""  ADAS
+
+BO_ 1792 adas_out: 8 MINIEYE_TRANSMITTER
+ SG_ Sound_type : 0|3@1+ (1,0) [0|7] ""  ADAS
+ SG_ Time_Indicator : 3|2@1+ (1,0) [0|3] ""  ADAS
+ SG_ HMW_valid : 16|1@1+ (1,0) [0|1] ""  ADAS
+ SG_ HMW_measure : 17|7@1+ (0.1,0) [0|9.9] "s"  ADAS
+ SG_ LDWoff : 32|1@1+ (1,0) [0|1] ""  ADAS
+ SG_ LeftLDWon : 33|1@1+ (1,0) [0|1] ""  ADAS
+ SG_ RightLDWon : 34|1@1+ (1,0) [0|1] ""  ADAS
+ SG_ FCW_on : 35|2@1+ (1,0) [0|3] ""  ADAS
+ SG_ PedsFCW : 41|1@1+ (1,0) [0|1] ""  ADAS
+ SG_ PedInDZ : 42|1@1+ (1,0) [0|1] ""  ADAS
+ SG_ HMW_Level : 56|2@1+ (1,0) [0|3] ""  ADAS
+
+
+
+BA_DEF_ SG_  "GenSigStartValue" INT -2147483648 0;
+BA_DEF_ SG_  "GenSigLongName" STRING ;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "cyclic","spontaneous","cyclicIfActive","spontaneousWithDelay","immediate";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 2 50000;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigLongName" "";
+BA_DEF_DEF_  "GenMsgSendType" "cyclic";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "GenMsgCycleTime" 50;
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_ "GenMsgCycleTime" BO_ 30 100;
+BA_ "GenMsgCycleTime" BO_ 29 100;
+BA_ "GenMsgCycleTime" BO_ 1528 40;
+BA_ "GenMsgCycleTime" BO_ 1919 20;
+BA_ "GenMsgCycleTime" BO_ 1903 20;
+BA_ "GenMsgCycleTime" BO_ 1901 20;
+BA_ "GenMsgCycleTime" BO_ 1902 20;
+BA_ "GenMsgCycleTime" BO_ 1904 20;
+BA_ "GenMsgCycleTime" BO_ 1905 20;
+BA_ "GenMsgCycleTime" BO_ 1906 20;
+BA_ "GenMsgCycleTime" BO_ 1907 20;
+BA_ "GenMsgCycleTime" BO_ 1908 20;
+BA_ "GenMsgCycleTime" BO_ 1909 20;
+BA_ "GenMsgCycleTime" BO_ 1910 20;
+BA_ "GenMsgCycleTime" BO_ 1911 20;
+BA_ "GenMsgCycleTime" BO_ 1520 40;
+BA_ "GenMsgCycleTime" BO_ 1521 40;
+BA_ "GenMsgCycleTime" BO_ 1522 40;
+BA_ "GenMsgCycleTime" BO_ 1523 40;
+BA_ "GenMsgCycleTime" BO_ 1524 40;
+BA_ "GenMsgCycleTime" BO_ 1525 40;
+BA_ "GenMsgCycleTime" BO_ 1526 40;
+BA_ "GenMsgCycleTime" BO_ 1527 40;
+BA_ "GenMsgCycleTime" BO_ 1914 20;
+BA_ "GenMsgCycleTime" BO_ 1915 20;
+BA_ "GenMsgCycleTime" BO_ 1916 20;
+BA_ "GenMsgCycleTime" BO_ 1917 20;
+BA_ "GenMsgCycleTime" BO_ 1792 100;
+VAL_ 30 cali_err 7 "sna" 6 "6" 5 "输入参数异常" 4 "标定结果异常" 3 "标定超时" 2 "车速不符合
+" 1 "目标数量太多
+" 0 "检测不到目标
+" ;
+VAL_ 30 CalibStatus 4 "calib succeed" 3 "calib error" 2 "calib in progre" 1 "calib succeed b4" 0 "no calib yet" ;
+VAL_ 29 CameraStatus 1 "fault" 0 "ok" ;
+VAL_ 29 CameraCovered 1 "camera has been coverd" 0 "camera no coverd" ;
+VAL_ 1901 on_route 1 "on route" 0 "not on route" ;
+VAL_ 1901 TargetVehicle_Status 4 "covered target ,covered target" 3 "valid target ,high confidence" 2 "stable target ,stable confidence" 1 "new target , low confidence" 0 "invalid target" ;
+VAL_ 1901 FCW 1 "FCWOn" 0 "FCWOff" ;
+VAL_ 1901 TargetVehicle_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1904 AdditionVehicle1_Status 4 "covered target ,covered target" 3 "valid target ,high confidence" 2 "stable target ,stable confidence" 1 "new target , low confidence" 0 "invalid target" ;
+VAL_ 1904 AdditionVehicle1_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1905 AdditionVehicle2_Status 4 "covered target ,covered target" 3 "valid target ,high confidence" 2 "stable target ,stable confidence" 1 "new target , low confidence" 0 "invalid target" ;
+VAL_ 1905 AdditionVehicle2_Type 5 "SpecialCar" 4 "truck" 3 "Bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1906 AdditionVehicle3_Status 4 "covered target ,covered target" 3 "valid target ,high confidence" 2 "stable target ,stable confidence" 1 "new target , low confidence" 0 "invalid target" ;
+VAL_ 1906 AdditionVehicle3_Type 5 "SpecialCar" 4 "truck" 3 "Bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1907 AdditionVehicle4_Status 4 "covered target ,covered target" 3 "valid target ,high confidence" 2 "stable target ,stable confidence" 1 "new target , low confidence" 0 "invalid target" ;
+VAL_ 1907 AdditionVehicle4_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1908 AdditionVehicle5_Status 4 "covered target ,covered target" 3 "valid target ,high confidence" 2 "stable target ,stable confidence" 1 "new target , low confidence" 0 "invalid target" ;
+VAL_ 1908 AdditionVehicle5_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1909 AdditionVehicle6_Status 4 "covered target ,covered target" 3 "valid target ,high confidence" 2 "stable target ,stable confidence" 1 "new target , low confidence" 0 "invalid target" ;
+VAL_ 1909 AdditionVehicle6_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1910 AdditionVehicle7_Status 4 "covered target ,covered target" 3 "valid target ,high confidence" 2 "stable target ,stable confidence" 1 "new target , low confidence" 0 "invalid target" ;
+VAL_ 1910 AdditionVehicle7_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1911 AdditionVehicle8_Status 4 "covered target ,covered target" 3 "valid target ,high confidence" 2 "stable target ,stable confidence" 1 "new target , low confidence" 0 "invalid target" ;
+VAL_ 1911 AdditionVehicle8_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1520 Lane1_Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1520 Lane1_Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1521 Lane1_LineCrossing 1 "LineCrossing" 0 "NoLineCross" ;
+VAL_ 1522 Lane2_Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1522 Lane2_Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1523 Lane2_LineCrossing 1 "LineCrossing" 0 "NoLineCross" ;
+VAL_ 1524 Lane3_Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1524 Lane3_Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1525 Lane3_LineCrossing 1 "LineCrossing" 0 "NoLineCross" ;
+VAL_ 1526 Lane4_Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1526 Lane4_Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1527 Lane4_LineCrossing 1 "LineCrossing" 0 "NoLineCross" ;
+VAL_ 1914 TargetPedestrian_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1915 TargetPedestrian1_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1915 TargetPedestrian2_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1916 TargetPedestrian3_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1916 TargetPedestrian4_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1917 TargetPedestrian5_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1917 TargetPedestrian6_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1792 Sound_type 7 "Stop&Go" 6 "FCW+PCW" 5 "UFCW" 4 "TSR" 3 "HW" 2 "LDWRight" 1 "LDWLeft" 0 "silent" ;
+VAL_ 1792 Time_Indicator 1 "night" 0 "day" ;
+VAL_ 1792 HMW_valid 1 "on" 0 "off" ;
+VAL_ 1792 LDWoff 1 "disable" 0 "enable" ;
+VAL_ 1792 LeftLDWon 1 "warning" 0 "NoWarning" ;
+VAL_ 1792 RightLDWon 1 "warning" 0 "NoWarning" ;
+VAL_ 1792 FCW_on 3 "reserved" 2 "warning level2" 1 "warning level1" 0 "NoWarning" ;
+VAL_ 1792 PedsFCW 1 "warning" 0 "NoWarning" ;
+VAL_ 1792 PedInDZ 1 "PedInDZ" 0 "NoPedInDZ" ;
+VAL_ 1792 HMW_Level 3 "HW<=0.6" 2 "HW<=HWConfig" 1 "HWM>HWConfig" 0 "NoCar" ;
+
