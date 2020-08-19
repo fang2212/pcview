@@ -8,14 +8,14 @@
             "port": 5001
         }
     },
-    "main_collector": "ffd1",
+    "main_collector": "algo_1206",
     "vehicles": {
         "ego": {
             "enable": true,
             "collectors": {
                 "ffd1": "normal",
                 "algo_626d": "normal",
-                "algo_e23e": "normal",
+                "algo_1206": "normal",
                 "ffe0": "normal",
                 "55dd": "normal",
                 "pi_gateway": "normal"
@@ -78,7 +78,6 @@
         "other": {
             "enable": false,
             "collectors": {
-                "9de8": "normal"
             }
         }
     }
