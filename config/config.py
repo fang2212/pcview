@@ -316,22 +316,30 @@ def load_cfg(jsonspec, local='config/local.json'):
     main_collector = spec.get('main_collector')
     if spec.get('version') and spec['version'] >= 0.6:
         for role in spec['vehicles']:
-            for idx in spec['vehicles'][role]['collectors']:
-                idx = str(idx)
-                def_name = 'config/collectors/{}.json'.format(idx)
-                clct = json.load(open(def_name))
-                if idx == main_collector:
-                    clct['is_main'] = True
+            for item in spec['vehicles'][role]['collectors']:
+                if spec['version'] >= 1.0:
+                    entry = item['model']
                 else:
-                    clct['is_main'] = False
+                    entry = str(item)
+                def_name = 'config/collectors/{}.json'.format(entry)
+                clct = json.load(open(def_name))
+                if spec['version'] >= 1.0:
+                    if item.get('params'):
+                        clct.update(item['params'])
+                        if item['params'].get('is_main'):
+                            main_collector = item['params']['is_main']
+                else:
+                    if entry == main_collector:
+                        clct['is_main'] = True
+                    else:
+                        clct['is_main'] = False
                 clct['veh_tag'] = role
-                clct['name'] = idx
+                clct['name'] = entry
                 clct['defs_path'] = def_name
                 cve_conf.configs.append(clct)
         for item in spec['vehicles']['ego']['installation']:  # TODO unify install params naming
             cve_conf.installs[item] = spec['vehicles']['ego']['installation'][item]
     else:
-
         for idx in spec['collectors']:
             idx = str(idx)
             clct = json.load(open('config/collectors/{}.json'.format(idx)))
