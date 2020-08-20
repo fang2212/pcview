@@ -283,7 +283,8 @@ def upgrade():
             print('uploaded file depressed:', upload_path)
             if os.path.exists(os.path.join(dest_dir, 'pcc_release', 'pcc')):
                 shutil.copy(os.path.join(dest_dir, 'pcc_release', 'pcc'), 'pcc')
-                print('replaced PCC executive, now restarting.')
+                shutil.copy(os.path.join(dest_dir, 'pcc_release', 'build_info.txt'), 'build_info.txt')
+                print('replaced PCC executive, now restarting...')
                 cmd_req = {'action': 'control', 'cmd': 'respawn'}
                 ctrl_q.put(cmd_req)
         return redirect(url_for('upgrade'))
