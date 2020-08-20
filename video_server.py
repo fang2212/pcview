@@ -1,13 +1,15 @@
-from flask import Flask, render_template, Response, session, jsonify, request, redirect, send_file
+from flask import Flask, render_template, Response, session, jsonify, request, redirect, send_file, url_for
+from werkzeug.utils import secure_filename
 from flask_socketio import SocketIO, emit
 from multiprocessing import Process, Queue
 import cv2
 import time
 import os
-import logging
+import shutil
 from io import BytesIO
 import zipfile
 import json
+import tarfile
 
 
 async_mode = None
@@ -30,6 +32,37 @@ no_frame = open('static/img/no_video.jpg', 'rb').read()
 
 profile_data = {}
 
+def make_targz(output_filename, source_dir):
+    """
+    一次性打包目录为tar.gz
+    :param output_filename: 压缩文件名
+    :param source_dir: 需要打包的目录
+    :return: bool
+    """
+    try:
+        with tarfile.open(output_filename, "w:gz") as tar:
+            tar.add(source_dir, arcname=os.path.basename(source_dir))
+
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+
+def untar(fname, dest_dir):
+    """
+    解压tar.gz文件
+    :param fname: 压缩文件名
+    :param dest_dir: 解压后的存放路径
+    :return: bool
+    """
+    try:
+        t = tarfile.open(fname)
+        t.extractall(path=dest_dir)
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 def set_local_path(path):
     global local_path
@@ -230,6 +263,33 @@ def download(item):
     return send_file(memfile, attachment_filename='pcc_{}.zip'.format(item), as_attachment=True)
 
 
+@app.route('/upgrade', methods=['POST', 'GET'])
+def upgrade():
+    if request.method == 'POST':
+        f = request.files['file']
+        # basepath = os.path.dirname(__file__)  # 当前文件所在路径
+        upload_dir = '/home/minieye/upgrade_temp'
+        upload_path = os.path.join(upload_dir, secure_filename(f.filename))
+        if os.path.exists(upload_dir):
+            shutil.rmtree(upload_dir)
+            os.mkdir(upload_dir)
+        else:
+            os.mkdir(upload_dir)
+        f.save(upload_path)
+        if upload_path.endswith('tar.gz'):
+            dest_dir = os.path.join(upload_dir, 'unzip')
+            os.mkdir(dest_dir)
+            untar(upload_path, dest_dir)
+            print('uploaded file depressed:', upload_path)
+            if os.path.exists(os.path.join(dest_dir, 'pcc_release', 'pcc')):
+                shutil.copy(os.path.join(dest_dir, 'pcc_release', 'pcc'), 'pcc')
+                print('replaced PCC executive, now restarting.')
+                cmd_req = {'action': 'control', 'cmd': 'respawn'}
+                ctrl_q.put(cmd_req)
+        return redirect(url_for('upgrade'))
+    return 'ok', 200
+
+
 @socketio.on('connect', namespace='/test')
 def test_connect():
     socketio.start_background_task(msg_send_task)
@@ -276,6 +336,11 @@ class PccServer(Process):
     def run_background(self, task):
         socketio.start_background_task(task)
         print('background task started:', task.__name__)
+
+    def close(self):
+        func = request.environ.get('werkzeug.server.shutdown')
+        if func:
+            func()
 
 
 if __name__ == "__main__":

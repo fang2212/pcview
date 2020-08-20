@@ -3,7 +3,7 @@ import os
 local_path = os.path.split(os.path.realpath(__file__))[0]
 os.chdir(local_path)
 
-from config.config import load_cfg, dic2obj
+from config.config import dic2obj, bcl
 import argparse
 import json
 import cv2
@@ -12,6 +12,7 @@ from tools.mytools import Supervisor
 import shutil
 import platform
 from sink.hub import Hub
+from threading import Thread
 
 machine_arch = platform.machine()
 
@@ -174,7 +175,7 @@ elif args.web:  # start webui PCC
     hub = Hub(uniconf=cve_conf)
 
     pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
-    pcc_thread = Thread(target=pcc.start)
+    pcc_thread = Thread(target=pcc.start, name='pcc_thread')
     hub.start()
 
     # print('-----------------------------------------------------------------------', os.getpid())
@@ -198,8 +199,19 @@ elif args.web:  # start webui PCC
                     pcc.control(ord('q'))
                     # hub = Hub(uniconf=cve_conf)
                     pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
-                    pcc_thread = Thread(target=pcc.start)
+                    pcc_thread = Thread(target=pcc.start, name='pcc_thread')
                     pcc_thread.start()
+                elif ctrl.get('cmd') == 'respawn':
+
+                    hub.close()
+                    time.sleep(2)
+                    pcc.control(ord('q'))
+                    time.sleep(2)
+                    server.terminate()
+                    server.join()
+                    # time.sleep(5)
+                    print(bcl.WARN+'CVE processes terminated, now respawn.'+bcl.ENDC)
+                    respawn()
                 else:
                     key = ord(ctrl['cmd'].lower())
 
@@ -216,7 +228,7 @@ elif args.web:  # start webui PCC
                 replayer = LogPlayer(r_sort, cve_conf, ratio=0.2, start_frame=0, loop=True)
                 pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, uniconf=cve_conf, to_web=server)
                 replayer.start()
-                pcc_thread = Thread(target=pcc.start)
+                pcc_thread = Thread(target=pcc.start, name='pcc_thread')
                 pcc_thread.start()
                 pass
             elif ctrl['action'] == 'analyze':

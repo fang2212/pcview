@@ -2,6 +2,7 @@ import os
 import time
 from multiprocessing import Process as kProcess
 from multiprocessing import Queue as kQueue
+from multiprocessing import Event
 from threading import Thread
 
 from config.config import bcl
@@ -15,17 +16,25 @@ class CollectorNode(kProcess):
     def __init__(self, sinks):
         super(CollectorNode, self).__init__()
         self.sinks = sinks
+        self.exit = Event()
 
     def run(self):
-
         print('Inited collector node', os.getpid())
         for sink in self.sinks:
             sink.start()
 
         while True:
-            time.sleep(0.5)
+            if self.exit.is_set():
+                for sink in self.sinks:
+                    sink.close()
+                break
+            time.sleep(0.1)
             # for sink in self.sinks:
             #     print(sink)
+        print('sink node exit.')
+
+    def close(self):
+        self.exit.set()
 
 
 class Hub(Thread):
@@ -35,6 +44,7 @@ class Hub(Thread):
         # msg_types = config.msg_types
 
         Thread.__init__(self)
+        self.setName('hub_thread')
         self.headless = headless
         # print(self.headless)
         self.msg_queue = kQueue(maxsize=3000)
@@ -56,6 +66,7 @@ class Hub(Thread):
         self.msg_types = []
         self.type_roles = dict()
         self.sinks = []
+        self.node = None
 
         for msg_type in ['frame', 'can', 'gsensor', 'rtk', 'x1_data', 'video_aux']:
             self.cache[msg_type] = []
@@ -116,6 +127,14 @@ class Hub(Thread):
     def run(self):
         self.finder.request()
         time.sleep(1)
+
+    def close(self):
+        print('closing finder..')
+        self.finder.close()
+        print('closing file handler..')
+        self.fileHandler.close()
+        print('closing sink node..')
+        self.node.close()
 
     def get_veh_role(self, source):
         if source in self.type_roles:
@@ -347,8 +366,8 @@ class Hub(Thread):
                     sink.start()
                     # sinks.append(sink)
                     # self.collectors[ip]['sinks']['video'] = sink
-        node = CollectorNode(self.sinks)
-        node.start()
+        self.node = CollectorNode(self.sinks)
+        self.node.start()
         return cfgs_online
 
     def fpga_handle(self, cfg, msg_queue, ip, index=0):

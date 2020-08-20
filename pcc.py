@@ -11,11 +11,11 @@ import time
 from datetime import datetime
 from math import fabs
 from multiprocessing import Manager
-from multiprocessing.dummy import Process as Thread
+from multiprocessing.dummy import Process as dThread
 # import signal
 import cv2
 # import sys
-# import numpy as np
+import numpy as np
 # from turbojpeg import TurboJPEG
 
 from config.config import load_cfg
@@ -32,6 +32,7 @@ from tools.transform import Transform, OrientTuner
 from tools.vehicle import Vehicle, get_rover_target
 from tools.cpu_mem_info import *
 # from multiprocessing import Queue
+
 
 
 # logging.basicConfig(level=logging.INFO,
@@ -463,10 +464,14 @@ class PCC(object):
 
         # t3 = time.time()
         ts_ana.append(('misc_data', time.time()))
-        if not self.replay and self.hub.fileHandler.is_recording:
-            self.player.show_recording(img, self.hub.fileHandler.start_time)
+        if not self.replay:
+            self.player.show_version(img, self.cfg)
+            if self.hub.fileHandler.is_recording:
+                self.player.show_recording(img, self.hub.fileHandler.start_time)
+            else:
+                self.player.show_recording(img, 0)
 
-        if self.replay:
+        else:
             self.player.show_replaying(img, self.ts_now - self.ts0)
 
         fps = self.player.cal_fps(frame_cnt)
@@ -957,7 +962,7 @@ if __name__ == "__main__":
         hub.start()
         pcc = HeadlessPCC(hub)
 
-        t = Thread(target=pcc.start)
+        t = dThread(target=pcc.start)
         t.start()
         # hub.fileHandler.start_rec()
         # pcc.start()

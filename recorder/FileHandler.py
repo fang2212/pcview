@@ -5,7 +5,7 @@ import os
 import sys
 import time
 from datetime import datetime
-from multiprocessing import Queue, Value
+from multiprocessing import Queue, Value, Process
 from multiprocessing.dummy import Process as Thread
 from collections import deque
 from tools.video_writer import MJPEGWriter
@@ -19,6 +19,7 @@ class FileHandler(Thread):
     def __init__(self, redirect=False, uniconf=None):
         super(FileHandler, self).__init__()
         self.deamon = True
+        self.setName('file_handler_thread')
         # self.log_queue = Queue()
         self.ctrl_queue = Queue()
         # self.image_queue = Queue()
@@ -65,6 +66,7 @@ class FileHandler(Thread):
 
         video_streams = dict()
         path = None
+        exit = False
 
         # video_path = None
         # frame_cnt = 0
@@ -76,7 +78,7 @@ class FileHandler(Thread):
         # origin_stdout = sys.stdout
         # key_msg_cache = deque(maxlen=50)
 
-        while True:
+        while not exit:
             raw_write = 0
             pcv_write = False
             fusion_write = False
@@ -167,8 +169,12 @@ class FileHandler(Thread):
                     #
                     # while not self.fusion_queue.empty():
                     #     self.fusion_queue.get()
+
                     for i in range(self.log_q.qsize()):
                         self.log_q.get()
+                elif ctrl['act'] == 'close':
+                    exit = True
+
 
             t1 = time.time()
 
@@ -308,6 +314,9 @@ class FileHandler(Thread):
             #     video_writer.flush()
             # print('filehandler dt:{:.1f} ctrl:{:.1f} raw:{:.1f} video:{:.1f}'.format(1000*(t3-t0), 1000*(t1-t0), 1000*(t2-t1), 1000*(t3-t2)))
             # time.sleep(0.01)
+
+    def close(self):
+        self.ctrl_queue.put({'act': 'close'})
 
     def start_rec(self, rlog=None):
         FORMAT = '%Y%m%d%H%M%S'

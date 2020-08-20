@@ -1,25 +1,25 @@
 {
-    "version": 0.8,
+    "version": 1.0,
     "name": "cfg_lab",
     "modules": {
         "GGA_reporter": {
-            "enable": true,
+            "enable": false,
             "ntrip_address": "ntrip.weaty.cn",
             "port": 5001
         }
     },
-    "main_collector": "algo_1206",
     "vehicles": {
         "ego": {
             "enable": true,
-            "collectors": {
-                "ffd1": "normal",
-                "algo_626d": "normal",
-                "algo_1206": "normal",
-                "ffe0": "normal",
-                "55dd": "normal",
-                "pi_gateway": "normal"
-            },
+            "collectors": [
+                {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d0", "is_main": true}},
+                {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d1"}},
+                {"model":  "x1_algo", "params": {"mac": "5a:31:b7:3a:62:6d"}},
+                {"model":  "x1_algo", "params": {"mac":  "5a:31:d3:59:12:06"}},
+                {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:e0"}},
+                {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
+                {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}}
+            ],
             "installation": {
                 "esr": {
                     "roll": 0.0,
@@ -77,8 +77,7 @@
         },
         "other": {
             "enable": false,
-            "collectors": {
-            }
+            "collectors": []
         }
     }
 }

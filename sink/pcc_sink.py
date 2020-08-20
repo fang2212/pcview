@@ -4,6 +4,7 @@ import struct
 import time
 # from multiprocessing import Process
 from threading import Thread
+# from threading import Event as tEvent
 from multiprocessing import Value, Event
 import os
 import aiohttp
@@ -41,6 +42,7 @@ class Sink(Thread):
         self.cls = msg_type
         self.isheadless = isheadless
         self.profile_intv = 1
+        self.exit = Event()
         # if 'can' in msg_type:
         #     self.cls = 'can'
             # print(self.type, 'start.')
@@ -81,7 +83,7 @@ class Sink(Thread):
         throuput = 0
         # if 'can' in self.type:
         #     print(self.type, 'start.')
-        while True:
+        while not self.exit.is_set():
 
             buf = self.read()
             if not buf:
@@ -120,6 +122,11 @@ class Sink(Thread):
             #     profile_info = {'type': 'profiling', 'source': self.source, 'pt_sum': pt_sum, 'uptime': t0-time0, 'ts': t0, 'pid': os.getpid()}
             #     self.queue.put((0, profile_info, self.source))
             #     next_check = t0 + self.profile_intv
+
+        print('sink', self.source, 'exit.')
+
+    def close(self):
+        self.exit.set()
 
     def pkg_handler(self, msg_buf):
         pass
@@ -426,7 +433,7 @@ class CameraSink(Sink):
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         df = frame_id - self.last_fid
         if df != 1:
-            print("\r{} frame jump at {}".format(df - 1, frame_id), end='')
+            print("\r{} frame jump at {}".format(df - 1, frame_id), 'in', self.source, end='')
         self.last_fid = frame_id
         app1 = jpg.find(b'\xff\xe1')
         frame_id_jfif = int.from_bytes(jpg[24:28], byteorder="little")
@@ -548,7 +555,7 @@ class FlowSink(Sink):
 
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
         if frame_id - self.last_fid != 1:
-            print("frame jump.", self.last_fid, frame_id)
+            print("frame jump at", self.last_fid, frame_id, 'in', self.source)
         self.last_fid = frame_id
         ts = int.from_bytes(data[16:24], byteorder='little', signed=False)
         ts = ts / 1000000

@@ -609,14 +609,28 @@ class Player(object):
         # self.show_text_info(source, 40, )
 
     def show_recording(self, img, info):
+        if info == 0:
+            self.show_text_info('video', 140, '               ')
+            self.show_text_info('video', 160, '               ')
+            return
         time_passed = time.time() - info
-        BaseDraw.draw_text(img, 'Recording... ', (2, 700), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
+        self.show_text_info('video', 140, '**Recording**', CVColor.Red)
+        self.show_text_info('video', 160, 'Rec time: {:.2f}s'.format(time_passed))
+        # BaseDraw.draw_text(img, 'Recording... ', (2, 700), 0.5, CVColor.White, 1)
+        # BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
 
     def show_replaying(self, img, dts):
         time_passed = dts
-        BaseDraw.draw_text(img, 'Replaying... ', (2, 700), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
+        self.show_text_info('video', 140, 'Replaying... ', CVColor.Red)
+        self.show_text_info('video', 160, 'replay time: {:.2f}s'.format(time_passed))
+        # BaseDraw.draw_text(img, 'Replaying... ', (2, 700), 0.5, CVColor.White, 1)
+        # BaseDraw.draw_text(img, 'replay time: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
+
+    def show_version(self, img, cfg):
+        if cfg.runtime.get('build_time'):
+            img_h = img.shape[0]
+            # BaseDraw.draw_text(img, cfg.runtime.get('build_time'), (2, img_h-20), 0.5, CVColor.White, 1)
+            BaseDraw.draw_text(img, cfg.runtime.get('git_version') + ' ' + cfg.runtime.get('build_time'), (2, img_h - 6), 0.3, CVColor.White, 1)
 
     def show_cipo_info(self, img, obs):
         try:

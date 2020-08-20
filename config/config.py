@@ -363,6 +363,12 @@ def load_cfg(jsonspec, local='config/local.json'):
         cve_conf.runtime['low_profile'] = False
     else:
         cve_conf.runtime['low_profile'] = True
+
+    if os.path.exists('build_info.txt'):
+        build_info = open('build_info.txt')
+        cve_conf.runtime['build_time'] = build_info.readline().strip()
+        cve_conf.runtime['git_version'] = build_info.readline().strip()
+        print('read build info.')
     return cve_conf
 
 

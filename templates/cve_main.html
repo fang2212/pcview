@@ -242,19 +242,19 @@
                     let item_name = "\"" + data[record]['name'] + "\"";
                     newLine.innerHTML =
                         "      <th scope=\"row\">" + data[record]['name'] +
-                    "          <button onclick='rename_log(" + item_name + ")' class=\"btn btn-outline \">Rename</button>\n" +
-                    "</th>\n" +
-                    "      <td>" + data[record]['log_size'] + "</td>\n" +
-                    "      <td>" + data[record]['mtime'] + "</td>\n" +
-                    "      <td class=\"text-info\">None</td>\n" +
-                    "      <td>yes</td>\n" +
-                    "      <td>\n" +
-                    "        <div class=\"btn-group-raised btn-group-toggle\">\n" +
-                    "          <a href=\"/download/" + data[record]['name'] + "\" class=\"btn btn-primary\">Download</a>\n" +
-                    "          <a href=\"/action/replay/" + data[record]['name'] + "\" class=\"btn btn-primary\">Replay</a>\n" +
-                    "          <a onclick='del_confirm(" + item_name + ")' class=\"btn btn-primary\">Delete</a>\n" +
-                    "        </div>\n" +
-                    "      </td>\n";
+                        "          <button onclick='rename_log(" + item_name + ")' class=\"btn btn-outline \">Rename</button>\n" +
+                        "</th>\n" +
+                        "      <td>" + data[record]['log_size'] + "</td>\n" +
+                        "      <td>" + data[record]['mtime'] + "</td>\n" +
+                        "      <td class=\"text-info\">None</td>\n" +
+                        "      <td>yes</td>\n" +
+                        "      <td>\n" +
+                        "        <div class=\"btn-group-raised btn-group-toggle\">\n" +
+                        "          <a href=\"/download/" + data[record]['name'] + "\" class=\"btn btn-primary\">Download</a>\n" +
+                        "          <a href=\"/action/replay/" + data[record]['name'] + "\" class=\"btn btn-primary\">Replay</a>\n" +
+                        "          <a onclick='del_confirm(" + item_name + ")' class=\"btn btn-primary\">Delete</a>\n" +
+                        "        </div>\n" +
+                        "      </td>\n";
 
                     content.appendChild(newLine)
                 }
@@ -492,9 +492,53 @@
             </form>
             <div id="log"></div>
         </div>
+
         <div id="tab-item5" class="tab-item">
-            tab5
+            <h2>固件升级</h2>#}
+            <input type="file" name="file" id="ufile"/>
+            <button id="upload-btn" onclick="upload()">上传</button>
+            <div class="progress progress-bar-striped" style="height: 20px">
+                <div class="progress-bar" role="progressbar" id="upload_progress"
+                     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                     style="width: 0%;">
+{#                    <span class="sr-only">30% 完成（信息）</span>#}
+                </div>
+            </div>
+            <a id="upgrade_info"></a>
+            <button id="respawn-btn" onclick="respawn_request()">重启</button>
         </div>
+        <script>
+            function upload() {
+                const f = document.querySelector('#ufile');
+                console.dir(f);
+                const fdata = new FormData();
+                fdata.append('file', f.files[0]);
+                $upost('/upgrade', fdata)
+            }
+            function respawn_request() {
+                $.post("/control/respawn", "respawn pcc", function (data) {})
+            }
+
+            function $upost(url, data) {
+                const xhr = new XMLHttpRequest();
+                var progressbar = document.getElementById("upload_progress")
+                var info = document.getElementById("upgrade_info")
+                xhr.open('post', url, true);
+                xhr.upload.addEventListener("progress", function (e) { // 也可以用ponprogress进行监听
+                    if (e.lengthComputable) {
+                        let percentComplete = e.loaded * 100.0 / e.total; // 计算上传进度（比例）
+                        console.log(percentComplete);
+                        progressbar.style.width = percentComplete + "%";
+                        info.innerText = "上传中：" + percentComplete + "%";
+                        if (percentComplete === 100){
+                            info.innerText = "上传完成, 升级中...";
+                            {#$.post("/control/" + realkey, "start upgrade", function (data) {});#}
+                        }
+                    }
+                });
+                xhr.send(data);
+            }
+        </script>
         <div id="tab-item6" class="tab-item">
             <h2>Receive:</h2>
             <div id="log1"></div>
