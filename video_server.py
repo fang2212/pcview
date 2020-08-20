@@ -10,9 +10,13 @@ from io import BytesIO
 import zipfile
 import json
 import tarfile
+# import for pyinstaller, do not delete
+from engineio.async_drivers import eventlet
+from eventlet.hubs import epolls, kqueue, selects
+from dns import dnssec, e164, hash, namedict, tsigkeyring, update, version, zone
+#
 
-
-async_mode = None
+async_mode = 'eventlet'
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 # app.logger.setLevel('ERROR')

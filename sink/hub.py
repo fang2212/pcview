@@ -11,7 +11,6 @@ from recorder.FileHandler import FileHandler
 from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink
 from tools.ip_mac import get_mac_ip, get_cached_macs, save_macs
 
-
 class CollectorNode(kProcess):
     def __init__(self, sinks):
         super(CollectorNode, self).__init__()
