@@ -2,8 +2,8 @@
 
 block_cipher = None
 added_files =[
-    ('templates', 'templates'),
-    ('static', 'static')
+    ('templates/*', 'templates'),
+    ('static/*', 'static')
     ]
 
 a = Analysis(['pcc_app.py'],
