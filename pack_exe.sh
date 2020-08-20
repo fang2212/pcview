@@ -26,7 +26,7 @@ mv dist/pcc_replay dist/pcc_release/
 #mv build_info.txt dist/pcc_release/
 cp -r config dist/pcc_release/
 cp -r dbc dist/pcc_release/
-#cp -r static dist/pcc_release/
+cp -r static dist/pcc_release/
 #cp -r templates dist/pcc_release/
 #mkdir dist/pcc/tk
 #mkdir dist/pcc/tcl
