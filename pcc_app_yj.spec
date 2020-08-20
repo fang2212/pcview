@@ -1,19 +1,18 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
-#added_files = [
-#	('config', 'config'), 
-#	('dbc', 'dbc'),
-#	('nanomsg', 'nanomsg'),
-#	('_nanomsg_cpy', '_nanomsg_cpy'),
-#	('web', 'web')
-#]
+added_files =[
+    ('templates', 'templates'),
+    ('static', 'static'),
+    ('config', 'config'),
+    ('dbc', 'dbc')
+    ]
 
 a = Analysis(['pcc_app.py'],
              pathex=['./'],
              binaries=[],
-             datas=[],
-             hiddenimports=['_nanomsg_cpy', 'pkg_resources.py2_warn', 'engineio.async_drivers.eventlet'],
+             datas= added_files,
+             hiddenimports=['_nanomsg_cpy', 'pkg_resources.py2_warn', 'engineio.async_drivers.eventlet', 'jinja2.ext'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
