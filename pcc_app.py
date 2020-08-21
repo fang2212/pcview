@@ -23,6 +23,7 @@ parser = argparse.ArgumentParser(description="process CVE log.")
 parser.add_argument('cfg_path', nargs='?', default=cfgfile)
 parser.add_argument('-o', '--output', default=None)
 parser.add_argument('-d', '--direct', default=None)
+parser.add_argument('-c', '--config', default=None)
 parser.add_argument('-hl', '--headless', help='headless mode', action="store_true")
 parser.add_argument('-a', '--auto', help='auto recording', action="store_true")
 parser.add_argument('-w', '--web', help='web ui', action="store_true")
@@ -59,7 +60,11 @@ except FileNotFoundError:
 # local_cfg.log_root = opath
 if args.output:
     local_cfg.log_root = args.output
-cve_conf = load_cfg(args.cfg_path)
+
+if args.config:
+    cve_conf = load_cfg(args.config)
+else:
+    cve_conf = load_cfg(args.cfg_path)
 cve_conf.local_cfg = local_cfg
 print(cve_conf.local_cfg.log_root)
 
