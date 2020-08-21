@@ -11,14 +11,14 @@ fi
 pyinstaller pcc_app.spec
 #pyinstaller -F pcc_replay_yj.spec
 #pyinstaller pcc_post.spec
-
-if [ -d "dist/pcc_release" ]; then
-	rm -rf ./dist/pcc_release/*
-	echo "remove!!..."
-else
-  	mkdir ./dist/pcc_release
-	echo "mkdir!!..."
-fi
+#
+#if [ -d "dist/pcc_release" ]; then
+#	rm -rf ./dist/pcc_release/*
+#	echo "remove!!..."
+#else
+#  	mkdir ./dist/pcc_release
+#	echo "mkdir!!..."
+#fi
 
 
 #mv dist/pcc dist/pcc_release/
@@ -30,14 +30,14 @@ fi
 #cp -r templates dist/pcc_release/
 #mkdir dist/pcc/tk
 #mkdir dist/pcc/tcl
-rm dist/pcc_release/config/local.json
+rm dist/pcc_app/config/local.json
 python3 tools/build_info.py
 mv build_info.txt dist/pcc_release/
 
 cd dist
-tar -czvf pcc_release.tar.gz pcc_release
+tar -czvf pcc_app.tar.gz pcc_app
 mkdir ~/release
-cp pcc_release.tar.gz ~/release/"PCC_$(date "+%Y%m%d%H%M%S").tar.gz"
+cp pcc_app.tar.gz ~/release/"PCC_APP_$(date "+%Y%m%d%H%M%S").tar.gz"
 
 echo "removing build dirs..."
 #rm -r dist
