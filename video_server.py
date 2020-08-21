@@ -285,7 +285,7 @@ def upgrade():
             os.mkdir(dest_dir)
             untar(upload_path, dest_dir)
             print('uploaded file depressed:', upload_path)
-            if os.path.exists(os.path.join(dest_dir, 'pcc_app', 'pcc')):
+            if os.path.exists(os.path.join(dest_dir, 'pcc_app', 'pcc_app')):
                 # shutil.copy(os.path.join(dest_dir, 'pcc_release', 'pcc'), 'pcc')
                 # shutil.copy(os.path.join(dest_dir, 'pcc_release', 'build_info.txt'), 'build_info.txt')
                 new_dir = os.path.join(dest_dir, 'pcc_app')
