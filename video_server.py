@@ -297,9 +297,9 @@ def upgrade():
                 for item in os.listdir(new_dir):
                     item_path = os.path.join(new_dir, item)
                     if os.path.isdir(item_path):
-                        shutil.copytree(item_path)
+                        shutil.copytree(item_path, item)
                     else:
-                        shutil.copy(item_path)
+                        shutil.copy(item_path, item)
                 print('replaced PCC executive, now restarting...')
                 cmd_req = {'action': 'control', 'cmd': 'respawn'}
                 ctrl_q.put(cmd_req)
