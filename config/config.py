@@ -326,6 +326,9 @@ def load_cfg(jsonspec, local='config/local.json'):
                 if spec['version'] >= 1.0:
                     if item.get('params'):
                         clct.update(item['params'])
+                        if clct['type'] == 'x1_collector':
+                            clct['ports']['can0']['topic'] = item['can0']
+                            clct['ports']['can1']['topic'] = item['can1']
                         if item['params'].get('is_main'):
                             main_collector = item['params']['is_main']
                 else:
