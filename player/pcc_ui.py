@@ -63,6 +63,7 @@ class Player(object):
                           'lmr': FlatColor.emerald,
                           'x1': FlatColor.amethyst,
                           'x1_fusion': CVColor.Red,
+                          'x1j': FlatColor.amethyst,
                           'rtk': FlatColor.sun_flower,
                           'ars': FlatColor.emerald,
                           'gps': FlatColor.clouds,

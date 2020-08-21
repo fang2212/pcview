@@ -13,6 +13,7 @@
             "enable": true,
             "collectors": {
                 "algo_03a3": "normal",
+                "algo_fd1f": "normal",
                 "skoda_ffd0": "normal",
                 "skoda_ffd1": "normal",
 		        "skoda_ffd2": "normal",

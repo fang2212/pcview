@@ -21,7 +21,7 @@
       "enable": true,
       "port": 1208,
       "protocol": "nanomsg",
-      "topic": "ars"
+      "topic": "x1j"
     },
     "gsensor": {
       "enable": false,

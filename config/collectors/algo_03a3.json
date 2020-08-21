@@ -6,7 +6,7 @@
   "repeater": false,
   "ports": {
     "video": {
-      "enable": true,
+      "enable": false,
       "port": 24011,
       "protocol": "libflow",
       "topic": "video"

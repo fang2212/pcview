@@ -270,9 +270,12 @@ def download(item):
 @app.route('/upgrade', methods=['POST', 'GET'])
 def upgrade():
     if request.method == 'POST':
+        home_path = os.path.expanduser('~')
         f = request.files['file']
         # basepath = os.path.dirname(__file__)  # 当前文件所在路径
-        upload_dir = '/home/minieye/upgrade_temp'
+        upload_dir = os.path.join(home_path, 'upgrade_temp')
+        if not os.path.exists(upload_dir):
+            os.mkdir(upload_dir)
         upload_path = os.path.join(upload_dir, secure_filename(f.filename))
         if os.path.exists(upload_dir):
             shutil.rmtree(upload_dir)
@@ -280,17 +283,20 @@ def upgrade():
         else:
             os.mkdir(upload_dir)
         f.save(upload_path)
+        print('saved upload file', upload_path)
         if upload_path.endswith('tar.gz'):
             dest_dir = os.path.join(upload_dir, 'unzip')
             os.mkdir(dest_dir)
             untar(upload_path, dest_dir)
             print('uploaded file depressed:', upload_path)
             if os.path.exists(os.path.join(dest_dir, 'pcc_app', 'pcc_app')):
+                print('start replacing files.')
                 # shutil.copy(os.path.join(dest_dir, 'pcc_release', 'pcc'), 'pcc')
                 # shutil.copy(os.path.join(dest_dir, 'pcc_release', 'build_info.txt'), 'build_info.txt')
                 new_dir = os.path.join(dest_dir, 'pcc_app')
                 for item in os.listdir('./'):
                     if os.path.isdir(item):
+                        print('removed dir', item)
                         shutil.rmtree(item)
                     else:
                         continue
@@ -299,8 +305,10 @@ def upgrade():
                     item_path = os.path.join(new_dir, item)
                     if os.path.isdir(item_path):
                         # continue
+                        print('copied dir', item_path)
                         shutil.copytree(item_path, item)
                     else:
+                        print('copied item', item_path)
                         shutil.copy(item_path, item)
                 print('replaced PCC executive, now restarting...')
                 cmd_req = {'action': 'control', 'cmd': 'respawn'}
