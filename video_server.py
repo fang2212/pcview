@@ -293,10 +293,12 @@ def upgrade():
                     if os.path.isdir(item):
                         shutil.rmtree(item)
                     else:
+                        continue
                         os.remove(item)
                 for item in os.listdir(new_dir):
                     item_path = os.path.join(new_dir, item)
                     if os.path.isdir(item_path):
+                        # continue
                         shutil.copytree(item_path, item)
                     else:
                         shutil.copy(item_path, item)

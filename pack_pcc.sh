@@ -8,7 +8,7 @@ if [ -d "build" ]; then
 fi
 
 #python3 tools/build_info.py
-pyinstaller pcc_app.spec
+pyinstaller pcc_app.spec --noconfirm
 #pyinstaller -F pcc_replay_yj.spec
 #pyinstaller pcc_post.spec
 #
