@@ -12,8 +12,8 @@
         "ego": {
             "enable": true,
             "collectors": [
-                {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d0", "is_main": true}},
-                {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d1"}},
+                {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d0"}},
+                {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d1", "is_main": true}},
                 {"model":  "x1_algo", "params": {"mac": "5a:31:b7:3a:62:6d"}},
                 {"model":  "x1_algo", "params": {"mac":  "5a:31:d3:59:12:06"}},
                 {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:e0"}},
