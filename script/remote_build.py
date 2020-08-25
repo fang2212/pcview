@@ -1,440 +1,55 @@
-#!/usr/bin/env python
-# _*_ coding:utf-8 _*_
-#
-# @Version : 1.0
-# @Time    : 2018/07/15
-# @Author  : simon.xu
-# @File    : config.py
-# @Desc    :
+import paramiko
+import time
 
 
-import json
-import os
-import shutil
-
-collector0 = {
-    "ip": "192.168.0.233",
-    # "ip": "192.168.98.227",
-    "mac": '00:0c:18:ef:ff:ed',
-    # 'mac': '00:0a:35:00:01:22',
-    # "ip": "127.0.0.1",
-    # "port": 1200,
-    "platform": "fpga",
-    "debug": True,
-    "work_mode": 'collector',  # 'validator'
-    "repeater": True,
-    "save": {
-        "path": "/media/nan/860evo/data/pcviewer",
-        "video": True,
-        "alert": False,
-        "log": False,
-        "raw": True
-    },
-    "msg_types": [
-        "can0",
-        "can1",
-        "gsensor"
-        # "lane",
-        # "vehicle",
-        # "ped",
-        # "tsr"
-    ],
-    "can_types": {
-        "can0": ['ifv300'],
-        "can1": []
-    },
-    "show": {
-        "overlook": False,
-        "lane": True,
-        "lane_speed_limit": 40,
-        "vehicle": True,
-        "ped": True,
-        "tsr": True,
-        "q3": True,
-        "radar": True,
-        "color": "color"
-    },
-    "fix": {
-        "lane": 1,
-        "vehicle": 2,
-        "ped": 2,
-        "tsr": 2
-    }
-}
+def line_buffered(f):
+    line_buf = b''
+    while not f.channel.exit_status_ready():
+        line_buf += f.read(1)
+        if line_buf.endswith(b'\n'):
+            yield line_buf.decode()
+            line_buf = b''
 
 
-collector1 = {
-    #"ip": "192.168.0.233",
-    "ip": "192.168.98.227",
-    # "ip": "127.0.0.1",
-    # "port": 1200,
-    'mac': '00:0c:18:ef:ff:e0',
-    "platform": "fpga",
-    "debug": True,
-    "work_mode": 'collector',  # 'validator'
-    "repeater": True,
-    "save": {
-        "path": "/media/nan/860evo/data/pcviewer",
-        "video": False,
-        "alert": False,
-        "log": False,
-        "raw": True
-    },
-    "msg_types": [
-        "can0",
-        "can1",
-        # "gsensor"
-        # "lane",
-        # "vehicle",
-        # "ped",
-        # "tsr"
-    ],
-    "can_types": {
-        "can0": ['x1'],
-        "can1": ['esr']
-    },
-    "show": {
-        "overlook": False,
-        "lane": True,
-        "lane_speed_limit": 40,
-        "vehicle": True,
-        "ped": True,
-        "tsr": True,
-        "q3": True,
-        "radar": True,
-        "color": "color"
-    },
-    "fix": {
-        "lane": 1,
-        "vehicle": 2,
-        "ped": 2,
-        "tsr": 2
-    }
-}
+class SSHSession(object):
+    def __init__(self, hostname, port=22, username='minieye', password='minieye'):
+        self.ssh = paramiko.SSHClient()
+        self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy)
+        self.ssh.connect(hostname=hostname, port=port, username=username, password=password)
+        self.tp = self.ssh.get_transport()
+        # print(self.ssh)
 
-collector2 = {
-    "ip": "192.168.98.227",
-    # "ip": "127.0.0.1",
-    # "port": 1200,
-    'mac': '00:0c:18:ef:ff:ec',
-    "platform": "fpga",
-    "debug": True,
-    "work_mode": 'collector',  # 'validator'
-    "repeater": True,
-    "save": {
-        "path": "/media/nan/860evo/data/pcviewer",
-        "video": False,
-        "alert": False,
-        "log": False,
-        "raw": True
-    },
-    "msg_types": [
-        "can0",
-        "can1",
-        # "gsensor"
-        # "lane",
-        # "vehicle",
-        # "ped",
-        # "tsr"
-    ],
-    "can_types": {
-        "can0": ['rtk'],
-        "can1": []
-    }
-}
+    def exec(self, cmd):
+        stdin, stdout, stderr = self.ssh.exec_command(cmd + ' 2>&1', bufsize=1)
+        for line in line_buffered(stdout):
+            print(line, end='')
+        # return res
 
-collector3 = {
-    "ip": "192.168.98.227",
-    # "ip": "127.0.0.1",
-    # "port": 1200,
-    'mac': '00:0c:18:ef:ff:e1',
-    "platform": "fpga",
-    "debug": True,
-    "work_mode": 'collector',  # 'validator'
-    "repeater": True,
-    "save": {
-        "path": "/media/nan/860evo/data/pcviewer",
-        "video": False,
-        "alert": False,
-        "log": False,
-        "raw": True
-    },
-    "msg_types": [
-        "can0",
-        "can1",
-        # "gsensor"
-        # "lane",
-        # "vehicle",
-        # "ped",
-        # "tsr"
-    ],
-    "can_types": {
-        "can0": ['rtk'],
-        "can1": []
-    }
-}
+    def upload(self, src, dst):
+        sftp = paramiko.SFTPClient.from_transport(self.tp)
+        sftp.put(src, dst)
 
-collector4 = {
-    # "ip": "192.168.98.227",
-    # "ip": "127.0.0.1",
-    # "port": 1200,
-    'mac': 'b8:27:eb:21:ba:29',
-    "platform": "fpga",
-    "debug": True,
-    "work_mode": 'collector',  # 'validator'
-    "repeater": True,
-    "msg_types": [
-        "can0",
-        # "gsensor"
-        # "lane",
-        # "vehicle",
-        # "ped",
-        # "tsr"
-    ],
-    "can_types": {
-        "can0": ['rtk'],
-        "can1": []
-    }
-}
+    def download(self, src, dst):
+        sftp = paramiko.SFTPClient.from_transport(self.tp)
+        sftp.get(src, dst)
 
-cfg_superb = {
-    'version': 0.1,
-    'collectors': [0, 1, 2, 3, 4],
-    'installation': {
-        "video": {
-            "lon_offset": -1.67,
-            "fv": 1458.0,
-            "cv": 360.0,
-            "roll": 1.0,
-            "fu": 1458.0,
-            "cu": 640.0,
-            "height": 1.18,
-            "lat_offset": 0.15,
-            "yaw": 2.25,
-            "pitch": -0.4
-        },
-        "ifv300": {
-            "lon_offset": -1.64,
-            "roll": 0.0,
-            "height": 1.18,
-            "lat_offset": 0.0,
-            "yaw": 0.0,
-            "pitch": 0.0
-        },
-        "x1": {
-            "lon_offset": -1.64,
-            "roll": 0.0,
-            "height": 1.18,
-            "lat_offset": 0.0,
-            "yaw": 0.0,
-            "pitch": 0.0
-        },
-        "esr": {
-            "lon_offset": 0.0,
-            "roll": 0.0,
-            "height": 0.45,
-            "lat_offset": 0.22,
-            "yaw": -1.8,
-            "pitch": 0.0
-        },
-        "rtk": {
-            "lon_offset": -0.21,
-            "roll": 0.0,
-            "height": 0.86,
-            "lat_offset": 0.0,
-            "yaw": 0.0,
-            "pitch": -2.0
-        },
-        "lmr": {
-            "lon_offset": 0.0,
-            "roll": 0.0,
-            "height": 0.45,
-            "lat_offset": -0.3,
-            "yaw": -1.0,
-            "pitch": 0.0
-        }
-    }
-}
+    def close(self):
+        self.ssh.close()
+        self.tp.close()
 
 
-def dic2obj(d):
-    top = type('new', (object,), d)
-    seqs = tuple, list, set, frozenset
-    for i, j in d.items():
-        if isinstance(j, dict):
-            setattr(top, i, dic2obj(j))
-        elif isinstance(j, seqs):
-            setattr(top, i, type(j)(dic2obj(sj) if isinstance(sj, dict) else sj for sj in j))
-        else:
-            setattr(top, i, j)
-    return top
+def trigger_build(branch=None):
+    work_dir = '/home/nan/work/pcview'
+    suffix = 'cd {} && '.format(work_dir)
+    sess = SSHSession('192.168.50.104', username='nan', password='199116')
+    if branch:
+        sess.exec(suffix + 'git checkout {}'.format(branch))
+    sess.exec(suffix + 'git pull')
+    sess.exec(suffix + './pack_pcc.sh')
 
+    # retrieve binary
+    sess.download(work_dir + '/dist/pcc_app.tar.gz', '/home/nan/release/pcc_app_1804_{}_{}.tar.gz'.format(branch, int(time.time())))
 
-def load_config(jsonspec):
-    # global config, configs
-    configs = []
-    spec = json.load(open(jsonspec))
-    # config = dic2obj(spec[0])
-    for idx, coll in enumerate(spec):
-        try:
-            configs[idx] = coll
-        except Exception as e:
-            configs.append(coll)
-    # configs[0] = spec[0]
-    # configs[1] = spec[1]
-    config = dic2obj(configs[0])
-    print(bcl.WARN + 'configs:' + bcl.ENDC)
-    for c in configs:
-        print(c)
-    return configs
-
-
-class CVECfg(object):
-    # cfg_name = ''
-    name = ''
-    configs = []
-    installs = {}
-    runtime = {}
-    versions = {}
-    local_cfg = None
-
-
-def load_cfg(jsonspec, local='config/local.json'):
-    print(bcl.WARN+'using config:' + bcl.ENDC, jsonspec)
-    # configs = []
-    # install = {}
-    # runtime = {}
-    cve_conf = CVECfg()
-    spec = json.load(open(jsonspec))
-    if 'name' not in spec:
-        name = os.path.basename(jsonspec)[:-5]
-        spec['name'] = name
-    cve_conf.name = spec['name']
-    main_collector = spec.get('main_collector')
-    if spec.get('version') and spec['version'] >= 0.6:
-        for role in spec['vehicles']:
-            for item in spec['vehicles'][role]['collectors']:
-                if spec['version'] >= 1.0:
-                    entry = item['model']
-                else:
-                    entry = str(item)
-                def_name = 'config/collectors/{}.json'.format(entry)
-                clct = json.load(open(def_name))
-                if spec['version'] >= 1.0:
-                    if item.get('params'):
-                        clct.update(item['params'])
-                        if item['params'].get('is_main'):
-                            main_collector = item['params']['is_main']
-                else:
-                    if entry == main_collector:
-                        clct['is_main'] = True
-                    else:
-                        clct['is_main'] = False
-                clct['veh_tag'] = role
-                clct['name'] = entry
-                clct['defs_path'] = def_name
-                cve_conf.configs.append(clct)
-        for item in spec['vehicles']['ego']['installation']:  # TODO unify install params naming
-            cve_conf.installs[item] = spec['vehicles']['ego']['installation'][item]
-    else:
-        for idx in spec['collectors']:
-            idx = str(idx)
-            clct = json.load(open('config/collectors/{}.json'.format(idx)))
-            if idx == main_collector:
-                clct['is_main'] = True
-            else:
-                clct['is_main'] = False
-            cve_conf.configs.append(clct)
-        for item in spec['installation']:
-            cve_conf.installs[item] = spec['installation'][item]
-    if main_collector is None:
-        cve_conf.configs[0]['is_main'] = True
-
-    # config = dic2obj(configs[0])
-    if not os.path.exists(local):
-        print('created new local cfg file.')
-        shutil.copy('config/local_sample.json', local)
-    cve_conf.local_cfg = dic2obj(json.load(open(local)))
-    cve_conf.runtime['modules'] = spec['modules']
-    return cve_conf
-
-
-def get_local_cfg():
-    if not os.path.exists('config/local.json'):
-        shutil.copy('config/local_sample.json', 'config/local.json')
-    local_cfg = dic2obj(json.load(open('config/local.json')))
-    return local_cfg
-
-
-def load_installation(jsonspec):
-    # global install
-    spec = json.load(open(jsonspec))
-    # for item in spec:
-    #     install[item] = spec[item]
-    # del install
-    # install = dic2obj(spec)
-    print(bcl.WARN + 'installation:' + bcl.ENDC)
-    print(spec)
-    return spec
-
-
-def get_pcc_version():
-    if os.path.exists('build_info.txt'):
-        with open('build_info.txt') as rf:
-            build_time = rf.readline()
-            git_desc = rf.readline()
-            return {'build_time': build_time, 'git_desc': git_desc}
-    else:
-        from tools.build_info import get_git_label
-        git_desc = get_git_label()
-        return {'git_desc': git_desc}
-
-
-class bcl:
-    HDR = '\033[95m'
-    OKBL = '\033[94m'
-    OKGR = '\033[92m'
-    WARN = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-
-# configs = []
-# install = {}
-# runtime = {}
-
-__test = []
-# local_cfg = None
 
 if __name__ == "__main__":
-    config = dic2obj(collector0)
-    configs = [collector0,
-               collector1,
-               collector2,
-               collector3,
-               collector4]
-
-    json.dump({'installation': json.load(open('installation.json')), 'collectors': configs},
-              open('skoda_spb.json', 'w+'), indent=True)
-    json.dump(collector0, open('collectors/0.json', 'w+'), indent=True)
-    json.dump(collector1, open('collectors/1.json', 'w+'), indent=True)
-    json.dump(collector2, open('collectors/2.json', 'w+'), indent=True)
-    json.dump(collector3, open('collectors/3.json', 'w+'), indent=True)
-    json.dump(collector4, open('collectors/4.json', 'w+'), indent=True)
-    json.dump(cfg_superb, open('cfg_superb.json', 'w+'), indent=True)
-    json.dump(configs, open('config.json', 'w+'), indent=True)
-
-
-else:
-    # install = json.load(open('etc/installation.json'))
-    # configs = json.load(open('config/skoda_spb.json'))['collectors']
-    # install = json.load(open('config/cfg_superb.json'))['installation']
-    # config = dic2obj(configs[0])
-    # load_cfg('config/cfg_superb.json')  # default
-
-    if not os.path.exists('config/local.json'):
-        shutil.copy('config/local_sample.json', 'config/local.json')
-    local_cfg = dic2obj(json.load(open('config/local.json')))
-
+    trigger_build('cve-new')
