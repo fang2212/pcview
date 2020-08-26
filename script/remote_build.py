@@ -20,7 +20,7 @@ class SSHSession(object):
         # print(self.ssh)
 
     def exec(self, cmd):
-        stdin, stdout, stderr = self.ssh.exec_command(cmd + ' 2>&1', bufsize=1)
+        stdin, stdout, stderr = self.ssh.exec_command(cmd + ' 2>&1')
         for line in line_buffered(stdout):
             print(line, end='')
         # return res

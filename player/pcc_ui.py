@@ -1085,6 +1085,10 @@ class Player(object):
                                                           self.cfg.installs['video']['roll']),
                            (1180, 710), 0.3, CVColor.White, 1)
 
+    def show_failure(self, img, failure):
+        y = int(img.shape[0]/2)
+        BaseDraw.draw_text(img, failure, (100, y), 2, CVColor.Red, 2)
+
     def show_warning_ifc(self, img, title):
         # print(title)
         if isinstance(title, list):

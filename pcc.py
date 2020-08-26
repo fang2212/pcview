@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 from math import fabs
 from multiprocessing import Manager
-from multiprocessing.dummy import Process as dThread
+from threading import Thread
 # import signal
 import cv2
 # import sys
@@ -77,7 +77,7 @@ class PCC(object):
         self.ot = OrientTuner(uniconf)
         self.show_ipm_bg = False
         self.auto_rec = auto_rec
-
+        self.frame_cnt = 0
         self.refresh_rate = 20
         if uniconf.runtime.get('low_profile'):
             self.refresh_rate = 5
@@ -100,6 +100,7 @@ class PCC(object):
         # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
         self.sv_state = 'ipm'
+        self.dt_from_img = 0
         # self.rt_param = self.cfg.runtime
         # cv2.namedWindow('video_aux')
 
@@ -144,7 +145,8 @@ class PCC(object):
             # video_server.local_path = uniconf.local_cfg.log_root
             self.vs = to_web
             # self.vs.start()
-
+        t = Thread(target=self.recv_data)
+        t.start()
         # if self.save_replay_video and self.replay:
         #     self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
         #     self.vw.set_writer("replay-render", 1760, 720)
@@ -157,6 +159,12 @@ class PCC(object):
         #     sys.exit(0)
         # for sig in [signal.SIGINT, signal.SIGTERM]:
         #     signal.signal(sig, exit_for_signal)
+    def ts_sync_local(self):
+        t = time.time()
+        if self.dt_from_img == 0:
+            self.dt_from_img = t - self.ts_now
+
+        return t - self.dt_from_img
 
     def init_cache(self):
         self.cache.clear()
@@ -254,39 +262,29 @@ class PCC(object):
             self.display_interval = 1.0
         elif self.display_interval < ll:
             self.display_interval = ll
-        print('refresh interval set to', self.display_interval, 'hub qsize:', iqsize)
+        # print('refresh interval set to', self.display_interval, 'hub qsize:', iqsize)
         return {'status': 'ok'}
 
-    def start(self):
-        # self.hub.start()
-        self.player.start_time = datetime.now()
-        frame_cnt = 0
-        data_cnt = 0
-        last_ts = time.time()
-        print('entering pcc loop. pid', os.getpid())
-
+    def recv_data(self):
+        self.statistics['fileHandler_log_q_size'] = 0
         while not self.exit:
-            if not self.hub.is_alive() and self.replay:
-                print('hub exit running.')
-                print('average frame cost: {:.1f}ms'.format(
-                    1000 * self.frame_cost_total / self.frame_drawn_cnt)) if self.frame_drawn_cnt != 0 else None
-                return
-            t0 = time.time()
-            # d = self.hub.pop_simple()  # receive
             try:
+                t0 = time.time()
                 d = self.hub.pop_common()
                 if not d:
+                    time.sleep(0.001)
                     continue
                 t1 = time.time()
-
+                self.statistics['frame_popping_cost'] = '{:.2f}'.format(1000 * (t1 - t0))
                 new_frame = self.cache_data(d)
                 if new_frame:
-                    frame_cnt += 1
-                    if frame_cnt > 500:
+                    self.frame_cnt += 1
+                    if self.frame_cnt > 500:
                         self.player.start_time = datetime.now()
-                        frame_cnt = 1
+                        self.frame_cnt = 1
 
                 t2 = time.time()
+                self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (t2 - t1))
                 if not self.replay:
                     qsize = self.hub.fileHandler.log_q.qsize()
                     self.statistics['fileHandler_log_q_size'] = qsize
@@ -305,9 +303,26 @@ class PCC(object):
                 raise e
                 continue
 
+    def start(self):
+        # self.hub.start()
+        self.player.start_time = datetime.now()
+
+        data_cnt = 0
+        last_ts = time.time()
+        print('entering pcc loop. pid', os.getpid())
+
+        while not self.exit:
+            if not self.hub.is_alive() and self.replay:
+                print('hub exit running.')
+                print('average frame cost: {:.1f}ms'.format(
+                    1000 * self.frame_cost_total / self.frame_drawn_cnt)) if self.frame_drawn_cnt != 0 else None
+                return
+            t3 = time.time()
+            # d = self.hub.pop_simple()  # receive
 
             # render begins
-            if time.time() - last_ts > self.display_interval:
+            # print('render begins.')
+            if t3 - last_ts > self.display_interval:
                 self.handle_keyboard()
                 # time.sleep(0.001)
                 # print('wait to refresh', self.display_interval)
@@ -318,17 +333,13 @@ class PCC(object):
                     show = False
                 else:
                     show = True
-                self.render(frame_cnt, show)
-
-            t4 = time.time()
-
-            self.statistics['frame_popping_cost'] = '{:.2f}'.format(1000 * (t1 - t0))
-            self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (t2 - t1))
-            self.statistics['frame_rendering_cost'] = '{:.2f}'.format(1000 * (t4 - t2))
+                self.render(self.frame_cnt, show)
+                t4 = time.time()
+                self.statistics['frame_rendering_cost'] = '{:.2f}'.format(1000 * (t4 - t3))
+                self.run_cost = self.run_cost * 0.9 + (t4 - t3) * 0.1
+            else:
+                time.sleep(0.001)
             self.statistics['refreshing_rate'] = '{:.1f}'.format(1.0 / self.display_interval)
-            # print('pcc time cost:popping:{:.2f}ms caching:{:.2f}ms rendering:{:.2f}ms total:{:.2f}ms iqsize:{}'.format(
-            #     1000 * (t1 - t0), 1000 * (t2 - t1), 1000 * (t4 - t2), 1000 * (t4 - t0), self.hub.msg_queue.qsize()), d[2])
-            self.run_cost = self.run_cost * 0.9 + (t4 - t0) * 0.1
 
     def render(self, frame_cnt, show=True):
         if show:
@@ -373,23 +384,25 @@ class PCC(object):
         ts_ana = []
         t0 = time.time()
         ts_ana.append(('draw start', t0))
-
+        # print(mess.get('img'))
         try:
-            if 'img_raw' in mess and mess['img_raw'] is not None:
+            if 'img_raw' in mess and mess['img_raw'] is not None:  # reuse img
                 img = mess['img_raw'].copy()
                 # print('reuse video.')
+                if 'ts' not in mess or self.ts_sync_local() - mess['ts'] > 5.0:
+                    self.player.show_failure(img, 'feed lost, check connection.')
             else:
                 # return
                 mess['img_raw'] = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
                 # mess['img_raw'] = self.jpeg_dec.decode(mess['img'])
                 img = mess['img_raw'].copy()
         except Exception as e:
-            print('img decode error', mess)
+            print('img decode error')
             # raise e
             return
         # ts_fdec = time.time()
         ts_ana.append(('frame decode', time.time()))
-
+        # self.player.show_failure(img, 'feed lost, check connection.')
         frame_id = mess['frame_id']
         self.now_id = frame_id
         self.ts_now = mess['ts']
@@ -943,89 +956,89 @@ class HeadlessPCC:
 if __name__ == "__main__":
     import sys
 
-    local_path = os.path.split(os.path.realpath(__file__))[0]
-    # print('local_path:', local_path)
-    os.chdir(local_path)
-
-    if len(sys.argv) == 1:
-        sys.argv.append('config/cfg_lab.json')
-
-    if '--direct' in sys.argv:
-        print('direct mode.')
-        hub = Hub(direct_cfg=sys.argv[2])
-        pcc = PCC(hub, ipm=True, replay=False)
-        pcc.start()
-
-    elif '--headless' in sys.argv:
-        print('headless mode.')
-        hub = Hub(headless=True)
-        hub.start()
-        pcc = HeadlessPCC(hub)
-
-        t = dThread(target=pcc.start)
-        t.start()
-        # hub.fileHandler.start_rec()
-        # pcc.start()
-
-        from tornado.web import Application, RequestHandler, StaticFileHandler
-        from tornado.ioloop import IOLoop
-
-
-        class IndexHandler(RequestHandler):
-            def post(self):
-                action = self.get_body_argument('action')
-                if action:
-                    if 'start' in action:
-                        if not hub.fileHandler.recording:
-                            hub.fileHandler.start_rec()
-                            print(hub.fileHandler.recording)
-                            self.write({'status': 'ok', 'action': action, 'message': 'start recording'})
-                        else:
-                            self.write({'status': 'ok', 'message': 'already recording', 'action': action})
-                    elif 'stop' in action:
-                        if not hub.fileHandler.recording:
-                            self.write({'status': 'ok', 'message': 'not recording', 'action': action})
-                        else:
-                            hub.fileHandler.stop_rec()
-                            print(hub.fileHandler.recording)
-                            self.write({'status': 'ok', 'action': action, 'message': 'stop recording'})
-                    elif 'check' in action:
-                        mess = 'recording' if hub.fileHandler.recording else 'not recording'
-                        self.write({'status': 'ok', 'action': action, 'message': mess})
-                    elif 'image' in action:
-                        img = hub.fileHandler.get_last_image()
-                        img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
-                        if img is None:
-                            # print('pcc', img)
-                            # img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
-                            img = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
-
-                        base64_str = cv2.imencode('.jpg', img)[1].tostring()
-                        base64_str = base64.b64encode(base64_str).decode()
-                        self.write({'status': 'ok', 'action': action, 'message': 'get image', 'data': base64_str})
-                    else:
-                        self.write({'status': 'ok', 'message': 'unrecognized action', 'action': action})
-                else:
-                    # self.hub.fileHandler.stop_rec()
-                    self.write({'status': 'error', 'message': 'not action', 'action': None})
-
-            def get(self):
-                self.render("web/index.html")
-
-
-        app = Application([
-            (r'/', IndexHandler),
-            (r"/static/(.*)", StaticFileHandler, {"path": "web/statics"}),
-        ], debug=False)
-        app.listen(9999)
-        IOLoop.instance().start()
-
-    else:
-        print('normal mode.')
-        uni_conf = load_cfg(sys.argv[1])
-        hub = Hub()
-        pcc = PCC(hub, ipm=False, replay=False)
-        pcc.start()
-
-    # pcc = PCC(hub, ipm=True, replay=False)
-    # pcc.start()
+    # local_path = os.path.split(os.path.realpath(__file__))[0]
+    # # print('local_path:', local_path)
+    # os.chdir(local_path)
+    #
+    # if len(sys.argv) == 1:
+    #     sys.argv.append('config/cfg_lab.json')
+    #
+    # if '--direct' in sys.argv:
+    #     print('direct mode.')
+    #     hub = Hub(direct_cfg=sys.argv[2])
+    #     pcc = PCC(hub, ipm=True, replay=False)
+    #     pcc.start()
+    #
+    # elif '--headless' in sys.argv:
+    #     print('headless mode.')
+    #     hub = Hub(headless=True)
+    #     hub.start()
+    #     pcc = HeadlessPCC(hub)
+    #
+    #     t = dThread(target=pcc.start)
+    #     t.start()
+    #     # hub.fileHandler.start_rec()
+    #     # pcc.start()
+    #
+    #     from tornado.web import Application, RequestHandler, StaticFileHandler
+    #     from tornado.ioloop import IOLoop
+    #
+    #
+    #     class IndexHandler(RequestHandler):
+    #         def post(self):
+    #             action = self.get_body_argument('action')
+    #             if action:
+    #                 if 'start' in action:
+    #                     if not hub.fileHandler.recording:
+    #                         hub.fileHandler.start_rec()
+    #                         print(hub.fileHandler.recording)
+    #                         self.write({'status': 'ok', 'action': action, 'message': 'start recording'})
+    #                     else:
+    #                         self.write({'status': 'ok', 'message': 'already recording', 'action': action})
+    #                 elif 'stop' in action:
+    #                     if not hub.fileHandler.recording:
+    #                         self.write({'status': 'ok', 'message': 'not recording', 'action': action})
+    #                     else:
+    #                         hub.fileHandler.stop_rec()
+    #                         print(hub.fileHandler.recording)
+    #                         self.write({'status': 'ok', 'action': action, 'message': 'stop recording'})
+    #                 elif 'check' in action:
+    #                     mess = 'recording' if hub.fileHandler.recording else 'not recording'
+    #                     self.write({'status': 'ok', 'action': action, 'message': mess})
+    #                 elif 'image' in action:
+    #                     img = hub.fileHandler.get_last_image()
+    #                     img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
+    #                     if img is None:
+    #                         # print('pcc', img)
+    #                         # img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
+    #                         img = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
+    #
+    #                     base64_str = cv2.imencode('.jpg', img)[1].tostring()
+    #                     base64_str = base64.b64encode(base64_str).decode()
+    #                     self.write({'status': 'ok', 'action': action, 'message': 'get image', 'data': base64_str})
+    #                 else:
+    #                     self.write({'status': 'ok', 'message': 'unrecognized action', 'action': action})
+    #             else:
+    #                 # self.hub.fileHandler.stop_rec()
+    #                 self.write({'status': 'error', 'message': 'not action', 'action': None})
+    #
+    #         def get(self):
+    #             self.render("web/index.html")
+    #
+    #
+    #     app = Application([
+    #         (r'/', IndexHandler),
+    #         (r"/static/(.*)", StaticFileHandler, {"path": "web/statics"}),
+    #     ], debug=False)
+    #     app.listen(9999)
+    #     IOLoop.instance().start()
+    #
+    # else:
+    #     print('normal mode.')
+    #     uni_conf = load_cfg(sys.argv[1])
+    #     hub = Hub()
+    #     pcc = PCC(hub, ipm=False, replay=False)
+    #     pcc.start()
+    #
+    # # pcc = PCC(hub, ipm=True, replay=False)
+    # # pcc.start()
