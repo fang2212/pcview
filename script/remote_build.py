@@ -21,7 +21,7 @@ class SSHSession(object):
         # print(self.ssh)
 
     def exec(self, cmd, get_pty=False):
-        stdin, stdout, stderr = self.ssh.exec_command(cmd + ' 2>&1', get_pty=get_pty)
+        stdin, stdout, stderr = self.ssh.exec_command(cmd + ' 2>&1', bufsize=1)
         for line in line_buffered(stdout):
             print(line, end='')
         # return res
@@ -46,7 +46,10 @@ def trigger_build(branch=None):
     if branch:
         sess.exec(suffix + 'git checkout {}'.format(branch))
     sess.exec(suffix + 'git pull')
+
+    # sess.exec(suffix + '/home/nan/.local/bin/pyinstaller pcc_app.spec --noconfirm')
     sess.exec(suffix + './pack_pcc.sh')
+    # sess.exec(suffix + '')
 
     # retrieve binary
     local_path = '/home/nan/release/pcc_app_1804_{}_{}.tar.gz'.format(branch, int(time.time()))
@@ -73,4 +76,4 @@ def deploy_to_cve(pack_path, remote_path='/home/minieye/upgrade_temp/'):
 if __name__ == "__main__":
     # pack = '/home/nan/release/pcc_app_1804_cve-new_1598513211.tar.gz'
     pack = trigger_build('cve-new')
-    deploy_to_cve(pack)
+    # deploy_to_cve(pack)

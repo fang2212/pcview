@@ -404,7 +404,7 @@ class PCC(object):
             return
         # ts_fdec = time.time()
         ts_ana.append(('frame decode', time.time()))
-        # self.player.show_failure(img, 'feed lost, check connection.')
+        self.player.show_failure(img, 'feed lost, check connection.')
         frame_id = mess['frame_id']
         self.now_id = frame_id
         self.ts_now = mess['ts']
