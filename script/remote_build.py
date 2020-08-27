@@ -1,5 +1,6 @@
 import paramiko
 import time
+import os
 
 
 def line_buffered(f):
@@ -19,8 +20,8 @@ class SSHSession(object):
         self.tp = self.ssh.get_transport()
         # print(self.ssh)
 
-    def exec(self, cmd):
-        stdin, stdout, stderr = self.ssh.exec_command(cmd + ' 2>&1')
+    def exec(self, cmd, get_pty=False):
+        stdin, stdout, stderr = self.ssh.exec_command(cmd + ' 2>&1', get_pty=get_pty)
         for line in line_buffered(stdout):
             print(line, end='')
         # return res
@@ -48,8 +49,28 @@ def trigger_build(branch=None):
     sess.exec(suffix + './pack_pcc.sh')
 
     # retrieve binary
-    sess.download(work_dir + '/dist/pcc_app.tar.gz', '/home/nan/release/pcc_app_1804_{}_{}.tar.gz'.format(branch, int(time.time())))
+    local_path = '/home/nan/release/pcc_app_1804_{}_{}.tar.gz'.format(branch, int(time.time()))
+    sess.download(work_dir + '/dist/pcc_app.tar.gz', local_path)
+    return local_path
+
+
+def deploy_to_cve(pack_path, remote_path='/home/minieye/upgrade_temp/'):
+    pack_name = os.path.basename(pack_path)
+    print('deploying...', pack_name)
+    sess = SSHSession('192.168.98.222', username='minieye', password='minieye')
+    sess.upload(pack_path, os.path.join(remote_path, pack_name))
+    suffix = 'cd {} && '.format(remote_path)
+    sess.exec(suffix + 'rm -rf unzip')
+    sess.exec(suffix + 'mkdir unzip')
+    sess.exec(suffix + 'tar xvzf {} -C unzip'.format(pack_name))
+    # sess.exec('cd {} && cp unzip/pcc_app /home/minieye/work/pcc_app/pcc_app')
+    sess.exec(suffix + 'sudo service cve stop', get_pty=True)
+    sess.exec(suffix + 'rm -rf /home/minieye/work/pcc_app')
+    sess.exec(suffix + 'cp -r unzip/pcc_app /home/minieye/work/')
+    sess.exec(suffix + 'sudo service cve start', get_pty=True)
 
 
 if __name__ == "__main__":
-    trigger_build('cve-new')
+    pack = '/home/nan/release/pcc_app_1804_cve-new_1598513211.tar.gz'
+    # pack = trigger_build('cve-new')
+    deploy_to_cve(pack)

@@ -32,7 +32,7 @@ pyinstaller pcc_app.spec --noconfirm
 #mkdir dist/pcc/tcl
 rm dist/pcc_app/config/local.json
 python3 tools/build_info.py
-mv build_info.txt dist/pcc_release/
+mv build_info.txt dist/pcc_app/
 
 cd dist
 tar -czvf pcc_app.tar.gz pcc_app
