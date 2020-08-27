@@ -15,7 +15,7 @@ from threading import Thread
 # import signal
 import cv2
 # import sys
-import numpy as np
+
 # from turbojpeg import TurboJPEG
 
 from config.config import load_cfg
@@ -32,6 +32,8 @@ from tools.transform import Transform, OrientTuner
 from tools.vehicle import Vehicle, get_rover_target
 from tools.cpu_mem_info import *
 # from multiprocessing import Queue
+import numpy as np
+
 
 
 
@@ -828,10 +830,10 @@ class PCC(object):
                 if self.cfg.runtime.get('low_profile'):
                     self.hub.parse_can_msgs(False)
             print('toggle recording status. {}'.format(self.hub.fileHandler.is_recording))
-        elif key == ord('s'):
-            self.ot.save_para()
-            if not self.replay:
-                self.hub.fileHandler.save_param()
+        # elif key == ord('s'):
+        #     self.ot.save_para()
+        #     if not self.replay:
+        #         self.hub.fileHandler.save_param()
         elif key == ord('p'):
             self.set_pinpoint = True
             # print(self.set_target)

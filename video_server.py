@@ -212,6 +212,7 @@ def control(cmd):
         cmd_req = {'action': 'control', 'cmd': cmd, 'status': 'ok'}
         ctrl_q.put(cmd_req)
         return jsonify(cmd_req)
+    return 'ok', 200
 
 
 @app.route("/action/<cmd>/<item>", methods=['GET', 'POST'])
