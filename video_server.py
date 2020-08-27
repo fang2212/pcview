@@ -300,17 +300,19 @@ def upgrade():
                         print('removed dir', item)
                         shutil.rmtree(item)
                     else:
-                        continue
+                        # continue
                         os.remove(item)
                 for item in os.listdir(new_dir):
                     item_path = os.path.join(new_dir, item)
                     if os.path.isdir(item_path):
                         # continue
                         print('copied dir', item_path)
-                        shutil.copytree(item_path, item)
+                        # shutil.copytree(item_path, item)
+                        os.popen('cp -r {} {}'.format(item_path, item))
                     else:
                         print('copied item', item_path)
-                        shutil.copy(item_path, item)
+                        # shutil.copy(item_path, item)
+                        os.popen('cp {} {}'.format(item_path, item))
                 print('replaced PCC executive, now restarting...')
                 cmd_req = {'action': 'control', 'cmd': 'respawn'}
                 ctrl_q.put(cmd_req)

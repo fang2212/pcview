@@ -71,6 +71,6 @@ def deploy_to_cve(pack_path, remote_path='/home/minieye/upgrade_temp/'):
 
 
 if __name__ == "__main__":
-    pack = '/home/nan/release/pcc_app_1804_cve-new_1598513211.tar.gz'
-    # pack = trigger_build('cve-new')
+    # pack = '/home/nan/release/pcc_app_1804_cve-new_1598513211.tar.gz'
+    pack = trigger_build('cve-new')
     deploy_to_cve(pack)
