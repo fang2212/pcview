@@ -42,7 +42,7 @@ class SSHSession(object):
 def trigger_build(branch=None):
     work_dir = '/home/nan/work/pcview'
     suffix = 'cd {} && '.format(work_dir)
-    sess = SSHSession('192.168.50.104', username='nan', password='199116')
+    sess = SSHSession('192.168.50.106', username='nan', password='199116')
     if branch:
         sess.exec(suffix + 'git checkout {}'.format(branch))
     sess.exec(suffix + 'git pull')
@@ -76,4 +76,4 @@ def deploy_to_cve(pack_path, remote_path='/home/minieye/upgrade_temp/'):
 if __name__ == "__main__":
     # pack = '/home/nan/release/pcc_app_1804_cve-new_1598513211.tar.gz'
     pack = trigger_build('cve-new')
-    # deploy_to_cve(pack)
+    deploy_to_cve(pack)
