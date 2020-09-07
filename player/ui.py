@@ -254,10 +254,16 @@ class BaseDraw(object):
         # if not isinstance(poly, np.array):
         #     print('input param poly must be numpy array.')
         #     return
+        # print(image_content.shape, )
         xmin = np.min(poly[:, 0])
+        # print(xmin)
+        # xmin = np.max(xmin, 0)
         ymin = np.min(poly[:, 1])
+        # ymin = np.max(ymin, 0)
         xmax = np.max(poly[:, 0])
+        # xmax = np.min(xmax, image_content.shape[0])
         ymax = np.max(poly[:, 1])
+        # ymax = np.min(ymax, image_content.shape[1])
         poly[:, 0] -= xmin
         poly[:, 1] -= ymin
         mask = image_content[ymin:ymax, xmin:xmax].copy()

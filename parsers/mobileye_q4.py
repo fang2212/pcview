@@ -85,8 +85,6 @@ def parser_mbq4(id, buf, ctx):
     #
     # # return
 
-
-
     # arbitration_id = canmatrix.ArbitrationId(id, extended=False)
     # decoded = db_q4_all.decode(arbitration_id, buf)
     # # print('0x{:x}'.format(id))
@@ -219,7 +217,7 @@ def parser_mbq4(id, buf, ctx):
             ctx['q4_obs'][cur_id_key]['probability'] = r['OBJ_Existence_Probability']
             ctx['q4_obs'][cur_id_key]['status'] = r['OBJ_Measuring_Status']
             ctx['q4_obs'][cur_id_key]['motion_category'] = r['OBJ_Motion_Category']
-            ctx['q4_obs'][cur_id_key]['class'] = r['OBJ_Object_Class']
+            ctx['q4_obs'][cur_id_key]['class'] = r['OBJ_Object_Class'].lower()
             ctx['q4_obs'][cur_id_key]['motion_status'] = r['OBJ_Motion_Status']
             ctx['q4_obs'][cur_id_key]['brake_light'] = r['OBJ_Brake_Light']
             ctx['q4_obs'][cur_id_key]['turn_right'] = r['OBJ_Turn_Indicator_Right']

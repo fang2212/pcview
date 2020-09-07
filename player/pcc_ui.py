@@ -59,6 +59,7 @@ class Player(object):
         #                   'sta77': CVColor.Black,
         #                   'mbq4': CVColor.Grass}
         self.color_obs = {'ifv300': FlatColor.peter_river,
+                          'mbq3': FlatColor.peter_river,
                           'esr': FlatColor.alizarin,
                           'lmr': FlatColor.emerald,
                           'x1': FlatColor.amethyst,
@@ -212,7 +213,7 @@ class Player(object):
         # print(obs['source'], obs['class'])
         height = height or width
         if obs.get('class') == 'pedestrian' or obs.get('class') == 'PEDESTRIAN':
-            height = 1.7
+            height = 1.6
         # install_para = install[obs['source'].split('.')[0]]
 
         if 'pos_lon' in obs:
@@ -250,7 +251,7 @@ class Player(object):
         x1 = x0 - 0.5 * w
         y1 = y0 - h
         x2 = x1 + w
-        y2 = y1 + h
+        y2 = y0
         x1 = int(x1)
         x2 = int(x2)
         y1 = int(y1)
@@ -265,7 +266,8 @@ class Player(object):
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
         elif obs.get('class') == 'pedestrian':
             # print(obs)
-            cv2.rectangle(img, (x1, y1), (x2, y2), color, thickness)
+            cv2.rectangle(img, (x1, y1), (x2, y2), color, 1)
+            BaseDraw.draw_alpha_poly(img, np.array([(x1, y1), (x1, y2), (x2, y2), (x2, y1)]), 0.3, color)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), size, color, 1)
         else:
             BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness)

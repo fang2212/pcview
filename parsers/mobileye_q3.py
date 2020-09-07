@@ -245,19 +245,23 @@ def parse_ifv300(id, buf, ctx=None):
 obs1 = {}
 lanes1 = {}
 numofobs = 0
+id_table = {0x766: 0, 0x767: 0, 0x768: 1, 0x769: 1, 0x76c: 2, 0x76d: 2, 0x76e: 3, 0x76f: 3}
 
 
 def parse_q3(id, buf, ctx=None):
     ids = [m.frame_id for m in db_q3.messages]
-    # global numofobs
+    global numofobs
     if id not in ids:
         return None
     r = db_q3.decode_message(id, buf)
     if ctx.get('parser_mode') == 'direct':
         return r
     # print("0x%x" % id, r)
-    if not ctx.get('obs'):
-        ctx['obs'] = {}
+    if not ctx.get('obsq3'):
+        ctx['obsq3'] = {}
+    if not ctx.get('laneq3'):
+        ctx['laneq3'] = {}
+        ctx['num_of_q3_lane'] = 0
     if not ctx.get('obsnum'):
         ctx['obsnum'] = {}
 
@@ -265,37 +269,160 @@ def parse_q3(id, buf, ctx=None):
         speed = buf[2]
         print("vehicle speed:", speed)
 
-    if id == 0x738:
+    elif id == 0x738:
         numofobs = r['NumObstacles']
         timestamp = r['Timestamp']
 
-    if 0x739 + 3 * ctx['obsnum'] > id >= 0x739 and (id - 0x739) % 3 == 0:
+    elif 0x739 + 3 * numofobs > id >= 0x739 and (id - 0x739) % 3 == 0:
         # print()
         # print("0x%x" % id, r)
-        ctx['obs']['type'] = 'obstacle'
-        ctx['obs']['sensor'] = 'q3'
-        ctx['obs']['id'] = r.get('ObstacleID')
-        ctx['obs']['pos_lon'] = r['ObstaclePosX']
-        ctx['obs']['pos_lat'] = r['ObstaclePosY']
-        ctx['obs']['turn_indic'] = r['BlinkerInfo']
-        ctx['obs']['cut_in_out'] = r['Move_in_and_Out']
-        ctx['obs']['vel_lon'] = r['ObstacleVelX']
-        ctx['obs']['class'] = r['ObstacleType']
-        ctx['obs']['status'] = r['ObstacleStatus']
-        ctx['obs']['brake_indic'] = r['ObstacleBrakeLights']
-        ctx['obs']['valid'] = r['ObstacleValid']
+        ctx['obsq3']['type'] = 'obstacle'
+        ctx['obsq3']['sensor'] = 'mbq3'
+        ctx['obsq3']['id'] = r.get('ObstacleID')
+        ctx['obsq3']['pos_lon'] = r['ObstaclePosX']
+        ctx['obsq3']['pos_lat'] = r['ObstaclePosY']
+        ctx['obsq3']['turn_indic'] = r['BlinkerInfo']
+        ctx['obsq3']['cut_in_out'] = r['Move_in_and_Out']
+        ctx['obsq3']['vel_lon'] = r['ObstacleVelX']
+        ctx['obsq3']['class'] = r['ObstacleType']
+        ctx['obsq3']['status'] = r['ObstacleStatus']
+        ctx['obsq3']['brake_indic'] = r['ObstacleBrakeLights']
+        ctx['obsq3']['valid'] = r['ObstacleValid']
 
-    if 0x739 + 3 * ctx['obsnum'] > id >= 0x739 and (id - 0x73a) % 3 == 0:
-        ctx['obs']['width'] = r['ObstacleWidth']
-        ctx['obs']['cipv'] = r['CIPVFlag']
+    elif 0x739 + 3 * numofobs > id >= 0x739 and (id - 0x73a) % 3 == 0:
+        ctx['obsq3']['width'] = r['ObstacleWidth']
+        ctx['obsq3']['cipo'] = False if r['CIPVFlag'] == 'not CIPV' else True
 
-    if 0x739 + 3 * ctx['obsnum'] > id >= 0x739 and (id - 0x73b) % 3 == 0:
-        ctx['obs']['vel_lat'] = r['ObstacleVelY']
-        ctx['obs']['acc_lon'] = r['Object_Accel_X']
-        ctx['obs']['color'] = 5
-        send = ctx['obs'].copy()
+    elif 0x739 + 3 * numofobs > id >= 0x739 and (id - 0x73b) % 3 == 0:
+        ctx['obsq3']['vel_lat'] = r['ObstacleVelY']
+        ctx['obsq3']['acc_lon'] = r['Object_Accel_X']
+        ctx['obsq3']['color'] = 5
+        send = ctx['obsq3'].copy()
         # print(send)
-        ctx['obs'].clear()
+        ctx['obsq3'].clear()
         # print(send)
         return send
+
+    elif id == 0x76b:  # road information
+        res = {'type': 'road_info', 'sensor': 'mbq3'}
+        res['construction_area'] = r['Construction_Area']
+        res['road_type'] = r['Road_Type']
+        res['highway_exit_left'] = r['Highway_Exit_Left']
+        res['highway_exit_right'] = r['Highway_Exit_Right']
+        res['prob_left_lane'] = r['Probability_Of_Left_Lane']
+        res['prob_right_lane'] = r['Probability_Of_Right_Lane']
+        res['driving_speed_left_lane'] = r['Driving_Speed_Left_Lane']
+        res['driving_speed_right_lane'] = r['Driving_Speed_Right_Lane']
+        return res
+
+    elif 0x766 <= id <= 0x76f:
+        lane_id = id_table.get(id)
+        if lane_id not in ctx['laneq3']:
+            ctx['laneq3'][lane_id] = {}
+
+        if 'Position' in r:
+            res = {'type': 'lane', 'sensor': 'mbq3', 'id': lane_id}
+            res['quality'] = r['Quality']
+            res['a0'] = r['Position']
+            res['a2'] = r['Curvature']
+            res['a3'] = r['Curvature_Derivative']
+            res['width_marking'] = r['Lane_mark_width']
+            ctx['laneq3'][lane_id].update(res)
+
+        elif 'Heading_Angle' in r:
+            ctx['laneq3'][lane_id]['a1'] = r['Heading_Angle']
+            ctx['laneq3'][lane_id]['range'] = r['View_Range_End']
+            ctx['laneq3'][lane_id]['range_start'] = r['View_Range_Start']
+            if r['View_Range_End'] > 0:
+                print("0x%x" % id, r)
+    #
+    # elif id == 0x766:  # lka lane A left
+    #     ctx['num_of_q3_lane'] += 1
+    #     lane_id = 0
+    #     res = {'type': 'lane', 'sensor': 'mbq3', 'id': lane_id}
+    #     res['quality'] = r['Quality']
+    #     res['a0'] = r['Position']
+    #     res['a2'] = r['Curvature']
+    #     res['a3'] = r['Curvature_Derivative']
+    #     res['width_marking'] = r['Width_left_marking']
+    #     ctx['laneq3'][lane_id].update(res)
+    #
+    # elif id == 0x768:  # lka lane A right
+    #     ctx['num_of_q3_lane'] += 1
+    #     lane_id = 1
+    #     res = {'type': 'lane', 'sensor': 'mbq3', 'id': lane_id}
+    #     res['quality'] = r['Quality']
+    #     res['a0'] = r['Position']
+    #     res['a2'] = r['Curvature']
+    #     res['a3'] = r['Curvature_Derivative']
+    #     res['width_marking'] = r['Width_right_marking']
+    #     ctx['laneq3'][lane_id].update(res)
+    #
+    # elif id == 0x767:  # lka lane B left
+    #     ctx['num_of_q3_lane'] += 1
+    #     lane_id = 0
+    #     if lane_id not in ctx['laneq3']:
+    #         return
+    #     ctx['laneq3'][lane_id]['a1'] = r['Heading_Angle']
+    #     ctx['laneq3'][lane_id]['range'] = r['View_Range_End']
+    #     ctx['laneq3'][lane_id]['range_start'] = r['View_Range_Start']
+    #
+    # elif id == 0x769:  # lka lane B right
+    #     ctx['num_of_q3_lane'] += 1
+    #     lane_id = 1
+    #     if lane_id not in ctx['laneq3']:
+    #         return
+    #     ctx['laneq3'][lane_id]['a1'] = r['Heading_Angle']
+    #     ctx['laneq3'][lane_id]['range'] = r['View_Range_End']
+    #     ctx['laneq3'][lane_id]['range_start'] = r['View_Range_Start']
+    #
+    # elif id == 0x76c:  # lka next lane A left
+    #     ctx['num_of_q3_lane'] += 1
+    #     lane_id = 2
+    #     res = {'type': 'lane', 'sensor': 'mbq3', 'id': lane_id}
+    #     res['quality'] = r['Quality']
+    #     res['a0'] = r['Position']
+    #     res['a2'] = r['Curvature']
+    #     res['a3'] = r['Curvature_Derivative']
+    #     res['width_marking'] = r['Lane_mark_width']
+    #     ctx['laneq3'][lane_id].update(res)
+    #
+    # elif id == 0x76e:  # lka next lane A right
+    #     ctx['num_of_q3_lane'] += 1
+    #     lane_id = 3
+    #     res = {'type': 'lane', 'sensor': 'mbq3', 'id': lane_id}
+    #     res['quality'] = r['Quality']
+    #     res['a0'] = r['Position']
+    #     res['a2'] = r['Curvature']
+    #     res['a3'] = r['Curvature_Derivative']
+    #     res['width_marking'] = r['Lane_mark_width']
+    #     ctx['laneq3'][lane_id].update(res)
+    #
+    # elif id == 0x76d:  # lka lane B left
+    #     ctx['num_of_q3_lane'] += 1
+    #     lane_id = 0
+    #     if lane_id not in ctx['laneq3']:
+    #         return
+    #     ctx['laneq3'][lane_id]['a1'] = r['Heading_Angle']
+    #     ctx['laneq3'][lane_id]['range'] = r['View_Range_End']
+    #     ctx['laneq3'][lane_id]['range_start'] = r['View_Range_Start']
+    #
+    # elif id == 0x76f:  # lka lane B right
+    #     ctx['num_of_q3_lane'] += 1
+    #     lane_id = 1
+    #     if lane_id not in ctx['laneq3']:
+    #         return
+    #     ctx['laneq3'][lane_id]['a1'] = r['Heading_Angle']
+    #     ctx['laneq3'][lane_id]['range'] = r['View_Range_End']
+    #     ctx['laneq3'][lane_id]['range_start'] = r['View_Range_Start']
+
+    if id == 0x76d:  # last frame of lane
+    # if ctx['num_of_q3_lane'] >= 8:
+        ctx['num_of_q3_lane'] = 0
+        send = list(ctx['laneq3'].copy().values())
+        ctx['laneq3'].clear()
+
+        # print(send)
+        return send
+
 

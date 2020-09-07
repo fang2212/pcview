@@ -694,7 +694,7 @@ class PCC(object):
         ego_atti = np.array([ego_pose['yaw'], 0, 0])
         target = np.array([data['pos_lat'], data['pos_lon'], data['pos_hgt']])  # target position in (right, front, up) order
         lat, lon, hgt = body2blh(ego_blh, ego_atti, target)
-        self.vehicles['ego'].set_pinpoint({'type': 'pinpoint', 'lat': lat, 'lon': lon, 'hgt': hgt})
+        # self.vehicles['ego'].set_pinpoint({'type': 'pinpoint', 'ts': data['ts'], 'source': data['source'], 'lat': lat, 'lon': lon, 'hgt': hgt})
         # print(lat, lon, hgt, 'ego yaw:', ego_pose['yaw'], data)
         self.player.show_tsr(img, data)
 

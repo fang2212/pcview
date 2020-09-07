@@ -137,7 +137,7 @@
 
             socket.on('delay', function (msg, cb) {
                 let data = msg.data;
-                let mcontent = document.getElementById('statistics')
+                let mcontent = document.getElementById('statistics');
                 if (data['name'] === 'frame_send_cost') {
                     $('#fsend_cost').text(data['delay']);
                 } else if (data['name'] === 'frame_rendering_cost') {
@@ -171,7 +171,7 @@
 
                 for (let ip in data) {
                     // for (let i=0; i<5; i++) {
-                    let dev = data[ip]
+                    let dev = data[ip];
                     let idx = dev['idx'];
                     let type = dev['type'];
                     // let idx = i;
@@ -185,7 +185,7 @@
                     // newCard.style = "max-width: 33%";
                     newCard.id = "dev_" + idx;
                     // newCard.style.maxWidth = "33%";
-                    newCard.style.minHeight = '280px'
+                    newCard.style.minHeight = '280px';
                     newCard.style.width = "400px";
                     newCard.style.marginLeft = "30px";
                     newCard.style.marginTop = "20px";
@@ -309,7 +309,7 @@
         $(document).keyup(function (event) {
             //判断回车键的code
             // alert(event.keyCode)
-            keypress(event.keyCode)
+            keypress(event.keyCode);
             if (event.keyCode == 13) {
                 //如果确定点击了回车键，那么就调用方法
                 // sign_in();
@@ -494,7 +494,7 @@
         </div>
 
         <div id="tab-item5" class="tab-item">
-            <h2>固件升级</h2>#}
+            <h2>固件升级</h2>
             <input type="file" name="file" id="ufile"/>
             <button id="upload-btn" onclick="upload()">上传</button>
             <div class="progress progress-bar-striped" style="height: 20px">
@@ -506,6 +506,7 @@
             </div>
             <a id="upgrade_info"></a>
             <button id="respawn-btn" onclick="respawn_request()">重启</button>
+            <button id="clear_mac-btn" onclick="clear_mac()">清除mac表</button>
         </div>
         <script>
             function upload() {
@@ -517,6 +518,10 @@
             }
             function respawn_request() {
                 $.post("/control/respawn", "respawn pcc", function (data) {})
+            }
+
+            function clear_mac() {
+                $.post("/control/clear_mac", "clear mac", function (data) {})
             }
 
             function $upost(url, data) {

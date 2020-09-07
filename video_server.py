@@ -36,6 +36,7 @@ no_frame = open('static/img/no_video.jpg', 'rb').read()
 
 profile_data = {}
 
+
 def make_targz(output_filename, source_dir):
     """
     一次性打包目录为tar.gz
@@ -208,10 +209,13 @@ def video_feed():
 def control(cmd):
     # message = "control"
     print('web control', cmd)
-    if not ctrl_q.full():
-        cmd_req = {'action': 'control', 'cmd': cmd, 'status': 'ok'}
-        ctrl_q.put(cmd_req)
-        return jsonify(cmd_req)
+    if cmd == 'clear_mac':
+        os.remove('config/runtime/cached_macs.json')
+    else:
+        if not ctrl_q.full():
+            cmd_req = {'action': 'control', 'cmd': cmd, 'status': 'ok'}
+            ctrl_q.put(cmd_req)
+            return jsonify(cmd_req)
     return 'ok', 200
 
 

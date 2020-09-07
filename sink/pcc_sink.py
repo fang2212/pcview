@@ -10,6 +10,7 @@ import os
 import aiohttp
 import can
 import msgpack
+import nnpy
 
 try:
     import pynng
@@ -51,18 +52,25 @@ class Sink(Thread):
     def _init_port(self):
         address = "tcp://%s:%s" % (self.dev, self.channel,)
         if nn_impl == 'pynng':
-            self._socket = pynng.Sub0(dial=address, topics=b'', recv_timeout=-1)
+            self._socket = pynng.Sub0(dial=address, topics=b'', recv_timeout=500)
             self._socket.recv_buffer_size = 1
         else:
-            self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
-            nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
-            nanomsg.wrapper.nn_connect(self._socket, address)
+            # self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
+            # nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
+            # nanomsg.wrapper.nn_connect(self._socket, address)
+            self._socket = nnpy.Socket(nnpy.AF_SP, nnpy.SUB)
+            self._socket.setsockopt(nnpy.SUB, nnpy.SUB_SUBSCRIBE, '')
+            self._socket.connect(address)
 
     def read(self):
         if nn_impl == 'pynng':
-            bs = self._socket.recv()
+            try:
+                bs = self._socket.recv()
+            except Exception as e:
+                return
         else:
-            bs = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
+            # bs = nanomsg.wrapper.nn_recv(self._socket, 1)[1]
+            bs = self._socket.recv()
         # print(self._socket.recv_buffer_size)
         return bs
         # return self._socket.recv()
@@ -87,7 +95,7 @@ class Sink(Thread):
 
             buf = self.read()
             if not buf:
-                time.sleep(0.01)
+                time.sleep(0.001)
                 continue
             t0 = time.time()
             msg_cnt += 1
@@ -114,7 +122,7 @@ class Sink(Thread):
                 if not self.queue.full():
                     self.queue.put((r))
                 else:
-                    time.sleep(0.01)
+                    time.sleep(0.001)
                     continue
 
             # time.sleep(0.01)
