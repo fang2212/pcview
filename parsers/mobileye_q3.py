@@ -333,8 +333,8 @@ def parse_q3(id, buf, ctx=None):
             ctx['laneq3'][lane_id]['a1'] = r['Heading_Angle']
             ctx['laneq3'][lane_id]['range'] = r['View_Range_End']
             ctx['laneq3'][lane_id]['range_start'] = r['View_Range_Start']
-            if r['View_Range_End'] > 0:
-                print("0x%x" % id, r)
+            # if r['View_Range_End'] > 0:
+            #     print("0x%x" % id, r)
     #
     # elif id == 0x766:  # lka lane A left
     #     ctx['num_of_q3_lane'] += 1
