@@ -793,6 +793,8 @@ class PCC(object):
             self.player.show_warning(img, data)
         elif data['type'] == 'profiling':
             self.analyze_profile(img, data)
+        elif data['type'] == 'inspva':
+            self.player.show_rtk_pva(img, data)
         self.specific_handle(img, data)
         return True
 

@@ -8,7 +8,7 @@ from threading import Thread
 from config.config import bcl
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
-from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink
+from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink, TCPSink
 from tools.ip_mac import get_mac_ip, get_cached_macs, save_macs
 
 class CollectorNode(kProcess):
@@ -312,9 +312,10 @@ class Hub(Thread):
                 for iface in cfg['ports']:
                     if not cfg['ports'][iface].get('enable') and not is_main:
                         continue
+                    port = cfg['ports'][iface]['port']
                     if 'can' in iface:
                         chn = cfg['ports'][iface]
-                        cansink = CANSink(self.msg_queue, ip=ip, port=chn['port'], channel=iface, type=[chn['topic']],
+                        cansink = CANSink(self.msg_queue, ip=ip, port=port, channel=iface, type=[chn['topic']],
                                               index=idx, fileHandler=self.fileHandler, isheadless=self.headless)
 
                         # cansink.start()
@@ -325,7 +326,7 @@ class Hub(Thread):
                         cfgs_online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                     elif 'gsensor' in iface:
                         chn = cfg['ports'][iface]
-                        gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=chn['port'], channel=iface, index=idx,
+                        gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=port, channel=iface, index=idx,
                                                       fileHandler=self.fileHandler, isheadless=self.headless)
                         # gsink.start()
                         # gsink = {'stype': 'imu', 'queue': self.msg_queue, 'ip': ip, 'port': chn['port'],
@@ -334,7 +335,7 @@ class Hub(Thread):
                         self.sinks.append(gsink)
                         cfgs_online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                     elif 'video' in iface:
-                        port = cfg['ports']['video']['port']
+                        # port = cfg['ports']['video']['port']
                         vsink = CameraSink(queue=self.msg_queue, ip=ip, port=port, channel='camera', index=idx,
                                           fileHandler=self.fileHandler, is_main=cfg.get('is_main'), devname=cfg.get('name'))
                         # vsink.start()
@@ -343,7 +344,7 @@ class Hub(Thread):
                         #          'is_main': cfg.get('is_main')}
                         self.sinks.append(vsink)
                     elif 'rtk' in iface or 'gps' in iface:
-                        port = cfg['ports'][iface]['port']
+                        # port = cfg['ports'][iface]['port']
                         pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=iface,
                                             fileHandler=self.fileHandler, isheadless=self.headless)
                         print('added sink pinode', ip, port, iface)
@@ -352,6 +353,10 @@ class Hub(Thread):
                         #           'index': idx, 'resname': 'name', 'fileHandler': self.fileHandler,
                         #           'isheadless': self.headless}
                         self.sinks.append(pisink)
+                        cfgs_online[ip]['msg_types'].append(iface + '.{}'.format(idx))
+                    elif 'inspva' in iface:
+                        tcpsink = TCPSink(self.msg_queue, ip, port, 'can', iface, idx, self.fileHandler)
+                        self.sinks.append(tcpsink)
                         cfgs_online[ip]['msg_types'].append(iface + '.{}'.format(idx))
             else:  # no type, default is x1 collector
                 continue

@@ -1138,6 +1138,31 @@ class Player(object):
         if data['type'] == 'rtcm':
             BaseDraw.draw_text(img, 'rtcm rcv:{}'.format(data['len']), (indent + 82, 20), 0.5, color, 1)
 
+    def show_rtk_pva(self, img, data):
+        style_list = {'NONE': 'fail', 'DOPPLER_VELOCITY': 'pass', 'NARROW_INT': 'pass', 'INS_RTKFIXED': 'pass'}
+        for key in data:
+            if key == 'pos_type':
+                self.show_text_info(data['source'], 40, 'P:{}'.format(data['pos_type']),
+                                    style_list.get(data['pos_type']))
+            elif key == 'lat':
+                self.show_text_info(data['source'], 80, 'lat: {:.8f}'.format(data['lat']))
+            elif key == 'lon':
+                self.show_text_info(data['source'], 100, 'lon:{:.8f}'.format(data['lon']))
+            elif key == 'hgt':
+                self.show_text_info(data['source'], 120, 'hgt: {:.3f}'.format(data['hgt']))
+        if '#SVs' in data and '#solSVs' in data:
+            self.show_text_info(data['source'], 160, '#SVs/sol: {}/{}'.format(data['#SVs'], data['#solSVs']))
+        if 'pitch' in data and 'yaw' in data:
+            if 'roll' in data:
+                self.show_text_info(data['source'], 180, 'Yaw  Pitch Roll ')
+                self.show_text_info(data['source'], 200,
+                                    '{:.2f} {:.2f} {:.2f}'.format(data['yaw'], data['pitch'], data['roll']))
+            elif 'length' in data:
+                self.show_text_info(data['source'], 180, 'Yaw  Pitch Len ')
+                self.show_text_info(data['source'], 200,
+                                    '{:.2f} {:.2f} {:.2f}'.format(data['yaw'], data['pitch'], data['length']))
+
+
     def show_gps(self, data):
         # if 'pos_type' in data:
         #     self.show_text_info(data['source'], 20, 'ptype:{}'.format(data['pos_type']))

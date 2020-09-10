@@ -49,6 +49,7 @@ def parse_x1j(id, data, ctx=None):
             cipv['id'] = r['Vehicle_ID']
             cipv['pos_lat'] = r['TargetVehicle_PosY']
             cipv['pos_lon'] = r['TargetVehicle_PosX']
+            cipv['width'] = r['TargetVehicle_Width']
 
             # print('X %.1f', r['TargetVehicle_PosX'])
             cipv['color'] = 4
@@ -58,10 +59,12 @@ def parse_x1j(id, data, ctx=None):
         if len(cipv) == 0:
             return None
         # cipv['width'] = r['TargetVehicle_Width']
+        cipv['width'] = 1.5
         # print('width %.1f', r['TargetVehicle_Width'])
         cipv['confi'] = r['TargetVehicle_Confidence']
         cipv['acc_lon'] = r['TargetVehicle_AccelX']
         cipv['vel_lon'] = r['TargetVehicle_VelX']
+        cipv['vel_lat'] = r['TargetVehicle_VelY']
         cipv['TTC'] = r['TargetVehicle_TTC']
 
         ctx['x1j_obs'].append(cipv.copy())
@@ -87,7 +90,7 @@ def parse_x1j(id, data, ctx=None):
         x1j_obs['ttc'] = 7
         x1j_obs['vel_lon'] = 0
         x1j_obs['cipv'] = False
-        x1j_obs['color'] = 4
+        # x1j_obs['color'] = 4
         x1j_obs['width'] = 1.5
 
         # x1_obs_list.append(x1_obs)

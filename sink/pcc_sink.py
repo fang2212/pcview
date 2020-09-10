@@ -11,6 +11,7 @@ import aiohttp
 import can
 import msgpack
 import nnpy
+import socket
 
 try:
     import pynng
@@ -63,14 +64,14 @@ class Sink(Thread):
             self._socket.connect(address)
 
     def read(self):
-        if nn_impl == 'pynng':
-            try:
-                bs = self._socket.recv()
-            except Exception as e:
-                return
-        else:
-            # bs = nanomsg.wrapper.nn_recv(self._socket, 1)[1]
-            bs = self._socket.recv()
+        # if nn_impl == 'pynng':
+        #     try:
+        #         bs = self._socket.recv()
+        #     except Exception as e:
+        #         return
+        # else:
+        #     # bs = nanomsg.wrapper.nn_recv(self._socket, 1)[1]
+        bs = self._socket.recv(2048)
         # print(self._socket.recv_buffer_size)
         return bs
         # return self._socket.recv()
@@ -189,6 +190,28 @@ class Sink(Thread):
 #
 #     def pkg_handler(self, msg_buf):
 #         pass
+
+
+class TCPSink(Sink):
+    def __init__(self, queue, ip, port, channel, protocol, index, fileHandler):
+        super(TCPSink, self).__init__(queue, ip, port, channel, index, False)
+        self.source = 'tcp.{:d}'.format(index)
+        self.index = index
+        self.filehandler = fileHandler
+        self.protocol = protocol
+        self.ctx = dict()
+
+    def _init_port(self):
+        print('connecting', self.dev, self.channel)
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.connect((self.dev, self.channel))
+
+    def pkg_handler(self, msg):
+        if self.protocol == 'novatel':
+            print(msg)
+            parser = parsers_dict.get(self.protocol)
+            if parser:
+                parser(None, msg, self.ctx)
 
 
 class PinodeSink(Sink):
@@ -440,8 +463,8 @@ class CameraSink(Sink):
         jpg = msg[16:]
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         df = frame_id - self.last_fid
-        if df != 1:
-            print("\r{} frame jump at {}".format(df - 1, frame_id), 'in', self.source, end='')
+        # if df != 1:
+        #     print("\r{} frame jump at {}".format(df - 1, frame_id), 'in', self.source, end='')
         self.last_fid = frame_id
         app1 = jpg.find(b'\xff\xe1')
         frame_id_jfif = int.from_bytes(jpg[24:28], byteorder="little")
@@ -562,8 +585,8 @@ class FlowSink(Sink):
             return 'x1_data', pcv, self.source
 
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
-        if frame_id - self.last_fid != 1:
-            print("frame jump at", self.last_fid, frame_id, 'in', self.source)
+        # if frame_id - self.last_fid != 1:
+        #     print("frame jump at", self.last_fid, frame_id, 'in', self.source)
         self.last_fid = frame_id
         ts = int.from_bytes(data[16:24], byteorder='little', signed=False)
         ts = ts / 1000000
