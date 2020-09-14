@@ -21,6 +21,7 @@ from config.config import CVECfg, load_config, load_installation
 from parsers.parser import parsers_dict
 from config.config import *
 from tools.log_info import *
+from parsers.novatel import parse_novatel
 # from numba import jit
 
 
@@ -569,6 +570,10 @@ class LogPlayer(Process):
                     sender = self.senders.get('.'.join(cols[2].split('.')[:2]))
                     if sender:
                         sender.sndq.put(msg)
+            elif 'inspva' in cols[2]:
+                r = parse_novatel(None, cols[3], None)
+                r['source'] = '.'.join(cols[2].split('.')[0:2])
+                self.msg_queue.put((0x00, r, r['source']))
         print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
         return

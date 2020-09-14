@@ -777,11 +777,13 @@ class PCC(object):
 
         elif data['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint']:
             # print('------------', data['type'])
+            # print('ub482 ts:', data['ts'])
             self.draw_rtk_ub482(img, data)
             self.player.update_column_ts(data['source'], data['ts'])
         elif data['type'] == 'rtcm':
             self.viz_rtcm(img, data)
         elif data['type'] == 'gps':
+            # print('gps ts:', data['ts'])
             self.player.show_gps(data)
             self.player.update_column_ts(data['source'], data['ts'])
         elif data['type'] == 'traffic_sign':
@@ -794,7 +796,10 @@ class PCC(object):
         elif data['type'] == 'profiling':
             self.analyze_profile(img, data)
         elif data['type'] == 'inspva':
+            # print('inspva')
+            # print('inspva ts:', data['ts'])
             self.player.show_rtk_pva(img, data)
+            self.player.show_heading_horizen(img, data)
         self.specific_handle(img, data)
         return True
 

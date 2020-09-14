@@ -226,12 +226,13 @@ def parse_x1(id, data, ctx=None):
                 ctx['fusion'][index]['type'] = 'obstacle'
                 ctx['fusion'][index]['sensor'] = 'x1_fusion'
                 # ctx['fusion'][index]['class'] = 'fusion'
-                ctx['fusion'][index]['color'] = 7
-                ctx['fusion'][index]['width'] = 1.5
+                # ctx['fusion'][index]['color'] = 7
+                # ctx['fusion'][index]['width'] = 1.5
                 ctx['fusion'][index]['height'] = 1.5
         else:
             ctx['fusion'][index] = dict()
             ctx['fusion'][index]['id'] = r['TrackID_' + '%02d' % (index + 1)]
+            ctx['fusion'][index]['width'] = r['Width_' + '%02d' % (index + 1)]
             ctx['fusion'][index]['acc_lat'] = r['Accel_lat_obj_' + '%02d' % (index + 1)]
             ctx['fusion'][index]['status'] = r['Status_' + '%02d' % (index + 1)]
             ctx['fusion'][index]['class'] = r['MC_object_class_' + '%02d' % (index + 1)]

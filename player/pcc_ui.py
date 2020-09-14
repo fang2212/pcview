@@ -1140,6 +1140,7 @@ class Player(object):
 
     def show_rtk_pva(self, img, data):
         style_list = {'NONE': 'fail', 'DOPPLER_VELOCITY': 'pass', 'NARROW_INT': 'pass', 'INS_RTKFIXED': 'pass'}
+
         for key in data:
             if key == 'pos_type':
                 self.show_text_info(data['source'], 40, 'P:{}'.format(data['pos_type']),
@@ -1162,6 +1163,7 @@ class Player(object):
                 self.show_text_info(data['source'], 200,
                                     '{:.2f} {:.2f} {:.2f}'.format(data['yaw'], data['pitch'], data['length']))
 
+        self.update_column_ts(data['source'], data['ts'])
 
     def show_gps(self, data):
         # if 'pos_type' in data:

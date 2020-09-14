@@ -355,7 +355,7 @@ class Hub(Thread):
                         self.sinks.append(pisink)
                         cfgs_online[ip]['msg_types'].append(iface + '.{}'.format(idx))
                     elif 'inspva' in iface:
-                        tcpsink = TCPSink(self.msg_queue, ip, port, 'can', iface, idx, self.fileHandler)
+                        tcpsink = TCPSink(self.msg_queue, ip, port, 'can', 'novatel', idx, self.fileHandler)
                         self.sinks.append(tcpsink)
                         cfgs_online[ip]['msg_types'].append(iface + '.{}'.format(idx))
             else:  # no type, default is x1 collector

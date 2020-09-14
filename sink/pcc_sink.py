@@ -208,10 +208,15 @@ class TCPSink(Sink):
 
     def pkg_handler(self, msg):
         if self.protocol == 'novatel':
-            print(msg)
+            # print(msg)
             parser = parsers_dict.get(self.protocol)
             if parser:
-                parser(None, msg, self.ctx)
+                r = parser(None, msg, self.ctx)
+                if not r:
+                    return
+                r['source'] = self.source
+                self.filehandler.insert_raw((r['ts'], r['source'] + '.inspva', msg.decode().strip()))
+                return self.channel, r, self.source
 
 
 class PinodeSink(Sink):
@@ -595,8 +600,7 @@ class FlowSink(Sink):
                         aiohttp.WSMsgType.ERROR):
             return None
 
-        r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
-             'is_main': self.is_main}
+        r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source, 'is_main': self.is_main}
         self.fileHandler.insert_jpg(r)
         # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
         return frame_id, r

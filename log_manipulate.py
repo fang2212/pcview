@@ -2222,6 +2222,7 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
 def viz_2d_trj(r0, source=None, vis=True):
     from recorder.convert import ub482_defs, decode_with_def
     from tools.geo import gps_bearing, gps_distance
+    from parsers.novatel import parse_novatel
 
     xlist = []
     ylist = []
@@ -2238,23 +2239,28 @@ def viz_2d_trj(r0, source=None, vis=True):
                 if src == source:
                     r = decode_with_def(ub482_defs, line)
                     point0 = r
-            if 'bestpos' in cols[2]:
+            elif 'bestpos' in cols[2] or 'inspva' in cols[2]:
                 _, idx, kw = cols[2].split('.')
                 src = _ + '.' + idx
                 if src not in trjs:
                     trjs[src] = {}
                     obs_cnt[src] = 0
-                sol_stt = cols[4]
 
                 if not source or (source and src == source):
-                    r = decode_with_def(ub482_defs, line)
-                    if sol_stt not in trjs[src]:
-                        trjs[src][sol_stt] = {'x': [], 'y': [], 'cnt': 0}
-                    trjs[src][sol_stt]['cnt'] += 1
+                    if 'inspva' in cols[2]:
+                        r = parse_novatel(None, cols[3], None)
+                        pos_type = r['pos_type']
+                    elif 'bestpos' in cols[2]:
+                        r = decode_with_def(ub482_defs, line)
+                        pos_type = cols[4]
+
+                    if pos_type not in trjs[src]:
+                        trjs[src][pos_type] = {'x': [], 'y': [], 'cnt': 0}
+                    trjs[src][pos_type]['cnt'] += 1
                     obs_cnt[src] += 1
                     if not r:
                         continue
-                    if sol_stt == 'NONE':
+                    if pos_type == 'NONE':
                         continue
                     if not point0:
                         point0 = r
@@ -2263,14 +2269,15 @@ def viz_2d_trj(r0, source=None, vis=True):
                     range = gps_distance(point0['lat'], point0['lon'], r['lat'], r['lon'])
                     x = cos(angle * pi / 180.0) * range
                     y = sin(angle * pi / 180.0) * range
-                    trjs[src][sol_stt]['x'].append(x)
-                    trjs[src][sol_stt]['y'].append(y)
+                    trjs[src][pos_type]['x'].append(x)
+                    trjs[src][pos_type]['y'].append(y)
                     # xlist.append(x)
                     # ylist.append(y)
+
     for src in trjs:
-        for sol_stt in trjs[src]:
-            pct = trjs[src][sol_stt]['cnt'] / obs_cnt[src] * 100.0
-            print('#obs in {} {}: {}  {:.2f}%'.format(src, sol_stt, trjs[src][sol_stt]['cnt'], pct))
+        for pos_type in trjs[src]:
+            pct = trjs[src][pos_type]['cnt'] / obs_cnt[src] * 100.0
+            print('#obs in {} {}: {}  {:.2f}%'.format(src, pos_type, trjs[src][pos_type]['cnt'], pct))
     fig = visual.get_fig()
     # visual.trj_2d(fig, xlist, ylist, vis)
     visual.trj_2d(fig, trjs, vis)
