@@ -16,7 +16,7 @@ from player import BaseDraw
 
 from player import FPSCnt
 from sink.nano import NanoGroup, Pkg
-from recorder.pcc import CanRecorder, GsensorRecorder, VideoRecorder
+from recorder.pcc_hil import CanRecorder, GsensorRecorder, VideoRecorder
 
 pack = os.path.join
 

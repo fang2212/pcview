@@ -1,38 +1,27 @@
 {
-    "version": 0.7,
+    "version": 1.0,
+    "name": "cfg_lab",
     "modules": {
         "GGA_reporter": {
-            "enable": true,
+            "enable": false,
             "ntrip_address": "ntrip.weaty.cn",
             "port": 5001
         }
     },
-    "main_collector": "skoda_ffd0",
     "vehicles": {
         "ego": {
             "enable": true,
-            "collectors": {
-                "algo_03a3": "normal",
-                "algo_fd1f": "normal",
-                "skoda_ffd0": "normal",
-                "skoda_ffd1": "normal",
-		        "skoda_ffd2": "normal",
-                "bynav": "normal",
-                "pi_ba29": "normal",
-                "pi_0d06": "normal",
-                "pi_gateway": "normal",
-                "pi_9de8": "normal"
-            },
+            "collectors": [
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "ars", "can1": "x1j"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "mbq3", "can1": "mqb", "is_main": true}},
+                {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mqb", "can1": "mqb"}},
+                {"model":  "x1_fusion", "params": {"mac": "5a:31:9d:8a:3a:ef", "is_main": true}},
+                {"model":  "x1_algo", "params": {"mac":  "5a:31:d3:59:12:06"}},
+                {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
+                {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}}
+            ],
             "installation": {
                 "esr": {
-                    "roll": 0.0,
-                    "lat_offset": 0.22,
-                    "pitch": 0.0,
-                    "height": 0.45,
-                    "lon_offset": 0.0,
-                    "yaw": -1.8
-                },
-                "ars": {
                     "roll": 0.0,
                     "lat_offset": 0.22,
                     "pitch": 0.0,
@@ -66,15 +55,15 @@
                 },
                 "video": {
                     "fu": 1458.0,
-                    "yaw": -0.6,
+                    "yaw": 0.0,
                     "fv": 1458.0,
-                    "pitch": -0.62,
+                    "pitch": -0.0,
                     "cu": 640.0,
                     "lat_offset": 0.15,
                     "roll": 0.0,
                     "height": 1.18,
                     "lon_offset": -1.67,
-                    "cv": 480.0
+                    "cv": 360.0
                 },
                 "x1": {
                     "roll": 0.0,
@@ -88,8 +77,7 @@
         },
         "other": {
             "enable": false,
-            "collectors": {
-            }
+            "collectors": []
         }
     }
 }

@@ -32,7 +32,7 @@ def parse_novatel(msg_type, msg, ctx):
     r['ts'] = week * 604800 + sec + 315964800.0 - bds_offset
     # print(time.localtime(r['ts']))
 
-    if msg_type == 'inspva' or msg_type == 'inspvaa':
+    if msg_type == 'drpva' or msg_type == 'drpvaa':
         r['type'] = 'inspva'
 
         r['sol_stat'] = fields[0]

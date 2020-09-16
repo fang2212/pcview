@@ -2260,7 +2260,7 @@ def viz_2d_trj(r0, source=None, vis=True):
                     obs_cnt[src] += 1
                     if not r:
                         continue
-                    if pos_type == 'NONE':
+                    if pos_type == 'NONE' and 'bestpos' in cols[2]:
                         continue
                     if not point0:
                         point0 = r
@@ -2278,10 +2278,11 @@ def viz_2d_trj(r0, source=None, vis=True):
         for pos_type in trjs[src]:
             pct = trjs[src][pos_type]['cnt'] / obs_cnt[src] * 100.0
             print('#obs in {} {}: {}  {:.2f}%'.format(src, pos_type, trjs[src][pos_type]['cnt'], pct))
-    fig = visual.get_fig()
+    # fig = visual.get_fig()
     # visual.trj_2d(fig, xlist, ylist, vis)
-    visual.trj_2d(fig, trjs, vis)
-    fig.close()
+    # visual.trj_2d(fig, trjs, vis)
+    visual.trj_2d_bk(trjs)
+    # fig.close()
 
             # for label in labels:
             #     match = match_label(label, cols[2])

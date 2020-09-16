@@ -15,6 +15,7 @@ import socket
 
 try:
     import pynng
+
     nn_impl = 'pynng'
 except ModuleNotFoundError:
     nn_impl = 'nanomsg'
@@ -47,7 +48,7 @@ class Sink(Thread):
         self.exit = Event()
         # if 'can' in msg_type:
         #     self.cls = 'can'
-            # print(self.type, 'start.')
+        # print(self.type, 'start.')
         self.source = 'general_dev.{}'.format(index)
 
     def _init_port(self):
@@ -139,6 +140,7 @@ class Sink(Thread):
 
     def pkg_handler(self, msg_buf):
         pass
+
 
 #
 # class SinkThread(Thread):
@@ -252,7 +254,8 @@ class PinodeSink(Sink):
             if r['type'] in ub482_defs:
                 # print(r)
                 if self.fileHandler.is_recording:
-                    self.fileHandler.insert_raw((r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
+                    self.fileHandler.insert_raw(
+                        (r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
 
             elif r['type'] == 'rtk':  # old d-rtk
                 timestamp = r['ts_origin']
@@ -328,7 +331,8 @@ class CANSink(Sink):
         self.parse_event = Event()
         self.type = 'can_sink'
         self.parse_event.set()
-        self.log_types = {'can0': 'CAN' + '{:01d}'.format(self.index * 2), 'can1': 'CAN' + '{:01d}'.format(self.index * 2 + 1)}
+        self.log_types = {'can0': 'CAN' + '{:01d}'.format(self.index * 2),
+                          'can1': 'CAN' + '{:01d}'.format(self.index * 2 + 1)}
         self.log_type = self.log_types.get(self.cls)
         # self.log_type = '{}.{}'.format(self.cls, self.index)
 
@@ -443,7 +447,7 @@ class GsensorSink(Sink):
         timestamp, gyro[0], gyro[1], gyro[2], accl[0], accl[1], accl[2], temp, sec, usec = struct.unpack(
             '<dhhhhhhhII', msg[8:])
         temp = temp / 340 + 36.53
-        # print('gsensor', timestamp, 'gyro:', gyro,'accl:', accl, temp, sec, usec)
+        # print('gsensor', timestamp, 'gyro:', gyro, 'accl:', accl, temp, sec, usec)
         self.fileHandler.insert_raw((timestamp, 'Gsensor.{}'.format(self.index),
                                      '{} {} {} {} {} {} {:.6f} {}'.format(accl[0], accl[1], accl[2], gyro[0], gyro[1],
                                                                           gyro[2], temp, sec, usec)))
@@ -476,7 +480,6 @@ class CameraSink(Sink):
         # print(app1, frame_id_jfif)
         timestamp, = struct.unpack('<d', msg[8:16])
 
-
         # logging.debug('cam id {}'.format(frame_id))
         # print('frame id', frame_id)
 
@@ -492,7 +495,7 @@ class CameraSink(Sink):
 
 
 class FlowSink(Sink):
-    def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, isheadless=False, is_main=False):
+    def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, name='x1_algo', isheadless=False, is_main=False):
         super(FlowSink, self).__init__(cam_queue, ip, port, channel, index, isheadless)
         self.last_fid = 0
         self.fileHandler = fileHandler
@@ -502,7 +505,7 @@ class FlowSink(Sink):
         self.msg_queue = msg_queue
         self.is_main = is_main
         self.type = 'flow_sink'
-        self.source = 'x1_algo.{:d}'.format(index)
+        self.source = name + '.{:d}'.format(index)
 
     async def _run(self):
         session = aiohttp.ClientSession()
@@ -519,17 +522,27 @@ class FlowSink(Sink):
                 'topic': 'subscribe',
                 'data': 'finish'
             }
+
+            msg_imu = {
+                'source': 'pcview',
+                'topic': 'subscribe',
+                'data': 'imuinfo'
+            }
             data = msgpack.packb(msg)
             await ws.send_bytes(data)
             data = msgpack.packb(msg_finish)
             await ws.send_bytes(data)
+            data = msgpack.packb(msg_imu)
+            await ws.send_bytes(data)
             async for msg in ws:
-
                 r = self.pkg_handler(msg)
                 if r is not None:
                     if isinstance(r[0], type("")):
                         if 'x1_data' in r[0]:
                             self.msg_queue.put((r[1]['frame_id'], r[1], r[0]))
+                        elif 'calib_param' in r[0]:
+                            self.msg_queue.put((r[1]['frame_id'], r[1], self.source))
+                            # print(self.source)
                     else:
                         self.cam_queue.put((*r, self.cls))
 
@@ -549,13 +562,43 @@ class FlowSink(Sink):
         # print('-----', data[b'topic'])
         ts = time.time()
         topic = None
+        # if 'topic' not in data:
+        #     return
         if b'topic' in data and data[b'topic'] == b'finish':
             buf = data[b'data']
             topic = 'finish'
-        elif 'topic' in data and data['topic'] == 'finish':
-            buf = data['data']
-            topic = 'finish'
+        elif 'topic' in data:
+            if data['topic'] == 'finish':
+                buf = data['data']
+                topic = 'finish'
+            elif data['topic'] == 'imuinfo':
+                imu_info = msgpack.unpackb(data['data'])
+                for d in imu_info['imu_info']:
+                    ts = d['timestamp'] / 1000000
+                    self.fileHandler.insert_raw((ts, self.source + '.gsensor', '{} {} {} {} {} {} {} {}'.format(
+                        d['accel'][0], d['accel'][1], d['accel'][2],
+                        d['gyro'][0], d['gyro'][1], d['gyro'][2],
+                        d['temp'], int(ts), 1000000 * (ts - int(ts)))))
+                return
+            elif data['topic'] == 'pcview':
+                pass
+            #     print(data['data'])
+                if b'calib_param' in data['data']:
+                    calib_params = msgpack.unpackb(data['data'])
+                    if calib_params:
+                        # print(calib_params)
+                        r = {'type': 'calib_param', 'source': self.source, 'ts': 0, 'frame_id': calib_params['frame_id']}
+                        r.update(calib_params['calib_param'])
+                        # print(r)
+                        return 'calib_param', r
+            #     else:
+            #         # print(data)
+            #         pass
+            else:
+                # print(data)
+                pass
         else:
+            # print(data)
             pass
 
         if topic == 'finish':
@@ -563,13 +606,16 @@ class FlowSink(Sink):
                 buf = msgpack.unpackb(buf)
                 data = buf['rc_fusion']
                 buf = msgpack.packb(data, use_bin_type=True)
-                self.fileHandler.insert_fusion_raw(buf)
-            elif b'calib_params' in buf:
-                buf = msgpack.unpackb(buf)
-                data = buf['calib_params']
-                buf = msgpack.packb(data, use_bin_type=True)
-                self.fileHandler.insert_fusion_raw(buf)
-            return 'fusion_data', data
+                # print(buf)
+                r = {'source': self.source, 'buf': buf}
+                self.fileHandler.insert_fusion_raw(r)
+            # elif b'calib_params' in buf:
+            #     buf = msgpack.unpackb(buf)
+            #     data = buf['calib_params']
+            #     buf = msgpack.packb(data, use_bin_type=True)
+            #     print(buf)
+            #     self.fileHandler.insert_fusion_raw(buf)
+            # return 'fusion_data', data
 
         if b'data' in data:
             data = data[b'data']
@@ -585,8 +631,8 @@ class FlowSink(Sink):
             pcv['source'] = self.source
             pcv['type'] = 'algo_debug'
             pcv['ts'] = ts
-            data = json.dumps(pcv)
-            self.fileHandler.insert_pcv_raw(data)
+            # data = json.dumps(pcv)
+            self.fileHandler.insert_pcv_raw(pcv)
             return 'x1_data', pcv, self.source
 
         frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
@@ -600,7 +646,8 @@ class FlowSink(Sink):
                         aiohttp.WSMsgType.ERROR):
             return None
 
-        r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source, 'is_main': self.is_main}
+        r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
+             'is_main': self.is_main}
         self.fileHandler.insert_jpg(r)
         # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
         return frame_id, r

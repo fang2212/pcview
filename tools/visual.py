@@ -136,6 +136,29 @@ def trj_2d(fig, trjs, vis=True):
         plt.show()
 
 
+def trj_2d_bk(trjs):
+    from bokeh.plotting import figure, show
+    from bokeh.io import output_notebook
+    from bokeh.palettes import Reds9, Blues9, Greens9, Purples9, Category10
+
+    p = figure(plot_width=1920, plot_height=1000)
+    # output_notebook()
+    colormap = [Reds9, Blues9, Greens9, Purples9]
+    style = [p.scatter, p.square,  p.triangle, p.cross]
+
+    for idx1, src in enumerate(trjs):
+        for idx2, label in enumerate(sorted(trjs[src].keys())):
+            entry = src + '.' + label
+            # legends.append(entry)
+            xlist = trjs[src][label]['x']
+            ylist = trjs[src][label]['y']
+            style[idx1](xlist, ylist, legend_label=entry, color=Category10[10][idx2], size=6)
+
+    # p.legend(legends)
+
+    show(p)
+
+
 def calc_rmse(predictions, targets):
     if isinstance(predictions, list):
         p = np.array(predictions)

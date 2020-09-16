@@ -61,8 +61,9 @@ class FileHandler(Thread):
     def run(self):
         # cnt = 0
         raw_fp = None
-        pcv_fp = None
-        fusion_fp = None
+        # pcv_fp = None
+        # fusion_fp = None
+        other_log_fps = {}
 
         video_streams = dict()
         path = None
@@ -77,6 +78,22 @@ class FileHandler(Thread):
         state = 'stop'
         # origin_stdout = sys.stdout
         # key_msg_cache = deque(maxlen=50)
+
+        def write_log(source, name, msg, bin=False):
+            if not path:
+                return
+            dir = os.path.join(path, source)
+            if not os.path.exists(dir):
+                os.mkdir(dir)
+            if source not in other_log_fps:
+                other_log_fps[source] = {}
+            if not other_log_fps[source].get(name):
+                ftype = 'wb' if bin else 'w+'
+                other_log_fps[source][name] = open(os.path.join(dir, name), ftype)
+
+            other_log_fps[source][name].write(msg)
+
+
 
         while not exit:
             raw_write = 0
@@ -99,8 +116,6 @@ class FileHandler(Thread):
                     video_path = ctrl['video_path']
 
                     raw_fp = open(os.path.join(path, 'log.txt'), 'w+')
-                    pcv_fp = open(os.path.join(path, 'pcv_log.txt'), 'w+')
-                    fusion_fp = open(os.path.join(path, 'fusion.txt'), 'wb')
 
                     # stdout_fp = open(os.path.join(path, 'stdout.txt'), 'w+')
                     # sys.stdout = stdout_fp
@@ -129,6 +144,12 @@ class FileHandler(Thread):
                         video_streams[video]['frame_reset'] = True
                     video_streams.clear()
 
+                    for source in other_log_fps:
+                        for name in other_log_fps[source]:
+                            other_log_fps[source][name].flush()
+                            other_log_fps[source][name].close()
+                    other_log_fps.clear()
+
                     # video_writer.flush()
                     # video_writer.close()
 
@@ -143,32 +164,6 @@ class FileHandler(Thread):
 
                     # sys.stdout = origin_stdout
                     state = 'stop'
-                    # self.jpg_queue.close()
-                    # self.video_queue.close()
-                    # self.raw_queue.close()
-                    # self.pcv_queue.close()
-                    # self.fusion_queue.close()
-                    #
-                    # self.video_queue = Queue(maxsize=40)
-                    # self.jpg_queue = Queue(maxsize=50)
-                    # self.raw_queue = Queue(maxsize=90000)
-                    # self.pcv_queue = Queue(maxsize=5000)
-                    # self.fusion_queue = Queue(maxsize=5000)
-                    # t0 = time.time()
-                    # while not self.video_queue.empty():
-                    #     self.video_queue.get()
-                    #
-                    # while not self.jpg_queue.empty():
-                    #     self.jpg_queue.get()
-                    #
-                    # while not self.raw_queue.empty():
-                    #     self.raw_queue.get()
-                    #
-                    # while not self.pcv_queue.empty():
-                    #     self.pcv_queue.get()
-                    #
-                    # while not self.fusion_queue.empty():
-                    #     self.fusion_queue.get()
 
                     for i in range(self.log_q.qsize()):
                         self.log_q.get()
@@ -196,19 +191,50 @@ class FileHandler(Thread):
                     # raw_fp.flush()
                     # print('end ............')
 
-                elif log_class == 'pcv' and pcv_fp:
+                elif log_class == 'pcv':
+                    source = msg['source']
+                    # dir = os.path.join(path, source)
+                    # if not other_log_fps.get(source):
+                    #     other_log_fps[source] = {}
+                    # if not os.path.exists(dir):
+                    #     os.mkdir(dir)
+                    # if not other_log_fps[source].get(log_class):
+                    #     other_log_fps[source][log_class] = open(os.path.join(dir, 'pcv_log.txt'), 'w+')
                     # data = self.pcv_queue.get()
-                    pcv_fp.write(msg + "\n")
+                    buf = json.dumps(msg) + "\n"
+                    # other_log_fps[source].write(buf + "\n")
+                    write_log(source, 'pcv_log.txt', buf, bin=False)
                     # pcv_fp.flush()
-                    pcv_write = True
-                elif log_class == 'fusion' and fusion_fp:
+                    # pcv_write = True
+                elif log_class == 'fusion':
+                    source = msg['source']
+                    # dir = os.path.join(path, source)
+                    # if not other_log_fps.get(source):
+                    #     other_log_fps[source] = {}
+                    # if not os.path.exists(dir):
+                    #     os.mkdir(dir)
+                    # if not other_log_fps[source].get(log_class):
+                    #     other_log_fps[source][log_class] = open(os.path.join(dir, 'fusion.txt'), 'wb')
                     # data = self.fusion_queue.get()
-                    fusion_fp.write(msg)
-                    fusion_write = True
+                    buf = msg['buf']
+                    # other_log_fps[source].write(buf)
+                    write_log(source, 'fusion.txt', buf, bin=True)
+                    # fusion_write = True
                     # fusion_fp.flush()
                     # t2 = time.time()
             # print('filehandler...', video_path, self.video_queue.qsize())
             # while self.uniconf.local_cfg.save.video and not self.jpg_queue.empty() and path:
+                elif log_class == 'general_bin':
+                    source = msg['source']
+                    name = msg['log_name'] + '.bin'
+                    # dir = os.path.join(path, source)
+                    # if not other_log_fps.get(source):
+                    #     other_log_fps[source] = {}
+                    # if not os.path.exists(dir):
+                    #     os.mkdir(dir)
+                    # if not other_log_fps[source].get(name):
+                    #     other_log_fps[source] = open(os.path.join(dir, '{}.bin'.format(name)), 'wb')
+                    write_log(source, name, msg['buf'], bin=True)
                 elif log_class == 'jpg' and path:
                     res = msg
                     ts = res['ts']
@@ -247,8 +273,10 @@ class FileHandler(Thread):
                         raw_fp.write(log_line)
                         raw_write += 1
 
-                    if pcv_fp:
-                        pcv_fp.write(json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n")
+                    # if other_log_fps.get(source) and other_log_fps[source].get('pcv'):
+                    #     other_log_fps[source]['pcv'].write(json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n")
+                    buf = json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n"
+                    write_log(source, 'pcv_log.txt', buf)
 
                     video_streams[source]['frame_cnt'] += 1
 
@@ -295,8 +323,10 @@ class FileHandler(Thread):
                         raw_fp.write(log_line)
                         raw_write += 1
 
-                    if pcv_fp:
-                        pcv_fp.write(json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n")
+                    # if other_log_fps.get(source):
+                    #     other_log_fps[source].write(json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n")
+                    buf = json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n"
+                    write_log(source, 'pcv_log.txt', buf)
 
                     video_streams[source]['frame_cnt'] += 1
             t3 = time.time()
@@ -306,10 +336,10 @@ class FileHandler(Thread):
             if raw_write > 100:
                 raw_write = 0
                 raw_fp.flush()
-            if pcv_write:
-                pcv_fp.flush()
-            if fusion_write:
-                fusion_fp.flush()
+            # if pcv_write:
+            #     pcv_fp.flush()
+            # if fusion_write:
+            #     fusion_fp.flush()
             # if video_write:
             #     video_writer.flush()
             # print('filehandler dt:{:.1f} ctrl:{:.1f} raw:{:.1f} video:{:.1f}'.format(1000*(t3-t0), 1000*(t1-t0), 1000*(t2-t1), 1000*(t3-t2)))
@@ -411,6 +441,10 @@ class FileHandler(Thread):
     def insert_fusion_raw(self, msg):
         if not self.log_q.full() and self.is_recording:
             self.log_q.put(('fusion', msg))
+
+    def insert_general_bin_raw(self, msg):
+        if not self.log_q.full() and self.is_recording:
+            self.log_q.put(('general_bin', msg))
 
     # def insert_can(self, msg):
     #     if not self.can_raw_queue.full():

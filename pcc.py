@@ -35,12 +35,10 @@ from tools.cpu_mem_info import *
 import numpy as np
 
 
-
-
 # logging.basicConfig(level=logging.INFO,
 #                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
-#sample_jpg = open('/home/nan/workshop/git/pcview/static/img/no_video.jpg', 'rb').read()
+# sample_jpg = open('/home/nan/workshop/git/pcview/static/img/no_video.jpg', 'rb').read()
 
 def loop_traverse(items):
     while True:
@@ -161,6 +159,7 @@ class PCC(object):
         #     sys.exit(0)
         # for sig in [signal.SIGINT, signal.SIGTERM]:
         #     signal.signal(sig, exit_for_signal)
+
     def ts_sync_local(self):
         t = time.time()
         if self.dt_from_img == 0:
@@ -213,9 +212,9 @@ class PCC(object):
             if 'video' in data['type']:
                 is_main = data.get('is_main')
                 # if not self.replay:
-                    # self.hub.fileHandler.insert_jpg(
-                    #     {'ts': data['ts'], 'frame_id': data['frame_id'], 'jpg': data['img'],
-                    #      'source': 'video' if is_main else data['source']})
+                # self.hub.fileHandler.insert_jpg(
+                #     {'ts': data['ts'], 'frame_id': data['frame_id'], 'jpg': data['img'],
+                #      'source': 'video' if is_main else data['source']})
                 if not is_main:
                     if data['source'] not in self.video_cache:
                         self.video_cache[data['source']] = {}
@@ -457,6 +456,7 @@ class PCC(object):
             for data in mess['x1_data']:
                 # print(mess['x1_data'])
                 self.flow_player.draw(data, img)
+
         # t2 = time.time()
         ts_ana.append(('pcv_data', time.time()))
         # cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
@@ -596,7 +596,8 @@ class PCC(object):
                 if self.gga is not None and not self.replay:
                     self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
                     if data['pos_type'] != 'NONE':
-                        self.statistics['GGA_report_coord'] = 'Lat:{lat:.8f}  Lon:{lon:.8f}  Hgt:{hgt:.3f}'.format(**data)
+                        self.statistics['GGA_report_coord'] = 'Lat:{lat:.8f}  Lon:{lon:.8f}  Hgt:{hgt:.3f}'.format(
+                            **data)
             elif 'yaw' in data:
                 self.player.show_heading_horizen(img, data)
         else:  # other vehicle
@@ -692,11 +693,20 @@ class PCC(object):
             return
         ego_blh = np.array([ego_pose['lat'], ego_pose['lon'], ego_pose['hgt']])
         ego_atti = np.array([ego_pose['yaw'], 0, 0])
-        target = np.array([data['pos_lat'], data['pos_lon'], data['pos_hgt']])  # target position in (right, front, up) order
+        target = np.array(
+            [data['pos_lat'], data['pos_lon'], data['pos_hgt']])  # target position in (right, front, up) order
         lat, lon, hgt = body2blh(ego_blh, ego_atti, target)
         # self.vehicles['ego'].set_pinpoint({'type': 'pinpoint', 'ts': data['ts'], 'source': data['source'], 'lat': lat, 'lon': lon, 'hgt': hgt})
         # print(lat, lon, hgt, 'ego yaw:', ego_pose['yaw'], data)
         self.player.show_tsr(img, data)
+
+    def handle_calib_param(self, data):
+        r = {data['source']: {'pitch': data['camera_pitch'], 'roll': data['camera_roll'], 'yaw': data['camera_yaw'],
+                              'fu': data['camera_fov_w'], 'fv': data['camera_fov_h'], 'cu': data['camera_cu'],
+                              'cv': data['camera_cv'], 'height': data['camera_height'],
+                              'lon_offset': -data['front_dist_to_camera'],
+                              'lat_offset': 0.5 * (data['left_dist_to_camera'] - data['right_dist_to_camera'])}}
+        self.cfg.installs.update(r)
 
     def specific_handle(self, img, data):
         src = data.get('source')
@@ -800,6 +810,8 @@ class PCC(object):
             # print('inspva ts:', data['ts'])
             self.player.show_rtk_pva(img, data)
             self.player.show_heading_horizen(img, data)
+        elif data['type'] == 'calib_param':
+            self.handle_calib_param(data)
         self.specific_handle(img, data)
         return True
 
@@ -902,7 +914,9 @@ class PCC(object):
         if not self.to_web:
             return
 
-        self.statistics['cpu_mem_info'] = 'cpu_used: {}% mem_used {}% cpu_temp: {}c'.format(get_cpu_pct(), get_mem_pct(), get_cpu_temp())
+        self.statistics['cpu_mem_info'] = 'cpu_used: {}% mem_used {}% cpu_temp: {}c'.format(get_cpu_pct(),
+                                                                                            get_mem_pct(),
+                                                                                            get_cpu_temp())
 
         for item in self.statistics:
             self.o_msg_q.put(('delay', {'name': item, 'value': '{}'.format(self.statistics[item])}))

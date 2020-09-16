@@ -24,7 +24,7 @@
       "topic": "ars"
     },
     "gsensor": {
-      "enable": true,
+      "enable": false,
       "port": 1209,
       "protocol": "nanomsg",
       "topic": "gsensor"
