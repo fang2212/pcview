@@ -214,8 +214,14 @@ class Transform:
     def trans_polar2rcs(self, angle, range, sensor):
         param = self.cfg.installs.get(sensor)
         if not param:
-            x = cos(angle * pi / 180.0) * range
-            y = sin(angle * pi / 180.0) * range
+            param = self.cfg.installs.get(sensor.split('.')[0])
+            if not param:
+                x = cos(angle * pi / 180.0) * range
+                y = sin(angle * pi / 180.0) * range
+            else:
+                angle = angle - param['yaw']
+                x = cos(angle * pi / 180.0) * range + param['lon_offset']
+                y = sin(angle * pi / 180.0) * range + param['lat_offset']
         else:
             angle = angle - param['yaw']
             x = cos(angle * pi / 180.0) * range + param['lon_offset']

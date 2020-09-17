@@ -64,6 +64,7 @@ class Player(object):
                           'lmr': FlatColor.emerald,
                           'x1': FlatColor.amethyst,
                           'x1_fusion': CVColor.Red,
+                          'x1_fusion_cam': FlatColor.dark_red,
                           'x1j': FlatColor.amethyst,
                           'rtk': FlatColor.sun_flower,
                           'ars': FlatColor.emerald,
@@ -204,6 +205,8 @@ class Player(object):
             return
         sensor = obs.get('sensor') or obs['source'].split('.')[0]
         color = self.color_obs.get(sensor)
+        if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
+            color = self.color_obs.get('x1_fusion_cam')
         if not color:
             color = self.color_obs['default']
 
@@ -304,8 +307,8 @@ class Player(object):
 
         color = self.color_obs.get(sensor) or self.color_obs['default']
 
-        if 'x1' in obs['source'] and obs['class'] == 'fusion_data':
-            color = FlatColor.concrete
+        if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
+            color = self.color_obs.get('x1_fusion_cam')
             # print(obs)
 
         if obs.get('sensor_type') == 'radar':
@@ -344,8 +347,8 @@ class Player(object):
         """
         r = data.get('range')
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
-        sensor = data['source'].split('.')[0]
-        p = self.transform.getp_ifc_from_poly(ratios, 1, 0, r, sensor=sensor)
+
+        p = self.transform.getp_ifc_from_poly(ratios, 1, 0, r, sensor=data['source'])
         if not p:
             return
 
@@ -647,7 +650,7 @@ class Player(object):
         style = 'normal'
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
             line = 160
-            style = self.color_obs.get('x1')
+            style = self.color_obs.get('x1_fusion_cam')
             self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
         elif obs.get('class') == 'pedestrian':
             line = 40
@@ -1011,12 +1014,12 @@ class Player(object):
             width: float 车道线宽度
             color: CVColor 车道线颜色
         """
-        sensor = data['source'].split('.')[0]
+        # sensor = data['source'].split('.')[0]
         r = data['range']
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
         if r == 0:
             return
-        p = self.transform.getp_ipm_from_poly(ratios, 1, 0, r, sensor=sensor)
+        p = self.transform.getp_ipm_from_poly(ratios, 1, 0, r, sensor=data['source'])
 
         for i in range(1, len(p) - 1, 1):
             BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)

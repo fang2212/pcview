@@ -60,8 +60,7 @@ class FlatColor(object):  # in BGR
     clouds = (0xf1, 0xf0, 0xec)
     concrete = (0xa6, 0xa5, 0x95)
     Blue = (200, 0, 0)
-    dark_red = (0x0, 0x0, 0x128)
-
+    dark_red = (0x10, 0x10, 0x80)
 
 
 class FPSCnt(object):
