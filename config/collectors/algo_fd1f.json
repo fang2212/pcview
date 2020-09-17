@@ -10,6 +10,18 @@
       "port": 24011,
       "protocol": "libflow",
       "topic": "video"
+    },
+    "x1-fusion": {
+      "enable": true,
+      "port": 24015,
+      "protocol": "libflow",
+      "topic": "x1-fusion"
+    },
+    "gsensor": {
+      "enable": true,
+      "port": 24099,
+      "protocol": "libflow",
+      "topic": "gsensor"
     }
   }
 }

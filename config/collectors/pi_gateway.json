@@ -7,7 +7,7 @@
   "repeater": false,
   "ports": {
     "rtk": {
-      "enable": true,
+      "enable": false,
       "port": 1210,
       "protocol": "nanomsg",
       "topic": "nmea"

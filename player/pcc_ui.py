@@ -49,15 +49,6 @@ class Player(object):
         self.color_seq = [CVColor.White, CVColor.Red, CVColor.Green, CVColor.deeporange, CVColor.purple,
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
-        # self.color_obs = {'ifv300': CVColor.Blue,
-        #                   'esr': CVColor.Red,
-        #                   'lmr': CVColor.Green,
-        #                   'x1': CVColor.purple,
-        #                   'rtk': CVColor.Yellow,
-        #                   'ars': CVColor.Green,
-        #                   'gps': CVColor.Midgrey,
-        #                   'sta77': CVColor.Black,
-        #                   'mbq4': CVColor.Grass}
         self.color_obs = {'ifv300': FlatColor.peter_river,
                           'mbq3': FlatColor.peter_river,
                           'esr': FlatColor.alizarin,
@@ -95,7 +86,7 @@ class Player(object):
             # else:
             self.indent += 160
             for src_type in self.color_obs:
-                if msg_type.split('.')[0] in src_type:
+                if msg_type.split('.')[0] == src_type:
                     self.columns[msg_type]['color'] = self.color_obs[src_type]
             self.columns[msg_type]['buffer'] = dict()
             self.columns[msg_type]['ts'] = 0
@@ -305,8 +296,7 @@ class Player(object):
             BaseDraw.draw_text(img, 'class: ' + data['type_class'], (tx - 50, ty), 0.5, color, 1)
 
         if 'prediction_source' in data:
-            BaseDraw.draw_text(img, 'predict: ' + data['prediction_source'], (tx - 50, ty + text_step), 0.5, color,
-                               1)
+            BaseDraw.draw_text(img, 'predict: ' + data['prediction_source'], (tx - 50, ty + text_step), 0.5, color, 1)
 
         if 'probability' in data:
             BaseDraw.draw_text(img, 'prob: ' + str('%.2f' % data['probability']), (tx - 50, ty + text_step * 2),
@@ -365,9 +355,9 @@ class Player(object):
                 color_lg = self.columns[col].get('color')
                 if color_lg is None:
                     color_lg = CVColor.LightGray
-                if color_lg is not None:
-                    cv2.rectangle(img, (indent + 1, y0 + 1), (indent + 19, y0 + 24), color_lg, -1)
-                    cv2.rectangle(img, (x0, y0), (x0 + w - 2, y0 + h), color_lg, 2)
+
+                cv2.rectangle(img, (indent + 1, y0 + 1), (indent + 19, y0 + 24), color_lg, -1)
+                cv2.rectangle(img, (x0, y0), (x0 + w - 2, y0 + h), color_lg, 2)
             if 'ifv300' in col:
                 BaseDraw.draw_text(img, 'q3', (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
             else:

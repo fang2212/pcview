@@ -596,7 +596,7 @@ class FlowSink(Sink):
             return
         elif topic == 'pcview':
             pass
-        #     print(payload)
+            # print(payload)
             if b'calib_param' in payload:
                 calib_params = msgpack.unpackb(payload)
                 if calib_params:
@@ -619,12 +619,12 @@ class FlowSink(Sink):
                     return None
 
                 r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
-                     'is_main': self.is_main}
+                     'is_main': self.is_main, 'transport': 'libflow'}
                 self.fileHandler.insert_jpg(r)
                 # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
                 return frame_id, r
-        #     else:
-        #         # print(data)
+            # else:
+            #     print(data)
         #         pass
         else:
             # print(data)

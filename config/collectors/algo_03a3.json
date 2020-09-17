@@ -19,7 +19,7 @@
     },
     "gsensor": {
       "enable": true,
-      "port": 2407,
+      "port": 24099,
       "protocol": "libflow",
       "topic": "gsensor"
     }

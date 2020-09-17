@@ -275,8 +275,9 @@ class FileHandler(Thread):
 
                     # if other_log_fps.get(source) and other_log_fps[source].get('pcv'):
                     #     other_log_fps[source]['pcv'].write(json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n")
-                    buf = json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n"
-                    write_log(source, 'pcv_log.txt', buf)
+                    if res.get('transport') == 'libflow':
+                        buf = json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n"
+                        write_log(source, 'pcv_log.txt', buf)
 
                     video_streams[source]['frame_cnt'] += 1
 
@@ -325,8 +326,9 @@ class FileHandler(Thread):
 
                     # if other_log_fps.get(source):
                     #     other_log_fps[source].write(json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n")
-                    buf = json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n"
-                    write_log(source, 'pcv_log.txt', buf)
+                    if res.get('transport') == 'libflow':
+                        buf = json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n"
+                        write_log(source, 'pcv_log.txt', buf)
 
                     video_streams[source]['frame_cnt'] += 1
             t3 = time.time()
