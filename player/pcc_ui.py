@@ -129,73 +129,9 @@ class Player(object):
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
             BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 0.3, CVColor.White, 1)
 
-    # def show_overlook_background(self, img):
-    #     """绘制俯视图的背景，包括背景图，车背景图，光线图
-    #     Args:
-    #         img: 原始图片
-    #     """
-    #     y_background, x_background, _ = self.overlook_background_image.shape
-    #     y_img, x_img, _ = img.shape
-    #     roi_img = img[0: y_background, x_img - x_background: x_img]
-    #     cv2.addWeighted(self.overlook_background_image, 1, roi_img, 0.4, 0.0, roi_img)
-    #     x_center, y_center = 1144, 240
-    #
-    #     data_r = int(1) % 20 + 120
-    #
-    #     draw_r = []
-    #     while data_r > 30:
-    #         draw_r.append(data_r)
-    #         data_r = data_r - 20
-    #     draw_r.append(140)
-    #
-    #     y_circle, x_circle, _ = self.circlesmall_image.shape
-    #     for R in draw_r:
-    #         x_new, y_new = int(R), int(y_circle * R / x_circle)
-    #         new_circle = cv2.resize(self.circlesmall_image, (y_new, x_new),
-    #                                 interpolation=cv2.INTER_CUBIC)
-    #         x_begin = x_center - x_new // 2
-    #         x_end = x_begin + x_new
-    #         y_begin = y_center - y_new // 2
-    #         y_end = y_begin + y_new
-    #         roi_img = img[y_begin: y_end, x_begin: x_end]
-    #         cv2.addWeighted(new_circle, 0.5, roi_img, 1.0, 0.0, roi_img)
-    #
-    #     for sector_in in [self.sectorwide_image, self.sectorthin_image]:
-    #         y_sector, x_sector, _ = sector_in.shape
-    #         x_begin = 1145 - x_sector // 2
-    #         x_end = x_begin + x_sector
-    #         y_end = 219
-    #         y_begin = y_end - y_sector
-    #         roi_img = img[y_begin: y_end, x_begin: x_end]
-    #         cv2.addWeighted(sector_in, 0.5, roi_img, 1.0, 0.0, roi_img)
-    #
-    #     y_car, x_car, _ = self.car_image.shape
-    #     x_begin = x_center - x_car // 2 - 3
-    #     x_end = x_begin + x_car
-    #     y_begin = y_center - y_car // 2
-    #     y_end = y_begin + y_car
-    #     roi_img = img[y_begin: y_end, x_begin: x_end]
-    #     cv2.addWeighted(self.car_image, 1.0,
-    #                     roi_img, 1.0, 0.0, roi_img)
-
     def show_parameters_background(self, img, rect):
         """左上角参数背景图"""
         BaseDraw.draw_alpha_rect(img, rect, 0.6, CVColor.Black)
-
-    # def show_columns(self, img):
-    #     w = self.param_bg_width
-    #     # self.show_parameters_background(img, (0, 0, w if w <= 1280 else 1280, 150))
-    #     for col in self.columns:
-    #         indent = self.columns[col]['indent']
-    #         x0 = indent
-    #         y0 = 0
-    #         x1 = indent + 140
-    #         y1 = max(self.columns[col]['buffer']) if self.columns[col]['buffer'] else 0
-    #         self.show_parameters_background(img, (x0, y0, x1 if x1 <= 1280 else 1280, y1))
-    #
-    #         BaseDraw.draw_text(img, col, (indent + 12, 20), 0.5, CVColor.Cyan, 1)
-    #         if col != 'video':
-    #             cv2.rectangle(img, (indent, 0), (indent + 140, 20), self.columns[col]['color'], -1)
 
     def show_obs(self, img, obs, thickness=2):
         try:
@@ -384,79 +320,6 @@ class Player(object):
         color = self.color_obs.get(data['sensor']) or self.color_obs['default']
         cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
 
-    # def show_tsr(self, img, position, color=CVColor.Cyan, thickness=2):
-    #     """绘制tsr框
-    #     Args:
-    #         img: 原始图片
-    #         position: (x, y, width, height),框的位置，大小
-    #         color: CVColor 颜色
-    #         thickness: int 线粗
-    #     """
-    #
-    #     x, y, width, height = position
-    #     x1 = int(x)
-    #     y1 = int(y)
-    #     width = int(width)
-    #     height = int(height)
-    #     x2 = x1 + width
-    #     y2 = y1 + height
-    #     BaseDraw.draw_rect(img, (x1, y1), (x2, y2), color, thickness)
-
-    # def show_tsr_info(self, img, position, max_speed):
-    #     """绘制车辆信息
-    #     Args:
-    #         img: 原始图片
-    #         position: (x, y, width, height),车辆框的位置，大小
-    #         max_speed: float
-    #     """
-    #     x, y, width, height = position
-    #     x1 = int(x)
-    #     y1 = int(y)
-    #     width = int(width)
-    #     height = int(height)
-    #     x2 = x1 + width
-    #     y2 = y1 + height
-    #     origin_x = max(0, x2 - 40)
-    #     origin_y = max(0, y2)
-    #     BaseDraw.draw_alpha_rect(img, (origin_x, origin_y, 40, 20), 0.6)
-    #     BaseDraw.draw_text(img, str(max_speed), (x2 - 30, y2 + 5),
-    #                        1, CVColor.Green, 1)
-
-    # def show_tsr_parameters(self, img, parameters, point):
-    #     """显示tsr信息
-    #     Args:
-    #         img: 原始图片
-    #         parameters: List [index, TODO ]
-    #     """
-    #     index = parameters[0]
-    #     speed_limit = parameters[1]
-    #     warning_level = parameters[2]
-    #     warning_state = parameters[3]
-    #
-    #     origin_x, origin_y = point
-    #     gap_v = 20
-    #     size = 0.5
-    #     BaseDraw.draw_text(img, 'tsr', (origin_x, origin_y + gap_v), size, CVColor.Cyan, 1)
-    #     BaseDraw.draw_text(img, 'focus_index:' + index, (origin_x, origin_y + gap_v * 2), size, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'speed_limit:' + speed_limit, (origin_x, origin_y + gap_v * 3), size, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'warning_level:' + warning_level, (origin_x, origin_y + gap_v * 4), size, CVColor.White,
-    #                        1)
-    #     BaseDraw.draw_text(img, 'warning_state:' + warning_state, (origin_x, origin_y + gap_v * 5), size, CVColor.White,
-    #                        1)
-
-    # def show_env(self, img, speed, light_mode, fps, point):
-    #     """显示环境信息
-    #     Args:
-    #         img: 原始图片
-    #         light_mode: 白天或夜间
-    #         fps: 帧率
-    #     """
-    #     origin_x, origin_y = point
-    #     origin_x += 10
-    #     BaseDraw.draw_text(img, 'env', (origin_x, origin_y + 20), 0.5, CVColor.Cyan, 1)
-    #     BaseDraw.draw_text(img, 'light:' + str(light_mode), (origin_x, origin_y + 40), 0.5, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'speed:' + str(int(speed)), (origin_x, origin_y + 60), 0.5, CVColor.White, 1)
-    #     BaseDraw.draw_text(img, 'fps:' + str(int(fps)), (origin_x, origin_y + 80), 0.5, CVColor.White, 1)
     def show_text_info(self, source, height, text, style='normal'):
         if style is None:
             style = 'warning'
@@ -1038,39 +901,6 @@ class Player(object):
             self.show_veh_speed(img, data['speed'], data['source'])
         if 'yaw_rate' in data:
             self.show_yaw_rate(img, data['yaw_rate'], data['source'])
-
-    # def draw_obs(self, img, data, ipm):
-    #     if len(data) == 0:
-    #         return
-    #     if data['type'] != 'obstacle':
-    #         return
-    #
-    #     x = data['pos_lon']
-    #     y = data['pos_lat']
-    #
-    #     color = self.color_seq[data['color']]
-    #     width = 0.4
-    #     otype = 0
-    #     if data['color'] == 1:
-    #         otype = 2
-    #
-    #     if 'class' in data:
-    #         width = data['width']
-    #         otype = data['class']
-    #
-    #     if 'cipo' in data and data['cipo']:
-    #         color = CVColor.Yellow
-    #         self.show_cipo_info(img, data)
-    #
-    #     self.show_obs(img, data, color)
-
-    # def draw_rtk(self, img, data, target):
-    #     if len(data) == 0:
-    #         return
-    #
-    #     self.show_drtk(img, data)
-    #     if target:
-    #         self.show_target(img, target, data)
 
     def cal_fps(self, frame_cnt):
         end_time = datetime.now()

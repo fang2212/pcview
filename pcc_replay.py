@@ -203,6 +203,7 @@ class LogPlayer(Process):
         self.parser = {}
         self.can_types = {}
         self.msg_types = []
+        # self.configs_valid = {}
         self.context = {}
         self.ratio = ratio
         self.ctrl_q = Queue()
@@ -264,24 +265,28 @@ class LogPlayer(Process):
                 if len(cfg['can_types']['can1']) > 0:
                     self.msg_types.append([cantypes1])
             elif 'msg_types' in cfg:
-                for mtype in cfg['msg_types']:
-                    self.msg_types.append(mtype)
-                    if 'can0' in cfg['ports']:
-                        self.can_types['CAN' + '{:01d}'.format(idx * 2)] = cfg['ports']['can0']['topic']
-                    if 'can1' in cfg['ports']:
-                        self.can_types['CAN' + '{:01d}'.format(idx * 2 + 1)] = cfg['ports']['can1']['topic']
-                # if cfg.get('is_main'):
-                #     self.jpeg_extractor = jpeg_extractor(os.path.dirname(log_path) + '/video.{}'.format(cfg.get('idx')))
-        print('msgtypes:', self.msg_types)
+                # ip = cfg['ip']
+                # self.configs_valid[ip] = cfg
+                # for mtype in cfg['msg_types']:
+                    # self.msg_types.append(mtype)
+                print(cfg)
+                if 'can0' in cfg['ports']:
+                    msg_type = cfg['ports']['can0']['topic']
+                    self.can_types['CAN' + '{:01d}'.format(idx * 2)] = msg_type + '.{}'.format(idx)
+                if 'can1' in cfg['ports']:
+                    msg_type = cfg['ports']['can1']['topic']
+                    self.can_types['CAN' + '{:01d}'.format(idx * 2 + 1)] = msg_type + '.{}'.format(idx)
+        # print('msgtypes:', self.msg_types)
 
-        self.msg_types = [x if len(x) > 0 else '' for x in list(self.can_types.values()) if len(x) > 2]
+        # self.msg_types = [x if len(x) > 0 else '' for x in list(self.can_types.values()) if len(x) > 2]
 
         for can in self.can_types:
             # print(can)
             self.parser[can] = []
             self.context[can] = {}
+            # print(can, self.can_types[can])
             for type in parsers_dict:
-                if type == self.can_types[can]:
+                if type == self.can_types[can].split('.')[0]:
                     print('----', can, type)
                     self.parser[can].append(parsers_dict[type])
             if len(self.parser[can]) == 0:
