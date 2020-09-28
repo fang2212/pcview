@@ -25,6 +25,13 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "imuinfo"
+    },
+    "lane_debug": {
+      "enable": true,
+      "port": 24020,
+      "transport": "libflow",
+      "protocol": "general_bin",
+      "topic": "lane_debug"
     }
   }
 }

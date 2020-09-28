@@ -93,8 +93,6 @@ class FileHandler(Thread):
 
             other_log_fps[source][name].write(msg)
 
-
-
         while not exit:
             raw_write = 0
             pcv_write = False

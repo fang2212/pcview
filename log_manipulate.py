@@ -853,7 +853,7 @@ def parse_nmea_line(line, ctx):
     from parsers.ublox import parse_ublox
     cols = line.split(' ')
     if cols[2] == 'NMEA' or 'gps' in cols[2]:
-        r = parse_ublox('NMEA', cols[3])
+        r = parse_ublox(cols[3], ctx)
         if r and 'speed' in r:
             if 'speed' not in ctx:
                 ctx['speed'] = {}
@@ -2223,16 +2223,24 @@ def viz_2d_trj(r0, source=None, vis=True):
     from recorder.convert import ub482_defs, decode_with_def
     from tools.geo import gps_bearing, gps_distance
     from parsers.novatel import parse_novatel
+    import pandas as pd
 
     xlist = []
     ylist = []
+    inspect_values = {'hgt': {},
+                      'roll': {},
+                      'pitch': {},
+                      'yaw': {}}
     trjs = {}
     obs_cnt = {}
     point0 = None
+    t0 = 0
     with open(r0) as rf:
         for idx, line in enumerate(rf):
             cols = line.split(' ')
             ts_now = float(cols[0]) + float(cols[1]) / 1000000
+            if not t0:
+                t0 = ts_now
             if 'pinpoint' in cols[2]:
                 _, idx, kw = cols[2].split('.')
                 src = _ + '.' + idx
@@ -2245,15 +2253,29 @@ def viz_2d_trj(r0, source=None, vis=True):
                 if src not in trjs:
                     trjs[src] = {}
                     obs_cnt[src] = 0
+                if src not in inspect_values['hgt']:
+                    inspect_values['hgt'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+                if 'inspva' in cols[2] and src not in inspect_values['roll']:
+                    inspect_values['roll'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+                    inspect_values['pitch'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+                    inspect_values['yaw'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
 
                 if not source or (source and src == source):
                     if 'inspva' in cols[2]:
                         r = parse_novatel(None, cols[3], None)
                         pos_type = r['pos_type']
+                        for item in inspect_values:
+                            inspect_values[item][src]['timestamps'].append(r['ts']-t0)
+                            inspect_values[item][src]['value'].append(r[item])
+                            inspect_values[item][src]['pos_type'].append(r['pos_type'])
                     elif 'bestpos' in cols[2]:
                         r = decode_with_def(ub482_defs, line)
                         pos_type = cols[4]
-
+                        inspect_values['hgt'][src]['timestamps'].append(r['ts']-t0)
+                        inspect_values['hgt'][src]['value'].append(r['hgt'])
+                        inspect_values['hgt'][src]['pos_type'].append(r['pos_type'])
+                    if not point0:
+                        point0 = r
                     if pos_type not in trjs[src]:
                         trjs[src][pos_type] = {'x': [], 'y': [], 'cnt': 0}
                     trjs[src][pos_type]['cnt'] += 1
@@ -2262,8 +2284,6 @@ def viz_2d_trj(r0, source=None, vis=True):
                         continue
                     if pos_type == 'NONE' and 'bestpos' in cols[2]:
                         continue
-                    if not point0:
-                        point0 = r
 
                     angle = gps_bearing(point0['lat'], point0['lon'], r['lat'], r['lon'])
                     range = gps_distance(point0['lat'], point0['lon'], r['lat'], r['lon'])
@@ -2271,8 +2291,23 @@ def viz_2d_trj(r0, source=None, vis=True):
                     y = sin(angle * pi / 180.0) * range
                     trjs[src][pos_type]['x'].append(x)
                     trjs[src][pos_type]['y'].append(y)
+
                     # xlist.append(x)
                     # ylist.append(y)
+            elif 'heading' in cols[2]:
+                _, idx, kw = cols[2].split('.')
+                src = _ + '.' + idx
+                if src not in inspect_values['pitch']:
+                    inspect_values['pitch'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+                    inspect_values['yaw'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+
+                r = decode_with_def(ub482_defs, line)
+                inspect_values['pitch'][src]['timestamps'].append(r['ts'] - t0)
+                inspect_values['pitch'][src]['value'].append(r['pitch'])
+                inspect_values['pitch'][src]['pos_type'].append(r['pos_type'])
+                inspect_values['yaw'][src]['timestamps'].append(r['ts'] - t0)
+                inspect_values['yaw'][src]['value'].append(r['yaw'])
+                inspect_values['yaw'][src]['pos_type'].append(r['pos_type'])
 
     for src in trjs:
         for pos_type in trjs[src]:
@@ -2282,11 +2317,9 @@ def viz_2d_trj(r0, source=None, vis=True):
     # visual.trj_2d(fig, xlist, ylist, vis)
     # visual.trj_2d(fig, trjs, vis)
     visual.trj_2d_bk(trjs)
-    # fig.close()
 
-            # for label in labels:
-            #     match = match_label(label, cols[2])
-            #     if match:
+    # for item in inspect_values:
+    visual.compare_1d_data(inspect_values)
 
 
 def process_error_by_matches(matches, names, r0, ts0, ctx, vis=False):

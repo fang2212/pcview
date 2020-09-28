@@ -4,7 +4,7 @@
   "ip": "192.168.98.220",
   "force_ip": true,
   "ports": {
-    "inspva": {
+    "bynav_x1": {
       "enable": true,
       "port": 2000,
       "protocol": "novatel",

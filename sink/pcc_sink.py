@@ -216,8 +216,13 @@ class TCPSink(Sink):
                 r = parser(None, msg, self.ctx)
                 if not r:
                     return
-                r['source'] = self.source
-                self.filehandler.insert_raw((r['ts'], r['source'] + '.inspva', msg.decode().strip()))
+                if isinstance(r, list):
+                    for res in r:
+                        res['source'] = self.source
+                        self.filehandler.insert_raw((res['ts'], res['source'] + '.{}'.format(res['type']), msg.decode().strip()))
+                else:
+                    r['source'] = self.source
+                    self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), msg.decode().strip()))
                 return self.channel, r, self.source
 
 
@@ -246,6 +251,7 @@ class PinodeSink(Sink):
 
         if not isinstance(data, list):
             data = [data]
+
         for r in data:
             # print(r)
             r['source'] = self.source
@@ -256,6 +262,7 @@ class PinodeSink(Sink):
                 if self.fileHandler.is_recording:
                     self.fileHandler.insert_raw(
                         (r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
+
 
             elif r['type'] == 'rtk':  # old d-rtk
                 timestamp = r['ts_origin']
@@ -278,7 +285,16 @@ class PinodeSink(Sink):
 
     def decode_pinode_res(self, resname, msg):
         if resname == 'rtk':
-            return json.loads(msg.decode())
+            results = json.loads(msg.decode())
+            for res in results:
+                if res['type'] == 'novatel-like':
+                    ret = parsers_dict['novatel'](None, res['buf'])
+                    # print(ret)
+
+                    return ret
+
+            return results
+
         elif resname == 'rtcm':
             self.rtcm3.add_data(msg)
             result = self.rtcm3.process_data(dump_decoded=False)
@@ -472,8 +488,8 @@ class CameraSink(Sink):
         jpg = msg[16:]
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         df = frame_id - self.last_fid
-        # if df != 1:
-        #     print("\r{} frame jump at {}".format(df - 1, frame_id), 'in', self.source, end='')
+        if df != 1:
+            print("\r{} frame jump at {}".format(df - 1, frame_id), 'in', self.source, end='')
         self.last_fid = frame_id
         app1 = jpg.find(b'\xff\xe1')
         frame_id_jfif = int.from_bytes(jpg[24:28], byteorder="little")
@@ -495,7 +511,8 @@ class CameraSink(Sink):
 
 
 class FlowSink(Sink):
-    def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, name='x1_algo', isheadless=False, is_main=False):
+    def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, protocol='msgpack', name='x1_algo',
+                 log_name='pcv_log', isheadless=False, is_main=False):
         super(FlowSink, self).__init__(cam_queue, ip, port, channel, index, isheadless)
         self.last_fid = 0
         self.fileHandler = fileHandler
@@ -503,6 +520,8 @@ class FlowSink(Sink):
         self.port = port
         self.cam_queue = cam_queue
         self.msg_queue = msg_queue
+        self.protocol = protocol
+        self.log_name = log_name
         self.is_main = is_main
         self.type = 'flow_sink'
         self.source = name + '.{:d}'.format(index)
@@ -528,11 +547,19 @@ class FlowSink(Sink):
                 'topic': 'subscribe',
                 'data': 'imuinfo'
             }
+
+            msg_lane = {
+                'source': 'lane_profiling',
+                'topic': 'subscribe',
+                'data': 'lane_profiling_data'
+            }
             data = msgpack.packb(msg)
             await ws.send_bytes(data)
             data = msgpack.packb(msg_finish)
             await ws.send_bytes(data)
             data = msgpack.packb(msg_imu)
+            await ws.send_bytes(data)
+            data = msgpack.packb(msg_lane)
             await ws.send_bytes(data)
             async for msg in ws:
                 r = self.pkg_handler(msg)
@@ -555,9 +582,18 @@ class FlowSink(Sink):
             loop.run_until_complete(self._run())
         except Exception as e:
             print('error when initiating flow sink on', self.ip, self.port)
-            raise(e)
+            raise (e)
 
     def pkg_handler(self, msg):
+        # if self.protocol != 'msgpack':
+        #     r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name}
+        #     r['buf'] = msg.data
+        #     data = msgpack.unpackb(msg.data)
+        #     print(data)
+        #     # print(msg)
+        #     self.fileHandler.insert_general_bin_raw(r)
+        #     return 'algo_debug', r
+
         data = msgpack.unpackb(msg.data)
         # print('-----', data[b'topic'])
         ts = time.time()
@@ -565,81 +601,90 @@ class FlowSink(Sink):
         # if 'topic' not in data:
         #     return
         if b'data' in data:
+            msg_src = data[b'source']
             payload = data[b'data']
             topic = data[b'topic'].decode()
         elif 'data' in data:
+            msg_src = data['source']
             payload = data['data']
             topic = data['topic']
         else:
             return
 
-        if topic == 'finish':
-            buf = payload
-            # topic = 'finish'
-            if b'rc_fusion' in buf:
-                buf = msgpack.unpackb(buf)
-                data = buf['rc_fusion']
-                buf = msgpack.packb(data, use_bin_type=True)
-                # print(buf)
-                r = {'source': self.source, 'buf': buf}
-                self.fileHandler.insert_fusion_raw(r)
-        elif topic == 'imuinfo':
-            imu_info = msgpack.unpackb(payload)
-            # print(imu_info)
-            for idx in range(imu_info['data_count']):
-                d = imu_info['imu_info'][idx]
-                ts = d['timestamp'] / 1000000
-                self.fileHandler.insert_raw((ts, self.source + '.gsensor', '{} {} {} {} {} {} {} {}'.format(
-                    d['accel'][0], d['accel'][1], d['accel'][2],
-                    d['gyro'][0], d['gyro'][1], d['gyro'][2],
-                    d['temp'], int(ts), 1000000 * (ts - int(ts)))))
-            return
-        elif topic == 'pcview':
-            pass
-            # print(payload)
-            if b'calib_param' in payload:
-                calib_params = msgpack.unpackb(payload)
-                if calib_params:
-                    # print(calib_params)
-                    r = {'type': 'calib_param', 'source': self.source, 'ts': 0, 'frame_id': calib_params['frame_id']}
-                    r.update(calib_params['calib_param'])
-                    # print(r)
-                    return 'calib_param', r
-            elif payload.startswith(b'\xff\x03'):  # jpeg pack header
+        if msg_src == 'pcview':
+            if topic == 'finish':
+                buf = payload
+                # topic = 'finish'
+                if b'rc_fusion' in buf:
+                    buf = msgpack.unpackb(buf)
+                    data = buf['rc_fusion']
+                    buf = msgpack.packb(data, use_bin_type=True)
+                    # print(buf)
+                    r = {'source': self.source, 'buf': buf}
+                    self.fileHandler.insert_fusion_raw(r)
+            elif topic == 'imuinfo':
+                imu_info = msgpack.unpackb(payload)
+                # print(imu_info)
+                for idx in range(imu_info['data_count']):
+                    d = imu_info['imu_info'][idx]
+                    ts = d['timestamp'] / 1000000
+                    self.fileHandler.insert_raw((ts, self.source + '.gsensor', '{} {} {} {} {} {} {} {}'.format(
+                        d['accel'][0], d['accel'][1], d['accel'][2],
+                        d['gyro'][0], d['gyro'][1], d['gyro'][2],
+                        d['temp'], int(ts), 1000000 * (ts - int(ts)))))
+                return
+            elif topic == 'pcview':
+                pass
                 # print(payload)
-                frame_id = int.from_bytes(payload[4:8], byteorder='little', signed=False)
-                # if frame_id - self.last_fid != 1:
-                #     print("frame jump at", self.last_fid, frame_id, 'in', self.source)
-                self.last_fid = frame_id
-                ts = int.from_bytes(payload[16:24], byteorder='little', signed=False)
-                ts = ts / 1000000
-                jpg = payload[24:]
-                if msg.type in (aiohttp.WSMsgType.CLOSED,
-                                aiohttp.WSMsgType.ERROR):
-                    return None
+                if b'calib_param' in payload:
+                    calib_params = msgpack.unpackb(payload)
+                    if calib_params:
+                        # print(calib_params)
+                        r = {'type': 'calib_param', 'source': self.source, 'ts': 0, 'frame_id': calib_params['frame_id']}
+                        r.update(calib_params['calib_param'])
+                        # print(r)
+                        return 'calib_param', r
+                elif payload.startswith(b'\xff\x03'):  # jpeg pack header
+                    # print(payload)
+                    frame_id = int.from_bytes(payload[4:8], byteorder='little', signed=False)
+                    # if frame_id - self.last_fid != 1:
+                    #     print("frame jump at", self.last_fid, frame_id, 'in', self.source)
+                    self.last_fid = frame_id
+                    ts = int.from_bytes(payload[16:24], byteorder='little', signed=False)
+                    ts = ts / 1000000
+                    jpg = payload[24:]
+                    if msg.type in (aiohttp.WSMsgType.CLOSED,
+                                    aiohttp.WSMsgType.ERROR):
+                        return None
 
-                r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
-                     'is_main': self.is_main, 'transport': 'libflow'}
-                self.fileHandler.insert_jpg(r)
-                # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
-                return frame_id, r
-            # else:
-            #     print(data)
-        #         pass
-        else:
-            # print(data)
-            pass
-    # else:
-    #     # print(data)
-    #     pass
+                    r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
+                         'is_main': self.is_main, 'transport': 'libflow'}
+                    self.fileHandler.insert_jpg(r)
+                    # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
+                    return frame_id, r
+                # else:
+                #     print(data)
+            #         pass
+            else:
+                # print(data)
+                pass
+        elif msg_src == 'lane_profiling':
+            if topic == 'lane_profiling_data':
+                r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name}
+                r['buf'] = payload
+                self.fileHandler.insert_general_bin_raw(r)
+                return 'algo_debug', r
+        # else:
+        #     # print(data)
+        #     pass
 
-            # elif b'calib_params' in buf:
-            #     buf = msgpack.unpackb(buf)
-            #     data = buf['calib_params']
-            #     buf = msgpack.packb(data, use_bin_type=True)
-            #     print(buf)
-            #     self.fileHandler.insert_fusion_raw(buf)
-            # return 'fusion_data', data
+        # elif b'calib_params' in buf:
+        #     buf = msgpack.unpackb(buf)
+        #     data = buf['calib_params']
+        #     buf = msgpack.packb(data, use_bin_type=True)
+        #     print(buf)
+        #     self.fileHandler.insert_fusion_raw(buf)
+        # return 'fusion_data', data
 
         if b'frame_id' in payload:
             # print(data['source'], data['topic'])

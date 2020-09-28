@@ -7,13 +7,15 @@
     "video": {
       "enable": true,
       "port": 24011,
-      "protocol": "libflow",
+      "protocol": "msgpack",
+      "transport": "libflow",
       "topic": ""
     },
     "x1_fusion": {
       "enable": true,
       "port": 24015,
-      "protocol": "libflow",
+      "protocol": "msgpack",
+      "transport": "libflow",
       "topic": ""
     }
   }

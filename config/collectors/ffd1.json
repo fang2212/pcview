@@ -8,25 +8,29 @@
     "video": {
       "enable": true,
       "port": 1200,
-      "protocol": "nanomsg",
+      "protocol": null,
+      "transport": "nanomsg",
       "topic": "video"
     },
     "can0": {
       "enable": true,
       "port": 1207,
-      "protocol": "nanomsg",
+      "protocol": null,
+      "transport": "nanomsg",
       "topic": "x1l"
     },
     "can1": {
       "enable": true,
       "port": 1208,
-      "protocol": "nanomsg",
+      "protocol": null,
+      "transport": "nanomsg",
       "topic": "x1"
     },
     "gsensor": {
       "enable": true,
       "port": 1209,
-      "protocol": "nanomsg",
+      "protocol": null,
+      "transport": "nanomsg",
       "topic": "gsensor"
     }
   }

@@ -2,7 +2,7 @@ import datetime
 import time
 
 
-def decode_nmea(nmeastr):
+def decode_nmea(nmeastr, ctx=None):
     # sample: $GNRMC,021346.50,A,2232.42074,N,11356.84392,E,0.123,,200719,,,D*61
     # print(msg)
     if not nmeastr[0] == '$':
@@ -34,6 +34,8 @@ def decode_nmea(nmeastr):
                    fields[1][2:4] + ':' + fields[1][4:]
         dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
         dtime = dtime + datetime.timedelta(hours=8)
+        if ctx:
+            ctx['date'] = '20' + fields[9][4:] + '-' + fields[9][2:4] + '-' + fields[9][0:2]
         # print(dtime)
         r['ts'] = dtime.timestamp()
         # print(dtime.timestamp())
@@ -44,18 +46,40 @@ def decode_nmea(nmeastr):
         # fileHandler.insert_raw((time.time(), 'gps-speed', str(r['speed'])))
         # print('speed', r['speed'])
         # print(fields)
-        if r:
-            return r
+
+        return r
+    elif nmeastr.startswith('$PASHR'):
+        r = dict()
+        r['type'] = 'pashr'
+        data = nmeastr.split('*')[0]
+        fields = data.split(',')
+
+        if len(fields) < 11:
+            return
+        if len(fields) > 11:
+            r['ins_status'] = fields[11]
+
+        if ctx and ctx.get('date'):
+            str_time = ctx['date'] + ' ' + fields[1][:2] + ':' + fields[1][2:4] + ':' + fields[1][4:]
+            dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
+            dtime = dtime + datetime.timedelta(hours=8)
+            r['ts'] = dtime.timestamp()
+        else:
+            return
+
+        states = ['NONE', 'SINGLE', 'RTK_FIX']
+
+        r['yaw'] = float(fields[2])
+        r['roll'] = float(fields[4])
+        r['pitch'] = float(fields[5])
+        r['undulation'] = float(fields[6])
+        r['roll_sgm'] = float(fields[7])
+        r['pitch_sgm'] = float(fields[8])
+        r['yaw_sgm'] = float(fields[9])
+        r['pos_type'] = states[int(fields[10])]
 
 
-def parse_ublox(protocol, data, ctx=None):
-    if protocol == 'NMEA':
-        r = decode_nmea(data)
-        if r and len(r) > 0:
-            return r
-
-    elif protocol == 'ubx':
-        pass
-
-    elif protocol == 'rtcm':
-        pass
+def parse_ublox(data, ctx=None):
+    r = decode_nmea(data, ctx=ctx)
+    if r and len(r) > 0:
+        return r

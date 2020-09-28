@@ -21,19 +21,22 @@
     "video": {
       "enable": true,
       "port": 6000,
-      "protocol": "nanomsg",
+      "protocol": null,
+      "transport": "nanomsg",
       "topic": "ub482"
     },
     "can0": {
       "enable": true,
       "port": 6003,
-      "protocol": "nanomsg",
+      "protocol": null,
+      "transport": "nanomsg",
       "topic": "ars"
     },
     "can1": {
       "enable": true,
       "port": 6001,
-      "protocol": "nanomsg",
+      "protocol": null,
+      "transport": "nanomsg",
       "topic": "mbq4"
     }
   }

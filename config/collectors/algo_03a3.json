@@ -8,19 +8,22 @@
     "video": {
       "enable": false,
       "port": 24011,
-      "protocol": "libflow",
+      "protocol": "msgpack",
+      "transport": "libflow",
       "topic": "video"
     },
     "x1-fusion": {
       "enable": true,
       "port": 24015,
-      "protocol": "libflow",
+      "protocol": "msgpack",
+      "transport": "libflow",
       "topic": "x1-fusion"
     },
     "gsensor": {
       "enable": true,
       "port": 24099,
-      "protocol": "libflow",
+      "protocol": "msgpack",
+      "transport": "libflow",
       "topic": "gsensor"
     }
   }

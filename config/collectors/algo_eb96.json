@@ -8,7 +8,8 @@
     "video": {
       "enable": false,
       "port": 24011,
-      "protocol": "libflow",
+      "protocol": "msgpack",
+      "transport": "libflow",
       "topic": "video"
     }
   }

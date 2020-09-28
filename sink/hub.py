@@ -39,7 +39,6 @@ class CollectorNode(kProcess):
 class Hub(Thread):
 
     def __init__(self, headless=False, direct_cfg=None, uniconf=None):
-
         # msg_types = config.msg_types
 
         Thread.__init__(self)
@@ -250,8 +249,10 @@ class Hub(Thread):
                     if not cfg['ports'][item].get('enable') and not is_main:
                         continue
                     port = cfg['ports'][item]['port']
+                    proto = cfg['ports'][item].get('protocol')
+
                     sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
-                                    index=idx, fileHandler=self.fileHandler, is_main=is_main)
+                                    index=idx, protocol=proto, log_name=item, fileHandler=self.fileHandler, is_main=is_main)
                     # sink.start()
                     # sink = {'stype': 'flow', 'msg_queue': self.msg_queue, 'cam_queue': self.cam_queue, 'ip': ip,
                     #         'port': port, 'channel': item, 'index': idx, 'fileHandler': self.fileHandler,
@@ -354,8 +355,9 @@ class Hub(Thread):
                         #           'isheadless': self.headless}
                         self.sinks.append(pisink)
                         cfgs_online[ip]['msg_types'].append(iface + '.{}'.format(idx))
-                    elif 'inspva' in iface:
-                        tcpsink = TCPSink(self.msg_queue, ip, port, 'can', 'novatel', idx, self.fileHandler)
+                    elif cfg['ports'][iface].get('transport') == 'tcp':
+                        proto = cfg['ports'][iface]['protocol']
+                        tcpsink = TCPSink(self.msg_queue, ip, port, 'can', proto, idx, self.fileHandler)
                         self.sinks.append(tcpsink)
                         cfgs_online[ip]['msg_types'].append(iface + '.{}'.format(idx))
             else:  # no type, default is x1 collector

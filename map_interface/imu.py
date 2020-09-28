@@ -1,3 +1,5 @@
+import numpy as np
+
 
 gyro_scale = 2000
 accl_scale = 16
@@ -28,3 +30,14 @@ def ahrs_update(imu_data):
     """
     input raw data acclx accly acclz gyrox gyroy gyroz
     """
+
+
+class Pose(object):
+    def __init__(self, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.roll = roll
+        self.pitch = pitch
+        self.yaw = yaw
+        self.state = np.array([x, y, z, roll, pitch, yaw])

@@ -136,27 +136,81 @@ def trj_2d(fig, trjs, vis=True):
         plt.show()
 
 
-def trj_2d_bk(trjs):
-    from bokeh.plotting import figure, show
-    from bokeh.io import output_notebook
-    from bokeh.palettes import Reds9, Blues9, Greens9, Purples9, Category10
+from bokeh.palettes import Reds9, Blues9, Greens9, Purples9, Category10_10, RdYlGn5
 
-    p = figure(plot_width=1920, plot_height=1000)
+pos_type_colors = {
+    'NONE': RdYlGn5[4],
+    'FIXEDPOS': 'white',
+    'FIXEDHEIGHT': 'white',
+    'DOPPLER_VELOCITY': RdYlGn5[3],
+    'SINGLE': RdYlGn5[3],
+    'PSRDIFF': RdYlGn5[2],
+    'WAAS': RdYlGn5[2],
+    'L1_FLOAT': RdYlGn5[2],
+    'IONOFREE_FLOAT': RdYlGn5[2],
+    'NARROW_FLOAT': RdYlGn5[1],
+    'L1_INT': RdYlGn5[1],
+    'WIDE_INT': RdYlGn5[1],
+    'NARROW_INT': RdYlGn5[0],
+    'INS': RdYlGn5[4],
+    'INS_PSRSP': RdYlGn5[3],
+    'INS_PSRDIFF': RdYlGn5[2],
+    'INS_RTKFLOAT': RdYlGn5[1],
+    'INS_RTKFIXED': RdYlGn5[0]
+}
+
+from bokeh.plotting import figure, show
+from bokeh.io import output_notebook
+from bokeh.models import LabelSet
+def trj_2d_bk(trjs):
+    p = figure(plot_width=1920, plot_height=1000, title='RTK trajectory')
     # output_notebook()
     colormap = [Reds9, Blues9, Greens9, Purples9]
     style = [p.scatter, p.square,  p.triangle, p.cross]
 
-    for idx1, src in enumerate(trjs):
+    for idx1, src in enumerate(sorted(trjs)):
         for idx2, label in enumerate(sorted(trjs[src].keys())):
             entry = src + '.' + label
             # legends.append(entry)
             xlist = trjs[src][label]['x']
             ylist = trjs[src][label]['y']
-            style[idx1](xlist, ylist, legend_label=entry, color=Category10[10][idx2], size=6)
+            style[idx1](xlist, ylist, legend_label=entry, color=pos_type_colors[label], size=6)
+
+    # labels = LabelSet(x='weight', y='height', text='names', level='glyph',
+    #                   x_offset=5, y_offset=5, source=source, render_mode='canvas')
 
     # p.legend(legends)
-
+    p.legend.click_policy = "hide"
     show(p)
+
+
+def compare_1d_data(data):
+    from bokeh.layouts import gridplot
+    import pandas as pd
+    from bokeh.models import ColumnDataSource, HoverTool
+    plist = []
+    tools = 'pan, wheel_zoom, crosshair, save'
+    for name in data:
+        hover = HoverTool(tooltips=[
+            ("time", "@timestamps"),
+            ("value", "@value"),
+            ("pos_type", "@pos_type"),
+        ])
+        p = figure(plot_width=1920, plot_height=1000, title=name, toolbar_sticky=True, tools=[hover, tools])
+
+        for idx1, src in enumerate(sorted(data[name])):
+            print('plotting', name, src)
+            entry = src + '.' + name
+            df = pd.DataFrame(data[name][src])
+            source = ColumnDataSource(df)
+            # x = data[name][src]['timestamps']
+            # y = data[name][src]['value']
+            p.line(x='timestamps', y='value', source=source, color=Category10_10[idx1], legend_label=entry)
+        p.legend.click_policy = "hide"
+        plist.append([p])
+    s = gridplot(plist)
+    # print(plist)
+    show(s)
 
 
 def calc_rmse(predictions, targets):

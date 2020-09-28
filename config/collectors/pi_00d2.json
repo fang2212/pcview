@@ -8,8 +8,9 @@
     "rtk": {
       "enable": true,
       "port": 1210,
-      "protocol": "nanomsg",
-      "topic": "nmea"
+      "protocol": "json",
+      "transport": "nanomsg",
+      "topic": "ub482"
     },
     "gps": {
       "enable": true,
