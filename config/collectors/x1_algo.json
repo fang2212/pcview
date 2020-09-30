@@ -1,6 +1,6 @@
 {
   "type": "x1_algo",
-  "ip": "192.168.98.92",
+  "ip": "192.168.0.233",
   "mac": "5a:31:66:d1:ac:0b",
   "work_mode": "collector",
   "repeater": false,

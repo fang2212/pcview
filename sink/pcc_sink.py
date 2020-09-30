@@ -212,23 +212,140 @@ class TCPSink(Sink):
         if self.protocol == 'novatel':
             # print(msg)
             parser = parsers_dict.get(self.protocol)
+            if isinstance(msg, bytes):
+                msg = msg.decode().strip()
             if parser:
-                r = parser(None, msg, self.ctx)
-                if not r:
-                    return
-                if isinstance(r, list):
-                    for res in r:
-                        res['source'] = self.source
-                        self.filehandler.insert_raw((res['ts'], res['source'] + '.{}'.format(res['type']), msg.decode().strip()))
+                if msg.count('#') > 1:
+                    ret = []
+                    for phr in msg.split('#')[1:]:
+                        if len(phr) > 0:
+                            # print('msg phrase', msg)
+                            r = parser(None, '#'+phr, self.ctx)
+                            if not r:
+                                return
+                            r['source'] = self.source
+                            ret.append(r)
+                            self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), msg))
                 else:
-                    r['source'] = self.source
-                    self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), msg.decode().strip()))
-                return self.channel, r, self.source
+                    ret = parser(None, msg, self.ctx)
+                    if not ret:
+                        return
+                    ret['source'] = self.source
+                    self.filehandler.insert_raw((ret['ts'], ret['source'] + '.{}'.format(ret['type']), msg))
+                # if isinstance(r, list):
+                #     for res in r:
+                #         res['source'] = self.source
+                #         self.filehandler.insert_raw((res['ts'], res['source'] + '.{}'.format(res['type']), msg.decode().strip()))
+                # else:
+                #     r['source'] = self.source
+                #     self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), msg.decode().strip()))
+                return self.channel, ret, self.source
 
 
 class PinodeSink(Sink):
     def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
         super(PinodeSink, self).__init__(queue, ip, port, channel, index, isheadless)
+        # print('pi_node connected.', ip, port, channel, index)
+        self.source = 'rtk.{:d}'.format(index)
+        self.index = index
+        self.context = {'source': self.source}
+        self.resname = resname
+        self.fileHandler = fileHandler
+        self.type = 'pi_sink'
+        if resname == 'rtcm':
+            self.rtcm3 = rtcm3.RTCM3()
+        # print(queue, ip, port, channel, index, resname, fileHandler, isheadless)
+
+    def pkg_handler(self, msg):
+        # print('-----------------------------------------hahahahha')
+
+        msg = memoryview(msg).tobytes()
+        # print(self.resname, msg)
+        data = self.decode_pinode_res(self.resname, msg)
+        if not data:
+            return
+
+        if not isinstance(data, list):
+            data = [data]
+
+        for r in data:
+            # print(r)
+            r['source'] = self.source
+            if r.get('sensor') == 'm8n':
+                r['source'] = 'gps.{:d}'.format(self.index)
+            if r['type'] in ub482_defs:
+                # print(r)
+                if self.fileHandler.is_recording:
+                    self.fileHandler.insert_raw(
+                        (r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
+
+            elif r['type'] == 'rtk':  # old d-rtk
+                timestamp = r['ts_origin']
+                self.fileHandler.insert_raw((timestamp, r['source'] + '.sol',
+                                             '{} {} {:.8f} {:.8f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}'.format(
+                                                 r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'],
+                                                 r['velE'], r['velD'], r['yaw'], r['pitch'], r['length'])))
+                self.fileHandler.insert_raw((timestamp, r['source'] + '.dop',
+                                             '{} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
+                                                 r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4],
+                                                 r['sat'][5], r['gdop'],
+                                                 r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'],
+                                                 r['prn'])))
+            elif r['type'] == 'gps':
+                # print(r)
+                self.fileHandler.insert_raw((time.time(), r['source'], msg.decode().strip()))
+                # print(time.time(), r['ts_origin'])
+
+        return self.channel, data, self.source
+
+    def decode_pinode_res(self, resname, msg):
+        if resname == 'rtk':
+            results = json.loads(msg.decode())
+            for res in results:
+                if res['type'] == 'novatel-like':
+                    ret = []
+                    for phr in res['buf'].split('#'):
+                        if len(phr) > 0:
+                            # print('phrase', phr)
+                            r = parsers_dict['novatel'](None, '#'+phr, None)
+                            if r:
+                                ret.append(r)
+                    # print(ret)
+
+                    return ret
+
+            return results
+
+        elif resname == 'rtcm':
+            self.rtcm3.add_data(msg)
+            result = self.rtcm3.process_data(dump_decoded=False)
+            r = None
+            while result != 0:
+                #        print str(datetime.now())
+                if result == rtcm3.Got_Undecoded:
+                    # if rtcm3.Dump_Undecoded:
+                    # print("Undecoded Data in RTCM.")
+                    pass
+                elif result == rtcm3.Got_Packet:
+                    r = self.rtcm3.dump(False, False, False, False)
+                    # sys.stdout.flush()
+                else:
+                    print("INTERNAL ERROR: Unknown result (" + str(result) + ")")
+                result = self.rtcm3.process_data()
+            if r:
+                r['type'] = 'rtcm'
+                r['len'] = len(msg)
+                r['ts'] = time.time()
+                return r
+        elif resname == 'gps':
+            # print(msg)
+            data = ublox.decode_nmea(msg.decode())
+            return data
+
+
+class PinodeSinkGeneral(Sink):
+    def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
+        super(PinodeSinkGeneral, self).__init__(queue, ip, port, channel, index, isheadless)
         # print('pi_node connected.', ip, port, channel, index)
         self.source = 'rtk.{:d}'.format(index)
         self.index = index
@@ -288,7 +405,13 @@ class PinodeSink(Sink):
             results = json.loads(msg.decode())
             for res in results:
                 if res['type'] == 'novatel-like':
-                    ret = parsers_dict['novatel'](None, res['buf'])
+                    ret = []
+                    for phr in res['buf'].split('#'):
+                        if len(phr) > 0:
+                            # print('phrase', phr)
+                            r = parsers_dict['novatel'](None, '#'+phr, None)
+                            if r:
+                                ret.append(r)
                     # print(ret)
 
                     return ret
@@ -533,7 +656,7 @@ class FlowSink(Sink):
             msg = {
                 'source': 'pcview',
                 'topic': 'subscribe',
-                'data': 'pcview',
+                'data': 'image',
             }
 
             msg_finish = {
@@ -555,13 +678,14 @@ class FlowSink(Sink):
             }
             data = msgpack.packb(msg)
             await ws.send_bytes(data)
-            data = msgpack.packb(msg_finish)
-            await ws.send_bytes(data)
-            data = msgpack.packb(msg_imu)
-            await ws.send_bytes(data)
-            data = msgpack.packb(msg_lane)
-            await ws.send_bytes(data)
+            # data = msgpack.packb(msg_finish)
+            # await ws.send_bytes(data)
+            # data = msgpack.packb(msg_imu)
+            # await ws.send_bytes(data)
+            # data = msgpack.packb(msg_lane)
+            # await ws.send_bytes(data)
             async for msg in ws:
+                print(msg)
                 r = self.pkg_handler(msg)
                 if r is not None:
                     if isinstance(r[0], type("")):
@@ -585,6 +709,7 @@ class FlowSink(Sink):
             raise (e)
 
     def pkg_handler(self, msg):
+        # print(msg)
         # if self.protocol != 'msgpack':
         #     r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name}
         #     r['buf'] = msg.data

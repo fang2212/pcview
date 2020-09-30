@@ -104,6 +104,7 @@ if args.direct:
     # cve_conf.local_cfg = get_local_cfg()
     hub = Hub(uniconf=cve_conf, direct_cfg=sys.argv[2])
     pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf)
+    hub.start()
     pcc.start()
 
 elif args.headless:

@@ -157,6 +157,8 @@ def parse_bestpos(fields):
 
 def parse_novatel(msg_type, msg, ctx):
     try:
+        if isinstance(msg, bytes):
+            msg = msg.decode().strip()
         header, data = msg.split(';')
         hfields = header.split(',')
         fields = data.split('*')[0].split(',')

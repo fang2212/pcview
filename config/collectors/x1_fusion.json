@@ -6,7 +6,7 @@
   "repeater": false,
   "ports": {
     "video": {
-      "enable": false,
+      "enable": true,
       "port": 24011,
       "transport": "libflow",
       "protocol": "msgpack",
