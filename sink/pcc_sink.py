@@ -656,7 +656,7 @@ class FlowSink(Sink):
             msg = {
                 'source': 'pcview',
                 'topic': 'subscribe',
-                'data': 'image',
+                'data': 'pcview',
             }
 
             msg_finish = {
@@ -685,7 +685,7 @@ class FlowSink(Sink):
             # data = msgpack.packb(msg_lane)
             # await ws.send_bytes(data)
             async for msg in ws:
-                print(msg)
+                # print(msg)
                 r = self.pkg_handler(msg)
                 if r is not None:
                     if isinstance(r[0], type("")):

@@ -163,6 +163,11 @@ class Hub(Thread):
             self.fpga_handle(cfg, self.msg_queue, ip)
         elif 'ports' in cfg:
             for iface in cfg['ports']:
+                protocol = cfg['ports'][iface].get('protocol')
+                transport = cfg['ports'][iface].get('transport')
+                if not transport:
+                    transport = protocol
+
                 if 'can' in iface:
                     chn = cfg['ports'][iface]
                     cansink = CANSink(self.msg_queue, ip=ip, port=chn['port'], channel=iface, type=[chn['topic']],
@@ -182,20 +187,22 @@ class Hub(Thread):
                     cfgs_online[ip]['msg_types'].append('gsensor.0')
 
                 elif 'video' in iface:
-                    protocol = cfg['ports'][iface].get('protocol')
-                    if protocol == 'nanomsg':
+
+                    if transport == 'nanomsg':
                         sink = CameraSink(queue=self.msg_queue, ip=ip, port=1200, channel='camera', index=0,
                                           fileHandler=self.fileHandler, is_main=True)
                         sink.start()
-                    elif protocol == 'libflow':
+                    elif transport == 'libflow':
                         port = cfg['ports'][iface]['port']
                         sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port,
                                         channel=iface, index=0, fileHandler=self.fileHandler, is_main=True)
+                        # print('inited flow video', sink)
                         sink.start()
                     cfgs_online[ip]['msg_types'].append('video.0')
 
         # node = CollectorNode(sinks)
         # node.start()
+        # print(cfgs_online)
         return cfgs_online
 
     def init_collectors(self):
