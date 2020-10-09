@@ -19,7 +19,7 @@ try:
     nn_impl = 'pynng'
 except Exception as e:
     nn_impl = 'nanomsg'
-    import nanomsg
+    # import nanomsg
 
 nn_impl = 'nanomsg'
 # import nanomsg
