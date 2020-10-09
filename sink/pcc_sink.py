@@ -635,7 +635,7 @@ class CameraSink(Sink):
 
 class FlowSink(Sink):
     def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, protocol='msgpack', name='x1_algo',
-                 log_name='pcv_log', isheadless=False, is_main=False):
+                 log_name='pcv_log', topic='pcview', isheadless=False, is_main=False):
         super(FlowSink, self).__init__(cam_queue, ip, port, channel, index, isheadless)
         self.last_fid = 0
         self.fileHandler = fileHandler
@@ -647,6 +647,7 @@ class FlowSink(Sink):
         self.log_name = log_name
         self.is_main = is_main
         self.type = 'flow_sink'
+        self.topic = topic
         self.source = name + '.{:d}'.format(index)
 
     async def _run(self):
@@ -656,7 +657,7 @@ class FlowSink(Sink):
             msg = {
                 'source': 'pcview',
                 'topic': 'subscribe',
-                'data': 'pcview',
+                'data': self.topic,
             }
 
             msg_finish = {
@@ -685,7 +686,7 @@ class FlowSink(Sink):
             # data = msgpack.packb(msg_lane)
             # await ws.send_bytes(data)
             async for msg in ws:
-                # print(msg)
+                # print(msg[:100])
                 r = self.pkg_handler(msg)
                 if r is not None:
                     if isinstance(r[0], type("")):
@@ -749,7 +750,7 @@ class FlowSink(Sink):
                     self.fileHandler.insert_fusion_raw(r)
             elif topic == 'imuinfo':
                 imu_info = msgpack.unpackb(payload)
-                # print(imu_info)
+                print(imu_info)
                 for idx in range(imu_info['data_count']):
                     d = imu_info['imu_info'][idx]
                     ts = d['timestamp'] / 1000000
@@ -787,9 +788,9 @@ class FlowSink(Sink):
                     self.fileHandler.insert_jpg(r)
                     # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
                     return frame_id, r
-                # else:
-                #     print(data)
-            #         pass
+                else:
+                    print('unknown payload begins with:', payload[:20])
+                    pass
             else:
                 # print(data)
                 pass
@@ -799,9 +800,25 @@ class FlowSink(Sink):
                 r['buf'] = payload
                 self.fileHandler.insert_general_bin_raw(r)
                 return 'algo_debug', r
-        # else:
-        #     # print(data)
-        #     pass
+        elif msg_src == 'imu':
+            if topic == 'imuinfo':
+                imu_info = msgpack.unpackb(payload)
+                # print(imu_info)
+                for idx in range(imu_info['data_count']):
+                    d = imu_info['imu_info'][idx]
+                    ts = d['timestamp'] / 1000000
+                    rtos_tick = d['rtostick']
+                    self.fileHandler.insert_raw((ts, self.source + '.gsensor', '{} {} {} {} {} {} {} {}'.format(
+                        d['accel'][0], d['accel'][1], d['accel'][2],
+                        d['gyro'][0], d['gyro'][1], d['gyro'][2],
+                        d['temp'], rtos_tick, 0)))
+                return
+        else:  # msg_src == 'pcview'
+            # buf = msgpack.unpackb(payload)
+            # print(data)
+            pass
+
+
 
         # elif b'calib_params' in buf:
         #     buf = msgpack.unpackb(buf)

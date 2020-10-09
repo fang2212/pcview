@@ -1,6 +1,6 @@
 {
   "type": "x1_algo",
-  "ip": "192.168.0.233",
+  "ip": "192.168.0.231",
   "mac": "5a:31:66:d1:ac:0b",
   "work_mode": "collector",
   "repeater": false,
@@ -10,7 +10,14 @@
       "port": 24011,
       "protocol": "msgpack",
       "transport": "libflow",
-      "topic": "video"
+      "topic": "pcview"
+    },
+    "gsensor": {
+      "enable": true,
+      "port": 24099,
+      "protocol": "msgpack",
+      "transport": "libflow",
+      "topic": "imuinfo"
     }
   }
 }

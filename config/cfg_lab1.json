@@ -22,56 +22,56 @@
             ],
             "installation": {
                 "esr": {
-                    "roll": 0.0,
-                    "lat_offset": 0.22,
+                    "yaw": 0.0,
                     "pitch": 0.0,
-                    "height": 0.45,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
                     "lon_offset": 0.0,
-                    "yaw": -1.8
+                    "height": 0.0
                 },
                 "lmr": {
-                    "roll": 0.0,
-                    "lat_offset": -0.3,
+                    "yaw": 0.0,
                     "pitch": 0.0,
-                    "height": 0.45,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
                     "lon_offset": 0.0,
-                    "yaw": -1.0
+                    "height": 0.0
                 },
                 "ifv300": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
                     "roll": 0.0,
                     "lat_offset": 0.0,
-                    "pitch": 0.0,
-                    "height": 1.18,
-                    "lon_offset": -1.64,
-                    "yaw": 0.0
+                    "lon_offset": -1.67,
+                    "height": 1.2
                 },
                 "rtk": {
-                    "roll": 0.0,
-                    "lat_offset": 0.0,
+                    "yaw": 0.0,
                     "pitch": -2.0,
-                    "height": 0.86,
+                    "roll": 0.0,
+                    "lat_offset": 0.15,
                     "lon_offset": -0.21,
-                    "yaw": 0.0
+                    "height": 1.2
                 },
                 "video": {
-                    "fu": 1458.0,
                     "yaw": 0.65,
-                    "fv": 1458.0,
                     "pitch": -0.51,
-                    "cu": 640.0,
-                    "lat_offset": 0.15,
                     "roll": 0.0,
-                    "height": 1.18,
+                    "lat_offset": 0.15,
                     "lon_offset": -1.67,
+                    "height": 1.2,
+                    "fu": 1458.0,
+                    "fv": 1458.0,
+                    "cu": 640.0,
                     "cv": 480.0
                 },
                 "x1": {
-                    "roll": 0.0,
-                    "lat_offset": 0.0,
+                    "yaw": 0.0,
                     "pitch": 0.0,
-                    "height": 1.18,
-                    "lon_offset": -1.64,
-                    "yaw": 0.0
+                    "roll": 0.0,
+                    "lat_offset": 0.15,
+                    "lon_offset": -1.67,
+                    "height": 1.2
                 }
             }
         },

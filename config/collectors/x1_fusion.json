@@ -10,7 +10,7 @@
       "port": 24011,
       "transport": "libflow",
       "protocol": "msgpack",
-      "topic": "video"
+      "topic": "pcview"
     },
     "x1_fusion": {
       "enable": true,
@@ -26,12 +26,12 @@
       "protocol": "msgpack",
       "topic": "imuinfo"
     },
-    "lane_debug": {
+    "lane_profiling": {
       "enable": true,
       "port": 24020,
       "transport": "libflow",
       "protocol": "general_bin",
-      "topic": "lane_debug"
+      "topic": "lane_profiling_data"
     }
   }
 }

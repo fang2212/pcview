@@ -165,40 +165,41 @@ class Hub(Thread):
             for iface in cfg['ports']:
                 protocol = cfg['ports'][iface].get('protocol')
                 transport = cfg['ports'][iface].get('transport')
+                port = cfg['ports'][iface]['port']
+                topic = cfg['ports'][iface]['topic']
                 if not transport:
                     transport = protocol
 
-                if 'can' in iface:
-                    chn = cfg['ports'][iface]
-                    cansink = CANSink(self.msg_queue, ip=ip, port=chn['port'], channel=iface, type=[chn['topic']],
-                                      index=0, fileHandler=self.fileHandler, isheadless=self.headless)
-
-                    cansink.start()
-                    cfgs_online[ip]['msg_types'].append('video.0')
-                    cfgs_online[ip]['msg_types'].append(chn['topic'] + '.0')
-                    # sinks.append(cansink)
-                elif 'gsensor' in iface:
-                    chn = cfg['ports'][iface]
-                    gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=chn['port'], channel=iface, index=0,
-                                        fileHandler=self.fileHandler, isheadless=self.headless)
-                    gsink.start()
-                    # print('gsensor found')
-                    # sinks.append(gsink)
-                    cfgs_online[ip]['msg_types'].append('gsensor.0')
-
-                elif 'video' in iface:
-
-                    if transport == 'nanomsg':
+                if transport == 'nanomsg':
+                    if 'video' in iface:
                         sink = CameraSink(queue=self.msg_queue, ip=ip, port=1200, channel='camera', index=0,
                                           fileHandler=self.fileHandler, is_main=True)
                         sink.start()
-                    elif transport == 'libflow':
-                        port = cfg['ports'][iface]['port']
-                        sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port,
-                                        channel=iface, index=0, fileHandler=self.fileHandler, is_main=True)
-                        # print('inited flow video', sink)
-                        sink.start()
-                    cfgs_online[ip]['msg_types'].append('video.0')
+                        cfgs_online[ip]['msg_types'].append('video.0')
+                    if 'can' in iface:
+                        chn = cfg['ports'][iface]
+                        cansink = CANSink(self.msg_queue, ip=ip, port=chn['port'], channel=iface, type=[chn['topic']],
+                                          index=0, fileHandler=self.fileHandler, isheadless=self.headless)
+
+                        cansink.start()
+                        cfgs_online[ip]['msg_types'].append('video.0')
+                        cfgs_online[ip]['msg_types'].append(chn['topic'] + '.0')
+                        # sinks.append(cansink)
+                    elif 'gsensor' in iface:
+                        chn = cfg['ports'][iface]
+                        gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=chn['port'], channel=iface, index=0,
+                                            fileHandler=self.fileHandler, isheadless=self.headless)
+                        gsink.start()
+                        # print('gsensor found')
+                        # sinks.append(gsink)
+                        cfgs_online[ip]['msg_types'].append('gsensor.0')
+
+                elif transport == 'libflow':
+                    sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port,
+                                    channel=iface, topic=topic, index=0, fileHandler=self.fileHandler, is_main=True)
+                    # print('inited flow video', sink)
+                    sink.start()
+
 
         # node = CollectorNode(sinks)
         # node.start()
@@ -257,9 +258,10 @@ class Hub(Thread):
                         continue
                     port = cfg['ports'][item]['port']
                     proto = cfg['ports'][item].get('protocol')
+                    topic = cfg['ports'][item].get('topic')
 
                     sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
-                                    index=idx, protocol=proto, log_name=item, fileHandler=self.fileHandler, is_main=is_main)
+                                    index=idx, protocol=proto, topic=topic, log_name=item, fileHandler=self.fileHandler, is_main=is_main)
                     # sink.start()
                     # sink = {'stype': 'flow', 'msg_queue': self.msg_queue, 'cam_queue': self.cam_queue, 'ip': ip,
                     #         'port': port, 'channel': item, 'index': idx, 'fileHandler': self.fileHandler,
