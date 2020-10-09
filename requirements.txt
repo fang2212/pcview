@@ -1,4 +1,4 @@
-pynng
+nnpy
 numpy
 python-can
 pyserial
