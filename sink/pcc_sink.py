@@ -22,7 +22,7 @@ except Exception as e:
     import nanomsg
 
 nn_impl = 'nanomsg'
-import nanomsg
+# import nanomsg
 
 # import pynng
 from parsers import ublox, rtcm3
