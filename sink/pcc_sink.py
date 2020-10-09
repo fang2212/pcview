@@ -17,7 +17,7 @@ try:
     import pynng
 
     nn_impl = 'pynng'
-except ModuleNotFoundError:
+except Exception as e:
     nn_impl = 'nanomsg'
     import nanomsg
 
