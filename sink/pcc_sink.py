@@ -727,7 +727,7 @@ class FlowSink(Sink):
         # if 'topic' not in data:
         #     return
         if b'data' in data:
-            msg_src = data[b'source']
+            msg_src = data[b'source'].decode()
             payload = data[b'data']
             topic = data[b'topic'].decode()
         elif 'data' in data:
