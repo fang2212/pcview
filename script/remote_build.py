@@ -57,6 +57,24 @@ def trigger_build(branch=None):
     return local_path
 
 
+def trigger_build_1604(branch=None):
+    work_dir = '/home/minieye/work/pcview'
+    suffix = 'cd {} && '.format(work_dir)
+    sess = SSHSession('192.168.50.123', username='minieye', password='minieye')
+    if branch:
+        sess.exec(suffix + 'git checkout {}'.format(branch))
+    sess.exec(suffix + 'git pull')
+
+    # sess.exec(suffix + '/home/nan/.local/bin/pyinstaller pcc_app.spec --noconfirm')
+    sess.exec(suffix + './pack_pcc.sh')
+    # sess.exec(suffix + '')
+
+    # retrieve binary
+    local_path = '/home/nan/release/pcc_app_1604_{}_{}.tar.gz'.format(branch, int(time.time()))
+    sess.download(work_dir + '/dist/pcc_app.tar.gz', local_path)
+    return local_path
+
+
 def deploy_to_cve(pack_path, remote_path='/home/minieye/upgrade_temp/'):
     pack_name = os.path.basename(pack_path)
     print('deploying...', pack_name)
@@ -75,5 +93,6 @@ def deploy_to_cve(pack_path, remote_path='/home/minieye/upgrade_temp/'):
 
 if __name__ == "__main__":
     # pack = '/home/nan/release/pcc_app_1804_cve-new_1598513211.tar.gz'
-    pack = trigger_build('cve-new')
-    deploy_to_cve(pack)
+    # pack = trigger_build('cve-new')
+    pack = trigger_build_1604('cve-new')
+    # deploy_to_cve(pack)
