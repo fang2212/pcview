@@ -1,5 +1,6 @@
 {
-    "version": 0.7,
+    "version": 1.0,
+    "name": "cfg_superb",
     "modules": {
         "GGA_reporter": {
             "enable": true,
@@ -11,18 +12,16 @@
     "vehicles": {
         "ego": {
             "enable": true,
-            "collectors": {
-                "algo_03a3": "normal",
-                "algo_fd1f": "normal",
-                "skoda_ffd0": "normal",
-                "skoda_ffd1": "normal",
-		        "skoda_ffd2": "normal",
-                "bynav": "normal",
-                "pi_ba29": "normal",
-                "pi_0d06": "normal",
-                "pi_gateway": "normal",
-                "pi_9de8": "normal"
-            },
+            "collectors": [
+                {"model": "x1_fusion", "params": {"mac": "5a:31:90:5d:03:a3"}},
+                {"model": "x1_fusion", "params": {"mac": "5a:31:3d:77:fd:1f"}},
+                {"model": "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "x1_fusion", "can1": "ars", "is_main": true}},
+                {"model": "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "t5", "can1": "ars"}},
+                {"model": "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mbq3", "can1": "x1j"}},
+                {"model": "bynav"},
+                {"model":  "pi_node", "params": {"mac": "b8:27:eb:d5:9d:e8"}},
+                {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}}
+            ],
             "installation": {
                 "esr": {
                     "roll": 0.0,

@@ -750,7 +750,7 @@ class FlowSink(Sink):
                     self.fileHandler.insert_fusion_raw(r)
             elif topic == 'imuinfo':
                 imu_info = msgpack.unpackb(payload)
-                print(imu_info)
+                # print(imu_info)
                 for idx in range(imu_info['data_count']):
                     d = imu_info['imu_info'][idx]
                     ts = d['timestamp'] / 1000000
@@ -789,7 +789,7 @@ class FlowSink(Sink):
                     # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
                     return frame_id, r
                 else:
-                    print('unknown payload begins with:', payload[:20])
+                    # print('unknown payload begins with:', payload[:20])
                     pass
             else:
                 # print(data)
