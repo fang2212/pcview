@@ -38,7 +38,7 @@ class Player(object):
         self.img_width = 1280
         self.img_height = 720
         self.indent = 160
-        self.columns = {'video': {'indent': 0, 'y0': 0, 'buffer': {}, 'ts': 0}}
+        self.columns = {'video': {'indent': 0, 'y0': 0, 'h': 1000, 'buffer': {}, 'ts': 0}}
         self.param_bg_width = 160
         self.next_patch_x = 160
         self.next_patch_y = 0
@@ -93,6 +93,7 @@ class Player(object):
                     self.columns[msg_type]['color'] = self.color_obs[src_type]
             self.columns[msg_type]['buffer'] = dict()
             self.columns[msg_type]['ts'] = 0
+            self.columns[msg_type]['h'] = 1000
         # self.param_bg_width = self.next_patch_x + 20
         # if self.next_patch_x > self.img_width:
 
@@ -333,33 +334,39 @@ class Player(object):
         self.img_height, self.img_width, _ = img.shape
         # print(self.img_width, self.img_height)
         w = 160
-        smallest_h = 1000
-        shortest_col = None
+        # smallest_h = 1000
+        # print(self.columns)
+        shortest_col = sorted(self.columns, key=lambda x: self.columns[x]['y0'] + self.columns[x]['h'])[0]
+
+        # print('shortest col:', shortest_col)
+        # shortest_col = None
         next_patch_x = 0
         next_patch_y = 0
         for idx, col in enumerate(self.columns):
             entry = self.columns[col]
             indent = next_patch_x
             y0 = next_patch_y
+            h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 24
+            h = 24 if h == 0 else h
             self.columns[col]['indent'] = indent
             self.columns[col]['y0'] = y0
-            if next_patch_x + 2*w <= self.img_width:
+            self.columns[col]['h'] = h
+            if idx+2 <= int(self.img_width/w):
                 next_patch_x += w
                 next_patch_y = 0
             else:
-                next_patch_y = smallest_h
+                next_patch_y = self.columns[shortest_col]['h'] + self.columns[shortest_col]['y0']
                 next_patch_x = self.columns[shortest_col]['indent']
-            h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 24
-            h = 24 if h == 0 else h
-            if h + y0 < smallest_h:
-                smallest_h = h + y0
-                shortest_col = col
+                # print('replace patch', idx, col, indent, y0, w, h)
+            # if h + y0 < smallest_h:
+            #     smallest_h = h + y0
+            #     shortest_col = col
 
             # if col is not 'video':
             #     color_lg = self.columns[col].get('color')
             #     if color_lg is not None:
             #         cv2.rectangle(img, (indent + 1, 1), (indent + 159, 24), self.columns[col]['color'], -1)
-            # print(col, indent, y0, w, h)
+            # print(idx, col, indent, y0, w, h)
             self.show_parameters_background(img, (indent, y0, w if w <= self.img_width else self.img_width, h))
 
             if col != 'video':

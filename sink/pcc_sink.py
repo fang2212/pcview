@@ -220,7 +220,12 @@ class TCPSink(Sink):
                 for phr in msg.split('\n'):
                     if len(phr) > 0:
                         # print('msg phrase', msg)
-                        r = parser(None, phr, self.ctx)
+                        # print(phr)
+                        try:
+                            r = parser(None, phr, self.ctx)
+                        except Exception as e:
+                            print('error parsing novatel,', phr)
+                            raise e
                         if not r:
                             return
                         r['source'] = self.source
