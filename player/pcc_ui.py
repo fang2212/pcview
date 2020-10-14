@@ -356,7 +356,7 @@ class Player(object):
             self.columns[col]['indent'] = indent
             self.columns[col]['y0'] = y0
             self.columns[col]['h'] = h
-            slots[indent] = y0 + h
+            slots[indent] = y0 + h + 2
             # if idx+2 <= int(self.img_width/w):
             #     next_patch_x += w
             #     next_patch_y = 0
@@ -403,8 +403,13 @@ class Player(object):
                 # print(col, height, entry['buffer'])
                 style = entry['buffer'][height]['style']
                 style_list = {'normal': None, 'warning': CVColor.Yellow, 'fail': CVColor.Red, 'pass': CVColor.Green}
+
                 if isinstance(style, str) and style_list.get(style):
-                    color = style_list.get(style)
+                    if style in style_list:
+                        color = style_list.get(style)
+                    else:
+                        if style == 'critical':
+                            pass
                 elif isinstance(style, tuple):
                     color = style
                 else:
@@ -416,15 +421,18 @@ class Player(object):
                                    color, 1)
 
     def show_video_info(self, img, data):
-        tnow = time.time()
+        tnow = data['ts']
+        if data['source'] not in self.video_streams:
+            self.video_streams[data['source']] = {'frame_cnt': data['frame_id'] - 1, 'last_ts': 0, 'ts0': time.time(),
+                                                  'fps': 20}
+        if tnow == self.video_streams[data['source']]['last_ts']:
+            return
         self.show_parameters_background(img, (0, 0, 160, 80))
         BaseDraw.draw_text(img, data['source'], (2, 20), 0.5, CVColor.Cyan, 1)
         dt = self.ts_now - data['ts']
         BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt * 1000)), (92, 20), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'frame: {}'.format(data['frame_id']), (2, 40), 0.5, CVColor.White, 1)
-        if data['source'] not in self.video_streams:
-            self.video_streams[data['source']] = {'frame_cnt': data['frame_id'] - 1, 'last_ts': 0, 'ts0': time.time(),
-                                                  'fps': 20}
+
         self.video_streams[data['source']]['frame_cnt'] += 1
         # duration = time.time() - self.video_streams[data['source']]['ts0']
         dt = tnow - self.video_streams[data['source']]['last_ts']

@@ -311,10 +311,10 @@ class PinodeSink(Sink):
             for res in results:
                 if res['type'] == 'novatel-like':
                     ret = []
-                    for phr in res['buf'].split('#'):
+                    for phr in res['buf'].split('\n'):
                         if len(phr) > 0:
                             # print('phrase', phr)
-                            r = parsers_dict['novatel'](None, '#'+phr, None)
+                            r = parsers_dict['novatel'](None, phr, None)
                             if r:
                                 ret.append(r)
                     # print(ret)
