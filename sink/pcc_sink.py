@@ -230,7 +230,9 @@ class TCPSink(Sink):
                             return
                         r['source'] = self.source
                         ret.append(r)
-                        self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), msg))
+                        # if len(msg) > 500:
+                        #     print('novatel too long:', msg)
+                        self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), phr))
                 # else:
                 #     ret = parser(None, msg, self.ctx)
                 #     if not ret:
@@ -755,7 +757,7 @@ class FlowSink(Sink):
                     self.fileHandler.insert_fusion_raw(r)
             elif topic == 'imuinfo':
                 imu_info = msgpack.unpackb(payload)
-                # print(imu_info)
+                print(imu_info)
                 for idx in range(imu_info['data_count']):
                     d = imu_info['imu_info'][idx]
                     ts = d['timestamp'] / 1000000
@@ -808,7 +810,7 @@ class FlowSink(Sink):
         elif msg_src == 'imu':
             if topic == 'imuinfo':
                 imu_info = msgpack.unpackb(payload)
-                # print(imu_info)
+                print(imu_info)
                 for idx in range(imu_info['data_count']):
                     d = imu_info['imu_info'][idx]
                     ts = d['timestamp'] / 1000000
@@ -818,9 +820,22 @@ class FlowSink(Sink):
                         d['gyro'][0], d['gyro'][1], d['gyro'][2],
                         d['temp'], rtos_tick, 0)))
                 return
+        elif msg_src == 'imuinfo':
+            if topic == 'imuinfo':
+                imu_info = msgpack.unpackb(payload)
+                # print(imu_info)
+                for idx in range(imu_info['data_count']):
+                    d = imu_info['imu_info'][idx]
+                    ts = d['timestamp'] / 1000000
+                    # rtos_tick = d['rtostick']
+                    self.fileHandler.insert_raw((ts, self.source + '.gsensor', '{} {} {} {} {} {} {} {}'.format(
+                        d['accel'][0], d['accel'][1], d['accel'][2],
+                        d['gyro'][0], d['gyro'][1], d['gyro'][2],
+                        d['temp'], int(ts), 1000000 * (ts - int(ts)))))
+                return
         else:  # msg_src == 'pcview'
             # buf = msgpack.unpackb(payload)
-            # print(data)
+            print(data)
             pass
 
 
