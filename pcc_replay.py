@@ -298,8 +298,6 @@ class LogPlayer(Process):
             if len(self.parser[can]) == 0:
                 self.parser[can] = [parsers_dict['default']]
         self.cache['can'] = []
-
-
         self.shared['replay_sync'] = False
 
     def get_veh_role(self, source):
