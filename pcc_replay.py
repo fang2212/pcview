@@ -238,6 +238,19 @@ class LogPlayer(Process):
 
     def init_env(self):
         self.shared['replay_sync'] = True
+        self.shared['t0'] = time.time()
+        print('t0 set to', self.shared['t0'])
+        with open(self.log_path) as rf:
+            done = False
+            while not done:
+                line = rf.readline()
+                # print(line)
+                try:
+                    cols = line.split(' ')
+                    self.shared['ts0'] = float(cols[0]) + float(cols[1]) / 1000000
+                except Exception as e:
+                    continue
+                done = True
         while not self.msg_queue.empty():
             self.msg_queue.get()
         self.jpeg_extractor = jpeg_extractor(os.path.dirname(self.log_path) + '/video')
@@ -251,9 +264,6 @@ class LogPlayer(Process):
         else:
             self.x1_parser = None
 
-        # if os.path.exists(self.x1_log):
-        #     self.x1_fp = open(self.x1_log, 'r')
-
         for idx, cfg in enumerate(self.cfg.configs):
             if 'can_types' in cfg:
                 cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
@@ -265,10 +275,6 @@ class LogPlayer(Process):
                 if len(cfg['can_types']['can1']) > 0:
                     self.msg_types.append([cantypes1])
             elif 'msg_types' in cfg:
-                # ip = cfg['ip']
-                # self.configs_valid[ip] = cfg
-                # for mtype in cfg['msg_types']:
-                    # self.msg_types.append(mtype)
                 print(cfg)
                 if 'can0' in cfg['ports']:
                     msg_type = cfg['ports']['can0']['topic']
@@ -293,11 +299,7 @@ class LogPlayer(Process):
                 self.parser[can] = [parsers_dict['default']]
         self.cache['can'] = []
 
-        self.shared['t0'] = time.time()
-        print('t0 set to', self.shared['t0'])
-        with open(self.log_path) as rf:
-            cols = rf.readline().split(' ')
-            self.shared['ts0'] = float(cols[0]) + float(cols[1]) / 1000000
+
         self.shared['replay_sync'] = False
 
     def get_veh_role(self, source):
@@ -367,7 +369,6 @@ class LogPlayer(Process):
                 self._do_replay()
                 print('replay start over.')
                 time.sleep(0.5)
-                # self.init_env()
                 # print(self.shared['ts0'], self.shared['t0'])
         self._do_replay()
 
@@ -410,7 +411,10 @@ class LogPlayer(Process):
 
             # print('line {}'.format(cnt))
             cols = line.split(' ')
-            ts = float(cols[0]) + float(cols[1]) / 1000000
+            try:
+                ts = float(cols[0]) + float(cols[1]) / 1000000
+            except Exception as e:
+                continue
 
             if cols[2] == 'camera':
                 frame_id = int(cols[3])
@@ -583,6 +587,9 @@ class LogPlayer(Process):
                 except Exception as e:
                     print(line)
                     raise e
+            elif 'imu_data_corrected' in cols[2]:
+                pass
+
         print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
         return

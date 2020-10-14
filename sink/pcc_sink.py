@@ -215,23 +215,23 @@ class TCPSink(Sink):
             if isinstance(msg, bytes):
                 msg = msg.decode().strip()
             if parser:
-                if msg.count('#') > 1:
-                    ret = []
-                    for phr in msg.split('#')[1:]:
-                        if len(phr) > 0:
-                            # print('msg phrase', msg)
-                            r = parser(None, '#'+phr, self.ctx)
-                            if not r:
-                                return
-                            r['source'] = self.source
-                            ret.append(r)
-                            self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), msg))
-                else:
-                    ret = parser(None, msg, self.ctx)
-                    if not ret:
-                        return
-                    ret['source'] = self.source
-                    self.filehandler.insert_raw((ret['ts'], ret['source'] + '.{}'.format(ret['type']), msg))
+                # if msg.count('\n') > 1:
+                ret = []
+                for phr in msg.split('\n'):
+                    if len(phr) > 0:
+                        # print('msg phrase', msg)
+                        r = parser(None, phr, self.ctx)
+                        if not r:
+                            return
+                        r['source'] = self.source
+                        ret.append(r)
+                        self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), msg))
+                # else:
+                #     ret = parser(None, msg, self.ctx)
+                #     if not ret:
+                #         return
+                #     ret['source'] = self.source
+                #     self.filehandler.insert_raw((ret['ts'], ret['source'] + '.{}'.format(ret['type']), msg))
                 # if isinstance(r, list):
                 #     for res in r:
                 #         res['source'] = self.source
