@@ -334,29 +334,35 @@ class Player(object):
         self.img_height, self.img_width, _ = img.shape
         # print(self.img_width, self.img_height)
         w = 160
+        slots = {}
+        for i in range(0, self.img_width, w):
+            slots[i] = 0
         # smallest_h = 1000
         # print(self.columns)
-        shortest_col = sorted(self.columns, key=lambda x: self.columns[x]['y0'] + self.columns[x]['h'])[0]
+        # shortest_col = sorted(self.columns, key=lambda x: self.columns[x]['y0'] + self.columns[x]['h'])[0]
 
         # print('shortest col:', shortest_col)
         # shortest_col = None
         next_patch_x = 0
         next_patch_y = 0
         for idx, col in enumerate(self.columns):
+            indent = sorted(slots, key=lambda x: slots[x])[0]
+            y0 = slots[indent]
             entry = self.columns[col]
-            indent = next_patch_x
-            y0 = next_patch_y
+            # indent = next_patch_x
+            # y0 = next_patch_y
             h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 24
             h = 24 if h == 0 else h
             self.columns[col]['indent'] = indent
             self.columns[col]['y0'] = y0
             self.columns[col]['h'] = h
-            if idx+2 <= int(self.img_width/w):
-                next_patch_x += w
-                next_patch_y = 0
-            else:
-                next_patch_y = self.columns[shortest_col]['h'] + self.columns[shortest_col]['y0']
-                next_patch_x = self.columns[shortest_col]['indent']
+            slots[indent] = y0 + h
+            # if idx+2 <= int(self.img_width/w):
+            #     next_patch_x += w
+            #     next_patch_y = 0
+            # else:
+            #     next_patch_y = shortest_y
+            #     next_patch_x = shortest_x
                 # print('replace patch', idx, col, indent, y0, w, h)
             # if h + y0 < smallest_h:
             #     smallest_h = h + y0
