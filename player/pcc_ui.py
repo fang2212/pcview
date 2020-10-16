@@ -35,10 +35,13 @@ class Player(object):
         self.cfg = uniconf
 
         self.video_streams = {'video': {}}
-
+        self.img_width = 1280
+        self.img_height = 720
         self.indent = 160
-        self.columns = {'video': {'indent': 0, 'y0': 0, 'buffer': {}, 'ts': 0}}
+        self.columns = {'video': {'indent': 0, 'y0': 0, 'h': 1000, 'buffer': {}, 'ts': 0}}
         self.param_bg_width = 160
+        self.next_patch_x = 160
+        self.next_patch_y = 0
         self.ts_now = 0
         self.rtk = {}
 
@@ -80,17 +83,20 @@ class Player(object):
             # del self.columns[i]
             return
         else:
-            self.columns[msg_type] = {'indent': self.indent, 'y0': 0}
+            self.columns[msg_type] = {'indent': self.next_patch_x, 'y0': self.next_patch_y}
             # if 'rtk' in msg_type:
             #     self.indent += 300
             # else:
-            self.indent += 160
+            self.next_patch_x += 160
             for src_type in self.color_obs:
                 if msg_type.split('.')[0] == src_type:
                     self.columns[msg_type]['color'] = self.color_obs[src_type]
             self.columns[msg_type]['buffer'] = dict()
             self.columns[msg_type]['ts'] = 0
-        self.param_bg_width = self.indent + 20
+            self.columns[msg_type]['h'] = 1000
+        # self.param_bg_width = self.next_patch_x + 20
+        # if self.next_patch_x > self.img_width:
+
 
     def get_indent(self, source):
         if source in self.columns:
@@ -325,31 +331,49 @@ class Player(object):
     def render_text_info(self, img):
         # self.show_columns(img)
         # print(len(self.columns))
-        smallest_h = 200
-        shortest_col = None
-        for col in self.columns:
+        self.img_height, self.img_width, _ = img.shape
+        # print(self.img_width, self.img_height)
+        w = 160
+        slots = {}
+        for i in range(0, self.img_width, w):
+            slots[i] = 0
+        # smallest_h = 1000
+        # print(self.columns)
+        # shortest_col = sorted(self.columns, key=lambda x: self.columns[x]['y0'] + self.columns[x]['h'])[0]
+
+        # print('shortest col:', shortest_col)
+        # shortest_col = None
+        next_patch_x = 0
+        next_patch_y = 0
+        for idx, col in enumerate(self.columns):
+            indent = sorted(slots, key=lambda x: slots[x])[0]
+            y0 = slots[indent]
             entry = self.columns[col]
-            indent = self.columns[col]['indent']
-            x0 = indent
-            y0 = self.columns[col]['y0']
-            w = 160
-            if x0 + w > 1280:
-                y0 = smallest_h
-                self.columns[col]['y0'] = y0
-                x0 = self.columns[shortest_col]['indent']
-                self.columns[col]['indent'] = x0
+            # indent = next_patch_x
+            # y0 = next_patch_y
             h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 24
             h = 24 if h == 0 else h
-            if h + y0 < smallest_h:
-                smallest_h = h + y0
-                shortest_col = col
+            self.columns[col]['indent'] = indent
+            self.columns[col]['y0'] = y0
+            self.columns[col]['h'] = h
+            slots[indent] = y0 + h + 2
+            # if idx+2 <= int(self.img_width/w):
+            #     next_patch_x += w
+            #     next_patch_y = 0
+            # else:
+            #     next_patch_y = shortest_y
+            #     next_patch_x = shortest_x
+                # print('replace patch', idx, col, indent, y0, w, h)
+            # if h + y0 < smallest_h:
+            #     smallest_h = h + y0
+            #     shortest_col = col
 
             # if col is not 'video':
             #     color_lg = self.columns[col].get('color')
             #     if color_lg is not None:
             #         cv2.rectangle(img, (indent + 1, 1), (indent + 159, 24), self.columns[col]['color'], -1)
-            # print(x0, y0, w, h)
-            self.show_parameters_background(img, (x0, y0, w if w <= 1280 else 1280, h))
+            # print(idx, col, indent, y0, w, h)
+            self.show_parameters_background(img, (indent, y0, w if w <= self.img_width else self.img_width, h))
 
             if col != 'video':
                 color_lg = self.columns[col].get('color')
@@ -357,7 +381,7 @@ class Player(object):
                     color_lg = CVColor.LightGray
 
                 cv2.rectangle(img, (indent + 1, y0 + 1), (indent + 19, y0 + 24), color_lg, -1)
-                cv2.rectangle(img, (x0, y0), (x0 + w - 2, y0 + h), color_lg, 2)
+                cv2.rectangle(img, (indent, y0), (indent + w - 2, y0 + h), color_lg, 2)
             if 'ifv300' in col:
                 BaseDraw.draw_text(img, 'q3', (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
             else:
@@ -379,8 +403,13 @@ class Player(object):
                 # print(col, height, entry['buffer'])
                 style = entry['buffer'][height]['style']
                 style_list = {'normal': None, 'warning': CVColor.Yellow, 'fail': CVColor.Red, 'pass': CVColor.Green}
+
                 if isinstance(style, str) and style_list.get(style):
-                    color = style_list.get(style)
+                    if style in style_list:
+                        color = style_list.get(style)
+                    else:
+                        if style == 'critical':
+                            pass
                 elif isinstance(style, tuple):
                     color = style
                 else:
@@ -392,15 +421,18 @@ class Player(object):
                                    color, 1)
 
     def show_video_info(self, img, data):
-        tnow = time.time()
+        tnow = data['ts']
+        if data['source'] not in self.video_streams:
+            self.video_streams[data['source']] = {'frame_cnt': data['frame_id'] - 1, 'last_ts': 0, 'ts0': time.time(),
+                                                  'fps': 20}
+        if tnow == self.video_streams[data['source']]['last_ts']:
+            return
         self.show_parameters_background(img, (0, 0, 160, 80))
         BaseDraw.draw_text(img, data['source'], (2, 20), 0.5, CVColor.Cyan, 1)
         dt = self.ts_now - data['ts']
         BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt * 1000)), (92, 20), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'frame: {}'.format(data['frame_id']), (2, 40), 0.5, CVColor.White, 1)
-        if data['source'] not in self.video_streams:
-            self.video_streams[data['source']] = {'frame_cnt': data['frame_id'] - 1, 'last_ts': 0, 'ts0': time.time(),
-                                                  'fps': 20}
+
         self.video_streams[data['source']]['frame_cnt'] += 1
         # duration = time.time() - self.video_streams[data['source']]['ts0']
         dt = tnow - self.video_streams[data['source']]['last_ts']

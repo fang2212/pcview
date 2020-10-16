@@ -108,6 +108,9 @@ def parse_inspva(fields):
 
 
 def parse_bestpos(fields):
+    if len(fields) < 20:
+        print('invalid bestpos:', fields)
+        return
     r = {}
     r['type'] = 'bestpos'
 
@@ -156,19 +159,16 @@ def parse_bestpos(fields):
 
 
 def parse_novatel(msg_type, msg, ctx):
-    try:
-        if isinstance(msg, bytes):
-            msg = msg.decode().strip()
-        header, data = msg.split(';')
-        hfields = header.split(',')
-        fields = data.split('*')[0].split(',')
-    except Exception as e:
-        print('error when parsing novatel:', msg)
-        raise e
-        return
     if not msg.startswith('#'):
         print('invalid novatel msg:', msg)
         return
+    # try:
+    if isinstance(msg, bytes):
+        msg = msg.decode().strip()
+    header, data = msg.split(';')
+    hfields = header.split(',')
+    fields = data.split('*')[0].split(',')
+
     msg_name = hfields[0][1:]
     port = hfields[1]
     seq = int(hfields[2])
@@ -178,9 +178,15 @@ def parse_novatel(msg_type, msg, ctx):
     sec = float(hfields[6])
     rcv_status = int(hfields[7], 16)
     bd_offset = int(hfields[9])
+    # print(bd_offset)
     rsv = hfields[8]
     if not msg_type:
         msg_type = msg_name.lower()
+    # except Exception as e:
+    #     print('error when parsing novatel:', msg)
+    #     raise e
+
+
 
     r = {}
     r['ts'] = week * 604800 + sec + 315964800.0 - bds_offset
@@ -195,6 +201,9 @@ def parse_novatel(msg_type, msg, ctx):
         r.update(ret)
 
     elif msg_type == 'corrimudataa':
+        if len(fields) < 8:
+            print('invalid corrimudate:', data)
+            return
         r['type'] = 'imu_data_corrected'
         r['pitch_rate'] = float(fields[2])
         r['roll_rate'] = float(fields[3])
@@ -205,10 +214,13 @@ def parse_novatel(msg_type, msg, ctx):
 
         return r
 
-    elif msg_type == 'bestposa' or msg_type == 'bestgnssposa':
+    elif msg_type == 'bestposa':
         ret = parse_bestpos(fields)
         r.update(ret)
-
+    elif msg_type == 'bestgnssposa':
+        # ret = parse_bestpos(fields)
+        # r.update({'pos_type': ret['pos_type']})
+        return
     if r:
         return r
 
