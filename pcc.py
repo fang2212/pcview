@@ -501,6 +501,11 @@ class PCC(object):
 
         self.player.render_text_info(img)
 
+        if img.shape[0] > 960:
+            img = cv2.resize(img, (img.shape[1], 960))
+        if img.shape[1] > 1280:
+            img = cv2.resize(img, (1280, img.shape[0]))
+
         if self.show_ipm:
             # print(img.shape)
             # print(self.ipm.shape)
