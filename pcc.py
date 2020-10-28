@@ -33,7 +33,7 @@ from tools.vehicle import Vehicle, get_rover_target
 from tools.cpu_mem_info import *
 # from multiprocessing import Queue
 import numpy as np
-from recorder.voice_note import Audio
+
 
 # logging.basicConfig(level=logging.INFO,
 #                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
@@ -844,6 +844,9 @@ class PCC(object):
                 paused_t = time.time() - self.pause_t
                 self.hub.add_pause(paused_t)
         elif key == ord("n") or key == ord("N"):
+            if self.replay:
+                return
+            from recorder.voice_note import Audio
             if self.audio is None or not self.audio.is_alive():
                 self.audio = None
                 if self.hub.fileHandler.is_recording:
