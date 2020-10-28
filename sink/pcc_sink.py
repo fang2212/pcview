@@ -707,12 +707,18 @@ class FlowSink(Sink):
 
     def run(self):
         import asyncio
-        from tornado.platform.asyncio import AnyThreadEventLoopPolicy
-        asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+        import platform
+
+        if platform.python_version() > "3.6":
+            from tornado.platform.asyncio import AnyThreadEventLoopPolicy
+            asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+        else:
+            asyncio.set_event_loop(asyncio.new_event_loop())
         loop = asyncio.get_event_loop()
         try:
             loop.run_until_complete(self._run())
         except Exception as e:
+            print(e)
             print('error when initiating flow sink on', self.ip, self.port)
             raise (e)
 
@@ -757,7 +763,7 @@ class FlowSink(Sink):
                     self.fileHandler.insert_fusion_raw(r)
             elif topic == 'imuinfo':
                 imu_info = msgpack.unpackb(payload)
-                print(imu_info)
+                imu_info = mytools.convert(imu_info)
                 for idx in range(imu_info['data_count']):
                     d = imu_info['imu_info'][idx]
                     ts = d['timestamp'] / 1000000
@@ -768,9 +774,11 @@ class FlowSink(Sink):
                 return
             elif topic == 'pcview':
                 pass
-                # print(payload)
+                #  print(payload[:10])
+                
                 if b'calib_param' in payload:
                     calib_params = msgpack.unpackb(payload)
+                    calib_params = mytools.convert(calib_params)
                     if calib_params:
                         # print(calib_params)
                         r = {'type': 'calib_param', 'source': self.source, 'ts': 0, 'frame_id': calib_params['frame_id']}
@@ -810,7 +818,9 @@ class FlowSink(Sink):
         elif msg_src == 'imu':
             if topic == 'imuinfo':
                 imu_info = msgpack.unpackb(payload)
-                print(imu_info)
+                # print(imu_info)
+                imu_info = mytools.convert(imu_info)
+
                 for idx in range(imu_info['data_count']):
                     d = imu_info['imu_info'][idx]
                     ts = d['timestamp'] / 1000000
