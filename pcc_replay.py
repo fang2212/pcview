@@ -181,7 +181,7 @@ class sched_nn_sender(Process):
 
 class LogPlayer(Process):
 
-    def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, ratio=1.0, loop=False, nnsend=False, nosort=False):
+    def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, ratio=1.0, loop=False, nnsend=False, nosort=False, real_interval=False):
         super(LogPlayer, self).__init__()
         self.start_frame = int(start_frame) if start_frame else 0
         self.end_frame = int(end_frame) if end_frame else 9999999999999
@@ -209,6 +209,7 @@ class LogPlayer(Process):
         self.ctrl_q = Queue()
         self.type_roles = {}
         self.cfg = uniconf
+        self.real_interval = real_interval
         # self.pcv_cache = deque(maxlen=500)
 
         self.last_time = 0
@@ -339,7 +340,8 @@ class LogPlayer(Process):
                 # print('sleep', dt)
                 # print(data)
                 pass
-                time.sleep(dt)
+                if self.real_interval:
+                    time.sleep(dt)
             # print('pop common', frame_id, len(data))
             return frame_id, data, msg_type
         else:
@@ -644,6 +646,7 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--send', action="store_true")
     parser.add_argument('-sf', '--start_frame', default=0)
     parser.add_argument('-ef', '--end_frame', default=None)
+    parser.add_argument('-ri', '--real_interval', action="store_true")
 
     args = parser.parse_args()
     source = args.input_path
@@ -665,7 +668,7 @@ if __name__ == "__main__":
     r_sort, cfg = prep_replay(source, ns=ns)
     from pcc import PCC
 
-    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=args.start_frame, end_frame=args.end_frame, loop=args.loop, nnsend=args.send)
+    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=args.start_frame, end_frame=args.end_frame, loop=args.loop, nnsend=args.send, real_interval=args.real_interval)
     if args.web:
         from video_server import PccServer
         server = PccServer()
