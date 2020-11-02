@@ -33,7 +33,7 @@ from tools.vehicle import Vehicle, get_rover_target
 from tools.cpu_mem_info import *
 # from multiprocessing import Queue
 import numpy as np
-from recorder.voice_note import Audio
+
 
 # logging.basicConfig(level=logging.INFO,
 #                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
@@ -162,6 +162,10 @@ class PCC(object):
 
         self.wav_cnt = 0
         self.audio = None
+
+        self.space_cnt = 0
+
+        self.alarm_info = {}
 
     def ts_sync_local(self):
         t = time.time()
@@ -843,7 +847,16 @@ class PCC(object):
             else:
                 paused_t = time.time() - self.pause_t
                 self.hub.add_pause(paused_t)
+
+            if self.hub.fileHandler.is_recording and not self.replay:
+                self.hub.fileHandler.insert_raw((self.ts_now, "space_note", str(self.space_cnt)))
+                self.space_cnt += 1
+                self.alarm_info["space_note"] = ("space_note_" + str(self.space_cnt), time.time())
+
         elif key == ord("n") or key == ord("N"):
+            if self.replay:
+                return
+            from recorder.voice_note import Audio
             if self.audio is None or not self.audio.is_alive():
                 self.audio = None
                 if self.hub.fileHandler.is_recording:
