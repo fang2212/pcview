@@ -10,3 +10,4 @@ flask
 flask-socketio
 psutil
 eventlet
+python-nmap
