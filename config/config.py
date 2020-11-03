@@ -7,7 +7,7 @@
 # @File    : config.py
 # @Desc    :
 
-
+import time
 import json
 import os
 import shutil
@@ -304,7 +304,7 @@ class CVECfg(object):
     configs = []
     installs = {}
     runtime = {}
-    versions = {}
+    version = None
     local_cfg = None
 
 
@@ -321,6 +321,7 @@ def load_cfg(jsonspec, local='config/local.json'):
     cve_conf.name = spec['name']
     main_collector = spec.get('main_collector')
     if spec.get('version') and spec['version'] >= 0.6:
+        cve_conf.version = spec['version']
         for role in spec['vehicles']:
             for item in spec['vehicles'][role]['collectors']:
                 if spec['version'] >= 1.0:
@@ -410,6 +411,33 @@ def get_pcc_version():
         from tools.build_info import get_git_label
         git_desc = get_git_label()
         return {'git_desc': git_desc}
+
+
+def save_macs(cfg_name, mac_ip, cachefile='config/runtime/cached_macs.json'):
+    if not os.path.exists(os.path.dirname(cachefile)):
+        os.mkdir(os.path.dirname(cachefile))
+    if not os.path.exists(cachefile):
+        to_save = {cfg_name: {'ts': time.time(), 'data': mac_ip}}
+        json.dump(to_save, open(cachefile, 'w'), indent=True)
+    else:
+        saved = json.load(open(cachefile))
+        saved[cfg_name] = {'ts': time.time(), 'data': mac_ip}
+        json.dump(saved, open(cachefile, 'w'), indent=True)
+
+
+def get_cached_macs(cfg_name, cachefile='config/runtime/cached_macs.json', timeout=600):
+    if not os.path.exists(cachefile):
+        return
+    cached = json.load(open(cachefile))
+    if cfg_name not in cached:
+        return
+    if time.time() - cached[cfg_name]['ts'] > timeout:
+        print('mac table timed out.')
+        return
+    if not cached[cfg_name]['data'] or len(cached[cfg_name]['data']) <= 2:
+        return
+    # print_ip_mac(cached[cfg_name]['data'])
+    return cached[cfg_name]['data']
 
 
 class bcl:

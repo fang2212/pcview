@@ -13,6 +13,17 @@ import msgpack
 import nnpy
 import socket
 
+class bcl:
+    HDR = '\033[95m'
+    OKBL = '\033[94m'
+    OKGR = '\033[92m'
+    WARN = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 try:
     import pynng
 
@@ -718,9 +729,8 @@ class FlowSink(Sink):
         try:
             loop.run_until_complete(self._run())
         except Exception as e:
-            print(e)
-            print('error when initiating flow sink on', self.ip, self.port)
-            raise (e)
+            print(bcl.FAIL+'error when initiating flow sink on'+bcl.ENDC, self.ip, self.port)
+            # raise (e)
 
     def pkg_handler(self, msg):
         # print(msg)

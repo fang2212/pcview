@@ -1,0 +1,37 @@
+{
+  "type": "x1_algo",
+  "mac": "5a:31:d3:59:12:06",
+  "ip": "192.168.98.209",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": false,
+      "port": 24011,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "pcview"
+    },
+    "x1_fusion": {
+      "enable": true,
+      "port": 24015,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "x1_fusion"
+    },
+    "gsensor": {
+      "enable": true,
+      "port": 24099,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "imuinfo"
+    },
+    "lane_profiling": {
+      "enable": true,
+      "port": 24020,
+      "transport": "libflow",
+      "protocol": "general_bin",
+      "topic": "lane_profiling_data"
+    }
+  }
+}

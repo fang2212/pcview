@@ -13,7 +13,7 @@
         "ego": {
             "enable": true,
             "collectors": [
-                {"model": "x1_fusion", "params": {"mac": "5a:31:90:5d:03:a3"}},
+                {"model": "x1_fusion_novid", "params": {"mac": "5a:31:90:5d:03:a3"}},
                 {"model": "x1_fusion", "params": {"mac": "5a:31:3d:77:fd:1f"}},
                 {"model": "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "x1_fusion", "can1": "ars", "is_main": true}},
                 {"model": "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "t5", "can1": "ars"}},
