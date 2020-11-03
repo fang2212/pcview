@@ -310,8 +310,8 @@ class PCC(object):
                 #         # self.adjust_interval()
                 #         continue
             except Exception as e:
-                print('pcc run error:', e)
-                raise e
+                print('pcc run error:', d)
+                # raise e
                 continue
 
     def start(self):
