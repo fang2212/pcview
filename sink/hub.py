@@ -8,7 +8,7 @@ from threading import Thread
 from config.config import bcl
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
-from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink, TCPSink
+from sink.pcc_sink_async import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink, TCPSink
 from tools.ip_mac import get_mac_ip, get_cached_macs, save_macs
 
 class CollectorNode(kProcess):

@@ -242,6 +242,9 @@ class PCC(object):
                     self.cache['frame_id'] = fid
                     self.cache['ts'] = data['ts']
                     self.cache['updated'] = True
+
+                    self.check_status()
+
                     return True
             else:
                 dtype = data.get('type') if 'type' in data else 'notype'
@@ -387,6 +390,13 @@ class PCC(object):
             self.auto_rec = False
             self.start_rec()
 
+    def show_alarm_info(self, img):
+        now = time.time()
+
+        for i, key in enumerate(self.alarm_info):
+            if self.alarm_info[key] + 2 > now:
+                cv2.putText(img, key, (10, i*60 + 300), cv2.FONT_HERSHEY_COMPLEX, 3, (0, 0, 255), 2)
+
     def draw(self, mess, frame_cnt):
         # print(mess[''])
         ts_ana = []
@@ -509,6 +519,8 @@ class PCC(object):
             img = cv2.resize(img, (img.shape[1], 960))
         if img.shape[1] > 1280:
             img = cv2.resize(img, (1280, img.shape[0]))
+
+        self.show_alarm_info(img)
 
         if self.show_ipm:
             # print(img.shape)
@@ -846,14 +858,9 @@ class PCC(object):
                 self.pause_t = time.time()
             else:
                 paused_t = time.time() - self.pause_t
-                self.hub.add_pause(paused_t)
+                if self.replay:
+                    self.hub.add_pause(paused_t)
 
-            if self.hub.fileHandler.is_recording and not self.replay:
-                self.hub.fileHandler.insert_raw((self.ts_now, "space_note", str(self.space_cnt)))
-                self.space_cnt += 1
-                self.alarm_info["space_note"] = ("space_note_" + str(self.space_cnt), time.time())
-
-        elif key == ord("n") or key == ord("N"):
             if self.replay:
                 return
             from recorder.voice_note import Audio
@@ -865,6 +872,7 @@ class PCC(object):
                     self.audio.start()
                     self.hub.fileHandler.insert_raw((self.ts_now, "voice_note", str(self.wav_cnt)))
                     self.wav_cnt += 1
+                    self.alarm_info["voice_note"] = time.time()
 
         elif key == ord('r'):
             if self.hub.fileHandler.is_recording:
@@ -927,7 +935,32 @@ class PCC(object):
             self.stuck_cnt += 1
         else:
             self.stuck_cnt = 0
-        if not self.hub.time_aligned:
+
+        # main video ts
+        all_ts = [self.cache['ts']]
+
+        # data ts
+        for source in self.cache['misc']:
+            for key in self.cache['misc'][source]:
+                d = self.cache['misc'][source][key]
+                if type(d) == dict and 'ts' in d:
+                    all_ts.append(d['ts'])
+        # other video ts
+        for source in self.video_cache:
+            d = self.video_cache[source]
+            if type(d) == dict and 'ts' in d:
+                all_ts.append(d['ts'])
+
+        # collector ts
+        if not self.replay:
+            all_ts.append(time.time())
+
+        all_ts = sorted(all_ts)
+        dt = all_ts[-1] - all_ts[0]
+
+        if dt > 5:
+            self.alarm_info["time_not_sync"] = time.time()
+
             return {'status': 'fail', 'info': 'collectors\' time not aligned!'}
         return {'status': 'ok', 'info': 'oj8k'}
 
