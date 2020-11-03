@@ -33,7 +33,7 @@ from tools.vehicle import Vehicle, get_rover_target
 from tools.cpu_mem_info import *
 # from multiprocessing import Queue
 import numpy as np
-
+import copy
 
 # logging.basicConfig(level=logging.INFO,
 #                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
@@ -167,6 +167,10 @@ class PCC(object):
 
         self.alarm_info = {}
 
+        self.cache_pause_data = []
+        self.cache_pause_idx = 0
+        self.cache_pause_max_len = 50
+
     def ts_sync_local(self):
         t = time.time()
         if self.dt_from_img == 0:
@@ -243,6 +247,11 @@ class PCC(object):
                     self.cache['ts'] = data['ts']
                     self.cache['updated'] = True
 
+                    self.cache_pause_data.append(copy.deepcopy(self.cache))
+                    if len(self.cache_pause_data) > self.cache_pause_max_len:
+                        self.cache_pause_data.pop(0)
+
+                    self.cache_pause_idx = len(self.cache_pause_data)
                     self.check_status()
 
                     return True
@@ -371,7 +380,11 @@ class PCC(object):
 
         while self.replay and self.pause:
             self.handle_keyboard()
-            self.draw(self.cache, frame_cnt)
+            comb = self.draw(self.cache, frame_cnt)
+            if self.replay:
+                cv2.imshow('MINIEYE-CVE', comb)
+
+            # print("pause....")
             self.hub.pause(True)
             time.sleep(0.1)
 
@@ -851,6 +864,22 @@ class PCC(object):
             # os._exit(0)
             self.exit = True
             # sys.exit(0)
+        elif key == ord('['):
+
+            if self.pause and self.replay:
+
+                self.cache_pause_idx -= 1
+                self.cache_pause_idx = max(self.cache_pause_idx, 1)
+                self.cache = copy.deepcopy(self.cache_pause_data[self.cache_pause_idx-1])
+                # print(self.cache_pause_idx)
+                # print(self.cache)
+
+        elif key == ord(']'):
+            if self.pause and self.replay:
+                self.cache_pause_idx += 1
+                self.cache_pause_idx = min(self.cache_pause_idx, self.cache_pause_max_len)
+                self.cache = copy.deepcopy(self.cache_pause_data[self.cache_pause_idx-1])
+
         elif key == 32:  # space
             self.pause = not self.pause
             print('Pause:', self.pause)
