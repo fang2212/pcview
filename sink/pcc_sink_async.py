@@ -59,8 +59,8 @@ class Sink(Thread):
 
         elif nn_impl == 'aionn':
             self._socket = aionn.Socket(aionn.AF_SP, aionn.SUB)
-            self._socket.connect('tcp://127.0.0.1:5555')
-            self._socket.setsockopt(aionn.SUB, aionn.SUB_SUBSCRIBE, 'topic')
+            self._socket.connect(address)
+            self._socket.setsockopt(aionn.SUB, aionn.SUB_SUBSCRIBE, '')
 
         else:
             # self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
