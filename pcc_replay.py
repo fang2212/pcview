@@ -181,7 +181,8 @@ class sched_nn_sender(Process):
 
 class LogPlayer(Process):
 
-    def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, ratio=1.0, loop=False, nnsend=False, nosort=False, real_interval=False):
+    def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, ratio=1.0, loop=False, nnsend=False,
+                 nosort=False, real_interval=False, chmain=None):
         super(LogPlayer, self).__init__()
         self.start_frame = int(start_frame) if start_frame else 0
         self.end_frame = int(end_frame) if end_frame else 9999999999999
@@ -237,6 +238,12 @@ class LogPlayer(Process):
                 self.senders[key] = NNSender(port_num)
                 self.senders[key].start()
 
+        self.video_dir = "video"
+        self.video_log_key = "camera"
+        if chmain:
+            self.video_dir = chmain
+            self.video_log_key = chmain
+
     def init_env(self):
         self.shared['replay_sync'] = True
         self.shared['t0'] = time.time()
@@ -254,7 +261,7 @@ class LogPlayer(Process):
                 done = True
         while not self.msg_queue.empty():
             self.msg_queue.get()
-        self.jpeg_extractor = jpeg_extractor(os.path.dirname(self.log_path) + '/video')
+        self.jpeg_extractor = jpeg_extractor(os.path.dirname(self.log_path) + '/' + self.video_dir)
         # self.x1_fp = None
         # self.shared['t0'] = 0
         self.main_idx = get_main_index(self.log_path)
@@ -416,7 +423,7 @@ class LogPlayer(Process):
             except Exception as e:
                 continue
 
-            if cols[2] == 'camera':
+            if cols[2] == self.video_log_key:
                 frame_id = int(cols[3])
                 if last_fid == 0:
                     last_fid = frame_id - 1
@@ -597,7 +604,7 @@ class LogPlayer(Process):
         # cp.print_stats()
 
 
-def prep_replay(source, ns=False):
+def prep_replay(source, ns=False, chmain=None):
     if os.path.isdir(source):
         loglist = sorted(os.listdir(source), reverse=True)
         source = os.path.join(os.path.join(source, loglist[0]), 'log.txt')
@@ -622,6 +629,12 @@ def prep_replay(source, ns=False):
         print("using installation:", install_path)
         uniconf.installs = load_installation(install_path)
 
+    # parm copy
+    if chmain:
+        if chmain in uniconf.installs:
+            uniconf.installs['video'] = uniconf.installs[chmain]
+        else:
+            print("no", chmain, "installation")
     # return source
     return r_sort, uniconf
 
@@ -647,6 +660,7 @@ if __name__ == "__main__":
     parser.add_argument('-sf', '--start_frame', default=0)
     parser.add_argument('-ef', '--end_frame', default=None)
     parser.add_argument('-ri', '--real_interval', action="store_true")
+    parser.add_argument('-chmain', default=None, help="change main video")
 
     args = parser.parse_args()
     source = args.input_path
@@ -665,10 +679,12 @@ if __name__ == "__main__":
 
     from tools import mytools
     ns = args.nosort
-    r_sort, cfg = prep_replay(source, ns=ns)
+    chmain = args.chmain
+    r_sort, cfg = prep_replay(source, ns=ns, chmain=chmain)
     from pcc import PCC
 
-    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=args.start_frame, end_frame=args.end_frame, loop=args.loop, nnsend=args.send, real_interval=args.real_interval)
+    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=args.start_frame, end_frame=args.end_frame, loop=args.loop,
+                         nnsend=args.send, real_interval=args.real_interval, chmain=chmain)
     if args.web:
         from video_server import PccServer
         server = PccServer()

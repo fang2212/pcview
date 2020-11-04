@@ -54,7 +54,7 @@ def convert(data):
     return data
 
 
-def sort_big_file(filename, file_splits=10, my_cmp=None):
+def sort_big_file(filename, file_splits=4, my_cmp=None):
     idx = 0
     buf_file = []
     buf_path = []
