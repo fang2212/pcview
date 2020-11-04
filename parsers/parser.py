@@ -11,6 +11,7 @@ from parsers.ublox import decode_nmea
 from parsers.df_d530 import parse_dfd530
 from parsers.x1d3 import parse_x1d3
 from parsers.novatel import parse_novatel
+from parsers.pim222 import parse_pim222
 
 
 def default_parser(id, data, type=None):
@@ -44,5 +45,6 @@ parsers_dict = {
     "ctlrr":    parse_ctlrr,
     "d530":     parse_dfd530,
     "novatel":  parse_novatel,
+    "pim222":   parse_pim222,
     "default":  default_parser
 }

@@ -9,7 +9,7 @@ added_files =[
     ]
 
 a = Analysis(['pcc_app.py'],
-             pathex=['./'],
+             pathex=['/usr/local/lib/python3.5/dist-packages/cv2/python-3.5'],
              binaries=[],
              datas=added_files,
              hiddenimports=['_nanomsg_cpy', 'pkg_resources.py2_warn', 'engineio.async_drivers.eventlet', 'jinja2.ext', 'nnpy'],

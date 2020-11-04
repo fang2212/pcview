@@ -15,13 +15,15 @@
     "gps": {
       "enable": true,
       "port": 1220,
-      "protocol": "nanomsg",
+      "protocol": "nmea",
+      "transport": "nanomsg",
       "topic": "nmea"
     },
     "rtcm": {
       "enable": true,
       "port": 1240,
-      "protocol": "nanomsg",
+      "protocol": "rtcm",
+      "transport": "nanomsg",
       "topic": "rtcm"
     }
   }

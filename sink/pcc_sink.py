@@ -44,9 +44,9 @@ from tools import mytools
 from collections import deque
 
 
-class Sink(Thread):
+class NNSink(Thread):
     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
-        super(Sink, self).__init__()
+        super(NNSink, self).__init__()
         self.deamon = True
         self.dev = ip
         self.channel = port
@@ -83,7 +83,7 @@ class Sink(Thread):
         #         return
         # else:
         #     # bs = nanomsg.wrapper.nn_recv(self._socket, 1)[1]
-        bs = self._socket.recv(2048)
+        bs = self._socket.recv()  # flags=nnpy.DONTWAIT
         # print(self._socket.recv_buffer_size)
         return bs
         # return self._socket.recv()
@@ -153,114 +153,103 @@ class Sink(Thread):
         pass
 
 
-#
-# class SinkThread(Thread):
-#     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
-#         super(SinkThread, self).__init__()
-#         self.deamon = True
-#         self.dev = ip
-#         self.channel = port
-#         self.queue = queue
-#         self.type = msg_type
-#         self.index = index
-#         self.cls = msg_type
-#         self.isheadless = isheadless
-#         if 'can' in msg_type:
-#             self.cls = 'can'
-#             # print(self.type, 'start.')
-#
-#     def _init_port(self):
-#         self._socket = nanomsg.wrapper.nn_socket(nanomsg.AF_SP, nanomsg.SUB)
-#         nanomsg.wrapper.nn_setsockopt(self._socket, nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, "")
-#         nanomsg.wrapper.nn_connect(self._socket, "tcp://%s:%s" % (self.dev, self.channel,))
-#         # self._socket = Socket(SUB)
-#         # self._socket.connect("tcp://%s:%s" % (self.dev, self.channel,))
-#
-#     def read(self):
-#         bs = nanomsg.wrapper.nn_recv(self._socket, 0)[1]
-#         return bs
-#         # return self._socket.recv()
-#
-#     def _init_local_socket(self):
-#         self.ss = None
-#
-#     def run(self):
-#         self._init_port()
-#         # if 'can' in self.type:
-#         #     print(self.type, 'start.')
-#         while True:
-#             buf = self.read()
-#             if not buf:
-#                 time.sleep(0.001)
-#                 continue
-#             t0 = time.time()
-#             r = self.pkg_handler(buf)
-#             dt = time.time() - t0
-#             # print(self.dev, self.type, self.channel, 'dt: {:.5f}'.format(dt))
-#             if r is not None and not self.isheadless:
-#                 self.queue.put((*r, self.cls))
-#             # time.sleep(0.01)
-#
-#     def pkg_handler(self, msg_buf):
-#         pass
-
-
-class TCPSink(Sink):
+class TCPSink(Thread):
     def __init__(self, queue, ip, port, channel, protocol, index, fileHandler):
-        super(TCPSink, self).__init__(queue, ip, port, channel, index, False)
+        super(TCPSink, self).__init__()
+        self.ip = ip
+        self.port = port
+        self.channel = channel
+        self.queue = queue
         self.source = 'tcp.{:d}'.format(index)
         self.index = index
         self.filehandler = fileHandler
         self.protocol = protocol
         self.ctx = dict()
+        self._buf = b''
+        self.exit = Event()
 
     def _init_port(self):
-        print('connecting', self.dev, self.channel)
+        print('connecting', self.ip, self.port)
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socket.connect((self.dev, self.channel))
+        self._socket.connect((self.ip, self.port))
+
+    def read(self):
+        bs = self._socket.recv(2048)  # flags=nnpy.DONTWAIT
+        return bs
 
     def pkg_handler(self, msg):
         if self.protocol == 'novatel':
             # print(msg)
-            parser = parsers_dict.get(self.protocol)
-            if isinstance(msg, bytes):
-                msg = msg.decode().strip()
-            if parser:
-                # if msg.count('\n') > 1:
-                ret = []
-                for phr in msg.split('\n'):
-                    if len(phr) > 0:
-                        # print('msg phrase', msg)
-                        # print(phr)
-                        try:
-                            r = parser(None, phr, self.ctx)
-                        except Exception as e:
-                            print('error parsing novatel,', phr)
-                            raise e
-                        if not r:
-                            return
-                        r['source'] = self.source
-                        ret.append(r)
-                        # if len(msg) > 500:
-                        #     print('novatel too long:', msg)
-                        self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), phr))
-                # else:
-                #     ret = parser(None, msg, self.ctx)
-                #     if not ret:
-                #         return
-                #     ret['source'] = self.source
-                #     self.filehandler.insert_raw((ret['ts'], ret['source'] + '.{}'.format(ret['type']), msg))
-                # if isinstance(r, list):
-                #     for res in r:
-                #         res['source'] = self.source
-                #         self.filehandler.insert_raw((res['ts'], res['source'] + '.{}'.format(res['type']), msg.decode().strip()))
-                # else:
-                #     r['source'] = self.source
-                #     self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), msg.decode().strip()))
-                return self.channel, ret, self.source
+            ret = []
+            self._buf += msg
+            while True:
+                a = self._buf.find(b'#')
+                b = self._buf.find(b'\r\n')
+                if a == -1 or b == -1 or len(self._buf) == 0 or a > b:
+                    if a > -1:
+                        self._buf = self._buf[a:]
+                    break
 
+                phr = self._buf[a:b].decode()
+                # print(a, b, self._buf[a:b])
+                self._buf = self._buf[b + 2:]
+                try:
+                    parser = parsers_dict.get(self.protocol)
+                    if not parser:
+                        return
+                    r = parser(None, phr, self.ctx)
+                except Exception as e:
+                    print('error parsing novatel,', phr)
+                    # raise e
+                    return
+                if not r:
+                    return
+                r['source'] = self.source
+                ret.append(r)
+                self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), phr))
 
-class PinodeSink(Sink):
+            return self.channel, ret, self.source
+
+    def run(self):
+        pid = os.getpid()
+        print('sink {} pid:'.format(self.source), pid)
+        time0 = time.time()
+        self._init_port()
+        pt_sum = 0
+        next_check = 0
+        self.pid = os.getpid()
+        last_ts = 0
+        msg_cnt = 0
+        throuput = 0
+        # if 'can' in self.type:
+        #     print(self.type, 'start.')
+        while not self.exit.is_set():
+
+            buf = self.read()
+            if not buf:
+                time.sleep(0.001)
+                continue
+            t0 = time.time()
+            msg_cnt += 1
+            # throuput += len(buf)
+            r = self.pkg_handler(buf)
+            if r is not None:
+                if isinstance(r[1], dict):
+                    r[1]['ts_arrival'] = t0
+                elif isinstance(r[1], list):
+                    for item in r[1]:
+                        item['ts_arrival'] = t0
+                else:
+                    print(r)
+                if not self.queue.full():
+                    self.queue.put((r))
+                else:
+                    time.sleep(0.001)
+                    continue
+
+        print('sink', self.source, 'exit.')
+
+class PinodeSink(NNSink):
     def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
         super(PinodeSink, self).__init__(queue, ip, port, channel, index, isheadless)
         # print('pi_node connected.', ip, port, channel, index)
@@ -270,14 +259,22 @@ class PinodeSink(Sink):
         self.resname = resname
         self.fileHandler = fileHandler
         self.type = 'pi_sink'
+        print('inited pi_node sink res:', resname)
         if resname == 'rtcm':
             self.rtcm3 = rtcm3.RTCM3()
+        # elif resname == 'pim222':
+        #     print('pim222 sodes')
         # print(queue, ip, port, channel, index, resname, fileHandler, isheadless)
 
     def pkg_handler(self, msg):
-        # print('-----------------------------------------hahahahha')
+        # if self.resname == 'pim222':
+        # print(self.resname, '-----------------------------------------hahahahha')
 
         msg = memoryview(msg).tobytes()
+        if self.resname == 'pim222':
+            print('pim222 pkg handler')
+            print(msg)
+            return
         # print(self.resname, msg)
         data = self.decode_pinode_res(self.resname, msg)
         if not data:
@@ -316,21 +313,30 @@ class PinodeSink(Sink):
 
         return self.channel, data, self.source
 
+    # def read(self):
+        # if self.resname == 'pim222':
+        #     print('--------------------------------------------------------------pim222')
+        # bs = self._socket.recv(2048)  # flags=nnpy.DONTWAIT
+        # return bs
+
     def decode_pinode_res(self, resname, msg):
         if resname == 'rtk':
             results = json.loads(msg.decode())
             for res in results:
                 if res['type'] == 'novatel-like':
                     ret = []
-                    for phr in res['buf'].split('\n'):
-                        if len(phr) > 0:
-                            # print('phrase', phr)
-                            r = parsers_dict['novatel'](None, phr, None)
-                            if r:
-                                ret.append(r)
-                    # print(ret)
+                    try:
+                        for phr in res['buf'].split('\n'):
+                            if len(phr) > 0:
+                                # print('phrase', phr)
+                                r = parsers_dict['novatel'](None, phr, None)
+                                if r:
+                                    ret.append(r)
+                        # print(ret)
 
-                    return ret
+                        return ret
+                    except Exception as e:
+                        print('parsing novatel-like msg error:', res['buf'])
 
             return results
 
@@ -361,7 +367,7 @@ class PinodeSink(Sink):
             return data
 
 
-class PinodeSinkGeneral(Sink):
+class PinodeSinkGeneral(NNSink):
     def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
         super(PinodeSinkGeneral, self).__init__(queue, ip, port, channel, index, isheadless)
         # print('pi_node connected.', ip, port, channel, index)
@@ -463,7 +469,7 @@ class PinodeSinkGeneral(Sink):
             return data
 
 
-class CANSink(Sink):
+class CANSink(NNSink):
     def __init__(self, queue, ip, port, channel, type, index, fileHandler, isheadless=False):
         super(CANSink, self).__init__(queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
@@ -589,7 +595,7 @@ class CANSink(Sink):
             return can_id, ret, self.source
 
 
-class GsensorSink(Sink):
+class GsensorSink(NNSink):
     def __init__(self, queue, ip, port, channel, index, fileHandler, isheadless=False):
         super(GsensorSink, self).__init__(queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
@@ -610,7 +616,7 @@ class GsensorSink(Sink):
                                                                           gyro[2], temp, sec, usec)))
 
 
-class CameraSink(Sink):
+class CameraSink(NNSink):
     def __init__(self, queue, ip, port, channel, index, fileHandler, headless=False, is_main=False, devname=None):
         super(CameraSink, self).__init__(queue, ip, port, channel, index, headless)
         self.last_fid = 0
@@ -630,7 +636,8 @@ class CameraSink(Sink):
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         df = frame_id - self.last_fid
         if df != 1:
-            print("\r{} frame jump at {}".format(df - 1, frame_id), 'in', self.source, end='')
+            # print("\r{} frame jump at {}".format(df - 1, frame_id), 'in', self.source, end='')
+            pass
         self.last_fid = frame_id
         app1 = jpg.find(b'\xff\xe1')
         frame_id_jfif = int.from_bytes(jpg[24:28], byteorder="little")
@@ -651,7 +658,7 @@ class CameraSink(Sink):
         return frame_id, r, self.source
 
 
-class FlowSink(Sink):
+class FlowSink(NNSink):
     def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, protocol='msgpack', name='x1_algo',
                  log_name='pcv_log', topic='pcview', isheadless=False, is_main=False):
         super(FlowSink, self).__init__(cam_queue, ip, port, channel, index, isheadless)
@@ -883,10 +890,10 @@ class FlowSink(Sink):
             return 'x1_data', pcv, self.source
 
 
-class RTKSink(Sink):
+class RTKSink(NNSink):
 
     def __init__(self, queue, ip, port, msg_type, index, fileHandler, isheadless=False):
-        Sink.__init__(self, queue, ip, port, msg_type, index, isheadless)
+        NNSink.__init__(self, queue, ip, port, msg_type, index, isheadless)
         self.fileHandler = fileHandler
         self.source = 'drtk'
 

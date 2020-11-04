@@ -42,7 +42,7 @@ class SSHSession(object):
 def trigger_build(branch=None):
     work_dir = '/home/nan/work/pcview'
     suffix = 'cd {} && '.format(work_dir)
-    sess = SSHSession('192.168.50.106', username='nan', password='199116')
+    sess = SSHSession('192.168.50.106', username='minieye', password='minieye')
     if branch:
         sess.exec(suffix + 'git checkout {}'.format(branch))
     sess.exec(suffix + 'git pull')
@@ -60,7 +60,7 @@ def trigger_build(branch=None):
 def trigger_build_1604(branch=None):
     work_dir = '/home/minieye/work/pcview'
     suffix = 'cd {} && '.format(work_dir)
-    sess = SSHSession('192.168.50.123', username='minieye', password='minieye')
+    sess = SSHSession('192.168.50.122', username='minieye', password='minieye')
     if branch:
         sess.exec(suffix + 'git checkout {}'.format(branch))
     sess.exec(suffix + 'git pull')

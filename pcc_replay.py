@@ -173,6 +173,7 @@ class sched_nn_sender(Process):
     def __init__(self):
         super(sched_nn_sender, self).__init__()
 
+
 # def generate_dev_conf(log, opath):
 #     ports_topics = get_ports_topics(log)
 #     cfg = {}
@@ -180,7 +181,6 @@ class sched_nn_sender(Process):
 #
 
 class LogPlayer(Process):
-
     def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, ratio=1.0, loop=False, nnsend=False, nosort=False, real_interval=False):
         super(LogPlayer, self).__init__()
         self.start_frame = int(start_frame) if start_frame else 0

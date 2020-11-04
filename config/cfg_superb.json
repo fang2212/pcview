@@ -20,7 +20,8 @@
                 {"model": "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mbq3", "can1": "x1j"}},
                 {"model": "bynav"},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:d5:9d:e8"}},
-                {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}}
+                {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}},
+                {"model": "pim222"}
             ],
             "installation": {
                 "esr": {
@@ -65,12 +66,12 @@
                 },
                 "video": {
                     "fu": 1458.0,
-                    "yaw": -0.51,
+                    "yaw": -1.42,
                     "fv": 1458.0,
                     "pitch": -0.63,
                     "cu": 640.0,
                     "lat_offset": 0.15,
-                    "roll": -1.1,
+                    "roll": 0.0,
                     "height": 1.18,
                     "lon_offset": -1.67,
                     "cv": 480.0

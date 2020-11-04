@@ -1,0 +1,17 @@
+{
+  "type": "pi_node",
+  "mac": "aa:22:a3:26:cc:cc",
+  "ip": "127.0.0.1",
+  "force_ip": true,
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "pim222": {
+      "enable": true,
+      "port": 1220,
+      "protocol": "nmea",
+      "transport": "nanomsg",
+      "topic": "pim222"
+    }
+  }
+}
