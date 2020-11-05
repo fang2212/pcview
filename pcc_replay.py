@@ -145,7 +145,8 @@ class ThreadGateway(Thread):
         self.info = None
 
 
-from nanomsg import Socket, PUB
+# from nanomsg import Socket, PUB
+import nnpy
 class NNSender(ThreadGateway):
     def __init__(self, port=5010, name='NNSender'):
         super(NNSender, self).__init__(name)
@@ -155,7 +156,7 @@ class NNSender(ThreadGateway):
         self.addr = addr
 
     def run(self):
-        with Socket(PUB) as spub:
+        with nnpy.Socket(nnpy.AF_SP, nnpy.PUB) as spub:
             spub.bind(self.addr)
             print('started NN PUB server on', self.addr)
             while True:
