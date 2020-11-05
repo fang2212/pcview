@@ -692,21 +692,17 @@ class FlowSink(Sink):
             # await ws.send_bytes(data)
             # print(self.topic, data)
             async for msg in ws:
-                # print("recv..")
-                try:
-                    r = self.pkg_handler(msg)
-
-                    if r is not None:
-                        if isinstance(r[0], type("")):
-                            if 'x1_data' in r[0]:
-                                self.msg_queue.put((r[1]['frame_id'], r[1], r[0]))
-                            elif 'calib_param' in r[0]:
-                                self.msg_queue.put((r[1]['frame_id'], r[1], self.source))
-                                # print(self.source)
-                        else:
-                            self.cam_queue.put((*r, self.cls))
-                except Exception as e:
-                    print(e)
+                # print(msg[:100])
+                r = self.pkg_handler(msg)
+                if r is not None:
+                    if isinstance(r[0], type("")):
+                        if 'x1_data' in r[0]:
+                            self.msg_queue.put((r[1]['frame_id'], r[1], r[0]))
+                        elif 'calib_param' in r[0]:
+                            self.msg_queue.put((r[1]['frame_id'], r[1], self.source))
+                            # print(self.source)
+                    else:
+                        self.cam_queue.put((*r, self.cls))
 
     def pkg_handler(self, msg):
         # print(msg)
