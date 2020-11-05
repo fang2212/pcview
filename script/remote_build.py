@@ -109,11 +109,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.platform == '1604':
-        pack = trigger_build_1604(args.branch)
+        pack = trigger_build_1604(args.branch, args.output)
         print('retrieved pcc package at', pack)
 
     elif args.platform == '1804':
-        pack = trigger_build(args.branch)
+        pack = trigger_build(args.branch, args.output)
         print('retrieved pcc package at', pack)
     else:
         print('platform not recognized.')
