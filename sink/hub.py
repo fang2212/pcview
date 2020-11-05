@@ -8,7 +8,7 @@ from threading import Thread
 from config.config import bcl
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
-from sink.pcc_sink_async import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink, TCPSink
+from sink.pcc_sink_async import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink, TCPSink, AsyncManager
 from config.config import get_cached_macs, save_macs
 
 
@@ -20,14 +20,19 @@ class CollectorNode(kProcess):
         self.q = kQueue()
 
     def run(self):
+        self.am = AsyncManager()
+        self.am.start()
+
         print('Inited collector node', os.getpid())
         for sink in self.sinks:
-            sink.start()
+            # sink.start()
+            self.am.add_task(sink.run())
 
         while not self.exit.is_set():
             if not self.q.empty():
                 sink = self.q.get()
-                sink.start()
+                # sink.start()
+                self.am.add_task(sink.run())
             else:
                 time.sleep(0.1)
             # for sink in self.sinks:

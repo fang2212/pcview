@@ -31,9 +31,42 @@ from parsers.parser import parsers_dict
 from recorder.convert import *
 from tools import mytools
 from collections import deque
+from multiprocessing import Queue
+import asyncio
+import platform
+import aionn
 
 
-class Sink(Thread):
+# async task manager
+class AsyncManager(Thread):
+    def __init__(self):
+        super(AsyncManager, self).__init__()
+        self.q = asyncio.Queue()
+        self.loop = None
+
+    def run(self) -> None:
+
+        if platform.python_version() > "3.6":
+            from tornado.platform.asyncio import AnyThreadEventLoopPolicy
+            asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+        else:
+            asyncio.set_event_loop(asyncio.new_event_loop())
+        self.loop = asyncio.get_event_loop()
+        try:
+            self.loop.run_forever()
+            # self.loop.run_until_complete(self._tasks())
+        except Exception as e:
+            print(e)
+            print("init loop error")
+
+    def add_task(self, task):
+        # print("add task")
+        # self.q.put(task)
+        while self.loop is None: time.sleep(0.01)
+        asyncio.run_coroutine_threadsafe(task, self.loop)
+
+
+class Sink(object):
     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
         super(Sink, self).__init__()
         self.deamon = True
@@ -87,24 +120,7 @@ class Sink(Thread):
     def _init_local_socket(self):
         self.ss = None
 
-    def run(self):
-        import asyncio
-        import platform
-
-        if platform.python_version() > "3.6":
-            from tornado.platform.asyncio import AnyThreadEventLoopPolicy
-            asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
-        else:
-            asyncio.set_event_loop(asyncio.new_event_loop())
-        loop = asyncio.get_event_loop()
-        try:
-            loop.run_until_complete(self._run())
-        except Exception as e:
-            print(e)
-            print('error when initiating flow sink on', self.dev, self.channel)
-            raise (e)
-
-    async def _run(self):
+    async def run(self):
         pid = os.getpid()
         print('sink {} pid:'.format(self.source), pid)
         time0 = time.time()
@@ -638,9 +654,10 @@ class FlowSink(Sink):
         self.topic = topic
         self.source = name + '.{:d}'.format(index)
 
-    async def _run(self):
+    async def run(self):
         session = aiohttp.ClientSession()
         URL = 'ws://' + str(self.ip) + ':' + str(self.port)
+
         async with session.ws_connect(URL) as ws:
             msg = {
                 'source': 'pcview',
@@ -673,6 +690,7 @@ class FlowSink(Sink):
             # await ws.send_bytes(data)
             # data = msgpack.packb(msg_lane)
             # await ws.send_bytes(data)
+            # print(self.topic, data)
             async for msg in ws:
                 # print(msg[:100])
                 r = self.pkg_handler(msg)
