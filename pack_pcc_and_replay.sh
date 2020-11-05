@@ -38,8 +38,12 @@ mv build_info.txt dist/pcc_app/
 cd dist
 cp pcc_replay/pcc_replay pcc_app/
 tar -czvf pcc_app.tar.gz pcc_app
-mkdir ~/release
-cp pcc_app.tar.gz ~/release/"PCC_APP_$(date "+%Y%m%d%H%M%S").tar.gz"
+
+#if [ ! -d "~/release " ]; then
+#  mkdir ~/release
+#fi
+
+#cp pcc_app.tar.gz ~/release/"PCC_APP_$(date "+%Y%m%d%H%M%S").tar.gz"
 
 echo "removing build dirs..."
 #rm -r dist

@@ -67,9 +67,10 @@ def trigger_build_1604(branch=None, local_path='.'):
     if branch:
         sess.exec(suffix + 'git checkout {}'.format(branch))
     sess.exec(suffix + 'git pull')
+    sess.exec(suffix + 'ifconfig')
 
     # sess.exec(suffix + '/home/nan/.local/bin/pyinstaller pcc_app.spec --noconfirm')
-    sess.exec(suffix + './pack_pcc_and_replay.sh')
+    sess.exec(suffix + 'bash pack_pcc_and_replay.sh')
     # sess.exec(suffix + '')
 
     # retrieve binary
@@ -109,9 +110,11 @@ if __name__ == "__main__":
 
     if args.platform == '1604':
         pack = trigger_build_1604(args.branch)
+        print('retrieved pcc package at', pack)
 
     elif args.platform == '1804':
-        pack = trigger_build_1604(args.branch)
+        pack = trigger_build(args.branch)
+        print('retrieved pcc package at', pack)
     else:
         print('platform not recognized.')
 
