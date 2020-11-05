@@ -13,9 +13,9 @@
             "enable": true,
             "collectors": [
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "ars", "can1": "x1j"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "mbq3", "can1": "mqb"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "mbq3", "can1": "mqb", "is_main": true}},
                 {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mqb", "can1": "mqb"}},
-                {"model":  "x1_fusion", "params": {"mac": "5a:31:9d:8a:3a:ef", "is_main": true}},
+                {"model":  "x1_fusion", "params": {"mac": "5a:31:9d:8a:3a:ef"}},
                 {"model":  "x1_fusion", "params": {"mac":  "5a:31:d3:59:12:06"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
                 {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}}

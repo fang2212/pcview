@@ -1,16 +1,18 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
-added_files = [
-	('config', 'config'),
-	('dbc', 'dbc')
-]
+added_files =[
+    ('templates/', 'templates'),
+    ('static/', 'static'),
+    ('dbc/', 'dbc'),
+    ('config/', 'config'),
+    ]
 
 a = Analysis(['pcc_replay.py'],
-             pathex=['.'],
+             pathex=['/usr/local/lib/python3.5/dist-packages/cv2/python-3.5'],
              binaries=[],
-             datas= added_files,
-             hiddenimports=['_nanomsg_cpy'],
+             datas=added_files,
+             hiddenimports=['pkg_resources.py2_warn', 'engineio.async_drivers.eventlet', 'jinja2.ext'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -24,7 +26,7 @@ exe = EXE(pyz,
           a.scripts,
           [],
           exclude_binaries=True,
-          name='pcc_replay',
+          name='pcc_app',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -37,4 +39,4 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                upx_exclude=[],
-               name='pcc_replay', icon='collection.ico')
+               name='pcc_replay')
