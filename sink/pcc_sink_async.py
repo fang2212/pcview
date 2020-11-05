@@ -12,7 +12,7 @@ import can
 import msgpack
 import nnpy
 import socket
-# import aionn
+import aionn
 
 try:
     import pynng

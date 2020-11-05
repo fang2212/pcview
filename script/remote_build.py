@@ -2,6 +2,9 @@ import paramiko
 import time
 import os
 
+local_proj_root = os.path.dirname(__file__)
+if local_proj_root.endswith('script'):
+    pass
 
 def line_buffered(f):
     line_buf = b''
@@ -39,39 +42,40 @@ class SSHSession(object):
         self.tp.close()
 
 
-def trigger_build(branch=None):
+def trigger_build(branch=None, local_path='.'):
     work_dir = '/home/nan/work/pcview'
     suffix = 'cd {} && '.format(work_dir)
-    sess = SSHSession('192.168.50.106', username='minieye', password='minieye')
+    sess = SSHSession('192.168.50.113', username='minieye', password='minieye')
     if branch:
         sess.exec(suffix + 'git checkout {}'.format(branch))
     sess.exec(suffix + 'git pull')
 
     # sess.exec(suffix + '/home/nan/.local/bin/pyinstaller pcc_app.spec --noconfirm')
-    sess.exec(suffix + './pack_pcc.sh')
+    sess.exec(suffix + './pack_pcc_and_replay.sh')
     # sess.exec(suffix + '')
 
     # retrieve binary
-    local_path = '/home/nan/release/pcc_app_1804_{}_{}.tar.gz'.format(branch, int(time.time()))
-    sess.download(work_dir + '/dist/pcc_app.tar.gz', local_path)
+    local = os.path.join(local_path, 'pcc_app_replay_1804_{}_{}.tar.gz'.format(branch, int(time.time())))
+    sess.download(work_dir + '/dist/pcc_app.tar.gz', local)
     return local_path
 
 
-def trigger_build_1604(branch=None):
+def trigger_build_1604(branch=None, local_path='.'):
     work_dir = '/home/minieye/work/pcview'
     suffix = 'cd {} && '.format(work_dir)
     sess = SSHSession('192.168.50.122', username='minieye', password='minieye')
     if branch:
         sess.exec(suffix + 'git checkout {}'.format(branch))
     sess.exec(suffix + 'git pull')
+    sess.exec(suffix + 'ifconfig')
 
     # sess.exec(suffix + '/home/nan/.local/bin/pyinstaller pcc_app.spec --noconfirm')
-    sess.exec(suffix + './pack_pcc.sh')
+    sess.exec(suffix + 'bash pack_pcc_and_replay.sh')
     # sess.exec(suffix + '')
 
     # retrieve binary
-    local_path = '/home/nan/release/pcc_app_1604_{}_{}.tar.gz'.format(branch, int(time.time()))
-    sess.download(work_dir + '/dist/pcc_app.tar.gz', local_path)
+    local = os.path.join(local_path, 'pcc_app_replay_1604_{}_{}.tar.gz'.format(branch, int(time.time())))
+    sess.download(work_dir + '/dist/pcc_app.tar.gz', local)
     return local_path
 
 
@@ -92,7 +96,30 @@ def deploy_to_cve(pack_path, remote_path='/home/minieye/upgrade_temp/'):
 
 
 if __name__ == "__main__":
+    import argparse
+    import os
+
+    home = os.environ['HOME']
+    parser = argparse.ArgumentParser(description="pcc remote build and retrieve.")
+    parser.add_argument('-p', '--platform', default='1604')
+    parser.add_argument('-b', '--branch', default='cve-new')
+    parser.add_argument('-t', '--target', default='pcc')  #
+    parser.add_argument('-o', '--output', default=home)
+
+    args = parser.parse_args()
+
+    if args.platform == '1604':
+        pack = trigger_build_1604(args.branch, args.output)
+        print('retrieved pcc package at', pack)
+
+    elif args.platform == '1804':
+        pack = trigger_build(args.branch, args.output)
+        print('retrieved pcc package at', pack)
+    else:
+        print('platform not recognized.')
+
+
     # pack = '/home/nan/release/pcc_app_1804_cve-new_1598513211.tar.gz'
     # pack = trigger_build('cve-new')
-    pack = trigger_build_1604('cve-new')
+
     # deploy_to_cve(pack)
