@@ -8,7 +8,8 @@ from threading import Thread
 from config.config import bcl
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
-from sink.pcc_sink_async import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink, TCPSink, AsyncManager
+# from sink.pcc_sink_async import *
+from sink.pcc_sink import *
 from config.config import get_cached_macs, save_macs
 
 
@@ -20,19 +21,25 @@ class CollectorNode(kProcess):
         self.q = kQueue()
 
     def run(self):
-        self.am = AsyncManager()
-        self.am.start()
+        if async_for_sink:
+            self.am = AsyncManager()
+            self.am.start()
 
         print('Inited collector node', os.getpid())
         for sink in self.sinks:
-            # sink.start()
-            self.am.add_task(sink.run())
+            if async_for_sink:
+                self.am.add_task(sink.run())
+            else:
+                sink.start()
 
         while not self.exit.is_set():
             if not self.q.empty():
                 sink = self.q.get()
-                # sink.start()
-                self.am.add_task(sink.run())
+                if async_for_sink:
+                    self.am.add_task(sink.run())
+                else:
+                    sink.start()
+
             else:
                 time.sleep(0.1)
             # for sink in self.sinks:
@@ -273,6 +280,7 @@ class Hub(Thread):
                 # pisink = {'stype': 'pi', 'queue': self.msg_queue, 'ip': ip, 'port': port, 'channel': 'can',
                 #           'index': idx, 'resname': 'name', 'fileHandler': self.fileHandler,
                 #           'isheadless': self.headless}
+                # print(ip, port, name, '---------------------------------------')
                 self.sinks.append(pisink)
                 self.online[ip]['msg_types'].append(name + '.{}'.format(idx))
         elif cfg.get('type') == 'x1_collector':

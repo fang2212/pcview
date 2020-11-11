@@ -13,6 +13,8 @@ import msgpack
 import nnpy
 import socket
 
+async_for_sink = False
+
 class bcl:
     HDR = '\033[95m'
     OKBL = '\033[94m'
@@ -167,6 +169,7 @@ class TCPSink(Thread):
         self.ctx = dict()
         self._buf = b''
         self.exit = Event()
+        self.type = 'tcp_sink'
 
     def _init_port(self):
         print('connecting', self.ip, self.port)
@@ -262,9 +265,11 @@ class PinodeSink(NNSink):
         print('inited pi_node sink res:', resname)
         if resname == 'rtcm':
             self.rtcm3 = rtcm3.RTCM3()
+        self._buf = b''
         # elif resname == 'pim222':
         #     print('pim222 sodes')
         # print(queue, ip, port, channel, index, resname, fileHandler, isheadless)
+        self.ctx = {}
 
     def pkg_handler(self, msg):
         # if self.resname == 'pim222':
@@ -272,9 +277,17 @@ class PinodeSink(NNSink):
 
         msg = memoryview(msg).tobytes()
         if self.resname == 'pim222':
-            print('pim222 pkg handler')
-            print(msg)
-            return
+            from parsers.pim222 import parse_pim222
+            source = 'pim222.{}'.format(self.index)
+            if not msg.startswith(b'$'):
+                return
+            # print('pim222 pkg handler')
+            self.fileHandler.insert_raw((time.time(), source, msg.decode().strip()))
+            r = parse_pim222(None, msg, self.ctx)
+            if r:
+                r['source'] = source
+                # print(r)
+                return self.channel, r, source
         # print(self.resname, msg)
         data = self.decode_pinode_res(self.resname, msg)
         if not data:
@@ -324,19 +337,28 @@ class PinodeSink(NNSink):
             results = json.loads(msg.decode())
             for res in results:
                 if res['type'] == 'novatel-like':
+                    # print(msg)
                     ret = []
-                    try:
-                        for phr in res['buf'].split('\n'):
-                            if len(phr) > 0:
-                                # print('phrase', phr)
-                                r = parsers_dict['novatel'](None, phr, None)
-                                if r:
-                                    ret.append(r)
-                        # print(ret)
+                    phr = res['buf']
+                    if len(phr) > 0:
+                        # print('phrase', phr)
+                        try:
+                            r = parsers_dict['novatel'](None, phr, None)
+                            if r:
+                                # print(r)
+                                r['source'] = 'rtk.{}'.format(self.index)
+                                self.fileHandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), phr))
+                                ret.append(r)
+                                # print(r)
+                        except Exception as e:
+                            print('error decoding novatel-like:', phr)
+                            # raise e
 
-                        return ret
-                    except Exception as e:
-                        print('parsing novatel-like msg error:', res['buf'])
+                    # print(ret)
+
+                    return ret
+                    # except Exception as e:
+                    #     print('parsing novatel-like msg error:', res['buf'])
 
             return results
 
@@ -385,7 +407,7 @@ class PinodeSinkGeneral(NNSink):
         # print('-----------------------------------------hahahahha')
 
         msg = memoryview(msg).tobytes()
-        # print(self.resname, msg)
+        print(self.resname, msg)
         data = self.decode_pinode_res(self.resname, msg)
         if not data:
             return

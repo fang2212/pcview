@@ -32,7 +32,7 @@ def parse_drpva(fields):
 
     r = {}
     # print(fields)
-    r['type'] = 'inspva'
+    r['type'] = 'drpva'
 
     r['sol_stat'] = fields[0]
     r['pos_type'] = fields[1]
@@ -194,6 +194,7 @@ def parse_novatel(msg_type, msg, ctx):
 
     if msg_type == 'drpva' or msg_type == 'drpvaa':
         ret = parse_drpva(fields)
+        # print(ret)
         r.update(ret)
 
     elif msg_type == 'inspvaxa':

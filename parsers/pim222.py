@@ -1,17 +1,58 @@
 import datetime
 
+
+pos_types = {0: 'None', 1: 'single', 2: 'psrdiff', 4: 'rtkfixed', 5:'ftkfloat', 6: 'ins', 7: 'fixpos'}
+
+
 def parse_pim222(msg_type, msg, ctx=None):
     if isinstance(msg, bytes):
         nmeastr = msg.decode()
     else:
         nmeastr = msg
 
-    if nmeastr.startswith('$GNRMC') or nmeastr.startswith('$GPRMC'):
+    if nmeastr.startswith('$GNGGA') or nmeastr.startswith('$GPGGA'):
+        r = dict()
+        # print(nmeastr)
+        r['type'] = 'gpgga'
+        fields = nmeastr.split(',')
+        r['lat'] = int(fields[2][:2]) + float(fields[2][2:]) / 60.0
+        r['lon'] = int(fields[4][:3]) + float(fields[4][3:]) / 60.0
+        r['pos_type'] = pos_types.get(int(fields[6]))
+        r['#SVs'] = int(fields[7])
+        r['hdop'] = float(fields[8])
+        r['hgt'] = float(fields[9])
+        r['undulation'] = float(fields[11])
+        r['diff_age'] = float(fields[13]) if fields[13] else None
+        # r['station_id'] = fields[14]
+        if ctx and ctx.get('date'):
+            str_time = ctx['date'] + ' ' + fields[1][:2] + ':' + fields[1][2:4] + ':' + fields[1][4:]
+            dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
+            dtime = dtime + datetime.timedelta(hours=8)
+            r['ts'] = dtime.timestamp()
+        else:
+            str_time = '2020-11-10' + ' ' + fields[1][:2] + ':' + fields[1][2:4] + ':' + fields[1][4:]
+            dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
+            dtime = dtime + datetime.timedelta(hours=8)
+            r['ts'] = dtime.timestamp()
+
+        return r
+
+    elif nmeastr.startswith('GPZDA'):
+        # r = dict()
+        fields = nmeastr.split(',')
+        # str_time = fields[4] + '-' + fields[3] + '-' + fields[2] + ' ' + fields[1][:2] + ':' + \
+        #            fields[1][2:4] + ':' + fields[1][4:]
+        ctx['date'] = fields[4] + '-' + fields[3] + '-' + fields[2]
+        # dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
+
+
+    elif nmeastr.startswith('$GNRMC') or nmeastr.startswith('$GPRMC'):
         # print(nmeastr)
         r = dict()
         r['type'] = 'gps'
         r['sensor'] = 'm8n'
         fields = nmeastr.split(',')
+
         if fields[7] == '':
             # print('no thanks')
             return
@@ -42,12 +83,14 @@ def parse_pim222(msg_type, msg, ctx=None):
 
         return r
     elif nmeastr.startswith('$PASHR'):
+        # print(nmeastr)
         r = dict()
         r['type'] = 'pashr'
         data = nmeastr.split('*')[0]
         fields = data.split(',')
 
         if len(fields) < 11:
+            print(nmeastr)
             return
         if len(fields) > 11:
             r['ins_status'] = fields[11]
@@ -58,7 +101,11 @@ def parse_pim222(msg_type, msg, ctx=None):
             dtime = dtime + datetime.timedelta(hours=8)
             r['ts'] = dtime.timestamp()
         else:
-            return
+            str_time = '2020-11-10' + ' ' + fields[1][:2] + ':' + fields[1][2:4] + ':' + fields[1][4:]
+            dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
+            dtime = dtime + datetime.timedelta(hours=8)
+            r['ts'] = dtime.timestamp()
+            # return
 
         states = ['NONE', 'SINGLE', 'RTK_FIX']
 
@@ -70,3 +117,5 @@ def parse_pim222(msg_type, msg, ctx=None):
         r['pitch_sgm'] = float(fields[8])
         r['yaw_sgm'] = float(fields[9])
         r['pos_type'] = states[int(fields[10])]
+
+        return r

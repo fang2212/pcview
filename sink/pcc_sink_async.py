@@ -14,6 +14,8 @@ import nnpy
 import socket
 import aionn
 
+async_for_sink = True
+
 try:
     import pynng
 
@@ -258,14 +260,22 @@ class PinodeSink(Sink):
         self.type = 'pi_sink'
         if resname == 'rtcm':
             self.rtcm3 = rtcm3.RTCM3()
-        # print(queue, ip, port, channel, index, resname, fileHandler, isheadless)
+        # print(queue, ip, port, channel, index, resname, fileHandler, isheadless, '------------------------------------------------------------')
 
     def pkg_handler(self, msg):
         # print('-----------------------------------------hahahahha')
 
         msg = memoryview(msg).tobytes()
         # print(self.resname, msg)
+        if self.resname == 'pim222':
+            # print('pim222 pkg handler')
+            data = msg.decode()
+
+            print(msg)
+            return
+
         data = self.decode_pinode_res(self.resname, msg)
+        # print(data)
         if not data:
             return
 
@@ -359,6 +369,7 @@ class PinodeSinkGeneral(Sink):
         self.type = 'pi_sink'
         if resname == 'rtcm':
             self.rtcm3 = rtcm3.RTCM3()
+        # print('inited resname:', resname)
         # print(queue, ip, port, channel, index, resname, fileHandler, isheadless)
 
     def pkg_handler(self, msg):

@@ -22,6 +22,7 @@ from parsers.parser import parsers_dict
 from config.config import *
 from tools.log_info import *
 from parsers.novatel import parse_novatel
+from parsers.pim222 import parse_pim222
 # from numba import jit
 
 
@@ -597,6 +598,10 @@ class LogPlayer(Process):
                     raise e
             elif 'imu_data_corrected' in cols[2]:
                 pass
+
+            elif 'pim222' in cols[2]:
+                r = parse_pim222(None, cols[3], None)
+                print(r)
 
         print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
