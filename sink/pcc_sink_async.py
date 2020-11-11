@@ -181,6 +181,68 @@ class Sink(object):
 
         print('sink', self.source, 'exit.')
 
+    def sync_run(self):
+        pid = os.getpid()
+        print('sink {} pid:'.format(self.source), pid)
+        time0 = time.time()
+        self._init_port()
+        pt_sum = 0
+        next_check = 0
+        self.pid = os.getpid()
+        last_ts = 0
+        msg_cnt = 0
+        throuput = 0
+        # if 'can' in self.type:
+        #     print(self.type, 'start.')
+        while not self.exit.is_set():
+
+            buf = self.read()
+            if not buf:
+                time.sleep(0.001)
+                continue
+            t0 = time.time()
+            msg_cnt += 1
+            # throuput += len(buf)
+
+            try:
+                r = self.pkg_handler(buf)
+            except Exception as e:
+                # print(e, buf[:10])
+                print(self.source, "pkg error")
+                continue
+            # dt = time.time() - t0
+            # t1 = time.time()
+            # pt_sum += t1 - t0
+            # if t1 - last_ts >= 1.0:
+            #     print('{} sink total cost in last sec: {:.2f}ms, cnt{}, throuput{}'.format(self.source, pt_sum*1000, msg_cnt, throuput))
+            #     pt_sum = 0
+            #     last_ts = t1
+            #     msg_cnt = 0
+            #     # throuput = 0
+            # print(self.dev, self.type, self.channel, 'dt: {:.5f}'.format(dt))
+            if r is not None:
+                if isinstance(r[1], dict):
+                    r[1]['ts_arrival'] = t0
+                elif isinstance(r[1], list):
+                    for item in r[1]:
+                        item['ts_arrival'] = t0
+                else:
+                    print(r)
+                if not self.queue.full():
+                    self.queue.put((r))
+                else:
+                    time.sleep(0.001)
+                    continue
+
+            # time.sleep(0.01)
+            # if t0 > next_check:
+            #     profile_info = {'type': 'profiling', 'source': self.source, 'pt_sum': pt_sum, 'uptime': t0-time0, 'ts': t0, 'pid': os.getpid()}
+            #     self.queue.put((0, profile_info, self.source))
+            #     next_check = t0 + self.profile_intv
+
+        print('sink', self.source, 'exit.')
+
+
     def close(self):
         self.exit.set()
 
@@ -196,13 +258,15 @@ class TCPSink(Sink):
         self.filehandler = fileHandler
         self.protocol = protocol
         self.ctx = dict()
+        self.run = self.sync_run
 
     def _init_port(self):
         print('connecting', self.dev, self.channel)
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.connect((self.dev, self.channel))
+        # self._socket.setblocking(False)
 
-    async def read(self):
+    def read(self):
         return self._socket.recv(2048)
 
     def pkg_handler(self, msg):
@@ -860,6 +924,7 @@ class RTKSink(Sink):
         Sink.__init__(self, queue, ip, port, msg_type, index, isheadless)
         self.fileHandler = fileHandler
         self.source = 'drtk'
+        self.run = self.sync_run
 
     def _init_port(self):
         # self._socket = can.interface.Bus()
@@ -879,7 +944,7 @@ class RTKSink(Sink):
         msg = can.Message(arbitration_id=0xc6, data=[x for x in buf[-last_dlc:]], extended_id=False)
         bus.send(msg)
 
-    async def read(self):
+    def read(self):
         if self._socket:
             r = self._socket.recv(128)
             if r:
