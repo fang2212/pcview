@@ -12,6 +12,8 @@ from recorder.FileHandler import FileHandler
 from sink.pcc_sink import *
 from config.config import get_cached_macs, save_macs
 
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
 
 class CollectorNode(kProcess):
     def __init__(self, sinks):
@@ -24,11 +26,17 @@ class CollectorNode(kProcess):
         if async_for_sink:
             self.am = AsyncManager()
             self.am.start()
+            while self.am.loop is None: time.sleep(0.01)
+            self.tep = ThreadPoolExecutor(2)
 
         print('Inited collector node', os.getpid())
         for sink in self.sinks:
             if async_for_sink:
-                self.am.add_task(sink.run())
+                if isinstance(sink, TCPSink) or isinstance(sink, RTKSink):
+                    t = self.am.loop.run_in_executor(self.tep, sink.run)
+                    self.am.add_task(asyncio.wait(t))
+                else:
+                    self.am.add_task(sink.run())
             else:
                 sink.start()
 
@@ -280,7 +288,6 @@ class Hub(Thread):
                 # pisink = {'stype': 'pi', 'queue': self.msg_queue, 'ip': ip, 'port': port, 'channel': 'can',
                 #           'index': idx, 'resname': 'name', 'fileHandler': self.fileHandler,
                 #           'isheadless': self.headless}
-                # print(ip, port, name, '---------------------------------------')
                 self.sinks.append(pisink)
                 self.online[ip]['msg_types'].append(name + '.{}'.format(idx))
         elif cfg.get('type') == 'x1_collector':

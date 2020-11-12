@@ -974,15 +974,18 @@ class PCC(object):
                 d = self.cache['misc'][source][key]
                 if type(d) == dict and 'ts' in d:
                     all_ts.append(d['ts'])
+
         # other video ts
         for source in self.video_cache:
             d = self.video_cache[source]
             if type(d) == dict and 'ts' in d:
-                all_ts.append(d['ts'])
+                    all_ts.append(d['ts'])
 
         # collector ts
-        if not self.replay:
-            all_ts.append(time.time())
+        # if not self.replay:
+        #     all_ts.append(time.time())
+
+        all_ts = [ts for ts in all_ts if ts]
 
         all_ts = sorted(all_ts)
         dt = all_ts[-1] - all_ts[0]
