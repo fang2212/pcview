@@ -8,7 +8,7 @@ from threading import Thread
 from config.config import bcl
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
-from sink.pcc_sink_async import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink, TCPSink, AsyncManager, RTKSink
+from sink.pcc_sink_async import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink, TCPSink, AsyncManager
 from config.config import get_cached_macs, save_macs
 
 from concurrent.futures import ThreadPoolExecutor
@@ -24,18 +24,12 @@ class CollectorNode(kProcess):
     def run(self):
         self.am = AsyncManager()
         self.am.start()
-        while self.am.loop is None: time.sleep(0.01)
-        self.tep = ThreadPoolExecutor(2)
 
         print('Inited collector node', os.getpid())
         for sink in self.sinks:
             # sink.start()
             # sync io should run in thread pool
-            if isinstance(sink, TCPSink) or isinstance(sink, RTKSink):
-                t = self.am.loop.run_in_executor(self.tep, sink.run)
-                self.am.add_task(asyncio.wait(t))
-            else:
-                self.am.add_task(sink.run())
+            self.am.add_task(sink.run())
 
         while not self.exit.is_set():
             if not self.q.empty():

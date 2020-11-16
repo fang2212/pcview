@@ -34,7 +34,7 @@ from tools.cpu_mem_info import *
 # from multiprocessing import Queue
 import numpy as np
 import copy
-
+import traceback
 # logging.basicConfig(level=logging.INFO,
 #                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
@@ -320,6 +320,7 @@ class PCC(object):
                 #         continue
             except Exception as e:
                 print('pcc run error:', d)
+                traceback.print_exc()
                 # raise e
                 continue
 
@@ -965,19 +966,21 @@ class PCC(object):
         else:
             self.stuck_cnt = 0
 
+        cache_cp = self.cache.copy()
+        video_cp = self.video_cache.copy()
         # main video ts
-        all_ts = [self.cache['ts']]
+        all_ts = [cache_cp['ts']]
 
         # data ts
-        for source in self.cache['misc']:
-            for key in self.cache['misc'][source]:
-                d = self.cache['misc'][source][key]
+        for source in cache_cp['misc']:
+            for key in cache_cp['misc'][source]:
+                d = cache_cp['misc'][source][key]
                 if type(d) == dict and 'ts' in d:
                     all_ts.append(d['ts'])
 
         # other video ts
-        for source in self.video_cache:
-            d = self.video_cache[source]
+        for source in video_cp:
+            d = video_cp[source]
             if type(d) == dict and 'ts' in d:
                     all_ts.append(d['ts'])
 
