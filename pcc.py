@@ -529,10 +529,12 @@ class PCC(object):
 
         self.player.render_text_info(img)
 
-        if img.shape[0] > 960:
-            img = cv2.resize(img, (img.shape[1], 960))
         if img.shape[1] > 1280:
-            img = cv2.resize(img, (1280, img.shape[0]))
+            fx = 1280 / img.shape[1]
+            img = cv2.resize(img, None, fx=fx, fy=fx)
+        if img.shape[0] > 960:
+            fx = 960 / img.shape[0]
+            img = cv2.resize(img, None, fx=fx, fy=fx)
 
         self.show_alarm_info(img)
 
