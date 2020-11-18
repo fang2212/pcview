@@ -192,20 +192,22 @@ def compare_1d_data(data):
     tools = 'pan, wheel_zoom, crosshair, save'
     for name in data:
         hover = HoverTool(tooltips=[
-            ("time", "@timestamps"),
+            ("time", "@index"),
             ("value", "@value"),
             ("pos_type", "@pos_type"),
+            ("#solSVs", "@solSVs")
         ])
-        p = figure(plot_width=1920, plot_height=1000, title=name, toolbar_sticky=True, tools=[hover, tools])
+        p = figure(plot_width=1600, plot_height=900, title=name, toolbar_sticky=True, tools=[hover, tools])
 
         for idx1, src in enumerate(sorted(data[name])):
             print('plotting', name, src)
             entry = src + '.' + name
-            df = pd.DataFrame(data[name][src])
+            df = pd.DataFrame.from_dict(data[name][src], orient='index')
+            df.fillna(value=-1)
             source = ColumnDataSource(df)
             # x = data[name][src]['timestamps']
             # y = data[name][src]['value']
-            p.line(x='timestamps', y='value', source=source, color=Category10_10[idx1], legend_label=entry)
+            p.line(x='index', y='value', source=source, color=Category10_10[idx1], legend_label=entry)
         p.legend.click_policy = "hide"
         plist.append([p])
     s = gridplot(plist)

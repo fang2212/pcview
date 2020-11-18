@@ -40,6 +40,7 @@ def parse_x1j(id, data, ctx=None):
     elif id == 0x76d:
         # CIPV
         if r['TargetVehicle_Type'] == 'NoVehicle':
+            # print(r)
             return None
         else:
             # print("0x%x" % id, r)
@@ -68,6 +69,7 @@ def parse_x1j(id, data, ctx=None):
         cipv['TTC'] = r['TargetVehicle_TTC']
 
         ctx['x1j_obs'].append(cipv.copy())
+        # print(cipv)
         # return cipv
 
     elif 0x770 <= id <= 0x777:
@@ -94,7 +96,13 @@ def parse_x1j(id, data, ctx=None):
         x1j_obs['width'] = 1.5
 
         # x1_obs_list.append(x1_obs)
-        ctx['x1j_obs'].append(x1j_obs.copy())
+        # print(x1j_obs['status'])
+        # if x1j_obs['status'] == 'invalid target':
+        #     return
+        if x1j_obs['pos_lon'] > 0.0:
+            ctx['x1j_obs'].append(x1j_obs.copy())
+        # else:
+        #     print(x1j_obs)
 
     elif id == 0x77a:
         # ped cipo

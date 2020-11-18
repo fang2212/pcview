@@ -297,7 +297,11 @@ def parse_q3(id, buf, ctx=None):
         ctx['obsq3']['vel_lat'] = r['ObstacleVelY']
         ctx['obsq3']['acc_lon'] = r['Object_Accel_X']
         ctx['obsq3']['color'] = 5
-        send = ctx['obsq3'].copy()
+        send = None
+        if ctx['obsq3']['pos_lon'] > 0:
+
+            send = ctx['obsq3'].copy()
+
         # print(send)
         ctx['obsq3'].clear()
         # print(send)

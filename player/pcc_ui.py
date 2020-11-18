@@ -505,7 +505,7 @@ class Player(object):
             self.show_text_info('video', 160, '               ')
             return
         time_passed = time.time() - info
-        self.show_text_info('video', 140, '**Recording**', CVColor.Red)
+        self.show_text_info('video', 140, '***[REC]***', CVColor.Red)
         self.show_text_info('video', 160, 'Rec time: {:.2f}s'.format(time_passed))
         # BaseDraw.draw_text(img, 'Recording... ', (2, 700), 0.5, CVColor.White, 1)
         # BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)

@@ -48,3 +48,39 @@ parsers_dict = {
     "pim222":   parse_pim222,
     "default":  default_parser
 }
+
+
+from multiprocessing import Queue, Process
+import time
+class MiniDecoder(Process):
+    def __init__(self, parsers=parsers_dict, can_types={}, oq=None):
+        super(MiniDecoder, self).__init__()
+        self.parsers = parsers
+        self.inq = Queue(maxsize=200)
+        self.oq = oq
+        self.can_types = can_types
+
+    def run(self):
+        ctx = {}
+        while True:
+            if not self.inq.empty():
+                ts, src, msg, msg_id = self.inq.get()
+                if 'CAN' in src:
+                    kw = self.can_types.get(src)
+                else:
+                    kw = src.split('.')[0]
+
+                if kw:
+                    parser = self.parsers.get(kw)
+                    if parser:
+                        r = parser(msg_id, msg, ctx)
+                        if r and self.oq:
+                            r['source'] = src
+                            if 'ts' not in r:
+                                r['ts'] = ts
+                            self.oq.put(r)
+
+            else:
+                time.sleep(0.01)
+
+

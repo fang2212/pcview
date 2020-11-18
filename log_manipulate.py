@@ -515,7 +515,7 @@ def parse_drtk_target(file_name):
 
 def parse_rtk_target_ub482(line, ctx):
     from recorder.convert import ub482_defs, decode_with_def
-    from tools.vehicle import Vehicle, get_rover_target
+    from models.vehicle import Vehicle, get_rover_target
     cols = line.split(' ')
     ts = float(cols[0]) + float(cols[1]) / 1000000
     if 'rtk' not in cols[2]:
@@ -593,7 +593,6 @@ def parse_rtk_target_ub482(line, ctx):
 
 def parse_esr_line(line, ctx):
     from parsers.radar import parse_esr
-    from math import sin, pi
     can_port = ctx['can_port'].get('esr')
     if can_port is None:
         return
@@ -2219,12 +2218,143 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
         # continue
 
 
+def viz_2d_trj_1(r0, source=None, vis=True):
+    from recorder.convert import ub482_defs, decode_with_def
+    from tools.geo import gps_bearing, gps_distance
+    from parsers.novatel import parse_novatel
+    from parsers.pim222 import parse_pim222
+    import simplekml
+
+    ctx = {}
+    xlist = []
+    ylist = []
+    inspect_values = {'hgt': {},
+                      'roll': {},
+                      'pitch': {},
+                      'yaw': {},
+                      'lat': {},
+                      'lon': {}}
+    trjs = {}
+    obs_cnt = {}
+    point0 = None
+    t0 = 0
+    kml = simplekml.Kml()
+    kmlpnts = {}
+    with open(r0) as rf:
+        for idx, line in enumerate(rf):
+            cols = line.split(' ')
+            ts_now = float(cols[0]) + float(cols[1]) / 1000000
+            src = '.'.join(cols[2].split('.')[0:2])
+            r = None
+            if not t0:
+                t0 = ts_now
+            # if 'pinpoint' in cols[2]:
+            #     _, idx, kw = cols[2].split('.')
+            #     src = _ + '.' + idx
+            #     if src == source:
+            #         r = decode_with_def(ub482_defs, line)
+            #         point0 = r
+
+            if 'rtk' in cols[2]:  # new ub482
+                kw = cols[2].split('.')[-1]
+                if kw in ub482_defs:
+                    r = decode_with_def(ub482_defs, line)
+                    if not r:
+                        continue
+                    r['ts'] = ts_now
+                    if kw == 'heading':
+                        r['pitch'] = -r['pitch'] - 4.72
+                        r['yaw'] = r['yaw'] + 180.0
+                        if r['yaw'] > 360.0:
+                            r['yaw'] = r['yaw'] - 360.0
+                else:
+                    r = parse_novatel(None, cols[3], None)
+                r['type'] = kw
+                r['source'] = src
+            elif 'inspva' in cols[2]:
+                r = parse_novatel(None, cols[3], None)
+                r['source'] = src
+            elif 'pim222' in cols[2]:
+                r = parse_pim222(None, cols[3], ctx)
+                # print(r)
+                if r:
+                    r['source'] = src
+                else:
+                    continue
+            else:
+                continue
+
+            # print(line)
+            if 'lat' in r and r['lat'] == 0:
+                continue
+            for item in inspect_values:
+                if item not in r:
+                    continue
+                if src not in inspect_values[item]:
+                    # inspect_values[item][src] = {'timestamps': [], 'value': [], 'pos_type': [], '#solSVs': []}
+                    inspect_values[item][src] = {}
+                    # print(r)
+                # inspect_values[item][src]['timestamps'].append(r['ts'] - t0)
+                # inspect_values[item][src]['value'].append(r[item])
+                # inspect_values[item][src]['pos_type'].append(r['pos_type'])
+                inspect_values[item][src][r['ts'] - t0] = {'value': r[item], 'pos_type': r['pos_type']}
+                if '#solSVs' in r:
+                    # inspect_values[item][src]['#solSVs'].append(r['#solSVs'])
+                    inspect_values[item][src][r['ts'] - t0]['solSVs'] = r['#solSVs']
+                # else:
+                #     inspect_values[item][src]['#solSVs'].append(inspect_values[item][src]['#solSVs'][-1])
+
+            if 'lat' in r and 'lon' in r:
+                if src not in trjs:
+                    trjs[src] = {}
+                    obs_cnt[src] = 0
+                if src not in kmlpnts:
+                    kmlpnts[src] = []
+                pos_type = r['pos_type']
+                if pos_type not in trjs[src]:
+                    trjs[src][pos_type] = {'x': [], 'y': [], 'cnt': 0}
+                # if pos_type not in kmlpnts[src]:
+                #     kmlpnts[src][pos_type] = []
+                trjs[src][pos_type]['cnt'] += 1
+                obs_cnt[src] += 1
+                # if pos_type == 'NONE':
+                #     continue
+                # if r['lat'] == 0:
+                #     continue
+                if not point0:
+                    point0 = r
+                angle = gps_bearing(point0['lat'], point0['lon'], r['lat'], r['lon'])
+                range = gps_distance(point0['lat'], point0['lon'], r['lat'], r['lon'])
+                x = cos(angle * pi / 180.0) * range
+                y = sin(angle * pi / 180.0) * range
+                trjs[src][pos_type]['x'].append(x)
+                trjs[src][pos_type]['y'].append(y)
+                kmlpnts[src].append((r['lon'], r['lat'], r['hgt']))
+
+    colors = [simplekml.Color.red, simplekml.Color.green, simplekml.Color.yellow, simplekml.Color.blue]
+    for idx, src in enumerate(sorted(trjs)):
+        for pos_type in trjs[src]:
+            pct = trjs[src][pos_type]['cnt'] / obs_cnt[src] * 100.0
+            print('#obs in {} {}: {}  {:.2f}%'.format(src, pos_type, trjs[src][pos_type]['cnt'], pct))
+        track = kml.newlinestring(name=src, coords=kmlpnts[src])
+        track.style.linestyle.color = colors[idx]
+        track.style.linestyle.width = 3
+
+    visual.trj_2d_bk(trjs)
+
+    # for item in inspect_values:
+    visual.compare_1d_data(inspect_values)
+
+
+    kml.save(os.path.join(os.path.dirname(r0), 'tracks.kml'))
+
+
 def viz_2d_trj(r0, source=None, vis=True):
     from recorder.convert import ub482_defs, decode_with_def
     from tools.geo import gps_bearing, gps_distance
     from parsers.novatel import parse_novatel
-    import pandas as pd
-
+    from parsers.pim222 import parse_pim222
+    ctx = {}
     xlist = []
     ylist = []
     inspect_values = {'hgt': {},
@@ -2247,7 +2377,7 @@ def viz_2d_trj(r0, source=None, vis=True):
                 if src == source:
                     r = decode_with_def(ub482_defs, line)
                     point0 = r
-            elif 'bestpos' in cols[2] or 'inspva' in cols[2]:
+            elif 'bestpos' in cols[2] or 'inspva' in cols[2] or 'drpva' in cols[2]:
                 _, idx, kw = cols[2].split('.')
                 src = _ + '.' + idx
                 if src not in trjs:
@@ -2255,13 +2385,13 @@ def viz_2d_trj(r0, source=None, vis=True):
                     obs_cnt[src] = 0
                 if src not in inspect_values['hgt']:
                     inspect_values['hgt'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
-                if 'inspva' in cols[2] and src not in inspect_values['roll']:
+                if 'inspva' in cols[2] or 'drpva' in cols[2] and src not in inspect_values['roll']:
                     inspect_values['roll'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
                     inspect_values['pitch'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
                     inspect_values['yaw'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
 
                 if not source or (source and src == source):
-                    if 'inspva' in cols[2]:
+                    if 'inspva' in cols[2] or 'drpva' in cols[2]:
                         r = parse_novatel(None, cols[3], None)
                         pos_type = r['pos_type']
                         for item in inspect_values:
@@ -2308,6 +2438,28 @@ def viz_2d_trj(r0, source=None, vis=True):
                 inspect_values['yaw'][src]['timestamps'].append(r['ts'] - t0)
                 inspect_values['yaw'][src]['value'].append(r['yaw'])
                 inspect_values['yaw'][src]['pos_type'].append(r['pos_type'])
+
+
+            elif 'pashr' in cols[2]:
+                src = cols[2]
+                if src not in inspect_values['pitch']:
+                    inspect_values['roll'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+                    inspect_values['pitch'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+                    inspect_values['yaw'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+
+                r = parse_pim222(None, cols[3], ctx)
+                if not r:
+                    continue
+                inspect_values['pitch'][src]['timestamps'].append(r['ts'] - t0)
+                inspect_values['pitch'][src]['value'].append(r['pitch'])
+                inspect_values['pitch'][src]['pos_type'].append(r['pos_type'])
+                inspect_values['yaw'][src]['timestamps'].append(r['ts'] - t0)
+                inspect_values['yaw'][src]['value'].append(r['yaw'])
+                inspect_values['yaw'][src]['pos_type'].append(r['pos_type'])
+                inspect_values['roll'][src]['timestamps'].append(r['ts'] - t0)
+                inspect_values['roll'][src]['value'].append(r['roll'])
+                inspect_values['roll'][src]['pos_type'].append(r['pos_type'])
+
 
     for src in trjs:
         for pos_type in trjs[src]:
@@ -2508,7 +2660,6 @@ parsers_choice = {'esr': parse_esr_line,
 
 def single_process(log, sensors=['x1', 'q3', 'esr', 'rtk'], parsers=None, vis=True, x1tgt=None, rdrtgt=None, analysis_dir=None):
     # log = os.path.join(dir_name, 'log.txt')
-    import json
     ctx = dict()
     init_sensor_ctx(sensors, ctx)
     # ctx['sensors'].append('x1')
@@ -2559,7 +2710,6 @@ def single_process(log, sensors=['x1', 'q3', 'esr', 'rtk'], parsers=None, vis=Tr
 
 
 def aeb_test_analysis(dir_name):
-    from tools import visual
     import xlwt
     # import openpyxl
 
@@ -2699,7 +2849,6 @@ def change_main_video(dir_name, main_video_name):
 
 if __name__ == "__main__":
     from tools import visual
-    import sys
     import argparse
 
     local_path = os.path.split(os.path.realpath(__file__))[0]
@@ -2748,7 +2897,7 @@ if __name__ == "__main__":
     elif args.changemain:
         change_main_video(r, args.changemain)
     elif args.trj:
-        viz_2d_trj(r)
+        viz_2d_trj_1(r)
     else:
         sensors = ['x1']
         if args.q3:

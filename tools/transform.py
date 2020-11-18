@@ -84,11 +84,17 @@ class Transform:
         self.ipm_height = 720
         self.intrinsic_para = np.array(((fu, 0, cu), (0, fv, cv), (0, 0, 1)))
         self.r_cam2img = np.array(((0, 1, 0), (0, 0, 1), (1, 0, 0)))
+        self.yaw = installs['video']['yaw']
+        self.pitch = installs['video']['pitch']
+        self.roll = installs['video']['roll']
         self.m_R_w2i = self.calc_m_w2i(installs['video']['yaw'], installs['video']['pitch'], installs['video']['roll'])
         self.cfg = uniconf
         self.cfg.installs['default'] = {'lat_offset': 0.0, 'lon_offset': 0.0, 'pitch': 0.0, 'roll': 0.0, 'yaw': 0.0}
 
     def calc_m_w2i(self, y, p, r):
+        # self.yaw = y
+        # self.pitch = p
+        # self.roll = r
         yaw = y * pi / 180
         pitch = p * pi / 180
         roll = r * pi / 180
@@ -109,7 +115,7 @@ class Transform:
         return np.dot(self.intrinsic_para, np.dot(self.r_cam2img, r_att))
 
     def update_m_r2i(self, y, p, r):
-        self.m_R_w2i = self.calc_m_w2i(y, p, r)
+        self.m_R_w2i = self.calc_m_w2i(self.yaw+y, self.pitch+p, self.roll+r)
 
     def getp_ifc_from_poly(self, coefs, step=0.1, start=0, end=60, sensor=None):
         a0, a1, a2, a3 = coefs

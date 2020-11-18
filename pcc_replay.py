@@ -380,6 +380,7 @@ class LogPlayer(Process):
                 time.sleep(0.5)
                 # print(self.shared['ts0'], self.shared['t0'])
         self._do_replay()
+        print('exit replaying.')
 
     # @jit(nopython=True)
     def _do_replay(self):
@@ -387,11 +388,13 @@ class LogPlayer(Process):
         last_fid = 0
         frame_lost = 0
         total_frame = 0
+        pass_forward = False
         rtk_dec = False
         lcnt = 0
-        fid_forward = 0
+        fid_forward = self.start_frame
         # pcv = PcvParser(self.x1_fp)
         rf = open(self.log_path)
+        ctx = {}
         for line in rf:
             if not self.ctrl_q.empty():
                 ctrl = self.ctrl_q.get()
@@ -407,9 +410,7 @@ class LogPlayer(Process):
             if line == '':
                 continue
 
-            while self.msg_queue.full():
-                # print('msg queue full, sleep 0.01')
-                time.sleep(0.01)
+
 
             # if 'replay_speed' in self.d:
             #     self.replay_speed = self.d['replay_speed']
@@ -434,32 +435,39 @@ class LogPlayer(Process):
                 last_fid = frame_id
 
                 try:
-                    if frame_id >= fid_forward:
-                        fid, jpg = next(self.jpeg_extractor)
-                    else:
-                        fid = fid_forward
-                        jpg = None
-                except StopIteration:
+                    fid, jpg = next(self.jpeg_extractor)
+                except StopIteration as e:
                     print('images run out.')
                     return
                 if fid and fid != frame_id:
                     print(bcl.FAIL+'raw fid differs from log:'+bcl.ENDC, fid, frame_id)
-                    if fid < frame_id:
-                        for i in range(frame_id - fid):
-                            _, jpg = next(self.jpeg_extractor)
-                    else:
-                        fid_forward = fid
+                # if fid and fid < self.start_frame:
+                #     print('fid from jpeg drop backward', fid, self.start_frame)
+                #     for i in range(self.start_frame-fid-1):
+                #         _, jpg = next(self.jpeg_extractor)
                 lcnt += 1
-                if jpg is None or lcnt % self.replay_speed != 0 or self.now_frame_id < self.start_frame:
+                if self.now_frame_id < self.start_frame:
+                    print('fid from log drop backward', self.now_frame_id, self.start_frame)
+                    while self.now_frame_id < self.start_frame:
+                        line = rf.readline().strip()
+                        cols = line.split(' ')
+                        if cols[2] == 'camera':
+                            self.now_frame_id = int(cols[3])
+                            _, jpg = next(self.jpeg_extractor)
+                if jpg is None or lcnt % self.replay_speed != 0:
                     self.now_frame_id = frame_id
+                    pass_forward = True
                     continue
-
+                pass_forward = False
                 self.now_frame_id = frame_id
                 # print(lcnt, frame_id, self.replay_speed)
                 r = {'ts': ts, 'img': jpg}
                 r['is_main'] = True
                 r['source'] = 'video'
                 r['type'] = 'video'
+                while self.msg_queue.full():
+                    # print('msg queue full, sleep 0.01')
+                    time.sleep(0.01)
                 self.msg_queue.put((frame_id, r, 'camera'))
 
                 if self.x1_parser:
@@ -480,8 +488,11 @@ class LogPlayer(Process):
                 # self.cache['can'] = []
                 # print('sent img {} size {}'.format(cols[3].strip(), len(jpg)), self.cam_queue.qsize())
 
-            if self.now_frame_id < self.start_frame:
+            if pass_forward:
                 continue
+            if self.now_frame_id >= self.end_frame:
+                print('log player reached the end frame:', self.end_frame)
+                break
 
             if 'CAN' in cols[2]:
                 msg_type = cols[2]
@@ -600,8 +611,11 @@ class LogPlayer(Process):
                 pass
 
             elif 'pim222' in cols[2]:
-                r = parse_pim222(None, cols[3], None)
-                print(r)
+                r = parse_pim222(None, cols[3], ctx)
+                # print(r)
+                if r:
+                    r['source'] = cols[2]
+                    self.msg_queue.put((0x00, r, r['source']))
 
         print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
@@ -705,6 +719,8 @@ if __name__ == "__main__":
         pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg)
         replayer.start()
         pcc.start()
+        replayer.join()
+        pcc.control(ord('q'))
 
 
 

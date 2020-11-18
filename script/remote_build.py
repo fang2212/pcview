@@ -43,7 +43,7 @@ class SSHSession(object):
 
 
 def trigger_build(branch=None, local_path='.'):
-    work_dir = '/home/nan/work/pcview'
+    work_dir = '/home/minieye/work/pcview'
     suffix = 'cd {} && '.format(work_dir)
     sess = SSHSession('192.168.50.113', username='minieye', password='minieye')
     if branch:

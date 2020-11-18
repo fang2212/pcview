@@ -5,9 +5,7 @@ __author__ = 'pengquanhua <pengquanhua@minieye.cc>'
 __version__ = '0.1.0'
 __progname__ = 'run'
 
-import base64
 # import logging
-import time
 from datetime import datetime
 from math import fabs
 from multiprocessing import Manager
@@ -18,7 +16,6 @@ import cv2
 
 # from turbojpeg import TurboJPEG
 
-from config.config import load_cfg
 from net.ntrip_client import GGAReporter
 from player import FlowPlayer
 from player.pcc_ui import Player
@@ -29,7 +26,8 @@ from tools.geo import *
 from tools.match import is_near
 # from tools.mytools import Supervisor
 from tools.transform import Transform, OrientTuner
-from tools.vehicle import Vehicle, get_rover_target
+from models.vehicle import Vehicle, get_rover_target
+from models.road import Road
 from tools.cpu_mem_info import *
 # from multiprocessing import Queue
 import numpy as np
@@ -83,6 +81,7 @@ class PCC(object):
             self.refresh_rate = 5
         self.display_interval = 1.0 / self.refresh_rate
         self.vehicles = {'ego': Vehicle('ego')}
+        self.road_info = Road()
         self.calib_data = dict()
         self.frame_cost = 0
         self.frame_cost_total = 0
@@ -846,6 +845,11 @@ class PCC(object):
         elif data['type'] in ['inspva', 'drpva', 'pashr', 'gpgga']:
             # print('inspva')
             # print('inspva ts:', data['ts'])
+            if data['source'] == 'tcp.5':
+                print('update euler angle', data['roll'], data['pitch'])
+                self.road_info.update_slope(data['pitch'])
+                self.road_info.update_cross_slope(data['roll'])
+                self.transform.update_m_r2i(0, data['pitch']-self.road_info.slope, data['roll']-self.road_info.cross_slope)
             self.player.show_rtk_pva(img, data)
             self.player.show_heading_horizen(img, data)
         elif data['type'] == 'calib_param':
@@ -1073,7 +1077,7 @@ class HeadlessPCC:
 
 
 if __name__ == "__main__":
-    import sys
+    pass
 
     # local_path = os.path.split(os.path.realpath(__file__))[0]
     # # print('local_path:', local_path)

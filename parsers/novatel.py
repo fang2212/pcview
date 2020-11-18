@@ -86,7 +86,7 @@ def parse_inspva(fields):
 
     r['roll'] = float(fields[9])
     r['pitch'] = float(fields[10])
-    r['yaw'] = float(fields[11]) + 180.0
+    r['yaw'] = float(fields[11])
     if r['yaw'] > 360.0:
         r['yaw'] = r['yaw'] - 360.0
 

@@ -1,7 +1,7 @@
 import datetime
 
 
-pos_types = {0: 'None', 1: 'single', 2: 'psrdiff', 4: 'rtkfixed', 5:'ftkfloat', 6: 'ins', 7: 'fixpos'}
+pos_types = {0: 'NONE', 1: 'SINGLE', 2: 'INS_PSRDIFF', 4: 'INS_RTKFIXED', 5:'INS_RTKFLOAT', 6: 'INS', 7: 'FIXEDPOS'}
 
 
 def parse_pim222(msg_type, msg, ctx=None):
@@ -19,6 +19,7 @@ def parse_pim222(msg_type, msg, ctx=None):
         r['lon'] = int(fields[4][:3]) + float(fields[4][3:]) / 60.0
         r['pos_type'] = pos_types.get(int(fields[6]))
         r['#SVs'] = int(fields[7])
+        r['#solSVs'] = r['#SVs']
         r['hdop'] = float(fields[8])
         r['hgt'] = float(fields[9])
         r['undulation'] = float(fields[11])
@@ -29,20 +30,24 @@ def parse_pim222(msg_type, msg, ctx=None):
             dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
             dtime = dtime + datetime.timedelta(hours=8)
             r['ts'] = dtime.timestamp()
+            # print(r['ts'])
         else:
-            str_time = '2020-11-10' + ' ' + fields[1][:2] + ':' + fields[1][2:4] + ':' + fields[1][4:]
-            dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
-            dtime = dtime + datetime.timedelta(hours=8)
-            r['ts'] = dtime.timestamp()
+            # str_time = '2020-11-10' + ' ' + fields[1][:2] + ':' + fields[1][2:4] + ':' + fields[1][4:]
+            # dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
+            # dtime = dtime + datetime.timedelta(hours=8)
+            # r['ts'] = dtime.timestamp()
+            return
 
         return r
 
-    elif nmeastr.startswith('GPZDA'):
+    elif nmeastr.startswith('$GPZDA'):
         # r = dict()
+        # print(nmeastr)
         fields = nmeastr.split(',')
         # str_time = fields[4] + '-' + fields[3] + '-' + fields[2] + ' ' + fields[1][:2] + ':' + \
         #            fields[1][2:4] + ':' + fields[1][4:]
         ctx['date'] = fields[4] + '-' + fields[3] + '-' + fields[2]
+        # print(ctx['date'])
         # dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
 
 
@@ -100,14 +105,16 @@ def parse_pim222(msg_type, msg, ctx=None):
             dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
             dtime = dtime + datetime.timedelta(hours=8)
             r['ts'] = dtime.timestamp()
+            # print(r['ts'])
         else:
-            str_time = '2020-11-10' + ' ' + fields[1][:2] + ':' + fields[1][2:4] + ':' + fields[1][4:]
-            dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
-            dtime = dtime + datetime.timedelta(hours=8)
-            r['ts'] = dtime.timestamp()
-            # return
+            # str_time = '2020-11-10' + ' ' + fields[1][:2] + ':' + fields[1][2:4] + ':' + fields[1][4:]
+            # dtime = datetime.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S.%f")
+            # dtime = dtime + datetime.timedelta(hours=8)
+            # r['ts'] = dtime.timestamp()
+            # pass
+            return
 
-        states = ['NONE', 'SINGLE', 'RTK_FIX']
+        states = ['NONE', 'SINGLE', 'NARROW_INT']
 
         r['yaw'] = float(fields[2])
         r['roll'] = float(fields[4])
