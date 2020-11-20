@@ -247,11 +247,12 @@ class PCC(object):
                     self.cache['ts'] = data['ts']
                     self.cache['updated'] = True
 
-                    self.cache_pause_data.append(copy.deepcopy(self.cache))
-                    if len(self.cache_pause_data) > self.cache_pause_max_len:
-                        self.cache_pause_data.pop(0)
+                    if self.replay:
+                        self.cache_pause_data.append(copy.copy(self.cache))
+                        if len(self.cache_pause_data) > self.cache_pause_max_len:
+                            self.cache_pause_data.pop(0)
 
-                    self.cache_pause_idx = len(self.cache_pause_data)
+                        self.cache_pause_idx = len(self.cache_pause_data)
                     self.check_status()
 
                     return True
@@ -337,6 +338,10 @@ class PCC(object):
                 print('hub exit running.')
                 print('average frame cost: {:.1f}ms'.format(
                     1000 * self.frame_cost_total / self.frame_drawn_cnt)) if self.frame_drawn_cnt != 0 else None
+
+                for i in range(1, 10):
+                    cv2.destroyAllWindows()
+                    cv2.waitKey(1)
                 return
             t3 = time.time()
             # d = self.hub.pop_simple()  # receive

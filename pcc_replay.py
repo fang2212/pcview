@@ -700,6 +700,10 @@ if __name__ == "__main__":
         pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg)
         replayer.start()
         pcc.start()
+        print("ening...")
+        # import sys
+        # sys.exit()
+        os._exit(0)
 
 
 
