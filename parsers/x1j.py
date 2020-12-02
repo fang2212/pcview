@@ -101,6 +101,7 @@ def parse_x1j(id, data, ctx=None):
         #     return
         if x1j_obs['pos_lon'] > 0.0:
             ctx['x1j_obs'].append(x1j_obs.copy())
+            # return x1j_obs.copy()
         # else:
         #     print(x1j_obs)
 
@@ -147,7 +148,8 @@ def parse_x1j(id, data, ctx=None):
         if id == 0x77d:
             if ctx.get('x1j_obs'):
                 ret = ctx['x1j_obs'].copy()
-                ctx['x1j_obs'].clear()
+                # ctx['x1j_obs'].clear()
+                # print(ret)
                 return ret
     elif 0x5f0 <= id <= 0x5f7:
         # lane

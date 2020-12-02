@@ -3,7 +3,7 @@ import os
 local_path = os.path.split(os.path.realpath(__file__))[0]
 os.chdir(local_path)
 
-from config.config import dic2obj, bcl
+from config.config import dic2obj, bcl, load_cfg
 import argparse
 import json
 import cv2

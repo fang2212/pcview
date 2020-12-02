@@ -5,20 +5,21 @@ import time
 from collections import deque
 import pickle
 from math import *
+from rich import print
 
 import cantools
 import numpy as np
 
-
-class bcl:
-    HDR = '\033[95m'
-    OKBL = '\033[94m'
-    OKGR = '\033[92m'
-    WARN = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+#
+# class bcl:
+#     HDR = '\033[95m'
+#     OKBL = '\033[94m'
+#     OKGR = '\033[92m'
+#     WARN = '\033[93m'
+#     FAIL = '\033[91m'
+#     ENDC = '\033[0m'
+#     BOLD = '\033[1m'
+#     UNDERLINE = '\033[4m'
 
 
 obs_meas_order = ['pos_lat', 'pos_lon', 'vel_lon', 'TTC']
@@ -1969,7 +1970,7 @@ def batch_process_1(dir_name, parsers):
         if not os.path.isdir(os.path.join(dir_name, d)):
             continue
         log = os.path.join(dir_name, d, 'pcc_data', 'log.txt')
-        print(bcl.BOLD + bcl.HDR + 'Entering dir: ' + d + bcl.ENDC)
+        print('[green bold]' + 'Entering dir: ' + d + '[/green bold]')
         single_process(log, parsers, False)
 
 
@@ -1980,7 +1981,7 @@ def batch_process_2(dir_name, parsers):
         if not os.path.isdir(os.path.join(dir_name, d)):
             continue
         log = os.path.join(dir_name, d, 'log.txt')
-        print(bcl.BOLD + bcl.HDR + 'Entering dir: ' + d + bcl.ENDC)
+        print('[green bold]' + 'Entering dir: ' + d + '[/green bold]')
         single_process(log, parsers, False)
 
 
@@ -1990,7 +1991,7 @@ def batch_process_3(dir_name, sensors, process, parsers=None, odir=None):
             if f == 'log.txt':
                 odir = os.path.join(odir, os.path.basename(root)) if odir else None
                 log = os.path.join(root, f)
-                print(bcl.BOLD + bcl.HDR + '\nEntering dir: ' + root + bcl.ENDC)
+                print('[green bold]' + '\nEntering dir: ' + root + '[/green bold]')
                 process(log, sensors, parsers, False, analysis_dir=odir)
 
 
@@ -2118,7 +2119,7 @@ def get_trajectory_from_matches(matches, types):
             # match_dict['{}_{}'.format(obs1id, obs2id)] = entry
         for obs2id in list(matches[obs1id]):
             if obs2id in discard_list:
-                print(bcl.BOLD+'discarded match:'+bcl.ENDC, type1, obs1id, type2, obs2id)
+                print('[bold]'+'discarded match:'+ '[/bold]', type1, obs1id, type2, obs2id)
                 del matches[obs1id][obs2id]
             else:
                 trj = {'obs': {type1: [obs1id], type2: [obs2id]}, **(matches[obs1id][obs2id])}
@@ -2201,7 +2202,7 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
             for id in trj['obs'][type]:
                 pattern = '{}.*.{}'.format(type, id)
                 obs_list.append(pattern)
-        print(bcl.OKBL + 'matched {}:'.format(len(trj['obs'])) + bcl.ENDC, trj)
+        print('[green]' + 'matched {}:'.format(len(trj['obs'])) + '[/green]', trj)
         fig = visual.get_fig()
         for idx, item in enumerate(obs_meas_display):
             samples = {x: {item: idx} for x in obs_list}  # {'esr.obj.2': {'pos_lat': 2}}
@@ -2218,12 +2219,36 @@ def chart_by_trj(trj_list, r0, ts0, vis=False):
         # continue
 
 
-def viz_2d_trj_1(r0, source=None, vis=True):
+def calc_cep(data):
+    from tools.geo import gps_bearing, gps_distance
+    lats = [x[0] for x in data]
+    lons = [x[1] for x in data]
+    # hgts = [x[2] for x in data]
+    mean_lat = np.mean(lats)
+    mean_lon = np.mean(lons)
+    num_of_sols = len(lats)
+    dists = []
+    for lat, lon, hgt in data:
+        dist = gps_distance(mean_lat, mean_lon, lat, lon)
+        dists.append(dist)
+
+    sdists = sorted(dists)
+    cep95 = sdists[int(0.95*num_of_sols)]
+    cep99 = sdists[int(0.99*num_of_sols)]
+    cep100 = sdists[-1]
+    stdev = (sum([x*x for x in sdists])/num_of_sols)**0.5
+
+    print('cep95:', cep95, 'cep99:', cep99, 'cep100:', cep100, 'stdev:', stdev)
+
+
+def viz_2d_trj(r0, source=None, vis=True):
     from recorder.convert import ub482_defs, decode_with_def
     from tools.geo import gps_bearing, gps_distance
     from parsers.novatel import parse_novatel
     from parsers.pim222 import parse_pim222
     import simplekml
+    import folium
+    from folium import plugins
 
     ctx = {}
     xlist = []
@@ -2287,6 +2312,8 @@ def viz_2d_trj_1(r0, source=None, vis=True):
             # print(line)
             if 'lat' in r and r['lat'] == 0:
                 continue
+            if 'yaw' in r and r['yaw'] < 300:
+                r['yaw'] += 360
             for item in inspect_values:
                 if item not in r:
                     continue
@@ -2331,7 +2358,16 @@ def viz_2d_trj_1(r0, source=None, vis=True):
                 trjs[src][pos_type]['y'].append(y)
                 kmlpnts[src].append((r['lon'], r['lat'], r['hgt']))
 
+    san_map = folium.Map(
+        location=[point0['lat'], point0['lon']],
+        zoom_start=17,
+        max_zoom=19,
+        # tiles='http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}',  # 高德街道图
+        # tiles='http://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',  # 高德卫星图
+        tiles='https://mt.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',  # google 卫星图
+        attr='default')
     colors = [simplekml.Color.red, simplekml.Color.green, simplekml.Color.yellow, simplekml.Color.blue]
+    colors1 = ['red', 'green', 'yellow', 'blue']
     for idx, src in enumerate(sorted(trjs)):
         for pos_type in trjs[src]:
             pct = trjs[src][pos_type]['cnt'] / obs_cnt[src] * 100.0
@@ -2339,139 +2375,151 @@ def viz_2d_trj_1(r0, source=None, vis=True):
         track = kml.newlinestring(name=src, coords=kmlpnts[src])
         track.style.linestyle.color = colors[idx]
         track.style.linestyle.width = 3
-
+        calc_cep(kmlpnts[src])
+        folium.PolyLine(np.array(kmlpnts[src])[:, [1, 0]], color=colors1[idx]).add_to(san_map)
+        marker_cluster = plugins.MarkerCluster().add_to(san_map)
+        # for lon, lat, hgt in kmlpnts[src]:
+        #     folium.Marker([lat, lon], color='red').add_to(marker_cluster)
+    san_map.save(os.path.join(os.path.dirname(r0), 'tracks_map.html'))
     visual.trj_2d_bk(trjs)
 
     # for item in inspect_values:
     visual.compare_1d_data(inspect_values)
+    for item in inspect_values:
+        for src in inspect_values[item]:
+            # print(inspect_values[item][src].items())
+            stdev = np.std(np.array([inspect_values[item][src][x]['value'] for x in inspect_values[item][src]]))
+            print('stdev of {} {} is {}'.format(src, item, stdev))
+
+
 
 
     kml.save(os.path.join(os.path.dirname(r0), 'tracks.kml'))
 
-
-def viz_2d_trj(r0, source=None, vis=True):
-    from recorder.convert import ub482_defs, decode_with_def
-    from tools.geo import gps_bearing, gps_distance
-    from parsers.novatel import parse_novatel
-    from parsers.pim222 import parse_pim222
-    ctx = {}
-    xlist = []
-    ylist = []
-    inspect_values = {'hgt': {},
-                      'roll': {},
-                      'pitch': {},
-                      'yaw': {}}
-    trjs = {}
-    obs_cnt = {}
-    point0 = None
-    t0 = 0
-    with open(r0) as rf:
-        for idx, line in enumerate(rf):
-            cols = line.split(' ')
-            ts_now = float(cols[0]) + float(cols[1]) / 1000000
-            if not t0:
-                t0 = ts_now
-            if 'pinpoint' in cols[2]:
-                _, idx, kw = cols[2].split('.')
-                src = _ + '.' + idx
-                if src == source:
-                    r = decode_with_def(ub482_defs, line)
-                    point0 = r
-            elif 'bestpos' in cols[2] or 'inspva' in cols[2] or 'drpva' in cols[2]:
-                _, idx, kw = cols[2].split('.')
-                src = _ + '.' + idx
-                if src not in trjs:
-                    trjs[src] = {}
-                    obs_cnt[src] = 0
-                if src not in inspect_values['hgt']:
-                    inspect_values['hgt'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
-                if 'inspva' in cols[2] or 'drpva' in cols[2] and src not in inspect_values['roll']:
-                    inspect_values['roll'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
-                    inspect_values['pitch'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
-                    inspect_values['yaw'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
-
-                if not source or (source and src == source):
-                    if 'inspva' in cols[2] or 'drpva' in cols[2]:
-                        r = parse_novatel(None, cols[3], None)
-                        pos_type = r['pos_type']
-                        for item in inspect_values:
-                            inspect_values[item][src]['timestamps'].append(r['ts']-t0)
-                            inspect_values[item][src]['value'].append(r[item])
-                            inspect_values[item][src]['pos_type'].append(r['pos_type'])
-                    elif 'bestpos' in cols[2]:
-                        r = decode_with_def(ub482_defs, line)
-                        pos_type = cols[4]
-                        inspect_values['hgt'][src]['timestamps'].append(r['ts']-t0)
-                        inspect_values['hgt'][src]['value'].append(r['hgt'])
-                        inspect_values['hgt'][src]['pos_type'].append(r['pos_type'])
-                    if not point0:
-                        point0 = r
-                    if pos_type not in trjs[src]:
-                        trjs[src][pos_type] = {'x': [], 'y': [], 'cnt': 0}
-                    trjs[src][pos_type]['cnt'] += 1
-                    obs_cnt[src] += 1
-                    if not r:
-                        continue
-                    if pos_type == 'NONE' and 'bestpos' in cols[2]:
-                        continue
-
-                    angle = gps_bearing(point0['lat'], point0['lon'], r['lat'], r['lon'])
-                    range = gps_distance(point0['lat'], point0['lon'], r['lat'], r['lon'])
-                    x = cos(angle * pi / 180.0) * range
-                    y = sin(angle * pi / 180.0) * range
-                    trjs[src][pos_type]['x'].append(x)
-                    trjs[src][pos_type]['y'].append(y)
-
-                    # xlist.append(x)
-                    # ylist.append(y)
-            elif 'heading' in cols[2]:
-                _, idx, kw = cols[2].split('.')
-                src = _ + '.' + idx
-                if src not in inspect_values['pitch']:
-                    inspect_values['pitch'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
-                    inspect_values['yaw'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
-
-                r = decode_with_def(ub482_defs, line)
-                inspect_values['pitch'][src]['timestamps'].append(r['ts'] - t0)
-                inspect_values['pitch'][src]['value'].append(r['pitch'])
-                inspect_values['pitch'][src]['pos_type'].append(r['pos_type'])
-                inspect_values['yaw'][src]['timestamps'].append(r['ts'] - t0)
-                inspect_values['yaw'][src]['value'].append(r['yaw'])
-                inspect_values['yaw'][src]['pos_type'].append(r['pos_type'])
-
-
-            elif 'pashr' in cols[2]:
-                src = cols[2]
-                if src not in inspect_values['pitch']:
-                    inspect_values['roll'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
-                    inspect_values['pitch'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
-                    inspect_values['yaw'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
-
-                r = parse_pim222(None, cols[3], ctx)
-                if not r:
-                    continue
-                inspect_values['pitch'][src]['timestamps'].append(r['ts'] - t0)
-                inspect_values['pitch'][src]['value'].append(r['pitch'])
-                inspect_values['pitch'][src]['pos_type'].append(r['pos_type'])
-                inspect_values['yaw'][src]['timestamps'].append(r['ts'] - t0)
-                inspect_values['yaw'][src]['value'].append(r['yaw'])
-                inspect_values['yaw'][src]['pos_type'].append(r['pos_type'])
-                inspect_values['roll'][src]['timestamps'].append(r['ts'] - t0)
-                inspect_values['roll'][src]['value'].append(r['roll'])
-                inspect_values['roll'][src]['pos_type'].append(r['pos_type'])
-
-
-    for src in trjs:
-        for pos_type in trjs[src]:
-            pct = trjs[src][pos_type]['cnt'] / obs_cnt[src] * 100.0
-            print('#obs in {} {}: {}  {:.2f}%'.format(src, pos_type, trjs[src][pos_type]['cnt'], pct))
-    # fig = visual.get_fig()
-    # visual.trj_2d(fig, xlist, ylist, vis)
-    # visual.trj_2d(fig, trjs, vis)
-    visual.trj_2d_bk(trjs)
-
-    # for item in inspect_values:
-    visual.compare_1d_data(inspect_values)
+#
+# def viz_2d_trj(r0, source=None, vis=True):
+#     from recorder.convert import ub482_defs, decode_with_def
+#     from tools.geo import gps_bearing, gps_distance
+#     from parsers.novatel import parse_novatel
+#     from parsers.pim222 import parse_pim222
+#     ctx = {}
+#     xlist = []
+#     ylist = []
+#     inspect_values = {'hgt': {},
+#                       'roll': {},
+#                       'pitch': {},
+#                       'yaw': {}}
+#     trjs = {}
+#     obs_cnt = {}
+#     point0 = None
+#     t0 = 0
+#     with open(r0) as rf:
+#         for idx, line in enumerate(rf):
+#             cols = line.split(' ')
+#             ts_now = float(cols[0]) + float(cols[1]) / 1000000
+#             if not t0:
+#                 t0 = ts_now
+#             if 'pinpoint' in cols[2]:
+#                 _, idx, kw = cols[2].split('.')
+#                 src = _ + '.' + idx
+#                 if src == source:
+#                     r = decode_with_def(ub482_defs, line)
+#                     point0 = r
+#             elif 'bestpos' in cols[2] or 'inspva' in cols[2] or 'drpva' in cols[2]:
+#                 _, idx, kw = cols[2].split('.')
+#                 src = _ + '.' + idx
+#                 if src not in trjs:
+#                     trjs[src] = {}
+#                     obs_cnt[src] = 0
+#                 if src not in inspect_values['hgt']:
+#                     inspect_values['hgt'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+#                 if 'inspva' in cols[2] or 'drpva' in cols[2] and src not in inspect_values['roll']:
+#                     inspect_values['roll'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+#                     inspect_values['pitch'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+#                     inspect_values['yaw'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+#
+#                 if not source or (source and src == source):
+#                     if 'inspva' in cols[2] or 'drpva' in cols[2]:
+#                         r = parse_novatel(None, cols[3], None)
+#                         pos_type = r['pos_type']
+#                         for item in inspect_values:
+#                             inspect_values[item][src]['timestamps'].append(r['ts']-t0)
+#                             inspect_values[item][src]['value'].append(r[item])
+#                             inspect_values[item][src]['pos_type'].append(r['pos_type'])
+#                     elif 'bestpos' in cols[2]:
+#                         r = decode_with_def(ub482_defs, line)
+#                         pos_type = cols[4]
+#                         inspect_values['hgt'][src]['timestamps'].append(r['ts']-t0)
+#                         inspect_values['hgt'][src]['value'].append(r['hgt'])
+#                         inspect_values['hgt'][src]['pos_type'].append(r['pos_type'])
+#                     if not point0:
+#                         point0 = r
+#                     if pos_type not in trjs[src]:
+#                         trjs[src][pos_type] = {'x': [], 'y': [], 'cnt': 0}
+#                     trjs[src][pos_type]['cnt'] += 1
+#                     obs_cnt[src] += 1
+#                     if not r:
+#                         continue
+#                     if pos_type == 'NONE' and 'bestpos' in cols[2]:
+#                         continue
+#
+#                     angle = gps_bearing(point0['lat'], point0['lon'], r['lat'], r['lon'])
+#                     range = gps_distance(point0['lat'], point0['lon'], r['lat'], r['lon'])
+#                     x = cos(angle * pi / 180.0) * range
+#                     y = sin(angle * pi / 180.0) * range
+#                     trjs[src][pos_type]['x'].append(x)
+#                     trjs[src][pos_type]['y'].append(y)
+#
+#                     # xlist.append(x)
+#                     # ylist.append(y)
+#             elif 'heading' in cols[2]:
+#                 _, idx, kw = cols[2].split('.')
+#                 src = _ + '.' + idx
+#                 if src not in inspect_values['pitch']:
+#                     inspect_values['pitch'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+#                     inspect_values['yaw'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+#
+#                 r = decode_with_def(ub482_defs, line)
+#                 inspect_values['pitch'][src]['timestamps'].append(r['ts'] - t0)
+#                 inspect_values['pitch'][src]['value'].append(r['pitch'])
+#                 inspect_values['pitch'][src]['pos_type'].append(r['pos_type'])
+#                 inspect_values['yaw'][src]['timestamps'].append(r['ts'] - t0)
+#                 inspect_values['yaw'][src]['value'].append(r['yaw'])
+#                 inspect_values['yaw'][src]['pos_type'].append(r['pos_type'])
+#
+#
+#             elif 'pashr' in cols[2]:
+#                 src = cols[2]
+#                 if src not in inspect_values['pitch']:
+#                     inspect_values['roll'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+#                     inspect_values['pitch'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+#                     inspect_values['yaw'][src] = {'timestamps': [], 'value': [], 'pos_type': []}
+#
+#                 r = parse_pim222(None, cols[3], ctx)
+#                 if not r:
+#                     continue
+#                 inspect_values['pitch'][src]['timestamps'].append(r['ts'] - t0)
+#                 inspect_values['pitch'][src]['value'].append(r['pitch'])
+#                 inspect_values['pitch'][src]['pos_type'].append(r['pos_type'])
+#                 inspect_values['yaw'][src]['timestamps'].append(r['ts'] - t0)
+#                 inspect_values['yaw'][src]['value'].append(r['yaw'])
+#                 inspect_values['yaw'][src]['pos_type'].append(r['pos_type'])
+#                 inspect_values['roll'][src]['timestamps'].append(r['ts'] - t0)
+#                 inspect_values['roll'][src]['value'].append(r['roll'])
+#                 inspect_values['roll'][src]['pos_type'].append(r['pos_type'])
+#
+#
+#     for src in trjs:
+#         for pos_type in trjs[src]:
+#             pct = trjs[src][pos_type]['cnt'] / obs_cnt[src] * 100.0
+#             print('#obs in {} {}: {}  {:.2f}%'.format(src, pos_type, trjs[src][pos_type]['cnt'], pct))
+#     # fig = visual.get_fig()
+#     # visual.trj_2d(fig, xlist, ylist, vis)
+#     # visual.trj_2d(fig, trjs, vis)
+#     visual.trj_2d_bk(trjs)
+#
+#     # for item in inspect_values:
+#     visual.compare_1d_data(inspect_values)
 
 
 def process_error_by_matches(matches, names, r0, ts0, ctx, vis=False):
@@ -2549,9 +2597,9 @@ def process_by_matches(matches, names, r0, ts0, ctx, vis=False):
             ets = entry.get('end_ts')
             cnt = entry.get('count')
             if not sts or not ets or not cnt:
-                print(bcl.BOLD + 'discard match:' + bcl.ENDC, obs1id, obs2id, entry)
+                print('[bold]' + 'discard match:' + '[/bold]', obs1id, obs2id, entry)
             if cnt < 20 or ets - sts < 1.0:
-                print(bcl.BOLD + 'discard match:' + bcl.ENDC, obs1id, obs2id, entry)
+                print('[bold]' + 'discard match:' + '[/bold]', obs1id, obs2id, entry)
                 continue
             # print(bcl.OKBL + 'matched(x1/esr):' + bcl.ENDC, obs1id, obs2id, entry)
             fig = visual.get_fig()
@@ -2675,7 +2723,7 @@ def single_process(log, sensors=['x1', 'q3', 'esr', 'rtk'], parsers=None, vis=Tr
                 parsers.append(parsers_choice[sensor])
 
     if not os.path.exists(log):
-        print(bcl.FAIL + 'Invalid data path. {} does not exist.'.format(log) + bcl.ENDC)
+        print('[red bold]' + 'Invalid data path. {} does not exist.'.format(log) + '[/red bold]')
         return
 
     analysis_dir = prep_analysis(log, ctx, analysis_dir)
@@ -2755,7 +2803,7 @@ def aeb_test_analysis(dir_name):
                 # ctx['d530'] = {'aeb_level': 0, 'xbr_acc': 0}
                 # odir = os.path.join(odir, os.path.basename(root)) if odir else None
                 log = os.path.join(root, f)
-                print(bcl.BOLD + bcl.HDR + '\nEntering dir: ' + root + bcl.ENDC)
+                print('[green bold]' + '\nEntering dir: ' + root + '[/green bold]')
                 sensors = ['x1', 'x1_fusion', 'ars', 'd530']
                 init_sensor_ctx(sensors, ctx)
                 parsers = [parse_x1_line,
@@ -2851,6 +2899,7 @@ if __name__ == "__main__":
     from tools import visual
     import argparse
 
+
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)
 
@@ -2897,7 +2946,7 @@ if __name__ == "__main__":
     elif args.changemain:
         change_main_video(r, args.changemain)
     elif args.trj:
-        viz_2d_trj_1(r)
+        viz_2d_trj(r)
     else:
         sensors = ['x1']
         if args.q3:
@@ -2917,14 +2966,14 @@ if __name__ == "__main__":
         rdir = os.path.dirname(r)
 
         if r.endswith('log.txt'):
-            print(bcl.WARN + 'Single process log: ' + r + bcl.ENDC)
+            print('[yellow]Single process log: ' + r + '[/yellow]')
             single_process(r, sensors, analysis_dir=analysis_dir)
         else:
-            print(bcl.WARN + 'Batch process logs in: ' + r + bcl.ENDC)
+            print('[yellow]Batch process logs in: ' + r + '[/yellow]')
             batch_process_3(r, sensors, single_process, odir=analysis_dir)
 
     dt = time.time() - t0
-    print(bcl.WARN + 'Processing done. Time cost: {}s'.format(dt) + bcl.ENDC)
+    print('[yellow bold]Processing done.[/yellow bold] Time cost: {:.2f} s'.format(dt))
     # test_sort(r)
     #
     # rfile = shutil.copy2(r, rdir)

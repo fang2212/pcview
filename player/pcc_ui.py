@@ -143,6 +143,9 @@ class Player(object):
         if not color:
             color = self.color_obs['default']
 
+        # if 'class' in obs and obs['class'] == 'truck':
+        #     print(obs)
+
         width = obs.get('width')
         width = width or 0.3
         height = obs.get('height')

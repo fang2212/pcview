@@ -334,7 +334,7 @@ class LogPlayer(Process):
             frame_id, data, msg_type = self.msg_queue.get()
             if not data:
                 return
-            # print(data)
+
             tsnow = data['ts'] if isinstance(data, dict) else data[0]['ts']
             # try:
             #     tsnow = data['ts'] if isinstance(data, dict) else data[0]['ts']
@@ -525,6 +525,7 @@ class LogPlayer(Process):
                         r[idx]['ts'] = ts
                         # obs['source'] = self.msg_types[int(msg_type[3])]
                         r[idx]['source'] = self.can_types[msg_type]
+                        # print(r[idx])
 
                 else:
                     # print('r is not list')

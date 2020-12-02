@@ -410,7 +410,6 @@ class PCC(object):
                 cv2.putText(img, key, (10, i*60 + 300), cv2.FONT_HERSHEY_COMPLEX, 3, (0, 0, 255), 2)
 
     def draw(self, mess, frame_cnt):
-        # print(mess[''])
         ts_ana = []
         t0 = time.time()
         ts_ana.append(('draw start', t0))
@@ -503,6 +502,8 @@ class PCC(object):
                     # if dt > 0.2 or dt < -0.2:
                     #     del mess['misc'][source][entity]
                     #     continue
+                    if source == 'x1j.0' and entity == 'obstacle.3':
+                        print(mess['misc'][source][entity])
                     if not self.draw_misc_data(img, mess['misc'][source][entity]):
                         print('draw misc data exited, source:', source)
 
