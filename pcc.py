@@ -413,7 +413,7 @@ class PCC(object):
         now = time.time()
 
         for i, key in enumerate(self.alarm_info):
-            if self.alarm_info[key] + 2 > now:
+            if self.alarm_info[key] > now:
                 cv2.putText(img, key, (10, i*60 + 300), cv2.FONT_HERSHEY_COMPLEX, 3, (0, 0, 255), 2)
 
     def draw(self, mess, frame_cnt):
@@ -903,13 +903,14 @@ class PCC(object):
             from recorder.voice_note import Audio
             if self.audio is None or not self.audio.is_alive():
                 self.audio = None
+                dur_time = 15
                 if self.hub.fileHandler.is_recording:
                     file_path = os.path.join(self.hub.fileHandler.path, "waves", "%d.wav" % self.wav_cnt)
-                    self.audio = Audio(file_path, is_replay=False)
+                    self.audio = Audio(file_path, is_replay=False, duration_time=dur_time)
                     self.audio.start()
                     self.hub.fileHandler.insert_raw((self.ts_now, "voice_note", str(self.wav_cnt)))
                     self.wav_cnt += 1
-                    self.alarm_info["voice_note"] = time.time()
+                    self.alarm_info["voice_note"] = time.time() + dur_time
 
         elif key == ord('r'):
             if self.hub.fileHandler.is_recording:
@@ -1001,7 +1002,7 @@ class PCC(object):
         dt = all_ts[-1] - all_ts[0]
 
         if dt > 5:
-            self.alarm_info["time_not_sync"] = time.time()
+            self.alarm_info["time_not_sync"] = time.time() + 3
 
             return {'status': 'fail', 'info': 'collectors\' time not aligned!'}
         return {'status': 'ok', 'info': 'oj8k'}

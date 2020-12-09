@@ -47,7 +47,7 @@ from collections import deque
 class NNSink(Thread):
     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
         super(NNSink, self).__init__()
-        self.deamon = True
+        self.daemon = True
         self.dev = ip
         self.channel = port
         self.queue = queue
@@ -167,6 +167,7 @@ class TCPSink(Thread):
         self.ctx = dict()
         self._buf = b''
         self.exit = Event()
+        self.type = "tcp_sink"
 
     def _init_port(self):
         print('connecting', self.ip, self.port)

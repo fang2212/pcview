@@ -8,11 +8,12 @@ from threading import Thread
 from config.config import bcl
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
-from sink.pcc_sink_async import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink, TCPSink, AsyncManager
+# from sink.pcc_sink_async import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink, TCPSink, AsyncManager
 from config.config import get_cached_macs, save_macs
 
-from concurrent.futures import ThreadPoolExecutor
-import asyncio
+from sink.pcc_sink import PinodeSink, CANSink, CameraSink, GsensorSink, FlowSink, TCPSink
+# from concurrent.futures import ThreadPoolExecutor
+# import asyncio
 
 class CollectorNode(kProcess):
     def __init__(self, sinks):
@@ -22,20 +23,20 @@ class CollectorNode(kProcess):
         self.q = kQueue()
 
     def run(self):
-        self.am = AsyncManager()
-        self.am.start()
+        # self.am = AsyncManager()
+        # self.am.start()
 
         print('Inited collector node', os.getpid())
         for sink in self.sinks:
-            # sink.start()
+            sink.start()
             # sync io should run in thread pool
-            self.am.add_task(sink.run())
+            # self.am.add_task(sink.run())
 
         while not self.exit.is_set():
             if not self.q.empty():
                 sink = self.q.get()
-                # sink.start()
-                self.am.add_task(sink.run())
+                sink.start()
+                # self.am.add_task(sink.run())
             else:
                 time.sleep(0.1)
             # for sink in self.sinks:
@@ -246,7 +247,10 @@ class Hub(Thread):
         is_main = cfg.get('is_main')
         self.online[ip]['msg_types'] = []
 
-        if cfg.get('type') == 'x1_algo':
+        if 'type' not in cfg:
+            return
+
+        if "algo" in cfg.get('type'):
             for item in cfg['ports']:
                 if not cfg['ports'][item].get('enable') and not is_main:
                     continue
@@ -256,7 +260,7 @@ class Hub(Thread):
 
                 sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
                                 index=idx, protocol=proto, topic=topic, log_name=item, fileHandler=self.fileHandler,
-                                is_main=is_main)
+                                is_main=is_main, name=cfg.get("type"))
                 # sink.start()
                 # sink = {'stype': 'flow', 'msg_queue': self.msg_queue, 'cam_queue': self.cam_queue, 'ip': ip,
                 #         'port': port, 'channel': item, 'index': idx, 'fileHandler': self.fileHandler,
