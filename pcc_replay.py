@@ -722,6 +722,7 @@ if __name__ == "__main__":
         pcc.start()
         replayer.join()
         pcc.control(ord('q'))
+        os._exit(0)
 
 
 

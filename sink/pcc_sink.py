@@ -169,7 +169,7 @@ class TCPSink(Thread):
         self.ctx = dict()
         self._buf = b''
         self.exit = Event()
-        self.type = 'tcp_sink'
+        self.type = "tcp_sink"
 
     def _init_port(self):
         print('connecting', self.ip, self.port)
@@ -407,7 +407,7 @@ class PinodeSinkGeneral(NNSink):
         # print('-----------------------------------------hahahahha')
 
         msg = memoryview(msg).tobytes()
-        print(self.resname, msg)
+        # print(self.resname, msg)
         data = self.decode_pinode_res(self.resname, msg)
         if not data:
             return

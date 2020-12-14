@@ -32,7 +32,7 @@ from tools.cpu_mem_info import *
 # from multiprocessing import Queue
 import numpy as np
 import copy
-
+import traceback
 # logging.basicConfig(level=logging.INFO,
 #                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
@@ -246,11 +246,12 @@ class PCC(object):
                     self.cache['ts'] = data['ts']
                     self.cache['updated'] = True
 
-                    self.cache_pause_data.append(copy.deepcopy(self.cache))
-                    if len(self.cache_pause_data) > self.cache_pause_max_len:
-                        self.cache_pause_data.pop(0)
+                    if self.replay:
+                        self.cache_pause_data.append(copy.copy(self.cache))
+                        if len(self.cache_pause_data) > self.cache_pause_max_len:
+                            self.cache_pause_data.pop(0)
 
-                    self.cache_pause_idx = len(self.cache_pause_data)
+                        self.cache_pause_idx = len(self.cache_pause_data)
                     self.check_status()
 
                     return True
@@ -319,6 +320,7 @@ class PCC(object):
                 #         continue
             except Exception as e:
                 print('pcc run error:', d)
+                traceback.print_exc()
                 # raise e
                 continue
 
@@ -335,6 +337,10 @@ class PCC(object):
                 print('hub exit running.')
                 print('average frame cost: {:.1f}ms'.format(
                     1000 * self.frame_cost_total / self.frame_drawn_cnt)) if self.frame_drawn_cnt != 0 else None
+
+                for i in range(1, 10):
+                    cv2.destroyAllWindows()
+                    cv2.waitKey(1)
                 return
             t3 = time.time()
             # d = self.hub.pop_simple()  # receive
@@ -406,7 +412,7 @@ class PCC(object):
         now = time.time()
 
         for i, key in enumerate(self.alarm_info):
-            if self.alarm_info[key] + 2 > now:
+            if self.alarm_info[key] > now:
                 cv2.putText(img, key, (10, i*60 + 300), cv2.FONT_HERSHEY_COMPLEX, 3, (0, 0, 255), 2)
 
     def draw(self, mess, frame_cnt):
@@ -528,10 +534,12 @@ class PCC(object):
 
         self.player.render_text_info(img)
 
-        if img.shape[0] > 960:
-            img = cv2.resize(img, (img.shape[1], 960))
         if img.shape[1] > 1280:
-            img = cv2.resize(img, (1280, img.shape[0]))
+            fx = 1280 / img.shape[1]
+            img = cv2.resize(img, None, fx=fx, fy=fx)
+        if img.shape[0] > 960:
+            fx = 960 / img.shape[0]
+            img = cv2.resize(img, None, fx=fx, fy=fx)
 
         self.show_alarm_info(img)
 
@@ -900,13 +908,14 @@ class PCC(object):
             from recorder.voice_note import Audio
             if self.audio is None or not self.audio.is_alive():
                 self.audio = None
+                dur_time = 15
                 if self.hub.fileHandler.is_recording:
                     file_path = os.path.join(self.hub.fileHandler.path, "waves", "%d.wav" % self.wav_cnt)
-                    self.audio = Audio(file_path, is_replay=False)
+                    self.audio = Audio(file_path, is_replay=False, duration_time=dur_time)
                     self.audio.start()
                     self.hub.fileHandler.insert_raw((self.ts_now, "voice_note", str(self.wav_cnt)))
                     self.wav_cnt += 1
-                    self.alarm_info["voice_note"] = time.time()
+                    self.alarm_info["voice_note"] = time.time() + dur_time
 
         elif key == ord('r'):
             if self.hub.fileHandler.is_recording:
@@ -970,19 +979,21 @@ class PCC(object):
         else:
             self.stuck_cnt = 0
 
+        cache_cp = self.cache.copy()
+        video_cp = self.video_cache.copy()
         # main video ts
-        all_ts = [self.cache['ts']]
+        all_ts = [cache_cp['ts']]
 
         # data ts
-        for source in self.cache['misc']:
-            for key in self.cache['misc'][source]:
-                d = self.cache['misc'][source][key]
+        for source in cache_cp['misc']:
+            for key in cache_cp['misc'][source]:
+                d = cache_cp['misc'][source][key]
                 if type(d) == dict and 'ts' in d:
                     all_ts.append(d['ts'])
 
         # other video ts
-        for source in self.video_cache:
-            d = self.video_cache[source]
+        for source in video_cp:
+            d = video_cp[source]
             if type(d) == dict and 'ts' in d:
                     all_ts.append(d['ts'])
 
@@ -996,7 +1007,7 @@ class PCC(object):
         dt = all_ts[-1] - all_ts[0]
 
         if dt > 5:
-            self.alarm_info["time_not_sync"] = time.time()
+            self.alarm_info["time_not_sync"] = time.time() + 3
 
             return {'status': 'fail', 'info': 'collectors\' time not aligned!'}
         return {'status': 'ok', 'info': 'oj8k'}

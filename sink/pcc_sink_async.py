@@ -260,16 +260,20 @@ class TCPSink(Sink):
         self.filehandler = fileHandler
         self.protocol = protocol
         self.ctx = dict()
-        self.run = self.sync_run
+        self.is_first = True
 
     def _init_port(self):
         print('connecting', self.dev, self.channel)
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socket.connect((self.dev, self.channel))
+        # self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # self._socket.connect((self.dev, self.channel))
         # self._socket.setblocking(False)
 
-    def read(self):
-        return self._socket.recv(2048)
+    async def read(self):
+        if self.is_first:
+            self._socket, writer = await asyncio.open_connection(self.dev, self.channel)
+            self.is_first = False
+
+        return await self._socket.read(2048)
 
     def pkg_handler(self, msg):
         if self.protocol == 'novatel':
