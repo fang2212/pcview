@@ -302,10 +302,10 @@ class Player(object):
         tx, ty = self.transform.trans_gnd2raw(x, y)
         text_step = 15
         if 'type_class' in data:
-            BaseDraw.draw_text(img, 'class: ' + data['type_class'], (tx - 50, ty), 0.5, color, 1)
+            BaseDraw.draw_text(img, 'class: {}'.format(data['type_class']), (tx - 50, ty), 0.5, color, 1)
 
         if 'prediction_source' in data:
-            BaseDraw.draw_text(img, 'predict: ' + data['prediction_source'], (tx - 50, ty + text_step), 0.5, color, 1)
+            BaseDraw.draw_text(img, 'predict: {}'.format(data['prediction_source']), (tx - 50, ty + text_step), 0.5, color, 1)
 
         if 'probability' in data:
             BaseDraw.draw_text(img, 'prob: ' + str('%.2f' % data['probability']), (tx - 50, ty + text_step * 2),

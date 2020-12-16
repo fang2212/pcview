@@ -258,10 +258,7 @@ class Hub(Thread):
         is_main = cfg.get('is_main')
         self.online[ip]['msg_types'] = []
 
-        if 'type' not in cfg:
-            return
-
-        if "algo" in cfg.get('type'):
+        if cfg.get('type') == 'x1_algo':
             for item in cfg['ports']:
                 if not cfg['ports'][item].get('enable') and not is_main:
                     continue
@@ -271,7 +268,7 @@ class Hub(Thread):
 
                 sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
                                 index=idx, protocol=proto, topic=topic, log_name=item, fileHandler=self.fileHandler,
-                                is_main=is_main, name=cfg.get("type"))
+                                is_main=is_main)
                 # sink.start()
                 # sink = {'stype': 'flow', 'msg_queue': self.msg_queue, 'cam_queue': self.cam_queue, 'ip': ip,
                 #         'port': port, 'channel': item, 'index': idx, 'fileHandler': self.fileHandler,

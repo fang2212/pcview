@@ -410,8 +410,6 @@ class LogPlayer(Process):
             if line == '':
                 continue
 
-
-
             # if 'replay_speed' in self.d:
             #     self.replay_speed = self.d['replay_speed']
 
