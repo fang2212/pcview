@@ -19,6 +19,35 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "imuinfo"
+    },
+     "vehicle": {
+      "enable": true,
+      "port": 26012,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "ped,vehicle"
+    },
+
+    "lane": {
+      "enable": true,
+      "port": 24012,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "lane"
+    },
+    "autocalib": {
+      "enable": true,
+      "port": 24015,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "autocalib"
+    },
+    "roadmark": {
+      "enable": true,
+      "port": 24018,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "roadmark"
     }
   }
 }
