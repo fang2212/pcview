@@ -191,6 +191,9 @@ class PCC(object):
             ts_now = time.time()
             for source in list(self.cache['misc']):
                 for entity in list(self.cache['misc'][source]):
+                    if type(self.cache['misc'][source][entity]) == list:
+                        del self.cache['misc'][source][entity]
+                        continue
                     ts_a = self.cache['misc'][source][entity].get('ts_arrival')
                     if not ts_a or ts_now - ts_a > max(3 * self.display_interval, 0.4):
                         del self.cache['misc'][source][entity]
@@ -259,8 +262,15 @@ class PCC(object):
                 dtype = data.get('type') if 'type' in data else 'notype'
                 id = str(data.get('id')) if 'id' in data else 'noid'
                 entity = data['source'] + '.' + dtype + '.' + id
-                self.cache['misc'][source][entity] = data
-                self.cache['info'][source]['integrity'] = 'divided'
+
+                if 'x1_data' in source:
+                    if entity not in self.cache['misc'][source]:
+                        self.cache['misc'][source][entity] = []
+                    self.cache['misc'][source][entity].append(data)
+                else:
+                    self.cache['misc'][source][entity] = data
+                    self.cache['info'][source]['integrity'] = 'divided'
+
 
     def adjust_interval(self):
         if not self.enable_auto_interval_adjust:
@@ -485,17 +495,21 @@ class PCC(object):
         # t1 = time.time()
         ts_ana.append(('other frame decode', time.time()))
 
-        if 'x1_data' in mess:
-            # print('------', mess['x1_data'])
-            for data in mess['x1_data']:
-                # print(mess['x1_data'])
-                self.flow_player.draw(data, img)
-
         # t2 = time.time()
-        ts_ana.append(('pcv_data', time.time()))
+
         # cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
         misc_data = mess.get('misc')
         if misc_data:
+            if 'x1_data' in misc_data:
+                # print('------', mess['x1_data'])
+                for key in misc_data['x1_data']:
+                    for data in misc_data['x1_data'][key]:
+                        # print(key)
+                        # print(misc_data['x1_data'])
+                        self.flow_player.draw(data, img)
+                misc_data['x1_data'].clear()
+                ts_ana.append(('pcv_data', time.time()))
+
             # print('can0 data')
             for source in list(mess['misc']):
                 for entity in list(mess['misc'][source]):

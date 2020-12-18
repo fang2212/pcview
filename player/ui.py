@@ -304,9 +304,9 @@ class BaseDraw(object):
         BaseDraw.draw_para_list(img, (x+5, y+gap_v*2), para_list, gap_v, size)
 
     @classmethod
-    def draw_head_info(cls, img, point, para_list, width=120):
+    def draw_head_info(cls, img, point, para_list, width=120, max_range=[1280, 720]):
         """显示物体头部信息 for car & ped
-        Args:   
+        Args:
             img: 原始图片
             point: 左上角位置
             para_list: List [index, TODO ]
@@ -316,19 +316,19 @@ class BaseDraw(object):
         gap_v = 18
         size = 0.5
 
-        if y-num*gap_v-6 < 0:
-            y = num*gap_v+6
-        elif y >= 720:
-            y = 720
+        if y - num * gap_v - 6 < 0:
+            y = num * gap_v + 6
+        elif y >= max_range[1]:
+            y = max_range[1]
 
-        if x+width >= 1280:
-            x = 1280-width
+        if x + width >= max_range[0]:
+            x = max_range[0] - width
         if x < 0:
             x = 0
 
-        rect = (x, y-num*gap_v-6, width, num*gap_v+6)
+        rect = (x, y - num * gap_v - 6, width, num * gap_v + 6)
         BaseDraw.draw_alpha_rect(img, rect, 0.4)
-        BaseDraw.draw_para_list(img, (x+5, y-6), para_list, -gap_v, size)
+        BaseDraw.draw_para_list(img, (x + 5, y - 6), para_list, -gap_v, size)
 
     @classmethod
     def draw_lane_warnning(cls, img, point, warning):

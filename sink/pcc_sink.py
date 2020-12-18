@@ -49,7 +49,7 @@ from collections import deque
 class NNSink(Thread):
     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
         super(NNSink, self).__init__()
-        self.deamon = True
+        self.daemon = True
         self.dev = ip
         self.channel = port
         self.queue = queue
@@ -882,12 +882,10 @@ class FlowSink(NNSink):
                         d['gyro'][0], d['gyro'][1], d['gyro'][2],
                         d['temp'], int(ts), 1000000 * (ts - int(ts)))))
                 return
+
         else:  # msg_src == 'pcview'
             # buf = msgpack.unpackb(payload)
-            print(data)
             pass
-
-
 
         # elif b'calib_params' in buf:
         #     buf = msgpack.unpackb(buf)
@@ -904,9 +902,17 @@ class FlowSink(NNSink):
                 payload[b'ultrasonic'][b'can_data'] = [x for x in payload[b'ultrasonic'][b'can_data']]
 
             pcv = mytools.convert(payload)
+
+            ## cv22_algo_data
+            if 'data' in pcv and 'key' in pcv:
+                pcv[pcv['key']] = pcv['data']
+                pcv.pop('data')
+                pcv.pop('key')
+
             pcv['source'] = self.source
             pcv['type'] = 'algo_debug'
             pcv['ts'] = ts
+            # print(pcv)
             # data = json.dumps(pcv)
             self.fileHandler.insert_pcv_raw(pcv)
             return 'x1_data', pcv, self.source

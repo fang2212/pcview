@@ -30,6 +30,7 @@ class FlowPlayer(object):
         self.rotor_cpu_avg = Avg(10)
 
     def draw(self, mess, img):
+        # print("***", mess.keys())
         if 'pedestrians' in mess:
             res_list = mess['pedestrians']
             for i, obj in enumerate(res_list):
@@ -126,12 +127,149 @@ class FlowPlayer(object):
                         self.ultrasonic_pair = [{}, {}]
                 else:
                     dis = round(mess['ultrasonic']['distance'], 2)
-            para_list = [
-                # "can_id:%d" % mess['ultrasonic']['can_id'],
-                "distance:" + '%sm' % str(dis)
-                # 'ts:' + "%.2fs" % (mess['ultrasonic']['time'] / 1000000)
-            ]
-            BaseDraw.draw_single_info(img, (1100, 0), 120, 'ultrasonic', para_list)
+                para_list = [
+                    # "can_id:%d" % mess['ultrasonic']['can_id'],
+                    "distance:" + '%sm' % str(dis)
+                    # 'ts:' + "%.2fs" % (mess['ultrasonic']['time'] / 1000000)
+                ]
+                BaseDraw.draw_single_info(img, (1100, 0), 120, 'ultrasonic', para_list)
+
+
+        # cv22 algo begin
+        h, w = img.shape[:2]
+        if 'vehicleMeasure' in mess:
+
+            res_list = mess['vehicleMeasure']
+            for i, vehicle in enumerate(res_list):
+
+                dect_rect = vehicle['det_rect']
+                pos = vehicle['reg_rect']
+
+                track_rect = vehicle.get("track_rect", None)
+
+                dect_rect = [d * w if i % 2 == 0 else d * h for i, d in
+                             enumerate(dect_rect)]
+                pos = [d * w if i % 2 == 0 else d * h for i, d in
+                       enumerate(pos)]
+                if track_rect:
+                    track_rect = [d * w if i % 2 == 0 else d * h for i, d in
+                                  enumerate(track_rect)]
+                    # BaseDraw.draw_obj_rect(img, track_rect, CVColor.Orange, 1)
+
+                BaseDraw.draw_obj_rect(img, dect_rect, CVColor.Cyan, 1)
+                color = CVColor.Blue if vehicle['is_crucial'] else CVColor.Blue
+                BaseDraw.draw_obj_rect_corn(img, pos, color, 2)
+
+                vid = vehicle['vehicle_id']
+                d1 = vehicle['longitude_dist']
+                d2 = vehicle['lateral_dist']
+                d1 = 'nan' if isnan(d1) else int(float(d1) * 100) / 100
+                d2 = 'nan' if isnan(d2) else int(float(d2) * 100) / 100
+                tid = str(vehicle['vehicle_class'])
+
+                vehicle_width = "%.2f" % vehicle.get('vehicle_width', 0)
+                para_list = [
+                    # 'vid:' + str(vid),
+                    'v:' + str(d1),
+                    'h:' + str(d2),
+                    # 'width:' + vehicle_width
+                ]
+                if vehicle['is_crucial']:
+                    para_list.append('ttc:' + str(round(vehicle.get("ttc", 0), 3)))
+                BaseDraw.draw_head_info(img, pos[0:2], para_list, 80, max_range=[w, h])
+
+        if 'PassableArea' in mess:
+            data = mess.get("PassableArea")
+
+            pts = [(d[0] * w, d[1] * h) for d in data['top_boundary']]
+            BaseDraw.draw_polylines(img, pts, CVColor.Yellow)
+            pts = [(d[0] * w, d[1] * h) for d in data['bottom_boundary']]
+            BaseDraw.draw_polylines(img, pts, CVColor.Blue)
+
+        if 'laneWarningRes' in mess:
+            lanelines = mess['laneWarningRes']['lanelines']
+            for lane in lanelines:
+                index = lane['label']
+                color = CVColor.Blue
+                pts = lane['perspective_view_pts']
+
+                uv_st = lane['start'][1] / 1080
+                uv_ed = lane['end'][1] / 1080
+                pts = [x for x in pts if x[1] >= uv_ed]
+                # print("after:", len(pts))
+                if not pts:
+                    continue
+
+                pts = [(d[0] * w, d[1] * h) for d in pts]
+                BaseDraw.draw_polylines(img, pts, color, 2)
+
+        lanelines = None
+        if 'Kerb' in mess:
+            lanelines = mess['Kerb']
+        if 'kerb' in mess:
+            lanelines = mess['kerb']
+            if type(lanelines) == dict:
+                lanelines = None
+
+        if lanelines is not None:
+            for lane in lanelines:
+                color = CVColor.Cyan
+                pts = lane['perspective_view_pts']
+                pts = [(d[0] * w, d[1] * h) for d in pts]
+                BaseDraw.draw_polylines(img, pts, color, 2)
+
+        roadmark = None
+        if 'RoadMark' in mess:
+            roadmark = mess.get("RoadMark")
+        elif 'roadmark' in mess:
+            roadmark = mess['roadmark']['roadmarks']
+
+        if roadmark is not None:
+            for rm in roadmark:
+                if rm.get('type', 16) == 16:
+                    continue
+
+                pts = rm['corner_pts']
+                pts = [(d[0] * w, d[1] * h) for d in pts]
+                pts.append(pts[0])
+                BaseDraw.draw_polylines(img, pts, CVColor.Green)
+                BaseDraw.draw_head_info(img, pts[0], ["type:%s" % str(rm['type'])],
+                                        max_range=[w, h])
+
+        if 'pedestrians' in mess:
+            res_list = mess['pedestrians']
+            for i, obj in enumerate(res_list):
+
+                dect_rect = obj['detect_box']
+                reg_rect = obj['regressed_box']
+                dect_rect = [d * w if i % 2 == 0 else d * h for i, d in
+                             enumerate(dect_rect)]
+
+                reg_rect = [d * w if i % 2 == 0 else d * h for i, d in
+                            enumerate(reg_rect)]
+
+                BaseDraw.draw_obj_rect(img, dect_rect, CVColor.Cyan, 1)
+                if obj['have_bike']:
+                    obj['bike_box'] = [d * w if i % 2 == 0 else d * h for i, d in
+                                       enumerate(obj['bike_box'])]
+                    BaseDraw.draw_obj_rect(img, obj['bike_box'], CVColor.Yellow, 1)
+                color = CVColor.Pink if obj['is_key'] else CVColor.Green
+
+                BaseDraw.draw_obj_rect_corn(img, reg_rect, color, 2)
+                para_list = [
+                    # 'dist:' + "%.2f" % obj['dist'],
+                    'ttc:' + "%.2f" % obj['ttc'],
+                    # 'ttc_m:' + "%.2f" % obj.get("ttc_m", -1),
+                    # # 'classify_type:'+str(obj['classify_type']),
+                    'world_x:' + "%.2f" % obj['world_x'],
+                    'world_y:' + "%.2f" % obj['world_y'],
+                    # 'predicted:' + str(obj['predicted']),
+                    # 'id:' + str(obj['id']),
+                    # 'lon_v:' + "%.3f" % obj['longitudinal_velocity'],
+                    # 'lat_v:' + "%.3f" % obj['lateral_velocity'],
+                ]
+                BaseDraw.draw_head_info(img, reg_rect[0:2], para_list, 100, max_range=[w, h])
+
         return img
 
 def chr(d):
