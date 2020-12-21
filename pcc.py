@@ -170,6 +170,8 @@ class PCC(object):
         self.cache_pause_idx = 0
         self.cache_pause_max_len = 50
 
+        self.recv_first_img = False
+
     def ts_sync_local(self):
         t = time.time()
         if self.dt_from_img == 0:
@@ -238,6 +240,9 @@ class PCC(object):
                 else:
                     self.cache['img'] = data['img']
                     self.cache['img_raw'] = None
+
+                    self.recv_first_img = True
+
                     try:
                         pass
                         # self.cache['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
@@ -390,7 +395,9 @@ class PCC(object):
             else:
                 cv2.imshow('MINIEYE-CVE', img_rendered)
 
-            self.save_rendered(img_rendered)
+            if self.recv_first_img:
+                self.save_rendered(img_rendered)
+
         t3 = time.time()
 
         while self.replay and self.pause:
@@ -888,6 +895,8 @@ class PCC(object):
         if key == ord('q') or key == 27:
             if not self.to_web:
                 cv2.destroyAllWindows()
+                if self.vw is not None:
+                    self.vw.release()
             # os._exit(0)
             self.exit = True
             # sys.exit(0)
