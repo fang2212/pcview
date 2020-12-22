@@ -45,8 +45,8 @@ def run(log_path):
                 data_dir = time.strftime("%Y%m%d-%H%M%S", time.localtime(ts))
                 data_dir = data_dir + "_" + fields[-1]
                 data_dir = os.path.join(log_dir, data_dir)
-                # if not os.path.exists(data_dir):
-                #     os.makedirs(os.path.join(data_dir, "video"))
+                if not os.path.exists(data_dir):
+                    os.makedirs(os.path.join(data_dir, "video"))
 
                 os.system("cp {} {}".format(log_dir + "/installation.json", data_dir))
                 os.system("cp {} {}".format(log_dir + "/config.json", data_dir))
@@ -107,6 +107,20 @@ def run(log_path):
 
     print("end", log_path, time.time())
 
+
 if __name__ == '__main__':
     sys.argv.append("/home/cao/data/download/shujuchuli_test/20201220110621/log.txt")
-    run(sys.argv[1])
+
+    arg = sys.argv[1]
+    if not os.path.exists(arg):
+        print(arg, "is not exists\n");
+        exit(0)
+
+    if os.path.isdir(arg):
+        for f in os.listdir(arg):
+            path = os.path.join(arg, f, "log.txt")
+            print(path, "start")
+            run(path)
+            print(path, "end")
+    else:
+        run(sys.argv[1])
