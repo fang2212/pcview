@@ -1,0 +1,79 @@
+{
+    "version": 1.0,
+    "name": "cfg_lab",
+    "modules": {
+        "GGA_reporter": {
+            "enable": false,
+            "ntrip_address": "ntrip.weaty.cn",
+            "port": 5001
+        }
+    },
+    "vehicles": {
+        "ego": {
+            "enable": true,
+            "collectors": [
+              {"model":  "x1_fusion", "params": {"mac": "00:0c:18:ef:ff:e0", "can0": "mbq3", "can1": "x1j", "force_ip":  true,
+                  "ip":  "192.168.0.233", "is_main":  false}},
+                {"model":  "cv22", "params": {"force_ip":  true, "ip":  "192.168.98.231", "is_main":  true, "type":  "cv22_algo_200m"}}
+            ],
+            "installation": {
+                "esr": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "lon_offset": 0.0,
+                    "height": 0.0
+                },
+                "lmr": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "lon_offset": 0.0,
+                    "height": 0.0
+                },
+                "ifv300": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "lon_offset": -1.67,
+                    "height": 1.2
+                },
+                "rtk": {
+                    "yaw": 0.0,
+                    "pitch": -2.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.15,
+                    "lon_offset": -0.21,
+                    "height": 1.2
+                },
+                "video": {
+                    "yaw": -1.12,
+                    "pitch": -0.47,
+                    "roll": -0.67,
+                    "lat_offset": 0.15,
+                    "lon_offset": -1.68,
+                    "height": 1.45,
+                    "fu": 2071.3667,
+                    "fv": 2071,
+                    "cu": 972.2942,
+                    "cv": 507.1232
+                },
+                "x1": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.15,
+                    "lon_offset": -1.67,
+                    "height": 1.2
+                }
+            }
+        },
+        "other": {
+            "enable": false,
+            "collectors": []
+        }
+    }
+}

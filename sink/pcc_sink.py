@@ -874,6 +874,7 @@ class FlowSink(NNSink):
         elif msg_src == 'imuinfo':
             if topic == 'imuinfo':
                 imu_info = msgpack.unpackb(payload)
+                imu_info = mytools.convert(imu_info)
                 # print(imu_info)
                 for idx in range(imu_info['data_count']):
                     d = imu_info['imu_info'][idx]
