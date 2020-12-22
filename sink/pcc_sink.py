@@ -794,7 +794,9 @@ class FlowSink(NNSink):
                 buf = payload
                 # topic = 'finish'
                 if b'rc_fusion' in buf:
+
                     buf = msgpack.unpackb(buf)
+                    buf = mytools.convert(buf)
                     data = buf['rc_fusion']
                     buf = msgpack.packb(data, use_bin_type=True)
                     # print(buf)

@@ -23,22 +23,22 @@ class CollectorNode(kProcess):
         self.q = kQueue()
 
     def run(self):
-        if async_for_sink:
-            self.am = AsyncManager()
-            self.am.start()
-            while self.am.loop is None: time.sleep(0.01)
-            self.tep = ThreadPoolExecutor(2)
+        # if async_for_sink:
+        #     self.am = AsyncManager()
+        #     self.am.start()
+        #     while self.am.loop is None: time.sleep(0.01)
+        #     self.tep = ThreadPoolExecutor(2)
 
         print('Inited collector node', os.getpid())
         for sink in self.sinks:
-            if async_for_sink:
-                if isinstance(sink, TCPSink) or isinstance(sink, RTKSink):
-                    t = self.am.loop.run_in_executor(self.tep, sink.run)
-                    self.am.add_task(asyncio.wait(t))
-                else:
-                    self.am.add_task(sink.run())
-            else:
-                sink.start()
+            # if async_for_sink:
+            #     if isinstance(sink, TCPSink) or isinstance(sink, RTKSink):
+            #         t = self.am.loop.run_in_executor(self.tep, sink.run)
+            #         self.am.add_task(asyncio.wait(t))
+            #     else:
+            #         self.am.add_task(sink.run())
+            # else:
+            sink.start()
 
         while not self.exit.is_set():
             if not self.q.empty():
