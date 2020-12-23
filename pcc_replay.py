@@ -268,8 +268,9 @@ class LogPlayer(Process):
         # self.shared['t0'] = 0
         self.main_idx = get_main_index(self.log_path)
         main_dev = get_main_dev(self.log_path)
-        x1_log = os.path.dirname(self.log_path) + '/pcv_log.txt'
-        if main_dev and main_dev['type'] == 'x1_algo' and os.path.exists(x1_log):
+        x1_log = os.path.dirname(self.log_path) + "/" + main_dev['type']+"." + str(main_dev['idx']) + '/pcv_log.txt'
+        print(x1_log, main_dev, main_dev['type'])
+        if main_dev and "algo" in main_dev['type'] and os.path.exists(x1_log):
             self.x1_parser = PcvParser(open(x1_log))
         else:
             self.x1_parser = None
@@ -470,10 +471,10 @@ class LogPlayer(Process):
 
                 if self.x1_parser:
                     res = self.x1_parser.get_frame(frame_id)
+
                     if res:
                         res['ts'] = ts
-                        res['source'] = 'x1_data.{}'.format(self.main_idx)
-                        # print(res)
+                        res['source'] = 'x1_data'
                         self.msg_queue.put((frame_id, res, res['source']))
 
                 if self.nnsend:
