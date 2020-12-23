@@ -13,9 +13,9 @@ import time
 
 def run(path: str) -> None:
 
-    dev_id = "test-pchil-001"
+    dev_id = "cve-test-hil"
     dst_dir = "/home/minieye/upgrade_temp/"
-    hil_dir = "/home/minieye/pc-hil/build/"
+    hil_dir = "/home/minieye/pchil/"
 
 
     # 创建 c4 客户端实例
@@ -32,7 +32,7 @@ def run(path: str) -> None:
     soft_name = os.path.basename(path)
     print("copy %s to hil" % path)
     # copy soft
-    os.system("sshpass -p minieye scp %s minieye@192.168.6.85:%s" % (path, dst_dir))
+    os.system("sshpass -p minieye scp %s minieye@192.168.50.131:%s" % (path, dst_dir))
 
     ret_str = s3client.shell_exec(dev_id, "ls %s" % dst_dir)
 
@@ -53,20 +53,28 @@ def run(path: str) -> None:
         print("killall existed cve")
 
     try:
-        s3client.shell_exec(dev_id, 'cd {}pcc_app && nohup ./pcc_app config/cfg_tmp.json -w &'.format(dst_dir), timeout=3)
+        ret_str = s3client.shell_exec(dev_id, 'cd {}pcc_app && nohup ./pcc_app config/cfg_hil.json -w &'.format(dst_dir), timeout=3)
     except RPCError as e:
         print("cve started")
 
+        time.sleep(1)
         # 发送录制的数据
-        resp = requests.post("http://192.168.6.85:1234/control/r", data="data_tobackend")
+        resp = requests.post("http://192.168.50.131:1234/control/r", data="data_tobackend")
         if resp.status_code == 200:
             print("发送录制成功")
         else:
             print("录制失败")
 
+    try:
+        ret_str = s3client.shell_exec(dev_id, "echo minieye | sudo -S killall pchil")
+        print(ret_str)
+    except RPCError as e:
+        print("killall pchil")
+
     # 挂载can卡, 启动case
     try:
-        ret_str = s3client.shell_exec(dev_id, "cd {}; nohup echo minieye | sudo -S DISPLAY=:0 ./pchil --log_path ../data/20201112130014/log_m3-2.txt --repeat 1 &".format(hil_dir), timeout=1)
+        ret_str = s3client.shell_exec(dev_id, "cd {}; nohup echo minieye | sudo -S export DISPLAY=:0; ./start.sh &".format(hil_dir), timeout=1)
+        print(ret_str)
     except RPCError as e:
         print("start pchil")
 
@@ -78,7 +86,7 @@ def run(path: str) -> None:
         except ShellExecError as e:
             runing = False
             # 发送录制的数据
-            resp = requests.post("http://192.168.6.85:1234/control/r", data="data_tobackend")
+            resp = requests.post("http://192.168.50.131:1234/control/r", data="data_tobackend")
             if resp.status_code == 200:
                 print("停止录制成功")
             else:
