@@ -33,6 +33,7 @@ def parse_x1j(id, data, ctx=None):
     if id == 0x76f:  # start of epoch
         ctx['x1j_obs'].clear()
         cipv.clear()
+        return {'type': 'vehicle_state', 'speed': r['speed']}
 
     elif id == 0x77f:  # frame_ped
         cipp.clear()
