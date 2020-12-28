@@ -144,8 +144,11 @@ class PCC(object):
             # video_server.local_path = uniconf.local_cfg.log_root
             self.vs = to_web
             # self.vs.start()
-        t = Thread(target=self.recv_data)
-        t.start()
+
+        if not self.replay:
+
+            t = Thread(target=self.recv_data)
+            t.start()
         # if self.save_replay_video and self.replay:
         #     self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
         #     self.vw.set_writer("replay-render", 1760, 720)
@@ -356,13 +359,36 @@ class PCC(object):
                 for i in range(1, 10):
                     cv2.destroyAllWindows()
                     cv2.waitKey(1)
+
+                if self.vw is not None:
+                    self.vw.release()
+
                 return
             t3 = time.time()
             # d = self.hub.pop_simple()  # receive
 
+            if self.replay:
+                t0 = time.time()
+                d = self.hub.pop_common()
+                if d:
+                    t1 = time.time()
+                    self.statistics['frame_popping_cost'] = '{:.2f}'.format(1000 * (t1 - t0))
+                    new_frame = self.cache_data(d)
+                    if not new_frame:
+                        continue
+
+                    if new_frame:
+                        self.frame_cnt += 1
+                        if self.frame_cnt > 500:
+                            self.player.start_time = datetime.now()
+                            self.frame_cnt = 1
+
+                    t2 = time.time()
+                    self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (t2 - t1))
+
             # render begins
             # print('render begins.')
-            if t3 - last_ts > self.display_interval:
+            if t3 - last_ts > self.display_interval or self.replay:
                 self.handle_keyboard()
                 # time.sleep(0.001)
                 # print('wait to refresh', self.display_interval)
