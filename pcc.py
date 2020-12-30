@@ -968,6 +968,9 @@ class PCC(object):
                     self.alarm_info["voice_note"] = time.time() + dur_time
 
         elif key == ord('r'):
+            if self.replay:
+                return
+
             if self.hub.fileHandler.is_recording:
                 # self.recording = False
                 self.stop_rec()
