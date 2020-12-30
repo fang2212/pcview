@@ -104,7 +104,7 @@ class PCC(object):
         # cv2.namedWindow('video_aux')
 
         # cv2.createTrackbar('ESR_y', 'adj', 500, 1000, self.ot.update_esr_yaw)
-
+        self.alarm_info = {}
         if replay:
             self.hub.d = Manager().dict()
         #
@@ -166,8 +166,6 @@ class PCC(object):
         self.audio = None
 
         self.space_cnt = 0
-
-        self.alarm_info = {}
 
         self.cache_pause_data = []
         self.cache_pause_idx = 0
@@ -386,6 +384,9 @@ class PCC(object):
                     t2 = time.time()
                     self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (t2 - t1))
 
+                else:
+                    continue
+
             # render begins
             # print('render begins.')
             if t3 - last_ts > self.display_interval or self.replay:
@@ -515,14 +516,14 @@ class PCC(object):
         ts_ana.append(('prep ipm', time.time()))
 
         img_aux = np.zeros([0, 427, 3], np.uint8)
-        for idx, source in enumerate(self.video_cache):
+        for idx, source in enumerate(list(self.video_cache.keys())):
             if idx > 2:
                 continue
             video = self.video_cache[source]
             self.video_cache[source]['updated'] = False
             img_small = cv2.resize(cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR), (427, 240))
             # img_small = cv2.resize(self.jpeg_dec.decode(video['img']), (427, 240))
-            video['device'] = "x1d3"
+            video['device'] = source
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
         # t1 = time.time()

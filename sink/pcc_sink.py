@@ -645,10 +645,11 @@ class CameraSink(NNSink):
         self.fileHandler = fileHandler
         self.headless = headless
         # self.index = index
-        self.source = 'video.{:d}'.format(index)
+        self.source = '{:s}.{:d}'.format(devname, index)
         self.is_main = is_main
         self.devname = devname
         self.type = 'cam_sink'
+
 
     def pkg_handler(self, msg):
         # print('cprocess-id:', os.getpid())

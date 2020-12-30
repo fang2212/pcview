@@ -293,7 +293,7 @@ class Hub(Thread):
                 #           'isheadless': self.headless}
                 self.sinks.append(pisink)
                 self.online[ip]['msg_types'].append(name + '.{}'.format(idx))
-        elif cfg.get('type') == 'x1_collector':
+        elif "collector" in cfg.get('type'):
             for iface in cfg['ports']:
                 if not cfg['ports'][iface].get('enable') and not is_main:
                     continue
@@ -322,7 +322,7 @@ class Hub(Thread):
                     port = cfg['ports']['video']['port']
                     vsink = CameraSink(queue=self.msg_queue, ip=ip, port=port, channel='camera', index=idx,
                                        fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
-                                       devname=cfg.get('name'))
+                                       devname=cfg.get('type'))
                     # vsink.start()
                     # vsink = {'stype': 'camera', 'queue': self.cam_queue, 'ip': ip, 'port': port,
                     #          'channel': 'camera', 'index': idx, 'fileHandler': self.fileHandler,
