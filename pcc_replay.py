@@ -268,6 +268,13 @@ class LogPlayer(Process):
         # self.shared['t0'] = 0
         self.main_idx = get_main_index(self.log_path)
         main_dev = get_main_dev(self.log_path)
+
+        if chmain is not None:
+            idx = int(chmain.split(".")[-1])
+            for f in self.cfg.configs:
+                if f.get("idx") == idx:
+                    main_dev = f
+                    break
         x1_log = os.path.dirname(self.log_path) + "/" + main_dev['type']+"." + str(main_dev['idx']) + '/pcv_log.txt'
         print(x1_log, main_dev, main_dev['type'])
         if main_dev and "algo" in main_dev['type'] and os.path.exists(x1_log):
