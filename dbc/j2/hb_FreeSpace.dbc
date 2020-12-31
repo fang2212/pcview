@@ -1,0 +1,397 @@
+VERSION "8"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:Matrix
+
+
+BO_ 1792 FS_Header: 1 Matrix
+ SG_ ProtocolMajorVersion : 0|4@1+ (1,0) [0|15] "NA" Matrix
+ SG_ ProtocolMinorVersion : 4|4@1+ (1,0) [0|15] "NA" Matrix
+
+
+BO_ 1796 FS_Types_message4: 1 Matrix
+ SG_ FS_Type_Point64 : 0|3@1+ (1,0) [0|7] "ENUM" Matrix
+
+
+BO_ 1795 FS_Types_message3: 8 Matrix
+ SG_ FS_Type_Point43 : 0|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point44 : 3|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point45 : 6|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point46 : 9|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point47 : 12|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point48 : 15|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point49 : 18|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point50 : 21|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point51 : 24|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point52 : 27|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point53 : 30|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point54 : 33|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point55 : 36|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point56 : 39|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point57 : 42|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point58 : 45|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point59 : 48|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point60 : 51|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point61 : 54|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point62 : 57|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point63 : 60|3@1+ (1,0) [0|7] "ENUM" Matrix
+
+
+BO_ 1794 FS_Types_message2: 8 Matrix
+ SG_ FS_Type_Point22 : 0|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point23 : 3|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point24 : 6|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point25 : 9|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point26 : 12|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point27 : 15|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point28 : 18|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point29 : 21|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point30 : 24|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point31 : 27|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point32 : 30|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point33 : 33|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point34 : 36|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point35 : 39|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point36 : 42|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point37 : 45|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point38 : 48|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point39 : 51|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point40 : 54|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point41 : 57|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point42 : 60|3@1+ (1,0) [0|7] "ENUM" Matrix
+
+
+BO_ 1793 FS_Types_message1: 8 Matrix
+ SG_ FS_Type_Point1 : 0|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point2 : 3|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point3 : 6|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point4 : 9|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point5 : 12|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point6 : 15|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point7 : 18|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point8 : 21|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point9 : 24|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point10 : 27|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point11 : 30|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point12 : 33|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point13 : 36|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point14 : 39|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point15 : 42|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point16 : 45|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point17 : 48|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point18 : 51|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point19 : 54|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point20 : 57|3@1+ (1,0) [0|7] "ENUM" Matrix
+ SG_ FS_Type_Point21 : 60|3@1+ (1,0) [0|7] "ENUM" Matrix
+
+
+BO_ 1925 FS_Points_message22: 3 Matrix
+ SG_ FS_lateral64 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal64 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1924 FS_Points_message21: 8 Matrix
+ SG_ FS_lateral61 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal61 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral62 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal62 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral63 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal63 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1923 FS_Points_message20: 8 Matrix
+ SG_ FS_lateral58 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal58 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral59 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal59 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral60 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal60 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1922 FS_Points_message19: 8 Matrix
+ SG_ FS_lateral55 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal55 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral56 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal56 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral57 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal57 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1921 FS_Points_message18: 8 Matrix
+ SG_ FS_lateral52 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal52 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral53 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal53 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral54 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal54 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1920 FS_Points_message17: 8 Matrix
+ SG_ FS_lateral49 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal49 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral50 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal50 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral51 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal51 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1919 FS_Points_message16: 8 Matrix
+ SG_ FS_lateral46 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal46 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral47 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal47 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral48 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal48 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1918 FS_Points_message15: 8 Matrix
+ SG_ FS_lateral43 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal43 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral44 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal44 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral45 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal45 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1917 FS_Points_message14: 8 Matrix
+ SG_ FS_lateral40 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal40 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral41 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal41 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral42 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal42 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1916 FS_Points_message13: 8 Matrix
+ SG_ FS_lateral37 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal37 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral38 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal38 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral39 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal39 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1915 FS_Points_message12: 8 Matrix
+ SG_ FS_lateral34 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal34 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral35 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal35 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral36 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal36 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1914 FS_Points_message11: 8 Matrix
+ SG_ FS_lateral31 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal31 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral32 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal32 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral33 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal33 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1913 FS_Points_message10: 8 Matrix
+ SG_ FS_lateral28 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal28 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral29 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal29 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral30 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal30 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1912 FS_Points_message9: 8 Matrix
+ SG_ FS_lateral25 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal25 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral26 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal26 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral27 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal27 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1911 FS_Points_message8: 8 Matrix
+ SG_ FS_lateral22 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal22 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral23 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal23 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral24 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal24 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1910 FS_Points_message7: 8 Matrix
+ SG_ FS_lateral19 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal19 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral20 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal20 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral21 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal21 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1909 FS_Points_message6: 8 Matrix
+ SG_ FS_lateral16 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal16 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral17 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal17 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral18 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal18 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1908 FS_Points_message5: 8 Matrix
+ SG_ FS_lateral13 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal13 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral14 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal14 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral15 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal15 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1907 FS_Points_message4: 8 Matrix
+ SG_ FS_lateral10 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal10 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral11 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal11 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral12 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal12 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1906 FS_Points_message3: 8 Matrix
+ SG_ FS_lateral7 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal7 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral8 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal8 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral9 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal9 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1905 FS_Points_message2: 8 Matrix
+ SG_ FS_lateral4 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal4 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral5 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal5 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral6 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal6 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+BO_ 1904 FS_Points_message1: 8 Matrix
+ SG_ FS_lateral1 : 0|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal1 : 10|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral2 : 21|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal2 : 31|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+ SG_ FS_lateral3 : 42|10@1+ (0.1,-51.2) [-51.2|51.1] "meter" Matrix
+ SG_ FS_longitudinal3 : 52|11@1+ (0.1,-102.4) [-102.4|102.3] "meter" Matrix
+
+
+
+
+
+CM_ SG_ 1792 ProtocolMajorVersion "Protocol Major Version, example: V0.3, 0: Major Version";
+CM_ SG_ 1792 ProtocolMinorVersion "Protocol Minor Version:  example: V0.3, 3: Minor Version";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_DEF_DEF_  "BusType" "CAN";
+VAL_ 1796 FS_Type_Point64 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point43 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point44 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point45 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point46 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point47 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point48 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point49 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point50 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point51 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point52 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point53 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point54 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point55 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point56 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point57 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point58 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point59 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point60 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point61 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point62 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1795 FS_Type_Point63 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point22 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point23 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point24 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point25 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point26 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point27 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point28 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point29 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point30 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point31 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point32 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point33 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point34 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point35 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point36 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point37 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point38 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point39 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point40 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point41 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1794 FS_Type_Point42 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point1 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point2 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point3 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point4 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point5 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point6 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point7 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point8 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point9 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point10 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point11 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point12 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point13 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point14 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point15 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point16 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point17 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point18 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point19 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point20 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+VAL_ 1793 FS_Type_Point21 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "pedestrain" 2 "road delimiter" 1 "car" 0 "ignore" ;
+

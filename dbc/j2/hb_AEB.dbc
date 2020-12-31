@@ -1,0 +1,123 @@
+VERSION "8"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:Matrix
+
+
+BO_ 2034 AEB_VRU: 8 Matrix
+ SG_ FCF_VRU_MCP_ID : 0|8@1+ (1,0) [0|255] "counter" Matrix
+ SG_ FCF_VRU_TTCValid : 8|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ FCF_VRU_TTC : 9|10@1+ (0.01,0) [0|10] "sec" Matrix
+ SG_ FCF_VRU_InverseTTC : 19|10@1+ (0.015625,-8) [-8|7.984375] "1/s" Matrix
+ SG_ FCF_VRU_Alert_L1 : 29|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ FCF_VRU_TTC_Thresh_L1 : 30|10@1+ (0.01,0) [0|10] "sec" Matrix
+ SG_ FCF_VRU_Alert_L2 : 40|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ FCF_VRU_TTC_Thresh_L2 : 41|10@1+ (0.01,0) [0|10] "sec" Matrix
+ SG_ FCF_VRU_Alert_L3 : 51|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ FCF_VRU_TTC_Thresh_L3 : 52|10@1+ (0.01,0) [0|10] "sec" Matrix
+
+
+BO_ 2032 AEB_VD1: 8 Matrix
+ SG_ FCF_VD_CIPV_ID : 0|8@1+ (1,0) [0|255] "counter" Matrix
+ SG_ FCF_VD_TTCValid : 8|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ FCF_VD_TTC : 9|10@1+ (0.01,0) [0|10] "sec" Matrix
+ SG_ FCF_VD_InverseTTC : 19|10@1+ (0.015625,-8) [-8|7.984375] "1/s" Matrix
+ SG_ FCF_VD_Alert_A : 29|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ FCF_VD_TTC_Thresh_A : 30|10@1+ (0.01,0) [0|10] "sec" Matrix
+ SG_ FCF_VD_Alert_B : 40|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ FCF_VD_TTC_Thresh_B : 41|10@1+ (0.01,0) [0|10] "sec" Matrix
+ SG_ FCF_VD_Alert_C : 51|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ FCF_VD_TTC_Thresh_C : 52|10@1+ (0.01,0) [0|10] "sec" Matrix
+
+
+BO_ 2033 AEB_VD2: 3 Matrix
+ SG_ FCF_VD_Alert_D : 0|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ FCF_VD_TTC_Thresh_D : 1|10@1+ (0.01,0) [0|10] "sec" Matrix
+ SG_ FCF_VD_Alert_E : 11|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ FCF_VD_TTC_Thresh_E : 12|10@1+ (0.01,0) [0|10] "sec" Matrix
+
+
+
+
+
+CM_ SG_ 2034 FCF_VRU_MCP_ID "ID for MCP";
+CM_ SG_ 2034 FCF_VRU_TTCValid "Valid: Invalid:No cipv or TTC minus zero";
+CM_ SG_ 2034 FCF_VRU_TTC "General estimation for debug only of the TTC measured at alert event";
+CM_ SG_ 2034 FCF_VRU_InverseTTC "InverseTTC";
+CM_ SG_ 2034 FCF_VRU_Alert_L1 "Alert for this set";
+CM_ SG_ 2034 FCF_VRU_TTC_Thresh_L1 "TTC threshold for target";
+CM_ SG_ 2034 FCF_VRU_Alert_L2 "Alert for this set";
+CM_ SG_ 2034 FCF_VRU_TTC_Thresh_L2 "TTC threshold for target";
+CM_ SG_ 2034 FCF_VRU_Alert_L3 "Alert for this set";
+CM_ SG_ 2034 FCF_VRU_TTC_Thresh_L3 "TTC threshold for target";
+CM_ SG_ 2032 FCF_VD_CIPV_ID "ID of vehicle on which activation was issued";
+CM_ SG_ 2032 FCF_VD_TTCValid "Valid£º Invalid£ºNo cipv or TTC minus zero";
+CM_ SG_ 2032 FCF_VD_TTC "General estimation for debug only of the TTC measured at alert event";
+CM_ SG_ 2032 FCF_VD_InverseTTC "InverseTTC";
+CM_ SG_ 2032 FCF_VD_Alert_A "Alert for this set";
+CM_ SG_ 2032 FCF_VD_TTC_Thresh_A "TTC used threshold";
+CM_ SG_ 2032 FCF_VD_Alert_B "Alert for this set";
+CM_ SG_ 2032 FCF_VD_TTC_Thresh_B "TTC used threshold";
+CM_ SG_ 2032 FCF_VD_Alert_C "Alert for this set";
+CM_ SG_ 2032 FCF_VD_TTC_Thresh_C "TTC used threshold";
+CM_ SG_ 2033 FCF_VD_Alert_D "Alert for this set";
+CM_ SG_ 2033 FCF_VD_TTC_Thresh_D "TTC used threshold";
+CM_ SG_ 2033 FCF_VD_Alert_E "Alert for this set";
+CM_ SG_ 2033 FCF_VD_TTC_Thresh_E "TTC used threshold";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_DEF_DEF_  "BusType" "CAN";
+VAL_ 2034 FCF_VRU_TTCValid 1 "Valid" 0 "Invalid" ;
+VAL_ 2034 FCF_VRU_Alert_L1 1 "ALERT" 0 "NO_ALERT" ;
+VAL_ 2034 FCF_VRU_Alert_L2 1 "ALERT" 0 "NO_ALERT" ;
+VAL_ 2034 FCF_VRU_Alert_L3 1 "ALERT" 0 "NO_ALERT" ;
+VAL_ 2032 FCF_VD_TTCValid 1 "Valid" 0 "Invalid" ;
+VAL_ 2032 FCF_VD_Alert_A 1 "ALERT" 0 "NO_ALERT" ;
+VAL_ 2032 FCF_VD_Alert_B 1 "ALERT" 0 "NO_ALERT" ;
+VAL_ 2032 FCF_VD_Alert_C 1 "ALERT" 0 "NO_ALERT" ;
+VAL_ 2033 FCF_VD_Alert_D 1 "ALERT" 0 "NO_ALERT" ;
+VAL_ 2033 FCF_VD_Alert_E 1 "ALERT" 0 "NO_ALERT" ;
+

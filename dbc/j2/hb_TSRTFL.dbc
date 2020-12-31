@@ -1,0 +1,521 @@
+VERSION "8"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Matrix
+
+
+BO_ 1312 TSR_Header: 2 Matrix
+ SG_ TSRObjectsNumber : 0|4@1+ (1,0) [0|8] "uint"  Matrix
+ SG_ ProtocolMajorVersion : 4|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ ProtocolMinorVersion : 8|4@1+ (1,0) [0|15] "NA"  Matrix
+
+BO_ 1327 TSR7: 8 Matrix
+ SG_ TSR_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TSR_Confidence : 4|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TSRTrafficSignType : 11|8@1+ (1,0) [0|255] "ENUM"  Matrix
+ SG_ TSRRoadMarkType : 19|5@1+ (1,0) [0|31] "ENUM"  Matrix
+ SG_ TSR_Relevancy : 24|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Filter_Type : 27|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Approved_Flag : 30|1@1+ (1,0) [0|1] "bool"  Matrix
+ SG_ Sign_Position_X : 31|12@1+ (0.05,0) [0|200] "meters"  Matrix
+ SG_ Sign_Position_Y : 43|11@1+ (0.05,-32) [-32|32] "meters"  Matrix
+ SG_ Sign_Position_Z : 54|10@1+ (0.05,0) [0|40] "meters"  Matrix
+
+BO_ 1325 TSR6: 8 Matrix
+ SG_ TSR_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TSR_Confidence : 4|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TSRTrafficSignType : 11|8@1+ (1,0) [0|255] "ENUM"  Matrix
+ SG_ TSRRoadMarkType : 19|5@1+ (1,0) [0|31] "ENUM"  Matrix
+ SG_ TSR_Relevancy : 24|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Filter_Type : 27|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Approved_Flag : 30|1@1+ (1,0) [0|1] "bool"  Matrix
+ SG_ Sign_Position_X : 31|12@1+ (0.05,0) [0|200] "meters"  Matrix
+ SG_ Sign_Position_Y : 43|11@1+ (0.05,-32) [-32|32] "meters"  Matrix
+ SG_ Sign_Position_Z : 54|10@1+ (0.05,0) [0|40] "meters"  Matrix
+
+BO_ 1323 TSR5: 8 Matrix
+ SG_ TSR_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TSR_Confidence : 4|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TSRTrafficSignType : 11|8@1+ (1,0) [0|255] "ENUM"  Matrix
+ SG_ TSRRoadMarkType : 19|5@1+ (1,0) [0|31] "ENUM"  Matrix
+ SG_ TSR_Relevancy : 24|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Filter_Type : 27|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Approved_Flag : 30|1@1+ (1,0) [0|1] "bool"  Matrix
+ SG_ Sign_Position_X : 31|12@1+ (0.05,0) [0|200] "meters"  Matrix
+ SG_ Sign_Position_Y : 43|11@1+ (0.05,-32) [-32|32] "meters"  Matrix
+ SG_ Sign_Position_Z : 54|10@1+ (0.05,0) [0|40] "meters"  Matrix
+
+BO_ 1321 TSR4: 8 Matrix
+ SG_ TSR_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TSR_Confidence : 4|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TSRTrafficSignType : 11|8@1+ (1,0) [0|255] "ENUM"  Matrix
+ SG_ TSRRoadMarkType : 19|5@1+ (1,0) [0|31] "ENUM"  Matrix
+ SG_ TSR_Relevancy : 24|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Filter_Type : 27|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Approved_Flag : 30|1@1+ (1,0) [0|1] "bool"  Matrix
+ SG_ Sign_Position_X : 31|12@1+ (0.05,0) [0|200] "meters"  Matrix
+ SG_ Sign_Position_Y : 43|11@1+ (0.05,-32) [-32|32] "meters"  Matrix
+ SG_ Sign_Position_Z : 54|10@1+ (0.05,0) [0|40] "meters"  Matrix
+
+BO_ 1319 TSR3: 8 Matrix
+ SG_ TSR_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TSR_Confidence : 4|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TSRTrafficSignType : 11|8@1+ (1,0) [0|255] "ENUM"  Matrix
+ SG_ TSRRoadMarkType : 19|5@1+ (1,0) [0|31] "ENUM"  Matrix
+ SG_ TSR_Relevancy : 24|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Filter_Type : 27|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Approved_Flag : 30|1@1+ (1,0) [0|1] "bool"  Matrix
+ SG_ Sign_Position_X : 31|12@1+ (0.05,0) [0|200] "meters"  Matrix
+ SG_ Sign_Position_Y : 43|11@1+ (0.05,-32) [-32|32] "meters"  Matrix
+ SG_ Sign_Position_Z : 54|10@1+ (0.05,0) [0|40] "meters"  Matrix
+
+BO_ 1317 TSR2: 8 Matrix
+ SG_ TSR_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TSR_Confidence : 4|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TSRTrafficSignType : 11|8@1+ (1,0) [0|255] "ENUM"  Matrix
+ SG_ TSRRoadMarkType : 19|5@1+ (1,0) [0|31] "ENUM"  Matrix
+ SG_ TSR_Relevancy : 24|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Filter_Type : 27|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Approved_Flag : 30|1@1+ (1,0) [0|1] "bool"  Matrix
+ SG_ Sign_Position_X : 31|12@1+ (0.05,0) [0|200] "meters"  Matrix
+ SG_ Sign_Position_Y : 43|11@1+ (0.05,-32) [-32|32] "meters"  Matrix
+ SG_ Sign_Position_Z : 54|10@1+ (0.05,0) [0|40] "meters"  Matrix
+
+BO_ 1315 TSR1: 8 Matrix
+ SG_ TSR_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TSR_Confidence : 4|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TSRTrafficSignType : 11|8@1+ (1,0) [0|255] "ENUM"  Matrix
+ SG_ TSRRoadMarkType : 19|5@1+ (1,0) [0|31] "ENUM"  Matrix
+ SG_ TSR_Relevancy : 24|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Filter_Type : 27|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Approved_Flag : 30|1@1+ (1,0) [0|1] "bool"  Matrix
+ SG_ Sign_Position_X : 31|12@1+ (0.05,0) [0|200] "meters"  Matrix
+ SG_ Sign_Position_Y : 43|11@1+ (0.05,-32) [-32|32] "meters"  Matrix
+ SG_ Sign_Position_Z : 54|10@1+ (0.05,0) [0|40] "meters"  Matrix
+
+BO_ 1313 TSR0: 8 Matrix
+ SG_ TSR_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TSR_Confidence : 4|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TSRTrafficSignType : 11|8@1+ (1,0) [0|255] "ENUM"  Matrix
+ SG_ TSRRoadMarkType : 19|5@1+ (1,0) [0|31] "ENUM"  Matrix
+ SG_ TSR_Relevancy : 24|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Filter_Type : 27|3@1+ (1,0) [0|7] "ENUM"  Matrix
+ SG_ TSR_Approved_Flag : 30|1@1+ (1,0) [0|1] "bool"  Matrix
+ SG_ Sign_Position_X : 31|12@1+ (0.05,0) [0|200] "meters"  Matrix
+ SG_ Sign_Position_Y : 43|11@1+ (0.05,-32) [-32|32] "meters"  Matrix
+ SG_ Sign_Position_Z : 54|10@1+ (0.05,0) [0|40] "meters"  Matrix
+
+BO_ 1337 TFL_Message7: 8 Matrix
+ SG_ TFL_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TFL_PosX : 4|12@1+ (0.0625,0) [0|255.9375] "m"  Matrix
+ SG_ TFL_PosY : 16|12@1+ (0.125,-256) [-256|255.875] "m"  Matrix
+ SG_ TFL_PosZ : 28|8@1+ (0.125,0) [0|31.875] "m"  Matrix
+ SG_ TFL_Confidence : 36|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TFL_Color : 43|3@1+ (1,0) [0|5] "Enum"  Matrix
+ SG_ TFL_Width : 46|5@1+ (0.03125,0) [0|0.96875] "m"  Matrix
+ SG_ TFL_ShapeType : 51|2@1+ (1,0) [0|2] "Enum"  Matrix
+ SG_ TFL_ClassificationType : 53|5@1+ (1,0) [0|18] "Enum"  Matrix
+ SG_ is_TFL_Blinking : 58|1@1+ (1,0) [0|1] "boolean"  Matrix
+
+BO_ 1336 TFL_Message6: 8 Matrix
+ SG_ TFL_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TFL_PosX : 4|12@1+ (0.0625,0) [0|255.9375] "m"  Matrix
+ SG_ TFL_PosY : 16|12@1+ (0.125,-256) [-256|255.875] "m"  Matrix
+ SG_ TFL_PosZ : 28|8@1+ (0.125,0) [0|31.875] "m"  Matrix
+ SG_ TFL_Confidence : 36|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TFL_Color : 43|3@1+ (1,0) [0|5] "Enum"  Matrix
+ SG_ TFL_Width : 46|5@1+ (0.03125,0) [0|0.96875] "m"  Matrix
+ SG_ TFL_ShapeType : 51|2@1+ (1,0) [0|2] "Enum"  Matrix
+ SG_ TFL_ClassificationType : 53|5@1+ (1,0) [0|14] "Enum"  Matrix
+ SG_ is_TFL_Blinking : 58|1@1+ (1,0) [0|1] "boolean"  Matrix
+
+BO_ 1335 TFL_Message5: 8 Matrix
+ SG_ TFL_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TFL_PosX : 4|12@1+ (0.0625,0) [0|255.9375] "m"  Matrix
+ SG_ TFL_PosY : 16|12@1+ (0.125,-256) [-256|255.875] "m"  Matrix
+ SG_ TFL_PosZ : 28|8@1+ (0.125,0) [0|31.875] "m"  Matrix
+ SG_ TFL_Confidence : 36|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TFL_Color : 43|3@1+ (1,0) [0|5] "Enum"  Matrix
+ SG_ TFL_Width : 46|5@1+ (0.03125,0) [0|0.96875] "m"  Matrix
+ SG_ TFL_ShapeType : 51|2@1+ (1,0) [0|2] "Enum"  Matrix
+ SG_ TFL_ClassificationType : 53|5@1+ (1,0) [0|18] "Enum"  Matrix
+ SG_ is_TFL_Blinking : 58|1@1+ (1,0) [0|1] "boolean"  Matrix
+
+BO_ 1334 TFL_Message4: 8 Matrix
+ SG_ TFL_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TFL_PosX : 4|12@1+ (0.0625,0) [0|255.9375] "m"  Matrix
+ SG_ TFL_PosY : 16|12@1+ (0.125,-256) [-256|255.875] "m"  Matrix
+ SG_ TFL_PosZ : 28|8@1+ (0.125,0) [0|31.875] "m"  Matrix
+ SG_ TFL_Confidence : 36|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TFL_Color : 43|3@1+ (1,0) [0|5] "Enum"  Matrix
+ SG_ TFL_Width : 46|5@1+ (0.03125,0) [0|0.96875] "m"  Matrix
+ SG_ TFL_ShapeType : 51|2@1+ (1,0) [0|2] "Enum"  Matrix
+ SG_ TFL_ClassificationType : 53|5@1+ (1,0) [0|18] "Enum"  Matrix
+ SG_ is_TFL_Blinking : 58|1@1+ (1,0) [0|1] "boolean"  Matrix
+
+BO_ 1333 TFL_Message3: 8 Matrix
+ SG_ TFL_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TFL_PosX : 4|12@1+ (0.0625,0) [0|255.9375] "m"  Matrix
+ SG_ TFL_PosY : 16|12@1+ (0.125,-256) [-256|255.875] "m"  Matrix
+ SG_ TFL_PosZ : 28|8@1+ (0.125,0) [0|31.875] "m"  Matrix
+ SG_ TFL_Confidence : 36|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TFL_Color : 43|3@1+ (1,0) [0|5] "Enum"  Matrix
+ SG_ TFL_Width : 46|5@1+ (0.03125,0) [0|0.96875] "m"  Matrix
+ SG_ TFL_ShapeType : 51|2@1+ (1,0) [0|2] "Enum"  Matrix
+ SG_ TFL_ClassificationType : 53|5@1+ (1,0) [0|18] "Enum"  Matrix
+ SG_ is_TFL_Blinking : 58|1@1+ (1,0) [0|1] "boolean"  Matrix
+
+BO_ 1332 TFL_Message2: 8 Matrix
+ SG_ TFL_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TFL_PosX : 4|12@1+ (0.0625,0) [0|255.9375] "m"  Matrix
+ SG_ TFL_PosY : 16|12@1+ (0.125,-256) [-256|255.875] "m"  Matrix
+ SG_ TFL_PosZ : 28|8@1+ (0.125,0) [0|31.875] "m"  Matrix
+ SG_ TFL_Confidence : 36|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TFL_Color : 43|3@1+ (1,0) [0|5] "Enum"  Matrix
+ SG_ TFL_Width : 46|5@1+ (0.03125,0) [0|0.96875] "m"  Matrix
+ SG_ TFL_ShapeType : 51|2@1+ (1,0) [0|2] "Enum"  Matrix
+ SG_ TFL_ClassificationType : 53|5@1+ (1,0) [0|18] "Enum"  Matrix
+ SG_ is_TFL_Blinking : 58|1@1+ (1,0) [0|1] "boolean"  Matrix
+
+BO_ 1331 TFL_Message1: 8 Matrix
+ SG_ TFL_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TFL_PosX : 4|12@1+ (0.0625,0) [0|255.9375] "m"  Matrix
+ SG_ TFL_PosY : 16|12@1+ (0.125,-256) [-256|255.875] "m"  Matrix
+ SG_ TFL_PosZ : 28|8@1+ (0.125,0) [0|31.875] "m"  Matrix
+ SG_ TFL_Confidence : 36|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TFL_Color : 43|3@1+ (1,0) [0|5] "Enum"  Matrix
+ SG_ TFL_Width : 46|5@1+ (0.03125,0) [0|0.96875] "m"  Matrix
+ SG_ TFL_ShapeType : 51|2@1+ (1,0) [0|2] "Enum"  Matrix
+ SG_ TFL_ClassificationType : 53|5@1+ (1,0) [0|18] "Enum"  Matrix
+ SG_ is_TFL_Blinking : 58|1@1+ (1,0) [0|1] "boolean"  Matrix
+
+BO_ 1330 TFL_Message0: 8 Matrix
+ SG_ TFL_ID : 0|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ TFL_PosX : 4|12@1+ (0.0625,0) [0|255.9375] "m"  Matrix
+ SG_ TFL_PosY : 16|12@1+ (0.125,-256) [-256|255.875] "m"  Matrix
+ SG_ TFL_PosZ : 28|8@1+ (0.125,0) [0|31.875] "m"  Matrix
+ SG_ TFL_Confidence : 36|7@1+ (1,0) [0|100] "NA"  Matrix
+ SG_ TFL_Color : 43|3@1+ (1,0) [0|5] "Enum"  Matrix
+ SG_ TFL_Width : 46|5@1+ (0.03125,0) [0|0.96875] "m"  Matrix
+ SG_ TFL_ShapeType : 51|2@1+ (1,0) [0|2] "Enum"  Matrix
+ SG_ TFL_ClassificationType : 53|5@1+ (1,0) [0|18] "Enum"  Matrix
+ SG_ is_TFL_Blinking : 58|1@1+ (1,0) [0|1] "boolean"  Matrix
+
+BO_ 1329 TFL_Header: 2 Matrix
+ SG_ TFLObjectsNumber : 0|4@1+ (1,0) [0|8] "NA"  Matrix
+ SG_ TFLMainObjectID : 4|4@1+ (1,0) [0|8] "NA"  Matrix
+ SG_ ProtocolMajorVersion : 8|4@1+ (1,0) [0|15] "NA"  Matrix
+ SG_ ProtocolMinorVersion : 12|4@1+ (1,0) [0|15] "NA"  Matrix
+
+BO_ 1351 TSR_ID67: 8 Matrix
+ SG_ TSR_Internal_ID6 : 0|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+ SG_ TSR_Internal_ID7 : 32|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+
+BO_ 1350 TSR_ID45: 8 Matrix
+ SG_ TSR_Internal_ID4 : 0|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+ SG_ TSR_Internal_ID5 : 32|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+
+BO_ 1349 TSR_ID23: 8 Matrix
+ SG_ TSR_Internal_ID2 : 0|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+ SG_ TSR_Internal_ID3 : 32|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+
+BO_ 1348 TSR_ID01: 8 Matrix
+ SG_ TSR_Internal_ID0 : 0|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+ SG_ TSR_Internal_ID1 : 32|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+
+BO_ 1347 TFL_ID67: 8 Matrix
+ SG_ TFL_Internal_ID6 : 0|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+ SG_ TFL_Internal_ID7 : 32|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+
+BO_ 1346 TFL_ID45: 8 Matrix
+ SG_ TFL_Internal_ID4 : 0|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+ SG_ TFL_Internal_ID5 : 32|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+
+BO_ 1345 TFL_ID23: 8 Matrix
+ SG_ TFL_Internal_ID2 : 0|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+ SG_ TFL_Internal_ID3 : 32|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+
+BO_ 1344 TFL_ID01: 8 Matrix
+ SG_ TFL_Internal_ID0 : 0|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+ SG_ TFL_Internal_ID1 : 32|32@1+ (1,0) [0|4294967295] "NA"  Matrix
+
+
+
+CM_ SG_ 1312 ProtocolMajorVersion "Protocol Major Version, example: V0.3, 0: Major Version";
+CM_ SG_ 1312 ProtocolMinorVersion "Protocol Minor Version:  example: V0.3, 3: Minor Version";
+CM_ SG_ 1327 TSR_ID "TSR ID";
+CM_ SG_ 1327 TSR_Confidence "TSR Confidence";
+CM_ SG_ 1327 TSRTrafficSignType "TSR Signs ENUM";
+CM_ SG_ 1327 TSRRoadMarkType "Reserved. Not Plan in J2 TSR RoadMark Signs ENUM";
+CM_ SG_ 1327 TSR_Relevancy "Reserved. Not Implement.  LANE_ASSIGNMENT_SIGN£ºHost Lane";
+CM_ SG_ 1327 TSR_Filter_Type "The reason for filtering the sign.  Reserved. Not Implement. ";
+CM_ SG_ 1327 TSR_Approved_Flag "Approved is true after  confirm the detection of this sign";
+CM_ SG_ 1327 Sign_Position_X "longitudinal distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1327 Sign_Position_Y "lateral distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1327 Sign_Position_Z "Sign height in meters";
+CM_ SG_ 1325 TSR_ID "TSR ID";
+CM_ SG_ 1325 TSR_Confidence "TSR Confidence";
+CM_ SG_ 1325 TSRTrafficSignType "TSR Signs ENUM";
+CM_ SG_ 1325 TSRRoadMarkType "Reserved. Not Plan in J2 TSR RoadMark Signs ENUM";
+CM_ SG_ 1325 TSR_Relevancy "Reserved. Not Implement.  LANE_ASSIGNMENT_SIGN£ºHost Lane";
+CM_ SG_ 1325 TSR_Filter_Type "The reason for filtering the sign.  Reserved. Not Implement. ";
+CM_ SG_ 1325 TSR_Approved_Flag "Approved is true after  confirm the detection of this sign";
+CM_ SG_ 1325 Sign_Position_X "longitudinal distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1325 Sign_Position_Y "lateral distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1325 Sign_Position_Z "Sign height in meters";
+CM_ SG_ 1323 TSR_ID "TSR ID";
+CM_ SG_ 1323 TSR_Confidence "TSR Confidence";
+CM_ SG_ 1323 TSRTrafficSignType "TSR Signs ENUM";
+CM_ SG_ 1323 TSRRoadMarkType "Reserved. Not Plan in J2 TSR RoadMark Signs ENUM";
+CM_ SG_ 1323 TSR_Relevancy "Reserved. Not Implement.  LANE_ASSIGNMENT_SIGN£ºHost Lane";
+CM_ SG_ 1323 TSR_Filter_Type "The reason for filtering the sign.  Reserved. Not Implement. ";
+CM_ SG_ 1323 TSR_Approved_Flag "Approved is true after  confirm the detection of this sign";
+CM_ SG_ 1323 Sign_Position_X "longitudinal distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1323 Sign_Position_Y "lateral distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1323 Sign_Position_Z "Sign height in meters";
+CM_ SG_ 1321 TSR_ID "TSR ID";
+CM_ SG_ 1321 TSR_Confidence "TSR Confidence";
+CM_ SG_ 1321 TSRTrafficSignType "TSR Signs ENUM";
+CM_ SG_ 1321 TSRRoadMarkType "Reserved. Not Plan in J2 TSR RoadMark Signs ENUM";
+CM_ SG_ 1321 TSR_Relevancy "Reserved. Not Implement.  LANE_ASSIGNMENT_SIGN£ºHost Lane";
+CM_ SG_ 1321 TSR_Filter_Type "The reason for filtering the sign.  Reserved. Not Implement. ";
+CM_ SG_ 1321 TSR_Approved_Flag "Approved is true after  confirm the detection of this sign";
+CM_ SG_ 1321 Sign_Position_X "longitudinal distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1321 Sign_Position_Y "lateral distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1321 Sign_Position_Z "Sign height in meters";
+CM_ SG_ 1319 TSR_ID "TSR ID";
+CM_ SG_ 1319 TSR_Confidence "TSR Confidence";
+CM_ SG_ 1319 TSRTrafficSignType "TSR Signs ENUM";
+CM_ SG_ 1319 TSRRoadMarkType "Reserved. Not Plan in J2 TSR RoadMark Signs ENUM";
+CM_ SG_ 1319 TSR_Relevancy "Reserved. Not Implement.  LANE_ASSIGNMENT_SIGN£ºHost Lane";
+CM_ SG_ 1319 TSR_Filter_Type "The reason for filtering the sign.  Reserved. Not Implement. ";
+CM_ SG_ 1319 TSR_Approved_Flag "Approved is true after  confirm the detection of this sign";
+CM_ SG_ 1319 Sign_Position_X "longitudinal distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1319 Sign_Position_Y "lateral distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1319 Sign_Position_Z "Sign height in meters";
+CM_ SG_ 1317 TSR_ID "TSR ID";
+CM_ SG_ 1317 TSR_Confidence "TSR Confidence";
+CM_ SG_ 1317 TSRTrafficSignType "TSR Signs ENUM";
+CM_ SG_ 1317 TSRRoadMarkType "Reserved. Not Plan in J2 TSR RoadMark Signs ENUM";
+CM_ SG_ 1317 TSR_Relevancy "Reserved. Not Implement.  LANE_ASSIGNMENT_SIGN£ºHost Lane";
+CM_ SG_ 1317 TSR_Filter_Type "The reason for filtering the sign.  Reserved. Not Implement. ";
+CM_ SG_ 1317 TSR_Approved_Flag "Approved is true after  confirm the detection of this sign";
+CM_ SG_ 1317 Sign_Position_X "longitudinal distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1317 Sign_Position_Y "lateral distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1317 Sign_Position_Z "Sign height in meters";
+CM_ SG_ 1315 TSR_ID "TSR ID";
+CM_ SG_ 1315 TSR_Confidence "TSR Confidence";
+CM_ SG_ 1315 TSRTrafficSignType "TSR Signs ENUM";
+CM_ SG_ 1315 TSRRoadMarkType "Reserved. Not Plan in J2 TSR RoadMark Signs ENUM";
+CM_ SG_ 1315 TSR_Relevancy "Reserved. Not Implement.  LANE_ASSIGNMENT_SIGN£ºHost Lane";
+CM_ SG_ 1315 TSR_Filter_Type "The reason for filtering the sign.  Reserved. Not Implement. ";
+CM_ SG_ 1315 TSR_Approved_Flag "Approved is true after  confirm the detection of this sign";
+CM_ SG_ 1315 Sign_Position_X "longitudinal distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1315 Sign_Position_Y "lateral distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1315 Sign_Position_Z "Sign height in meters";
+CM_ SG_ 1313 TSR_ID "TSR ID";
+CM_ SG_ 1313 TSR_Confidence "TSR Confidence";
+CM_ SG_ 1313 TSRTrafficSignType "TSR Signs ENUM";
+CM_ SG_ 1313 TSRRoadMarkType "Reserved. Not Plan in J2 TSR RoadMark Signs ENUM";
+CM_ SG_ 1313 TSR_Relevancy "Reserved. Not Implement.  LANE_ASSIGNMENT_SIGN£ºHost Lane";
+CM_ SG_ 1313 TSR_Filter_Type "The reason for filtering the sign.  Reserved. Not Implement. ";
+CM_ SG_ 1313 TSR_Approved_Flag "Approved is true after  confirm the detection of this sign";
+CM_ SG_ 1313 Sign_Position_X "longitudinal distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1313 Sign_Position_Y "lateral distance to sign, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1313 Sign_Position_Z "Sign height in meters";
+CM_ SG_ 1337 TFL_ID "TFL ID, range 1-8";
+CM_ SG_ 1337 TFL_PosX "Longitudinal distance to sign (on the ground ) in meters, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1337 TFL_PosY "Lateral distance with respect to camera. Positive values for detections left of the camera.";
+CM_ SG_ 1337 TFL_PosZ "Height of TFL with respect to ground";
+CM_ SG_ 1337 TFL_Confidence "Traffic light confidence";
+CM_ SG_ 1337 TFL_Width "Reserved. Not Plan in J2 default value: 0 - 0m";
+CM_ SG_ 1337 TFL_ShapeType "Reserved. Not Plan in J2 default value: 0 - Unknown/Unsupported";
+CM_ SG_ 1337 is_TFL_Blinking "Reserved. Not Plan in J2 default value: 0";
+CM_ SG_ 1336 TFL_ID "TFL ID, range 1-8";
+CM_ SG_ 1336 TFL_PosX "Longitudinal distance to sign (on the ground ) in meters, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1336 TFL_PosY "Lateral distance with respect to camera. Positive values for detections left of the camera.";
+CM_ SG_ 1336 TFL_PosZ "Height of TFL with respect to ground";
+CM_ SG_ 1336 TFL_Confidence "Traffic light confidence";
+CM_ SG_ 1336 TFL_Width "Reserved. Not Plan in J2 default value: 0 - 0m";
+CM_ SG_ 1336 TFL_ShapeType "Reserved. Not Plan in J2 default value: 0 - Unknown/Unsupported";
+CM_ SG_ 1336 is_TFL_Blinking "Reserved. Not Plan in J2 default value: 0";
+CM_ SG_ 1335 TFL_ID "TFL ID, range 1-8";
+CM_ SG_ 1335 TFL_PosX "Longitudinal distance to sign (on the ground ) in meters, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1335 TFL_PosY "Lateral distance with respect to camera. Positive values for detections left of the camera.";
+CM_ SG_ 1335 TFL_PosZ "Height of TFL with respect to ground";
+CM_ SG_ 1335 TFL_Confidence "Traffic light confidence";
+CM_ SG_ 1335 TFL_Width "Reserved. Not Plan in J2 default value: 0 - 0m";
+CM_ SG_ 1335 TFL_ShapeType "Reserved. Not Plan in J2 default value: 0 - Unknown/Unsupported";
+CM_ SG_ 1335 is_TFL_Blinking "Reserved. Not Plan in J2 default value: 0";
+CM_ SG_ 1334 TFL_ID "TFL ID, range 1-8";
+CM_ SG_ 1334 TFL_PosX "Longitudinal distance to sign (on the ground ) in meters, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1334 TFL_PosY "Lateral distance with respect to camera. Positive values for detections left of the camera.";
+CM_ SG_ 1334 TFL_PosZ "Height of TFL with respect to ground";
+CM_ SG_ 1334 TFL_Confidence "Traffic light confidence";
+CM_ SG_ 1334 TFL_Width "Reserved. Not Plan in J2 default value: 0 - 0m";
+CM_ SG_ 1334 TFL_ShapeType "Reserved. Not Plan in J2 default value: 0 - Unknown/Unsupported";
+CM_ SG_ 1334 is_TFL_Blinking "Reserved. Not Plan in J2 default value: 0";
+CM_ SG_ 1333 TFL_ID "TFL ID, range 1-8";
+CM_ SG_ 1333 TFL_PosX "Longitudinal distance to sign (on the ground ) in meters, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1333 TFL_PosY "Lateral distance with respect to camera. Positive values for detections left of the camera.";
+CM_ SG_ 1333 TFL_PosZ "Height of TFL with respect to ground";
+CM_ SG_ 1333 TFL_Confidence "Traffic light confidence";
+CM_ SG_ 1333 TFL_Width "Reserved. Not Plan in J2 default value: 0 - 0m";
+CM_ SG_ 1333 TFL_ShapeType "Reserved. Not Plan in J2 default value: 0 - Unknown/Unsupported";
+CM_ SG_ 1333 is_TFL_Blinking "Reserved. Not Plan in J2 default value: 0";
+CM_ SG_ 1332 TFL_ID "TFL ID, range 1-8";
+CM_ SG_ 1332 TFL_PosX "Longitudinal distance to sign (on the ground ) in meters, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1332 TFL_PosY "Lateral distance with respect to camera. Positive values for detections left of the camera.";
+CM_ SG_ 1332 TFL_PosZ "Height of TFL with respect to ground";
+CM_ SG_ 1332 TFL_Confidence "Traffic light confidence";
+CM_ SG_ 1332 TFL_Width "Reserved. Not Implement. default value: 0 - 0m";
+CM_ SG_ 1332 TFL_ShapeType "Reserved. Not Implement. default value: 0 - Unknown/Unsupported";
+CM_ SG_ 1332 is_TFL_Blinking "Reserved. Not Implement. default value: 0";
+CM_ SG_ 1331 TFL_ID "TFL ID, range 1-8";
+CM_ SG_ 1331 TFL_PosX "Longitudinal distance to sign (on the ground ) in meters, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1331 TFL_PosY "Lateral distance with respect to camera. Positive values for detections left of the camera.";
+CM_ SG_ 1331 TFL_PosZ "Height of TFL with respect to ground";
+CM_ SG_ 1331 TFL_Confidence "Traffic light confidence";
+CM_ SG_ 1331 TFL_Width "Reserved. Not Plan in J2 default value: 0 - 0m";
+CM_ SG_ 1331 TFL_ShapeType "Reserved. Not Plan in J2 default value: 0 - Unknown/Unsupported";
+CM_ SG_ 1331 is_TFL_Blinking "Reserved. Not Plan in J2 default value: 0";
+CM_ SG_ 1330 TFL_ID "TFL ID, range 1-8";
+CM_ SG_ 1330 TFL_PosX "Longitudinal distance to sign (on the ground ) in meters, repect to to the middle of the RL and RR corners  ";
+CM_ SG_ 1330 TFL_PosY "Lateral distance with respect to camera. Positive values for detections left of the camera.";
+CM_ SG_ 1330 TFL_PosZ "Height of TFL with respect to ground";
+CM_ SG_ 1330 TFL_Confidence "Traffic light confidence";
+CM_ SG_ 1330 TFL_Width "Reserved. Not Plan in J2 default value: 0 - 0m";
+CM_ SG_ 1330 TFL_ShapeType "Reserved. Not Plan in J2 default value: 0 - Unknown/Unsupported";
+CM_ SG_ 1330 is_TFL_Blinking "Reserved. Not Plan in J2 default value: 0";
+CM_ SG_ 1329 TFLObjectsNumber "Number of TFL Objects";
+CM_ SG_ 1329 TFLMainObjectID "Reserved - Not Implemented. The ID that represents the TFL which is the most relevant for the host vehicle";
+CM_ SG_ 1329 ProtocolMajorVersion "Protocol Major Version, example: V0.3, 0: Major Version";
+CM_ SG_ 1329 ProtocolMinorVersion "Protocol Minor Version:  example: V0.3, 3: Minor Version";
+CM_ SG_ 1351 TSR_Internal_ID6 "relevant uint32 internal ID inside software";
+CM_ SG_ 1351 TSR_Internal_ID7 "relevant uint32 internal ID inside software";
+CM_ SG_ 1350 TSR_Internal_ID4 "relevant uint32 internal ID inside software";
+CM_ SG_ 1350 TSR_Internal_ID5 "relevant uint32 internal ID inside software";
+CM_ SG_ 1349 TSR_Internal_ID2 "relevant uint32 internal ID inside software";
+CM_ SG_ 1349 TSR_Internal_ID3 "relevant uint32 internal ID inside software";
+CM_ SG_ 1348 TSR_Internal_ID0 "relevant uint32 internal ID inside software";
+CM_ SG_ 1348 TSR_Internal_ID1 "relevant uint32 internal ID inside software";
+CM_ SG_ 1347 TFL_Internal_ID6 "relevant internal ID inside software";
+CM_ SG_ 1347 TFL_Internal_ID7 "relevant internal ID inside software";
+CM_ SG_ 1346 TFL_Internal_ID4 "relevant internal ID inside software";
+CM_ SG_ 1346 TFL_Internal_ID5 "relevant internal ID inside software";
+CM_ SG_ 1345 TFL_Internal_ID2 "relevant internal ID inside software";
+CM_ SG_ 1345 TFL_Internal_ID3 "relevant internal ID inside software";
+CM_ SG_ 1344 TFL_Internal_ID0 "relevant internal ID inside software";
+CM_ SG_ 1344 TFL_Internal_ID1 "relevant internal ID inside software";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "BusType" "CAN";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_ "BusType" "CAN";
+VAL_ 1327 TSRTrafficSignType 255 " Default" 54 " SpeedLimRev" 53 " SpeedLim90_electric" 52 " SpeedLim90" 51 " SpeedLim80_electric" 50 " SpeedLim80" 49 " SpeedLim70_electric" 48 " SpeedLim70" 47 " SpeedLim65" 46 " SpeedLim60_electric" 45 " SpeedLim60" 44 " SpeedLim5_electric" 43 " SpeedLim55" 42 " SpeedLim50_electric" 41 " SpeedLim50" 40 " SpeedLim5" 39 " SpeedLim40_electric" 38 " SpeedLim40" 37 " SpeedLim35" 36 " SpeedLim30_electric" 35 " SpeedLim30" 34 " SpeedLim25" 33 " SpeedLim20" 32 " SpeedLim15" 31 " SpeedLim120_electric" 30 " SpeedLim120" 29 " SpeedLim110_electric" 28 " SpeedLim110" 27 " SpeedLim100_electric" 26 " SpeedLim100" 25 " SpeedLim10" 24 " Other_Warning" 23 " Other_TravelSign_BrownWhite" 22 " Other_RouteID_YellowBlack" 21 " Other_RouteID_RedWhite" 20 " Other_RedCircleLight" 19 " Other_Prohibit" 18 " Other_NoParking" 17 " Other_Mirror" 16 " Other_LightArrow" 15 " Other_Indications" 14 " Other_GuideSign_WhiteBlack" 13 " Other_GuideSign_GreenWhite" 12 " Other_GuideSign_BlueWhite" 11 " Other_Exit" 10 " Other_Detfp" 9 " Other_Construction_Sign" 8 " NoPassingRev" 7 " MinSpeedLim90" 6 " MinSpeedLim80" 5 " MinSpeedLim70" 4 " MinSpeedLim60" 3 " MinSpeedLim50" 2 " MinSpeedLim110" 1 " MinSpeedLim100" 0 " Construction" ;
+VAL_ 1327 TSR_Relevancy 5 "FAR_IRRELEVANT_SIGN (Reserved)" 4 "SIGN_ON_TURN (Reserved)" 3 "HIGHWAY_EXIT_SIGN (Reserved)" 2 "NOT_IN_HOSTLANE" 1 "IN_HOSTLANE_SIGN" 0 "Undefined" ;
+VAL_ 1327 TSR_Filter_Type 7 "RESERVED" 6 "RESERVED" 5 "RESERVED" 4 "RESERVED" 3 "Embedded(Reserved)" 2 "On vehicle/truck" 1 "Irrelevant to the host driver" 0 "Not filtered" ;
+VAL_ 1327 TSR_Approved_Flag 1 "Approved" 0 "Not Approved" ;
+VAL_ 1325 TSRTrafficSignType 255 " Default" 54 " SpeedLimRev" 53 " SpeedLim90_electric" 52 " SpeedLim90" 51 " SpeedLim80_electric" 50 " SpeedLim80" 49 " SpeedLim70_electric" 48 " SpeedLim70" 47 " SpeedLim65" 46 " SpeedLim60_electric" 45 " SpeedLim60" 44 " SpeedLim5_electric" 43 " SpeedLim55" 42 " SpeedLim50_electric" 41 " SpeedLim50" 40 " SpeedLim5" 39 " SpeedLim40_electric" 38 " SpeedLim40" 37 " SpeedLim35" 36 " SpeedLim30_electric" 35 " SpeedLim30" 34 " SpeedLim25" 33 " SpeedLim20" 32 " SpeedLim15" 31 " SpeedLim120_electric" 30 " SpeedLim120" 29 " SpeedLim110_electric" 28 " SpeedLim110" 27 " SpeedLim100_electric" 26 " SpeedLim100" 25 " SpeedLim10" 24 " Other_Warning" 23 " Other_TravelSign_BrownWhite" 22 " Other_RouteID_YellowBlack" 21 " Other_RouteID_RedWhite" 20 " Other_RedCircleLight" 19 " Other_Prohibit" 18 " Other_NoParking" 17 " Other_Mirror" 16 " Other_LightArrow" 15 " Other_Indications" 14 " Other_GuideSign_WhiteBlack" 13 " Other_GuideSign_GreenWhite" 12 " Other_GuideSign_BlueWhite" 11 " Other_Exit" 10 " Other_Detfp" 9 " Other_Construction_Sign" 8 " NoPassingRev" 7 " MinSpeedLim90" 6 " MinSpeedLim80" 5 " MinSpeedLim70" 4 " MinSpeedLim60" 3 " MinSpeedLim50" 2 " MinSpeedLim110" 1 " MinSpeedLim100" 0 " Construction" ;
+VAL_ 1325 TSR_Relevancy 5 "FAR_IRRELEVANT_SIGN (Reserved)" 4 "SIGN_ON_TURN (Reserved)" 3 "HIGHWAY_EXIT_SIGN (Reserved)" 2 "NOT_IN_HOSTLANE" 1 "IN_HOSTLANE_SIGN" 0 "Undefined" ;
+VAL_ 1325 TSR_Filter_Type 7 "RESERVED" 6 "RESERVED" 5 "RESERVED" 4 "RESERVED" 3 "Embedded(Reserved)" 2 "On vehicle/truck" 1 "Irrelevant to the host driver" 0 "Not filtered" ;
+VAL_ 1325 TSR_Approved_Flag 1 "Approved" 0 "Not Approved" ;
+VAL_ 1323 TSRTrafficSignType 255 " Default" 54 " SpeedLimRev" 53 " SpeedLim90_electric" 52 " SpeedLim90" 51 " SpeedLim80_electric" 50 " SpeedLim80" 49 " SpeedLim70_electric" 48 " SpeedLim70" 47 " SpeedLim65" 46 " SpeedLim60_electric" 45 " SpeedLim60" 44 " SpeedLim5_electric" 43 " SpeedLim55" 42 " SpeedLim50_electric" 41 " SpeedLim50" 40 " SpeedLim5" 39 " SpeedLim40_electric" 38 " SpeedLim40" 37 " SpeedLim35" 36 " SpeedLim30_electric" 35 " SpeedLim30" 34 " SpeedLim25" 33 " SpeedLim20" 32 " SpeedLim15" 31 " SpeedLim120_electric" 30 " SpeedLim120" 29 " SpeedLim110_electric" 28 " SpeedLim110" 27 " SpeedLim100_electric" 26 " SpeedLim100" 25 " SpeedLim10" 24 " Other_Warning" 23 " Other_TravelSign_BrownWhite" 22 " Other_RouteID_YellowBlack" 21 " Other_RouteID_RedWhite" 20 " Other_RedCircleLight" 19 " Other_Prohibit" 18 " Other_NoParking" 17 " Other_Mirror" 16 " Other_LightArrow" 15 " Other_Indications" 14 " Other_GuideSign_WhiteBlack" 13 " Other_GuideSign_GreenWhite" 12 " Other_GuideSign_BlueWhite" 11 " Other_Exit" 10 " Other_Detfp" 9 " Other_Construction_Sign" 8 " NoPassingRev" 7 " MinSpeedLim90" 6 " MinSpeedLim80" 5 " MinSpeedLim70" 4 " MinSpeedLim60" 3 " MinSpeedLim50" 2 " MinSpeedLim110" 1 " MinSpeedLim100" 0 " Construction" ;
+VAL_ 1323 TSR_Relevancy 5 "FAR_IRRELEVANT_SIGN (Reserved)" 4 "SIGN_ON_TURN (Reserved)" 3 "HIGHWAY_EXIT_SIGN (Reserved)" 2 "NOT_IN_HOSTLANE" 1 "IN_HOSTLANE_SIGN" 0 "Undefined" ;
+VAL_ 1323 TSR_Filter_Type 7 "RESERVED" 6 "RESERVED" 5 "RESERVED" 4 "RESERVED" 3 "Embedded(Reserved)" 2 "On vehicle/truck" 1 "Irrelevant to the host driver" 0 "Not filtered" ;
+VAL_ 1323 TSR_Approved_Flag 1 "Approved" 0 "Not Approved" ;
+VAL_ 1321 TSRTrafficSignType 255 " Default" 54 " SpeedLimRev" 53 " SpeedLim90_electric" 52 " SpeedLim90" 51 " SpeedLim80_electric" 50 " SpeedLim80" 49 " SpeedLim70_electric" 48 " SpeedLim70" 47 " SpeedLim65" 46 " SpeedLim60_electric" 45 " SpeedLim60" 44 " SpeedLim5_electric" 43 " SpeedLim55" 42 " SpeedLim50_electric" 41 " SpeedLim50" 40 " SpeedLim5" 39 " SpeedLim40_electric" 38 " SpeedLim40" 37 " SpeedLim35" 36 " SpeedLim30_electric" 35 " SpeedLim30" 34 " SpeedLim25" 33 " SpeedLim20" 32 " SpeedLim15" 31 " SpeedLim120_electric" 30 " SpeedLim120" 29 " SpeedLim110_electric" 28 " SpeedLim110" 27 " SpeedLim100_electric" 26 " SpeedLim100" 25 " SpeedLim10" 24 " Other_Warning" 23 " Other_TravelSign_BrownWhite" 22 " Other_RouteID_YellowBlack" 21 " Other_RouteID_RedWhite" 20 " Other_RedCircleLight" 19 " Other_Prohibit" 18 " Other_NoParking" 17 " Other_Mirror" 16 " Other_LightArrow" 15 " Other_Indications" 14 " Other_GuideSign_WhiteBlack" 13 " Other_GuideSign_GreenWhite" 12 " Other_GuideSign_BlueWhite" 11 " Other_Exit" 10 " Other_Detfp" 9 " Other_Construction_Sign" 8 " NoPassingRev" 7 " MinSpeedLim90" 6 " MinSpeedLim80" 5 " MinSpeedLim70" 4 " MinSpeedLim60" 3 " MinSpeedLim50" 2 " MinSpeedLim110" 1 " MinSpeedLim100" 0 " Construction" ;
+VAL_ 1321 TSR_Relevancy 5 "FAR_IRRELEVANT_SIGN (Reserved)" 4 "SIGN_ON_TURN (Reserved)" 3 "HIGHWAY_EXIT_SIGN (Reserved)" 2 "NOT_IN_HOSTLANE" 1 "IN_HOSTLANE_SIGN" 0 "Undefined" ;
+VAL_ 1321 TSR_Filter_Type 7 "RESERVED" 6 "RESERVED" 5 "RESERVED" 4 "RESERVED" 3 "Embedded(Reserved)" 2 "On vehicle/truck" 1 "Irrelevant to the host driver" 0 "Not filtered" ;
+VAL_ 1321 TSR_Approved_Flag 1 "Approved" 0 "Not Approved" ;
+VAL_ 1319 TSRTrafficSignType 255 " Default" 54 " SpeedLimRev" 53 " SpeedLim90_electric" 52 " SpeedLim90" 51 " SpeedLim80_electric" 50 " SpeedLim80" 49 " SpeedLim70_electric" 48 " SpeedLim70" 47 " SpeedLim65" 46 " SpeedLim60_electric" 45 " SpeedLim60" 44 " SpeedLim5_electric" 43 " SpeedLim55" 42 " SpeedLim50_electric" 41 " SpeedLim50" 40 " SpeedLim5" 39 " SpeedLim40_electric" 38 " SpeedLim40" 37 " SpeedLim35" 36 " SpeedLim30_electric" 35 " SpeedLim30" 34 " SpeedLim25" 33 " SpeedLim20" 32 " SpeedLim15" 31 " SpeedLim120_electric" 30 " SpeedLim120" 29 " SpeedLim110_electric" 28 " SpeedLim110" 27 " SpeedLim100_electric" 26 " SpeedLim100" 25 " SpeedLim10" 24 " Other_Warning" 23 " Other_TravelSign_BrownWhite" 22 " Other_RouteID_YellowBlack" 21 " Other_RouteID_RedWhite" 20 " Other_RedCircleLight" 19 " Other_Prohibit" 18 " Other_NoParking" 17 " Other_Mirror" 16 " Other_LightArrow" 15 " Other_Indications" 14 " Other_GuideSign_WhiteBlack" 13 " Other_GuideSign_GreenWhite" 12 " Other_GuideSign_BlueWhite" 11 " Other_Exit" 10 " Other_Detfp" 9 " Other_Construction_Sign" 8 " NoPassingRev" 7 " MinSpeedLim90" 6 " MinSpeedLim80" 5 " MinSpeedLim70" 4 " MinSpeedLim60" 3 " MinSpeedLim50" 2 " MinSpeedLim110" 1 " MinSpeedLim100" 0 " Construction" ;
+VAL_ 1319 TSR_Relevancy 5 "FAR_IRRELEVANT_SIGN (Reserved)" 4 "SIGN_ON_TURN (Reserved)" 3 "HIGHWAY_EXIT_SIGN (Reserved)" 2 "NOT_IN_HOSTLANE" 1 "IN_HOSTLANE_SIGN" 0 "Undefined" ;
+VAL_ 1319 TSR_Filter_Type 7 "RESERVED" 6 "RESERVED" 5 "RESERVED" 4 "RESERVED" 3 "Embedded(Reserved)" 2 "On vehicle/truck" 1 "Irrelevant to the host driver" 0 "Not filtered" ;
+VAL_ 1319 TSR_Approved_Flag 1 "Approved" 0 "Not Approved" ;
+VAL_ 1317 TSRTrafficSignType 255 " Default" 54 " SpeedLimRev" 53 " SpeedLim90_electric" 52 " SpeedLim90" 51 " SpeedLim80_electric" 50 " SpeedLim80" 49 " SpeedLim70_electric" 48 " SpeedLim70" 47 " SpeedLim65" 46 " SpeedLim60_electric" 45 " SpeedLim60" 44 " SpeedLim5_electric" 43 " SpeedLim55" 42 " SpeedLim50_electric" 41 " SpeedLim50" 40 " SpeedLim5" 39 " SpeedLim40_electric" 38 " SpeedLim40" 37 " SpeedLim35" 36 " SpeedLim30_electric" 35 " SpeedLim30" 34 " SpeedLim25" 33 " SpeedLim20" 32 " SpeedLim15" 31 " SpeedLim120_electric" 30 " SpeedLim120" 29 " SpeedLim110_electric" 28 " SpeedLim110" 27 " SpeedLim100_electric" 26 " SpeedLim100" 25 " SpeedLim10" 24 " Other_Warning" 23 " Other_TravelSign_BrownWhite" 22 " Other_RouteID_YellowBlack" 21 " Other_RouteID_RedWhite" 20 " Other_RedCircleLight" 19 " Other_Prohibit" 18 " Other_NoParking" 17 " Other_Mirror" 16 " Other_LightArrow" 15 " Other_Indications" 14 " Other_GuideSign_WhiteBlack" 13 " Other_GuideSign_GreenWhite" 12 " Other_GuideSign_BlueWhite" 11 " Other_Exit" 10 " Other_Detfp" 9 " Other_Construction_Sign" 8 " NoPassingRev" 7 " MinSpeedLim90" 6 " MinSpeedLim80" 5 " MinSpeedLim70" 4 " MinSpeedLim60" 3 " MinSpeedLim50" 2 " MinSpeedLim110" 1 " MinSpeedLim100" 0 " Construction" ;
+VAL_ 1317 TSR_Relevancy 5 "FAR_IRRELEVANT_SIGN (Reserved)" 4 "SIGN_ON_TURN (Reserved)" 3 "HIGHWAY_EXIT_SIGN (Reserved)" 2 "NOT_IN_HOSTLANE" 1 "IN_HOSTLANE_SIGN" 0 "Undefined" ;
+VAL_ 1317 TSR_Filter_Type 7 "RESERVED" 6 "RESERVED" 5 "RESERVED" 4 "RESERVED" 3 "Embedded(Reserved)" 2 "On vehicle/truck" 1 "Irrelevant to the host driver" 0 "Not filtered" ;
+VAL_ 1317 TSR_Approved_Flag 1 "Approved" 0 "Not Approved" ;
+VAL_ 1315 TSRTrafficSignType 255 " Default" 54 " SpeedLimRev" 53 " SpeedLim90_electric" 52 " SpeedLim90" 51 " SpeedLim80_electric" 50 " SpeedLim80" 49 " SpeedLim70_electric" 48 " SpeedLim70" 47 " SpeedLim65" 46 " SpeedLim60_electric" 45 " SpeedLim60" 44 " SpeedLim5_electric" 43 " SpeedLim55" 42 " SpeedLim50_electric" 41 " SpeedLim50" 40 " SpeedLim5" 39 " SpeedLim40_electric" 38 " SpeedLim40" 37 " SpeedLim35" 36 " SpeedLim30_electric" 35 " SpeedLim30" 34 " SpeedLim25" 33 " SpeedLim20" 32 " SpeedLim15" 31 " SpeedLim120_electric" 30 " SpeedLim120" 29 " SpeedLim110_electric" 28 " SpeedLim110" 27 " SpeedLim100_electric" 26 " SpeedLim100" 25 " SpeedLim10" 24 " Other_Warning" 23 " Other_TravelSign_BrownWhite" 22 " Other_RouteID_YellowBlack" 21 " Other_RouteID_RedWhite" 20 " Other_RedCircleLight" 19 " Other_Prohibit" 18 " Other_NoParking" 17 " Other_Mirror" 16 " Other_LightArrow" 15 " Other_Indications" 14 " Other_GuideSign_WhiteBlack" 13 " Other_GuideSign_GreenWhite" 12 " Other_GuideSign_BlueWhite" 11 " Other_Exit" 10 " Other_Detfp" 9 " Other_Construction_Sign" 8 " NoPassingRev" 7 " MinSpeedLim90" 6 " MinSpeedLim80" 5 " MinSpeedLim70" 4 " MinSpeedLim60" 3 " MinSpeedLim50" 2 " MinSpeedLim110" 1 " MinSpeedLim100" 0 " Construction" ;
+VAL_ 1315 TSR_Relevancy 5 "FAR_IRRELEVANT_SIGN (Reserved)" 4 "SIGN_ON_TURN (Reserved)" 3 "HIGHWAY_EXIT_SIGN (Reserved)" 2 "NOT_IN_HOSTLANE" 1 "IN_HOSTLANE_SIGN" 0 "Undefined" ;
+VAL_ 1315 TSR_Filter_Type 7 "RESERVED" 6 "RESERVED" 5 "RESERVED" 4 "RESERVED" 3 "Embedded(Reserved)" 2 "On vehicle/truck" 1 "Irrelevant to the host driver" 0 "Not filtered" ;
+VAL_ 1315 TSR_Approved_Flag 1 "Approved" 0 "Not Approved" ;
+VAL_ 1313 TSRTrafficSignType 255 " Default" 54 " SpeedLimRev" 53 " SpeedLim90_electric" 52 " SpeedLim90" 51 " SpeedLim80_electric" 50 " SpeedLim80" 49 " SpeedLim70_electric" 48 " SpeedLim70" 47 " SpeedLim65" 46 " SpeedLim60_electric" 45 " SpeedLim60" 44 " SpeedLim5_electric" 43 " SpeedLim55" 42 " SpeedLim50_electric" 41 " SpeedLim50" 40 " SpeedLim5" 39 " SpeedLim40_electric" 38 " SpeedLim40" 37 " SpeedLim35" 36 " SpeedLim30_electric" 35 " SpeedLim30" 34 " SpeedLim25" 33 " SpeedLim20" 32 " SpeedLim15" 31 " SpeedLim120_electric" 30 " SpeedLim120" 29 " SpeedLim110_electric" 28 " SpeedLim110" 27 " SpeedLim100_electric" 26 " SpeedLim100" 25 " SpeedLim10" 24 " Other_Warning" 23 " Other_TravelSign_BrownWhite" 22 " Other_RouteID_YellowBlack" 21 " Other_RouteID_RedWhite" 20 " Other_RedCircleLight" 19 " Other_Prohibit" 18 " Other_NoParking" 17 " Other_Mirror" 16 " Other_LightArrow" 15 " Other_Indications" 14 " Other_GuideSign_WhiteBlack" 13 " Other_GuideSign_GreenWhite" 12 " Other_GuideSign_BlueWhite" 11 " Other_Exit" 10 " Other_Detfp" 9 " Other_Construction_Sign" 8 " NoPassingRev" 7 " MinSpeedLim90" 6 " MinSpeedLim80" 5 " MinSpeedLim70" 4 " MinSpeedLim60" 3 " MinSpeedLim50" 2 " MinSpeedLim110" 1 " MinSpeedLim100" 0 " Construction" ;
+VAL_ 1313 TSR_Relevancy 5 "FAR_IRRELEVANT_SIGN (Reserved)" 4 "SIGN_ON_TURN (Reserved)" 3 "HIGHWAY_EXIT_SIGN (Reserved)" 2 "NOT_IN_HOSTLANE" 1 "IN_HOSTLANE_SIGN" 0 "Undefined" ;
+VAL_ 1313 TSR_Filter_Type 7 "RESERVED" 6 "RESERVED" 5 "RESERVED" 4 "RESERVED" 3 "Embedded(Reserved)" 2 "On vehicle/truck" 1 "Irrelevant to the host driver" 0 "Not filtered" ;
+VAL_ 1313 TSR_Approved_Flag 1 "Approved" 0 "Not Approved" ;
+VAL_ 1337 TFL_Color 5 "Off" 4 "Other" 3 "Yellow" 2 "Green" 1 "Red" 0 "Unknown" ;
+VAL_ 1337 TFL_ShapeType 2 "Horizontal 3-light" 1 "Vertical 3-light" 0 "Unknown/Unsupported" ;
+VAL_ 1337 TFL_ClassificationType 18 "sign_of_forbid_ped (Reserved)" 17 "text_of_forbid_ped (Reserved)    " 16 "sign_of_allow_ped (Reserved)    " 15 "text_of_allow_ped (Reserved)    " 14 "L_Allow_Drive_into    " 13 "L_No_Drive_into    " 12 "L_Forward_and_Right    " 11 "L_Forward_and_Left    " 10 "L_left_and_return   " 9 "L_Other (Reserved)   " 8 "L_Time    " 7 "L_Non_Motor    " 6 "L_Pedestrian    " 5 "L_Return    " 4 "L_Right    " 3 "L_Left    " 2 "L_Forward    " 1 "L_Circle    " 0 "Unknown " ;
+VAL_ 1337 is_TFL_Blinking 1 "Blinking" 0 "No_Blinking" ;
+VAL_ 1336 TFL_Color 5 "Off" 4 "Other" 3 "Yellow" 2 "Green" 1 "Red" 0 "Unknown" ;
+VAL_ 1336 TFL_ShapeType 2 "Horizontal 3-light" 1 "Vertical 3-light" 0 "Unknown/Unsupported" ;
+VAL_ 1336 TFL_ClassificationType 18 "sign_of_forbid_ped (Reserved)" 17 "text_of_forbid_ped (Reserved)    " 16 "sign_of_allow_ped (Reserved)    " 15 "text_of_allow_ped (Reserved)    " 14 "L_Allow_Drive_into    " 13 "L_No_Drive_into    " 12 "L_Forward_and_Right    " 11 "L_Forward_and_Left    " 10 "L_left_and_return   " 9 "L_Other (Reserved)   " 8 "L_Time    " 7 "L_Non_Motor    " 6 "L_Pedestrian    " 5 "L_Return    " 4 "L_Right    " 3 "L_Left    " 2 "L_Forward    " 1 "L_Circle    " 0 "Unknown " ;
+VAL_ 1336 is_TFL_Blinking 1 "Blinking" 0 "No_Blinking" ;
+VAL_ 1335 TFL_Color 5 "Off" 4 "Other" 3 "Yellow" 2 "Green" 1 "Red" 0 "Unknown" ;
+VAL_ 1335 TFL_ShapeType 2 "Horizontal 3-light" 1 "Vertical 3-light" 0 "Unknown/Unsupported" ;
+VAL_ 1335 TFL_ClassificationType 18 "sign_of_forbid_ped (Reserved)" 17 "text_of_forbid_ped (Reserved)    " 16 "sign_of_allow_ped (Reserved)    " 15 "text_of_allow_ped (Reserved)    " 14 "L_Allow_Drive_into    " 13 "L_No_Drive_into    " 12 "L_Forward_and_Right    " 11 "L_Forward_and_Left    " 10 "L_left_and_return   " 9 "L_Other (Reserved)   " 8 "L_Time    " 7 "L_Non_Motor    " 6 "L_Pedestrian    " 5 "L_Return    " 4 "L_Right    " 3 "L_Left    " 2 "L_Forward    " 1 "L_Circle    " 0 "Unknown " ;
+VAL_ 1335 is_TFL_Blinking 1 "Blinking" 0 "No_Blinking" ;
+VAL_ 1334 TFL_Color 5 "Off" 4 "Other" 3 "Yellow" 2 "Green" 1 "Red" 0 "Unknown" ;
+VAL_ 1334 TFL_ShapeType 2 "Horizontal 3-light" 1 "Vertical 3-light" 0 "Unknown/Unsupported" ;
+VAL_ 1334 TFL_ClassificationType 18 "sign_of_forbid_ped (Reserved)" 17 "text_of_forbid_ped (Reserved)    " 16 "sign_of_allow_ped (Reserved)    " 15 "text_of_allow_ped (Reserved)    " 14 "L_Allow_Drive_into    " 13 "L_No_Drive_into    " 12 "L_Forward_and_Right    " 11 "L_Forward_and_Left    " 10 "L_left_and_return   " 9 "L_Other (Reserved)   " 8 "L_Time    " 7 "L_Non_Motor    " 6 "L_Pedestrian    " 5 "L_Return    " 4 "L_Right    " 3 "L_Left    " 2 "L_Forward    " 1 "L_Circle    " 0 "Unknown " ;
+VAL_ 1334 is_TFL_Blinking 1 "Blinking" 0 "No_Blinking" ;
+VAL_ 1333 TFL_Color 5 "Off" 4 "Other" 3 "Yellow" 2 "Green" 1 "Red" 0 "Unknown" ;
+VAL_ 1333 TFL_ShapeType 2 "Horizontal 3-light" 1 "Vertical 3-light" 0 "Unknown/Unsupported" ;
+VAL_ 1333 TFL_ClassificationType 18 "sign_of_forbid_ped (Reserved)" 17 "text_of_forbid_ped (Reserved)    " 16 "sign_of_allow_ped (Reserved)    " 15 "text_of_allow_ped (Reserved)    " 14 "L_Allow_Drive_into    " 13 "L_No_Drive_into    " 12 "L_Forward_and_Right    " 11 "L_Forward_and_Left    " 10 "L_left_and_return   " 9 "L_Other (Reserved)   " 8 "L_Time    " 7 "L_Non_Motor    " 6 "L_Pedestrian    " 5 "L_Return    " 4 "L_Right    " 3 "L_Left    " 2 "L_Forward    " 1 "L_Circle    " 0 "Unknown " ;
+VAL_ 1333 is_TFL_Blinking 1 "Blinking" 0 "No_Blinking" ;
+VAL_ 1332 TFL_Color 5 "Off" 4 "Other" 3 "Yellow" 2 "Green" 1 "Red" 0 "Unknown" ;
+VAL_ 1332 TFL_ShapeType 2 "Horizontal 3-light" 1 "Vertical 3-light" 0 "Unknown/Unsupported" ;
+VAL_ 1332 TFL_ClassificationType 18 "sign_of_forbid_ped (Reserved)" 17 "text_of_forbid_ped (Reserved)    " 16 "sign_of_allow_ped (Reserved)    " 15 "text_of_allow_ped (Reserved)    " 14 "L_Allow_Drive_into    " 13 "L_No_Drive_into    " 12 "L_Forward_and_Right    " 11 "L_Forward_and_Left    " 10 "L_left_and_return   " 9 "L_Other (Reserved)   " 8 "L_Time    " 7 "L_Non_Motor    " 6 "L_Pedestrian    " 5 "L_Return    " 4 "L_Right    " 3 "L_Left    " 2 "L_Forward    " 1 "L_Circle    " 0 "Unknown " ;
+VAL_ 1332 is_TFL_Blinking 1 "Blinking" 0 "Not Blinking" ;
+VAL_ 1331 TFL_Color 5 "Off" 4 "Other" 3 "Yellow" 2 "Green" 1 "Red" 0 "Unknown" ;
+VAL_ 1331 TFL_ShapeType 2 "Horizontal 3-light" 1 "Vertical 3-light" 0 "Unknown/Unsupported" ;
+VAL_ 1331 TFL_ClassificationType 18 "sign_of_forbid_ped (Reserved)" 17 "text_of_forbid_ped (Reserved)    " 16 "sign_of_allow_ped (Reserved)    " 15 "text_of_allow_ped (Reserved)    " 14 "L_Allow_Drive_into    " 13 "L_No_Drive_into    " 12 "L_Forward_and_Right    " 11 "L_Forward_and_Left    " 10 "L_left_and_return   " 9 "L_Other (Reserved)   " 8 "L_Time    " 7 "L_Non_Motor    " 6 "L_Pedestrian    " 5 "L_Return    " 4 "L_Right    " 3 "L_Left    " 2 "L_Forward    " 1 "L_Circle    " 0 "Unknown " ;
+VAL_ 1331 is_TFL_Blinking 1 "Blinking" 0 "No_Blinking" ;
+VAL_ 1330 TFL_Color 5 "Off" 4 "Other" 3 "Yellow" 2 "Green" 1 "Red" 0 "Unknown" ;
+VAL_ 1330 TFL_ShapeType 2 "Horizontal 3-light" 1 "Vertical 3-light" 0 "Unknown/Unsupported" ;
+VAL_ 1330 TFL_ClassificationType 18 "sign_of_forbid_ped (Reserved)" 17 "text_of_forbid_ped (Reserved)    " 16 "sign_of_allow_ped (Reserved)    " 15 "text_of_allow_ped (Reserved)    " 14 "L_Allow_Drive_into    " 13 "L_No_Drive_into    " 12 "L_Forward_and_Right    " 11 "L_Forward_and_Left    " 10 "L_left_and_return   " 9 "L_Other (Reserved)   " 8 "L_Time    " 7 "L_Non_Motor    " 6 "L_Pedestrian    " 5 "L_Return    " 4 "L_Right    " 3 "L_Left    " 2 "L_Forward    " 1 "L_Circle    " 0 "Unknown " ;
+VAL_ 1330 is_TFL_Blinking 1 "Blinking" 0 "No_Blinking" ;
+

@@ -1,0 +1,251 @@
+VERSION "8"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:Matrix
+
+
+BO_ 1536 IHBC_HighLowBeam: 6 Matrix
+ SG_ Reason_Preceding : 0|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ Reason_Oncoming : 1|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ Reason_Street_Light : 2|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ Environment_Lux : 3|20@1+ (0.02,0) [0|20000] "Lux" Matrix
+ SG_ IHBC_Decision : 23|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ IHBC_Running_Mode : 24|2@1+ (1,0) [0|3] "Enum" Matrix
+ SG_ Reason_for_IHBC_Inactive : 26|4@1+ (1,0) [0|15] "Enum" Matrix
+ SG_ Num_Of_Objects : 30|4@1+ (1,0) [0|15] "counter" Matrix
+ SG_ ProtocolMajorVersion : 34|4@1+ (1,0) [0|15] "NA" Matrix
+ SG_ ProtocolMinorVersion : 38|4@1+ (1,0) [0|15] "NA" Matrix
+
+
+BO_ 1549 IHBC_Object_12: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+BO_ 1548 IHBC_Object_11: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+BO_ 1547 IHBC_Object_10: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+BO_ 1546 IHBC_Object_9: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+BO_ 1545 IHBC_Object_8: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+BO_ 1544 IHBC_Object_7: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+BO_ 1543 IHBC_Object_6: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+BO_ 1542 IHBC_Object_5: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+BO_ 1541 IHBC_Object_4: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+BO_ 1540 IHBC_Object_3: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+BO_ 1539 IHBC_Object_2: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+BO_ 1538 IHBC_Object_1: 5 Matrix
+ SG_ IHBC_OBJ_ANG : 0|11@1- (0.05,0) [-50|50] "degree" Matrix
+ SG_ IHBC_OBJ_DIST : 11|10@1+ (1,0) [0|1023] "m" Matrix
+ SG_ IHBC_COUPLED_WIDTH : 21|11@1+ (0.05,0) [0|100] "degree" Matrix
+ SG_ IHBC_OBJ_TYPE : 32|4@1+ (1,0) [0|15] "enum" Matrix
+ SG_ IHBC_OBJ_VALID : 36|1@1+ (1,0) [0|1] "bool" Matrix
+
+
+
+
+
+CM_ SG_ 1536 Reason_Preceding "Reasons to switch to low beam";
+CM_ SG_ 1536 Reason_Oncoming "Reasons to switch to low beam";
+CM_ SG_ 1536 Reason_Street_Light "Reasons to switch to low beam";
+CM_ SG_ 1536 Environment_Lux "Environment illuminationLux";
+CM_ SG_ 1536 IHBC_Decision "High beam status recommnedation";
+CM_ SG_ 1536 Reason_for_IHBC_Inactive "The reasons which cause the system to get into inactive mode";
+CM_ SG_ 1536 ProtocolMajorVersion "Major Version of Protocol";
+CM_ SG_ 1536 ProtocolMinorVersion "Minor Version of Protocol";
+CM_ SG_ 1549 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1549 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1549 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1549 IHBC_OBJ_TYPE "The type of the detected object";
+CM_ SG_ 1548 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1548 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1548 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1548 IHBC_OBJ_TYPE "The type of the detected object";
+CM_ SG_ 1547 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1547 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1547 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1547 IHBC_OBJ_TYPE "The type of the detected object";
+CM_ SG_ 1546 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1546 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1546 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1546 IHBC_OBJ_TYPE "The type of the detected object";
+CM_ SG_ 1545 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1545 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1545 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1545 IHBC_OBJ_TYPE "The type of the detected object";
+CM_ SG_ 1544 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1544 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1544 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1544 IHBC_OBJ_TYPE "The type of the detected object";
+CM_ SG_ 1543 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1543 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1543 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1543 IHBC_OBJ_TYPE "The type of the detected object";
+CM_ SG_ 1542 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1542 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1542 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1542 IHBC_OBJ_TYPE "The type of the detected object";
+CM_ SG_ 1541 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1541 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1541 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1541 IHBC_OBJ_TYPE "The type of the detected object";
+CM_ SG_ 1540 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1540 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1540 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1540 IHBC_OBJ_TYPE "The type of the detected object";
+CM_ SG_ 1539 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1539 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1539 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1539 IHBC_OBJ_TYPE "The type of the detected object";
+CM_ SG_ 1538 IHBC_OBJ_ANG "The angle to the center of the object";
+CM_ SG_ 1538 IHBC_OBJ_DIST "The distance from the camera to the object";
+CM_ SG_ 1538 IHBC_COUPLED_WIDTH "width in degrees of the coupled light";
+CM_ SG_ 1538 IHBC_OBJ_TYPE "The type of the detected object";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_DEF_DEF_  "BusType" "CAN";
+VAL_ 1536 Reason_Preceding 1 "on" 0 "off" ;
+VAL_ 1536 Reason_Oncoming 1 "on" 0 "off" ;
+VAL_ 1536 Reason_Street_Light 1 "on" 0 "off" ;
+VAL_ 1536 IHBC_Decision 1 "High Beam on" 0 "High Beam off" ;
+VAL_ 1536 IHBC_Running_Mode 3 "IHBC_Full" 2 "IHBC_Inactive" 1 "IHBC_Day" 0 "Undecided" ;
+VAL_ 1536 Reason_for_IHBC_Inactive 15 "invalid reason" 3 "deactivated" 2 "in grace" 1 "low detection rate" 0 "obviously bright" ;
+VAL_ 1549 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1549 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+VAL_ 1548 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1548 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+VAL_ 1547 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1547 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+VAL_ 1546 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1546 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+VAL_ 1545 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1545 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+VAL_ 1544 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1544 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+VAL_ 1543 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1543 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+VAL_ 1542 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1542 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+VAL_ 1541 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1541 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+VAL_ 1540 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1540 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+VAL_ 1539 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1539 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+VAL_ 1538 IHBC_OBJ_TYPE 15 "invalid" 7 "cluster" 6 "strong reflector" 5 "stree light" 4 "couple of OC upper truck lights" 3 "couple of preceding" 2 "preceding" 1 "couple of oncoming" 0 "oncoming" ;
+VAL_ 1538 IHBC_OBJ_VALID 1 "valid" 0 "invalid" ;
+

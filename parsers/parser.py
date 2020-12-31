@@ -12,7 +12,7 @@ from parsers.df_d530 import parse_dfd530
 from parsers.x1d3 import parse_x1d3
 from parsers.novatel import parse_novatel
 from parsers.pim222 import parse_pim222
-
+from parsers.j2 import parser_j2
 
 def default_parser(id, data, type=None):
     return None
@@ -46,9 +46,9 @@ parsers_dict = {
     "d530":     parse_dfd530,
     "novatel":  parse_novatel,
     "pim222":   parse_pim222,
+    "j2": parser_j2,
     "default":  default_parser
 }
-
 
 from multiprocessing import Queue, Process
 import time

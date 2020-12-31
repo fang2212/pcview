@@ -1,0 +1,78 @@
+VERSION "8"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:Matrix
+
+
+BO_ 1026 Sync_Message_Output_3: 6 Matrix
+ SG_ FrameIndex : 0|32@1+ (1,0) [0|4294967295] "NA" Matrix
+ SG_ CameraID : 32|4@1+ (1,0) [0|12] "enum" Matrix
+ SG_ ProtocolMajorVersion : 36|4@1+ (1,0) [0|15] "NA" Matrix
+ SG_ ProtocolMinorVersion : 40|4@1+ (1,0) [0|15] "NA" Matrix
+
+
+BO_ 1025 Sync_Message_Output_2: 8 Matrix
+ SG_ SPITimestamp : 0|64@1+ (1,0) [0|1.84467440737095E+19] "milliseconds" Matrix
+
+
+BO_ 1024 Sync_Message_Output_1: 8 Matrix
+ SG_ ImageTimestamp : 0|64@1+ (1,0) [0|1.84467440737095E+19] "milliseconds" Matrix
+
+
+
+
+
+CM_ SG_ 1026 FrameIndex "Image Frame Counter";
+CM_ SG_ 1026 CameraID "The camera id in order to distinguish between different cameras and and consistent with the structured output of CANFD";
+CM_ SG_ 1026 ProtocolMajorVersion "Major Version of Protocol";
+CM_ SG_ 1026 ProtocolMinorVersion "Minor Version of Protocol";
+CM_ SG_ 1025 SPITimestamp "The time givs the SPI timestamp when completed in J2";
+CM_ SG_ 1024 ImageTimestamp "The time givs the image timestamp when completed in J2";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_DEF_DEF_  "BusType" "CAN";
+VAL_ 1026 CameraID 12 "Narrow-Back-Right" 11 "Narrow-Right" 10 "Narrow-Front-Right" 9 "Narrow-Front" 8 "Narrow-Front-Left" 7 "Narrow-Left" 6 "Narrow-Back-Left" 5 "Narrow-Back" 4 "Fisheye-Right" 3 "Fisheye-Left" 2 "Fisheye-Front" 1 "Fisheye-Back" 0 "Default" ;
+

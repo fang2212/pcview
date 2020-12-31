@@ -1,0 +1,1123 @@
+VERSION "8"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:Matrix
+
+
+BO_ 1040 ObstacleHeader: 7 Matrix
+ SG_ NumObstacles : 0|8@1+ (1,0) [0|20] "NA" Matrix
+ SG_ ID_CIPV : 8|8@1+ (1,0) [0|255] "counter" Matrix
+ SG_ ID_MCP : 16|8@1+ (1,0) [0|255] "counter" Matrix
+ SG_ CIPV_TTC : 24|10@1+ (0.01,0) [0|10] "second" Matrix
+ SG_ CIPV_TTC_Valid : 34|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ MCP_TTC : 35|10@1+ (0.01,0) [0|10] "second" Matrix
+ SG_ MCP_TTC_Valid : 45|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ProtocolMajorVersion : 46|4@1+ (1,0) [0|15] "NA" Matrix
+ SG_ ProtocolMinorVersion : 50|4@1+ (1,0) [0|15] "NA" Matrix
+
+
+BO_ 1105 ObstacleDataE10: 7 Matrix
+ SG_ ObstacleAngle : 0|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+ SG_ ObstacleAngleStd : 16|16@1+ (0.01,0) [0|327.67] "degree" Matrix
+ SG_ ObstacleVelXAbs : 32|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYAbs : 44|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+
+
+BO_ 1104 ObstacleDataD10: 8 Matrix
+ SG_ ObstaclePosXSTD : 0|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstaclePosYSTD : 13|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstacleVelXSTD : 26|12@1+ (0.05,0) [0|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYSTD : 38|12@1+ (0.05,0) [0|50] "m/sec" Matrix
+ SG_ ObstacleAccY : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1103 ObstacleDataC10: 8 Matrix
+ SG_ ObstaclePosX : 0|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstaclePosY : 13|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstacleVelX : 26|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelY : 38|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+ SG_ ObstacleAccX : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1102 ObstacleDataB10: 7 Matrix
+ SG_ ObstacleLength : 0|9@1+ (0.05,0) [0|25.6] "m" Matrix
+ SG_ ObstacleWidth : 9|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ ObstacleHeight : 18|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ CIPVFlag : 27|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ MCPFlag : 28|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleBlinkerInfo : 29|3@1+ (1,0) [0|4] "enum" Matrix
+ SG_ ObstacleBrakeLights : 32|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleCenterAngle : 33|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+
+
+BO_ 1101 ObstacleDataA10: 8 Matrix
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|255] "NA" Matrix
+ SG_ ObstacleValid : 8|2@1+ (1,0) [0|2] "bool" Matrix
+ SG_ ObstacleReplaced : 10|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleAge : 11|16@1+ (1,0) [0|65535] "NA" Matrix
+ SG_ ObstacleConfidence : 27|7@1+ (1,0) [0|100] "NA" Matrix
+ SG_ ObstacleMotionCategory : 34|4@1+ (1,0) [0|13] "enum" Matrix
+ SG_ ObstacleMotionStatus : 38|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleMeasuringStatus : 41|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleClass : 44|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ VehicleSubType : 47|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedSubType : 50|2@1+ (1,0) [0|3] "enum" Matrix
+ SG_ PedPos : 52|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedOrientation : 55|4@1+ (1,0) [0|9] "enum" Matrix
+ SG_ ObstacleLaneAssignment : 59|3@1+ (1,0) [0|5] "enum" Matrix
+
+
+BO_ 1100 ObstacleDataE9: 7 Matrix
+ SG_ ObstacleAngle : 0|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+ SG_ ObstacleAngleStd : 16|16@1+ (0.01,0) [0|327.67] "degree" Matrix
+ SG_ ObstacleVelXAbs : 32|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYAbs : 44|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+
+
+BO_ 1099 ObstacleDataD9: 8 Matrix
+ SG_ ObstaclePosXSTD : 0|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstaclePosYSTD : 13|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstacleVelXSTD : 26|12@1+ (0.05,0) [0|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYSTD : 38|12@1+ (0.05,0) [0|50] "m/sec" Matrix
+ SG_ ObstacleAccY : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1098 ObstacleDataC9: 8 Matrix
+ SG_ ObstaclePosX : 0|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstaclePosY : 13|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstacleVelX : 26|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelY : 38|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+ SG_ ObstacleAccX : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1097 ObstacleDataB9: 7 Matrix
+ SG_ ObstacleLength : 0|9@1+ (0.05,0) [0|25.6] "m" Matrix
+ SG_ ObstacleWidth : 9|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ ObstacleHeight : 18|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ CIPVFlag : 27|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ MCPFlag : 28|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleBlinkerInfo : 29|3@1+ (1,0) [0|4] "enum" Matrix
+ SG_ ObstacleBrakeLights : 32|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleCenterAngle : 33|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+
+
+BO_ 1096 ObstacleDataA9: 8 Matrix
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|255] "NA" Matrix
+ SG_ ObstacleValid : 8|2@1+ (1,0) [0|2] "bool" Matrix
+ SG_ ObstacleReplaced : 10|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleAge : 11|16@1+ (1,0) [0|65535] "NA" Matrix
+ SG_ ObstacleConfidence : 27|7@1+ (1,0) [0|100] "NA" Matrix
+ SG_ ObstacleMotionCategory : 34|4@1+ (1,0) [0|13] "enum" Matrix
+ SG_ ObstacleMotionStatus : 38|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleMeasuringStatus : 41|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleClass : 44|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ VehicleSubType : 47|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedSubType : 50|2@1+ (1,0) [0|3] "enum" Matrix
+ SG_ PedPos : 52|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedOrientation : 55|4@1+ (1,0) [0|9] "enum" Matrix
+ SG_ ObstacleLaneAssignment : 59|3@1+ (1,0) [0|5] "enum" Matrix
+
+
+BO_ 1095 ObstacleDataE8: 7 Matrix
+ SG_ ObstacleAngle : 0|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+ SG_ ObstacleAngleStd : 16|16@1+ (0.01,0) [0|327.67] "degree" Matrix
+ SG_ ObstacleVelXAbs : 32|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYAbs : 44|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+
+
+BO_ 1094 ObstacleDataD8: 8 Matrix
+ SG_ ObstaclePosXSTD : 0|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstaclePosYSTD : 13|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstacleVelXSTD : 26|12@1+ (0.05,0) [0|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYSTD : 38|12@1+ (0.05,0) [0|50] "m/sec" Matrix
+ SG_ ObstacleAccY : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1093 ObstacleDataC8: 8 Matrix
+ SG_ ObstaclePosX : 0|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstaclePosY : 13|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstacleVelX : 26|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelY : 38|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+ SG_ ObstacleAccX : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1092 ObstacleDataB8: 7 Matrix
+ SG_ ObstacleLength : 0|9@1+ (0.05,0) [0|25.6] "m" Matrix
+ SG_ ObstacleWidth : 9|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ ObstacleHeight : 18|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ CIPVFlag : 27|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ MCPFlag : 28|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleBlinkerInfo : 29|3@1+ (1,0) [0|4] "enum" Matrix
+ SG_ ObstacleBrakeLights : 32|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleCenterAngle : 33|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+
+
+BO_ 1091 ObstacleDataA8: 8 Matrix
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|255] "NA" Matrix
+ SG_ ObstacleValid : 8|2@1+ (1,0) [0|2] "bool" Matrix
+ SG_ ObstacleReplaced : 10|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleAge : 11|16@1+ (1,0) [0|65535] "NA" Matrix
+ SG_ ObstacleConfidence : 27|7@1+ (1,0) [0|100] "NA" Matrix
+ SG_ ObstacleMotionCategory : 34|4@1+ (1,0) [0|13] "enum" Matrix
+ SG_ ObstacleMotionStatus : 38|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleMeasuringStatus : 41|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleClass : 44|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ VehicleSubType : 47|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedSubType : 50|2@1+ (1,0) [0|3] "enum" Matrix
+ SG_ PedPos : 52|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedOrientation : 55|4@1+ (1,0) [0|9] "enum" Matrix
+ SG_ ObstacleLaneAssignment : 59|3@1+ (1,0) [0|5] "enum" Matrix
+
+
+BO_ 1090 ObstacleDataE7: 7 Matrix
+ SG_ ObstacleAngle : 0|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+ SG_ ObstacleAngleStd : 16|16@1+ (0.01,0) [0|327.67] "degree" Matrix
+ SG_ ObstacleVelXAbs : 32|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYAbs : 44|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+
+
+BO_ 1089 ObstacleDataD7: 8 Matrix
+ SG_ ObstaclePosXSTD : 0|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstaclePosYSTD : 13|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstacleVelXSTD : 26|12@1+ (0.05,0) [0|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYSTD : 38|12@1+ (0.05,0) [0|50] "m/sec" Matrix
+ SG_ ObstacleAccY : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1088 ObstacleDataC7: 8 Matrix
+ SG_ ObstaclePosX : 0|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstaclePosY : 13|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstacleVelX : 26|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelY : 38|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+ SG_ ObstacleAccX : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1087 ObstacleDataB7: 7 Matrix
+ SG_ ObstacleLength : 0|9@1+ (0.05,0) [0|25.6] "m" Matrix
+ SG_ ObstacleWidth : 9|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ ObstacleHeight : 18|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ CIPVFlag : 27|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ MCPFlag : 28|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleBlinkerInfo : 29|3@1+ (1,0) [0|4] "enum" Matrix
+ SG_ ObstacleBrakeLights : 32|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleCenterAngle : 33|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+
+
+BO_ 1086 ObstacleDataA7: 8 Matrix
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|255] "NA" Matrix
+ SG_ ObstacleValid : 8|2@1+ (1,0) [0|2] "bool" Matrix
+ SG_ ObstacleReplaced : 10|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleAge : 11|16@1+ (1,0) [0|65535] "NA" Matrix
+ SG_ ObstacleConfidence : 27|7@1+ (1,0) [0|100] "NA" Matrix
+ SG_ ObstacleMotionCategory : 34|4@1+ (1,0) [0|13] "enum" Matrix
+ SG_ ObstacleMotionStatus : 38|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleMeasuringStatus : 41|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleClass : 44|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ VehicleSubType : 47|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedSubType : 50|2@1+ (1,0) [0|3] "enum" Matrix
+ SG_ PedPos : 52|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedOrientation : 55|4@1+ (1,0) [0|9] "enum" Matrix
+ SG_ ObstacleLaneAssignment : 59|3@1+ (1,0) [0|5] "enum" Matrix
+
+
+BO_ 1085 ObstacleDataE6: 7 Matrix
+ SG_ ObstacleAngle : 0|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+ SG_ ObstacleAngleStd : 16|16@1+ (0.01,0) [0|327.67] "degree" Matrix
+ SG_ ObstacleVelXAbs : 32|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYAbs : 44|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+
+
+BO_ 1084 ObstacleDataD6: 8 Matrix
+ SG_ ObstaclePosXSTD : 0|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstaclePosYSTD : 13|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstacleVelXSTD : 26|12@1+ (0.05,0) [0|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYSTD : 38|12@1+ (0.05,0) [0|50] "m/sec" Matrix
+ SG_ ObstacleAccY : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1083 ObstacleDataC6: 8 Matrix
+ SG_ ObstaclePosX : 0|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstaclePosY : 13|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstacleVelX : 26|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelY : 38|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+ SG_ ObstacleAccX : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1082 ObstacleDataB6: 7 Matrix
+ SG_ ObstacleLength : 0|9@1+ (0.05,0) [0|25.6] "m" Matrix
+ SG_ ObstacleWidth : 9|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ ObstacleHeight : 18|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ CIPVFlag : 27|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ MCPFlag : 28|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleBlinkerInfo : 29|3@1+ (1,0) [0|4] "enum" Matrix
+ SG_ ObstacleBrakeLights : 32|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleCenterAngle : 33|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+
+
+BO_ 1081 ObstacleDataA6: 8 Matrix
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|255] "NA" Matrix
+ SG_ ObstacleValid : 8|2@1+ (1,0) [0|2] "bool" Matrix
+ SG_ ObstacleReplaced : 10|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleAge : 11|16@1+ (1,0) [0|65535] "NA" Matrix
+ SG_ ObstacleConfidence : 27|7@1+ (1,0) [0|100] "NA" Matrix
+ SG_ ObstacleMotionCategory : 34|4@1+ (1,0) [0|13] "enum" Matrix
+ SG_ ObstacleMotionStatus : 38|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleMeasuringStatus : 41|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleClass : 44|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ VehicleSubType : 47|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedSubType : 50|2@1+ (1,0) [0|3] "enum" Matrix
+ SG_ PedPos : 52|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedOrientation : 55|4@1+ (1,0) [0|9] "enum" Matrix
+ SG_ ObstacleLaneAssignment : 59|3@1+ (1,0) [0|5] "enum" Matrix
+
+
+BO_ 1080 ObstacleDataE5: 7 Matrix
+ SG_ ObstacleAngle : 0|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+ SG_ ObstacleAngleStd : 16|16@1+ (0.01,0) [0|327.67] "degree" Matrix
+ SG_ ObstacleVelXAbs : 32|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYAbs : 44|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+
+
+BO_ 1079 ObstacleDataD5: 8 Matrix
+ SG_ ObstaclePosXSTD : 0|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstaclePosYSTD : 13|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstacleVelXSTD : 26|12@1+ (0.05,0) [0|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYSTD : 38|12@1+ (0.05,0) [0|50] "m/sec" Matrix
+ SG_ ObstacleAccY : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1078 ObstacleDataC5: 8 Matrix
+ SG_ ObstaclePosX : 0|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstaclePosY : 13|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstacleVelX : 26|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelY : 38|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+ SG_ ObstacleAccX : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1077 ObstacleDataB5: 7 Matrix
+ SG_ ObstacleLength : 0|9@1+ (0.05,0) [0|25.6] "m" Matrix
+ SG_ ObstacleWidth : 9|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ ObstacleHeight : 18|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ CIPVFlag : 27|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ MCPFlag : 28|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleBlinkerInfo : 29|3@1+ (1,0) [0|4] "enum" Matrix
+ SG_ ObstacleBrakeLights : 32|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleCenterAngle : 33|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+
+
+BO_ 1076 ObstacleDataA5: 8 Matrix
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|255] "NA" Matrix
+ SG_ ObstacleValid : 8|2@1+ (1,0) [0|2] "bool" Matrix
+ SG_ ObstacleReplaced : 10|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleAge : 11|16@1+ (1,0) [0|65535] "NA" Matrix
+ SG_ ObstacleConfidence : 27|7@1+ (1,0) [0|100] "NA" Matrix
+ SG_ ObstacleMotionCategory : 34|4@1+ (1,0) [0|13] "enum" Matrix
+ SG_ ObstacleMotionStatus : 38|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleMeasuringStatus : 41|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleClass : 44|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ VehicleSubType : 47|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedSubType : 50|2@1+ (1,0) [0|3] "enum" Matrix
+ SG_ PedPos : 52|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedOrientation : 55|4@1+ (1,0) [0|9] "enum" Matrix
+ SG_ ObstacleLaneAssignment : 59|3@1+ (1,0) [0|5] "enum" Matrix
+
+
+BO_ 1075 ObstacleDataE4: 7 Matrix
+ SG_ ObstacleAngle : 0|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+ SG_ ObstacleAngleStd : 16|16@1+ (0.01,0) [0|327.67] "degree" Matrix
+ SG_ ObstacleVelXAbs : 32|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYAbs : 44|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+
+
+BO_ 1074 ObstacleDataD4: 8 Matrix
+ SG_ ObstaclePosXSTD : 0|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstaclePosYSTD : 13|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstacleVelXSTD : 26|12@1+ (0.05,0) [0|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYSTD : 38|12@1+ (0.05,0) [0|50] "m/sec" Matrix
+ SG_ ObstacleAccY : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1073 ObstacleDataC4: 8 Matrix
+ SG_ ObstaclePosX : 0|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstaclePosY : 13|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstacleVelX : 26|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelY : 38|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+ SG_ ObstacleAccX : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1072 ObstacleDataB4: 7 Matrix
+ SG_ ObstacleLength : 0|9@1+ (0.05,0) [0|25.6] "m" Matrix
+ SG_ ObstacleWidth : 9|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ ObstacleHeight : 18|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ CIPVFlag : 27|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ MCPFlag : 28|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleBlinkerInfo : 29|3@1+ (1,0) [0|4] "enum" Matrix
+ SG_ ObstacleBrakeLights : 32|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleCenterAngle : 33|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+
+
+BO_ 1071 ObstacleDataA4: 8 Matrix
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|255] "NA" Matrix
+ SG_ ObstacleValid : 8|2@1+ (1,0) [0|2] "bool" Matrix
+ SG_ ObstacleReplaced : 10|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleAge : 11|16@1+ (1,0) [0|65535] "NA" Matrix
+ SG_ ObstacleConfidence : 27|7@1+ (1,0) [0|100] "NA" Matrix
+ SG_ ObstacleMotionCategory : 34|4@1+ (1,0) [0|13] "enum" Matrix
+ SG_ ObstacleMotionStatus : 38|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleMeasuringStatus : 41|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleClass : 44|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ VehicleSubType : 47|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedSubType : 50|2@1+ (1,0) [0|3] "enum" Matrix
+ SG_ PedPos : 52|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedOrientation : 55|4@1+ (1,0) [0|9] "enum" Matrix
+ SG_ ObstacleLaneAssignment : 59|3@1+ (1,0) [0|5] "enum" Matrix
+
+
+BO_ 1070 ObstacleDataE3: 7 Matrix
+ SG_ ObstacleAngle : 0|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+ SG_ ObstacleAngleStd : 16|16@1+ (0.01,0) [0|327.67] "degree" Matrix
+ SG_ ObstacleVelXAbs : 32|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYAbs : 44|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+
+
+BO_ 1069 ObstacleDataD3: 8 Matrix
+ SG_ ObstaclePosXSTD : 0|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstaclePosYSTD : 13|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstacleVelXSTD : 26|12@1+ (0.05,0) [0|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYSTD : 38|12@1+ (0.05,0) [0|50] "m/sec" Matrix
+ SG_ ObstacleAccY : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1068 ObstacleDataC3: 8 Matrix
+ SG_ ObstaclePosX : 0|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstaclePosY : 13|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstacleVelX : 26|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelY : 38|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+ SG_ ObstacleAccX : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1067 ObstacleDataB3: 7 Matrix
+ SG_ ObstacleLength : 0|9@1+ (0.05,0) [0|25.6] "m" Matrix
+ SG_ ObstacleWidth : 9|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ ObstacleHeight : 18|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ CIPVFlag : 27|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ MCPFlag : 28|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleBlinkerInfo : 29|3@1+ (1,0) [0|4] "enum" Matrix
+ SG_ ObstacleBrakeLights : 32|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleCenterAngle : 33|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+
+
+BO_ 1066 ObstacleDataA3: 8 Matrix
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|255] "NA" Matrix
+ SG_ ObstacleValid : 8|2@1+ (1,0) [0|2] "bool" Matrix
+ SG_ ObstacleReplaced : 10|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleAge : 11|16@1+ (1,0) [0|65535] "NA" Matrix
+ SG_ ObstacleConfidence : 27|7@1+ (1,0) [0|100] "NA" Matrix
+ SG_ ObstacleMotionCategory : 34|4@1+ (1,0) [0|13] "enum" Matrix
+ SG_ ObstacleMotionStatus : 38|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleMeasuringStatus : 41|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleClass : 44|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ VehicleSubType : 47|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedSubType : 50|2@1+ (1,0) [0|3] "enum" Matrix
+ SG_ PedPos : 52|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedOrientation : 55|4@1+ (1,0) [0|9] "enum" Matrix
+ SG_ ObstacleLaneAssignment : 59|3@1+ (1,0) [0|5] "enum" Matrix
+
+
+BO_ 1065 ObstacleDataE2: 7 Matrix
+ SG_ ObstacleAngle : 0|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+ SG_ ObstacleAngleStd : 16|16@1+ (0.01,0) [0|327.67] "degree" Matrix
+ SG_ ObstacleVelXAbs : 32|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYAbs : 44|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+
+
+BO_ 1064 ObstacleDataD2: 8 Matrix
+ SG_ ObstaclePosXSTD : 0|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstaclePosYSTD : 13|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstacleVelXSTD : 26|12@1+ (0.05,0) [0|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYSTD : 38|12@1+ (0.05,0) [0|50] "m/sec" Matrix
+ SG_ ObstacleAccY : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1063 ObstacleDataC2: 8 Matrix
+ SG_ ObstaclePosX : 0|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstaclePosY : 13|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstacleVelX : 26|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelY : 38|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+ SG_ ObstacleAccX : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1062 ObstacleDataB2: 7 Matrix
+ SG_ ObstacleLength : 0|9@1+ (0.05,0) [0|25.6] "m" Matrix
+ SG_ ObstacleWidth : 9|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ ObstacleHeight : 18|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ CIPVFlag : 27|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ MCPFlag : 28|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleBlinkerInfo : 29|3@1+ (1,0) [0|4] "enum" Matrix
+ SG_ ObstacleBrakeLights : 32|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleCenterAngle : 33|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+
+
+BO_ 1061 ObstacleDataA2: 8 Matrix
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|255] "NA" Matrix
+ SG_ ObstacleValid : 8|2@1+ (1,0) [0|2] "bool" Matrix
+ SG_ ObstacleReplaced : 10|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleAge : 11|16@1+ (1,0) [0|65535] "NA" Matrix
+ SG_ ObstacleConfidence : 27|7@1+ (1,0) [0|100] "NA" Matrix
+ SG_ ObstacleMotionCategory : 34|4@1+ (1,0) [0|13] "enum" Matrix
+ SG_ ObstacleMotionStatus : 38|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleMeasuringStatus : 41|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleClass : 44|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ VehicleSubType : 47|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedSubType : 50|2@1+ (1,0) [0|3] "enum" Matrix
+ SG_ PedPos : 52|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedOrientation : 55|4@1+ (1,0) [0|9] "enum" Matrix
+ SG_ ObstacleLaneAssignment : 59|3@1+ (1,0) [0|5] "enum" Matrix
+
+
+BO_ 1060 ObstacleDataE1: 7 Matrix
+ SG_ ObstacleAngle : 0|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+ SG_ ObstacleAngleStd : 16|16@1+ (0.01,0) [0|327.67] "degree" Matrix
+ SG_ ObstacleVelXAbs : 32|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYAbs : 44|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+
+
+BO_ 1059 ObstacleDataD1: 8 Matrix
+ SG_ ObstaclePosXSTD : 0|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstaclePosYSTD : 13|13@1+ (0.0625,0) [0|250] "m" Matrix
+ SG_ ObstacleVelXSTD : 26|12@1+ (0.05,0) [0|102.35] "m/sec" Matrix
+ SG_ ObstacleVelYSTD : 38|12@1+ (0.05,0) [0|50] "m/sec" Matrix
+ SG_ ObstacleAccY : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1058 ObstacleDataC1: 8 Matrix
+ SG_ ObstaclePosX : 0|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstaclePosY : 13|13@1+ (0.0625,-250) [-250|250] "m" Matrix
+ SG_ ObstacleVelX : 26|12@1+ (0.05,-102.4) [-102.4|102.35] "m/sec" Matrix
+ SG_ ObstacleVelY : 38|12@1+ (0.05,-50) [-50|50] "m/sec" Matrix
+ SG_ ObstacleAccX : 50|10@1+ (0.03,-14.97) [-14.97|14.97] "m/s^2" Matrix
+
+
+BO_ 1057 ObstacleDataB1: 7 Matrix
+ SG_ ObstacleLength : 0|9@1+ (0.05,0) [0|25.6] "m" Matrix
+ SG_ ObstacleWidth : 9|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ ObstacleHeight : 18|9@1+ (0.02,0) [0|10.24] "m" Matrix
+ SG_ CIPVFlag : 27|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ MCPFlag : 28|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleBlinkerInfo : 29|3@1+ (1,0) [0|4] "enum" Matrix
+ SG_ ObstacleBrakeLights : 32|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleCenterAngle : 33|16@1+ (0.01,-327.68) [-327.68|327.67] "degree" Matrix
+
+
+BO_ 1056 ObstacleDataA1: 8 Matrix
+ SG_ ObstacleID : 0|8@1+ (1,0) [0|255] "NA" Matrix
+ SG_ ObstacleValid : 8|2@1+ (1,0) [0|2] "bool" Matrix
+ SG_ ObstacleReplaced : 10|1@1+ (1,0) [0|1] "bool" Matrix
+ SG_ ObstacleAge : 11|16@1+ (1,0) [0|65535] "NA" Matrix
+ SG_ ObstacleConfidence : 27|7@1+ (1,0) [0|100] "NA" Matrix
+ SG_ ObstacleMotionCategory : 34|4@1+ (1,0) [0|13] "enum" Matrix
+ SG_ ObstacleMotionStatus : 38|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleMeasuringStatus : 41|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ ObstacleClass : 44|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ VehicleSubType : 47|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedSubType : 50|2@1+ (1,0) [0|3] "enum" Matrix
+ SG_ PedPos : 52|3@1+ (1,0) [0|7] "enum" Matrix
+ SG_ PedOrientation : 55|4@1+ (1,0) [0|9] "enum" Matrix
+ SG_ ObstacleLaneAssignment : 59|3@1+ (1,0) [0|5] "enum" Matrix
+
+
+BO_ 1047 ObstacleInternalID90: 8 Matrix
+ SG_ Obstacle_Internal_ID9 : 0|32@1+ (1,0) [0|4294967295] "NA" Matrix
+ SG_ Obstacle_Internal_ID10 : 32|32@1+ (1,0) [0|4294967295] "NA" Matrix
+
+
+BO_ 1046 ObstacleInternalID78: 8 Matrix
+ SG_ Obstacle_Internal_ID7 : 0|32@1+ (1,0) [0|4294967295] "NA" Matrix
+ SG_ Obstacle_Internal_ID8 : 32|32@1+ (1,0) [0|4294967295] "NA" Matrix
+
+
+BO_ 1045 ObstacleInternalID56: 8 Matrix
+ SG_ Obstacle_Internal_ID5 : 0|32@1+ (1,0) [0|4294967295] "NA" Matrix
+ SG_ Obstacle_Internal_ID6 : 32|32@1+ (1,0) [0|4294967295] "NA" Matrix
+
+
+BO_ 1044 ObstacleInternalID34: 8 Matrix
+ SG_ Obstacle_Internal_ID3 : 0|32@1+ (1,0) [0|4294967295] "NA" Matrix
+ SG_ Obstacle_Internal_ID4 : 32|32@1+ (1,0) [0|4294967295] "NA" Matrix
+
+
+BO_ 1043 ObstacleInternalIID12: 8 Matrix
+ SG_ Obstacle_Internal_ID1 : 0|32@1+ (1,0) [0|4294967295] "NA" Matrix
+ SG_ Obstacle_Internal_ID2 : 32|32@1+ (1,0) [0|4294967295] "NA" Matrix
+
+
+
+
+
+CM_ SG_ 1040 ID_CIPV "CIPV";
+CM_ SG_ 1040 ID_MCP "MCP";
+CM_ SG_ 1040 CIPV_TTC "CIPV TTC";
+CM_ SG_ 1040 CIPV_TTC_Valid "Validity bit for CIPV_TTC Signal TTC only valid for CIPV.";
+CM_ SG_ 1040 MCP_TTC "MCP TTC";
+CM_ SG_ 1040 MCP_TTC_Valid "Validity bit for MCP_TTC Signal";
+CM_ SG_ 1040 ProtocolMajorVersion "hb_Lanes: Major Version of Protocol";
+CM_ SG_ 1040 ProtocolMinorVersion "hb_Lanes: Minor Version of Protocol";
+CM_ SG_ 1105 ObstacleAngle "the heading angle of vehicle";
+CM_ SG_ 1105 ObstacleAngleStd "the standard deviation of heading angle of vehicle";
+CM_ SG_ 1105 ObstacleVelXAbs "the abusolute longitude velocity of the obstacle. ";
+CM_ SG_ 1105 ObstacleVelYAbs "the abusolute lateral velocity of the obstacle. ";
+CM_ SG_ 1104 ObstaclePosXSTD "the standard deviation of longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1104 ObstaclePosYSTD "the standard deviation of lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1104 ObstacleVelXSTD "the standard deviation of longitude velocity of the obstacle. ";
+CM_ SG_ 1104 ObstacleVelYSTD "the standard deviation of  lateral velocity of the obstacle. ";
+CM_ SG_ 1104 ObstacleAccY "The lateral acceleration of the object.";
+CM_ SG_ 1103 ObstaclePosX "The longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1103 ObstaclePosY "The lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1103 ObstacleVelX "The relative longitude velocity of the obstacle. ";
+CM_ SG_ 1103 ObstacleVelY "The relative lateral velocity of the obstacle. ";
+CM_ SG_ 1103 ObstacleAccX "The longitude acceleration of the object.";
+CM_ SG_ 1102 ObstacleLength "Length";
+CM_ SG_ 1102 ObstacleWidth "Width";
+CM_ SG_ 1102 ObstacleHeight "Height";
+CM_ SG_ 1102 CIPVFlag "0 - not CIPV 1 - CIPV";
+CM_ SG_ 1102 MCPFlag "0 - not MCP 1 - MCP";
+CM_ SG_ 1102 ObstacleBlinkerInfo "Blinker Info";
+CM_ SG_ 1102 ObstacleBrakeLights "BrakeLightInfo";
+CM_ SG_ 1102 ObstacleCenterAngle "Angle of Host Vehicle Oritation to the Obstacle Center ";
+CM_ SG_ 1101 ObstacleID "The detected OBJ ID ";
+CM_ SG_ 1101 ObstacleValid "Obstacle Valid info";
+CM_ SG_ 1101 ObstacleReplaced "Reserved";
+CM_ SG_ 1101 ObstacleAge "Frame age of obstacle";
+CM_ SG_ 1101 ObstacleConfidence "Existence probability of Obstacle";
+CM_ SG_ 1101 ObstacleMotionCategory "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.";
+CM_ SG_ 1101 ObstacleMotionStatus "The target is moving or stopped";
+CM_ SG_ 1101 ObstacleMeasuringStatus "Were measurements predicted, old, or not valid";
+CM_ SG_ 1101 ObstacleClass "Kind of object.";
+CM_ SG_ 1101 VehicleSubType "Vehicle Sub type";
+CM_ SG_ 1101 PedSubType "Pedestrian Sub type";
+CM_ SG_ 1101 PedPos "Pedestrian Position";
+CM_ SG_ 1101 PedOrientation "Pedestrian Orientation";
+CM_ SG_ 1101 ObstacleLaneAssignment "update next lane(distinguish left or right)";
+CM_ SG_ 1100 ObstacleAngle "the heading angle of vehicle";
+CM_ SG_ 1100 ObstacleAngleStd "the standard deviation of heading angle of vehicle";
+CM_ SG_ 1100 ObstacleVelXAbs "the abusolute longitude velocity of the obstacle. ";
+CM_ SG_ 1100 ObstacleVelYAbs "the abusolute lateral velocity of the obstacle. ";
+CM_ SG_ 1099 ObstaclePosXSTD "the standard deviation of longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1099 ObstaclePosYSTD "the standard deviation of lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1099 ObstacleVelXSTD "the standard deviation of longitude velocity of the obstacle. ";
+CM_ SG_ 1099 ObstacleVelYSTD "the standard deviation of  lateral velocity of the obstacle. ";
+CM_ SG_ 1099 ObstacleAccY "The lateral acceleration of the object.";
+CM_ SG_ 1098 ObstaclePosX "The longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1098 ObstaclePosY "The lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1098 ObstacleVelX "The relative longitude velocity of the obstacle. ";
+CM_ SG_ 1098 ObstacleVelY "The relative lateral velocity of the obstacle. ";
+CM_ SG_ 1098 ObstacleAccX "The longitude acceleration of the object.";
+CM_ SG_ 1097 ObstacleLength "Length";
+CM_ SG_ 1097 ObstacleWidth "Width";
+CM_ SG_ 1097 ObstacleHeight "Height";
+CM_ SG_ 1097 CIPVFlag "0 - not CIPV 1 - CIPV";
+CM_ SG_ 1097 MCPFlag "0 - not MCP 1 - MCP";
+CM_ SG_ 1097 ObstacleBlinkerInfo "Blinker Info";
+CM_ SG_ 1097 ObstacleBrakeLights "BrakeLightInfo";
+CM_ SG_ 1097 ObstacleCenterAngle "Angle of Host Vehicle Oritation to the Obstacle Center ";
+CM_ SG_ 1096 ObstacleID "The detected OBJ ID ";
+CM_ SG_ 1096 ObstacleValid "Obstacle Valid info";
+CM_ SG_ 1096 ObstacleReplaced "Reserved";
+CM_ SG_ 1096 ObstacleAge "Frame age of obstacle";
+CM_ SG_ 1096 ObstacleConfidence "Existence probability of Obstacle";
+CM_ SG_ 1096 ObstacleMotionCategory "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.";
+CM_ SG_ 1096 ObstacleMotionStatus "The target is moving or stopped";
+CM_ SG_ 1096 ObstacleMeasuringStatus "Were measurements predicted, old, or not valid";
+CM_ SG_ 1096 ObstacleClass "Kind of object.";
+CM_ SG_ 1096 VehicleSubType "Vehicle Sub type";
+CM_ SG_ 1096 PedSubType "Pedestrian Sub type";
+CM_ SG_ 1096 PedPos "Pedestrian Position";
+CM_ SG_ 1096 PedOrientation "Pedestrian Orientation";
+CM_ SG_ 1096 ObstacleLaneAssignment "update next lane(distinguish left or right)";
+CM_ SG_ 1095 ObstacleAngle "the heading angle of vehicle";
+CM_ SG_ 1095 ObstacleAngleStd "the standard deviation of heading angle of vehicle";
+CM_ SG_ 1095 ObstacleVelXAbs "the abusolute longitude velocity of the obstacle. ";
+CM_ SG_ 1095 ObstacleVelYAbs "the abusolute lateral velocity of the obstacle. ";
+CM_ SG_ 1094 ObstaclePosXSTD "the standard deviation of longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1094 ObstaclePosYSTD "the standard deviation of lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1094 ObstacleVelXSTD "the standard deviation of longitude velocity of the obstacle. ";
+CM_ SG_ 1094 ObstacleVelYSTD "the standard deviation of  lateral velocity of the obstacle. ";
+CM_ SG_ 1094 ObstacleAccY "The lateral acceleration of the object.";
+CM_ SG_ 1093 ObstaclePosX "The longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1093 ObstaclePosY "The lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1093 ObstacleVelX "The relative longitude velocity of the obstacle. ";
+CM_ SG_ 1093 ObstacleVelY "The relative lateral velocity of the obstacle. ";
+CM_ SG_ 1093 ObstacleAccX "The longitude acceleration of the object.";
+CM_ SG_ 1092 ObstacleLength "Length";
+CM_ SG_ 1092 ObstacleWidth "Width";
+CM_ SG_ 1092 ObstacleHeight "Height";
+CM_ SG_ 1092 CIPVFlag "0 - not CIPV 1 - CIPV";
+CM_ SG_ 1092 MCPFlag "0 - not MCP 1 - MCP";
+CM_ SG_ 1092 ObstacleBlinkerInfo "Blinker Info";
+CM_ SG_ 1092 ObstacleBrakeLights "BrakeLightInfo";
+CM_ SG_ 1092 ObstacleCenterAngle "Angle of Host Vehicle Oritation to the Obstacle Center ";
+CM_ SG_ 1091 ObstacleID "The detected OBJ ID ";
+CM_ SG_ 1091 ObstacleValid "Obstacle Valid info";
+CM_ SG_ 1091 ObstacleReplaced "Reserved";
+CM_ SG_ 1091 ObstacleAge "Frame age of obstacle";
+CM_ SG_ 1091 ObstacleConfidence "Existence probability of Obstacle";
+CM_ SG_ 1091 ObstacleMotionCategory "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.";
+CM_ SG_ 1091 ObstacleMotionStatus "The target is moving or stopped";
+CM_ SG_ 1091 ObstacleMeasuringStatus "Were measurements predicted, old, or not valid";
+CM_ SG_ 1091 ObstacleClass "Kind of object.";
+CM_ SG_ 1091 VehicleSubType "Vehicle Sub type";
+CM_ SG_ 1091 PedSubType "Pedestrian Sub type";
+CM_ SG_ 1091 PedPos "Pedestrian Position";
+CM_ SG_ 1091 PedOrientation "Pedestrian Orientation";
+CM_ SG_ 1091 ObstacleLaneAssignment "update next lane(distinguish left or right)";
+CM_ SG_ 1090 ObstacleAngle "the heading angle of vehicle";
+CM_ SG_ 1090 ObstacleAngleStd "the standard deviation of heading angle of vehicle";
+CM_ SG_ 1090 ObstacleVelXAbs "the abusolute longitude velocity of the obstacle. ";
+CM_ SG_ 1090 ObstacleVelYAbs "the abusolute lateral velocity of the obstacle. ";
+CM_ SG_ 1089 ObstaclePosXSTD "the standard deviation of longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1089 ObstaclePosYSTD "the standard deviation of lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1089 ObstacleVelXSTD "the standard deviation of longitude velocity of the obstacle. ";
+CM_ SG_ 1089 ObstacleVelYSTD "the standard deviation of  lateral velocity of the obstacle. ";
+CM_ SG_ 1089 ObstacleAccY "The lateral acceleration of the object.";
+CM_ SG_ 1088 ObstaclePosX "The longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1088 ObstaclePosY "The lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1088 ObstacleVelX "The relative longitude velocity of the obstacle. ";
+CM_ SG_ 1088 ObstacleVelY "The relative lateral velocity of the obstacle. ";
+CM_ SG_ 1088 ObstacleAccX "The longitude acceleration of the object.";
+CM_ SG_ 1087 ObstacleLength "Length";
+CM_ SG_ 1087 ObstacleWidth "Width";
+CM_ SG_ 1087 ObstacleHeight "Height";
+CM_ SG_ 1087 CIPVFlag "0 - not CIPV 1 - CIPV";
+CM_ SG_ 1087 MCPFlag "0 - not MCP 1 - MCP";
+CM_ SG_ 1087 ObstacleBlinkerInfo "Blinker Info";
+CM_ SG_ 1087 ObstacleBrakeLights "BrakeLightInfo";
+CM_ SG_ 1087 ObstacleCenterAngle "Angle of Host Vehicle Oritation to the Obstacle Center ";
+CM_ SG_ 1086 ObstacleID "The detected OBJ ID ";
+CM_ SG_ 1086 ObstacleValid "Obstacle Valid info";
+CM_ SG_ 1086 ObstacleReplaced "Reserved";
+CM_ SG_ 1086 ObstacleAge "Frame age of obstacle";
+CM_ SG_ 1086 ObstacleConfidence "Existence probability of Obstacle";
+CM_ SG_ 1086 ObstacleMotionCategory "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.";
+CM_ SG_ 1086 ObstacleMotionStatus "The target is moving or stopped";
+CM_ SG_ 1086 ObstacleMeasuringStatus "Were measurements predicted, old, or not valid";
+CM_ SG_ 1086 ObstacleClass "Kind of object.";
+CM_ SG_ 1086 VehicleSubType "Vehicle Sub type";
+CM_ SG_ 1086 PedSubType "Pedestrian Sub type";
+CM_ SG_ 1086 PedPos "Pedestrian Position";
+CM_ SG_ 1086 PedOrientation "Pedestrian Orientation";
+CM_ SG_ 1086 ObstacleLaneAssignment "update next lane(distinguish left or right)";
+CM_ SG_ 1085 ObstacleAngle "the heading angle of vehicle";
+CM_ SG_ 1085 ObstacleAngleStd "the standard deviation of heading angle of vehicle";
+CM_ SG_ 1085 ObstacleVelXAbs "the abusolute longitude velocity of the obstacle. ";
+CM_ SG_ 1085 ObstacleVelYAbs "the abusolute lateral velocity of the obstacle. ";
+CM_ SG_ 1084 ObstaclePosXSTD "the standard deviation of longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1084 ObstaclePosYSTD "the standard deviation of lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1084 ObstacleVelXSTD "the standard deviation of longitude velocity of the obstacle. ";
+CM_ SG_ 1084 ObstacleVelYSTD "the standard deviation of  lateral velocity of the obstacle. ";
+CM_ SG_ 1084 ObstacleAccY "The lateral acceleration of the object.";
+CM_ SG_ 1083 ObstaclePosX "The longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1083 ObstaclePosY "The lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1083 ObstacleVelX "The relative longitude velocity of the obstacle. ";
+CM_ SG_ 1083 ObstacleVelY "The relative lateral velocity of the obstacle. ";
+CM_ SG_ 1083 ObstacleAccX "The longitude acceleration of the object.";
+CM_ SG_ 1082 ObstacleLength "Length";
+CM_ SG_ 1082 ObstacleWidth "Width";
+CM_ SG_ 1082 ObstacleHeight "Height";
+CM_ SG_ 1082 CIPVFlag "0 - not CIPV 1 - CIPV";
+CM_ SG_ 1082 MCPFlag "0 - not MCP 1 - MCP";
+CM_ SG_ 1082 ObstacleBlinkerInfo "Blinker Info";
+CM_ SG_ 1082 ObstacleBrakeLights "BrakeLightInfo";
+CM_ SG_ 1082 ObstacleCenterAngle "Angle of Host Vehicle Oritation to the Obstacle Center ";
+CM_ SG_ 1081 ObstacleID "The detected OBJ ID ";
+CM_ SG_ 1081 ObstacleValid "Obstacle Valid info";
+CM_ SG_ 1081 ObstacleReplaced "Reserved";
+CM_ SG_ 1081 ObstacleAge "Frame age of obstacle";
+CM_ SG_ 1081 ObstacleConfidence "Existence probability of Obstacle";
+CM_ SG_ 1081 ObstacleMotionCategory "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.";
+CM_ SG_ 1081 ObstacleMotionStatus "The target is moving or stopped";
+CM_ SG_ 1081 ObstacleMeasuringStatus "Were measurements predicted, old, or not valid";
+CM_ SG_ 1081 ObstacleClass "Kind of object.";
+CM_ SG_ 1081 VehicleSubType "Vehicle Sub type";
+CM_ SG_ 1081 PedSubType "Pedestrian Sub type";
+CM_ SG_ 1081 PedPos "Pedestrian Position";
+CM_ SG_ 1081 PedOrientation "Pedestrian Orientation";
+CM_ SG_ 1081 ObstacleLaneAssignment "update next lane(distinguish left or right)";
+CM_ SG_ 1080 ObstacleAngle "the heading angle of vehicle";
+CM_ SG_ 1080 ObstacleAngleStd "the standard deviation of heading angle of vehicle";
+CM_ SG_ 1080 ObstacleVelXAbs "the abusolute longitude velocity of the obstacle. ";
+CM_ SG_ 1080 ObstacleVelYAbs "the abusolute lateral velocity of the obstacle. ";
+CM_ SG_ 1079 ObstaclePosXSTD "the standard deviation of longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1079 ObstaclePosYSTD "the standard deviation of lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1079 ObstacleVelXSTD "the standard deviation of longitude velocity of the obstacle. ";
+CM_ SG_ 1079 ObstacleVelYSTD "the standard deviation of  lateral velocity of the obstacle. ";
+CM_ SG_ 1079 ObstacleAccY "The lateral acceleration of the object.";
+CM_ SG_ 1078 ObstaclePosX "The longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1078 ObstaclePosY "The lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1078 ObstacleVelX "The relative longitude velocity of the obstacle. ";
+CM_ SG_ 1078 ObstacleVelY "The relative lateral velocity of the obstacle. ";
+CM_ SG_ 1078 ObstacleAccX "The longitude acceleration of the object.";
+CM_ SG_ 1077 ObstacleLength "Length";
+CM_ SG_ 1077 ObstacleWidth "Width";
+CM_ SG_ 1077 ObstacleHeight "Height";
+CM_ SG_ 1077 CIPVFlag "0 - not CIPV 1 - CIPV";
+CM_ SG_ 1077 MCPFlag "0 - not MCP 1 - MCP";
+CM_ SG_ 1077 ObstacleBlinkerInfo "Blinker Info";
+CM_ SG_ 1077 ObstacleBrakeLights "BrakeLightInfo";
+CM_ SG_ 1077 ObstacleCenterAngle "Angle of Host Vehicle Oritation to the Obstacle Center ";
+CM_ SG_ 1076 ObstacleID "The detected OBJ ID ";
+CM_ SG_ 1076 ObstacleValid "Obstacle Valid info";
+CM_ SG_ 1076 ObstacleReplaced "Reserved";
+CM_ SG_ 1076 ObstacleAge "Frame age of obstacle";
+CM_ SG_ 1076 ObstacleConfidence "Existence probability of Obstacle";
+CM_ SG_ 1076 ObstacleMotionCategory "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.";
+CM_ SG_ 1076 ObstacleMotionStatus "The target is moving or stopped";
+CM_ SG_ 1076 ObstacleMeasuringStatus "Were measurements predicted, old, or not valid";
+CM_ SG_ 1076 ObstacleClass "Kind of object.";
+CM_ SG_ 1076 VehicleSubType "Vehicle Sub type";
+CM_ SG_ 1076 PedSubType "Pedestrian Sub type";
+CM_ SG_ 1076 PedPos "Pedestrian Position";
+CM_ SG_ 1076 PedOrientation "Pedestrian Orientation";
+CM_ SG_ 1076 ObstacleLaneAssignment "update next lane(distinguish left or right)";
+CM_ SG_ 1075 ObstacleAngle "the heading angle of vehicle";
+CM_ SG_ 1075 ObstacleAngleStd "the standard deviation of heading angle of vehicle";
+CM_ SG_ 1075 ObstacleVelXAbs "the abusolute longitude velocity of the obstacle. ";
+CM_ SG_ 1075 ObstacleVelYAbs "the abusolute lateral velocity of the obstacle. ";
+CM_ SG_ 1074 ObstaclePosXSTD "the standard deviation of longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1074 ObstaclePosYSTD "the standard deviation of lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1074 ObstacleVelXSTD "the standard deviation of longitude velocity of the obstacle. ";
+CM_ SG_ 1074 ObstacleVelYSTD "the standard deviation of  lateral velocity of the obstacle. ";
+CM_ SG_ 1074 ObstacleAccY "The lateral acceleration of the object.";
+CM_ SG_ 1073 ObstaclePosX "The longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1073 ObstaclePosY "The lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1073 ObstacleVelX "The relative longitude velocity of the obstacle. ";
+CM_ SG_ 1073 ObstacleVelY "The relative lateral velocity of the obstacle. ";
+CM_ SG_ 1073 ObstacleAccX "The longitude acceleration of the object.";
+CM_ SG_ 1072 ObstacleLength "Length";
+CM_ SG_ 1072 ObstacleWidth "Width";
+CM_ SG_ 1072 ObstacleHeight "Height";
+CM_ SG_ 1072 CIPVFlag "0 - not CIPV 1 - CIPV";
+CM_ SG_ 1072 MCPFlag "0 - not MCP 1 - MCP";
+CM_ SG_ 1072 ObstacleBlinkerInfo "Blinker Info";
+CM_ SG_ 1072 ObstacleBrakeLights "BrakeLightInfo";
+CM_ SG_ 1072 ObstacleCenterAngle "Angle of Host Vehicle Oritation to the Obstacle Center ";
+CM_ SG_ 1071 ObstacleID "The detected OBJ ID ";
+CM_ SG_ 1071 ObstacleValid "Obstacle Valid info";
+CM_ SG_ 1071 ObstacleReplaced "Reserved";
+CM_ SG_ 1071 ObstacleAge "Frame age of obstacle";
+CM_ SG_ 1071 ObstacleConfidence "Existence probability of Obstacle";
+CM_ SG_ 1071 ObstacleMotionCategory "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.";
+CM_ SG_ 1071 ObstacleMotionStatus "The target is moving or stopped";
+CM_ SG_ 1071 ObstacleMeasuringStatus "Were measurements predicted, old, or not valid";
+CM_ SG_ 1071 ObstacleClass "Kind of object.";
+CM_ SG_ 1071 VehicleSubType "Vehicle Sub type";
+CM_ SG_ 1071 PedSubType "Pedestrian Sub type";
+CM_ SG_ 1071 PedPos "Pedestrian Position";
+CM_ SG_ 1071 PedOrientation "Pedestrian Orientation";
+CM_ SG_ 1071 ObstacleLaneAssignment "update next lane(distinguish left or right)";
+CM_ SG_ 1070 ObstacleAngle "the heading angle of vehicle";
+CM_ SG_ 1070 ObstacleAngleStd "the standard deviation of heading angle of vehicle";
+CM_ SG_ 1070 ObstacleVelXAbs "the abusolute longitude velocity of the obstacle. ";
+CM_ SG_ 1070 ObstacleVelYAbs "the abusolute lateral velocity of the obstacle. ";
+CM_ SG_ 1069 ObstaclePosXSTD "the standard deviation of longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1069 ObstaclePosYSTD "the standard deviation of lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1069 ObstacleVelXSTD "the standard deviation of longitude velocity of the obstacle. ";
+CM_ SG_ 1069 ObstacleVelYSTD "the standard deviation of  lateral velocity of the obstacle. ";
+CM_ SG_ 1069 ObstacleAccY "The lateral acceleration of the object.";
+CM_ SG_ 1068 ObstaclePosX "The longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1068 ObstaclePosY "The lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1068 ObstacleVelX "The relative longitude velocity of the obstacle. ";
+CM_ SG_ 1068 ObstacleVelY "The relative lateral velocity of the obstacle. ";
+CM_ SG_ 1068 ObstacleAccX "The longitude acceleration of the object.";
+CM_ SG_ 1067 ObstacleLength "Length";
+CM_ SG_ 1067 ObstacleWidth "Width";
+CM_ SG_ 1067 ObstacleHeight "Height";
+CM_ SG_ 1067 CIPVFlag "0 - not CIPV 1 - CIPV";
+CM_ SG_ 1067 MCPFlag "0 - not MCP 1 - MCP";
+CM_ SG_ 1067 ObstacleBlinkerInfo "Blinker Info";
+CM_ SG_ 1067 ObstacleBrakeLights "BrakeLightInfo";
+CM_ SG_ 1067 ObstacleCenterAngle "Angle of Host Vehicle Oritation to the Obstacle Center ";
+CM_ SG_ 1066 ObstacleID "The detected OBJ ID ";
+CM_ SG_ 1066 ObstacleValid "Obstacle Valid info";
+CM_ SG_ 1066 ObstacleReplaced "Reserved";
+CM_ SG_ 1066 ObstacleAge "Frame age of obstacle";
+CM_ SG_ 1066 ObstacleConfidence "Existence probability of Obstacle";
+CM_ SG_ 1066 ObstacleMotionCategory "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.";
+CM_ SG_ 1066 ObstacleMotionStatus "The target is moving or stopped";
+CM_ SG_ 1066 ObstacleMeasuringStatus "Were measurements predicted, old, or not valid";
+CM_ SG_ 1066 ObstacleClass "Kind of object.";
+CM_ SG_ 1066 VehicleSubType "Vehicle Sub type";
+CM_ SG_ 1066 PedSubType "Pedestrian Sub type";
+CM_ SG_ 1066 PedPos "Pedestrian Position";
+CM_ SG_ 1066 PedOrientation "Pedestrian Orientation";
+CM_ SG_ 1066 ObstacleLaneAssignment "update next lane(distinguish left or right)";
+CM_ SG_ 1065 ObstacleAngle "the heading angle of vehicle";
+CM_ SG_ 1065 ObstacleAngleStd "the standard deviation of heading angle of vehicle";
+CM_ SG_ 1065 ObstacleVelXAbs "the abusolute longitude velocity of the obstacle. ";
+CM_ SG_ 1065 ObstacleVelYAbs "the abusolute lateral velocity of the obstacle. ";
+CM_ SG_ 1064 ObstaclePosXSTD "the standard deviation of longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1064 ObstaclePosYSTD "the standard deviation of lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1064 ObstacleVelXSTD "the standard deviation of longitude velocity of the obstacle. ";
+CM_ SG_ 1064 ObstacleVelYSTD "the standard deviation of  lateral velocity of the obstacle. ";
+CM_ SG_ 1064 ObstacleAccY "The lateral acceleration of the object.";
+CM_ SG_ 1063 ObstaclePosX "The longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1063 ObstaclePosY "The lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1063 ObstacleVelX "The relative longitude velocity of the obstacle. ";
+CM_ SG_ 1063 ObstacleVelY "The relative lateral velocity of the obstacle. ";
+CM_ SG_ 1063 ObstacleAccX "The longitude acceleration of the object.";
+CM_ SG_ 1062 ObstacleLength "Length";
+CM_ SG_ 1062 ObstacleWidth "Width";
+CM_ SG_ 1062 ObstacleHeight "Height";
+CM_ SG_ 1062 CIPVFlag "0 - not CIPV 1 - CIPV";
+CM_ SG_ 1062 MCPFlag "0 - not MCP 1 - MCP";
+CM_ SG_ 1062 ObstacleBlinkerInfo "Blinker Info";
+CM_ SG_ 1062 ObstacleBrakeLights "BrakeLightInfo";
+CM_ SG_ 1062 ObstacleCenterAngle "Angle of Host Vehicle Oritation to the Obstacle Center ";
+CM_ SG_ 1061 ObstacleID "The detected OBJ ID ";
+CM_ SG_ 1061 ObstacleValid "Obstacle Valid info";
+CM_ SG_ 1061 ObstacleReplaced "Reserved";
+CM_ SG_ 1061 ObstacleAge "Frame age of obstacle";
+CM_ SG_ 1061 ObstacleConfidence "Existence probability of Obstacle";
+CM_ SG_ 1061 ObstacleMotionCategory "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.";
+CM_ SG_ 1061 ObstacleMotionStatus "The target is moving or stopped";
+CM_ SG_ 1061 ObstacleMeasuringStatus "Were measurements predicted, old, or not valid";
+CM_ SG_ 1061 ObstacleClass "Kind of object.";
+CM_ SG_ 1061 VehicleSubType "Vehicle Sub type";
+CM_ SG_ 1061 PedSubType "Pedestrian Sub type";
+CM_ SG_ 1061 PedPos "Pedestrian Position";
+CM_ SG_ 1061 PedOrientation "Pedestrian Orientation";
+CM_ SG_ 1061 ObstacleLaneAssignment "update next lane(distinguish left or right)";
+CM_ SG_ 1060 ObstacleAngle "the heading angle of vehicle";
+CM_ SG_ 1060 ObstacleAngleStd "the standard deviation of heading angle of vehicle";
+CM_ SG_ 1060 ObstacleVelXAbs "the abusolute longitude velocity of the obstacle. ";
+CM_ SG_ 1060 ObstacleVelYAbs "the abusolute lateral velocity of the obstacle. ";
+CM_ SG_ 1059 ObstaclePosXSTD "the standard deviation of longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1059 ObstaclePosYSTD "the standard deviation of lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1059 ObstacleVelXSTD "the standard deviation of longitude velocity of the obstacle. ";
+CM_ SG_ 1059 ObstacleVelYSTD "the standard deviation of  lateral velocity of the obstacle. ";
+CM_ SG_ 1059 ObstacleAccY "The lateral acceleration of the object.";
+CM_ SG_ 1058 ObstaclePosX "The longitudinal distance to the middle of the RL and RR corners";
+CM_ SG_ 1058 ObstaclePosY "The lateral distance to the middle of the RL and RR corners  ";
+CM_ SG_ 1058 ObstacleVelX "The relative longitude velocity of the obstacle. ";
+CM_ SG_ 1058 ObstacleVelY "The relative lateral velocity of the obstacle. ";
+CM_ SG_ 1058 ObstacleAccX "The longitude acceleration of the object.";
+CM_ SG_ 1057 ObstacleLength "Length";
+CM_ SG_ 1057 ObstacleWidth "Width";
+CM_ SG_ 1057 ObstacleHeight "Height";
+CM_ SG_ 1057 CIPVFlag "0 - not CIPV 1 - CIPV";
+CM_ SG_ 1057 MCPFlag "0 - not MCP 1 - MCP";
+CM_ SG_ 1057 ObstacleBlinkerInfo "Blinker Info";
+CM_ SG_ 1057 ObstacleBrakeLights "BrakeLightInfo";
+CM_ SG_ 1057 ObstacleCenterAngle "Angle of Host Vehicle Oritation to the Obstacle Center ";
+CM_ SG_ 1056 ObstacleID "The detected OBJ ID ";
+CM_ SG_ 1056 ObstacleValid "Obstacle Valid info";
+CM_ SG_ 1056 ObstacleReplaced "Reserved";
+CM_ SG_ 1056 ObstacleAge "Frame age of obstacle";
+CM_ SG_ 1056 ObstacleConfidence "Existence probability of Obstacle";
+CM_ SG_ 1056 ObstacleMotionCategory "The signal is based on our estimation of where the target is now relatively to the lanes, its rate of change, and our estimation of where it is going to be within one second.";
+CM_ SG_ 1056 ObstacleMotionStatus "The target is moving or stopped";
+CM_ SG_ 1056 ObstacleMeasuringStatus "Were measurements predicted, old, or not valid";
+CM_ SG_ 1056 ObstacleClass "Kind of object.";
+CM_ SG_ 1056 VehicleSubType "Vehicle Sub type";
+CM_ SG_ 1056 PedSubType "Pedestrian Sub type";
+CM_ SG_ 1056 PedPos "Pedestrian Position";
+CM_ SG_ 1056 PedOrientation "Pedestrian Orientation";
+CM_ SG_ 1056 ObstacleLaneAssignment "Obstacle Lane Assignment £¨Which lane a vehicle belongs to£©";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_DEF_DEF_  "BusType" "CAN";
+VAL_ 1040 CIPV_TTC_Valid 1 "Valid" 0 "NotValid" ;
+VAL_ 1040 MCP_TTC_Valid 1 "Valid" 0 "NotValid" ;
+VAL_ 1102 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1102 MCPFlag 1 "MCP" 0 "not MCP" ;
+VAL_ 1102 ObstacleBlinkerInfo 4 "Both" 3 "Right" 2 "Left" 1 "Off" 0 "Unavailable" ;
+VAL_ 1102 ObstacleBrakeLights 1 "ON" 0 "OFF" ;
+VAL_ 1101 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" 0 "invalid Obstacle(default value)" ;
+VAL_ 1101 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1101 ObstacleMotionCategory 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 1101 ObstacleMotionStatus 5 "MOVING SLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 1101 ObstacleMeasuringStatus 2 "PREDICTED" 1 "MEASURED" 0 "INVALID" ;
+VAL_ 1101 ObstacleClass 4 "GENERAL_OBJECT" 3 "CYCLIST" 2 "PEDESTRIAN" 1 "VEHICLE" 0 "INVALID" ;
+VAL_ 1101 VehicleSubType 7 "Lorry" 6 "Tiny_car" 5 "Special_vehicle" 4 "Motors(Tri-cycle)" 3 "Trucks" 2 "Small_Medium_Car" 1 "Bus" 0 "Unknown" ;
+VAL_ 1101 PedSubType 2 "Child" 1 "Adult" 0 "Unknown" ;
+VAL_ 1101 PedPos 5 "Sitter" 4 "Pedestrian" 3 "Lier" 2 "Cyclist" 1 "Bended" 0 "Unknown" ;
+VAL_ 1101 PedOrientation 8 "right_back" 7 "right_front" 6 "right" 5 "left_back" 4 "left_anterior" 3 "left" 2 "front" 1 "back" 0 "Unknown" ;
+VAL_ 1101 ObstacleLaneAssignment 5 "RIGHT_RIGHT" 4 "RIGHT " 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 1097 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1097 MCPFlag 1 "MCP" 0 "not MCP" ;
+VAL_ 1097 ObstacleBlinkerInfo 4 "Both" 3 "Right" 2 "Left" 1 "Off" 0 "Unavailable" ;
+VAL_ 1097 ObstacleBrakeLights 1 "ON" 0 "OFF" ;
+VAL_ 1096 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" 0 "invalid Obstacle(default value)" ;
+VAL_ 1096 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1096 ObstacleMotionCategory 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 1096 ObstacleMotionStatus 5 "MOVING SLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 1096 ObstacleMeasuringStatus 2 "PREDICTED" 1 "MEASURED" 0 "INVALID" ;
+VAL_ 1096 ObstacleClass 4 "GENERAL_OBJECT" 3 "CYCLIST" 2 "PEDESTRIAN" 1 "VEHICLE" 0 "INVALID" ;
+VAL_ 1096 VehicleSubType 7 "Lorry" 6 "Tiny_car" 5 "Special_vehicle" 4 "Motors(Tri-cycle)" 3 "Trucks" 2 "Small_Medium_Car" 1 "Bus" 0 "Unknown" ;
+VAL_ 1096 PedSubType 2 "Child" 1 "Adult" 0 "Unknown" ;
+VAL_ 1096 PedPos 5 "Sitter" 4 "Pedestrian" 3 "Lier" 2 "Cyclist" 1 "Bended" 0 "Unknown" ;
+VAL_ 1096 PedOrientation 8 "right_back" 7 "right_front" 6 "right" 5 "left_back" 4 "left_anterior" 3 "left" 2 "front" 1 "back" 0 "Unknown" ;
+VAL_ 1096 ObstacleLaneAssignment 5 "RIGHT_RIGHT" 4 "RIGHT " 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 1092 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1092 MCPFlag 1 "MCP" 0 "not MCP" ;
+VAL_ 1092 ObstacleBlinkerInfo 4 "Both" 3 "Right" 2 "Left" 1 "Off" 0 "Unavailable" ;
+VAL_ 1092 ObstacleBrakeLights 1 "ON" 0 "OFF" ;
+VAL_ 1091 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" 0 "invalid Obstacle(default value)" ;
+VAL_ 1091 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1091 ObstacleMotionCategory 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 1091 ObstacleMotionStatus 5 "MOVING SLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 1091 ObstacleMeasuringStatus 2 "PREDICTED" 1 "MEASURED" 0 "INVALID" ;
+VAL_ 1091 ObstacleClass 4 "GENERAL_OBJECT" 3 "CYCLIST" 2 "PEDESTRIAN" 1 "VEHICLE" 0 "INVALID" ;
+VAL_ 1091 VehicleSubType 7 "Lorry" 6 "Tiny_car" 5 "Special_vehicle" 4 "Motors(Tri-cycle)" 3 "Trucks" 2 "Small_Medium_Car" 1 "Bus" 0 "Unknown" ;
+VAL_ 1091 PedSubType 2 "Child" 1 "Adult" 0 "Unknown" ;
+VAL_ 1091 PedPos 5 "Sitter" 4 "Pedestrian" 3 "Lier" 2 "Cyclist" 1 "Bended" 0 "Unknown" ;
+VAL_ 1091 PedOrientation 8 "right_back" 7 "right_front" 6 "right" 5 "left_back" 4 "left_anterior" 3 "left" 2 "front" 1 "back" 0 "Unknown" ;
+VAL_ 1091 ObstacleLaneAssignment 5 "RIGHT_RIGHT" 4 "RIGHT " 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 1087 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1087 MCPFlag 1 "MCP" 0 "not MCP" ;
+VAL_ 1087 ObstacleBlinkerInfo 4 "Both" 3 "Right" 2 "Left" 1 "Off" 0 "Unavailable" ;
+VAL_ 1087 ObstacleBrakeLights 1 "ON" 0 "OFF" ;
+VAL_ 1086 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" 0 "invalid Obstacle(default value)" ;
+VAL_ 1086 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1086 ObstacleMotionCategory 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 1086 ObstacleMotionStatus 5 "MOVING SLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 1086 ObstacleMeasuringStatus 2 "PREDICTED" 1 "MEASURED" 0 "INVALID" ;
+VAL_ 1086 ObstacleClass 4 "GENERAL_OBJECT" 3 "CYCLIST" 2 "PEDESTRIAN" 1 "VEHICLE" 0 "INVALID" ;
+VAL_ 1086 VehicleSubType 7 "Lorry" 6 "Tiny_car" 5 "Special_vehicle" 4 "Motors(Tri-cycle)" 3 "Trucks" 2 "Small_Medium_Car" 1 "Bus" 0 "Unknown" ;
+VAL_ 1086 PedSubType 2 "Child" 1 "Adult" 0 "Unknown" ;
+VAL_ 1086 PedPos 5 "Sitter" 4 "Pedestrian" 3 "Lier" 2 "Cyclist" 1 "Bended" 0 "Unknown" ;
+VAL_ 1086 PedOrientation 8 "right_back" 7 "right_front" 6 "right" 5 "left_back" 4 "left_anterior" 3 "left" 2 "front" 1 "back" 0 "Unknown" ;
+VAL_ 1086 ObstacleLaneAssignment 5 "RIGHT_RIGHT" 4 "RIGHT " 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 1082 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1082 MCPFlag 1 "MCP" 0 "not MCP" ;
+VAL_ 1082 ObstacleBlinkerInfo 4 "Both" 3 "Right" 2 "Left" 1 "Off" 0 "Unavailable" ;
+VAL_ 1082 ObstacleBrakeLights 1 "ON" 0 "OFF" ;
+VAL_ 1081 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" 0 "invalid Obstacle(default value)" ;
+VAL_ 1081 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1081 ObstacleMotionCategory 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 1081 ObstacleMotionStatus 5 "MOVING SLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 1081 ObstacleMeasuringStatus 2 "PREDICTED" 1 "MEASURED" 0 "INVALID" ;
+VAL_ 1081 ObstacleClass 4 "GENERAL_OBJECT" 3 "CYCLIST" 2 "PEDESTRIAN" 1 "VEHICLE" 0 "INVALID" ;
+VAL_ 1081 VehicleSubType 7 "Lorry" 6 "Tiny_car" 5 "Special_vehicle" 4 "Motors(Tri-cycle)" 3 "Trucks" 2 "Small_Medium_Car" 1 "Bus" 0 "Unknown" ;
+VAL_ 1081 PedSubType 2 "Child" 1 "Adult" 0 "Unknown" ;
+VAL_ 1081 PedPos 5 "Sitter" 4 "Pedestrian" 3 "Lier" 2 "Cyclist" 1 "Bended" 0 "Unknown" ;
+VAL_ 1081 PedOrientation 8 "right_back" 7 "right_front" 6 "right" 5 "left_back" 4 "left_anterior" 3 "left" 2 "front" 1 "back" 0 "Unknown" ;
+VAL_ 1081 ObstacleLaneAssignment 5 "RIGHT_RIGHT" 4 "RIGHT " 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 1077 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1077 MCPFlag 1 "MCP" 0 "not MCP" ;
+VAL_ 1077 ObstacleBlinkerInfo 4 "Both" 3 "Right" 2 "Left" 1 "Off" 0 "Unavailable" ;
+VAL_ 1077 ObstacleBrakeLights 1 "ON" 0 "OFF" ;
+VAL_ 1076 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" 0 "invalid Obstacle(default value)" ;
+VAL_ 1076 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1076 ObstacleMotionCategory 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 1076 ObstacleMotionStatus 5 "MOVING SLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 1076 ObstacleMeasuringStatus 2 "PREDICTED" 1 "MEASURED" 0 "INVALID" ;
+VAL_ 1076 ObstacleClass 4 "GENERAL_OBJECT" 3 "CYCLIST" 2 "PEDESTRIAN" 1 "VEHICLE" 0 "INVALID" ;
+VAL_ 1076 VehicleSubType 7 "Lorry" 6 "Tiny_car" 5 "Special_vehicle" 4 "Motors(Tri-cycle)" 3 "Trucks" 2 "Small_Medium_Car" 1 "Bus" 0 "Unknown" ;
+VAL_ 1076 PedSubType 2 "Child" 1 "Adult" 0 "Unknown" ;
+VAL_ 1076 PedPos 5 "Sitter" 4 "Pedestrian" 3 "Lier" 2 "Cyclist" 1 "Bended" 0 "Unknown" ;
+VAL_ 1076 PedOrientation 8 "right_back" 7 "right_front" 6 "right" 5 "left_back" 4 "left_anterior" 3 "left" 2 "front" 1 "back" 0 "Unknown" ;
+VAL_ 1076 ObstacleLaneAssignment 5 "RIGHT_RIGHT" 4 "RIGHT " 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 1072 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1072 MCPFlag 1 "MCP" 0 "not MCP" ;
+VAL_ 1072 ObstacleBlinkerInfo 4 "Both" 3 "Right" 2 "Left" 1 "Off" 0 "Unavailable" ;
+VAL_ 1072 ObstacleBrakeLights 1 "ON" 0 "OFF" ;
+VAL_ 1071 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" 0 "invalid Obstacle(default value)" ;
+VAL_ 1071 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1071 ObstacleMotionCategory 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 1071 ObstacleMotionStatus 5 "MOVING SLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 1071 ObstacleMeasuringStatus 2 "PREDICTED" 1 "MEASURED" 0 "INVALID" ;
+VAL_ 1071 ObstacleClass 4 "GENERAL_OBJECT" 3 "CYCLIST" 2 "PEDESTRIAN" 1 "VEHICLE" 0 "INVALID" ;
+VAL_ 1071 VehicleSubType 7 "Lorry" 6 "Tiny_car" 5 "Special_vehicle" 4 "Motors(Tri-cycle)" 3 "Trucks" 2 "Small_Medium_Car" 1 "Bus" 0 "Unknown" ;
+VAL_ 1071 PedSubType 2 "Child" 1 "Adult" 0 "Unknown" ;
+VAL_ 1071 PedPos 5 "Sitter" 4 "Pedestrian" 3 "Lier" 2 "Cyclist" 1 "Bended" 0 "Unknown" ;
+VAL_ 1071 PedOrientation 8 "right_back" 7 "right_front" 6 "right" 5 "left_back" 4 "left_anterior" 3 "left" 2 "front" 1 "back" 0 "Unknown" ;
+VAL_ 1071 ObstacleLaneAssignment 5 "RIGHT_RIGHT" 4 "RIGHT " 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 1067 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1067 MCPFlag 1 "MCP" 0 "not MCP" ;
+VAL_ 1067 ObstacleBlinkerInfo 4 "Both" 3 "Right" 2 "Left" 1 "Off" 0 "Unavailable" ;
+VAL_ 1067 ObstacleBrakeLights 1 "ON" 0 "OFF" ;
+VAL_ 1066 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" 0 "invalid Obstacle(default value)" ;
+VAL_ 1066 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1066 ObstacleMotionCategory 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 1066 ObstacleMotionStatus 5 "MOVING SLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 1066 ObstacleMeasuringStatus 2 "PREDICTED" 1 "MEASURED" 0 "INVALID" ;
+VAL_ 1066 ObstacleClass 4 "GENERAL_OBJECT" 3 "CYCLIST" 2 "PEDESTRIAN" 1 "VEHICLE" 0 "INVALID" ;
+VAL_ 1066 VehicleSubType 7 "Lorry" 6 "Tiny_car" 5 "Special_vehicle" 4 "Motors(Tri-cycle)" 3 "Trucks" 2 "Small_Medium_Car" 1 "Bus" 0 "Unknown" ;
+VAL_ 1066 PedSubType 2 "Child" 1 "Adult" 0 "Unknown" ;
+VAL_ 1066 PedPos 5 "Sitter" 4 "Pedestrian" 3 "Lier" 2 "Cyclist" 1 "Bended" 0 "Unknown" ;
+VAL_ 1066 PedOrientation 8 "right_back" 7 "right_front" 6 "right" 5 "left_back" 4 "left_anterior" 3 "left" 2 "front" 1 "back" 0 "Unknown" ;
+VAL_ 1066 ObstacleLaneAssignment 5 "RIGHT_RIGHT" 4 "RIGHT " 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 1062 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1062 MCPFlag 1 "MCP" 0 "not MCP" ;
+VAL_ 1062 ObstacleBlinkerInfo 4 "Both" 3 "Right" 2 "Left" 1 "Off" 0 "Unavailable" ;
+VAL_ 1062 ObstacleBrakeLights 1 "ON" 0 "OFF" ;
+VAL_ 1061 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" 0 "invalid Obstacle(default value)" ;
+VAL_ 1061 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1061 ObstacleMotionCategory 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 1061 ObstacleMotionStatus 5 "MOVING SLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 1061 ObstacleMeasuringStatus 2 "PREDICTED" 1 "MEASURED" 0 "INVALID" ;
+VAL_ 1061 ObstacleClass 4 "GENERAL_OBJECT" 3 "CYCLIST" 2 "PEDESTRIAN" 1 "VEHICLE" 0 "INVALID" ;
+VAL_ 1061 VehicleSubType 7 "Lorry" 6 "Tiny_car" 5 "Special_vehicle" 4 "Motors(Tri-cycle)" 3 "Trucks" 2 "Small_Medium_Car" 1 "Bus" 0 "Unknown" ;
+VAL_ 1061 PedSubType 2 "Child" 1 "Adult" 0 "Unknown" ;
+VAL_ 1061 PedPos 5 "Sitter" 4 "Pedestrian" 3 "Lier" 2 "Cyclist" 1 "Bended" 0 "Unknown" ;
+VAL_ 1061 PedOrientation 8 "right_back" 7 "right_front" 6 "right" 5 "left_back" 4 "left_anterior" 3 "left" 2 "front" 1 "back" 0 "Unknown" ;
+VAL_ 1061 ObstacleLaneAssignment 5 "RIGHT_RIGHT" 4 "RIGHT " 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+VAL_ 1057 CIPVFlag 1 "CIPV" 0 "not CIPV" ;
+VAL_ 1057 MCPFlag 1 "MCP" 0 "not MCP" ;
+VAL_ 1057 ObstacleBlinkerInfo 4 "Both" 3 "Right" 2 "Left" 1 "Off" 0 "Unavailable" ;
+VAL_ 1057 ObstacleBrakeLights 1 "ON" 0 "OFF" ;
+VAL_ 1056 ObstacleValid 2 "older valid" 1 "new valid (detected this frame)" 0 "invalid Obstacle(default value)" ;
+VAL_ 1056 ObstacleReplaced 1 "replaced in this frame" 0 "not replaced in this frame" ;
+VAL_ 1056 ObstacleMotionCategory 13 "ONCOMING" 12 "PRECEEDING" 11 "MOVING" 10 "RTAP" 9 "LTAP" 8 "CROSSING" 7 "MOVING_OUT" 6 "MOVING_IN" 5 "CLOSE_CUT_IN" 4 "PASSING_OUT" 3 "PASSING_IN" 2 "PASSING" 1 "UNDEFINED" 0 "INVALID" ;
+VAL_ 1056 ObstacleMotionStatus 5 "MOVING SLOWLY" 4 "STOPPED" 3 "STATIONARY" 2 "MOVING" 1 "UNKNOWN" 0 "INVALID" ;
+VAL_ 1056 ObstacleMeasuringStatus 2 "PREDICTED" 1 "MEASURED" 0 "INVALID" ;
+VAL_ 1056 ObstacleClass 4 "GENERAL_OBJECT" 3 "CYCLIST" 2 "PEDESTRIAN" 1 "VEHICLE" 0 "INVALID" ;
+VAL_ 1056 VehicleSubType 7 "Lorry" 6 "Tiny_car" 5 "Special_vehicle" 4 "Motors(Tri-cycle)" 3 "Trucks" 2 "Small_Medium_Car" 1 "Bus" 0 "Unknown" ;
+VAL_ 1056 PedSubType 2 "Child" 1 "Adult" 0 "Unknown" ;
+VAL_ 1056 PedPos 5 "Sitter" 4 "Pedestrian" 3 "Lier" 2 "Cyclist" 1 "Bended" 0 "Unknown" ;
+VAL_ 1056 PedOrientation 8 "right_back" 7 "right_front" 6 "right" 5 "left_back" 4 "left_anterior" 3 "left" 2 "front" 1 "back" 0 "Unknown" ;
+VAL_ 1056 ObstacleLaneAssignment 5 "RIGHT_RIGHT" 4 "RIGHT " 3 "HOST" 2 "LEFT" 1 "LEFT_LEFT" 0 "UNKNOWN" ;
+
