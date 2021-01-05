@@ -12,6 +12,7 @@ from parsers.df_d530 import parse_dfd530
 from parsers.x1d3 import parse_x1d3
 from parsers.novatel import parse_novatel
 from parsers.pim222 import parse_pim222
+from parsers.chcnav import parse_cgi220
 
 
 def default_parser(id, data, type=None):
@@ -46,17 +47,22 @@ parsers_dict = {
     "d530":     parse_dfd530,
     "novatel":  parse_novatel,
     "pim222":   parse_pim222,
+    "nmea-like":    parse_cgi220,
     "default":  default_parser
 }
 
 
 from multiprocessing import Queue, Process
 import time
+
+
 class MiniDecoder(Process):
+    inq = Queue(maxsize=200)
+
     def __init__(self, parsers=parsers_dict, can_types={}, oq=None):
         super(MiniDecoder, self).__init__()
         self.parsers = parsers
-        self.inq = Queue(maxsize=200)
+
         self.oq = oq
         self.can_types = can_types
 
@@ -71,9 +77,11 @@ class MiniDecoder(Process):
                     kw = src.split('.')[0]
 
                 if kw:
+                    if src not in ctx:
+                        ctx[src] = {}
                     parser = self.parsers.get(kw)
                     if parser:
-                        r = parser(msg_id, msg, ctx)
+                        r = parser(msg_id, msg, ctx[src])
                         if r and self.oq:
                             r['source'] = src
                             if 'ts' not in r:

@@ -855,10 +855,11 @@ class PCC(object):
             # print('inspva')
             # print('inspva ts:', data['ts'])
             if data['source'] == 'tcp.5':
-                print('update euler angle', data['roll'], data['pitch'])
-                self.road_info.update_slope(data['pitch'])
-                self.road_info.update_cross_slope(data['roll'])
-                self.transform.update_m_r2i(0, data['pitch']-self.road_info.slope, data['roll']-self.road_info.cross_slope)
+                pass
+                # print('update euler angle', data['roll'], data['pitch'])
+                # self.road_info.update_slope(data['pitch'])
+                # self.road_info.update_cross_slope(data['roll'])
+                # self.transform.update_m_r2i(0, data['pitch']-self.road_info.slope, data['roll']-self.road_info.cross_slope)
             self.player.show_rtk_pva(img, data)
             self.player.show_heading_horizen(img, data)
         elif data['type'] == 'calib_param':

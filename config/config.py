@@ -331,6 +331,8 @@ def load_cfg(jsonspec, local='config/local.json'):
                 def_name = 'config/collectors/{}.json'.format(entry)
                 clct = json.load(open(def_name))
                 if spec['version'] >= 1.0:
+                    if item.get('alias'):
+                        clct['alias'] = item.get('alias')
                     if item.get('params'):
                         clct.update(item['params'])
                         if clct['type'] == 'x1_collector':

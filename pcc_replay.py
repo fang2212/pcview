@@ -601,8 +601,9 @@ class LogPlayer(Process):
             elif 'inspva' in cols[2]:
                 try:
                     r = parse_novatel(None, cols[3], None)
-                    r['source'] = '.'.join(cols[2].split('.')[0:2])
-                    self.msg_queue.put((0x00, r, r['source']))
+                    if r:
+                        r['source'] = '.'.join(cols[2].split('.')[0:2])
+                        self.msg_queue.put((0x00, r, r['source']))
                 except Exception as e:
                     print(line)
                     raise e

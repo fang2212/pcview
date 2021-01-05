@@ -172,7 +172,7 @@ class TCPSink(Thread):
         self.type = "tcp_sink"
 
     def _init_port(self):
-        print('connecting', self.ip, self.port)
+        print('connecting tcp', self.ip, self.port)
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.connect((self.ip, self.port))
 
@@ -181,12 +181,14 @@ class TCPSink(Thread):
         return bs
 
     def pkg_handler(self, msg):
-        if self.protocol == 'novatel':
-            # print(msg)
+        if self.protocol == 'novatel' or self.protocol=='nmea-like':
+            sync_start = b'#' if self.protocol=='novatel' else b'$'
+            # if self.protocol == 'nmea-like':
+            #     print(msg)
             ret = []
             self._buf += msg
             while True:
-                a = self._buf.find(b'#')
+                a = self._buf.find(sync_start)
                 b = self._buf.find(b'\r\n')
                 if a == -1 or b == -1 or len(self._buf) == 0 or a > b:
                     if a > -1:
@@ -203,15 +205,19 @@ class TCPSink(Thread):
                     r = parser(None, phr, self.ctx)
                 except Exception as e:
                     print('error parsing novatel,', phr)
-                    # raise e
+                    raise e
                     return
                 if not r:
                     return
                 r['source'] = self.source
                 ret.append(r)
                 self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), phr))
-
             return self.channel, ret, self.source
+        # elif self.protocol == 'nmea-like':
+        #     print(msg)
+
+
+
 
     def run(self):
         pid = os.getpid()
@@ -279,15 +285,43 @@ class PinodeSink(NNSink):
         if self.resname == 'pim222':
             from parsers.pim222 import parse_pim222
             source = 'pim222.{}'.format(self.index)
-            if not msg.startswith(b'$'):
-                return
+            # print(msg)
+            # if not msg.startswith(b'$'):
+            #     return
+            ret = []
+            # msg = msg.replace(b'\x00', b'')
+            self._buf += msg
+            # print('msg:', msg)
+            while True:
+                a = self._buf.find(b'$')
+                b = self._buf.find(b'\r\n')
+                # print(a,b)
+                if a == -1 or b == -1 or len(self._buf) == 0 or a > b:
+                    if a > -1:
+                        self._buf = self._buf[a:]
+                    break
+                phr = self._buf[a:b].replace(b'\x00', b'').decode()
+                # phr = self._buf[a:b].decode()
+
+                # print(a, b, self._buf[a:b])
+                self._buf = self._buf[b + 2:]
+                try:
+                    r = parse_pim222(None, phr, self.ctx)
+                except Exception as e:
+                    print('error parsing pim222-like:', phr)
+                    # raise e
+                    continue
+                if r:
+                    r['source'] = source
+                    ret.append(r)
+                    self.fileHandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), phr))
             # print('pim222 pkg handler')
-            self.fileHandler.insert_raw((time.time(), source, msg.decode().strip()))
-            r = parse_pim222(None, msg, self.ctx)
-            if r:
-                r['source'] = source
+            # self.fileHandler.insert_raw((time.time(), source, msg.decode().strip()))
+            # r = parse_pim222(None, msg, self.ctx)
+            # if r:
+            #     r['source'] = source
                 # print(r)
-                return self.channel, r, source
+            return self.channel, ret, source
         # print(self.resname, msg)
         data = self.decode_pinode_res(self.resname, msg)
         if not data:

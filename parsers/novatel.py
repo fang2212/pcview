@@ -103,7 +103,7 @@ def parse_inspva(fields):
     r['yaw_sgm'] = float(fields[21])
 
     # r['time_since_update'] = float(fields[22])
-    # print(r)
+    # print(r)?
     return r
 
 
@@ -185,8 +185,6 @@ def parse_novatel(msg_type, msg, ctx):
     # except Exception as e:
     #     print('error when parsing novatel:', msg)
     #     raise e
-
-
 
     r = {}
     r['ts'] = week * 604800 + sec + 315964800.0 - bds_offset

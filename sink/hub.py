@@ -15,6 +15,7 @@ from config.config import get_cached_macs, save_macs
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
 
+
 class CollectorNode(kProcess):
     def __init__(self, sinks):
         super(CollectorNode, self).__init__()

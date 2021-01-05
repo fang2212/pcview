@@ -1,0 +1,15 @@
+{
+  "type": "general",
+  "mac": "00:e0:0c:c4:d5:41",
+  "ip": "192.168.98.230",
+  "force_ip": true,
+  "ports": {
+    "bynav_x1": {
+      "enable": true,
+      "port": 12000,
+      "protocol": "nmea-like",
+      "transport": "tcp",
+      "topic": "gpchc"
+    }
+  }
+}
