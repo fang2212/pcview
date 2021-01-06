@@ -1,0 +1,86 @@
+{
+    "version": 1.0,
+    "name": "cfg_lab",
+    "modules": {
+        "GGA_reporter": {
+            "enable": false,
+            "ntrip_address": "ntrip.weaty.cn",
+            "port": 5001
+        }
+    },
+    "vehicles": {
+        "ego": {
+            "enable": true,
+            "collectors": [
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "ars", "can1": "gs4"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "gs4", "can1": "mbq4"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "x1j", "can1": "debug"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "ars", "can1": "debug"}},
+                {"model":  "x1_fusion", "params": {"mac": "5a:31:4f:44:a8:f2"}},
+                {"model":  "x1_fusion", "params": {"mac": "5a:31:44:3d:e9:14"}},
+                {"model":  "x1_fusion", "params": {"mac":  "5a:31:d3:59:12:06"}},
+                {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
+                {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}},
+                {"model":  "x1_fusion", "params": {"ip":  "192.168.98.231", "force_ip":  true, "is_main":  true}}
+            ],
+            "installation": {
+                "esr": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "lon_offset": 0.0,
+                    "height": 0.0
+                },
+                "lmr": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "lon_offset": 0.0,
+                    "height": 0.0
+                },
+                "ifv300": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "lon_offset": -1.67,
+                    "height": 1.2
+                },
+                "rtk": {
+                    "yaw": 0.0,
+                    "pitch": -2.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.15,
+                    "lon_offset": -0.21,
+                    "height": 1.2
+                },
+                "video": {
+                    "yaw": 3.2,
+                    "pitch": 1.2,
+                    "roll": 0.42,
+                    "lat_offset": 0.12,
+                    "lon_offset": -1.58,
+                    "height": 1.2,
+                    "fu": 1286.9,
+                    "fv": 1286.1333,
+                    "cu": 960.4223,
+                    "cv": 555.0085
+                },
+                "x1": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.15,
+                    "lon_offset": -1.67,
+                    "height": 1.2
+                }
+            }
+        },
+        "other": {
+            "enable": false,
+            "collectors": []
+        }
+    }
+}
