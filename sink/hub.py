@@ -24,22 +24,22 @@ class CollectorNode(kProcess):
         self.q = kQueue()
 
     def run(self):
-        if async_for_sink:
-            self.am = AsyncManager()
-            self.am.start()
-            while self.am.loop is None: time.sleep(0.01)
-            self.tep = ThreadPoolExecutor(2)
+        # if async_for_sink:
+        #     self.am = AsyncManager()
+        #     self.am.start()
+        #     while self.am.loop is None: time.sleep(0.01)
+        #     self.tep = ThreadPoolExecutor(2)
 
         print('Inited collector node', os.getpid())
         for sink in self.sinks:
-            if async_for_sink:
-                if isinstance(sink, TCPSink) or isinstance(sink, RTKSink):
-                    t = self.am.loop.run_in_executor(self.tep, sink.run)
-                    self.am.add_task(asyncio.wait(t))
-                else:
-                    self.am.add_task(sink.run())
-            else:
-                sink.start()
+            # if async_for_sink:
+            #     if isinstance(sink, TCPSink) or isinstance(sink, RTKSink):
+            #         t = self.am.loop.run_in_executor(self.tep, sink.run)
+            #         self.am.add_task(asyncio.wait(t))
+            #     else:
+            #         self.am.add_task(sink.run())
+            # else:
+            sink.start()
 
         while not self.exit.is_set():
             if not self.q.empty():
@@ -259,7 +259,10 @@ class Hub(Thread):
         is_main = cfg.get('is_main')
         self.online[ip]['msg_types'] = []
 
-        if cfg.get('type') == 'x1_algo':
+        if 'type' not in cfg:
+            return
+
+        if "algo" in cfg.get('type'):
             for item in cfg['ports']:
                 if not cfg['ports'][item].get('enable') and not is_main:
                     continue
@@ -269,7 +272,7 @@ class Hub(Thread):
 
                 sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
                                 index=idx, protocol=proto, topic=topic, log_name=item, fileHandler=self.fileHandler,
-                                is_main=is_main)
+                                is_main=is_main, name=cfg.get("type"))
                 # sink.start()
                 # sink = {'stype': 'flow', 'msg_queue': self.msg_queue, 'cam_queue': self.cam_queue, 'ip': ip,
                 #         'port': port, 'channel': item, 'index': idx, 'fileHandler': self.fileHandler,
@@ -291,7 +294,7 @@ class Hub(Thread):
                 #           'isheadless': self.headless}
                 self.sinks.append(pisink)
                 self.online[ip]['msg_types'].append(name + '.{}'.format(idx))
-        elif cfg.get('type') == 'x1_collector':
+        elif "collector" in cfg.get('type'):
             for iface in cfg['ports']:
                 if not cfg['ports'][iface].get('enable') and not is_main:
                     continue
@@ -320,7 +323,7 @@ class Hub(Thread):
                     port = cfg['ports']['video']['port']
                     vsink = CameraSink(queue=self.msg_queue, ip=ip, port=port, channel='camera', index=idx,
                                        fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
-                                       devname=cfg.get('name'))
+                                       devname=cfg.get('type'))
                     # vsink.start()
                     # vsink = {'stype': 'camera', 'queue': self.cam_queue, 'ip': ip, 'port': port,
                     #          'channel': 'camera', 'index': idx, 'fileHandler': self.fileHandler,
@@ -494,6 +497,7 @@ class Hub(Thread):
             try:
                 r = self.msg_queue.get()
                 fid, data, source = r
+
             except ValueError as e:
                 print('error when pop data:')
                 print(r)

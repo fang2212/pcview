@@ -13,7 +13,7 @@ from parsers.x1d3 import parse_x1d3
 from parsers.novatel import parse_novatel
 from parsers.pim222 import parse_pim222
 from parsers.chcnav import parse_cgi220
-
+from parsers.j2 import parser_j2
 
 def default_parser(id, data, type=None):
     return None
@@ -48,6 +48,7 @@ parsers_dict = {
     "novatel":  parse_novatel,
     "pim222":   parse_pim222,
     "nmea-like":    parse_cgi220,
+    "j2":       parser_j2,
     "default":  default_parser
 }
 

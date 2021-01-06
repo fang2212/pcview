@@ -49,7 +49,7 @@ from collections import deque
 class NNSink(Thread):
     def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
         super(NNSink, self).__init__()
-        self.deamon = True
+        self.daemon = True
         self.dev = ip
         self.channel = port
         self.queue = queue
@@ -679,10 +679,11 @@ class CameraSink(NNSink):
         self.fileHandler = fileHandler
         self.headless = headless
         # self.index = index
-        self.source = 'video.{:d}'.format(index)
+        self.source = '{:s}.{:d}'.format(devname, index)
         self.is_main = is_main
         self.devname = devname
         self.type = 'cam_sink'
+
 
     def pkg_handler(self, msg):
         # print('cprocess-id:', os.getpid())
@@ -828,7 +829,9 @@ class FlowSink(NNSink):
                 buf = payload
                 # topic = 'finish'
                 if b'rc_fusion' in buf:
+
                     buf = msgpack.unpackb(buf)
+                    buf = mytools.convert(buf)
                     data = buf['rc_fusion']
                     buf = msgpack.packb(data, use_bin_type=True)
                     # print(buf)
@@ -906,6 +909,7 @@ class FlowSink(NNSink):
         elif msg_src == 'imuinfo':
             if topic == 'imuinfo':
                 imu_info = msgpack.unpackb(payload)
+                imu_info = mytools.convert(imu_info)
                 # print(imu_info)
                 for idx in range(imu_info['data_count']):
                     d = imu_info['imu_info'][idx]
@@ -916,12 +920,10 @@ class FlowSink(NNSink):
                         d['gyro'][0], d['gyro'][1], d['gyro'][2],
                         d['temp'], int(ts), 1000000 * (ts - int(ts)))))
                 return
+
         else:  # msg_src == 'pcview'
             # buf = msgpack.unpackb(payload)
-            print(data)
             pass
-
-
 
         # elif b'calib_params' in buf:
         #     buf = msgpack.unpackb(buf)
@@ -938,9 +940,17 @@ class FlowSink(NNSink):
                 payload[b'ultrasonic'][b'can_data'] = [x for x in payload[b'ultrasonic'][b'can_data']]
 
             pcv = mytools.convert(payload)
+
+            ## cv22_algo_data
+            if 'data' in pcv and 'key' in pcv:
+                pcv[pcv['key']] = pcv['data']
+                pcv.pop('data')
+                pcv.pop('key')
+
             pcv['source'] = self.source
             pcv['type'] = 'algo_debug'
             pcv['ts'] = ts
+            # print(pcv)
             # data = json.dumps(pcv)
             self.fileHandler.insert_pcv_raw(pcv)
             return 'x1_data', pcv, self.source

@@ -104,7 +104,7 @@ class PCC(object):
         # cv2.namedWindow('video_aux')
 
         # cv2.createTrackbar('ESR_y', 'adj', 500, 1000, self.ot.update_esr_yaw)
-
+        self.alarm_info = {}
         if replay:
             self.hub.d = Manager().dict()
         #
@@ -144,8 +144,11 @@ class PCC(object):
             # video_server.local_path = uniconf.local_cfg.log_root
             self.vs = to_web
             # self.vs.start()
-        t = Thread(target=self.recv_data)
-        t.start()
+
+        if not self.replay:
+
+            t = Thread(target=self.recv_data)
+            t.start()
         # if self.save_replay_video and self.replay:
         #     self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
         #     self.vw.set_writer("replay-render", 1760, 720)
@@ -164,11 +167,11 @@ class PCC(object):
 
         self.space_cnt = 0
 
-        self.alarm_info = {}
-
         self.cache_pause_data = []
         self.cache_pause_idx = 0
         self.cache_pause_max_len = 50
+
+        self.recv_first_img = False
 
     def ts_sync_local(self):
         t = time.time()
@@ -191,6 +194,9 @@ class PCC(object):
             ts_now = time.time()
             for source in list(self.cache['misc']):
                 for entity in list(self.cache['misc'][source]):
+                    if type(self.cache['misc'][source][entity]) == list:
+                        del self.cache['misc'][source][entity]
+                        continue
                     ts_a = self.cache['misc'][source][entity].get('ts_arrival')
                     if not ts_a or ts_now - ts_a > max(3 * self.display_interval, 0.4):
                         del self.cache['misc'][source][entity]
@@ -235,6 +241,9 @@ class PCC(object):
                 else:
                     self.cache['img'] = data['img']
                     self.cache['img_raw'] = None
+
+                    self.recv_first_img = True
+
                     try:
                         pass
                         # self.cache['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
@@ -259,8 +268,15 @@ class PCC(object):
                 dtype = data.get('type') if 'type' in data else 'notype'
                 id = str(data.get('id')) if 'id' in data else 'noid'
                 entity = data['source'] + '.' + dtype + '.' + id
-                self.cache['misc'][source][entity] = data
-                self.cache['info'][source]['integrity'] = 'divided'
+
+                if 'x1_data' in source:
+                    if entity not in self.cache['misc'][source]:
+                        self.cache['misc'][source][entity] = []
+                    self.cache['misc'][source][entity].append(data)
+                else:
+                    self.cache['misc'][source][entity] = data
+                    self.cache['info'][source]['integrity'] = 'divided'
+
 
     def adjust_interval(self):
         if not self.enable_auto_interval_adjust:
@@ -341,13 +357,39 @@ class PCC(object):
                 for i in range(1, 10):
                     cv2.destroyAllWindows()
                     cv2.waitKey(1)
+
+                if self.vw is not None:
+                    self.vw.release()
+
                 return
             t3 = time.time()
             # d = self.hub.pop_simple()  # receive
 
+            if self.replay:
+                t0 = time.time()
+                d = self.hub.pop_common()
+                if d:
+                    t1 = time.time()
+                    self.statistics['frame_popping_cost'] = '{:.2f}'.format(1000 * (t1 - t0))
+                    new_frame = self.cache_data(d)
+                    if not new_frame:
+                        continue
+
+                    if new_frame:
+                        self.frame_cnt += 1
+                        if self.frame_cnt > 500:
+                            self.player.start_time = datetime.now()
+                            self.frame_cnt = 1
+
+                    t2 = time.time()
+                    self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (t2 - t1))
+
+                else:
+                    continue
+
             # render begins
             # print('render begins.')
-            if t3 - last_ts > self.display_interval:
+            if t3 - last_ts > self.display_interval or self.replay:
                 self.handle_keyboard()
                 # time.sleep(0.001)
                 # print('wait to refresh', self.display_interval)
@@ -380,7 +422,9 @@ class PCC(object):
             else:
                 cv2.imshow('MINIEYE-CVE', img_rendered)
 
-            self.save_rendered(img_rendered)
+            if self.recv_first_img:
+                self.save_rendered(img_rendered)
+
         t3 = time.time()
 
         while self.replay and self.pause:
@@ -472,30 +516,34 @@ class PCC(object):
         ts_ana.append(('prep ipm', time.time()))
 
         img_aux = np.zeros([0, 427, 3], np.uint8)
-        for idx, source in enumerate(self.video_cache):
+        for idx, source in enumerate(list(self.video_cache.keys())):
             if idx > 2:
                 continue
             video = self.video_cache[source]
             self.video_cache[source]['updated'] = False
             img_small = cv2.resize(cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR), (427, 240))
             # img_small = cv2.resize(self.jpeg_dec.decode(video['img']), (427, 240))
-            video['device'] = "x1d3"
+            video['device'] = source
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
         # t1 = time.time()
         ts_ana.append(('other frame decode', time.time()))
 
-        if 'x1_data' in mess:
-            # print('------', mess['x1_data'])
-            for data in mess['x1_data']:
-                # print(mess['x1_data'])
-                self.flow_player.draw(data, img)
-
         # t2 = time.time()
-        ts_ana.append(('pcv_data', time.time()))
+
         # cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
         misc_data = mess.get('misc')
         if misc_data:
+            if 'x1_data' in misc_data:
+                # print('------', mess['x1_data'])
+                for key in misc_data['x1_data']:
+                    for data in misc_data['x1_data'][key]:
+                        # print(key)
+                        # print(misc_data['x1_data'])
+                        self.flow_player.draw(data, img)
+                misc_data['x1_data'].clear()
+                ts_ana.append(('pcv_data', time.time()))
+
             # print('can0 data')
             for source in list(mess['misc']):
                 for entity in list(mess['misc'][source]):
@@ -875,6 +923,8 @@ class PCC(object):
         if key == ord('q') or key == 27:
             if not self.to_web:
                 cv2.destroyAllWindows()
+                if self.vw is not None:
+                    self.vw.release()
             # os._exit(0)
             self.exit = True
             # sys.exit(0)
@@ -919,6 +969,9 @@ class PCC(object):
                     self.alarm_info["voice_note"] = time.time() + dur_time
 
         elif key == ord('r'):
+            if self.replay:
+                return
+
             if self.hub.fileHandler.is_recording:
                 # self.recording = False
                 self.stop_rec()
