@@ -536,11 +536,13 @@ class PCC(object):
         if misc_data:
             if 'x1_data' in misc_data:
                 # print('------', mess['x1_data'])
-                for key in misc_data['x1_data']:
-                    for data in misc_data['x1_data'][key]:
-                        # print(key)
-                        # print(misc_data['x1_data'])
-                        self.flow_player.draw(data, img)
+
+                if self.replay:
+                    for key in misc_data['x1_data']:
+                        for data in misc_data['x1_data'][key]:
+                            # print(key)
+                            # print(misc_data['x1_data'])
+                            self.flow_player.draw(data, img)
                 misc_data['x1_data'].clear()
                 ts_ana.append(('pcv_data', time.time()))
 
