@@ -856,7 +856,8 @@ class PCC(object):
 
         if data['type'] == 'pcv_data':
             # print('pcv_data', data)
-            self.flow_player.draw(data, img)
+            if self.replay:
+                self.flow_player.draw(data, img)
 
         elif data['type'] == 'obstacle':
             # dummy0 = {'type': 'obstacle', 'id': 20, 'source': 'x1.1', 'pos_lat': 0, 'pos_lon': 60, 'color': 1}
