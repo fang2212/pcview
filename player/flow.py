@@ -103,7 +103,7 @@ class FlowPlayer(object):
                     end = min(end, 720)
 
                     color = CVColor.Yellow
-                    if self.cfg.get('lane_pts'):
+                    if self.cfg.get('lane_pts', 1):
                         BaseDraw.draw_polylines(img, lane['perspective_view_pts'], color, 2)
                     else:
                         BaseDraw.draw_lane_line(img, lane['perspective_view_poly_coeff'],
@@ -178,63 +178,6 @@ class FlowPlayer(object):
                     para_list.append('ttc:' + str(round(vehicle.get("ttc", 0), 3)))
                 BaseDraw.draw_head_info(img, pos[0:2], para_list, 80, max_range=[w, h])
 
-        if 'PassableArea' in mess:
-            data = mess.get("PassableArea")
-
-            pts = [(d[0] * w, d[1] * h) for d in data['top_boundary']]
-            BaseDraw.draw_polylines(img, pts, CVColor.Yellow)
-            pts = [(d[0] * w, d[1] * h) for d in data['bottom_boundary']]
-            BaseDraw.draw_polylines(img, pts, CVColor.Blue)
-
-        if 'laneWarningRes' in mess:
-            lanelines = mess['laneWarningRes']['lanelines']
-            for lane in lanelines:
-                index = lane['label']
-                color = CVColor.Blue
-                pts = lane['perspective_view_pts']
-
-                uv_st = lane['start'][1] / 1080
-                uv_ed = lane['end'][1] / 1080
-                pts = [x for x in pts if x[1] >= uv_ed]
-                # print("after:", len(pts))
-                if not pts:
-                    continue
-
-                pts = [(d[0] * w, d[1] * h) for d in pts]
-                BaseDraw.draw_polylines(img, pts, color, 2)
-
-        lanelines = None
-        if 'Kerb' in mess:
-            lanelines = mess['Kerb']
-        if 'kerb' in mess:
-            lanelines = mess['kerb']
-            if type(lanelines) == dict:
-                lanelines = None
-
-        if lanelines is not None:
-            for lane in lanelines:
-                color = CVColor.Cyan
-                pts = lane['perspective_view_pts']
-                pts = [(d[0] * w, d[1] * h) for d in pts]
-                BaseDraw.draw_polylines(img, pts, color, 2)
-
-        roadmark = None
-        if 'RoadMark' in mess:
-            roadmark = mess.get("RoadMark")
-        elif 'roadmark' in mess:
-            roadmark = mess['roadmark']['roadmarks']
-
-        if roadmark is not None:
-            for rm in roadmark:
-                if rm.get('type', 16) == 16:
-                    continue
-
-                pts = rm['corner_pts']
-                pts = [(d[0] * w, d[1] * h) for d in pts]
-                pts.append(pts[0])
-                BaseDraw.draw_polylines(img, pts, CVColor.Green)
-                BaseDraw.draw_head_info(img, pts[0], ["type:%s" % str(rm['type'])],
-                                        max_range=[w, h])
 
         if 'pedestrians' in mess:
             res_list = mess['pedestrians']
@@ -269,6 +212,68 @@ class FlowPlayer(object):
                     # 'lat_v:' + "%.3f" % obj['lateral_velocity'],
                 ]
                 BaseDraw.draw_head_info(img, reg_rect[0:2], para_list, 100, max_range=[w, h])
+
+        if 'laneWarningRes' in mess:
+            lanelines = mess['laneWarningRes']['lanelines']
+            for lane in lanelines:
+                index = lane['label']
+                color = CVColor.Blue
+                pts = lane['perspective_view_pts']
+
+                uv_st = lane['start'][1] / 1080
+                uv_ed = lane['end'][1] / 1080
+                pts = [x for x in pts if x[1] >= uv_ed]
+                # print("after:", len(pts))
+                if not pts:
+                    continue
+
+                pts = [(d[0] * w, d[1] * h) for d in pts]
+                BaseDraw.draw_polylines(img, pts, color, 2)
+
+        if 'PassableArea' in mess:
+            data = mess.get("PassableArea")
+
+            pts = [(d[0] * w, d[1] * h) for d in data['top_boundary']]
+            BaseDraw.draw_polylines(img, pts, CVColor.Yellow)
+            pts = [(d[0] * w, d[1] * h) for d in data['bottom_boundary']]
+            BaseDraw.draw_polylines(img, pts, CVColor.Blue)
+
+        lanelines = None
+        if 'Kerb' in mess:
+            lanelines = mess['Kerb']
+        if 'kerb' in mess:
+            lanelines = mess['kerb']
+            if type(lanelines) == dict:
+                lanelines = None
+
+        if lanelines is not None:
+            for lane in lanelines:
+                color = CVColor.Cyan
+                pts = lane['perspective_view_pts']
+                pts = [(d[0] * w, d[1] * h) for d in pts]
+                BaseDraw.draw_polylines(img, pts, color, 2)
+
+
+        roadmark = None
+        if 'RoadMark' in mess:
+            roadmark = mess.get("RoadMark")
+        elif 'roadmark' in mess:
+            roadmark = mess['roadmark']['roadmarks']
+
+        if roadmark is not None:
+
+            for rm in roadmark:
+                if rm.get('type', 16) == 16:
+                    continue
+
+                pts = rm['corner_pts']
+                pts = [(d[0] * w, d[1] * h) for d in pts]
+                pts.append(pts[0])
+                BaseDraw.draw_polylines(img, pts, CVColor.Green)
+                BaseDraw.draw_head_info(img, pts[0], ["type:%s" % str(rm['type'])],
+                                        max_range=[w, h])
+
+
 
         return img
 

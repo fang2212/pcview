@@ -914,11 +914,15 @@ class FlowSink(NNSink):
                 pcv.pop('key')
 
             pcv['source'] = self.source
-            pcv['type'] = 'algo_debug'
+            pcv['type'] = 'pcv_data'
             pcv['ts'] = ts
             # print(pcv)
             # data = json.dumps(pcv)
             self.fileHandler.insert_pcv_raw(pcv)
+
+            if not self.is_main:
+                return None
+
             return 'x1_data', pcv, self.source
 
 
