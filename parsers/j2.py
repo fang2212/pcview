@@ -36,7 +36,7 @@ def parser_j2(id, buf, ctx=None):
                     obs_list.append(obs.copy())
                     obs.clear()
 
-            ctx.clear()
+            ctx['obs'].clear()
             return obs_list
 
         ctx["obs"] = {}
@@ -93,24 +93,6 @@ def parser_j2(id, buf, ctx=None):
             if lane_key not in ctx:
                 ctx[lane_key] = {}
 
-        # x1_lane[index]['Lane_Type'] = r['Lane' + '%01d' % (index + 1) + '_Type']
-        # x1_lane[index]['Quality'] = r['Lane' + '%01d' % (index + 1) + '_Quality']
-        # x1_lane[index]['a0'] = r['Lane' + '%01d' % (index + 1) + '_Position']
-        # x1_lane[index]['a2'] = r['Lane' + '%01d' % (index + 1) + '_Curvature']
-        # x1_lane[index]['a3'] = r['Lane' + '%01d' % (index + 1) + '_CurvatureDerivative']
-        # x1_lane[index]['WidthMarking'] = r['Lane' + '%01d' % (index + 1) + '_WidthMarking']
-
-        # x1_lane[index]['a1'] = r['Lane' + '%01d' % (index + 1) + '_HeadingAngle']
-        # x1_lane[index]['ViewRangeStart'] = r['Lane' + '%01d' % (index + 1) + '_ViewRangeStart']
-        # x1_lane[index]['range'] = r['Lane' + '%01d' % (index + 1) + '_ViewRangeEnd']
-        # x1_lane[index]['LineCrossing'] = r['Lane' + '%01d' % (index + 1) + '_LineCrossing']
-        # # x1_lane[index]['LineMarkColor'] = r['Lane' + '%01d' % (index + 1) + '_LineMarkColor']
-        #
-        # x1_lane[index]['type'] = 'lane'
-        # x1_lane[index]['sensor'] = 'x1'
-        # x1_lane[index]['id'] = index
-        # x1_lane[index]['color'] = 4
-
         if 'LaneModelC0' in r:
             ctx[lane_key]['a0'] = -r['LaneModelC0']
             ctx[lane_key]['a1'] = r['LaneModelC1']
@@ -124,7 +106,7 @@ def parser_j2(id, buf, ctx=None):
             ctx[lane_key]['ViewRangeStart'] = r['LaneViewRangeStart']
             ctx[lane_key]['range'] = r['LaneViewRangeEnd']
             ctx[lane_key]['LineMarkColor'] = r['LaneMarkColor']
-
+            ctx[lane_key]['LaneMeasuringStatus'] = r['LaneMeasuringStatus']
             ctx[lane_key]['id'] = ld
             ctx[lane_key]['type'] = 'lane'
             ctx[lane_key]['sensor'] = 'j2'
@@ -132,9 +114,8 @@ def parser_j2(id, buf, ctx=None):
         if "a0" in ctx[lane_key] and 'type' in ctx[lane_key]:
             # invalid
             obs = None
-            if ctx[lane_key]['Lane_Type'] != 15:
+            if ctx[lane_key]['Lane_Type'] != 15 and ctx[lane_key]['LaneMeasuringStatus'] != 4:
                 obs = ctx[lane_key].copy()
-
             ctx.pop(lane_key)
             return obs
 

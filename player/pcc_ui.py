@@ -283,8 +283,11 @@ class Player(object):
         """
         r = data.get('range')
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
+        source = data['source']
+        if 'j2' in source:
+            source = ""
 
-        p = self.transform.getp_ifc_from_poly(ratios, 1, 0, r, sensor=data['source'])
+        p = self.transform.getp_ifc_from_poly(ratios, 1, 0, r, sensor=source)
         if not p:
             return
 
