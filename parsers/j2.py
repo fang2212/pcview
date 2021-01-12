@@ -95,9 +95,9 @@ def parser_j2(id, buf, ctx=None):
 
         if 'LaneModelC0' in r:
             ctx[lane_key]['a0'] = -r['LaneModelC0']
-            ctx[lane_key]['a1'] = r['LaneModelC1']
-            ctx[lane_key]['a2'] = r['LaneModelC2']
-            ctx[lane_key]['a3'] = r['LaneModelC3']
+            ctx[lane_key]['a1'] = -r['LaneModelC1']
+            ctx[lane_key]['a2'] = -r['LaneModelC2']
+            ctx[lane_key]['a3'] = -r['LaneModelC3']
 
         if 'LaneTrackID' in r:
             ctx[lane_key]['Lane_Type'] = r['LaneTypeClass']
