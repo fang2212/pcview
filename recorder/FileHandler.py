@@ -260,7 +260,7 @@ class FileHandler(Thread):
                         if video_streams[source]['video_writer']:
                             # video_streams[source]['video_writer'].flush()
                             video_streams[source]['video_writer'].finish_video()
-                        video_streams[source]['video_writer'] = MJPEGWriter(vpath, w, h, 20)
+                        video_streams[source]['video_writer'] = MJPEGWriter(vpath, w, h, 30)
                         video_streams[source]['video_writer'].write_header()
                     video_streams[source]['video_writer'].write_frame(data)
                     tv_s = int(ts)
