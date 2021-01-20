@@ -1,5 +1,6 @@
 from flask import Flask, render_template, Response, session, jsonify, request, redirect, send_file, url_for
 from werkzeug.utils import secure_filename
+import socketio
 from flask_socketio import SocketIO, emit
 from multiprocessing import Process, Queue
 import cv2
@@ -16,6 +17,14 @@ from eventlet.hubs import epolls, kqueue, selects
 from dns import dnssec, e164, hash, namedict, tsigkeyring, update, version, zone
 #
 
+socketio_ver = socketio.__version__
+# print('socketio version:', socketio_ver)
+if socketio_ver.startswith('4.'):
+    socketio_js = 'socket.io.js'
+elif socketio_ver.startswith('5.'):
+    socketio_js = 'socket.io.305.js'
+else:
+    socketio_js = 'socket.io.js'
 async_mode = 'eventlet'
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -196,7 +205,7 @@ def get_image():
 
 @app.route('/')
 def index():
-    return render_template('cve_main.html', async_mode=socketio.async_mode)
+    return render_template('cve_main.html', async_mode=socketio.async_mode, socketio_js=socketio_js)
 
 
 @app.route('/video_feed')
