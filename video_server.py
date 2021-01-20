@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Response, session, jsonify, request, redirect, send_file, url_for
 from werkzeug.utils import secure_filename
-import socketio
+import socketio as si
 from flask_socketio import SocketIO, emit
 from multiprocessing import Process, Queue
 import cv2
@@ -17,7 +17,7 @@ from eventlet.hubs import epolls, kqueue, selects
 from dns import dnssec, e164, hash, namedict, tsigkeyring, update, version, zone
 #
 
-socketio_ver = socketio.__version__
+socketio_ver = si.__version__
 # print('socketio version:', socketio_ver)
 if socketio_ver.startswith('4.'):
     socketio_js = 'socket.io.js'

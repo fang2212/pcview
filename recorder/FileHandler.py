@@ -19,7 +19,7 @@ class FileHandler(Thread):
     def __init__(self, redirect=False, uniconf=None):
         super(FileHandler, self).__init__()
         self.deamon = True
-        self.setName('file_handler_thread')
+        # self.setName('file_handler_thread')
         # self.log_queue = Queue()
         self.ctrl_queue = Queue()
         # self.image_queue = Queue()
@@ -68,6 +68,7 @@ class FileHandler(Thread):
         video_streams = dict()
         path = None
         exit = False
+        start_time = None
 
         # video_path = None
         # frame_cnt = 0
@@ -100,10 +101,14 @@ class FileHandler(Thread):
             video_write = False
             t0 = time.time()
             # print('now time', t0)
-            if self.is_recording and t0 - self.start_time > 600:
-                self.stop_rec()
-                self.start_rec()
-                self.start_time = t0
+            if self.is_recording:
+                if start_time is None:
+                    start_time = time.time()
+                    time.sleep(0.01)
+                elif t0 - start_time > 600:
+                    self.stop_rec()
+                    self.start_rec()
+                    start_time = t0
 
             if not self.ctrl_queue.empty():
                 ctrl = self.ctrl_queue.get()
@@ -112,6 +117,7 @@ class FileHandler(Thread):
                     path = ctrl['path']
 
                     video_path = ctrl['video_path']
+                    start_time = ctrl['start_time']
 
                     raw_fp = open(os.path.join(path, 'log.txt'), 'w+')
 
@@ -369,14 +375,16 @@ class FileHandler(Thread):
             if not os.path.exists(self.video_path):
                 os.makedirs(self.video_path)
 
+        self.start_time = time.time()
         self.ctrl_queue.put({'act': 'start',
+                             'start_time': self.start_time,
                              'path': self.path,
                              'video_path': self.video_path})
         # self.video_writer = cv2.VideoWriter(os.path.join(self.video_path, '0' + '.avi'),
         #                                     self.fourcc, 20.0, (1280, 720), True)
         # print(self.video_path)
         self.recording_state.value = 1
-        self.start_time = time.time()
+
         print('start recording.', self.is_recording)
         # self.start()
 

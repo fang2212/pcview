@@ -13,6 +13,7 @@ import shutil
 import platform
 from sink.hub import Hub
 from threading import Thread
+from recorder.FileHandler import FileHandler
 
 machine_arch = platform.machine()
 
@@ -102,7 +103,9 @@ if args.direct:
     print('PCC starts in direct-mode.')
 
     # cve_conf.local_cfg = get_local_cfg()
-    hub = Hub(uniconf=cve_conf, direct_cfg=sys.argv[2])
+    logger = FileHandler(uniconf=cve_conf)
+    logger.start()
+    hub = Hub(uniconf=cve_conf, direct_cfg=sys.argv[2], logger=logger)
     pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf)
     # hub.start()
     pcc.start()
@@ -178,7 +181,9 @@ elif args.web:  # start webui PCC
     print('PCC starts in webui mode. architect:', machine_arch)
     server = video_server.PccServer()
     server.start()
-    hub = Hub(uniconf=cve_conf)
+    logger = FileHandler(uniconf=cve_conf)
+    logger.start()
+    hub = Hub(uniconf=cve_conf, logger=logger)
 
     pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
     pcc_thread = Thread(target=pcc.start, name='pcc_thread')
@@ -258,7 +263,9 @@ else:  # normal standalone PCC
         auto_rec = True
     else:
         auto_rec = False
-    hub = Hub(uniconf=cve_conf)
+    logger = FileHandler(uniconf=cve_conf)
+    logger.start()
+    hub = Hub(uniconf=cve_conf, logger=logger)
     pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec)
     hub.start()
     sup = init_checkers(pcc)

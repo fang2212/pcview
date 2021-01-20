@@ -67,7 +67,7 @@ class CollectorNode(kProcess):
 
 class Hub(Thread):
 
-    def __init__(self, headless=False, direct_cfg=None, uniconf=None):
+    def __init__(self, headless=False, direct_cfg=None, uniconf=None, logger=None):
         # msg_types = config.msg_types
 
         Thread.__init__(self)
@@ -104,9 +104,10 @@ class Hub(Thread):
             }
         local_cfg = uniconf.local_cfg
         self.direct_cfg = direct_cfg
-        if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
-            self.fileHandler = FileHandler(uniconf=uniconf)
-            self.fileHandler.start()
+        if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video and logger:
+            self.fileHandler = logger
+            # self.fileHandler = FileHandler(uniconf=uniconf)
+            # self.fileHandler.start()
             # self.fileHandler.start_rec()
 
         if direct_cfg is not None:  # direct mode

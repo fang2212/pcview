@@ -110,7 +110,7 @@ class NNSink(Thread):
 
             buf = self.read()
             if not buf:
-                time.sleep(0.001)
+                time.sleep(0.02)
                 continue
             t0 = time.time()
             msg_cnt += 1
@@ -137,7 +137,7 @@ class NNSink(Thread):
                 if not self.queue.full():
                     self.queue.put((r))
                 else:
-                    time.sleep(0.001)
+                    time.sleep(0.005)
                     continue
 
             # time.sleep(0.01)
@@ -779,6 +779,8 @@ class FlowSink(NNSink):
                             # print(self.source)
                     else:
                         self.cam_queue.put((*r, self.cls))
+                else:
+                    time.sleep(0.02)
 
     def run(self):
         import asyncio
@@ -948,11 +950,15 @@ class FlowSink(NNSink):
                 pcv.pop('key')
 
             pcv['source'] = self.source
-            pcv['type'] = 'algo_debug'
+            pcv['type'] = 'pcv_data'
             pcv['ts'] = ts
             # print(pcv)
             # data = json.dumps(pcv)
             self.fileHandler.insert_pcv_raw(pcv)
+
+            if not self.is_main:
+                return None
+
             return 'x1_data', pcv, self.source
 
 
