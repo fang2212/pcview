@@ -98,8 +98,8 @@ def parse_x1j(id, data, ctx=None):
 
         # x1_obs_list.append(x1_obs)
         # print(x1j_obs['status'])
-        # if x1j_obs['status'] == 'invalid target':
-        #     return
+        if x1j_obs['status'] == 'invalid target':
+            return
         if x1j_obs['pos_lon'] > 0.0:
             ctx['x1j_obs'].append(x1j_obs.copy())
             # return x1j_obs.copy()

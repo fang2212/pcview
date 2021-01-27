@@ -15,12 +15,14 @@ from config.config import get_cached_macs, save_macs
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
 
+
 class CollectorNode(kProcess):
     def __init__(self, sinks):
         super(CollectorNode, self).__init__()
         self.sinks = sinks
         self.exit = Event()
         self.q = kQueue()
+
 
     def run(self):
         # if async_for_sink:
@@ -58,7 +60,7 @@ class CollectorNode(kProcess):
 
     def add(self, sink):
         self.sinks.append(sink)
-        self.q.put(sink)
+        # self.q.put(sink)
 
     def close(self):
         self.exit.set()
@@ -90,7 +92,9 @@ class Hub(Thread):
         self.msg_types = []
         self.type_roles = dict()
         self.sinks = []
-        self.node = None
+
+        self.nodes = [CollectorNode([]), CollectorNode([])]
+
         self.mac_ip = None
         self.online = {}
 
@@ -103,9 +107,10 @@ class Hub(Thread):
             }
         local_cfg = uniconf.local_cfg
         self.direct_cfg = direct_cfg
+        self.fileHandler = None
         if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
             self.fileHandler = FileHandler(uniconf=uniconf)
-            self.fileHandler.start()
+            # self.fileHandler.start()
             # self.fileHandler.start_rec()
 
         if direct_cfg is not None:  # direct mode
@@ -178,7 +183,10 @@ class Hub(Thread):
         print('closing file handler..')
         self.fileHandler.close()
         print('closing sink node..')
-        self.node.close()
+        # self.node.close()
+
+        self.nodes[0].close()
+        self.nodes[1].close()
 
     def get_veh_role(self, source):
         if source in self.type_roles:
@@ -245,7 +253,6 @@ class Hub(Thread):
                                     channel=iface, topic=topic, index=0, fileHandler=self.fileHandler, is_main=True)
                     # print('inited flow video', sink)
                     sink.start()
-
 
         # node = CollectorNode(sinks)
         # node.start()
@@ -391,8 +398,8 @@ class Hub(Thread):
             #     sink = CameraSink(queue=self.cam_queue, ip=ip, port=1200, channel='camera', index=idx,
             #                       fileHandler=self.fileHandler, is_main=True)
             #     sink.start()
-                # sinks.append(sink)
-                # self.collectors[ip]['sinks']['video'] = sink
+            # sinks.append(sink)
+            # self.collectors[ip]['sinks']['video'] = sink
 
     def init_collectors(self):
         self.online = {}
@@ -417,8 +424,15 @@ class Hub(Thread):
         for ip in self.online:
             self.init_collector(self.online[ip])
 
-        self.node = CollectorNode(self.sinks)
-        self.node.start()
+        for i, s in enumerate(self.sinks):
+            self.nodes[i & 1].add(s)
+
+        self.nodes[0].start()
+        self.nodes[1].start()
+
+        if self.fileHandler:
+            self.fileHandler.start()
+
         return self.online
 
     def fpga_handle(self, cfg, msg_queue, ip, index=0):

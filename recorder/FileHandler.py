@@ -5,21 +5,21 @@ import os
 import sys
 import time
 from datetime import datetime
-from multiprocessing import Queue, Value, Process
+from multiprocessing import Queue, Value, Process, Array
 from multiprocessing.dummy import Process as Thread
 from collections import deque
 from tools.video_writer import MJPEGWriter
 import cv2
 import numpy as np
-
+from ctypes import c_char_p
 # from config.config import local_cfg, configs, install
 
 
-class FileHandler(Thread):
+class FileHandler(Process):
     def __init__(self, redirect=False, uniconf=None):
         super(FileHandler, self).__init__()
         self.deamon = True
-        self.setName('file_handler_thread')
+        # self.setName('file_handler_thread')
         # self.log_queue = Queue()
         self.ctrl_queue = Queue()
         # self.image_queue = Queue()
@@ -29,11 +29,12 @@ class FileHandler(Thread):
         # self.pcv_queue = Queue(maxsize=5000)
         # self.fusion_queue = Queue(maxsize=5000)
 
-        self.log_q = Queue(maxsize=100000)
+        self.log_q = Queue(maxsize=200000)
 
         # self.can_raw_queue = kqueue(maxsize=100)
         self._max_cnt = 1200
-        self.path = None
+        # self.__path = Value(c_char_p, b"")
+        self.__path = Array('c', b'0'*100)
         self.image_path = None
         self.raw_fp = None
         self.log_fp = None
@@ -42,7 +43,8 @@ class FileHandler(Thread):
         self.video_path = None
         self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
         self.recording_state = Value('i', 0)
-        self.start_time = None
+        self.__start_time = Value("d", 0)
+
         self.frame_cnt = 0
         self.frame_reset = True
         self.redirect = redirect
@@ -57,6 +59,26 @@ class FileHandler(Thread):
     @property
     def is_recording(self):
         return self.recording_state.value == 1
+
+    @property
+    def start_time(self):
+        return self.__start_time.value
+
+    @start_time.setter
+    def start_time(self, v):
+        self.__start_time.value = v
+
+    @property
+    def path(self):
+        with self.__path.get_lock():
+            # print(self.__path.value)
+            return self.__path.value.decode()
+
+    @path.setter
+    def path(self, p):
+        with self.__path.get_lock():
+            # print(p)
+            self.__path.value = p.encode()
 
     def run(self):
         # cnt = 0
@@ -331,9 +353,9 @@ class FileHandler(Thread):
                     video_streams[source]['frame_cnt'] += 1
             t3 = time.time()
             if t3 - t0 < 0.001:
-                time.sleep(0.01)
+                time.sleep(0.001)
             # else:
-            if raw_write > 100:
+            if raw_write > 2000:
                 raw_write = 0
                 raw_fp.flush()
             # if pcv_write:
@@ -377,14 +399,14 @@ class FileHandler(Thread):
         # print(self.video_path)
         self.recording_state.value = 1
         self.start_time = time.time()
-        print('start recording.', self.is_recording)
+        print('start recording.', self.is_recording, self.path)
         # self.start()
 
     def stop_rec(self):
         self.ctrl_queue.put({'act': 'stop'})
         self.recording_state.value = 0
 
-        self.start_time = None
+        self.start_time = 0
         self.frame_reset = True
         print('stop recording.', self.is_recording, self.frame_cnt)
 

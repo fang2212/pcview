@@ -745,6 +745,8 @@ class FlowSink(NNSink):
                             # print(self.source)
                     else:
                         self.cam_queue.put((*r, self.cls))
+                else:
+                    time.sleep(0.001)
 
     def run(self):
         import asyncio

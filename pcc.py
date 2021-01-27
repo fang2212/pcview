@@ -399,7 +399,8 @@ class PCC(object):
                 last_ts = time.time()
                 # if not self.replay:
                 #     self.hub.parse_can_msgs()
-                if not self.replay and self.statistics['fileHandler_log_q_size'] > 10000:
+                # 不需要考虑存储的缓存队列的大小来控制是否渲染,因为两者已经分离到了两个进程
+                if not self.replay and self.statistics['fileHandler_log_q_size'] < 0:
                     show = False
                 else:
                     show = True
