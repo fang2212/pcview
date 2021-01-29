@@ -279,10 +279,13 @@ class FileHandler(Process):
                         print("video start over.", video_streams[source]['frame_cnt'], vpath)
                         img = cv2.imdecode(np.fromstring(data, np.uint8), cv2.IMREAD_COLOR)
                         h, w, c = img.shape
+                        now_fps = 20
+                        if 'cv22' in source:
+                            now_fps = 30
                         if video_streams[source]['video_writer']:
                             # video_streams[source]['video_writer'].flush()
                             video_streams[source]['video_writer'].finish_video()
-                        video_streams[source]['video_writer'] = MJPEGWriter(vpath, w, h, 30)
+                        video_streams[source]['video_writer'] = MJPEGWriter(vpath, w, h, now_fps)
                         video_streams[source]['video_writer'].write_header()
                     video_streams[source]['video_writer'].write_frame(data)
                     tv_s = int(ts)
