@@ -245,6 +245,7 @@ class LogPlayer(Process):
         if chmain:
             self.video_dir = chmain
             self.video_log_key = chmain
+        self.chmain = chmain
 
     def init_env(self):
         self.shared['replay_sync'] = True
@@ -269,6 +270,7 @@ class LogPlayer(Process):
         self.main_idx = get_main_index(self.log_path)
         main_dev = get_main_dev(self.log_path)
 
+        chmain = self.chmain
         if chmain is not None:
             idx = int(chmain.split(".")[-1])
             for f in self.cfg.configs:

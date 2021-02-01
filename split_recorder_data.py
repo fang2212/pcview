@@ -12,7 +12,7 @@ import cv2
 from pcc import PCC
 from pcc_replay import LogPlayer, prep_replay
 import sys
-
+import traceback
 
 def run(log_path):
     if not os.path.exists(log_path):
@@ -41,6 +41,10 @@ def run(log_path):
                 cache_ts_file_pos.pop(0)
 
             if "voice_note" in line:
+
+                pos = rf.tell()
+                cache_ts_file_pos.append((pos, ts))
+
                 file_ts = cache_ts_file_pos[0][1]
                 data_dir = time.strftime("%Y%m%d-%H%M%S", time.localtime(ts))
                 data_dir = data_dir + "_" + fields[-1]
@@ -58,6 +62,7 @@ def run(log_path):
                 ed_camera_id = -1
                 while True:
                     line = rf.readline()
+
                     if line == "":
                         running = False
                         break
@@ -72,11 +77,18 @@ def run(log_path):
                             st_camera_id = int(fields[3])
                         ed_camera_id = int(fields[3])
 
-                    if ts - file_ts >= 2*time_dt:
+                    if ts - file_ts > 2*time_dt:
                         break
 
                 new_log_wf.flush()
                 new_log_wf.close()
+
+                rf.seek(cache_ts_file_pos[-1][0])
+
+                while cache_ts_file_pos[-1][1] - cache_ts_file_pos[0][1] > time_dt:
+                    cache_ts_file_pos.pop(0)
+
+
                 print("voice in ", st_camera_id, ed_camera_id)
                 odir = data_dir
                 replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=st_camera_id, end_frame=ed_camera_id,
@@ -113,14 +125,18 @@ if __name__ == '__main__':
 
     arg = sys.argv[1]
     if not os.path.exists(arg):
-        print(arg, "is not exists\n");
+        print(arg, "is not exists\n")
         exit(0)
 
     if os.path.isdir(arg):
         for f in os.listdir(arg):
             path = os.path.join(arg, f, "log.txt")
             print(path, "start")
-            run(path)
+            try:
+                run(path)
+            except Exception as e:
+                print(e)
+                print(traceback.print_exc())
             print(path, "end")
     else:
         run(sys.argv[1])
