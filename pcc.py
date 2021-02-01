@@ -46,9 +46,10 @@ def loop_traverse(items):
 
 class PCC(object):
     def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=None,
-                 auto_rec=False):
+                 auto_rec=False, draw_algo=False):
         super(PCC, self).__init__()
         # from config.config import runtime
+        self.draw_algo = draw_algo
         self.hub = hub
         self.cfg = uniconf
         self.player = Player(uniconf)
@@ -857,7 +858,7 @@ class PCC(object):
 
         if data['type'] == 'pcv_data':
             # print('pcv_data', data)
-            if self.replay:
+            if self.replay or (not self.replay and self.draw_algo):
                 self.flow_player.draw(data, img)
 
         elif data['type'] == 'obstacle':

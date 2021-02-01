@@ -27,6 +27,7 @@ parser.add_argument('-c', '--config', default=None)
 parser.add_argument('-hl', '--headless', help='headless mode', action="store_true")
 parser.add_argument('-a', '--auto', help='auto recording', action="store_true")
 parser.add_argument('-w', '--web', help='web ui', action="store_true")
+parser.add_argument('-da', '--draw_algo', help='show algo data', action="store_true")
 # load_cfg(sys.argv[1])
 
 args = parser.parse_args()
@@ -180,7 +181,7 @@ elif args.web:  # start webui PCC
     server.start()
     hub = Hub(uniconf=cve_conf)
 
-    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo)
     pcc_thread = Thread(target=pcc.start, name='pcc_thread')
     hub.start()
 
@@ -259,7 +260,7 @@ else:  # normal standalone PCC
     else:
         auto_rec = False
     hub = Hub(uniconf=cve_conf)
-    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec)
+    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec, draw_algo=args.draw_algo)
     hub.start()
     sup = init_checkers(pcc)
     pcc.start()
