@@ -818,6 +818,7 @@ class PCC(object):
                               'lon_offset': -data['front_dist_to_camera'],
                               'lat_offset': 0.5 * (data['left_dist_to_camera'] - data['right_dist_to_camera'])}}
         self.cfg.installs.update(r)
+        self.hub.fileHandler.d['installs'] = self.cfg.installs
 
     def specific_handle(self, img, data):
         src = data.get('source')

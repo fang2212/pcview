@@ -5,7 +5,7 @@ import os
 import sys
 import time
 from datetime import datetime
-from multiprocessing import Queue, Value, Process, Array
+from multiprocessing import Queue, Value, Process, Array, Manager
 from multiprocessing.dummy import Process as Thread
 from collections import deque
 from tools.video_writer import MJPEGWriter
@@ -53,7 +53,8 @@ class FileHandler(Process):
 
         self.isheadless = False
         self.uniconf = uniconf
-
+        self.d = Manager().dict()
+        self.d['installs'] = uniconf.installs
         # print('outer id:', os.getpid())
 
     @property
@@ -382,6 +383,8 @@ class FileHandler(Process):
             self.path = os.path.join(self.uniconf.local_cfg.log_root, date)
         if not os.path.exists(self.path):
             os.makedirs(self.path)
+
+        self.uniconf.installs = self.d['installs']
         if not rlog:
             json.dump(self.uniconf.configs, open(os.path.join(self.path, 'config.json'), 'w+'), indent=True)
             # json.dump(install, open(os.path.join(self.path, 'installation.json'), 'w+'), indent=True)
@@ -414,6 +417,7 @@ class FileHandler(Process):
         print('stop recording.', self.is_recording, self.frame_cnt)
 
     def save_param(self):
+        self.uniconf.installs = self.d['installs']
         json.dump(self.uniconf.installs, open(os.path.join(self.path, 'installation.json'), 'w+'), indent=True)
 
     def check_file(self):
