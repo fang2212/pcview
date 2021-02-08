@@ -120,6 +120,87 @@ def run(log_path):
     print("end", log_path, time.time())
 
 
+def cp_video(logpath, video_key):
+
+    if not os.path.exists(logpath):
+        return
+
+    st_frameid, ed_frameid = -1, -1
+    with open(logpath, "r") as rf:
+        for line in rf:
+            line = line.strip()
+            fields = line.split()
+            if fields[2] == video_key:
+                cam_id = int(fields[-1])
+                if st_frameid == -1:
+                    st_frameid = cam_id
+                ed_frameid = cam_id
+
+    o_dir = os.path.join(os.path.dirname(os.path.dirname(logpath)), video_key)
+    n_dir = os.path.join(os.path.dirname(logpath), video_key)
+
+    print(st_frameid, ed_frameid)
+    # print(o_dir)
+    # print(n_dir)
+
+    if not os.path.exists(n_dir):
+        os.makedirs(n_dir)
+
+    avis = sorted([ f for f in os.listdir(o_dir) if f.endswith(".avi")] , key=lambda d: int(d.split("_")[-1][:-4]))
+    i, j = 0, 0
+    while i < len(avis):
+        n_id = int(avis[i].split("_")[-1][:-4])
+        if n_id > st_frameid:
+            print(n_id)
+            break
+        i += 1
+
+    i -= 1
+    while j < len(avis):
+        n_id = int(avis[j].split("_")[-1][:-4])
+        if n_id > ed_frameid:
+            print(n_id)
+            break
+        j += 1
+    j -= 1
+
+    for k in range(i, j+1):
+        os.system("cp %s %s" % (os.path.join(o_dir, avis[k]), n_dir))
+
+
+def split_log(logpath, video_key):
+    log_dir = os.path.dirname(logpath)
+    o_dir = os.path.join(log_dir, video_key)
+
+    avis = sorted([f for f in os.listdir(o_dir) if f.endswith(".avi")], key=lambda d: int(d.split("_")[-1][:-4]))
+    rf = open(logpath, "r")
+
+    for i, f in enumerate(avis):
+        total_frames = 1200
+        if i == len(avis) - 1:
+            cap = cv2.VideoCapture(os.path.join(o_dir, f))
+            total_frames = cap.get(7)
+            cap.release()
+
+        wf = open(os.path.join(o_dir, f + ".log"), "w")
+
+        cnt = 0
+        while True:
+            line = rf.readline().strip()
+            if not line:
+                break
+            print(line, file=wf)
+            fields = line.split()
+            if fields[2] == video_key:
+                cnt += 1
+
+            if cnt >= total_frames:
+                break
+        wf.flush()
+        wf.close()
+    rf.close()
+
+
 if __name__ == '__main__':
     sys.argv.append("/home/cao/data/download/shujuchuli_test/20201220110621/log.txt")
 
@@ -139,4 +220,6 @@ if __name__ == '__main__':
                 print(traceback.print_exc())
             print(path, "end")
     else:
-        run(sys.argv[1])
+        # run(sys.argv[1])
+        # cp_video("/home/cao/data/download/shujuchuli_test/20201220110621/20201220-111134_1/log.txt", "x1_algo.3")
+        split_log("/home/cao/data/download/shujuchuli_test/20201220110621/log.txt", "x1_algo.3")
