@@ -270,16 +270,16 @@ class PCC(object):
                 id = str(data.get('id')) if 'id' in data else 'noid'
                 entity = data['source'] + '.' + dtype + '.' + id
 
-                self.cache['misc'][source][entity] = data
-                self.cache['info'][source]['integrity'] = 'divided'
+                # self.cache['misc'][source][entity] = data
+                # self.cache['info'][source]['integrity'] = 'divided'
 
-                # if 'x1_data' in source:
-                #     if entity not in self.cache['misc'][source]:
-                #         self.cache['misc'][source][entity] = []
-                #     self.cache['misc'][source][entity].append(data)
-                # else:
-                #     self.cache['misc'][source][entity] = data
-                #     self.cache['info'][source]['integrity'] = 'divided'
+                if 'x1_data' in source:
+                    if entity not in self.cache['misc'][source]:
+                        self.cache['misc'][source][entity] = {"data": [], "type": "pcv_data"}
+                    self.cache['misc'][source][entity]["data"].append(data)
+                else:
+                    self.cache['misc'][source][entity] = data
+                    self.cache['info'][source]['integrity'] = 'divided'
 
 
     def adjust_interval(self):
@@ -860,7 +860,8 @@ class PCC(object):
         if data['type'] == 'pcv_data':
             # print('pcv_data', data)
             if self.replay or (not self.replay and self.draw_algo):
-                self.flow_player.draw(data, img)
+                for t in data["data"]:
+                    self.flow_player.draw(t, img)
 
         elif data['type'] == 'obstacle':
             # dummy0 = {'type': 'obstacle', 'id': 20, 'source': 'x1.1', 'pos_lat': 0, 'pos_lon': 60, 'color': 1}

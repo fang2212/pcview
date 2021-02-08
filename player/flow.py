@@ -29,6 +29,8 @@ class FlowPlayer(object):
         self.sys_cpu_avg = Avg(10)
         self.rotor_cpu_avg = Avg(10)
 
+        self.x1_flag = 0
+
     def draw(self, mess, img):
         # print("***", mess.keys())
         if 'pedestrians' in mess:
@@ -55,6 +57,7 @@ class FlowPlayer(object):
                 # BaseDraw.draw_head_info(img, pos[0:2], para_list, 150)
 
         if 'vehicle_measure_res_list' in mess:
+            self.x1_flag = True
             res_list = mess['vehicle_measure_res_list']
             for i, vehicle in enumerate(res_list):
                 # BaseDraw.draw_obj_rect(img, vehicle['det_rect'], CVColor.Cyan, 1)
@@ -95,7 +98,7 @@ class FlowPlayer(object):
             # print('speed:', speed, speed_limit)
             lane_begin = self.cfg.get('lane_begin', 0)
             for lane in lanelines:
-                if ((int(lane['label']) in [1, 2])) and speed >= speed_limit:
+                if ((int(lane['label']) in [1, 2]) or True) and speed >= speed_limit:
                     index = lane['label']
                     begin = lane_begin or int(lane['end'][1])
                     end = int(lane['start'][1])
@@ -134,6 +137,8 @@ class FlowPlayer(object):
                 ]
                 BaseDraw.draw_single_info(img, (1100, 0), 120, 'ultrasonic', para_list)
 
+        if self.x1_flag:
+            return
 
         # cv22 algo begin
         h, w = img.shape[:2]
