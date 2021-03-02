@@ -298,7 +298,7 @@ def parse_q3(id, buf, ctx=None):
         ctx['obsq3']['acc_lon'] = r['Object_Accel_X']
         ctx['obsq3']['color'] = 5
         send = None
-        if ctx['obsq3']['pos_lon'] > 0:
+        if "pos_lon" in ctx['obsq3'] and ctx['obsq3']['pos_lon'] > 0:
 
             send = ctx['obsq3'].copy()
 
@@ -426,6 +426,8 @@ def parse_q3(id, buf, ctx=None):
         send = list(ctx['laneq3'].copy().values())
         ctx['laneq3'].clear()
 
+        send = [x for x in send if 'a0' in x and 'a1' in x]
+        # for item in send:
         # print(send)
         return send
 
