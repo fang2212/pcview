@@ -313,7 +313,7 @@ class LogPlayer(Process):
             # print(can, self.can_types[can])
             for type in parsers_dict:
                 if type == self.can_types[can].split('.')[0]:
-                    print('----', can, type)
+                    print('----', can, type, parsers_dict[type])
                     self.parser[can].append(parsers_dict[type])
             if len(self.parser[can]) == 0:
                 self.parser[can] = [parsers_dict['default']]

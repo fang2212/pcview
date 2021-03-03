@@ -47,6 +47,7 @@ parsers_dict = {
     "novatel":  parse_novatel,
     "pim222":   parse_pim222,
     "j2": parser_j2,
+    "ars410": parse_ars410,
     "default":  default_parser
 }
 
