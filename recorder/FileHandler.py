@@ -450,7 +450,7 @@ class FileHandler(Process):
             self.log_q.put(('video', msg))
 
     def insert_jpg(self, msg):
-        if not self.log_q.full() and self.is_recording:
+        if self.is_recording:
             self.log_q.put(('jpg', msg))
 
     def insert_raw(self, msg):
@@ -458,13 +458,13 @@ class FileHandler(Process):
         # print(self.is_recording)
         # timestamp, log_type, data = msg
 
-        if self.uniconf.local_cfg.save.raw and self.is_recording and not self.log_q.full():
+        if self.uniconf.local_cfg.save.raw and self.is_recording:
             self.log_q.put(('raw', msg))
         # else:
         #     print('discard raw:', log_type)
 
     def insert_pcv_raw(self, msg):
-        if not self.log_q.full() and self.is_recording:
+        if self.is_recording:
             self.log_q.put(('pcv', msg))
 
     def insert_fusion_raw(self, msg):
