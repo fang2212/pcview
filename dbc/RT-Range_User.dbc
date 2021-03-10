@@ -1,0 +1,82 @@
+VERSION"HIPBNYYYYYYYYYYYYYYYYYYYYYYYYYYYNNNNNNNNNN/4/%%%/4/'%**4NNN///"
+
+
+NS_ :
+        NS_DESC_
+        CM_
+        BA_DEF_
+        BA_
+        VAL_
+        CAT_DEF_
+        CAT_
+        FILTER
+        BA_DEF_DEF_
+        EV_DATA_
+        ENVVAR_DATA_
+        SGTYPE_
+        SGTYPE_VAL_
+        BA_DEF_SGTYPE_
+        BA_SGTYPE_
+        SIG_TYPE_REF_
+        VAL_TABLE_
+        SIG_GROUP_
+        SIG_VALTYPE_
+        SIGTYPE_VALTYPE_
+        BO_TX_BU_
+        BA_DEF_REL_
+        BA_REL_
+        BA_DEF_DEF_REL_
+        BU_SG_REL_
+        BU_EV_REL_
+        BU_BO_REL_
+
+BS_:
+
+BU_: RTRange
+
+
+BO_ 1968 Range1Forward: 8 RTRange
+ SG_ Range1PosForward : 0|32@1- (0.001,0) [-2147483.6475|2147483.6475] "m" Vector__XXX
+ SG_ Range1VelForward : 32|16@1- (0.01,0) [-327.675|327.675] "m/s" Vector__XXX
+ SG_ Range1TimeToCollisionForward : 48|16@1- (0.001,0) [-32.7675|32.7675] "s" Vector__XXX
+
+BO_ 1969 Range1Lateral: 8 RTRange
+ SG_ Range1PosLateral : 0|32@1- (0.001,0) [-2147483.6475|2147483.6475] "m" Vector__XXX
+ SG_ Range1VelLateral : 32|16@1- (0.01,0) [-327.675|327.675] "m/s" Vector__XXX
+ SG_ Range1TimeToCollisionLateral : 48|16@1- (0.001,0) [-32.7675|32.7675] "s" Vector__XXX
+
+BO_ 1971 Range1HunterPosLocal: 8 RTRange
+ SG_ Range1HunterPosLocalX : 0|32@1- (0.001,0) [-2147483.6475|2147483.6475] "m" Vector__XXX
+ SG_ Range1HunterPosLocalY : 32|32@1- (0.001,0) [-2147483.6475|2147483.6475] "m" Vector__XXX
+
+BO_ 1972 Range1TargetPosLocal: 8 RTRange
+ SG_ Range1TargetPosLocalX : 0|32@1- (0.001,0) [-2147483.6475|2147483.6475] "m" Vector__XXX
+ SG_ Range1TargetPosLocalY : 32|32@1- (0.001,0) [-2147483.6475|2147483.6475] "m" Vector__XXX
+
+BO_ 1795 Target1Velocity: 8 RTRange
+ SG_ Target1VelNorth : 0|16@1- (0.01,0) [-327.675|327.675] "m/s" Vector__XXX
+ SG_ Target1VelEast : 16|16@1- (0.01,0) [-327.675|327.675] "m/s" Vector__XXX
+ SG_ Target1VelDown : 32|16@1- (0.01,0) [-327.675|327.675] "m/s" Vector__XXX
+ SG_ Target1Speed2D : 48|16@1+ (0.01,0) [0|655.35] "m/s" Vector__XXX
+
+BO_ 1798 Target1AccelLevel: 8 RTRange
+ SG_ Target1AccelForward : 0|16@1- (0.01,0) [-327.675|327.675] "m/s²" Vector__XXX
+ SG_ Target1AccelLateral : 16|16@1- (0.01,0) [-327.675|327.675] "m/s²" Vector__XXX
+ SG_ Target1AccelDown : 32|16@1- (0.01,0) [-327.675|327.675] "m/s²" Vector__XXX
+ SG_ Target1AccelSlip : 48|16@1- (0.01,0) [-327.675|327.675] "m/s²" Vector__XXX
+
+BO_ 1804 Target1PosLocal: 8 RTRange
+ SG_ Target1PosLocalX : 0|32@1- (0.0001,0) [-214748.36475|214748.36475] "m" Vector__XXX
+ SG_ Target1PosLocalY : 32|32@1- (0.0001,0) [-214748.36475|214748.36475] "m" Vector__XXX
+
+BO_ 1539 HunterVelocity: 8 RTRange
+ SG_ HunterVelNorth : 0|16@1- (0.01,0) [-327.675|327.675] "m/s" Vector__XXX
+ SG_ HunterVelEast : 16|16@1- (0.01,0) [-327.675|327.675] "m/s" Vector__XXX
+ SG_ HunterVelDown : 32|16@1- (0.01,0) [-327.675|327.675] "m/s" Vector__XXX
+ SG_ HunterSpeed2D : 48|16@1+ (0.01,0) [0|655.35] "m/s" Vector__XXX
+
+BO_ 1541 HunterAccelVehicle: 6 RTRange
+ SG_ HunterAccelX : 0|16@1- (0.01,0) [-327.675|327.675] "m/s²" Vector__XXX
+ SG_ HunterAccelY : 16|16@1- (0.01,0) [-327.675|327.675] "m/s²" Vector__XXX
+ SG_ HunterAccelZ : 32|16@1- (0.01,0) [-327.675|327.675] "m/s²" Vector__XXX
+
