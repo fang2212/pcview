@@ -500,6 +500,12 @@ class Player(object):
         # BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
         self.show_text_info(source, 60, '{:.1f}deg/s'.format(yr_deg))
 
+    def show_accel(self, img, acc, source):
+        # indent = self.get_indent(source)
+        # yr_deg = yr * 57.3
+        # BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
+        self.show_text_info(source, 80, '{:.1f}m/s^2'.format(acc))
+
     def show_q3_veh(self, img, speed, yr):
         BaseDraw.draw_text(img, 'q3spd: ' + str(int(speed * 3.6)), (2, 120), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'q3yr: ' + '%.4f' % yr, (2, 140), 0.5, CVColor.White, 1)
@@ -929,6 +935,9 @@ class Player(object):
             self.show_veh_speed(img, data['speed'], data['source'])
         if 'yaw_rate' in data:
             self.show_yaw_rate(img, data['yaw_rate'], data['source'])
+
+        if 'accel' in data:
+            self.show_accel(img, data['accel'], data['source'])
 
     def cal_fps(self, frame_cnt):
         end_time = datetime.now()

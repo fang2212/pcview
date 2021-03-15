@@ -45,3 +45,9 @@ def parser_rt(id, buf, ctx=None):
             ret = ctx['cipv'].copy()
             ctx.pop('cipv')
             return ret
+
+    if id == 1539:
+        return {'type': 'vehicle_state', 'speed': r['HunterSpeed2D'] * 3.6}
+
+    if id == 1541:
+        return {'type': 'vehicle_state', 'accel': r['HunterAccelX']}
