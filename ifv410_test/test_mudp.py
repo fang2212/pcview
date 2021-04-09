@@ -7,7 +7,6 @@ import numpy as np
 from decode_algo import *
 
 
-
 MUDP_HEADER_SIZE = 32 # 8 bytes timestamps + 24 bytes UDP header
 BIG_ENDIAN_VERSION_INFO = int('18A1', 16)
 STREAM_DEFINITIONS_FOLDER_NAME = 'stream_definitions'
@@ -267,11 +266,11 @@ def decode(mudp_path: str, stream_definitions: dict):
                 draw_ipm(img, road_transition_res)
                 # print("obs:", len(obs), ",lanes:", len(lanes))
                 cv2.imshow("ifv410", img)
-                cv2.waitKey(1)
+                cv2.waitKey(0)
 
 if __name__ == "__main__":
-    sys.argv.append("./sample_data/UDP/GACA12H4WD_20200804_C11_103340_002.mudp")
-    str_005_016 = read_vis_definiaton("./sample_data/UDP/strdef_src022_str005_ver016_Vis.txt")
+    sys.argv.append("/home/minieye/work-git/cve/cve/cve_data/20210408201444/q4_100.0/q4_100.0.bin")
+    str_005_016 = read_vis_definiaton("../dbc/strdef_src022_str005_ver016_Vis.txt")
     str_005_016.update({'streamNumber': 5, 'streamVersion': 16, "streamChunkLen": 6192})
     decode(sys.argv[1], str_005_016)
 
