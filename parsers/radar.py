@@ -98,7 +98,7 @@ def parse_ars410(id, buf, ctx=None):
     if id == 0x80:
         yaw_rate_ars = r['FRS_Host_Yaw']
         speed = r['FRS_HostSpeed'] * 3.6
-        return {'type': 'vehicle_state', 'yaw_rate': yaw_rate_ars, 'speed': speed}
+        return {'type': 'vehicle_state', 'yaw_rate': -yaw_rate_ars / 180 * pi, 'speed': speed}
 
 
 def parse_ars(id, buf, ctx=None):
