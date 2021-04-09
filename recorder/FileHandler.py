@@ -14,6 +14,9 @@ import numpy as np
 from ctypes import c_char_p
 # from config.config import local_cfg, configs, install
 
+# 限制为单线程，防止竞争占用资源
+cv2.setNumThreads(0)
+
 
 class FileHandler(Process):
     def __init__(self, redirect=False, uniconf=None):

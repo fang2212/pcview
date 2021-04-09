@@ -12,6 +12,7 @@ from multiprocessing import Manager
 from threading import Thread
 # import signal
 import cv2
+from turbojpeg import TurboJPEG
 # import sys
 
 # from turbojpeg import TurboJPEG
@@ -37,6 +38,10 @@ import traceback
 #                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 # sample_jpg = open('/home/nan/workshop/git/pcview/static/img/no_video.jpg', 'rb').read()
+
+cv2.setNumThreads(0)
+jpeg = TurboJPEG()
+
 
 def loop_traverse(items):
     while True:
@@ -187,7 +192,7 @@ class PCC(object):
         self.cache['info'] = {}
         self.cache['ts'] = 0
         self.cache['img'] = open('static/img/no_video.jpg', 'rb').read()
-        self.cache['img_raw'] = cv2.imdecode(np.fromstring(self.cache['img'], np.uint8), cv2.IMREAD_COLOR)
+        self.cache['img_raw'] = jpeg.decode(np.fromstring(self.cache['img'], np.uint8))
         self.cache['frame_id'] = 0
 
     def clean_cache(self):
@@ -468,7 +473,7 @@ class PCC(object):
         ts_ana = []
         t0 = time.time()
         ts_ana.append(('draw start', t0))
-        # print(mess.get('img'))
+        # print(mess.get("img_raw"))
         try:
             if 'img_raw' in mess and mess['img_raw'] is not None:  # reuse img
                 img = mess['img_raw'].copy()
@@ -477,7 +482,7 @@ class PCC(object):
                     self.player.show_failure(img, 'feed lost, check connection.')
             else:
                 # return
-                mess['img_raw'] = cv2.imdecode(np.fromstring(mess['img'], np.uint8), cv2.IMREAD_COLOR)
+                mess['img_raw'] = jpeg.decode(np.fromstring(mess['img'], np.uint8))
                 # mess['img_raw'] = self.jpeg_dec.decode(mess['img'])
                 img = mess['img_raw'].copy()
         except Exception as e:
@@ -526,7 +531,7 @@ class PCC(object):
                 continue
             video = self.video_cache[source]
             self.video_cache[source]['updated'] = False
-            img_small = cv2.resize(cv2.imdecode(np.fromstring(video['img'], np.uint8), cv2.IMREAD_COLOR), (427, 240))
+            img_small = cv2.resize(jpeg.decode(np.fromstring(video['img'], np.uint8)), (427, 240))
             # img_small = cv2.resize(self.jpeg_dec.decode(video['img']), (427, 240))
             video['device'] = source
             self.player.show_video_info(img_small, video)
