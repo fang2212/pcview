@@ -284,6 +284,8 @@ class LogPlayer(Process):
         else:
             self.x1_parser = None
 
+        self.bin_rf = {}
+
         for idx, cfg in enumerate(self.cfg.configs):
             if 'can_types' in cfg:
                 cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
@@ -625,6 +627,19 @@ class LogPlayer(Process):
                 if r:
                     r['source'] = cols[2]
                     self.msg_queue.put((0x00, r, r['source']))
+
+            elif 'q4_100' in cols[2]:
+                if cols[2] not in self.bin_rf:
+                    self.bin_rf[cols[2]] = open(os.path.join(os.path.dirname(self.log_path), cols[2], cols[2] + ".bin"), "rb")
+                sz = int(cols[3])
+                bts = self.bin_rf[cols[2]].read(sz)
+                ret = parsers_dict.get("q4_100", "default")(0, bts)
+                if ret is None:
+                    continue
+                for obs in ret:
+                    obs['ts'] = ts
+                    obs['source'] = cols[2]
+                self.msg_queue.put(("q4_100", ret.copy(), cols[2]))
 
         print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
