@@ -68,6 +68,8 @@ class Player(object):
                           'xyd2': FlatColor.Blue,
                           'anc': FlatColor.carrot,
                           'ctlrr': FlatColor.alizarin,
+                          "q4_100": FlatColor.concrete,
+                          "j2": FlatColor.carrot,
                           'default': FlatColor.clouds}
 
         self.param_bg_width = 160
@@ -195,6 +197,7 @@ class Player(object):
         x2 = int(x2)
         y1 = int(y1)
         y2 = int(y2)
+
         size = max(min(0.5 * 8 / dist, 0.5), 0.28)
         if obs.get('sensor_type') == 'radar':
             w = max(5, min(50, w))
@@ -204,7 +207,8 @@ class Player(object):
             # print(x1, y1, x, h)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
         elif obs.get('class') == 'pedestrian':
-            # print(obs)
+            if x1 < 0 or y1 < 0 or x2 > img.shape[1] or y2 > img.shape[0]:
+                return
             cv2.rectangle(img, (x1, y1), (x2, y2), color, 1)
             BaseDraw.draw_alpha_poly(img, np.array([(x1, y1), (x1, y2), (x2, y2), (x2, y1)]), 0.3, color)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), size, color, 1)

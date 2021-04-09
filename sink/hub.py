@@ -383,11 +383,18 @@ class Hub(Thread):
                     #           'isheadless': self.headless}
                     self.sinks.append(pisink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
+
                 elif cfg['ports'][iface].get('transport') == 'tcp':
                     proto = cfg['ports'][iface]['protocol']
                     tcpsink = TCPSink(self.msg_queue, ip, port, 'can', proto, idx, self.fileHandler)
                     self.sinks.append(tcpsink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
+                elif cfg['ports'][iface].get("transport") == 'udp':
+                    proto = cfg['ports'][iface]['protocol']
+                    udpsink = UDPSink(self.msg_queue, ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler)
+                    self.sinks.append(udpsink)
+                    self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
+
         else:  # no type, default is x1 collector
             pass
             # self.fpga_handle(cfg, self.msg_queue, ip, index=idx)

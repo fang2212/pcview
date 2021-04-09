@@ -1,0 +1,15 @@
+{
+  "type": "general",
+  "mac": "00:e0:0c:c4:d5:41",
+  "ip": "",
+  "force_ip": true,
+  "ports": {
+    "q4_100": {
+      "enable": true,
+      "port": 5003,
+      "protocol": "q4_100",
+      "transport": "udp",
+      "topic": "q4_100"
+    }
+  }
+}

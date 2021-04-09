@@ -155,6 +155,99 @@ class NNSink(Thread):
         pass
 
 
+class UDPSink(Thread):
+    def __init__(self, queue, ip, port, topic, protocol, index, fileHandler):
+        super(UDPSink, self).__init__()
+        self.ip = ip
+        self.port = port
+        self.channel = topic
+        self.queue = queue
+        self.source = '{}.{:d}'.format(topic, index)
+        self.index = index
+        self.fileHandler = fileHandler
+        self.protocol = protocol
+        self.ctx = dict()
+        self._buf = b''
+        self.exit = Event()
+        self.type = "ucp_sink"
+
+    def _init_port(self):
+        print('connecting', self.ip, self.port)
+
+        # udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # # 绑定端口号
+        # udpSocket.bind(("", 5003))
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._socket.bind((self.ip, self.port))
+
+    def read(self):
+        bs = self._socket.recv(66666)
+        return bs
+
+    def pkg_handler(self, msg):
+        if self.channel == 'q4_100':
+
+            # no timestamp , use local timestamp
+
+            timestamp = time.time()
+            msg = struct.pack("<d", timestamp) + msg
+
+            r = {'type': self.channel, 'source': self.source, 'log_name': self.source}
+            r['buf'] = msg
+            self.fileHandler.insert_general_bin_raw(r)
+            self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
+            ret = parsers_dict.get(self.protocol, "default")(0, msg, self.ctx)
+            if ret is None:
+                return ret
+            for obs in ret:
+                obs['ts'] = timestamp
+                obs['source'] = self.source
+            # log_bytes = data.hex()
+            # print('CAN sink save raw.', self.source)
+
+            return self.channel, ret, self.source
+
+    def run(self):
+        pid = os.getpid()
+        print('sink {} pid:'.format(self.source), pid)
+        time0 = time.time()
+        self._init_port()
+        pt_sum = 0
+        next_check = 0
+        self.pid = os.getpid()
+        last_ts = 0
+        msg_cnt = 0
+        throuput = 0
+        # if 'can' in self.type:
+        #     print(self.type, 'start.')
+        while not self.exit.is_set():
+
+            buf = self.read()
+            if not buf:
+                time.sleep(0.001)
+                continue
+            t0 = time.time()
+            msg_cnt += 1
+            # throuput += len(buf)
+            r = self.pkg_handler(buf)
+            if r is not None:
+                if isinstance(r[1], dict):
+                    r[1]['ts_arrival'] = t0
+                elif isinstance(r[1], list):
+                    for item in r[1]:
+                        item['ts_arrival'] = t0
+                else:
+                    print(r)
+                if not self.queue.full():
+                    self.queue.put((r))
+                else:
+                    time.sleep(0.001)
+                    continue
+
+        print('sink', self.source, 'exit.')
+
+
+
 class TCPSink(Thread):
     def __init__(self, queue, ip, port, channel, protocol, index, fileHandler):
         super(TCPSink, self).__init__()

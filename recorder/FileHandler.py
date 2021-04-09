@@ -472,7 +472,7 @@ class FileHandler(Process):
             self.log_q.put(('fusion', msg))
 
     def insert_general_bin_raw(self, msg):
-        if not self.log_q.full() and self.is_recording:
+        if self.is_recording:
             self.log_q.put(('general_bin', msg))
 
     # def insert_can(self, msg):
