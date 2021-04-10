@@ -68,8 +68,9 @@ class Player(object):
                           'xyd2': FlatColor.Blue,
                           'anc': FlatColor.carrot,
                           'ctlrr': FlatColor.alizarin,
-                          "q4_100": FlatColor.concrete,
+                          "q4_100": FlatColor.turquoise,
                           "j2": FlatColor.carrot,
+                          "ars410": FlatColor.wet_asphalt,
                           'default': FlatColor.clouds}
 
         self.param_bg_width = 160

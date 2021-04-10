@@ -62,8 +62,8 @@ def parse_ars410(id, buf, ctx=None):
         # ret = {'type': 'obstacle', 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle, 'pos_lat': y_raw,
         #        'pos_lon': x_raw, 'vel_lat': vy, 'vel_lon': vx, 'RCS': rcs, 'TTC': ttc}
 
-        ret = {'type': 'obstacle', 'sensor_type': 'radar', 'pos_lat': r['FRS_Obj_YPos'],
-               'pos_lon': r['FRS_Obj_XPos'], 'vel_lat': r['FRS_Obj_YVelRel'], 'vel_lon': r['FRS_Obj_XVelRel']}
+        ret = {'type': 'obstacle', 'sensor_type': 'radar', 'pos_lat': -r['FRS_Obj_YPos'],
+               'pos_lon': r['FRS_Obj_XPos'], 'vel_lat': -r['FRS_Obj_YVelRel'], 'vel_lon': r['FRS_Obj_XVelRel']}
         ret['range'] = sqrt(ret['pos_lon']**2 + ret['pos_lat']**2)
 
         ret['angle'] = atan2(ret['pos_lat'], ret['pos_lon']) * 180 / pi
