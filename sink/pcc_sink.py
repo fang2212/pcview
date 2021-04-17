@@ -38,11 +38,11 @@ nn_impl = 'nanomsg'
 # import nanomsg
 
 # import pynng
-from parsers import ublox, rtcm3
-from parsers.drtk import V1_msg, v1_handlers
-from parsers.parser import parsers_dict
-from recorder.convert import *
-from tools import mytools
+# from parsers import ublox, rtcm3
+# from parsers.drtk import V1_msg, v1_handlers
+# from parsers.parser import parsers_dict
+# from recorder.convert import *
+# from tools import mytools
 from collections import deque
 
 
@@ -181,6 +181,7 @@ class TCPSink(Thread):
         return bs
 
     def pkg_handler(self, msg):
+        from parsers.parser import parsers_dict
         if self.protocol == 'novatel' or self.protocol=='nmea-like':
             sync_start = b'#' if self.protocol=='novatel' else b'$'
             # if self.protocol == 'nmea-like':
@@ -258,9 +259,11 @@ class TCPSink(Thread):
 
         print('sink', self.source, 'exit.')
 
+
 class PinodeSink(NNSink):
     def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
         super(PinodeSink, self).__init__(queue, ip, port, channel, index, isheadless)
+        from parsers import ublox, rtcm3
         # print('pi_node connected.', ip, port, channel, index)
         self.source = 'rtk.{:d}'.format(index)
         self.index = index
@@ -280,6 +283,7 @@ class PinodeSink(NNSink):
     def pkg_handler(self, msg):
         # if self.resname == 'pim222':
         # print(self.resname, '-----------------------------------------hahahahha')
+        from recorder.convert import compose_from_def, load_log_defs, decode_with_def, ub482_defs
 
         msg = memoryview(msg).tobytes()
         if self.resname == 'pim222':
@@ -367,6 +371,8 @@ class PinodeSink(NNSink):
         # return bs
 
     def decode_pinode_res(self, resname, msg):
+        from parsers.parser import parsers_dict
+        from parsers import ublox, rtcm3
         if resname == 'rtk':
             results = json.loads(msg.decode())
             for res in results:
@@ -427,6 +433,7 @@ class PinodeSinkGeneral(NNSink):
     def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
         super(PinodeSinkGeneral, self).__init__(queue, ip, port, channel, index, isheadless)
         # print('pi_node connected.', ip, port, channel, index)
+        from parsers import ublox, rtcm3
         self.source = 'rtk.{:d}'.format(index)
         self.index = index
         self.context = {'source': self.source}
@@ -439,6 +446,7 @@ class PinodeSinkGeneral(NNSink):
 
     def pkg_handler(self, msg):
         # print('-----------------------------------------hahahahha')
+        from recorder.convert import compose_from_def, load_log_defs, decode_with_def, ub482_defs
 
         msg = memoryview(msg).tobytes()
         # print(self.resname, msg)
@@ -481,6 +489,8 @@ class PinodeSinkGeneral(NNSink):
         return self.channel, data, self.source
 
     def decode_pinode_res(self, resname, msg):
+        from parsers.parser import parsers_dict
+        from parsers import ublox, rtcm3
         if resname == 'rtk':
             results = json.loads(msg.decode())
             for res in results:
@@ -527,6 +537,7 @@ class PinodeSinkGeneral(NNSink):
 
 class CANSink(NNSink):
     def __init__(self, queue, ip, port, channel, type, index, fileHandler, isheadless=False):
+        from parsers.parser import parsers_dict
         super(CANSink, self).__init__(queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
         self.parser = []
@@ -799,6 +810,7 @@ class FlowSink(NNSink):
             # raise (e)
 
     def pkg_handler(self, msg):
+        from tools import mytools
         # print(msg)
         # if self.protocol != 'msgpack':
         #     r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name}
@@ -963,13 +975,13 @@ class FlowSink(NNSink):
 
 
 class RTKSink(NNSink):
-
     def __init__(self, queue, ip, port, msg_type, index, fileHandler, isheadless=False):
         NNSink.__init__(self, queue, ip, port, msg_type, index, isheadless)
         self.fileHandler = fileHandler
         self.source = 'drtk'
 
     def _init_port(self):
+        from parsers.drtk import V1_msg, v1_handlers
         # self._socket = can.interface.Bus()
         try:
             self._socket = can.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)
@@ -998,6 +1010,7 @@ class RTKSink(NNSink):
             self.can_send(self._socket, data)
 
     def pkg_handler(self, msg):
+        from parsers.drtk import V1_msg, v1_handlers
         timestamp = time.time()
         # timestamp =
         self.v1msg.push(bytes(msg))
@@ -1022,3 +1035,45 @@ class RTKSink(NNSink):
             else:
                 # print('0x{:04x}'.format(msgid), msg)
                 pass
+
+
+class FileHandlerDummy(object):
+    def insert_jpg(self, r):
+        import cv2
+        import numpy as np
+        # print(r)
+        print("{frame_id}, {ts}, {source},".format(**r), len(r['img']))
+        # print('frame id:', data[0], "{type}, {ts}".format(**data[1]), 'img len:', len(data[1]['img']))
+        raw = cv2.imdecode(np.frombuffer(r['img'], np.uint8), cv2.IMREAD_COLOR)
+        cv2.imshow('MINIEYE-CVE', raw)
+        pass
+    def insert_raw(self, r):
+        # print("{frame_id}, {ts}, {source},".format(**r))
+        print(r)
+        pass
+
+
+if __name__ == "__main__":
+    from queue import Queue
+    import cv2
+
+    cv2.namedWindow('MINIEYE-CVE')
+
+    q = Queue(maxsize=100)
+    fhl = FileHandlerDummy()
+    camsink = CameraSink(q, '192.168.98.192', 1200, 'camera', 0, fhl, is_main=True, devname='camera')
+    camsink.start()
+
+    gsensor_sink = GsensorSink(q, '192.168.98.192', 1209, 'imu', 0, fhl)
+    gsensor_sink.start()
+
+    algo_sink = FlowSink(q, q, '192.168.98.181', 24011, 'algo', 1, fhl)
+    algo_sink.start()
+
+    while True:
+        data = q.get()
+        if data:
+            key = cv2.waitKey(1) & 0xff
+            # print('frame id:', data[0], "{type}, {ts}".format(**data[1]), 'img len:', len(data[1]['img']))
+        else:
+            time.sleep(0.01)

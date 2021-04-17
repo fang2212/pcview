@@ -1040,12 +1040,14 @@ class PCC(object):
                 d = cache_cp['misc'][source][key]
                 if type(d) == dict and 'ts' in d:
                     all_ts.append(d['ts'])
+                    print(source, key, d['ts'])
 
         # other video ts
         for source in video_cp:
             d = video_cp[source]
             if type(d) == dict and 'ts' in d:
-                    all_ts.append(d['ts'])
+                all_ts.append(d['ts'])
+                print(source, d['ts'])
 
         # collector ts
         # if not self.replay:
