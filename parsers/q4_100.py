@@ -3,7 +3,7 @@ import json
 import struct
 import time
 
-from parsers.decode_eyeq4_100 import decode_obs, decode_lane_marker
+from parsers.decode_eyeq4_100 import decode_obs, decode_lane_marker, decode_speed
 
 
 def cal_type_sz_signed(type_str) -> (int, int, bool):
@@ -166,6 +166,7 @@ def decode_data(data: bytes, stream_info):
 
 
 stream_info_005_016 = read_vis_definiaton("./dbc/strdef_src022_str005_ver016_Vis.txt")
+stream_info_007_012 = read_vis_definiaton("./dbc/strdef_src022_str007_ver012.txt")
 
 
 def parser_q4_100(id, buf, ctx={}):
@@ -178,3 +179,6 @@ def parser_q4_100(id, buf, ctx={}):
         lane, obs = decode_data(buf[32:], stream_info_005_016)
         lane.extend(obs)
         return lane
+    elif header_info["streamNumber"] == 7 and header_info["streamVersion"] == 12 and header_info["streamChunkLen"] == 212:
+        r = decode_speed(stream_info_007_012, buf[32:])
+        return r

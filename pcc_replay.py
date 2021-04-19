@@ -636,6 +636,9 @@ class LogPlayer(Process):
                 ret = parsers_dict.get("q4_100", "default")(0, bts)
                 if ret is None:
                     continue
+                if type(ret) != list:
+                    ret = [ret]
+
                 for obs in ret:
                     obs['ts'] = ts
                     obs['source'] = cols[2]

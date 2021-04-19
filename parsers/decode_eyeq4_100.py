@@ -1,5 +1,6 @@
 import struct
 
+
 def decode_bytes_2_number(signal: dict, data: bytes):
     if signal['size'] != len(data):
         print(__name__, "size not equal data length")
@@ -17,6 +18,16 @@ def decode_bytes_2_number(signal: dict, data: bytes):
 
 def decode_sample(stream_info, data):
     pass
+
+
+def decode_speed(stream_info, data):
+    signal = "vse_out.filt_veh_speed_over_ground"
+    signal = stream_info[signal]
+    num = decode_bytes_2_number(signal, data[signal['offset']: signal['offset'] + signal['size']])
+    if num is None:
+        return
+    return {'type': 'vehicle_state', 'speed': num * 3.6}
+
 
 def decode_lane_marker(stream_info, data):
     """
@@ -38,8 +49,8 @@ def decode_lane_marker(stream_info, data):
 
     prefix = "vision_road_info.roadInfo.roadMarkerInfo"
     lane_type = [
-        "hostRightMarker",
         "hostLeftMarker",
+        "hostRightMarker",
         "nextLeftLeftMarker",
         "nextLeftRightMarker",
         "nextRightRightMarker",
