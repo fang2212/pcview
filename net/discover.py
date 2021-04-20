@@ -30,7 +30,7 @@ class CollectorFinder(Thread):
         macs = self.get_macs()
         # print('mac table:', macs)
         for mac in macs:
-            if mac.startswith('5a:31'):
+            if mac.startswith('5a:31') or mac.startswith("6a:92"):
                 ip = macs[mac]
                 if ip not in self.found:
                     print('nmap found new device:', ip, mac)
@@ -49,7 +49,7 @@ class CollectorFinder(Thread):
 
     def load_cached_macs(self, cached_macs):
         for mac in cached_macs:
-            if mac.startswith('5a:31'):
+            if mac.startswith('5a:31') or mac.startswith("6a:92"):
                 ip = cached_macs[mac]
                 if ip not in self.found:
                     self.found[ip] = {'mac': mac}
