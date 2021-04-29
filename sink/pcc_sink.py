@@ -12,6 +12,7 @@ import can
 import msgpack
 import nnpy
 import socket
+import zmq
 
 async_for_sink = False
 
@@ -155,6 +156,85 @@ class NNSink(Thread):
         pass
 
 
+class ZmqSink(Thread):
+    def __init__(self, queue, ip, port, topic, protocol, index, fileHandler):
+        super(ZmqSink, self).__init__()
+        self.ip = ip
+        self.port = port
+        self.channel = topic
+        self.queue = queue
+        self.source = '{}.{:d}'.format(topic, index)
+        self.index = index
+        self.fileHandler = fileHandler
+        self.protocol = protocol
+        self.ctx = dict()
+        self._buf = b''
+        self.exit = Event()
+        self.type = "zmq_sink"
+        self.context = None
+
+    def _init_port(self):
+        print('connecting', self.ip, self.port)
+        self.context = zmq.Context()
+        self._socket = self.context.socket(zmq.SUB)
+        url = "tcp://%s:%d" % (self.ip, self.port)
+
+        self._socket.connect(url)
+        self._socket.setsockopt(zmq.SUBSCRIBE, b'')  # 接收所有消息
+
+    def read(self):
+        bs = self._socket.recv()
+        return bs
+
+    def pkg_handler(self, msg):
+        if self.channel == 'j2_zmq':
+
+            r = {'type': self.channel, 'source': self.source, 'log_name': self.source}
+            r['buf'] = msg
+            self.fileHandler.insert_general_bin_raw(r)
+
+
+    def run(self):
+        pid = os.getpid()
+        print('sink {} pid:'.format(self.source), pid)
+        time0 = time.time()
+        self._init_port()
+        pt_sum = 0
+        next_check = 0
+        self.pid = os.getpid()
+        last_ts = 0
+        msg_cnt = 0
+        throuput = 0
+        # if 'can' in self.type:
+        #     print(self.type, 'start.')
+        while not self.exit.is_set():
+
+            buf = self.read()
+            if not buf:
+                time.sleep(0.001)
+                continue
+            t0 = time.time()
+            msg_cnt += 1
+            # throuput += len(buf)
+            r = self.pkg_handler(buf)
+            if r is not None:
+                if isinstance(r[1], dict):
+                    r[1]['ts_arrival'] = t0
+                elif isinstance(r[1], list):
+                    for item in r[1]:
+                        item['ts_arrival'] = t0
+                else:
+                    print(r)
+                if not self.queue.full():
+                    self.queue.put((r))
+                else:
+                    time.sleep(0.001)
+                    continue
+
+        print('sink', self.source, 'exit.')
+
+
+
 class UDPSink(Thread):
     def __init__(self, queue, ip, port, topic, protocol, index, fileHandler):
         super(UDPSink, self).__init__()
@@ -199,6 +279,9 @@ class UDPSink(Thread):
             ret = parsers_dict.get(self.protocol, "default")(0, msg, self.ctx)
             if ret is None:
                 return ret
+            if type(ret) != list:
+                ret = [ret]
+
             for obs in ret:
                 obs['ts'] = timestamp
                 obs['source'] = self.source
