@@ -172,13 +172,17 @@ stream_info_007_012 = read_vis_definiaton("./dbc/strdef_src022_str007_ver012.txt
 def parser_q4_100(id, buf, ctx={}):
 
     # str_005_016.update({'streamNumber': 5, 'streamVersion': 16, "streamChunkLen": 6192})
+
+    if len(buf) < 32:
+        return None
+
     header_info = decode_header(buf[:32])
 
     # only decode strdef_src022_ver016_vis.txt
-    if header_info["streamNumber"] == 5 and header_info["streamVersion"] == 16 and header_info["streamChunkLen"] == 6192:
+    if header_info["streamNumber"] == 5 and header_info["streamVersion"] == 16 and header_info["streamChunkLen"] == 6192 and len(buf)-32 == 6192:
         lane, obs = decode_data(buf[32:], stream_info_005_016)
         lane.extend(obs)
         return lane
-    elif header_info["streamNumber"] == 7 and header_info["streamVersion"] == 12 and header_info["streamChunkLen"] == 212:
+    elif header_info["streamNumber"] == 7 and header_info["streamVersion"] == 12 and header_info["streamChunkLen"] == 212 and len(buf)-32 == 212:
         r = decode_speed(stream_info_007_012, buf[32:])
         return r
