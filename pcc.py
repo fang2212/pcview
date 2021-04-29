@@ -580,9 +580,11 @@ class PCC(object):
                     #     del mess['misc'][source][entity]
                     #     continue
                     if source == 'x1j.0' and entity == 'obstacle.3':
-                        print(mess['misc'][source][entity])
+                        # print(mess['misc'][source][entity])
+                        pass
                     if not self.draw_misc_data(img, mess['misc'][source][entity]):
-                        print('draw misc data exited, source:', source)
+                        # print('draw misc data exited, source:', source)
+                        pass
 
         # t3 = time.time()
         ts_ana.append(('misc_data', time.time()))
@@ -856,7 +858,7 @@ class PCC(object):
     def draw_misc_data(self, img, data):
         # print(data)
         if 'type' not in data:
-            print('data invalid: no type', data)
+            # print('data invalid: no type', data)
             return
         role = self.hub.get_veh_role(data.get('source'))
         if role not in self.vehicles:
