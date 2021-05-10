@@ -183,7 +183,6 @@ class Hub(Thread):
         print('closing file handler..')
         self.fileHandler.close()
         print('closing sink node..')
-        # self.node.close()
 
         self.nodes[0].close()
         self.nodes[1].close()
