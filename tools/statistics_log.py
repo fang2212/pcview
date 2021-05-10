@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import time
 from datetime import datetime
 from tqdm import tqdm
 
@@ -32,6 +33,7 @@ save_dir = os.path.join(save_dir, date_str)
 os.makedirs(save_dir)
 
 process_show = 0
+
 
 def main():
     # 对log文件参数进行统计
@@ -99,7 +101,8 @@ def render(can, can_name):
     count = 0
     for can_id_data in can:
         # print(f"{can_id_data[0].get('id')} len:", len(can_id_data))
-        if len(can_id_data) <= 1:
+        data_count = len(can_id_data)
+        if data_count <= 1:
             continue
 
         count += 1
@@ -122,18 +125,20 @@ def render(can, can_name):
             interval_list.append(time_interval)
             prev_timestamp = data.get("ts")
 
-        # 求均值、最大值、最小值
+        # 求均值、最大值、最小值、标准差
         avg_interval = np.mean(interval_list)
         min_interval = np.min(interval_list)
         max_interval = np.max(interval_list)
+        std_interval = np.std(interval_list)
 
         # 渲染
-        plt.title(f"can id:{can_id_data[0].get('id')}")
+        plt.title(f"can id:{can_id_data[0].get('id')} count:({data_count}) time:{int(can_id_data[-1].get('ts') - can_id_data[0].get('ts'))}s std/avg:{'%.3f' % (std_interval/avg_interval)}")
         plt.xlabel("timestamp")
         plt.ylabel("interval(s)")
         avg_line = plt.axhline(y=avg_interval, color="r", linestyle="--", linewidth=1)
         min_line = plt.axhline(y=min_interval, color="g", linestyle="--", linewidth=1)
         max_line = plt.axhline(y=max_interval, color="y", linestyle="--", linewidth=1)
+        # std_line = plt.axhline(y=std_interval, color="b", linestyle="--", linewidth=1)
         plt.legend([avg_line, min_line, max_line], [f'avg:{"%.8f" % avg_interval}', f'min:{"%.8f" % min_interval}',
                                                     f'max:{"%.8f" % max_interval}'], bbox_to_anchor=(0, -0.23, 1, 2),
                    loc="lower left", mode="expand", borderaxespad=0, ncol=3)
@@ -142,7 +147,7 @@ def render(can, can_name):
     plt.subplots_adjust(left=0, bottom=0, right=1, top=1, hspace=0.1, wspace=0.1)
     plt.tight_layout()
     plt.suptitle(can_name, fontsize="xx-large")
-    plt.savefig(f'{os.path.join(save_dir, can_name)}.png', dpi=200, format='png')
+    plt.savefig(f'{os.path.join(save_dir, can_name)}_{time.strftime("%Y%m%d%H%M%S", time.localtime(can[0][0].get("ts")))}.png', dpi=200, format='png')
     plt.close()
 
 

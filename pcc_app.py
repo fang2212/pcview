@@ -67,7 +67,7 @@ if args.config:
 else:
     cve_conf = load_cfg(args.cfg_path)
 cve_conf.local_cfg = local_cfg
-print(cve_conf.local_cfg.log_root)
+print("log path:", cve_conf.local_cfg.log_root)
 
 _startup_cwd = os.getcwd()
 
