@@ -26,7 +26,6 @@
                 {"model":  "bynav"},
                 {"model":  "q4_100"}
        ],
-
             "installation": {
                 "esr": {
                     "yaw": 0.0,
@@ -42,9 +41,6 @@
                     "pitch": 1.0,
                     "height": 0.53,
                     "lon_offset": 0.0,
-<<<<<<< HEAD
-                    "yaw": -1
-=======
                     "yaw": -0.5
                 },
                 "ars410": {
@@ -54,7 +50,6 @@
                     "height": 0.53,
                     "lon_offset": 0.0,
                     "yaw": 0
->>>>>>> e8816210fda9d6143f35b8a59e0d682b223f1395
                 },
                 "lmr": {
                     "yaw": 0.0,
@@ -72,8 +67,7 @@
                       "lon_offset": -1.38,
                       "yaw": 0.0
                  },
-<<<<<<< HEAD
-=======
+
                  "q4_100": {
                       "roll": 0.0,
                       "lat_offset": -0.08,
@@ -82,7 +76,7 @@
                       "lon_offset": -1.58,
                       "yaw": 0
                 },
->>>>>>> e8816210fda9d6143f35b8a59e0d682b223f1395
+
                  "mbq4": {
                       "roll": 0.0,
                       "lat_offset": -0.06,
@@ -91,8 +85,7 @@
                       "lon_offset": -1.58,
                       "yaw": 0.0
                 },
-<<<<<<< HEAD
-=======
+
                  "j2": {
                       "roll": 0.0,
                       "lat_offset": -0.03,
@@ -101,7 +94,7 @@
                       "lon_offset": -3.53,
                       "yaw": 0
                 },
->>>>>>> e8816210fda9d6143f35b8a59e0d682b223f1395
+
                 "rtk": {
                     "yaw": 0.0,
                     "pitch": -2.0,
@@ -111,18 +104,7 @@
                     "height": 1.2
                 },
                 "video": {
-<<<<<<< HEAD
-                    "yaw": 2.1,
-                    "pitch": 1.2,
-                    "roll": 0.42,
-                    "lat_offset": 0.12,
-                    "lon_offset": -1.58,
-                    "height": 1.41,
-                    "fu": 1286.9,
-                    "fv": 1286.1333,
-                    "cu": 960.4223,
-                    "cv": 555.0085
-=======
+
                     "yaw": 1.3,
                     "pitch": 4.95,
                     "roll": 1.2,
@@ -133,21 +115,16 @@
                     "fv": 1296.2201,
                     "cu": 967.7107,
                     "cv": 533.2411
->>>>>>> e8816210fda9d6143f35b8a59e0d682b223f1395
+
                 },
                 "x1": {
                     "yaw": 0.0,
                     "pitch": 0.0,
                     "roll": 0.0,
-<<<<<<< HEAD
-                    "lat_offset": 0.15,
-                    "lon_offset": -1.67,
-                    "height": 1.2
-=======
+
                     "lat_offset": 0,
                     "lon_offset": 0,
                     "height": 1.4
->>>>>>> e8816210fda9d6143f35b8a59e0d682b223f1395
                 }
             }
         },
