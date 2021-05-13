@@ -1085,7 +1085,7 @@ class FlowSink(NNSink):
 
             pcv = mytools.convert(payload)
 
-            ## cv22_algo_data
+            # cv22_algo_data
             if 'data' in pcv and 'key' in pcv:
                 pcv[pcv['key']] = pcv['data']
                 pcv.pop('data')

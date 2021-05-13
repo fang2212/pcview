@@ -331,7 +331,7 @@ class PCC(object):
                 t2 = time.time()
                 self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (t2 - t1))
                 if not self.replay:
-                    qsize = self.hub.fileHandler.log_q.qsize()
+                    qsize = self.hub.fileHandler.log_queue.qsize()
                     self.statistics['fileHandler_log_q_size'] = qsize
                 #     # print('raw queue size:', qsize)
                 #     if self.hub.fileHandler.is_recording and qsize > 2000:
@@ -1011,7 +1011,7 @@ class PCC(object):
                 # self.parse_state = False
                 if self.cfg.runtime.get('low_profile'):
                     self.hub.parse_can_msgs(False)
-            print('toggle recording status. {}'.format(self.hub.fileHandler.is_recording))
+            print('toggle recording status: {}'.format(self.hub.fileHandler.is_recording))
         # elif key == ord('s'):
         #     self.ot.save_para()
         #     if not self.replay:

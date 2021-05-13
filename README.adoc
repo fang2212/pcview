@@ -27,3 +27,11 @@ cve-new是CVE的web版本，可以从浏览器呈现和控制。
 ** pcc_replay.py 回放主程序 
 ** log_manipulate.py 后处理分析入口 
 ** 配置参考 instruction.md
+
+== 环境安装
+=== 1、pip官方包安装
+** pip3 install -r requirements.txt
+
+=== 2、PyTurboJPEG安装
+** sudo apt-get install libturbojpeg
+** pip3 install -U git+git://github.com/lilohuang/PyTurboJPEG.git

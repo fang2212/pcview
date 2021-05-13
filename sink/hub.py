@@ -93,7 +93,7 @@ class Hub(Thread):
         self.type_roles = dict()
         self.sinks = []
 
-        self.nodes = [CollectorNode([]), CollectorNode([])]
+        self.nodes = [CollectorNode([]), CollectorNode([]), CollectorNode([]), CollectorNode([])]
 
         self.mac_ip = None
         self.online = {}
@@ -184,8 +184,8 @@ class Hub(Thread):
         self.fileHandler.close()
         print('closing sink node..')
 
-        self.nodes[0].close()
-        self.nodes[1].close()
+        for node in self.nodes:
+            node.close()
 
     def get_veh_role(self, source):
         if source in self.type_roles:
@@ -431,10 +431,10 @@ class Hub(Thread):
             self.init_collector(self.online[ip])
 
         for i, s in enumerate(self.sinks):
-            self.nodes[i & 1].add(s)
+            self.nodes[i % 4].add(s)
 
-        self.nodes[0].start()
-        self.nodes[1].start()
+        for node in self.nodes:
+            node.start()
 
         if self.fileHandler:
             self.fileHandler.start()

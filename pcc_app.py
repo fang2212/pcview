@@ -252,7 +252,7 @@ elif args.web:  # start webui PCC
             time.sleep(0.1)
 
 else:  # normal standalone PCC
-    print('PCC starts in normal mode.')
+    print(f'PCC starts in normal mode. pid:{os.getpid()}')
     # cve_conf = load_cfg(args.cfg_path)
     # local_cfg = get_local_cfg()
     if args.auto:

@@ -1,16 +1,16 @@
 #!/usr/bin/python
 # -*- coding:utf8 -*-
+import cv2
 import json
 import os
 import time
 from datetime import datetime
-from multiprocessing import Queue, Process, Array, Manager
+from multiprocessing import Queue, Process, Array, Manager, Value
 
+import numpy as np
 from turbojpeg import TurboJPEG
 
 from tools.video_writer import MJPEGWriter
-import cv2
-import numpy as np
 
 # 限制为单线程，防止竞争占用资源
 cv2.setNumThreads(0)
@@ -38,8 +38,8 @@ class FileHandler(Process):
         self.video_path = None                      # 视频保存路径
 
         self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        self.recording_state = 0
-        self.__start_time = 0
+        self.recording_state = Value('i', 0)
+        self.__start_time = Value("d", 0)
 
         self.redirect = redirect
 
@@ -51,15 +51,15 @@ class FileHandler(Process):
 
     @property
     def is_recording(self):
-        return self.recording_state == 1
+        return self.recording_state.value == 1
 
     @property
     def start_time(self):
-        return self.__start_time
+        return self.__start_time.value
 
     @start_time.setter
     def start_time(self, v):
-        self.__start_time = v
+        self.__start_time.value = v
 
     @property
     def path(self):
@@ -72,116 +72,114 @@ class FileHandler(Process):
             self.__path.value = p.encode()
 
     def run(self):
+        print(f"file handle pid:{os.getpid()}")
+
         while self.running:
             t0 = time.time()
             if self.is_recording and t0 - self.start_time > 600:
                 self.stop_rec()
                 self.start_rec()
 
-            while not self.log_queue.empty():
-                log_class, msg = self.log_queue.get()
-                # log.txt记录
-                if log_class == 'raw' and self.log_fp:
-                    timestamp, log_type, data = msg
-                    tv_s = int(timestamp)
-                    tv_us = (timestamp - tv_s) * 1000000
-                    log_line = "%.10d %.6d " % (tv_s, tv_us) + log_type + ' ' + data + "\n"
-                    self.log_fp.write(log_line)
-                    self.log_fp_write += 1
+            log_class, msg = self.log_queue.get()
+            # log.txt记录
+            if log_class == 'raw' and self.log_fp:
+                timestamp, log_type, data = msg
+                tv_s = int(timestamp)
+                tv_us = (timestamp - tv_s) * 1000000
+                log_line = "%.10d %.6d " % (tv_s, tv_us) + log_type + ' ' + data + "\n"
+                self.log_fp.write(log_line)
+                self.log_fp_write += 1
 
-                # 其他类型的日志记录
-                elif log_class == 'pcv':
-                    source = msg['source']
-                    buf = json.dumps(msg) + "\n"
-                    self.record_other_log(source, 'pcv_log.txt', buf, bin=False)
-                elif log_class == 'fusion':
-                    source = msg['source']
-                    buf = msg['buf']
-                    self.record_other_log(source, 'fusion.txt', buf, bin=True)
-                elif log_class == 'general_bin':
-                    source = msg['source']
-                    name = msg['log_name'] + '.bin'
-                    self.record_other_log(source, name, msg['buf'], bin=True)
-                elif log_class == 'jpg' and self.save_path:
-                    res = msg
-                    frame_id = res['frame_id']
-                    data = res['img']
-                    source = res['source']
-                    is_main = res.get('is_main')
-                    if source not in self.video_streams:
-                        if is_main:
-                            video_path = os.path.join(self.save_path, 'video')
-                        else:
-                            video_path = os.path.join(self.save_path, source)
-                        if not os.path.exists(video_path):
-                            os.mkdir(video_path)
-
-                        self.video_streams[source] = {
-                            'video_path': video_path,
-                            'frame_cnt': 0,
-                            'frame_reset': True,
-                            'video_writer': None
-                        }
-
-                    if self.video_streams[source]['frame_cnt'] % self._max_cnt == 0 or self.video_streams[source]['frame_reset']:
-                        self.video_streams[source]['frame_reset'] = False
-                        self.video_streams[source]['frame_cnt'] = 0
-                        video_path = os.path.join(self.video_streams[source]['video_path'],
-                                                  'camera_{:08d}.avi'.format(frame_id))
-                        img = jpeg.decode(np.fromstring(data, np.uint8))
-                        h, w, c = img.shape
-                        now_fps = 20
-                        if 'cv22' in source:
-                            now_fps = 30
-                        if self.video_streams[source].get('video_writer'):
-                            self.video_streams[source]['video_writer'].finish_video()
-                        self.video_streams[source]['video_writer'] = MJPEGWriter(video_path, w, h, now_fps)
-                        self.video_streams[source]['video_writer'].write_header()
-                        print("video start over.", self.video_streams[source]['frame_cnt'], video_path)
-
-                    self.video_streams[source]['video_writer'].write_frame(data)
-                    self.video_streams[source]['frame_cnt'] += 1
-                    self.record_video_log(msg)
-                elif log_class == 'video' and self.save_path:
-                    res = msg
-                    frame_id = res['frame_id']
-                    data = res['img']
-                    source = res['source']
-                    if source not in self.video_streams:
+            # 其他类型的日志记录
+            elif log_class == 'pcv':
+                source = msg['source']
+                buf = json.dumps(msg) + "\n"
+                self.record_other_log(source, 'pcv_log.txt', buf, bin=False)
+            elif log_class == 'fusion':
+                source = msg['source']
+                buf = msg['buf']
+                self.record_other_log(source, 'fusion.txt', buf, bin=True)
+            elif log_class == 'general_bin':
+                source = msg['source']
+                name = msg['log_name'] + '.bin'
+                self.record_other_log(source, name, msg['buf'], bin=True)
+            elif log_class == 'jpg' and self.save_path:
+                res = msg
+                frame_id = res['frame_id']
+                data = res['img']
+                source = res['source']
+                is_main = res.get('is_main')
+                if source not in self.video_streams:
+                    if is_main:
+                        video_path = os.path.join(self.save_path, 'video')
+                    else:
                         video_path = os.path.join(self.save_path, source)
-                        if not os.path.exists(video_path):
-                            os.mkdir(video_path)
-                        self.video_streams[source] = {
-                            'video_path': video_path,
-                            'frame_cnt': 0,
-                            'frame_reset': True,
-                            'video_writer': None
-                        }
+                    if not os.path.exists(video_path):
+                        os.mkdir(video_path)
 
-                    h, w, c = data.shape
-                    if self.video_streams[source]['frame_cnt'] % self._max_cnt == 0 or self.video_streams[source]['frame_reset']:
-                        self.video_streams[source]['frame_reset'] = False
-                        self.video_streams[source]['frame_cnt'] = 0
-                        vpath = os.path.join(self.video_streams[source]['video_path'], 'camera_{:08d}.avi'.format(frame_id))
-                        print("video start over.", self.video_streams[source]['frame_cnt'], vpath)
-                        if self.video_streams[source]['video_writer']:
-                            if not self.isheadless:
-                                self.video_streams[source]['video_writer'].release()
-                            else:
-                                self.video_streams[source]['video_writer'].flush()
-                                self.video_streams[source]['video_writer'].close()
+                    self.video_streams[source] = {
+                        'video_path': video_path,
+                        'frame_cnt': 0,
+                        'frame_reset': True,
+                        'video_writer': None
+                    }
 
+                if self.video_streams[source]['frame_cnt'] % self._max_cnt == 0 or self.video_streams[source]['frame_reset']:
+                    self.video_streams[source]['frame_reset'] = False
+                    self.video_streams[source]['frame_cnt'] = 0
+                    video_path = os.path.join(self.video_streams[source]['video_path'],
+                                              'camera_{:08d}.avi'.format(frame_id))
+                    img = jpeg.decode(np.fromstring(data, np.uint8))
+                    h, w, c = img.shape
+                    now_fps = 20
+                    if 'cv22' in source:
+                        now_fps = 30
+                    if self.video_streams[source].get('video_writer'):
+                        self.video_streams[source]['video_writer'].finish_video()
+                    self.video_streams[source]['video_writer'] = MJPEGWriter(video_path, w, h, now_fps)
+                    self.video_streams[source]['video_writer'].write_header()
+                    print("video start over.", self.video_streams[source]['frame_cnt'], video_path)
+
+                self.video_streams[source]['video_writer'].write_frame(data)
+                self.video_streams[source]['frame_cnt'] += 1
+                self.record_video_log(msg)
+            elif log_class == 'video' and self.save_path:
+                res = msg
+                frame_id = res['frame_id']
+                data = res['img']
+                source = res['source']
+                if source not in self.video_streams:
+                    video_path = os.path.join(self.save_path, source)
+                    if not os.path.exists(video_path):
+                        os.mkdir(video_path)
+                    self.video_streams[source] = {
+                        'video_path': video_path,
+                        'frame_cnt': 0,
+                        'frame_reset': True,
+                        'video_writer': None
+                    }
+
+                h, w, c = data.shape
+                if self.video_streams[source]['frame_cnt'] % self._max_cnt == 0 or self.video_streams[source]['frame_reset']:
+                    self.video_streams[source]['frame_reset'] = False
+                    self.video_streams[source]['frame_cnt'] = 0
+                    vpath = os.path.join(self.video_streams[source]['video_path'], 'camera_{:08d}.avi'.format(frame_id))
+                    print("video start over.", self.video_streams[source]['frame_cnt'], vpath)
+                    if self.video_streams[source]['video_writer']:
                         if not self.isheadless:
-                            self.video_streams[source]['video_writer'] = cv2.VideoWriter(vpath, self.fourcc, 20.0, (w, h), True)
+                            self.video_streams[source]['video_writer'].release()
                         else:
-                            self.video_streams[source]['video_writer'] = open(vpath, 'wb')
+                            self.video_streams[source]['video_writer'].flush()
+                            self.video_streams[source]['video_writer'].close()
 
-                    self.video_streams[source]['video_writer'].write(data)
-                    self.video_streams[source]['frame_cnt'] += 1
-                    self.record_video_log(msg)
-            t2 = time.time()
-            if t2 - t0 < 0.001:
-                time.sleep(0.001)
+                    if not self.isheadless:
+                        self.video_streams[source]['video_writer'] = cv2.VideoWriter(vpath, self.fourcc, 20.0, (w, h), True)
+                    else:
+                        self.video_streams[source]['video_writer'] = open(vpath, 'wb')
+
+                self.video_streams[source]['video_writer'].write(data)
+                self.video_streams[source]['frame_cnt'] += 1
+                self.record_video_log(msg)
             if self.log_fp_write > 2000:
                 self.log_fp.flush()
 
@@ -276,15 +274,15 @@ class FileHandler(Process):
                 os.makedirs(self.video_path)
 
         self.ctrl_queue.put({'act': 'start', 'path': self.path, 'video_path': self.video_path})
-        self.recording_state = 1
+        self.recording_state.value = 1
         self.start_time = time.time()
         print('start recording:', self.path)
 
     def stop_rec(self):
         self.ctrl_queue.put({'act': 'stop'})
-        self.recording_state = 0
+        self.recording_state.value = 0
         self.start_time = 0
-        print('stop recording.', self.is_recording)
+        print('stop recording.')
 
     def save_param(self):
         self.uniconf.installs = self.d['installs']
