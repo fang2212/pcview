@@ -393,6 +393,11 @@ class Hub(Thread):
                     udpsink = UDPSink(self.msg_queue, ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler)
                     self.sinks.append(udpsink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
+                elif cfg['ports'][iface].get("transport") == 'zmq':
+                    proto = cfg['ports'][iface]['protocol']
+                    zmqSink = ZmqSink(self.msg_queue, ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler)
+                    self.sinks.append(zmqSink)
+                    self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
 
         else:  # no type, default is x1 collector
             pass
