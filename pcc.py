@@ -5,39 +5,27 @@ __author__ = 'pengquanhua <pengquanhua@minieye.cc>'
 __version__ = '0.1.0'
 __progname__ = 'run'
 
-# import logging
 from datetime import datetime
 from math import fabs
 from multiprocessing import Manager
 from threading import Thread
-# import signal
 import cv2
 from turbojpeg import TurboJPEG
-# import sys
-
-# from turbojpeg import TurboJPEG
 
 from net.ntrip_client import GGAReporter
 from player import FlowPlayer
 from player.pcc_ui import Player
 from recorder import VideoRecorder
 from recorder.convert import *
-# from sink.hub import Hub
 from tools.geo import *
 from tools.match import is_near
-# from tools.mytools import Supervisor
 from tools.transform import Transform, OrientTuner
 from models.vehicle import Vehicle, get_rover_target
 from models.road import Road
 from tools.cpu_mem_info import *
-# from multiprocessing import Queue
 import numpy as np
 import copy
 import traceback
-# logging.basicConfig(level=logging.INFO,
-#                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
-
-# sample_jpg = open('/home/nan/workshop/git/pcview/static/img/no_video.jpg', 'rb').read()
 
 cv2.setNumThreads(0)
 jpeg = TurboJPEG()
@@ -51,7 +39,7 @@ def loop_traverse(items):
 
 class PCC(object):
     def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=None,
-                 auto_rec=False, draw_algo=False):
+                 auto_rec=False, draw_algo=False, show_video=True):
         super(PCC, self).__init__()
         # from config.config import runtime
         self.draw_algo = draw_algo
@@ -65,6 +53,8 @@ class PCC(object):
         self.rlog = rlog
         self.frame_idx = 0
         self.ts0 = 0
+        self.show_video = show_video        # 是否输出显示界面（包括网页、本地渲染界面）
+        self.to_web = False
 
         self.now_id = 0
         # self.pre_rtk = {}
@@ -131,42 +121,26 @@ class PCC(object):
         self.save_replay_video = save_replay_video
         self.vw = None
         self.vs = None
-        if not to_web:
-            self.to_web = False
-            cv2.namedWindow('MINIEYE-CVE')
-            cv2.setMouseCallback('MINIEYE-CVE', self.left_click, '1234')
-            cv2.namedWindow('adj')
-            cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
-            cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
-            cv2.createTrackbar('Roll  ', 'adj', 500, 1000, self.ot.update_roll)
-        else:
-            self.to_web = True
-            # from video_server import VideoServer
-            import video_server
-            # self.web_img = video_server.server_dict
-            # self.ctrl_q = video_server.ctrl_q
-            self.o_msg_q = video_server.msg_q
-            self.o_img_q = video_server.img_q
-            # video_server.local_path = uniconf.local_cfg.log_root
-            self.vs = to_web
-            # self.vs.start()
+        if self.show_video:
+            if not to_web:
+                self.to_web = False
+                cv2.namedWindow('MINIEYE-CVE')
+                cv2.setMouseCallback('MINIEYE-CVE', self.left_click, '1234')
+                cv2.namedWindow('adj')
+                cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
+                cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
+                cv2.createTrackbar('Roll  ', 'adj', 500, 1000, self.ot.update_roll)
+            else:
+                import video_server
+
+                self.to_web = True
+                self.o_msg_q = video_server.msg_q
+                self.o_img_q = video_server.img_q
+                self.vs = to_web
 
         if not self.replay:
-
             t = Thread(target=self.recv_data)
             t.start()
-        # if self.save_replay_video and self.replay:
-        #     self.vw = VideoRecorder(os.path.dirname(self.rlog), fps=20)
-        #     self.vw.set_writer("replay-render", 1760, 720)
-        #     print('--------save replay video', os.path.dirname(self.rlog))
-
-        # def exit_for_signal(signal_num, frame):
-        #     if self.vs:
-        #         self.vs.terminate()
-        #     print("exit by signal")
-        #     sys.exit(0)
-        # for sig in [signal.SIGINT, signal.SIGTERM]:
-        #     signal.signal(sig, exit_for_signal)
 
         self.wav_cnt = 0
         self.audio = None
@@ -331,18 +305,8 @@ class PCC(object):
                 t2 = time.time()
                 self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (t2 - t1))
                 if not self.replay:
-                    qsize = self.hub.fileHandler.log_queue.qsize()
+                    qsize = self.hub.fileHandler.log_q.qsize()
                     self.statistics['fileHandler_log_q_size'] = qsize
-                #     # print('raw queue size:', qsize)
-                #     if self.hub.fileHandler.is_recording and qsize > 2000:
-                #         print('msg_q critical, skip drawing.', qsize)
-                #         # time.sleep(0.1)
-                #         continue
-                #     iqsize = self.hub.msg_queue.qsize()
-                #     if iqsize > 2000:
-                #         # print('iqsize:', iqsize, '>1000. pop cost: {:.2f}ms'.format((t1-t0)*1000), d[2], sys.getsizeof(d[1]))
-                #         # self.adjust_interval()
-                #         continue
             except Exception as e:
                 print('pcc run error:', d)
                 traceback.print_exc()

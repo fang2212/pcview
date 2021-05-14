@@ -12,6 +12,9 @@ import time
 from multiprocessing import Process, Queue, Manager, freeze_support
 import json
 from threading import Thread
+
+from tqdm import tqdm
+
 from parsers import ublox
 from recorder.convert import *
 from collections import deque
@@ -652,6 +655,7 @@ class LogPlayer(Process):
 
 
 def prep_replay(source, ns=False, chmain=None):
+    print("source:", source)
     if os.path.isdir(source):
         loglist = sorted(os.listdir(source), reverse=True)
         source = os.path.join(os.path.join(source, loglist[0]), 'log.txt')
@@ -686,6 +690,41 @@ def prep_replay(source, ns=False, chmain=None):
     return r_sort, uniconf
 
 
+def start_replay(source_path, args, show_video=True):
+    from pcc import PCC
+    if args.render:
+        if args.output:
+            odir = args.output
+        else:
+            odir = os.path.dirname(source_path)
+    else:
+        odir = None
+    ns = args.nosort
+    chmain = args.chmain
+    r_sort, cfg = prep_replay(source_path, ns=ns, chmain=chmain)
+
+    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=args.start_frame, end_frame=args.end_frame, loop=args.loop,
+                         nnsend=args.send, real_interval=args.real_interval, chmain=chmain)
+
+    if args.web:
+        if not show_video:
+            return
+        from video_server import PccServer
+        server = PccServer()
+        server.start()
+        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=server)
+        replayer.start()
+        pcc.start()
+        while True:
+            time.sleep(1)
+    else:
+        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, show_video=show_video)
+        replayer.start()
+        pcc.start()
+        replayer.join()
+        pcc.control(ord('q'))
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -711,44 +750,14 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     source = args.input_path
-    if args.render:
-        if args.output:
-            odir = args.output
-        else:
-            odir = os.path.dirname(source)
-    else:
-        odir = None
 
     freeze_support()
-    # source = sys.argv[1]
-    print(source)
-    # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
 
-    from tools import mytools
-    ns = args.nosort
-    chmain = args.chmain
-    r_sort, cfg = prep_replay(source, ns=ns, chmain=chmain)
-    from pcc import PCC
-
-    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=args.start_frame, end_frame=args.end_frame, loop=args.loop,
-                         nnsend=args.send, real_interval=args.real_interval, chmain=chmain)
-    if args.web:
-        from video_server import PccServer
-        server = PccServer()
-        server.start()
-        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=server)
-        print(os.getpid())
-        replayer.start()
-        pcc.start()
-        while True:
-            time.sleep(1)
+    if os.path.isdir(source):
+        dirs = [os.path.join(source, d) for d in os.listdir(source) if os.path.isdir(os.path.join(source, d))]
+        for d in tqdm(dirs):
+            start_replay(os.path.join(d, "log.txt"), args, show_video=False)
     else:
-        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg)
-        replayer.start()
-        pcc.start()
-        replayer.join()
-        pcc.control(ord('q'))
-        os._exit(0)
-
-
+        start_replay(source, args)
+        print(source)
 

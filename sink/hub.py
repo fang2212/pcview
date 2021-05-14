@@ -93,7 +93,9 @@ class Hub(Thread):
         self.type_roles = dict()
         self.sinks = []
 
-        self.nodes = [CollectorNode([]), CollectorNode([]), CollectorNode([]), CollectorNode([])]
+        self.nodes = []
+        for i in range(5):
+            self.nodes.append(CollectorNode([]))
 
         self.mac_ip = None
         self.online = {}
@@ -263,6 +265,8 @@ class Hub(Thread):
         idx = cfg['idx']
         is_main = cfg.get('is_main')
         self.online[ip]['msg_types'] = []
+        print('==='*6)
+        print(cfg)
 
         if 'type' not in cfg:
             return
@@ -435,8 +439,13 @@ class Hub(Thread):
         for ip in self.online:
             self.init_collector(self.online[ip])
 
+        print("sink num:", len(self.sinks))
         for i, s in enumerate(self.sinks):
-            self.nodes[i % 4].add(s)
+            print("sink:", s.source)
+            if s.source == "j2.0" or s.source == "q3control.1" or s.source == "debug.2":
+                self.nodes[4].add(s)
+            else:
+                self.nodes[i % 4].add(s)
 
         for node in self.nodes:
             node.start()

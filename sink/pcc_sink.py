@@ -138,6 +138,7 @@ class NNSink(Thread):
                 if not self.queue.full():
                     self.queue.put((r))
                 else:
+                    print("full")
                     time.sleep(0.001)
                     continue
 
