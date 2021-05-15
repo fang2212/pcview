@@ -556,6 +556,8 @@ class PCC(object):
             self.player.show_version(img, self.cfg)
             if self.hub.fileHandler.is_recording:
                 self.player.show_recording(img, self.hub.fileHandler.start_time)
+                if self.hub.fileHandler.is_marking:
+                    self.player.show_marking(img, self.hub.fileHandler.start_marking_time)
             else:
                 self.player.show_recording(img, 0)
 
@@ -980,6 +982,12 @@ class PCC(object):
         #     self.ot.save_para()
         #     if not self.replay:
         #         self.hub.fileHandler.save_param()
+        elif key == ord('0'):
+            if self.hub.fileHandler.is_recording:
+                if self.hub.fileHandler.is_marking:
+                    self.hub.fileHandler.end_mark()
+                else:
+                    self.hub.fileHandler.start_mark()
         elif key == ord('p'):
             self.set_pinpoint = True
             # print(self.set_target)

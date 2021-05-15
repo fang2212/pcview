@@ -527,6 +527,10 @@ class Player(object):
         # BaseDraw.draw_text(img, 'Recording... ', (2, 700), 0.5, CVColor.White, 1)
         # BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
 
+    def show_marking(self, img, start_time):
+        time_passed = time.time() - start_time
+        BaseDraw.draw_text(img, 'Marking time: {:.2f}s'.format(time_passed), (100, 680), 3, CVColor.Green, 3)
+
     def show_replaying(self, img, dts):
         time_passed = dts
         self.show_text_info('video', 140, 'Replaying... ', CVColor.Red)

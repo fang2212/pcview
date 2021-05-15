@@ -35,3 +35,7 @@ cve-new是CVE的web版本，可以从浏览器呈现和控制。
 === 2、PyTurboJPEG安装
 ** sudo apt-get install libturbojpeg
 ** pip3 install -U git+git://github.com/lilohuang/PyTurboJPEG.git
+
+=== 3、pyaudio安装
+** sudo apt-get install portaudio19-dev
+** pip3 install pyaudio
