@@ -247,9 +247,25 @@ class FileHandler(Process):
             if ctrl['act'] == 'start':
                 self.save_path = ctrl['path']
                 self.log_fp = open(os.path.join(self.save_path, 'log.txt'), 'w+')
+
+                # 处理间隔录制的mark
+                if self.is_marking:
+                    timestamp = time.time()
+                    tv_s = int(timestamp)
+                    tv_us = (timestamp - tv_s) * 1000000
+                    log_line = "%.10d %.6d " % (tv_s, tv_us) + "mark start"
+                    self.log_fp.write(log_line)
                 print('start recording.')
 
             elif ctrl['act'] == 'stop':
+                # 处理间隔录制的mark
+                if self.is_marking:
+                    timestamp = time.time()
+                    tv_s = int(timestamp)
+                    tv_us = (timestamp - tv_s) * 1000000
+                    log_line = "%.10d %.6d " % (tv_s, tv_us) + "mark end"
+                    self.log_fp.write(log_line)
+
                 # 关闭文件
                 self.log_fp.flush()
                 self.log_fp.close()

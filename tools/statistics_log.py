@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import shutil
 import time
 from datetime import datetime
 from tqdm import tqdm
@@ -25,11 +26,13 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s： %(message)s', datefmt
 if os.path.exists(args.save):
     save_dir = args.save
 else:
-    save_dir = '.'
+    save_dir = os.path.join(os.getcwd(), '.')
     logging.warning(f"--save参数提供的路径不存在，改为根目录保存")
 
-date_str = datetime.now().strftime("%Y%m%d%H%M%S")
-save_dir = os.path.join(save_dir, date_str)
+
+save_dir = os.path.join(save_dir, "log信号接收统计图表")
+if os.path.exists(save_dir):
+    shutil.rmtree(save_dir)
 os.makedirs(save_dir)
 
 process_show = 0
