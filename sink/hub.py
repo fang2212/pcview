@@ -441,11 +441,7 @@ class Hub(Thread):
 
         print("sink num:", len(self.sinks))
         for i, s in enumerate(self.sinks):
-            print("sink:", s.source)
-            if s.source == "j2.0" or s.source == "q3control.1" or s.source == "debug.2":
-                self.nodes[4].add(s)
-            else:
-                self.nodes[i % 4].add(s)
+            self.nodes[i % 4].add(s)
 
         for node in self.nodes:
             node.start()

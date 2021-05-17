@@ -13,8 +13,8 @@
             "enable": true,
             "collectors": [
               {"model":  "ffd1", "params": {"mac": "00:0c:18:ef:ff:e0", "can0": "mbq3", "can1": "x1j", "force_ip":  true,
-                  "ip":  "192.168.6.233", "is_main":  false}},
-                {"model":  "cv22", "params": {"force_ip":  true, "ip":  "192.168.98.231", "is_main":  true, "type":  "cv22_algo_200m"}}
+                  "ip":  "192.168.0.233", "is_main":  true}},
+                {"model":  "cv22", "params": {"force_ip":  true, "ip":  "192.168.98.231", "is_main":  false, "type":  "cv22_algo_200m"}}
             ],
             "installation": {
                 "esr": {

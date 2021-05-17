@@ -33,7 +33,7 @@ class FileHandler(Process):
 
         self.save_path = None                       # 日志保存路径
         self.log_fp = None                          # log.txt文件对象
-        self.log_fp_write = 0                       # log.txt记录次数
+        self.log_fp_last_write = 0                  # log.txt最后一次记录时间
         self.other_log_fps = {}                     # 其他类型的消息类型log文件对象
         self.video_streams = dict()                 # 视频文件对象
         self.video_path = None                      # 视频保存路径
@@ -113,7 +113,6 @@ class FileHandler(Process):
                 tv_us = (timestamp - tv_s) * 1000000
                 log_line = "%.10d %.6d " % (tv_s, tv_us) + log_type + ' ' + data + "\n"
                 self.log_fp.write(log_line)
-                self.log_fp_write += 1
 
             # 其他类型的日志记录
             elif log_class == 'pcv':
@@ -205,8 +204,11 @@ class FileHandler(Process):
                 self.video_streams[source]['video_writer'].write(data)
                 self.video_streams[source]['frame_cnt'] += 1
                 self.record_video_log(msg)
-            if self.log_fp_write > 2000:
+
+            # 写入到log.txt文件的间隔时间
+            if t0 - self.log_fp_last_write > 1 and self.log_fp:
                 self.log_fp.flush()
+                self.log_fp_last_write = time.time()
 
     def record_other_log(self, source, name, msg, bin=False):
         """记录其他类型的消息日志"""
@@ -230,11 +232,10 @@ class FileHandler(Process):
         source = msg['source']
         tv_s = int(ts)
         tv_us = (ts - tv_s) * 1000000
-        kw = 'camera' if source == 'video' else source
+        kw = 'camera' if msg['is_main'] else source
         log_line = "%.10d %.6d " % (tv_s, tv_us) + kw + ' ' + '{}'.format(frame_id) + "\n"
         if self.log_fp:
             self.log_fp.write(log_line)
-            self.log_fp_write += 1
 
         if msg.get('transport') == 'libflow':
             buf = json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n"
