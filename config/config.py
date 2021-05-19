@@ -283,8 +283,6 @@ def load_config(jsonspec):
             configs[idx] = coll
         except Exception as e:
             configs.append(coll)
-    # configs[0] = spec[0]
-    # configs[1] = spec[1]
     config = dic2obj(configs[0])
     print(bcl.WARN + 'configs:' + bcl.ENDC)
     for c in configs:

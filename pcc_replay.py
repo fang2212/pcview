@@ -463,8 +463,11 @@ class LogPlayer(Process):
                     print('fid from log drop backward', self.now_frame_id, self.start_frame)
                     while self.now_frame_id < self.start_frame:
                         line = rf.readline().strip()
+                        if line == "":
+                            continue
+
                         cols = line.split(' ')
-                        if cols[2] == 'camera':
+                        if cols[2] == self.video_log_key:
                             self.now_frame_id = int(cols[3])
                             _, jpg = next(self.jpeg_extractor)
                 if jpg is None or lcnt % self.replay_speed != 0:
