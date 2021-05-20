@@ -112,7 +112,7 @@ if __name__ == '__main__':
         recorder_cfg['path'] = args.path
 
     if recorder_cfg.get('video'):
-        video_recorder = VideoRecorder(recorder_cfg['path'], 20)
+        video_recorder = VideoRecorder(recorder_cfg['path'], 30)
     else:
         video_recorder = None
     msg_queue = Queue()
