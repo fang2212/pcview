@@ -5,7 +5,7 @@ import os
 import shutil
 import time
 from multiprocessing import Pool, cpu_count
-
+import openpyxl
 from tqdm import tqdm
 
 import numpy as np
@@ -28,10 +28,17 @@ class Statistics:
     def __init__(self, log_path, save_path=None):
         self.log_path = log_path
         self.save_path = save_path
-        self.file_name = os.path.split(log_path)[-1].split(".")[0] + '.png'
+        self.file_name = os.path.split(log_path)[-1].split(".")[0]
         # self.pool = Pool(4)                         # 初始化进程池
 
+        self.id_map = {}                                # CAN设备数据统计映射表
         self.record_data = []                           # 日志数据
+
+        self.wb = openpyxl.Workbook()                                           # Excel文件对象
+        self.excel_ws = self.wb.create_sheet(title=self.file_name, index=0)     # Excel工作表对象
+        self.excel_row_pos = 1
+
+        self.img_contain = 12
 
         self.init()
 
@@ -40,6 +47,12 @@ class Statistics:
             self.save_path = os.path.join(os.path.dirname(self.log_path), "asc信号接收统计图表")
             if not os.path.exists(self.save_path):
                 os.makedirs(self.save_path)
+
+        # 初始化表头
+        excel_header = ["设备id", '平均值', '最小值', '最大值', '标准差']
+        for i, h in enumerate(excel_header):
+            self.excel_ws.cell(column=i+1, row=self.excel_row_pos, value=h)
+        self.excel_row_pos += 1
 
     def run(self):
         print("start:", self.log_path)
@@ -52,73 +65,118 @@ class Statistics:
 
                 # 格式化日志数据
                 cols = line.strip().split("	")
+                if not self.id_map.get(cols[2]):
+                    self.id_map[cols[2]] = [{"ts": float(cols[0]), "id": cols[2]}]
+                else:
+                    self.id_map[cols[2]].append({"ts": float(cols[0]), "id": cols[2]})
 
-                self.record_data.append({"ts": float(cols[0])})
+        # print(len(self.id_map))
+        self.statistics_id()
+        self.export_excel()
+        # render([self.record_data], file_name=os.path.join(self.save_path, self.file_name))
 
-        render([self.record_data], file_name=os.path.join(self.save_path, self.file_name))
 
+    def statistics_id(self):
+        """
+            统计数据接收情况
+        """
+        id_list = list(self.id_map.keys())
+        img_num = 1
+        for i in range(0, len(id_list), self.img_contain):
+            split_id = id_list[i: i + self.img_contain]
+            render_list = [self.id_map[dev_id] for dev_id in split_id]
 
-def render(data_list, title="", file_name="统计图表.png"):
-    """渲染设备的接收情况图表"""
-    if not data_list:
-        return
-    if os.path.exists(file_name):
-        logger.debug(f"已存在渲染数据：{file_name}")
-        return
+            over_count = len(render_list) % col_count
+            if over_count != 0:
+                over_list = render_list[:-over_count]
+                if not over_list:
+                    continue
+                file_name = os.path.join(self.save_path, f'{self.file_name}_{img_num}.png')
+                self.render(over_list, title=f"{self.file_name}_{img_num}", file_name=file_name)
+                # self.pool.apply(render_can, args=(render_list[:-over_count], f"{can}_{img_num}", self.save_path))
+                render_list = render_list[-over_count:]
+                img_num += 1
+                if not render_list:
+                    continue
+            file_name = os.path.join(self.save_path, f'{self.file_name}_{img_num}.png')
+            self.render(render_list, title=f"{self.file_name}_{img_num}", file_name=file_name)
+            # self.pool.apply(render_can, args=(render_list, f"{can}_{img_num}", self.save_path))
+            img_num += 1
 
-    # 设置主图像素跟大小
-    can_id_count = len(data_list)
-    render_col_count = can_id_count if can_id_count < col_count else col_count
-    render_row_count = int(math.ceil(can_id_count / col_count))
-    plt.rcParams['figure.dpi'] = 200
-    plt.rcParams['figure.figsize'] = 10 * render_col_count, render_row_count * 6
+    def render(self, data_list, title="", file_name="统计图表.png"):
+        """渲染设备的接收情况图表"""
+        if not data_list:
+            return
+        if os.path.exists(file_name):
+            logger.debug(f"已存在渲染数据：{file_name}")
+            return
 
-    count = 0
-    for can_id_data in data_list:
-        data_count = len(can_id_data)
-        if data_count <= 1:
-            continue
+        # 设置主图像素跟大小
+        can_id_count = len(data_list)
+        render_col_count = can_id_count if can_id_count < col_count else col_count
+        render_row_count = int(math.ceil(can_id_count / col_count))
+        plt.rcParams['figure.dpi'] = 200
+        plt.rcParams['figure.figsize'] = 10 * render_col_count, render_row_count * 6
 
-        count += 1
-        # 渲染子图图表
-        plt.subplot(render_row_count, render_col_count, count)
-        interval_list = []
-        timestamp_list = []
-        prev_timestamp = 0
-        for data in can_id_data:
-            timestamp_list.append(data.get("ts"))
-            if not prev_timestamp:
-                prev_timestamp = data.get("ts")
+        count = 0
+        for can_id_data in data_list:
+            data_count = len(can_id_data)
+            if data_count <= 1:
                 continue
 
-            # 计算接收间隔
-            time_interval = data.get("ts") - prev_timestamp
-            interval_list.append(time_interval)
-            prev_timestamp = data.get("ts")
+            count += 1
+            # 渲染子图图表
+            plt.subplot(render_row_count, render_col_count, count)
+            interval_list = []
+            timestamp_list = []
+            prev_timestamp = 0
+            for data in can_id_data:
+                timestamp_list.append(data.get("ts"))
+                if not prev_timestamp:
+                    prev_timestamp = data.get("ts")
+                    continue
 
-        # 求均值、最大值、最小值、标准差
-        avg_interval = np.mean(interval_list)
-        min_interval = np.min(interval_list)
-        max_interval = np.max(interval_list)
-        std_interval = np.std(interval_list)
+                # 计算接收间隔
+                time_interval = data.get("ts") - prev_timestamp
+                interval_list.append(time_interval)
+                prev_timestamp = data.get("ts")
 
-        # 渲染
-        plt.title(f"count:({data_count}) time:{int(can_id_data[-1].get('ts') - can_id_data[0].get('ts'))}s std/avg:{'%.3f' % (std_interval/avg_interval)}")
-        plt.xlabel("timestamp")
-        plt.ylabel("interval(s)")
-        avg_line = plt.axhline(y=avg_interval, color="r", linestyle="--", linewidth=1)
-        min_line = plt.axhline(y=min_interval, color="g", linestyle="--", linewidth=1)
-        max_line = plt.axhline(y=max_interval, color="y", linestyle="--", linewidth=1)
-        plt.legend([avg_line, min_line, max_line], [f'avg:{"%.8f" % avg_interval}', f'min:{"%.8f" % min_interval}',
-                                                    f'max:{"%.8f" % max_interval}'], bbox_to_anchor=(0, -0.23, 1, 2),
-                   loc="lower left", mode="expand", borderaxespad=0, ncol=3)
-        plt.scatter(timestamp_list[1:], interval_list, s=1, marker='.')  # s表示面积，marker表示图形
+            # 求均值、最大值、最小值、标准差
+            avg_interval = np.mean(interval_list)
+            min_interval = np.min(interval_list)
+            max_interval = np.max(interval_list)
+            std_interval = np.std(interval_list)
+            # 写入到表格对象中
+            col_data = [can_id_data[0].get('id'), avg_interval, min_interval, max_interval, std_interval]
+            for i, d in enumerate(col_data):
+                self.excel_ws.cell(column=i+1, row=self.excel_row_pos, value=d)
+            self.excel_row_pos += 1
 
-    plt.subplots_adjust(left=0, bottom=0, right=1, top=1, hspace=0.1, wspace=0.1)
-    plt.tight_layout()
-    plt.suptitle(title, fontsize="xx-large")
-    plt.savefig(file_name, dpi=200, format='png')
-    plt.close()
+            # 渲染
+            plt.title(f"{'dev id:'+can_id_data[0].get('id')} count:({data_count}) time:{int(can_id_data[-1].get('ts') - can_id_data[0].get('ts'))}s std/avg:{'%.3f' % (std_interval/avg_interval)}")
+            plt.xlabel("timestamp")
+            plt.ylabel("interval(s)")
+            avg_line = plt.axhline(y=avg_interval, color="r", linestyle="--", linewidth=1)
+            min_line = plt.axhline(y=min_interval, color="g", linestyle="--", linewidth=1)
+            max_line = plt.axhline(y=max_interval, color="y", linestyle="--", linewidth=1)
+            plt.legend([avg_line, min_line, max_line], [f'avg:{"%.8f" % avg_interval}', f'min:{"%.8f" % min_interval}',
+                                                        f'max:{"%.8f" % max_interval}'], bbox_to_anchor=(0, -0.23, 1, 2),
+                       loc="lower left", mode="expand", borderaxespad=0, ncol=3)
+            plt.scatter(timestamp_list[1:], interval_list, s=1, marker='.')  # s表示面积，marker表示图形
+
+        plt.subplots_adjust(left=0, bottom=0, right=1, top=1, hspace=0.1, wspace=0.1)
+        plt.tight_layout()
+        plt.suptitle(title, fontsize="xx-large")
+        plt.savefig(file_name, dpi=200, format='png')
+        plt.close()
+
+    def export_excel(self):
+        excel_filename = os.path.join(self.save_path, self.file_name + ".xlsx")
+        if os.path.exists(excel_filename):
+            logger.debug(f"{excel_filename}已存在，跳过保存")
+            self.wb.close()
+        else:
+            self.wb.save(excel_filename)
 
 
 def asc_list_from_path(path):
@@ -169,7 +227,8 @@ if __name__ == "__main__":
         log_path_list += asc_list_from_path(path)
 
     logger.debug(f"wait statistics count: {len(log_path_list)}")
-    for path in log_path_list:
+    for path in tqdm(log_path_list):
         task = Statistics(path, save_path=args.save)
         task.run()
+
     logger.warning("运行结束")

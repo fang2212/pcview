@@ -12,3 +12,5 @@ flask-socketio
 psutil
 eventlet
 python-nmap
+openpyxl
+tqdm
