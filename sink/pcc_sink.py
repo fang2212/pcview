@@ -387,7 +387,6 @@ class TCPSink(Thread):
                 r['source'] = self.source
                 ret.append(r)
                 self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), phr))
-
             return self.channel, ret, self.source
 
     def run(self):

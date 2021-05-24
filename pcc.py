@@ -199,8 +199,8 @@ class PCC(object):
                 dtype = d.get('type') if 'type' in d else 'notype'
                 id = str(d.get('id')) if 'id' in d else 'noid'
                 entity = dtype + '.' + id
-                # if d['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint']:
-                #     print(entity, '-------------------------------------')
+                # if d['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint', 'inspva']:
+                #     print(d, '-------------------------------------')
                 self.cache['misc'][source][entity] = d
                 self.cache['info'][source]['integrity'] = 'framed'
         elif isinstance(data, dict):
@@ -645,7 +645,7 @@ class PCC(object):
             if not self.replay:
                 self.hub.fileHandler.insert_raw(
                     (data['ts'], data.get('source') + '.pinpoint', compose_from_def(ub482_defs, data)))
-            print('set pinpoint:', data)
+            # print('insert pinpoint:', data)
             return
 
     def draw_rtk_ub482(self, img, data):
@@ -653,12 +653,14 @@ class PCC(object):
         source = data.get('source')
         # print(source)
         role = self.hub.get_veh_role(source)
-        # print(role)
         # self.vehicles[role].dynamics[data['type']] = data
         self.vehicles[role].update_dynamics(data)
 
-        if data['type'] == 'pinpoint':
-            self.update_pinpoint(data)
+        if data['type'] == 'inspva' and self.set_pinpoint:
+            self.set_pinpoint = False
+            pp = data.copy()
+            pp['type'] = 'pinpoint'
+            self.update_pinpoint(pp)
 
         if role in ('ego', 'default'):
             host = self.vehicles['ego'].get_pos()
@@ -872,7 +874,7 @@ class PCC(object):
             data['updated'] = True
             self.draw_rtk(img, data)
 
-        elif data['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint']:
+        elif data['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint', 'inspva']:
             pass
             # print('------------', data['type'])
             # print('ub482 ts:', data['ts'])
