@@ -24,6 +24,7 @@
                 {"model":  "cv22", "params": {"mac":  "6a:92:5e:c0:96:00", "is_main":  true}},
                 {"model":  "cv22_novid", "params": {"mac":  "6a:92:52:69:87:00", "is_main":  false}},
                 {"model":  "bynav"},
+                {"model":  "j2_zmq"},
                 {"model":  "q4_100"}
        ],
             "installation": {
@@ -38,16 +39,16 @@
                 "ars": {
                     "roll": 0.0,
                     "lat_offset": 0.35,
-                    "pitch": 1.0,
+                    "pitch": 0,
                     "height": 0.53,
                     "lon_offset": 0.0,
-                    "yaw": -0.5
+                    "yaw": 0.5
                 },
                 "ars410": {
                     "roll": 0.0,
                     "lat_offset": 0.35,
-                    "pitch": 1.0,
-                    "height": 0.53,
+                    "pitch": 0,
+                    "height": 0.37,
                     "lon_offset": 0.0,
                     "yaw": 0
                 },
@@ -109,7 +110,7 @@
                 },
                 "video": {
                     "yaw": 1.3,
-                    "pitch": 4.95,
+                    "pitch": 0.5,
                     "roll": 1.2,
                     "lat_offset": 0.12,
                     "lon_offset": -1.58,
