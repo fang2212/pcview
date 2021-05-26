@@ -726,22 +726,6 @@ class Player(object):
             BaseDraw.draw_text(img, '#rtk:{}/{} #ori:{}/{}'.format(rtk['sat'][1], rtk['sat'][0], rtk['sat'][5],
                                                                    rtk['sat'][4]), (indent + 50, 20), 0.5, color, 1)
 
-    def show_drtk(self, img, rtk=None):
-        if not rtk or rtk.get('rtkst') is None:
-            for s in self.rtk:
-                d = self.rtk[s]
-                dt = self.ts_now - d['ts']
-                # print(self.ts_now)
-                if dt > 0.25:
-                    d['updated'] = False
-                self._show_drtk(img, d)
-            return
-
-        self._show_drtk(img, rtk)
-        # rtk['updated'] = False
-        self.rtk[rtk['source']] = rtk
-        # self.show_target()
-
     def show_target(self, img, target, host):
         if not target or not host:
             return
@@ -753,8 +737,8 @@ class Player(object):
             x = 0.001
         width = 0.5
         height = 0.5
-        ux, uy = self.transform.trans_gnd2raw(x, y, host['hgt'] - target['hgt'] + self.cfg.install['video']['height'] -
-                                              self.cfg.install['rtk']['height'])
+        ux, uy = self.transform.trans_gnd2raw(x, y, host['hgt'] - target['hgt'] + self.cfg.installs['video']['height'] -
+                                              self.cfg.installs['rtk']['height'])
         w = 1200 * width / x
         if w > 50:
             w = 50
@@ -775,11 +759,14 @@ class Player(object):
         cv2.line(img, p1, p2, CVColor.White, 2)
         cv2.line(img, p3, p4, CVColor.White, 2)
 
-        BaseDraw.draw_text(img, 'R: {:.3f}'.format(range), (int(ux + 4), int(uy - 4)), 0.4, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (int(ux + 4), int(uy + 14)), 0.4, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
-                           CVColor.White, 1)
+        # BaseDraw.draw_text(img, 'R: {:.3f}'.format(range), (int(ux + 4), int(uy - 4)), 0.4, CVColor.White, 1)
+        # BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (int(ux + 4), int(uy + 14)), 0.4, CVColor.White, 1)
+        # BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
+        #                    CVColor.White, 1)
 
+        self.show_text_info(target['source'], 160, 'range: {:.3f}'.format(range))
+        self.show_text_info(target['source'], 180, 'angle: {:.2f}'.format(angle))
+        self.show_text_info(target['source'], 200, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle))
         return range, angle
 
     def show_rtk_target(self, img, target):
@@ -798,12 +785,32 @@ class Player(object):
         w = max(10, min(50, w))
         h = w
 
-        p1 = int(ux - 0.5 * w), int(uy - 0.5 * h)
-        p2 = int(ux + 0.5 * w), int(uy + 0.5 * h)
-        p3 = int(ux + 0.5 * w), int(uy - 0.5 * h)
-        p4 = int(ux - 0.5 * w), int(uy + 0.5 * h)
+        # p1 = int(ux - 0.5 * w), int(uy - 0.5 * h)
+        # p2 = int(ux + 0.5 * w), int(uy + 0.5 * h)
+        # p3 = int(ux + 0.5 * w), int(uy - 0.5 * h)
+        # p4 = int(ux - 0.5 * w), int(uy + 0.5 * h)
+
+        # cv2.line(img, p1, p2, color, 1)
+        # cv2.line(img, p3, p4, color, 1)
+        # cv2.line(img, p1, p3, color, 1)
+        # cv2.line(img, p1, p4, color, 1)
+        # cv2.line(img, p2, p3, color, 1)
+        # cv2.line(img, p2, p4, color, 1)
+        #
+        # p5 = (int(ux + 80), int(uy - 0.5 * h - 80))
+        # p6 = (p5[0] + 20, p5[1])
+        #
+        # cv2.line(img, (ux, uy), p5, color, 1)
+        # cv2.line(img, p5, p6, color, 1)
 
         color = self.color_obs['rtk']
+        p1 = int(ux - 0.5 * w), int(uy)
+        p2 = int(ux + 0.5 * w), int(uy)
+        p3 = int(ux), int(uy - 0.5 * h)
+        p4 = int(ux), int(uy + 0.5 * h)
+
+        cv2.line(img, p1, p2, color, 2)
+        cv2.line(img, p3, p4, color, 2)
 
         if angle > 90 or angle < -90:
             BaseDraw.draw_text(img, 'RTK target on the back', (int(ux + 4), int(uy - 4)), 0.6, CVColor.White, 1)
@@ -811,26 +818,14 @@ class Player(object):
         # cv2.line(img, p1, p2, CVColor.Green if target['rtkst'] >= 48 else CVColor.Grey, 2)
         # cv2.line(img, p3, p4, CVColor.Green if host['rtkst'] >= 48 else CVColor.Grey, 2)
 
-        cv2.line(img, p1, p2, color, 1)
-        cv2.line(img, p3, p4, color, 1)
-        cv2.line(img, p1, p3, color, 1)
-        cv2.line(img, p1, p4, color, 1)
-        cv2.line(img, p2, p3, color, 1)
-        cv2.line(img, p2, p4, color, 1)
 
-        p5 = (int(ux + 80), int(uy - 0.5 * h - 80))
-        p6 = (p5[0] + 20, p5[1])
-
-        cv2.line(img, (ux, uy), p5, color, 1)
-        cv2.line(img, p5, p6, color, 1)
-
-        BaseDraw.draw_text(img, 'R: {:.2f}'.format(range), p5, 0.3, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (p5[0], p5[1] - 10), 0.3, CVColor.White, 1)
+        # BaseDraw.draw_text(img, 'R: {:.2f}'.format(range), p5, 0.3, CVColor.White, 1)
+        # BaseDraw.draw_text(img, 'A: {:.2f}'.format(angle), (p5[0], p5[1] - 10), 0.3, CVColor.White, 1)
         # BaseDraw.draw_text(img, 'Trange: {:.3f} angle:{:.2f}'.format(range, angle), (indent + 2, 140), 0.5,
         #                    CVColor.White, 1)
-        self.show_text_info(target['source'], 240, 'range: {:.3f}'.format(range))
-        self.show_text_info(target['source'], 260, 'angle: {:.2f}'.format(angle))
-        self.show_text_info(target['source'], 280, 'TTC: {:.2f}'.format(target['TTC']))
+        self.show_text_info(target['source'], 160, 'range: {:.3f}'.format(range))
+        self.show_text_info(target['source'], 180, 'angle: {:.2f}'.format(angle))
+        self.show_text_info(target['source'], 200, 'TTC: {:.2f}'.format(target['TTC']))
 
     def show_ipm_target(self, img, target, host):
         range, angle = self._calc_relatives(target, host)
@@ -985,7 +980,8 @@ class Player(object):
         # print(data['type'], data['ts'], data['sol_stat'], data['pos_type'])
         # self.update_column_ts(data['source'], data['ts'])
         color = CVColor.White
-        style_list = {'NONE': 'fail', 'DOPPLER_VELOCITY': 'pass', 'NARROW_INT': 'pass', 'INS_RTKFIXED': 'pass'}
+        style_list = {'NONE': 'fail', 'DOPPLER_VELOCITY': 'pass', 'NARROW_INT': 'pass',
+                      'INS_RTKFIXED': 'pass', 'INS_PSRSP': 'pass'}
         if data['type'] == 'bestpos':
             # BaseDraw.draw_text(img, '{}'.format(data['pos_type']), (indent + 142, 40), 0.5, color, 1)
             # BaseDraw.draw_text(img, 'lat: {:.8f}'.format(data['lat']), (indent + 142, 60), 0.5, color, 1)
@@ -996,9 +992,12 @@ class Player(object):
             self.show_text_info(data['source'], 100, 'lon:{:.8f}'.format(data['lon']))
             self.show_text_info(data['source'], 120, 'hgt: {:.3f}'.format(data['hgt']))
             self.show_text_info(data['source'], 60, '#SVs/sol: {}/{}'.format(data['#SVs'], data['#solSVs']))
-            #
-            # vel = (data['velN'] ** 2 + data['velE'] ** 2) ** 0.5
-            # BaseDraw.draw_text(img, '{:.2f}km/h'.format(vel * 3.6), (indent + 142, 120), 0.5, color, 1)
+
+        if data['type'] == 'inspva':
+            self.show_text_info(data['source'], 40, 'P:{}'.format(data['pos_type']), style_list.get(data['pos_type']))
+            self.show_text_info(data['source'], 80, 'lat: {:.8f}'.format(data['lat']))
+            self.show_text_info(data['source'], 100, 'lon:{:.8f}'.format(data['lon']))
+            self.show_text_info(data['source'], 120, 'hgt: {:.3f}'.format(data['hgt']))
         if data['type'] == 'heading':
             # BaseDraw.draw_text(img, '{}'.format(data['pos_type']), (indent + 2, 40), 0.5, color, 1)
             # BaseDraw.draw_text(img, 'yaw: {:.2f}'.format(data['yaw']), (indent + 2, 60), 0.5, color, 1)

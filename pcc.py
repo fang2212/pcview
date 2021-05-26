@@ -621,10 +621,10 @@ class PCC(object):
             self.vw.write(img_rendered)
 
     def draw_rtk(self, img, data):
-        self.player.show_drtk(img, data)
         if len(data) == 0 or data.get('source') is None:
             return
 
+        # print("data:", data)
         if data['source'] == 'rtk.2':
             dt0 = data['ts'] - data['ts_origin']
             # self.rtkplot.update('rtk0', data['ts_origin'], dt0)
@@ -654,13 +654,20 @@ class PCC(object):
         # print(source)
         role = self.hub.get_veh_role(source)
         # self.vehicles[role].dynamics[data['type']] = data
-        self.vehicles[role].update_dynamics(data)
 
-        if data['type'] == 'inspva' and self.set_pinpoint:
-            self.set_pinpoint = False
-            pp = data.copy()
-            pp['type'] = 'pinpoint'
-            self.update_pinpoint(pp)
+        if data['type'] == 'inspva':
+            if self.set_pinpoint:
+                self.set_pinpoint = False
+                pp = data.copy()
+                pp['type'] = 'pinpoint'
+                self.update_pinpoint(pp)
+            data['hor_speed'] = (data.get("vel_n")**2 + data.get("vel_e")**2)**0.5
+            data['trk_gnd'] = atan2(data.get("vel_e"), data.get("vel_n"))
+            # old_pinpoint = self.vehicles['ego'].pinpoint
+            # self.player.show_target(img, data, old_pinpoint)
+            # if self.show_ipm:
+            #     self.player.show_ipm_target(self.ipm, data, old_pinpoint)
+        self.vehicles[role].update_dynamics(data)
 
         if role in ('ego', 'default'):
             host = self.vehicles['ego'].get_pos()
@@ -705,8 +712,10 @@ class PCC(object):
             #     pp1 = ppq[0]
             #     self.player.show_target(img, pp1, host)
 
-        pp_target = self.vehicles['ego'].get_pp_target()
+        pp_target = self.vehicles['ego'].get_pp_target(data)
+        # print("target:", pp_target)
         if pp_target:
+
             # t0 = time.time()
             self.player.show_rtk_target(img, pp_target)
             if self.show_ipm:
@@ -870,9 +879,9 @@ class PCC(object):
             self.cipv = data
 
         elif data['type'] == 'rtk':
-            # print('------------', data['type'])
             data['updated'] = True
             self.draw_rtk(img, data)
+            # print('------------', data['type'], data)
 
         elif data['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint', 'inspva']:
             pass
