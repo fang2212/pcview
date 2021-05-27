@@ -655,8 +655,8 @@ class PCC(object):
         role = self.hub.get_veh_role(source)
         # self.vehicles[role].dynamics[data['type']] = data
 
-        if data['type'] == 'inspva':
-            if self.set_pinpoint:
+        if data['type'] == 'inspva' or data['type'] == 'pinpoint':
+            if self.set_pinpoint or data['type'] == 'pinpoint':
                 self.set_pinpoint = False
                 pp = data.copy()
                 pp['type'] = 'pinpoint'

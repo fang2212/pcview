@@ -587,7 +587,7 @@ class LogPlayer(Process):
             #     r = {'source': cols[2], 'type': cols[2], 'ts': ts, 'range': range, 'angle': angle, 'height': height}
             #     self.cache['can'].append(r.copy())
 
-            elif 'rtk' in cols[2]:  # new ub482
+            elif 'pinpoint' in cols[2]:  # new ub482
                 kw = cols[2].split('.')[-1]
                 source = '.'.join(cols[2].split('.')[0:2])
                 if kw in ub482_defs:
