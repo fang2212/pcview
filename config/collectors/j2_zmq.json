@@ -1,0 +1,15 @@
+{
+  "type": "general",
+  "mac": "00:e0:0c:c4:d5:41",
+  "ip": "192.168.98.30",
+  "force_ip": true,
+  "ports": {
+    "j2_zmq": {
+      "enable": true,
+      "port": 5560,
+      "protocol": "j2_zmq",
+      "transport": "zmq",
+      "topic": "j2_zmq"
+    }
+  }
+}
