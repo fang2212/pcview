@@ -9,6 +9,7 @@ from multiprocessing import Queue, Process, Array, Manager, Value
 
 from turbojpeg import TurboJPEG
 
+from recorder.convert import ub482_defs, compose_from_def
 from tools.video_writer import MJPEGWriter
 import cv2
 import numpy as np
@@ -41,6 +42,9 @@ class FileHandler(Process):
         # 通过0键来标记起点（结束）
         self.marking = Value('i', 0)
         self.__marking_start_time = Value("d", 0)
+
+        # 定位打点
+        self.pinpoint = Manager().dict()
 
         self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
         self.recording_state = Value('i', 0)
@@ -318,6 +322,11 @@ class FileHandler(Process):
         self.ctrl_queue.put({'act': 'start', 'path': self.path, 'video_path': self.video_path})
         self.recording_state.value = 1
         self.start_time = time.time()
+
+        # 初始化定位标签，防止自动分割处理的时候无法后续处理 todo：待测试效果
+        if self.pinpoint:
+            self.insert_raw(
+                    (time.time(), self.pinpoint.get('source') + '.pinpoint', compose_from_def(ub482_defs, self.pinpoint)))
         print('start recording:', self.path)
 
     def stop_rec(self, clean_queue=True):

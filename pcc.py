@@ -661,6 +661,8 @@ class PCC(object):
                 pp = data.copy()
                 pp['type'] = 'pinpoint'
                 self.update_pinpoint(pp)
+                if not self.replay:
+                    self.hub.fileHandler.pinpoint = pp
             data['hor_speed'] = (data.get("vel_n")**2 + data.get("vel_e")**2)**0.5
             data['trk_gnd'] = atan2(data.get("vel_e"), data.get("vel_n"))
             # old_pinpoint = self.vehicles['ego'].pinpoint
@@ -677,6 +679,8 @@ class PCC(object):
                     pp = data.copy()
                     pp['type'] = 'pinpoint'
                     self.update_pinpoint(pp)
+                    if not self.replay:
+                        self.hub.fileHandler.pinpoint = pp
                     # self.vehicles['ego'].dynamics['pinpoint'] = data
                     # self.hub.fileHandler.insert_raw(
                     #     (data['ts'], source + '.pinpoint', compose_from_def(ub482_defs, data)))
@@ -949,28 +953,28 @@ class PCC(object):
                 self.cache = copy.deepcopy(self.cache_pause_data[self.cache_pause_idx-1])
 
         elif key == 32:  # space
-            self.pause = not self.pause
-            print('Pause:', self.pause)
-            if self.pause:
-                self.pause_t = time.time()
-            else:
-                paused_t = time.time() - self.pause_t
-                if self.replay:
-                    self.hub.add_pause(paused_t)
-
+            # 如果是回放的话空格键是控制暂停\播放，否则是语音打点记录功能
             if self.replay:
-                return
-            from recorder.voice_note import Audio
-            if self.audio is None or not self.audio.is_alive():
-                self.audio = None
-                dur_time = 15
-                if self.hub.fileHandler.is_recording:
-                    file_path = os.path.join(self.hub.fileHandler.path, "waves", "%d.wav" % self.wav_cnt)
-                    self.audio = Audio(file_path, is_replay=False, duration_time=dur_time)
-                    self.audio.start()
-                    self.hub.fileHandler.insert_raw((self.ts_now, "voice_note", str(self.wav_cnt)))
-                    self.wav_cnt += 1
-                    self.alarm_info["voice_note"] = time.time() + dur_time
+                self.pause = not self.pause
+                print('Pause:', self.pause)
+                if self.pause:
+                    self.pause_t = time.time()
+                else:
+                    paused_t = time.time() - self.pause_t
+                    self.hub.add_pause(paused_t)
+            else:
+                from recorder.voice_note import Audio
+
+                if self.audio is None or not self.audio.is_alive():
+                    self.audio = None
+                    dur_time = 15
+                    if self.hub.fileHandler.is_recording:
+                        file_path = os.path.join(self.hub.fileHandler.path, "waves", "%d.wav" % self.wav_cnt)
+                        self.audio = Audio(file_path, is_replay=False, duration_time=dur_time)
+                        self.audio.start()
+                        self.hub.fileHandler.insert_raw((self.ts_now, "voice_note", str(self.wav_cnt)))
+                        self.wav_cnt += 1
+                        self.alarm_info["voice_note"] = time.time() + dur_time
 
         elif key == ord('r'):
             if self.replay:

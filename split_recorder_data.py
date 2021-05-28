@@ -51,6 +51,8 @@ class SplitRecorder:
         self.mark_start = 0                         # 开始的（log.txt文档位置，时间戳）
         self.mark_end = 0                           # 结束的（log.txt文档位置，时间戳）
 
+        self.pinpoint = None                        # 定位标记数据
+
         self.init()
 
     def init(self):
@@ -75,11 +77,15 @@ class SplitRecorder:
         提取voice数据
         """
         log_sort, cfg = prep_replay(self.log_path)
+        self.pinpoint = None
         with open(log_sort, "r") as rf:
             lines = rf.readlines()
             for pos, line in enumerate(lines):
                 if line == "":
                     continue
+
+                if "pinpoint" in line:
+                    self.pinpoint = line
 
                 if "voice_note" in line:
                     fields = line.split()
@@ -116,6 +122,9 @@ class SplitRecorder:
             for pos, line in enumerate(lines):
                 if line == '':
                     continue
+
+                if "pinpoint" in line:
+                    self.pinpoint = line
 
                 # 格式化日志数据
                 cols = line.strip().split(" ")
@@ -185,6 +194,13 @@ class SplitRecorder:
                 break
 
         voice_list = log_data[start_pos:end_pos]
+
+        # 接入pinpoint定位数据
+        if self.pinpoint:
+            first_line = voice_list[0].strip().split(" ")
+            pinpoint_line = self.pinpoint.strip().split(" ")
+            new_log_wf.write(" ".join(first_line[:2] + pinpoint_line[2:]))
+
         for line in voice_list:
             if line == "":
                 continue
@@ -217,6 +233,12 @@ class SplitRecorder:
         new_log_wf = open(os.path.join(self.mark_dir, "log.txt"), "w")
         self.st_camera_id = -1
         self.ed_camera_id = -1
+
+        # 接入pinpoint定位数据
+        if self.pinpoint:
+            first_line = mark_data[0].strip().split(" ")
+            pinpoint_line = self.pinpoint.strip().split(" ")
+            new_log_wf.write(" ".join(first_line[:2] + pinpoint_line[2:]))
 
         for line in mark_data:
             if line == "":
