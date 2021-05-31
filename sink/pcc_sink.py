@@ -937,6 +937,7 @@ class FlowSink(NNSink):
         try:
             loop.run_until_complete(self._run())
         except Exception as e:
+            # print(e)
             print(bcl.FAIL+'error when initiating flow sink on'+bcl.ENDC, self.ip, self.port)
             # raise (e)
 

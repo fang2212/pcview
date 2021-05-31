@@ -6,7 +6,7 @@
 # @Author  : simon.xu
 # @File    : replay.py
 # @Desc    : log replayer for collected data
-
+import logging
 import struct
 import time
 from multiprocessing import Process, Queue, Manager, freeze_support
@@ -28,6 +28,8 @@ from parsers.novatel import parse_novatel
 from parsers.pim222 import parse_pim222
 # from numba import jit
 from tools import mytools
+from utils import logger
+
 
 def jpeg_extractor(video_dir):
     """
@@ -201,7 +203,7 @@ class LogPlayer(Process):
         self.last_frame = 0
         self.jpeg_extractor = None
         self.base_dir = os.path.dirname(self.log_path)
-        self.msg_queue = Queue(maxsize=50)
+        self.msg_queue = Queue(maxsize=50000)
         # self.cam_queue = Queue()
         self.cache = {}
         self.msg_cnt = {}
@@ -361,15 +363,13 @@ class LogPlayer(Process):
             # print(tsnow, self.shared['ts0'], time.time(), self.shared['t0'])
             # print(self.msg_queue.qsize())
             if not self.nosort and dt > 0.0002:  # smallest interval that sleep can actually delay
-                # print('sleep', dt)
-                # print(data)
-                pass
                 if self.real_interval:
+                    # logger.debug(f"real interval:{dt}")
                     time.sleep(dt)
             # print('pop common', frame_id, len(data))
             return frame_id, data, msg_type
         else:
-            # print('msg empty sleep 0.01')
+            logger.warning("pop_common empty")
             time.sleep(0.001)
 
     def pause(self, pause):
@@ -482,7 +482,7 @@ class LogPlayer(Process):
                 r['source'] = 'video'
                 r['type'] = 'video'
                 while self.msg_queue.full():
-                    # print('msg queue full, sleep 0.01')
+                    # print("video full")
                     time.sleep(0.01)
                 self.msg_queue.put((frame_id, r, 'camera'))
 
@@ -622,7 +622,6 @@ class LogPlayer(Process):
                     r['source'] = '.'.join(cols[2].split('.')[0:2])
                     self.msg_queue.put((0x00, r, r['source']))
                 except Exception as e:
-                    print(line)
                     raise e
             elif 'imu_data_corrected' in cols[2]:
                 pass
@@ -650,7 +649,9 @@ class LogPlayer(Process):
                     obs['source'] = cols[2]
                 self.msg_queue.put(("q4_100", ret.copy(), cols[2]))
 
-        print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
+        logger.debug(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
+        logger.debug(f"msg_queue_size:{self.msg_queue.qsize()}")
+        # print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
         return
         # cp.disable()
@@ -749,12 +750,16 @@ if __name__ == "__main__":
     parser.add_argument('-sf', '--start_frame', default=0)
     parser.add_argument('-ef', '--end_frame', default=None)
     parser.add_argument('-ri', '--real_interval', action="store_true")
+    parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
     parser.add_argument('-chmain', default=None, help="change main video")
 
     args = parser.parse_args()
     source = args.input_path
 
     freeze_support()
+
+    if args.debug:
+        logger.setLevel(level=logging.DEBUG)
 
     if os.path.isdir(source):
         dirs = [os.path.join(source, d) for d in os.listdir(source) if os.path.isdir(os.path.join(source, d))]

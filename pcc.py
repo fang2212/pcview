@@ -27,6 +27,8 @@ import numpy as np
 import copy
 import traceback
 
+from utils import logger
+
 cv2.setNumThreads(0)
 jpeg = TurboJPEG()
 
@@ -307,6 +309,7 @@ class PCC(object):
                 if not self.replay:
                     qsize = self.hub.fileHandler.log_queue.qsize()
                     self.statistics['fileHandler_log_q_size'] = qsize
+
             except Exception as e:
                 print('pcc run error:', e)
                 traceback.print_exc()
@@ -364,8 +367,6 @@ class PCC(object):
             # print('render begins.')
             if t3 - last_ts > self.display_interval or self.replay:
                 self.handle_keyboard()
-                # time.sleep(0.001)
-                # print('wait to refresh', self.display_interval)
                 last_ts = time.time()
                 # if not self.replay:
                 #     self.hub.parse_can_msgs()
