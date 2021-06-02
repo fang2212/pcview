@@ -76,7 +76,7 @@ class Hub(Thread):
         self.headless = headless
         # print(self.headless)
         self.msg_queue = kQueue(maxsize=3000)
-        # self.cam_queue = kQueue()
+        self.cam_queue = kQueue()
         # self.sink = {}
         self.cache = {}
         self.time_aligned = True
@@ -212,7 +212,7 @@ class Hub(Thread):
         print('initializing direct connect to {} {}'.format(ip, mac))
 
         if 'can_type' in cfg:
-            sink = CameraSink(queue=self.msg_queue, ip=ip, port=1200, channel='camera', index=0,
+            sink = CameraSink(queue=self.msg_queue, ip=ip, port=1200, msg_type='camera', index=0,
                               fileHandler=self.fileHandler, is_main=True)
             sink.start()
             self.fpga_handle(cfg, self.msg_queue, ip)
@@ -227,14 +227,14 @@ class Hub(Thread):
 
                 if transport == 'nanomsg':
                     if 'video' in iface:
-                        sink = CameraSink(queue=self.msg_queue, ip=ip, port=1200, channel='camera', index=0,
+                        sink = CameraSink(queue=self.msg_queue, ip=ip, port=1200, msg_type='camera', index=0,
                                           fileHandler=self.fileHandler, is_main=True)
                         sink.start()
                         cfgs_online[ip]['msg_types'].append('video.0')
                     if 'can' in iface:
                         chn = cfg['ports'][iface]
-                        cansink = CANSink(self.msg_queue, ip=ip, port=chn['port'], channel=iface, type=[chn['topic']],
-                                          index=0, fileHandler=self.fileHandler, isheadless=self.headless)
+                        cansink = CANSink(self.msg_queue, ip=ip, port=chn['port'], msg_type=iface, type=[chn['topic']],
+                                          index=0, fileHandler=self.fileHandler)
 
                         cansink.start()
                         cfgs_online[ip]['msg_types'].append('video.0')
@@ -242,8 +242,8 @@ class Hub(Thread):
                         # sinks.append(cansink)
                     elif 'gsensor' in iface:
                         chn = cfg['ports'][iface]
-                        gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=chn['port'], channel=iface, index=0,
-                                            fileHandler=self.fileHandler, isheadless=self.headless)
+                        gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=chn['port'], msg_type=iface, index=0,
+                                            fileHandler=self.fileHandler)
                         gsink.start()
                         # print('gsensor found')
                         # sinks.append(gsink)
@@ -251,7 +251,7 @@ class Hub(Thread):
 
                 elif transport == 'libflow':
                     sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port,
-                                    channel=iface, topic=topic, index=0, fileHandler=self.fileHandler, is_main=True)
+                                    msg_type=iface, topic=topic, index=0, fileHandler=self.fileHandler, is_main=True)
                     # print('inited flow video', sink)
                     sink.start()
 
@@ -279,7 +279,7 @@ class Hub(Thread):
                 proto = cfg['ports'][item].get('protocol')
                 topic = cfg['ports'][item].get('topic')
 
-                sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
+                sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, msg_type=item,
                                 index=idx, protocol=proto, topic=topic, log_name=item, fileHandler=self.fileHandler,
                                 is_main=is_main, name=cfg.get("type"))
                 # sink.start()
@@ -294,8 +294,8 @@ class Hub(Thread):
                 if not cfg['ports'][name].get('enable'):
                     continue
                 port = cfg['ports'][name]['port']
-                pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=name,
-                                    fileHandler=self.fileHandler, isheadless=self.headless)
+                pisink = PinodeSink(self.msg_queue, ip, port, msg_type='can', index=idx, resname=name,
+                                    fileHandler=self.fileHandler)
                 # print('added sink pinode', ip, port, name)
                 # pisink.start()
                 # pisink = {'stype': 'pi', 'queue': self.msg_queue, 'ip': ip, 'port': port, 'channel': 'can',
@@ -309,8 +309,8 @@ class Hub(Thread):
                     continue
                 if 'can' in iface:
                     chn = cfg['ports'][iface]
-                    cansink = CANSink(self.msg_queue, ip=ip, port=chn['port'], channel=iface, type=[chn['topic']],
-                                      index=idx, fileHandler=self.fileHandler, isheadless=self.headless)
+                    cansink = CANSink(self.msg_queue, ip=ip, port=chn['port'], msg_type=iface, type=[chn['topic']],
+                                      index=idx, fileHandler=self.fileHandler)
 
                     # cansink.start()
                     # cansink = {'stype': 'can', 'queue': self.msg_queue, 'ip': ip, 'port': chn['port'],
@@ -320,8 +320,8 @@ class Hub(Thread):
                     self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'gsensor' in iface:
                     chn = cfg['ports'][iface]
-                    gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=chn['port'], channel=iface, index=idx,
-                                        fileHandler=self.fileHandler, isheadless=self.headless)
+                    gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=chn['port'], msg_type=iface, index=idx,
+                                        fileHandler=self.fileHandler)
                     # gsink.start()
                     # gsink = {'stype': 'imu', 'queue': self.msg_queue, 'ip': ip, 'port': chn['port'],
                     #          'channel': iface, 'index': idx, 'fileHandler': self.fileHandler,
@@ -330,7 +330,7 @@ class Hub(Thread):
                     self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'video' in iface:
                     port = cfg['ports']['video']['port']
-                    vsink = CameraSink(queue=self.msg_queue, ip=ip, port=port, channel='camera', index=idx,
+                    vsink = CameraSink(queue=self.msg_queue, ip=ip, port=port, msg_type='camera', index=idx,
                                        fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
                                        devname=cfg.get('type'))
                     # vsink.start()
@@ -346,8 +346,8 @@ class Hub(Thread):
                 port = cfg['ports'][iface]['port']
                 if 'can' in iface:
                     chn = cfg['ports'][iface]
-                    cansink = CANSink(self.msg_queue, ip=ip, port=port, channel=iface, type=[chn['topic']],
-                                      index=idx, fileHandler=self.fileHandler, isheadless=self.headless)
+                    cansink = CANSink(self.msg_queue, ip=ip, port=port, msg_type=iface, type=[chn['topic']],
+                                      index=idx, fileHandler=self.fileHandler)
 
                     # cansink.start()
                     # cansink = {'stype': 'can', 'queue': self.msg_queue, 'ip': ip, 'port': chn['port'],
@@ -357,8 +357,8 @@ class Hub(Thread):
                     self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'gsensor' in iface:
                     chn = cfg['ports'][iface]
-                    gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=port, channel=iface, index=idx,
-                                        fileHandler=self.fileHandler, isheadless=self.headless)
+                    gsink = GsensorSink(queue=self.msg_queue, ip=ip, port=port, msg_type=iface, index=idx,
+                                        fileHandler=self.fileHandler)
                     # gsink.start()
                     # gsink = {'stype': 'imu', 'queue': self.msg_queue, 'ip': ip, 'port': chn['port'],
                     #          'channel': iface, 'index': idx, 'fileHandler': self.fileHandler,
@@ -367,7 +367,7 @@ class Hub(Thread):
                     self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'video' in iface:
                     # port = cfg['ports']['video']['port']
-                    vsink = CameraSink(queue=self.msg_queue, ip=ip, port=port, channel='camera', index=idx,
+                    vsink = CameraSink(queue=self.msg_queue, ip=ip, port=port, msg_type='camera', index=idx,
                                        fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
                                        devname=cfg.get('name'))
                     # vsink.start()
@@ -377,8 +377,8 @@ class Hub(Thread):
                     self.sinks.append(vsink)
                 elif 'rtk' in iface or 'gps' in iface:
                     # port = cfg['ports'][iface]['port']
-                    pisink = PinodeSink(self.msg_queue, ip, port, channel='can', index=idx, resname=iface,
-                                        fileHandler=self.fileHandler, isheadless=self.headless)
+                    pisink = PinodeSink(self.msg_queue, ip, port, msg_type='can', index=idx, resname=iface,
+                                        fileHandler=self.fileHandler)
                     # print('added sink pinode', ip, port, iface)
                     # pisink.start()
                     # pisink = {'stype': 'pi', 'queue': self.msg_queue, 'ip': ip, 'port': port, 'channel': 'can',
@@ -398,8 +398,8 @@ class Hub(Thread):
                     self.sinks.append(udpsink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
                 elif cfg['ports'][iface].get("transport") == 'zmq':
-                    proto = cfg['ports'][iface]['protocol']
-                    zmqSink = ZmqSink(self.msg_queue, ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler)
+                    # proto = cfg['ports'][iface]['protocol']
+                    zmqSink = ZmqSink(self.msg_queue, ip, port, cfg['ports'][iface]['topic'], idx, self.fileHandler)
                     self.sinks.append(zmqSink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
 
@@ -459,21 +459,21 @@ class Hub(Thread):
             # typestr = 'can' + '{:01d}'.format(index * 2)
 
             types = cfg['can_types']['can0']
-            sink['can0'] = CANSink(queue=msg_queue, ip=ip, port=1207, channel='can0', type=types,
-                                   index=index, fileHandler=self.fileHandler, isheadless=self.headless)
+            sink['can0'] = CANSink(queue=msg_queue, ip=ip, port=1207, msg_type='can0', type=types,
+                                   index=index, fileHandler=self.fileHandler)
             sink['can0'].start()
 
         if 'can1' in cfg['msg_types'] and len(cfg['can_types']['can1']) != 0:
             # typestr = 'can' + '{:01d}'.format(index * 2 + 1)
 
             types = cfg['can_types']['can1']
-            sink['can1'] = CANSink(queue=msg_queue, ip=ip, port=1208, channel='can1', type=types,
-                                   index=index, fileHandler=self.fileHandler, isheadless=self.headless)
+            sink['can1'] = CANSink(queue=msg_queue, ip=ip, port=1208, msg_type='can1', type=types,
+                                   index=index, fileHandler=self.fileHandler)
             sink['can1'].start()
 
         if 'gsensor' in cfg['msg_types']:
-            sink['gsensor'] = GsensorSink(queue=msg_queue, ip=ip, port=1209, channel='gsensor', index=index,
-                                          fileHandler=self.fileHandler, isheadless=self.headless)
+            sink['gsensor'] = GsensorSink(queue=msg_queue, ip=ip, port=1209, msg_type='gsensor', index=index,
+                                          fileHandler=self.fileHandler)
             sink['gsensor'].start()
 
         return sink

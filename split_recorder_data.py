@@ -33,7 +33,7 @@ class SplitRecorder:
     """
     对log文件进行提取mark、voice标记数据
     """
-    def __init__(self, log_path, voice=True, mark=False, save=None):
+    def __init__(self, log_path, voice=True, mark=False, save=None, start_frame=None, end_frame=None):
         self.log_path = log_path                    # log.txt路径
         self.log_dir = os.path.dirname(log_path)    # log文件夹路径
         self.save_path = save                       # 保存路径
@@ -51,6 +51,11 @@ class SplitRecorder:
         self.mark_start = 0                         # 开始的（log.txt文档位置，时间戳）
         self.mark_end = 0                           # 结束的（log.txt文档位置，时间戳）
 
+        self.start_frame = start_frame              # 指定截取的开始范围
+        self.end_frame = end_frame                  # 指定截取的结束范围
+        self.start_frame_pos = 0                    # 开始的（log.txt文档位置，时间戳）
+        self.end_frame_pos = -1                     # 结束的（log.txt文档位置，时间戳）
+
         self.pinpoint = None                        # 定位标记数据
 
         self.init()
@@ -65,6 +70,9 @@ class SplitRecorder:
             self.save_path = self.log_dir
 
     def run(self):
+        if self.start_frame or self.end_frame:
+            self.extractor_video()
+            return
         if self.voice:
             self.extractor_voice()
             self.extractor_voice_video(self.voice_video_frame)
@@ -156,6 +164,34 @@ class SplitRecorder:
                 print("mark in ", self.st_camera_id, self.ed_camera_id)
                 self.render_video(log_sort, cfg, self.mark_dir)
 
+    def extractor_video(self):
+        log_sort, cfg = prep_replay(self.log_path)
+        with open(log_sort, "r") as rf:
+            lines = rf.readlines()
+            for pos, line in enumerate(lines):
+                if line == '':
+                    continue
+
+                if "pinpoint" in line:
+                    self.pinpoint = line
+
+                # 格式化日志数据
+                cols = line.strip().split(" ")
+                if str(self.start_frame) in cols[3]:
+                    self.start_frame_pos = pos
+                elif str(self.end_frame) in cols[3]:
+                    self.end_frame_pos = pos
+                    break
+            mark_data = lines[self.start_frame_pos:self.end_frame_pos]
+            if not mark_data:
+                logger.error(f"未找到该视频帧节点，sf:{self.start_frame} ef:{self.end_frame}")
+                return
+            self.extractor_mark_log(mark_data)
+
+            # 渲染视频数据
+            print("mark in ", self.start_frame, self.end_frame)
+            self.render_video(log_sort, cfg, self.mark_dir)
+
     def extractor_voice_log(self, log_data, pos, current_ts, save_dir):
         """
         提取voice log数据
@@ -199,7 +235,7 @@ class SplitRecorder:
         if self.pinpoint:
             first_line = voice_list[0].strip().split(" ")
             pinpoint_line = self.pinpoint.strip().split(" ")
-            new_log_wf.write(" ".join(first_line[:2] + pinpoint_line[2:]))
+            new_log_wf.write(" ".join(first_line[:2] + pinpoint_line[2:])+'\n')
 
         for line in voice_list:
             if line == "":
@@ -238,7 +274,7 @@ class SplitRecorder:
         if self.pinpoint:
             first_line = mark_data[0].strip().split(" ")
             pinpoint_line = self.pinpoint.strip().split(" ")
-            new_log_wf.write(" ".join(first_line[:2] + pinpoint_line[2:]))
+            new_log_wf.write(" ".join(first_line[:2] + pinpoint_line[2:])+'\n')
 
         for line in mark_data:
             if line == "":
@@ -423,6 +459,8 @@ if __name__ == '__main__':
     parser.add_argument('path', nargs='+', help='包含log.txt的路径')
     parser.add_argument('--voice', '-v', action='store_true', help='渲染voice标记视频', default=False)
     parser.add_argument('--mark', '-m', action='store_true', help='渲染mark标记视频', default=False)
+    parser.add_argument('--start_frame', '-sf', type=int, help='视频开始帧数')
+    parser.add_argument('--end_frame', '-ef', type=int, help='视频结束帧数')
     parser.add_argument('--debug', '-d', action='store_true', help='debug调试模式', default=False)
     parser.add_argument('--save', '-s', help='保存统计文件夹路径（默认当前目录）')
     args = parser.parse_args()
@@ -448,6 +486,7 @@ if __name__ == '__main__':
 
     for log in log_list:
         print(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} start:", log)
-        split = SplitRecorder(log, voice=args.voice, mark=args.mark, save=args.save)
+        split = SplitRecorder(log, voice=args.voice, mark=args.mark, save=args.save, start_frame=args.start_frame,
+                              end_frame=args.end_frame)
         split.run()
 

@@ -7,7 +7,7 @@ import psutil
 
 
 class Supervisor(Thread):
-    def __init__(self, checkers=[]):
+    def __init__(self):
         super(Supervisor, self).__init__()
         # self.checkers = checkers
         self.checkers = []
