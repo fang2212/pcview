@@ -26,7 +26,7 @@
                 {"model":  "bynav"},
                 {"model":  "j2_zmq"},
                 {"model":  "q4_100"}
-       ],
+            ],
             "installation": {
                 "esr": {
                     "yaw": 0.0,

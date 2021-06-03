@@ -27,6 +27,8 @@ import numpy as np
 import copy
 import traceback
 
+from utils import logger
+
 cv2.setNumThreads(0)
 jpeg = TurboJPEG()
 
@@ -41,14 +43,12 @@ class PCC(object):
     def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=None,
                  auto_rec=False, draw_algo=False, show_video=True):
         super(PCC, self).__init__()
-        # from config.config import runtime
         self.draw_algo = draw_algo
         self.hub = hub
         self.cfg = uniconf
         self.player = Player(uniconf)
         self.exit = False
         self.pause = False
-        # self.recording = False
         self.replay = replay
         self.rlog = rlog
         self.frame_idx = 0
@@ -57,10 +57,8 @@ class PCC(object):
         self.to_web = False
 
         self.now_id = 0
-        # self.pre_rtk = {}
         self.ts_now = 0
         self.cipv = {}
-        # self.msg_cnt = {}
         self.transform = Transform(uniconf)
         self.m_g2i = self.transform.calc_g2i_matrix()
         self.ipm = None
@@ -90,26 +88,14 @@ class PCC(object):
         self.statistics = {}
         self.enable_auto_interval_adjust = True
         self.parse_state = True
-        # self.jpeg_dec = TurboJPEG()
 
-        # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
         self.sv_state = 'ipm'
         self.dt_from_img = 0
-        # self.rt_param = self.cfg.runtime
-        # cv2.namedWindow('video_aux')
 
-        # cv2.createTrackbar('ESR_y', 'adj', 500, 1000, self.ot.update_esr_yaw)
         self.alarm_info = {}
         if replay:
             self.hub.d = Manager().dict()
-        #
-        #     def update_speed(x):
-        #         self.hub.d['replay_speed'] = 1 if x // 10 < 1 else x // 10
-        #         print('replay-speed is', self.hub.d['replay_speed'])
-        #
-        #     if not to_web:
-        #         cv2.createTrackbar('replay-speed', 'adj', 10, 50, update_speed)
 
         self.gga = None
         if not self.replay:
@@ -174,63 +160,39 @@ class PCC(object):
             ts_now = time.time()
             for source in list(self.cache['misc']):
                 for entity in list(self.cache['misc'][source]):
-                    # if type(self.cache['misc'][source][entity]) == list:
-                    #     del self.cache['misc'][source][entity]
-                    #     continue
                     ts_a = self.cache['misc'][source][entity].get('ts_arrival')
                     if not ts_a or ts_now - ts_a > max(3 * self.display_interval, 0.4):
                         del self.cache['misc'][source][entity]
         except Exception as e:
-            print('error when clean cache:', entity)
-            pass
+            logger.error('error when clean cache:', e)
 
     def cache_data(self, d):
         if not d:
             return
         fid, data, source = d
-        # if 'type' not in data:
-        #     print(data)
         if source not in self.cache['misc']:
             self.cache['misc'][source] = {}
             self.cache['info'][source] = {}
         if isinstance(data, list):
-            # print('msg data list')
             for d in data:
                 dtype = d.get('type') if 'type' in d else 'notype'
                 id = str(d.get('id')) if 'id' in d else 'noid'
                 entity = dtype + '.' + id
-                # if d['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint', 'inspva']:
-                #     print(d, '-------------------------------------')
                 self.cache['misc'][source][entity] = d
                 self.cache['info'][source]['integrity'] = 'framed'
         elif isinstance(data, dict):
-            # print(data)
             if 'video' in data['type']:
                 is_main = data.get('is_main')
-                # if not self.replay:
-                # self.hub.fileHandler.insert_jpg(
-                #     {'ts': data['ts'], 'frame_id': data['frame_id'], 'jpg': data['img'],
-                #      'source': 'video' if is_main else data['source']})
                 if not is_main:
                     if data['source'] not in self.video_cache:
                         self.video_cache[data['source']] = {}
-                    # data['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
                     self.video_cache[data['source']] = data
                     self.video_cache[data['source']]['updated'] = True
-
                 else:
                     self.cache['img'] = data['img']
                     self.cache['img_raw'] = None
 
                     self.recv_first_img = True
-
-                    try:
-                        pass
-                        # self.cache['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
-                        # self.o_img_q.put(data['img'])
-                    except Exception as e:
-                        print('img decode error:', e)
-                        return
                     self.cache['frame_id'] = fid
                     self.cache['ts'] = data['ts']
                     self.cache['updated'] = True
@@ -248,9 +210,6 @@ class PCC(object):
                 dtype = data.get('type') if 'type' in data else 'notype'
                 id = str(data.get('id')) if 'id' in data else 'noid'
                 entity = data['source'] + '.' + dtype + '.' + id
-
-                # self.cache['misc'][source][entity] = data
-                # self.cache['info'][source]['integrity'] = 'divided'
 
                 if 'x1_data' in source:
                     if entity not in self.cache['misc'][source]:
@@ -314,10 +273,8 @@ class PCC(object):
                 continue
 
     def start(self):
-        # self.hub.start()
         self.player.start_time = datetime.now()
 
-        data_cnt = 0
         last_ts = time.time()
         print('entering pcc loop. pid', os.getpid())
 
@@ -361,10 +318,8 @@ class PCC(object):
                     continue
 
             # render begins
-            # print('render begins.')
             if t3 - last_ts > self.display_interval or self.replay:
                 self.handle_keyboard()
-                # time.sleep(0.001)
                 # print('wait to refresh', self.display_interval)
                 last_ts = time.time()
                 # if not self.replay:
@@ -1064,10 +1019,6 @@ class PCC(object):
             d = video_cp[source]
             if type(d) == dict and 'ts' in d:
                     all_ts.append(d['ts'])
-
-        # collector ts
-        # if not self.replay:
-        #     all_ts.append(time.time())
 
         all_ts = [ts for ts in all_ts if ts]
 
