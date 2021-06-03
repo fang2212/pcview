@@ -94,7 +94,7 @@ class Statistics:
 
     def other_collect(self, other_data):
         data = {
-            "ts": float(other_data[0]) + float(other_data[1]) / 1000000,
+            "ts": float(other_data[0] + other_data[1]),
             "name": other_data[2],
         }
         # 更新设备数据表
@@ -204,7 +204,7 @@ class Statistics:
             plt.legend([avg_line, min_line, max_line], [f'avg:{"%.8f" % avg_interval}', f'min:{"%.8f" % min_interval}',
                                                         f'max:{"%.8f" % max_interval}'], bbox_to_anchor=(0, -0.23, 1, 2),
                        loc="lower left", mode="expand", borderaxespad=0, ncol=3)
-            plt.scatter(timestamp_list[1:], interval_list, s=1, marker='.')  # s表示面积，marker表示图形
+            plt.plot(timestamp_list[1:], interval_list, s=1, marker='.')  # s表示面积，marker表示图形
 
         plt.subplots_adjust(left=0, bottom=0, right=1, top=1, hspace=0.1, wspace=0.1)
         plt.tight_layout()
