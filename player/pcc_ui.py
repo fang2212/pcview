@@ -53,10 +53,10 @@ class Player(object):
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
         self.color_obs = {
-            "ars410": FlatColor.wet_asphalt,
+            "ars410": FlatColor.peach,
             "gs4_debug": FlatColor.pink,
             "j2": FlatColor.carrot,
-            "q4_100": FlatColor.peach,
+            "q4_100": FlatColor.turquoise,
             'anc': FlatColor.carrot,
             'ars': FlatColor.emerald,
             'ctlrr': FlatColor.alizarin,
