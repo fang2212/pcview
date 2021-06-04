@@ -20,7 +20,7 @@ def parser_gs4(id, buf, ctx=None):
         return {
             "type": "lane",
             "type_class": "spp",
-            "range": 25,
+            "range": 50,
             "a0": r["SPP_POLY_COEFF_A0"],
             "a1": r["SPP_POLY_COEFF_A1"],
             "a2": r["SPP_POLY_COEFF_A2"],
