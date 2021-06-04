@@ -37,8 +37,8 @@ socketio = SocketIO(app, async_mode=async_mode)
 # server_dict['now_image'] = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
 
 ctrl_q = Queue(maxsize=20)
-msg_q = Queue(maxsize=200)
-img_q = Queue(maxsize=5)
+msg_q = Queue(maxsize=2000)
+img_q = Queue(maxsize=5000)
 local_path = json.load(open('config/local.json'))['log_root']
 
 no_frame = open('static/img/no_video.jpg', 'rb').read()

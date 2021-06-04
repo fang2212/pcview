@@ -55,6 +55,7 @@ class Statistics:
 
     def run(self):
         print("start:", self.log_path)
+        exclude_list = ["voice_note", "pinpoint"]
         with open(self.log_path) as f:
             lines = f.readlines()
 
@@ -67,7 +68,7 @@ class Statistics:
 
                 if "CAN" in cols[2]:
                     self.can_collect(cols)
-                elif "gsensor" in cols[2] or "camera" in cols[2]:
+                elif not ("voice_note" in cols[2] or "pinpoint" in cols[2]):
                     self.other_collect(cols)
 
         self.statistics_can()
@@ -231,7 +232,7 @@ def log_list_from_path(path):
         logger.error(f"{path}路径不存在")
         return
 
-    if os.path.isfile(path) and os.path.split(path)[-1] == "log.txt":
+    if os.path.isfile(path):
         return [path]
     elif os.path.isdir(path):
         log_path = os.path.join(path, "log.txt")
@@ -249,7 +250,7 @@ if __name__ == "__main__":
     # 解析命令行参数
     parser = argparse.ArgumentParser()
     parser.add_argument('path', nargs='+', help='包含log.txt的路径')
-    parser.add_argument('--debug', action='store_true', help='调试模式', default=False)
+    parser.add_argument('--debug', "-d", action='store_true', help='调试模式', default=False)
     parser.add_argument('--save', '-s', help='保存统计图表文件夹路径（默认当前目录）')
     args = parser.parse_args()
 

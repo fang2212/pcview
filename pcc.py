@@ -41,16 +41,16 @@ def loop_traverse(items):
 
 class PCC(object):
     def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=None,
-                 auto_rec=False, draw_algo=False, show_video=True):
+                 auto_rec=False, draw_algo=False, show_video=True, sink_process=None):
         super(PCC, self).__init__()
-        # from config.config import runtime
         self.draw_algo = draw_algo
         self.hub = hub
+        self.sink_process = sink_process                # 解析进程
         self.cfg = uniconf
         self.player = Player(uniconf)
         self.exit = False
         self.pause = False
-        # self.recording = False
+
         self.replay = replay
         self.rlog = rlog
         self.frame_idx = 0
@@ -58,15 +58,13 @@ class PCC(object):
         self.show_video = show_video        # 是否输出显示界面（包括网页、本地渲染界面）
         self.to_web = False
 
-        self.now_id = 0
-        # self.pre_rtk = {}
+        self.now_fid = 0
         self.ts_now = 0
         self.cipv = {}
-        # self.msg_cnt = {}
         self.transform = Transform(uniconf)
         self.m_g2i = self.transform.calc_g2i_matrix()
         self.ipm = None
-        self.show_ipm = ipm
+        self.show_ipm = ipm     # 是否显示俯视图
         self.set_pinpoint = False
         self.target = None
         self.rtk_pair = [{}, {}]
@@ -74,10 +72,11 @@ class PCC(object):
         self.show_ipm_bg = False
         self.auto_rec = auto_rec
         self.frame_cnt = 0
-        self.refresh_rate = 20
+        self.refresh_rate = 30
         if uniconf.runtime.get('low_profile'):
             self.refresh_rate = 5
         self.display_interval = 1.0 / self.refresh_rate
+        self.cache_del_interval = max(3 * self.display_interval, 0.4)
         self.vehicles = {'ego': Vehicle('ego')}
         self.road_info = Road()
         self.calib_data = dict()
@@ -92,26 +91,14 @@ class PCC(object):
         self.statistics = {}
         self.enable_auto_interval_adjust = True
         self.parse_state = True
-        # self.jpeg_dec = TurboJPEG()
 
-        # cv2.resizeWindow('adj', 600, 600)
         self.sideview_state = loop_traverse(['ipm', 'video_aux'])
         self.sv_state = 'ipm'
         self.dt_from_img = 0
-        # self.rt_param = self.cfg.runtime
-        # cv2.namedWindow('video_aux')
 
-        # cv2.createTrackbar('ESR_y', 'adj', 500, 1000, self.ot.update_esr_yaw)
         self.alarm_info = {}
         if replay:
             self.hub.d = Manager().dict()
-        #
-        #     def update_speed(x):
-        #         self.hub.d['replay_speed'] = 1 if x // 10 < 1 else x // 10
-        #         print('replay-speed is', self.hub.d['replay_speed'])
-        #
-        #     if not to_web:
-        #         cv2.createTrackbar('replay-speed', 'adj', 10, 50, update_speed)
 
         self.gga = None
         if not self.replay:
@@ -122,7 +109,6 @@ class PCC(object):
 
         self.save_replay_video = save_replay_video
         self.vw = None
-        self.vs = None
         if self.show_video:
             if not to_web:
                 self.to_web = False
@@ -138,11 +124,6 @@ class PCC(object):
                 self.to_web = True
                 self.o_msg_q = video_server.msg_q
                 self.o_img_q = video_server.img_q
-                self.vs = to_web
-
-        if not self.replay:
-            t = Thread(target=self.recv_data)
-            t.start()
 
         self.wav_cnt = 0
         self.audio = None
@@ -172,87 +153,73 @@ class PCC(object):
         self.cache['frame_id'] = 0
 
     def clean_cache(self):
+        """
+        清除旧数据
+        :return:
+        """
         try:
             ts_now = time.time()
             for source in list(self.cache['misc']):
                 for entity in list(self.cache['misc'][source]):
-                    # if type(self.cache['misc'][source][entity]) == list:
-                    #     del self.cache['misc'][source][entity]
-                    #     continue
                     ts_a = self.cache['misc'][source][entity].get('ts_arrival')
-                    if not ts_a or ts_now - ts_a > max(3 * self.display_interval, 0.4):
+
+                    # 对超过一定时间内的数据进行删除
+                    if not ts_a or ts_now - ts_a > self.cache_del_interval:
                         del self.cache['misc'][source][entity]
         except Exception as e:
-            print('error when clean cache:', entity)
-            pass
+            logger.error('error when clean cache:{}'.format(e))
 
     def cache_data(self, d):
+        """
+        缓存数据，等待视频渲染
+        :param d:
+        :return:
+        """
         if not d:
             return
         fid, data, source = d
-        # if 'type' not in data:
-        #     print(data)
         if source not in self.cache['misc']:
             self.cache['misc'][source] = {}
             self.cache['info'][source] = {}
         if isinstance(data, list):
-            # print('msg data list')
             for d in data:
                 dtype = d.get('type') if 'type' in d else 'notype'
                 id = str(d.get('id')) if 'id' in d else 'noid'
                 entity = dtype + '.' + id
-                # if d['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint', 'inspva']:
-                #     print(d, '-------------------------------------')
+
                 self.cache['misc'][source][entity] = d
                 self.cache['info'][source]['integrity'] = 'framed'
         elif isinstance(data, dict):
-            # print(data)
             if 'video' in data['type']:
                 is_main = data.get('is_main')
-                # if not self.replay:
-                # self.hub.fileHandler.insert_jpg(
-                #     {'ts': data['ts'], 'frame_id': data['frame_id'], 'jpg': data['img'],
-                #      'source': 'video' if is_main else data['source']})
                 if not is_main:
                     if data['source'] not in self.video_cache:
                         self.video_cache[data['source']] = {}
-                    # data['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
                     self.video_cache[data['source']] = data
                     self.video_cache[data['source']]['updated'] = True
-
                 else:
                     self.cache['img'] = data['img']
                     self.cache['img_raw'] = None
 
                     self.recv_first_img = True
 
-                    try:
-                        pass
-                        # self.cache['img_raw'] = cv2.imdecode(np.fromstring(data['img'], np.uint8), cv2.IMREAD_COLOR)
-                        # self.o_img_q.put(data['img'])
-                    except Exception as e:
-                        print('img decode error:', e)
-                        return
                     self.cache['frame_id'] = fid
                     self.cache['ts'] = data['ts']
                     self.cache['updated'] = True
 
                     if self.replay:
+                        # 退回播放数据缓存
                         self.cache_pause_data.append(copy.copy(self.cache))
                         if len(self.cache_pause_data) > self.cache_pause_max_len:
                             self.cache_pause_data.pop(0)
-
-                        self.cache_pause_idx = len(self.cache_pause_data)
+                        else:
+                            self.cache_pause_idx = len(self.cache_pause_data)
                     self.check_status()
-
                     return True
             else:
                 dtype = data.get('type') if 'type' in data else 'notype'
                 id = str(data.get('id')) if 'id' in data else 'noid'
                 entity = data['source'] + '.' + dtype + '.' + id
-
-                # self.cache['misc'][source][entity] = data
-                # self.cache['info'][source]['integrity'] = 'divided'
 
                 if 'x1_data' in source:
                     if entity not in self.cache['misc'][source]:
@@ -262,11 +229,10 @@ class PCC(object):
                     self.cache['misc'][source][entity] = data
                     self.cache['info'][source]['integrity'] = 'divided'
 
-
     def adjust_interval(self):
         if not self.enable_auto_interval_adjust:
             return
-        iqsize = self.hub.msg_queue.qsize()
+        iqsize = self.sink_process.result_queue.qsize()
         self.statistics['pcc_inq_size'] = iqsize
         if iqsize > 300:
             self.display_interval = max(self.display_interval, self.run_cost) + 0.005
@@ -291,7 +257,7 @@ class PCC(object):
         while not self.exit:
             try:
                 t0 = time.time()
-                d = self.hub.pop_common()
+                d = self.sink_process.pop_resulte()
                 if not d:
                     time.sleep(0.001)
                     continue
@@ -315,113 +281,93 @@ class PCC(object):
                 traceback.print_exc()
                 # raise e
                 continue
+        logger.info("recv_data exit")
 
     def start(self):
-        # self.hub.start()
         self.player.start_time = datetime.now()
-
-        data_cnt = 0
         last_ts = time.time()
-        print('entering pcc loop. pid', os.getpid())
 
         while not self.exit:
-            if not self.hub.is_alive() and self.replay:
-                print('hub exit running.')
+            # 回放检测信号进程是否结束
+            if self.replay and not self.sink_process.is_alive() and self.sink_process.result_queue.empty():
+                logger.warning('hub exit running.')
                 print('average frame cost: {:.1f}ms'.format(
                     1000 * self.frame_cost_total / self.frame_drawn_cnt)) if self.frame_drawn_cnt != 0 else None
-
+                # 清除视频窗口
                 for i in range(1, 10):
                     cv2.destroyAllWindows()
                     cv2.waitKey(1)
-
+                # 回放视频保存对象
                 if self.vw is not None:
                     self.vw.release()
-
                 return
-            t3 = time.time()
-            # d = self.hub.pop_simple()  # receive
 
-            if self.replay:
-                t0 = time.time()
-                d = self.hub.pop_common()
-                if d:
-                    t1 = time.time()
-                    self.statistics['frame_popping_cost'] = '{:.2f}'.format(1000 * (t1 - t0))
-                    new_frame = self.cache_data(d)
-                    if not new_frame:
-                        continue
+            # 从信号进程取出数据
+            begin_ts = time.time()
+            d = self.sink_process.pop_resulte()
+            if not d:
+                continue
 
-                    if new_frame:
-                        self.frame_cnt += 1
-                        if self.frame_cnt > 500:
-                            self.player.start_time = datetime.now()
-                            self.frame_cnt = 1
+            # 处理数据
+            pop_ts = time.time()
+            self.statistics['frame_popping_cost'] = '{:.2f}'.format(1000 * (pop_ts - begin_ts))
+            # 缓存信号数据，等待视频渲染
+            new_frame = self.cache_data(d)
+            if not new_frame:
+                continue
 
-                    t2 = time.time()
-                    self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (t2 - t1))
+            if new_frame:
+                self.frame_cnt += 1
+                if self.frame_cnt > 500:
+                    self.player.start_time = datetime.now()
+                    self.frame_cnt = 1
 
-                else:
-                    continue
+            cache_ts = time.time()
+            self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (cache_ts - pop_ts))
 
             # render begins
-            # print('render begins.')
-            if t3 - last_ts > self.display_interval or self.replay:
+            if self.replay or begin_ts - last_ts > self.display_interval:
+                # 监听窗口按键事件
                 self.handle_keyboard()
                 last_ts = time.time()
-                # if not self.replay:
-                #     self.hub.parse_can_msgs()
-                # 不需要考虑存储的缓存队列的大小来控制是否渲染,因为两者已经分离到了两个进程
-                if not self.replay and self.statistics['fileHandler_log_q_size'] < 0:
-                    show = False
-                else:
-                    show = True
-                self.render(self.frame_cnt, show)
-                t4 = time.time()
-                self.statistics['frame_rendering_cost'] = '{:.2f}'.format(1000 * (t4 - t3))
-                self.run_cost = self.run_cost * 0.9 + (t4 - t3) * 0.1
+                self.render(self.frame_cnt)
+                after_render_ts = time.time()
+                self.statistics['frame_rendering_cost'] = '{:.2f}'.format(1000 * (after_render_ts - begin_ts))
+                self.run_cost = self.run_cost * 0.9 + (after_render_ts - begin_ts) * 0.1
             else:
                 time.sleep(0.001)
             self.statistics['refreshing_rate'] = '{:.1f}'.format(1.0 / self.display_interval)
 
     def render(self, frame_cnt, show=True):
         if show:
-            img_rendered = self.draw(self.cache, frame_cnt)  # render
-            # ts_render = time.time()
+            img_rendered = self.draw(self.cache, frame_cnt)  # 处理图片，渲染数据信息
+
             if self.to_web:
-                # self.web_img['now_image'] = comb.copy()
-                # self.o_msg_q.put(
-                #     ('delay', {'name': 'frame_render_cost', 'delay': '{:.1f}'.format(self.frame_cost * 1000)}))
                 self.statistics['frame_total_cost'] = '{:.2f}ms'.format(self.frame_cost * 1000)
-                if not self.o_img_q.full():
-                    self.o_img_q.put(img_rendered)
+                self.o_img_q.put(img_rendered)
             else:
                 cv2.imshow('MINIEYE-CVE', img_rendered)
 
             if self.recv_first_img:
                 self.save_rendered(img_rendered)
 
-        t3 = time.time()
-
+        # 暂停的时候保持画面窗口
         while self.replay and self.pause:
             self.handle_keyboard()
             comb = self.draw(self.cache, frame_cnt)
             if self.replay:
                 cv2.imshow('MINIEYE-CVE', comb)
 
-            # print("pause....")
             self.hub.pause(True)
             time.sleep(0.1)
 
+        # 清除已渲染的数据
         self.clean_cache()
 
         if self.replay:
             self.hub.pause(False)
             if self.hub.d:
                 frame_cnt += self.hub.d['replay_speed'] - 1
-                # print(frame_cnt)
-        # self.draw(d, frame_cnt)
-
-        # time.sleep(0.01)
 
         if self.auto_rec:
             self.auto_rec = False
@@ -436,48 +382,39 @@ class PCC(object):
 
     def draw(self, mess, frame_cnt):
         ts_ana = []
-        t0 = time.time()
-        ts_ana.append(('draw start', t0))
-        # print(mess.get("img_raw"))
+        draw_start_ts = time.time()
+        ts_ana.append(('draw start', draw_start_ts))
+
         try:
             if 'img_raw' in mess and mess['img_raw'] is not None:  # reuse img
                 img = mess['img_raw'].copy()
-                # print('reuse video.')
                 if 'ts' not in mess or self.ts_sync_local() - mess['ts'] > 5.0:
                     self.player.show_failure(img, 'feed lost, check connection.')
             else:
-                # return
                 mess['img_raw'] = jpeg.decode(np.fromstring(mess['img'], np.uint8))
-                # mess['img_raw'] = self.jpeg_dec.decode(mess['img'])
                 img = mess['img_raw'].copy()
         except Exception as e:
-            print('img decode error')
-            # raise e
+            logger.error('img decode error:{}'.format(e))
             return
-        # ts_fdec = time.time()
+
         ts_ana.append(('frame decode', time.time()))
-        # self.player.show_failure(img, 'feed lost, check connection.')
         frame_id = mess['frame_id']
-        self.now_id = frame_id
+        self.now_fid = frame_id
         self.ts_now = mess['ts']
         self.player.ts_now = mess['ts']
         self.player.update_column_ts('video', mess['ts'])
-        # print(mess)
-        # print(frame_id, img.shape)
+        self.player.show_frame_id(img, 'video', frame_id)
+        self.player.show_frame_cost(self.frame_cost)        # 渲染画面的耗时
+        self.player.show_datetime(img, self.ts_now)
 
         if self.ts0 == 0:
             self.ts0 = self.ts_now
 
-        # if not self.replay and mess.get('updated'):
-        #     self.hub.fileHandler.insert_video(
-        #         {'ts': mess['ts'], 'frame_id': frame_id, 'img': mess['img_raw'], 'source': 'video'})
+        # 如果有定位标签的话，渲染定位信息
+        if self.vehicles['ego'].pinpoint:
+            self.player.show_pinpoint(img, self.vehicles['ego'].pinpoint)
 
-        # self.player.show_columns(img)
-        if self.vehicles['ego'].dynamics.get('pinpoint'):
-            self.player.show_pinpoint(img, self.vehicles['ego'].dynamics['pinpoint'][0])
-        self.player.show_frame_id(img, 'video', frame_id)
-        self.player.show_frame_cost(self.frame_cost)
-        self.player.show_datetime(img, self.ts_now)
+        # 显示俯视图
         if self.show_ipm:
             self.m_g2i = self.transform.calc_g2i_matrix()
 
@@ -497,53 +434,23 @@ class PCC(object):
             video = self.video_cache[source]
             self.video_cache[source]['updated'] = False
             img_small = cv2.resize(jpeg.decode(np.fromstring(video['img'], np.uint8)), (427, 240))
-            # img_small = cv2.resize(self.jpeg_dec.decode(video['img']), (427, 240))
+
             video['device'] = source
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
-        # t1 = time.time()
+
         ts_ana.append(('other frame decode', time.time()))
 
-        # t2 = time.time()
-
-        # cache = {'rtk.2': {'type': 'rtk'}, 'rtk.3': {'type': 'rtk'}}
-
         if 'x1_data' in mess:
-            # print('------', mess['x1_data'])
             for data in mess['x1_data']:
-                # print(mess['x1_data'])
                 self.flow_player.draw(data, img)
 
-            # t2 = time.time()
         ts_ana.append(('pcv_data', time.time()))
-
 
         misc_data = mess.get('misc')
         if misc_data:
-            # if 'x1_data' in misc_data:
-            #     # print('------', mess['x1_data'])
-            #
-            #     if self.replay:
-            #         for key in misc_data['x1_data']:
-            #             for data in misc_data['x1_data'][key]:
-            #                 # print(key)
-            #                 # print(misc_data['x1_data'])
-            #                 self.flow_player.draw(data, img)
-            #     misc_data['x1_data'].clear()
-            #     ts_ana.append(('pcv_data', time.time()))
-
-            # print('can0 data')
             for source in list(mess['misc']):
                 for entity in list(mess['misc'][source]):
-                    # print(entity)
-                    # try:
-                    #     dt = self.ts_now - mess['misc'][source][entity]['ts']
-                    # except KeyError as e:
-                    #     print('error: no ts in', source, entity)
-                    #     raise e
-                    # if dt > 0.2 or dt < -0.2:
-                    #     del mess['misc'][source][entity]
-                    #     continue
                     if source == 'x1j.0' and entity == 'obstacle.3':
                         # print(mess['misc'][source][entity])
                         pass
@@ -594,7 +501,7 @@ class PCC(object):
             padding = np.zeros((img.shape[0] - img_aux.shape[0], img_aux.shape[1], 3), np.uint8)
             comb = np.hstack((img, np.vstack((img_aux, padding))))
 
-        self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
+        self.frame_cost = (time.time() - draw_start_ts) * 0.1 + self.frame_cost * 0.9
         self.frame_drawn_cnt += 1
         self.frame_cost_total += self.frame_cost
 
@@ -838,31 +745,23 @@ class PCC(object):
             self.o_msg_q.put(('profiling', data))
 
     def draw_misc_data(self, img, data):
-        # print(data)
         if 'type' not in data:
-            # print('data invalid: no type', data)
             return
+
+        # todo:待优化
         role = self.hub.get_veh_role(data.get('source'))
         if role not in self.vehicles:
             self.vehicles[role] = Vehicle(role)
 
         if data['type'] == 'pcv_data':
-            # print('pcv_data', data)
             if self.replay or (not self.replay and self.draw_algo):
                 for t in data["data"]:
                     self.flow_player.draw(t, img)
 
         elif data['type'] == 'obstacle':
-            # dummy0 = {'type': 'obstacle', 'id': 20, 'source': 'x1.1', 'pos_lat': 0, 'pos_lon': 60, 'color': 1}
-            # dummy1 = {'type': 'obstacle', 'id': 20, 'source': 'esr.0', 'sensor': 'radar', 'pos_lat': 0, 'pos_lon': 60, 'color': 2}
-            # self.player.show_obs(img, dummy0)
-            # self.player.show_obs(img, dummy1)
-
             self.player.show_obs(img, data)
             self.player.update_column_ts(data.get('source'), data.get('ts'))
             if self.show_ipm:
-                # self.player.show_ipm_obs(self.ipm, dummy0)
-                # self.player.show_ipm_obs(self.ipm, dummy1)
                 self.player.show_ipm_obs(self.ipm, data)
             if data.get('cipo'):
                 self.cipv = data
@@ -925,27 +824,31 @@ class PCC(object):
         return True
 
     def handle_keyboard(self):
+        """
+        获取视频窗口的按键事件
+        :return:
+        """
         key = cv2.waitKey(1) & 0xFF
         self.control(key)
 
     def control(self, key):
+        """
+        按键事件方法
+        :param key:
+        :return:
+        """
         if key == ord('q') or key == 27:
             if not self.to_web:
                 cv2.destroyAllWindows()
                 if self.vw is not None:
                     self.vw.release()
-            # os._exit(0)
             self.exit = True
-            # sys.exit(0)
+            self.sink_process.close()
         elif key == ord('['):
-
             if self.pause and self.replay:
-
                 self.cache_pause_idx -= 1
                 self.cache_pause_idx = max(self.cache_pause_idx, 1)
                 self.cache = copy.deepcopy(self.cache_pause_data[self.cache_pause_idx-1])
-                # print(self.cache_pause_idx)
-                # print(self.cache)
 
         elif key == ord(']'):
             if self.pause and self.replay:
@@ -977,27 +880,19 @@ class PCC(object):
                         self.wav_cnt += 1
                         self.alarm_info["voice_note"] = time.time() + dur_time
 
-        elif key == ord('r'):
+        elif key == ord('r'):   # 录制功能
             if self.replay:
                 return
 
             if self.hub.fileHandler.is_recording:
-                # self.recording = False
                 self.stop_rec()
-                # self.parse_state = True
                 self.hub.parse_can_msgs(self.parse_state)
 
             else:
-                # self.recording = True
                 self.start_rec()
-                # self.parse_state = False
                 if self.cfg.runtime.get('low_profile'):
                     self.hub.parse_can_msgs(False)
-            print('toggle recording status: {}'.format(self.hub.fileHandler.is_recording))
-        # elif key == ord('s'):
-        #     self.ot.save_para()
-        #     if not self.replay:
-        #         self.hub.fileHandler.save_param()
+            logger.warning('toggle recording status: {}'.format(self.hub.fileHandler.is_recording))
         elif key == ord('0'):
             if self.hub.fileHandler.is_recording:
                 if self.hub.fileHandler.is_marking:
@@ -1030,7 +925,7 @@ class PCC(object):
         self.hub.fileHandler.start_rec(self.rlog)
         pp = self.vehicles['ego'].pinpoint
         if pp and not self.replay:
-            print('save PP.')
+            logger.debug("已打过定位标签，进行续记录：{}".format(pp))
             self.hub.fileHandler.insert_raw(
                 (pp['ts'], pp.get('source') + '.pinpoint', compose_from_def(ub482_defs, pp)))
 
@@ -1040,10 +935,14 @@ class PCC(object):
     def left_click(self, event, x, y, flags, param):
         # print(event, x, y, flags, param)
         if cv2.EVENT_LBUTTONDOWN == event:
-            print('left btn down', x, y)
+            logger.debug('left btn down {} {}'.format(x , y))
 
     def check_status(self):
-        if self.hub.msg_queue.full():
+        """
+        检查信号接收情况
+        :return:
+        """
+        if self.sink_process.result_queue.full():
             self.stuck_cnt += 1
         else:
             self.stuck_cnt = 0
@@ -1053,7 +952,7 @@ class PCC(object):
         # main video ts
         all_ts = [cache_cp['ts']]
 
-        # data ts
+        # 收集其他信号的接收时间
         for source in cache_cp['misc']:
             for key in cache_cp['misc'][source]:
                 d = cache_cp['misc'][source][key]
@@ -1066,15 +965,10 @@ class PCC(object):
             if type(d) == dict and 'ts' in d:
                     all_ts.append(d['ts'])
 
-        # collector ts
-        # if not self.replay:
-        #     all_ts.append(time.time())
+        all_ts = np.array(all_ts)
+        dt = np.ptp(all_ts)
 
-        all_ts = [ts for ts in all_ts if ts]
-
-        all_ts = sorted(all_ts)
-        dt = all_ts[-1] - all_ts[0]
-
+        # 出现超时信号进行处理
         if dt > 5:
             self.alarm_info["time_not_sync"] = time.time() + 3
 
@@ -1133,28 +1027,9 @@ class PCC(object):
         with open(ofile, 'a') as cf:
             tv_s = int(ts)
             tv_us = (ts - tv_s) * 1000000
-            data = '{} {} {} {} {}'.format(self.now_id, d_azu, azu_rtk, azu_esr, dt)
+            data = '{} {} {} {} {}'.format(self.now_fid, d_azu, azu_rtk, azu_esr, dt)
             log_line = "%.10d %.6d " % (tv_s, tv_us) + 'esr.calib' + ' ' + data + "\n"
             cf.write(log_line)
-
-
-class HeadlessPCC:
-    def __init__(self, hub):
-        self.hub = hub
-        self.hub.fileHandler.isheadless = True
-
-    def start(self):
-        # self.hub.start()
-        while True:
-            mess = self.hub.pop_simple()
-
-            if mess is None or not mess.get('frame_id'):
-                continue
-            frame_id = mess['frame_id']
-            # if self.cfg.local_cfg.save.video:
-            self.hub.fileHandler.insert_video(
-                {'ts': mess['ts'], 'frame_id': frame_id, 'img': mess['img'], 'source': 'video'})
-            time.sleep(0.02)
 
 
 if __name__ == "__main__":

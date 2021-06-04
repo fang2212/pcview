@@ -38,14 +38,14 @@ class Sink(Thread):
     """
     信号解析基本类
     """
-    def __init__(self, queue, ip, port, msg_type, index=0):
+    def __init__(self, ip, port, msg_type, index=0, sink_process=None):
         super().__init__()
         self.daemon = True  # 设置为守护线程
         self.ip = ip
         self.port = port
-        self.queue = queue
         self.msg_type = msg_type
         self.index = index
+        self.sink_process=sink_process
         self.source = 'sink.{}'.format(index)
         self.exit = Event()
 
@@ -84,13 +84,13 @@ class NNSink(Sink):
     """
     nnpy类型信号处理基类
     """
-    def __init__(self, queue, ip, port, msg_type, index=0):
-        super().__init__(queue=queue, ip=ip, port=port, msg_type=msg_type)
+    def __init__(self, ip, port, msg_type, index=0, sink_process=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, sink_process=sink_process)
         self.ip = ip
         self.port = port
-        self.queue = queue
         self.type = msg_type
         self.index = index
+        self.sink_process=sink_process
         self.source = 'nnpy_sink.{}'.format(index)
 
     def _init_port(self):
@@ -122,23 +122,19 @@ class NNSink(Sink):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                if not self.queue.full():
-                    self.queue.put((r))
-                else:
-                    time.sleep(0.001)
-                    continue
+                self.sink_process.put_decode((r))
 
 
 class ZmqSink(Sink):
-    def __init__(self, queue, ip, port, msg_type, index, fileHandler):
-        super().__init__(queue=queue, ip=ip, port=port, msg_type=msg_type)
+    def __init__(self, ip, port, msg_type, index, fileHandler, sink_process=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, sink_process=sink_process)
         self.ip = ip
         self.port = port
         self.msg_type = msg_type
-        self.queue = queue
         self.source = '{}.{:d}'.format(msg_type, index)
         self.index = index
         self.fileHandler = fileHandler
+        self.sink_process = sink_process
         self.ctx = dict()
         self._buf = b''
         self.context = None
@@ -149,7 +145,6 @@ class ZmqSink(Sink):
         url = "tcp://%s:%d" % (self.ip, self.port)
 
         self._socket.connect(url)
-        # self._socket.setsockopt(zmq.SUBSCRIBE, b'')  # 接收所有消息
 
     def read(self):
         bs = self._socket.recv()
@@ -180,20 +175,17 @@ class ZmqSink(Sink):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                if not self.queue.full():
-                    self.queue.put((r))
-                else:
-                    time.sleep(0.001)
-                    continue
+
+                self.sink_process.put_decode((r))
 
 
 class UDPSink(Sink):
-    def __init__(self, queue, ip, port, topic, protocol, index, file_andler):
-        super(UDPSink, self).__init__(queue=queue, ip=ip, port=port, msg_type=msg_type)
+    def __init__(self, ip, port, topic, protocol, index, file_andler, sink_process=None):
+        super(UDPSink, self).__init__(ip=ip, port=port, msg_type=topic, sink_process=sink_process)
         self.ip = ip
         self.port = port
         self.msg_type = topic
-        self.queue = queue
+        self.sink_process = sink_process
         self.source = '{}.{:d}'.format(topic, index)
         self.index = index
         self.fileHandler = file_andler
@@ -241,20 +233,16 @@ class UDPSink(Sink):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                if not self.queue.full():
-                    self.queue.put((r))
-                else:
-                    time.sleep(0.001)
-                    continue
+                self.sink_process.put_decode((r))
 
 
 class TCPSink(Sink):
-    def __init__(self, queue, ip, port, msg_type, protocol, index, fileHandler):
-        super(TCPSink, self).__init__(queue=queue, ip=ip, port=port, msg_type=msg_type)
+    def __init__(self, ip, port, msg_type, protocol, index, fileHandler, sink_process=None):
+        super(TCPSink, self).__init__(ip=ip, port=port, msg_type=msg_type, sink_process=sink_process)
         self.ip = ip
         self.port = port
         self.msg_type = msg_type
-        self.queue = queue
+        self.sink_process = sink_process
         self.source = 'tcp.{:d}'.format(index)
         self.index = index
         self.filehandler = fileHandler
@@ -310,22 +298,19 @@ class TCPSink(Sink):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                if not self.queue.full():
-                    self.queue.put((r))
-                else:
-                    time.sleep(0.001)
-                    continue
+                self.sink_process.put_decode((r))
 
 
 class PinodeSink(NNSink):
-    def __init__(self, queue, ip, port, msg_type, index, resname, fileHandler):
-        super().__init__(queue=queue, ip=ip, port=port, index=index, msg_type=msg_type)
+    def __init__(self, ip, port, msg_type, index, resname, fileHandler, sink_process=None):
+        super().__init__(ip=ip, port=port, index=index, msg_type=msg_type, sink_process=sink_process)
         self.source = 'rtk.{:d}'.format(index)
         self.msg_type = msg_type
         self.index = index
         self.context = {'source': self.source}
         self.resname = resname
         self.fileHandler = fileHandler
+        self.sink_process = sink_process
         self.type = 'pi_sink'
         logger.debug(f'inited pi_node sink res:{resname}')
         if resname == 'rtcm':
@@ -336,16 +321,19 @@ class PinodeSink(NNSink):
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
         if self.resname == 'pim222':
-            from parsers.pim222 import parse_pim222
             source = 'pim222.{}'.format(self.index)
             if not msg.startswith(b'$'):
                 return
             self.fileHandler.insert_raw((time.time(), source, msg.decode().strip()))
 
-            r = parse_pim222(None, msg, self.ctx)
-            if r:
-                r['source'] = source
-                return self.msg_type, r, source
+            decode_msg = {
+                "type": "pim222",
+                "source": source,
+                "data": msg,
+            }
+            self.sink_process.put_decode({"data": decode_msg})
+            return
+
         data = self.decode_pinode_res(self.resname, msg)
         if not data:
             return
@@ -425,158 +413,59 @@ class PinodeSink(NNSink):
             return data
 
 
-class PinodeSinkGeneral(NNSink):
-    def __init__(self, queue, ip, port, msg_type, index, resname, fileHandler):
-        super().__init__(queue=queue, ip=ip, port=port, msg_type=msg_type, index=index)
-        self.msg_type = msg_type
-        self.source = 'rtk.{:d}'.format(index)
-        self.index = index
-        self.context = {'source': self.source}
-        self.resname = resname
-        self.fileHandler = fileHandler
-        self.type = 'pi_sink'
-        if resname == 'rtcm':
-            self.rtcm3 = rtcm3.RTCM3()
-
-    def pkg_handler(self, msg):
-        msg = memoryview(msg).tobytes()
-        data = self.decode_pinode_res(self.resname, msg)
-        if not data:
-            return
-
-        if not isinstance(data, list):
-            data = [data]
-
-        for r in data:
-            # print(r)
-            r['source'] = self.source
-            if r.get('sensor') == 'm8n':
-                r['source'] = 'gps.{:d}'.format(self.index)
-            if r['type'] in ub482_defs:
-                # print(r)
-                if self.fileHandler.is_recording:
-                    self.fileHandler.insert_raw(
-                        (r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
-
-
-            elif r['type'] == 'rtk':  # old d-rtk
-                timestamp = r['ts_origin']
-                self.fileHandler.insert_raw((timestamp, r['source'] + '.sol',
-                                             '{} {} {:.8f} {:.8f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}'.format(
-                                                 r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'],
-                                                 r['velE'], r['velD'], r['yaw'], r['pitch'], r['length'])))
-                self.fileHandler.insert_raw((timestamp, r['source'] + '.dop',
-                                             '{} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                                                 r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4],
-                                                 r['sat'][5], r['gdop'],
-                                                 r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'],
-                                                 r['prn'])))
-            elif r['type'] == 'gps':
-                self.fileHandler.insert_raw((time.time(), r['source'], msg.decode().strip()))
-
-        return self.msg_type, data, self.source
-
-    def decode_pinode_res(self, resname, msg):
-        if resname == 'rtk':
-            results = json.loads(msg.decode())
-            for res in results:
-                if res['type'] == 'novatel-like':
-                    ret = []
-                    for phr in res['buf'].split('#'):
-                        if len(phr) > 0:
-                            # print('phrase', phr)
-                            r = parsers_dict['novatel'](None, '#'+phr, None)
-                            if r:
-                                ret.append(r)
-                    return ret
-
-            return results
-
-        elif resname == 'rtcm':
-            self.rtcm3.add_data(msg)
-            result = self.rtcm3.process_data(dump_decoded=False)
-            r = None
-            while result != 0:
-                if result == rtcm3.Got_Undecoded:
-                    pass
-                elif result == rtcm3.Got_Packet:
-                    r = self.rtcm3.dump(False, False, False, False)
-                else:
-                    print("INTERNAL ERROR: Unknown result (" + str(result) + ")")
-                result = self.rtcm3.process_data()
-            if r:
-                r['type'] = 'rtcm'
-                r['len'] = len(msg)
-                r['ts'] = time.time()
-                return r
-        elif resname == 'gps':
-            # print(msg)
-            data = ublox.decode_nmea(msg.decode())
-            return data
-
-
 class CANSink(NNSink):
-    def __init__(self, queue, ip, port, msg_type, type, index, fileHandler):
-        super().__init__(queue=queue, ip=ip, port=port, msg_type=msg_type, index=index)
-        self.fileHandler = fileHandler
-        self.parser = []
-        for ptype in parsers_dict:
-            if ptype in type:
-                self.parser.append(parsers_dict[ptype])
-
-        if len(self.parser) == 0:
-            self.parser = [parsers_dict["default"]]
-        self.stat = {}
-
-        self.temp_ts = {'CAN1': 0, 'CAN2': 0}
+    def __init__(self, ip, port, msg_type, type, index, fileHandler, sink_process=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, sink_process=sink_process)
+        self.fileHandler = fileHandler                          # 日志对象
+        self.sink_process = sink_process
         self.source = '{}.{:d}'.format(type[0], index)
-        self.context = {'source': self.source}
-        # self.parse_switch = Value('i', 1)
-        self.buf = deque(maxlen=2000)
-        self.parse_event = Event()
         self.type = 'can_sink'
-        self.parse_event.set()
         self.log_types = {'can0': 'CAN' + '{:01d}'.format(self.index * 2),
                           'can1': 'CAN' + '{:01d}'.format(self.index * 2 + 1)}
         self.log_type = self.log_types.get(self.msg_type)
+        self.parse_event = Event()
+        self.parse_event.set()
+
+        # 解析方法初始化
+        self.parser = []
+        for parser in parsers_dict:
+            if parser in type:
+                self.parser.append(parsers_dict[parser])
+        if len(self.parser) == 0:
+            self.parser = [parsers_dict["default"]]
+
         print('CANSink initialized.', self.type, ip, port, self.parser[0].__name__)
 
     def pkg_handler(self, msg):
+        # can信号基本信息解析
         msg = memoryview(msg).tobytes()
         can_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
-
         timestamp = struct.unpack('<d', msg[8:16])[0]
         data = msg[16:]
         id = '0x%x' % can_id
         log_type = self.log_type
         log_bytes = data.hex()
+        # 记录原始报文
         self.fileHandler.insert_raw((timestamp, log_type, id + ' ' + log_bytes))
 
         if not self.parse_event.is_set():
             return
-        for parser in self.parser:
-            ret = parser(can_id, data, self.context)
-            # print(r)
-            if ret is None:
-                return None
-            if isinstance(ret, list):
-                # print('r is list')
-                for obs in ret:
-                    obs['ts'] = timestamp
-                    obs['source'] = self.source
-                    # print(obs)
-            else:
-                # print('r is not list')
-                ret['ts'] = timestamp
-                ret['source'] = self.source
-                # print(r['source'])
-            # print(r)
-            return can_id, ret, self.source
+
+        # 添加到解析队列
+        decode_msg = {
+            "type": "can",
+            "source": self.source,
+            "data": data,
+            "parsers": self.parser,
+            "cid": can_id,
+            "ts": timestamp
+        }
+        self.sink_process.put_decode(decode_msg)
 
 
 class GsensorSink(NNSink):
-    def __init__(self, queue, ip, port, msg_type, index, fileHandler):
-        super(GsensorSink, self).__init__(queue=queue, ip=ip, port=port, msg_type=msg_type, index=index)
+    def __init__(self, ip, port, msg_type, index, fileHandler, sink_process=None):
+        super(GsensorSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, sink_process=sink_process)
         self.fileHandler = fileHandler
         self.type = 'gsensor_sink'
 
@@ -593,8 +482,8 @@ class GsensorSink(NNSink):
 
 
 class CameraSink(NNSink):
-    def __init__(self, queue, ip, port, msg_type, index, fileHandler, is_main=False, devname=None):
-        super(CameraSink, self).__init__(queue=queue, ip=ip, port=port, msg_type=msg_type, index=index)
+    def __init__(self, ip, port, msg_type, index, fileHandler, is_main=False, devname=None, sink_process=None):
+        super(CameraSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, sink_process=sink_process)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.source = '{:s}.{:d}'.format(devname, index)
@@ -617,16 +506,14 @@ class CameraSink(NNSink):
 
 
 class FlowSink(NNSink):
-    def __init__(self, cam_queue, msg_queue, ip, port, msg_type, index, fileHandler, protocol='msgpack', name='x1_algo',
-                 log_name='pcv_log', topic='pcview', is_main=False):
-        super().__init__(queue=cam_queue, ip=ip, port=port, msg_type=msg_type, index=index)
+    def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo',
+                 log_name='pcv_log', topic='pcview', is_main=False, sink_process=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, sink_process=sink_process)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.ip = ip
         self.port = port
-        self.cam_queue = cam_queue
-        self.msg_queue = msg_queue
-        self.protocol = protocol
+        self.sink_process = sink_process
         self.log_name = log_name
         self.is_main = is_main
         self.type = 'flow_sink'
@@ -645,17 +532,15 @@ class FlowSink(NNSink):
             data = msgpack.packb(msg)
             await ws.send_bytes(data)
             async for msg in ws:
-                # print(msg[:100])
                 r = self.pkg_handler(msg)
                 if r is not None:
                     if isinstance(r[0], type("")):
                         if 'x1_data' in r[0]:
-                            self.msg_queue.put((r[1]['frame_id'], r[1], r[0]))
+                            self.sink_process.put_decode((r[1]['frame_id'], r[1], r[0]))
                         elif 'calib_param' in r[0]:
-                            self.msg_queue.put((r[1]['frame_id'], r[1], self.source))
-                            # print(self.source)
+                            self.sink_process.put_decode((r[1]['frame_id'], r[1], self.source))
                     else:
-                        self.cam_queue.put((*r, self.msg_type))
+                        self.sink_process.put_decode((*r, self.msg_type))
                 else:
                     time.sleep(0.001)
 
@@ -691,9 +576,7 @@ class FlowSink(NNSink):
         if msg_src == 'pcview':
             if topic == 'finish':
                 buf = payload
-                # topic = 'finish'
                 if b'rc_fusion' in buf:
-
                     buf = msgpack.unpackb(buf)
                     buf = mytools.convert(buf)
                     data = buf['rc_fusion']
@@ -741,14 +624,12 @@ class FlowSink(NNSink):
                 pass
         elif msg_src == 'lane_profiling':
             if topic == 'lane_profiling_data':
-                r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name}
-                r['buf'] = payload
+                r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name, 'buf': payload}
                 self.fileHandler.insert_general_bin_raw(r)
                 return 'algo_debug', r
         elif msg_src == 'imu':
             if topic == 'imuinfo':
                 imu_info = msgpack.unpackb(payload)
-                # print(imu_info)
                 imu_info = mytools.convert(imu_info)
 
                 for idx in range(imu_info['data_count']):
@@ -764,19 +645,16 @@ class FlowSink(NNSink):
             if topic == 'imuinfo':
                 imu_info = msgpack.unpackb(payload)
                 imu_info = mytools.convert(imu_info)
-                # print(imu_info)
                 for idx in range(imu_info['data_count']):
                     d = imu_info['imu_info'][idx]
                     ts = d['timestamp'] / 1000000
-                    # rtos_tick = d['rtostick']
                     self.fileHandler.insert_raw((ts, self.source + '.gsensor', '{} {} {} {} {} {} {} {}'.format(
                         d['accel'][0], d['accel'][1], d['accel'][2],
                         d['gyro'][0], d['gyro'][1], d['gyro'][2],
                         d['temp'], int(ts), 1000000 * (ts - int(ts)))))
                 return
 
-        else:  # msg_src == 'pcview'
-            # buf = msgpack.unpackb(payload)
+        else:
             pass
 
         if b'frame_id' in payload:
@@ -800,62 +678,3 @@ class FlowSink(NNSink):
                 return None
 
             return 'x1_data', pcv, self.source
-
-
-class RTKSink(NNSink):
-
-    def __init__(self, queue, ip, port, msg_type, index, fileHandler):
-        super().__init__(queue=queue, ip=ip, port=port, msg_type=msg_type, index=index)
-        self.fileHandler = fileHandler
-        self.source = 'drtk'
-
-    def _init_port(self):
-        try:
-            self._socket = can.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)
-            self.v1msg = V1_msg()
-        except Exception as e:
-            self._socket = None
-
-    def can_send(self, bus, buf):
-        idx = int(len(buf) / 8)
-        last_dlc = len(buf) % 8
-
-        for i in range(idx):
-            msg = can.Message(arbitration_id=0xc6, data=[x for x in buf[i * 8:i * 8 + 8]], extended_id=False)
-            bus.send(msg)
-        msg = can.Message(arbitration_id=0xc6, data=[x for x in buf[-last_dlc:]], extended_id=False)
-        bus.send(msg)
-
-    def read(self):
-        if self._socket:
-            r = self._socket.recv(128)
-            if r:
-                return r.data
-
-    def write(self, data):
-        if self._socket:
-            self.can_send(self._socket, data)
-
-    def pkg_handler(self, msg):
-        timestamp = time.time()
-        self.v1msg.push(bytes(msg))
-        while not self.v1msg.unpacked.empty():
-            msg = self.v1msg.unpacked.get()
-            msgid = msg['cmdSet'] << 8 | msg['cmdID']
-            if msgid in v1_handlers:
-                r = v1_handlers[msgid](msg, self.write)
-                if r is not None:
-                    r['ts'] = timestamp
-                    self.fileHandler.insert_raw((timestamp, 'rtksol0',
-                                                 '{} {} {:.8f} {:.8f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}'.format(
-                                                     r['rtkst'], r['orist'], r['lat'], r['lon'], r['hgt'], r['velN'],
-                                                     r['velE'], r['velD'], r['yaw'], r['pitch'], r['length'])))
-                    self.fileHandler.insert_raw(
-                        (timestamp, 'rtkdop0', '{} {} {} {} {} {} {} {} {} {} {} {} {} {}'.format(
-                            r['sat'][0], r['sat'][1], r['sat'][2], r['sat'][3], r['sat'][4], r['sat'][5], r['gdop'],
-                            r['pdop'], r['hdop'], r['htdop'], r['tdop'], r['cutoff'], r['trkSatn'], r['prn']
-                        )))
-                    return msgid, r, self.source
-            else:
-                # print('0x{:04x}'.format(msgid), msg)
-                pass

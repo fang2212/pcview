@@ -75,11 +75,6 @@ class Player(object):
 
         self.param_bg_width = 160
 
-        # for col in self.columns:
-        #     if len(col) == 0:
-        #         del self.columns[col]
-        # print(self.columns)
-
     def add_info_column(self, msg_type):
         if len(msg_type) == 0:
             # self.columns.remove(col)
@@ -139,6 +134,7 @@ class Player(object):
         except Exception as e:
             print('Error indent', obs)
             return
+
         sensor = obs.get('sensor') or obs['source'].split('.')[0]
         color = self.color_obs.get(sensor)
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
@@ -474,18 +470,19 @@ class Player(object):
         self.show_text_info(source, 60, 'fps: ' + str(int(fps)))
 
     def show_datetime(self, img, ts=None):
-        # indent = self.columns['video']['indent']
+        """
+        视频的录制时间
+        :param img:
+        :param ts:
+        :return:
+        """
         if ts is None:
             ta = datetime.now()
         else:
             ta = time.localtime(ts)
 
-        FORMAT = '%Y/%m/%d'
-        date = time.strftime(FORMAT, ta)
-        FORMAT = '%H:%M:%S'
-        time_ = time.strftime(FORMAT, ta)
-        # BaseDraw.draw_text(img, '{}'.format(date), (indent + 2, 100), 0.5, CVColor.White, 1)
-        # BaseDraw.draw_text(img, '{}'.format(time_), (indent + 2, 120), 0.5, CVColor.White, 1)
+        date = time.strftime('%Y/%m/%d', ta)
+        time_ = time.strftime('%H:%M:%S', ta)
         self.show_text_info('video', 100, '{}'.format(date))
         self.show_text_info('video', 120, '{}'.format(time_))
 

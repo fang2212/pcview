@@ -15,6 +15,8 @@ import cv2
 import numpy as np
 
 # 限制为单线程，防止竞争占用资源
+from utils import logger
+
 cv2.setNumThreads(0)
 jpeg = TurboJPEG()
 
@@ -323,11 +325,11 @@ class FileHandler(Process):
         self.recording_state.value = 1
         self.start_time = time.time()
 
-        # 初始化定位标签，防止自动分割处理的时候无法后续处理 todo：待测试效果
-        if self.pinpoint:
-            self.insert_raw(
-                    (time.time(), self.pinpoint.get('source') + '.pinpoint', compose_from_def(ub482_defs, self.pinpoint)))
-        print('start recording:', self.path)
+        # 初始化定位标签，防止自动分割处理的时候无法后续处理
+        # if self.pinpoint:
+        #     self.insert_raw(
+        #             (time.time(), self.pinpoint.get('source') + '.pinpoint', compose_from_def(ub482_defs, self.pinpoint)))
+        logger.info('start recording: {}'.format(self.path))
 
     def stop_rec(self, clean_queue=True):
         self.ctrl_queue.put({'act': 'stop'})
