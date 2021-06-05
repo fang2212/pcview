@@ -1,0 +1,1276 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: ADAS Debug
+VAL_TABLE_ Vision_Type_Right 3 "Barrier" 2 "Road Edge" 1 "Lane Marker" 0 "None" ;
+VAL_TABLE_ Vision_Type_Left 3 "Barrier" 2 "Road Edge" 1 "Lane Marker" 0 "None" ;
+VAL_TABLE_ TJA_Info_Disp 3 "TJA_INFO_FAIL" 2 "TJA_INFO_CANCELLED" 1 "TJA_INFO_CANNOT_ACTIVATE" 0 "TJA_INFO_NO_DISP" ;
+VAL_TABLE_ TJA_ACC_Rq 3 "TJA_ACC_FORCE_DIS" 2 "TJA_ACC_BRK" 1 "TJA_ACC_INHIBIT_ACCEL" 0 "TJA_ACC_NO_REQ" ;
+VAL_TABLE_ TJA_Mode 15 "reserve" 14 "reserve" 13 "reserve" 12 "TJA_FAULT" 11 "TJA_RESM_RQ" 10 "TJA_DRV_CNCL" 9 "TJA_SYS_CNCL" 8 "TJA_TO_BRK" 7 "TJA_TO_NOACCL" 6 "TJA_LIM_TO" 5 "TJA_OVRD_LAT" 4 "TJA_OVRD_LONG" 3 "TJA_ACTIVECTRL" 2 "TJA_STANDBYENABLE" 1 "TJA_STANDBYDISABLE" 0 "TJA_OFF_MODE" ;
+VAL_TABLE_ LatCtlRampType_Rq 3 "Immediately" 2 "Fast" 1 "Medium" 0 "Slow" ;
+VAL_TABLE_ TJA_Situation_enum 3 "reserve" 2 "Invalid" 1 "Uncertain" 0 "Valid" ;
+VAL_TABLE_ TJA_Drv_OvRd 3 "reserve" 2 "Driver Override Longitudinally" 1 "Driver Override Laterally" 0 "No Driver Override" ;
+VAL_TABLE_ Status_Vision_Calib_Process_e 8 "DES_BAD_PARAMS_TARGET_HORIZON" 7 "DES_BAD_PARAMS_TARGET_YAW" 6 "DES_TOO_MANY_TARGETS_FOUND" 5 "DES_BAD_PARAMS" 4 "DES_BAD_PARAMS_SQUARE_SIDE_SIZE" 3 "DES_BAD_PARAMS_DISTANCE" 2 "DES_NO_TARGET_FOUND" 1 "DES_SUCCESS" 0 "DES_VISION_CALIB_UNKNOWN" ;
+VAL_TABLE_ Vision_Align_State_T 4 "eVISION_APP_MODE" 3 "eWAIT_ALIGN_MSG" 2 "eWAIT_ALIGN_STATE" 1 "eVISION_UNALIGNED" 0 "eALIGNED_IDLE" ;
+VAL_TABLE_ Mesp_Return_Status_T 5 "eDES_MESP_STATUS_ILLEGAL_CALL " 4 "eDES_STATUS_SERVICE_INVALID " 3 "eDES_STATUS_INVALID_PARAMETER" 2 "eDES_MESP_BUSY " 1 "eDES_MESP_GENERAL_ERR " 0 "eDES_MESP_STATUS_OK " ;
+VAL_TABLE_ Mesp_MainState_T 134 "eMAIN_STATE_RUNNING_DIAGNOSTICS " 132 "eMAIN_STATE_PENDING_SPC " 130 "eMAIN_STATE_PENDING_TAC " 128 "eMAIN_STATE_PENDING_VISION " 34 "eRUNNING_SPC " 32 "eRUNNING_TAC " 3 "eBOOT " 2 "eRUNNING_VISON " 1 "ePENDING " 0 "eUKNOWN" ;
+
+
+BO_ 272 SPP_SP_Poly_Coeff: 8 ADAS
+ SG_ COEFF_A3 : 48|16@1+ (3.7252902985E-009,-0.00012206658721) [-0.00012206658721|0.00012206658721] "1/m^2"  Debug
+ SG_ COEFF_A2 : 32|16@1+ (9.765625E-007,-0.031999023438) [-0.031999023438|0.031999023438] "1/m"  Debug
+ SG_ COEFF_A1 : 16|16@1+ (0.0009765625,-31.999023438) [-31.999023438|31.999023438] "radians"  Debug
+ SG_ COEFF_A0 : 0|16@1+ (0.00390625,-128) [-128|127] "m"  Debug
+
+BO_ 257 TaskTime: 8 ADAS
+ SG_ FusionTaskTime : 40|20@1+ (1,0) [0|1048575] "us" Vector__XXX
+ SG_ SppTaskTime : 20|20@1+ (1,0) [0|1048575] "us"  Debug
+ SG_ CtrlTaskTime : 0|20@1+ (1,0) [0|1048575] "us"  Debug
+
+BO_ 256 VersionInfo: 8 ADAS
+ SG_ SPPVersion : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ FusionVersion : 24|8@1+ (1,0) [0|255] ""  Debug
+ SG_ CtrlVersion : 16|8@1+ (1,0) [0|255] ""  Debug
+ SG_ BswVersion : 8|8@1+ (1,0) [0|255] ""  Debug
+ SG_ HwVersion : 0|8@1+ (1,0) [0|255] ""  Debug
+
+BO_ 807 AEB_Ped_Info: 8 ADAS
+ SG_ AEB_TargetPedVelY : 55|10@0+ (0.1,0) [0|102.3] "m/s"  Debug
+ SG_ AEB_TargetPedTTC : 39|10@0+ (0.01,0) [0|10.23] "s"  Debug
+ SG_ AEB_TargetPedPosY : 23|16@0+ (0.01,0) [0|655.35] "m"  Debug
+ SG_ AEB_KeyPed_exist : 7|1@0+ (1,0) [0|1] ""  Debug
+
+BO_ 805 AEB_DreCondition_Info: 8 ADAS
+ SG_ AEB_FCA_ParkingInh : 1|1@0+ (1,0) [0|1] ""  Debug
+ SG_ AEB_FCA_LatStrWhllnh : 2|1@0+ (1,0) [0|1] ""  Debug
+ SG_ AEB_FCA_FaultInh : 4|1@0+ (1,0) [0|1] ""  Debug
+ SG_ AEB_FCA_BrkPedAchvdInh : 5|1@0+ (1,0) [0|1] ""  Debug
+ SG_ AEB_FCA_ActVehAccelInh : 6|1@0+ (1,0) [0|1] ""  Debug
+ SG_ AEB_FCA_AccPosInh : 7|1@0+ (1,0) [0|1] ""  Debug
+
+BO_ 806 AEB_Sts_Info: 8 ADAS
+ SG_ AEB_Sts : 5|3@0+ (1,0) [0|7] ""  Debug
+ SG_ AEB_FCW_Sts : 2|3@0+ (1,0) [0|7] ""  Debug
+
+BO_ 804 AEB_Veh_Info: 7 ADAS
+ SG_ AEB_AvoidDistbyBrk : 41|10@0+ (0.1,0) [0|102.3] "m"  Debug
+ SG_ AEB_TargetVehTTC : 25|10@0+ (0.01,0) [0|10.23] "s"  Debug
+ SG_ AEB_KeyCar_exist : 7|1@0+ (1,0) [0|1] ""  Debug
+
+BO_ 1059 TRACK_C_01: 6 ADAS
+ SG_ yawrate : 40|8@1- (0.005,0) [-0.5|0.5] ""  Debug
+ SG_ ttc : 24|16@1+ (0.01,0) [0|10] "sec"  Debug
+ SG_ Dist2Traj_ttc : 8|16@1- (0.02,0) [-5|5] "m" Vector__XXX
+ SG_ Colli_Prop : 0|8@1+ (0.01,0) [0|1] "" Vector__XXX
+
+BO_ 1025 TRACK_B_01: 8 ADAS
+ SG_ TRACK_01_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_01 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_01 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_01 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_01 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_01 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_01 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1024 TRACK_A_01: 8 ADAS
+ SG_ TRACK_01_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_01 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_01 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_01 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_01 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_01 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_01 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_01 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_01 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1027 TRACK_B_02: 8 ADAS
+ SG_ TRACK_02_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_02 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_02 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_02 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_02 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_02 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_02 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1026 TRACK_A_02: 8 ADAS
+ SG_ TRACK_02_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_02 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_02 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_02 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_02 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_02 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_02 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_02 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_02 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1029 TRACK_B_03: 8 ADAS
+ SG_ TRACK_03_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_03 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_03 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_03 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_03 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_03 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_03 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1028 TRACK_A_03: 8 ADAS
+ SG_ TRACK_03_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_03 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_03 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_03 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_03 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_03 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_03 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_03 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_03 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1031 TRACK_B_04: 8 ADAS
+ SG_ TRACK_04_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_04 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_04 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_04 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_04 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_04 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_04 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1030 TRACK_A_04: 8 ADAS
+ SG_ TRACK_04_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_04 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_04 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_04 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_04 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_04 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_04 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_04 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_04 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1033 TRACK_B_05: 8 ADAS
+ SG_ TRACK_05_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_05 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_05 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_05 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_05 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_05 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_05 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1032 TRACK_A_05: 8 ADAS
+ SG_ TRACK_05_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_05 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_05 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_05 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_05 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_05 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_05 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_05 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_05 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1035 TRACK_B_06: 8 ADAS
+ SG_ TRACK_06_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_06 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_06 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_06 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_06 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_06 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_06 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1034 TRACK_A_06: 8 ADAS
+ SG_ TRACK_06_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_06 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_06 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_06 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_06 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_06 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_06 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_06 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_06 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1037 TRACK_B_07: 8 ADAS
+ SG_ TRACK_07_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_07 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_07 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_07 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_07 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_07 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_07 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1036 TRACK_A_07: 8 ADAS
+ SG_ TRACK_07_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_07 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_07 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_07 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_07 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_07 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_07 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_07 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_07 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1039 TRACK_B_08: 8 ADAS
+ SG_ TRACK_08_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_08 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_08 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_08 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_08 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_08 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_08 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1038 TRACK_A_08: 8 ADAS
+ SG_ TRACK_08_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_08 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_08 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_08 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_08 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_08 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_08 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_08 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_08 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1041 TRACK_B_09: 8 ADAS
+ SG_ TRACK_09_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_09 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_09 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_09 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_09 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_09 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_09 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1040 TRACK_A_09: 8 ADAS
+ SG_ TRACK_09_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_09 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_09 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_09 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_09 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_09 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_09 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_09 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_09 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1043 TRACK_B_10: 8 ADAS
+ SG_ TRACK_10_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_10 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_10 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_10 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_10 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_10 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_10 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1042 TRACK_A_10: 8 ADAS
+ SG_ TRACK_10_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_10 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_10 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_10 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_10 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_10 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_10 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_10 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_10 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1045 TRACK_B_11: 8 ADAS
+ SG_ TRACK_11_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_11 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_11 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_11 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_11 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_11 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_11 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1044 TRACK_A_11: 8 ADAS
+ SG_ TRACK_11_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_11 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_11 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_11 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_11 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_11 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_11 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_11 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_11 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1047 TRACK_B_12: 8 ADAS
+ SG_ TRACK_12_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_12 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_12 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_12 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_12 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_12 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_12 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1046 TRACK_A_12: 8 ADAS
+ SG_ TRACK_12_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_12 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_12 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_12 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_12 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_12 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_12 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_12 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_12 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1049 TRACK_B_13: 8 ADAS
+ SG_ TRACK_13_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_13 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_13 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_13 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_13 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_13 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_13 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1048 TRACK_A_13: 8 ADAS
+ SG_ TRACK_13_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_13 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_13 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_13 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_13 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_13 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_13 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_13 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_13 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1051 TRACK_B_14: 8 ADAS
+ SG_ TRACK_14_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_14 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_14 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_14 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_14 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_14 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_14 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1050 TRACK_A_14: 8 ADAS
+ SG_ TRACK_14_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_14 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_14 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_14 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_14 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_14 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_14 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_14 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_14 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1053 TRACK_B_15: 8 ADAS
+ SG_ TRACK_15_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_15 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_15 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_15 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_15 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_15 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_15 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1052 TRACK_A_15: 8 ADAS
+ SG_ TRACK_15_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_15 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_15 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_15 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_15 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_15 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_15 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_15 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_15 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1055 TRACK_B_16: 8 ADAS
+ SG_ TRACK_16_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_16 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_16 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_16 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_16 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_16 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_16 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1054 TRACK_A_16: 8 ADAS
+ SG_ TRACK_16_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_16 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_16 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_16 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_16 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_16 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_16 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_16 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_16 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1893 Frameid_TSR: 8 ADAS
+ SG_ frameid_tsr : 0|32@1+ (1,0) [0|4294967295] ""  Debug
+
+BO_ 1528 Frameid_Lane: 8 ADAS
+ SG_ turn_right : 33|1@1+ (1,0) [0|1] ""  Debug
+ SG_ turn_left : 32|1@1+ (1,0) [0|1] ""  Debug
+ SG_ frameid_lane : 0|32@1+ (1,0) [0|4294967295] ""  Debug
+
+BO_ 1919 Frameid_PED: 8 ADAS
+ SG_ frameid_ped : 0|32@1+ (1,0) [0|4294967295] ""  Debug
+
+BO_ 1903 Frameid_Car: 8 ADAS
+ SG_ speed : 32|8@1+ (1,0) [0|255] "km/h"  Debug
+ SG_ frameid_car : 0|32@1+ (1,0) [0|4294967295] ""  Debug
+
+BO_ 1901 KeyCarFrameA1: 8 ADAS
+ SG_ FCW : 0|1@1+ (1,0) [0|1] ""  Debug
+ SG_ Vehicle_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ TargetVehicle_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ TargetVehicle_PosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "m"  Debug
+ SG_ TargetVehicle_Type : 48|3@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1902 KeyCarFrameA2: 8 ADAS
+ SG_ TargetVehicle_TTC : 0|10@1+ (0.01,0) [0|10] "sec"  Debug
+ SG_ TargetVehicle_VelX : 16|12@1- (0.0625,0) [-127.93|127.93] "m/sec"  Debug
+ SG_ TargetVehicle_AccelX : 32|10@1- (0.03,0) [-14.97|14.97] "m/sec^2"  Debug
+ SG_ TargetVehicle_Width : 48|8@1+ (0.05,0) [0|12.5] "M"  Debug
+ SG_ TargetVehicle_Confidence : 56|6@1+ (0.02,0) [0|1] ""  Debug
+
+BO_ 1904 OtherCarFrame1: 8 ADAS
+ SG_ AdditionVehicleNumber1 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ Vehicle1_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle1_PosX : 8|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle1_PosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle1_Type : 30|3@1+ (1,0) [0|5] ""  Debug
+ SG_ Vehicle2_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle2_PosX : 39|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle2_PosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle2_Type : 61|3@1+ (1,0) [0|5] ""  Debug
+
+BO_ 1905 OtherCarFrame2: 8 ADAS
+ SG_ AdditionVehicleNumber2 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ Vehicle3_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle3_PosX : 8|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle3_PosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle3_Type : 30|3@1+ (1,0) [0|5] ""  Debug
+ SG_ Vehicle4_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle4_PosX : 39|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle4_PosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle4_Type : 61|3@1+ (1,0) [0|5] ""  Debug
+
+BO_ 1906 OtherCarFrame3: 8 ADAS
+ SG_ AdditionVehicleNumber3 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ Vehicle5_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle5_PosX : 8|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle5_PosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle5_Type : 30|3@1+ (1,0) [0|5] ""  Debug
+ SG_ Vehicle6_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle6_PosX : 39|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle6_PosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle6_Type : 61|3@1+ (1,0) [0|5] ""  Debug
+
+BO_ 1907 OtherCarFrame4: 8 ADAS
+ SG_ AdditionVehicleNumber4 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ Vehicle7_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle7_PosX : 8|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle7_PosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle7_Type : 30|3@1+ (1,0) [0|5] ""  Debug
+ SG_ Vehicle8_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle8_PosX : 39|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle8_PosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle8_Type : 61|3@1+ (1,0) [0|5] ""  Debug
+
+BO_ 1908 OtherCarFrame5: 8 ADAS
+ SG_ AdditionVehicleNumber5 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ Vehicle9_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle9_PosX : 8|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle9_PosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle9_Type : 30|3@1+ (1,0) [0|5] ""  Debug
+ SG_ Vehicle10_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle10_PosX : 39|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle10_PosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle10_Type : 61|3@1+ (1,0) [0|5] ""  Debug
+
+BO_ 1909 OtherCarFrame6: 8 ADAS
+ SG_ AdditionVehicleNumber6 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ Vehicle11_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle11_PosX : 8|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle11_PosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle11_Type : 30|3@1+ (1,0) [0|5] ""  Debug
+ SG_ Vehicle12_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle12_PosX : 39|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle12_PosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle12_Type : 61|3@1+ (1,0) [0|5] ""  Debug
+
+BO_ 1910 OtherCarFrame7: 8 ADAS
+ SG_ AdditionVehicleNumber7 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ Vehicle13_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle13_PosX : 8|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle13_PosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle13_Type : 30|3@1+ (1,0) [0|5] ""  Debug
+ SG_ Vehicle14_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle14_PosX : 39|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle14_PosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle14_Type : 61|3@1+ (1,0) [0|5] ""  Debug
+
+BO_ 1911 OtherCarFrame8: 8 ADAS
+ SG_ AdditionVehicleNumber8 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ Vehicle15_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle15_PosX : 8|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle15_PosY : 20|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle15_Type : 30|3@1+ (1,0) [0|5] ""  Debug
+ SG_ Vehicle16_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionVehicle16_PosX : 39|12@1+ (0.0625,0) [0|250] "Meter"  Debug
+ SG_ AdditionVehicle16_PosY : 51|10@1- (0.0625,0) [-31.9375|31.9375] "Meter"  Debug
+ SG_ AdditionVehicle16_Type : 61|3@1+ (1,0) [0|5] ""  Debug
+
+BO_ 1520 Lane1FrameC: 8 ADAS
+ SG_ Lane1_CountMsg1 : 6|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Lane1_Type : 0|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Lane1_Quality : 4|2@1+ (1,0) [0|3] ""  Debug
+ SG_ Lane1_Position : 8|16@1- (0.00390625,0) [-128|128] "Meter"  Debug
+ SG_ Lane1_Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter"  Debug
+ SG_ Lane1_CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2"  Debug
+ SG_ Lane1_WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter"  Debug
+
+BO_ 1521 Lane1FrameD: 8 ADAS
+ SG_ Lane1_CountMsg2 : 37|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Lane1_HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian"  Debug
+ SG_ Lane1_ViewRangeStart : 16|8@1+ (0.5,0) [0|127.5] ""  Debug
+ SG_ Lane1_ViewRangeEnd : 24|8@1+ (0.5,0) [0|127.5] ""  Debug
+ SG_ Lane1_LineCrossing : 32|1@1+ (1,0) [0|1] ""  Debug
+ SG_ Lane1_LineMarkColor : 33|3@1+ (1,0) [0|1] ""  Debug
+
+BO_ 1522 Lane2FrameC: 8 ADAS
+ SG_ Lane2_CountMsg1 : 6|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Lane2_Type : 0|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Lane2_Quality : 4|2@1+ (1,0) [0|3] ""  Debug
+ SG_ Lane2_Position : 8|16@1- (0.00390625,0) [-128|128] "Meter"  Debug
+ SG_ Lane2_Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter"  Debug
+ SG_ Lane2_CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2"  Debug
+ SG_ Lane2_WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter"  Debug
+
+BO_ 1523 Lane2FrameD: 8 ADAS
+ SG_ Lane2_CountMsg2 : 37|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Lane2_HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian"  Debug
+ SG_ Lane2_ViewRangeStart : 16|8@1+ (0.5,0) [0|127.5] ""  Debug
+ SG_ Lane2_ViewRangeEnd : 24|8@1+ (0.5,0) [0|127.5] ""  Debug
+ SG_ Lane2_LineCrossing : 32|1@1+ (1,0) [0|1] ""  Debug
+ SG_ Lane2_LineMarkColor : 33|3@1+ (1,0) [0|1] ""  Debug
+
+BO_ 1524 Lane3FrameC: 8 ADAS
+ SG_ Lane3_CountMsg1 : 6|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Lane3_Type : 0|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Lane3_Quality : 4|2@1+ (1,0) [0|3] ""  Debug
+ SG_ Lane3_Position : 8|16@1- (0.00390625,0) [-128|128] "Meter"  Debug
+ SG_ Lane3_Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter"  Debug
+ SG_ Lane3_CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2"  Debug
+ SG_ Lane3_WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter"  Debug
+
+BO_ 1525 Lane3FrameD: 8 ADAS
+ SG_ Lane3_CountMsg2 : 37|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Lane3_HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian"  Debug
+ SG_ Lane3_ViewRangeStart : 16|8@1+ (0.5,0) [0|127.5] ""  Debug
+ SG_ Lane3_ViewRangeEnd : 24|8@1+ (0.5,0) [0|127.5] ""  Debug
+ SG_ Lane3_LineCrossing : 32|1@1+ (1,0) [0|1] ""  Debug
+ SG_ Lane3_LineMarkColor : 33|3@1+ (1,0) [0|1] ""  Debug
+
+BO_ 1526 Lane4FrameC: 8 ADAS
+ SG_ Lane4_CountMsg1 : 6|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Lane4_Type : 0|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Lane4_Quality : 4|2@1+ (1,0) [0|3] ""  Debug
+ SG_ Lane4_Position : 8|16@1- (0.00390625,0) [-128|128] "Meter"  Debug
+ SG_ Lane4_Curvature : 24|16@1+ (9.76563E-007,-0.031999023438) [-0.031999023438|0.032000032767] "1/Meter"  Debug
+ SG_ Lane4_CurvatureDerivative : 40|16@1+ (3.72529E-009,-0.00012206658721) [-0.00012206658721|0.00012207029294] "1/Meter^2"  Debug
+ SG_ Lane4_WidthMarking : 56|8@1+ (0.01,0) [0|2.55] "Meter"  Debug
+
+BO_ 1527 Lane4FrameD: 8 ADAS
+ SG_ Lane4_CountMsg2 : 37|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Lane4_HeadingAngle : 0|16@1+ (1.08949E-005,-0.357) [-0.357|0.357] "radian"  Debug
+ SG_ Lane4_ViewRangeStart : 16|8@1+ (0.5,0) [0|127.5] ""  Debug
+ SG_ Lane4_ViewRangeEnd : 24|8@1+ (0.5,0) [0|127.5] ""  Debug
+ SG_ Lane4_LineCrossing : 32|1@1+ (1,0) [0|1] ""  Debug
+ SG_ Lane4_LineMarkColor : 33|3@1+ (1,0) [0|1] ""  Debug
+
+BO_ 1914 PED_Frame_C: 8 ADAS
+ SG_ TargetPedestrian_TTC : 30|10@1+ (0.01,0) [0|10] "s"  Debug
+ SG_ TargetPedestrian_ID : 0|6@1+ (1,0) [0|63] ""  Debug
+ SG_ TargetPedestrian_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ TargetPedestrian_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian_VelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec"  Debug
+ SG_ TargetPedestrian_VelY : 52|8@1- (0.0625,0) [-8|7.9375] "m/sec"  Debug
+ SG_ TargetPedestrian_Type : 60|3@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1915 PED1_Frame_D: 8 ADAS
+ SG_ AdditionPedestrianNumber1 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ AdditionPedestrian1_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian1_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian1_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian1_Type : 30|3@1+ (1,0) [0|7] ""  Debug
+ SG_ AdditionPedestrian2_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian2_PosX : 39|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian2_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian2_Type : 61|3@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1916 PED2_Frame_D: 8 ADAS
+ SG_ AdditionPedestrianNumber2 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ AdditionPedestrian3_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian3_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian3_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian3_Type : 30|3@1+ (1,0) [0|7] ""  Debug
+ SG_ AdditionPedestrian4_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian4_PosX : 39|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian4_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian4_Type : 61|3@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1917 PED3_Frame_D: 8 ADAS
+ SG_ AdditionPedestrianNumber3 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ AdditionPedestrian5_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian5_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian5_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian5_Type : 30|3@1+ (1,0) [0|7] ""  Debug
+ SG_ AdditionPedestrian6_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian6_PosX : 39|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian6_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian6_Type : 61|3@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1889 TSR_A: 8 ADAS
+ SG_ Vision_only_Sign2_Type : 32|8@1+ (1,0) [0|255] "km/h"  Debug
+ SG_ Vision_only_Sign1_Type : 0|8@1+ (1,0) [0|255] "km/h"  Debug
+
+BO_ 1890 TSR_B_1: 8 ADAS
+ SG_ Vision_only_Sign3_Type : 0|8@1+ (1,0) [0|255] "km/h"  Debug
+ SG_ Can_Msg1_Ender : 32|1@1+ (1,0) [0|1] ""  Debug
+
+BO_ 1891 TSR_B_2: 8 ADAS
+ SG_ Vision_only_Sign4_Type : 0|8@1+ (1,0) [0|255] "km/h"  Debug
+ SG_ Can_Msg2_Ender : 32|1@1+ (1,0) [0|1] ""  Debug
+
+BO_ 1892 TSR_B_3: 8 ADAS
+ SG_ Vision_only_Sign5_Type : 0|8@1+ (1,0) [0|255] "km/h"  Debug
+ SG_ Can_Msg3_Ender : 32|1@1+ (1,0) [0|1] ""  Debug
+
+BO_ 1792 adas_out: 8 ADAS
+ SG_ error : 24|1@1+ (1,0) [0|1] ""  Debug
+ SG_ Sound_type : 0|3@1+ (1,0) [0|7] ""  Debug
+ SG_ Time_Indicator : 3|2@1+ (1,0) [0|3] ""  Debug
+ SG_ ZeroSpeed : 13|1@1+ (1,0) [0|1] ""  Debug
+ SG_ HMW_valid : 16|1@1+ (1,0) [0|1] ""  Debug
+ SG_ HMW_measure : 17|7@1+ (0.1,0) [0|9.9] "s"  Debug
+ SG_ LDWoff : 32|1@1+ (1,0) [0|1] ""  Debug
+ SG_ LeftLDWon : 33|1@1+ (1,0) [0|1] ""  Debug
+ SG_ RightLDWon : 34|1@1+ (1,0) [0|1] ""  Debug
+ SG_ FCW_on : 35|1@1+ (1,0) [0|1] ""  Debug
+ SG_ PedsFCW : 41|1@1+ (1,0) [0|1] ""  Debug
+ SG_ PedInDZ : 42|1@1+ (1,0) [0|1] ""  Debug
+ SG_ TSR_enabled : 47|1@1+ (1,0) [0|1] ""  Debug
+ SG_ TSR_Level : 48|3@1+ (1,0) [0|7] ""  Debug
+ SG_ HMW_Level : 56|2@1+ (1,0) [0|3] ""  Debug
+
+BO_ 785 ILC2: 8 ADAS
+ SG_ SP_A1_ILC : 55|16@0- (0.01,0) [0|0] ""  Debug
+ SG_ SP_A0_ILC : 39|16@0- (0.01,0) [0|0] ""  Debug
+ SG_ x_f : 23|16@0+ (0.1,0) [0|0] ""  Debug
+ SG_ y_f_ref : 7|16@0- (0.1,0) [0|0] ""  Debug
+
+BO_ 784 ILC1: 8 ADAS
+ SG_ preview_range_ALC_P1 : 15|16@0+ (0.1,0) [0|0] ""  Debug
+ SG_ ALC_phase_debug : 4|4@0+ (0.5,0) [0|0] ""  Debug
+ SG_ ALC_P1_active : 5|1@0+ (1,0) [0|0] ""  Debug
+ SG_ ALC_done : 6|1@0+ (1,0) [0|0] ""  Debug
+ SG_ ALC_active : 7|1@0+ (1,0) [0|0] ""  Debug
+
+BO_ 786 LaneBias: 8 ADAS
+ SG_ RightLaneBias2ACTIVE_Magic_Out : 55|16@0+ (1,0) [0|0] ""  Debug
+ SG_ LeftLaneBias2ACTIVE_Magic_Out : 39|16@0+ (1,0) [0|0] ""  Debug
+ SG_ ACTIVE2RightLaneBias_Magic_Out : 23|16@0+ (1,0) [0|0] ""  Debug
+ SG_ ACTIVE2LeftLaneBias_Magic_Out : 7|16@0+ (1,0) [0|0] ""  Debug
+
+BO_ 801 SP_MEM_Develop: 8 ADAS
+ SG_ ME_RLM_Valid : 3|1@0+ (1,0) [0|1] ""  Debug
+ SG_ ME_LLM_Valid : 2|1@0+ (1,0) [0|1] ""  Debug
+ SG_ ME_BLM_Valid : 1|1@0+ (1,0) [0|1] ""  Debug
+ SG_ SP_type_mem : 20|3@0+ (1,0) [0|7] ""  Debug
+ SG_ SP_mem_State : 36|3@0+ (1,0) [0|7] ""  Debug
+ SG_ SP_MEM_SLM_MAX_TM : 31|11@0+ (0.1,0) [0|204.7] ""  Debug
+ SG_ SP_mem_host_low_spd_flg : 4|1@0+ (1,0) [0|1] ""  Debug
+ SG_ SP_MEM_BLM_MAX_TM : 15|11@0+ (0.1,0) [0|204.7] ""  Debug
+ SG_ SP_conf_mem : 7|3@0+ (1,0) [0|7] ""  Debug
+
+BO_ 776 ACC_Dev_Extra_Info: 8 ADAS
+ SG_ ACCBSCE_AutBrkTp : 2|3@1+ (1,0) [0|0] ""  Debug
+ SG_ Auto_Resume_OK : 1|1@1+ (1,0) [0|0] ""  Debug
+ SG_ Go_Notifier_Request : 0|1@1+ (1,0) [0|0] ""  Debug
+
+BO_ 802 TJA_Dev_Disengage: 8 ADAS
+ SG_ TJA_Last_Disengage_Magic_3 : 55|16@0+ (1,0) [0|0] ""  Debug
+ SG_ TJA_Last_Disengage_Magic_2 : 39|16@0+ (1,0) [0|0] ""  Debug
+ SG_ TJA_Last_Disengage_Magic_1 : 23|16@0+ (1,0) [0|0] ""  Debug
+ SG_ TJA_Last_Disengage_Magic_0 : 7|16@0+ (1,0) [0|0] ""  Debug
+
+BO_ 803 TJA_Develop_Info: 7 ADAS
+ SG_ TJA_wait_hold_release : 36|1@0+ (1,0) [0|1] ""  Debug
+ SG_ TJA_InvalidDrv_TillStop : 16|1@0+ (1,0) [0|1] ""  Debug
+ SG_ TJA_Active_ACCOnly : 17|1@0+ (1,0) [0|1] ""  Debug
+ SG_ TJA_Allow_Activation_Magic : 55|8@0+ (1,0) [0|0] ""  Debug
+ SG_ LatCtlRampType_Rq : 38|2@0+ (1,0) [0|3] ""  Debug
+ SG_ TJA_Warn_Disp_Rq : 47|2@0+ (1,0) [0|3] ""  Debug
+ SG_ TJA_Res_Rq : 45|1@0+ (1,0) [0|1] ""  Debug
+ SG_ TJA_Mode : 29|4@0+ (1,0) [0|15] ""  Debug
+ SG_ TJA_LatCtrl_Rq : 39|1@0+ (1,0) [0|1] ""  Debug
+ SG_ TJA_ACC_Rq : 25|2@0+ (1,0) [0|3] ""  Debug
+ SG_ TJA_UcrtLocation_flg : 20|1@0+ (1,0) [0|1] "none"  Debug
+ SG_ TJA_handsoff_Warning : 44|1@0+ (1,0) [0|1] ""  Debug
+ SG_ TJA_Situation_enum : 19|2@0+ (1,0) [0|3] ""  Debug
+ SG_ TJA_DrvCancel_flg : 21|1@0+ (1,0) [0|1] "none"  Debug
+ SG_ TJA_Drv_OvRd_enum : 31|2@0+ (1,0) [0|3] ""  Debug
+ SG_ TJA_DriverInvalid_flg : 22|1@0+ (1,0) [0|1] "none"  Debug
+ SG_ TJA_Allow_Activation : 23|1@0+ (1,0) [0|1] ""  Debug
+ SG_ TJA_VehInvalid_Magic : 7|16@0+ (1,0) [0|65535] ""  Debug
+
+BO_ 772 ACC_Dev_Diseng_5_4: 8 ADAS
+ SG_ Disengage_ACC_5_Flags : 7|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+ SG_ Disengage_ACC_4_Flags : 39|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+
+BO_ 771 ACC_Dev_Diseng_3_2: 8 ADAS
+ SG_ Disengage_ACC_2_Flags : 39|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+ SG_ Disengage_ACC_3_Flags : 7|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+
+BO_ 770 ACC_Dev_Diseng_1_0: 8 ADAS
+ SG_ Disengage_ACC_0_Flags : 39|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+ SG_ Disengage_ACC_1_Flags : 7|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+
+BO_ 779 ACC_Dev_Inh_5_4: 8 ADAS
+ SG_ Inhibit_ACC_4_Flags : 39|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+ SG_ Inhibit_ACC_5_Flags : 7|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+
+BO_ 778 ACC_Dev_Inh_3_2: 8 ADAS
+ SG_ Inhibit_ACC_2_Flags : 39|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+ SG_ Inhibit_ACC_3_Flags : 7|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+
+BO_ 777 ACC_Dev_Inh_1_0: 8 ADAS
+ SG_ Inhibit_ACC_0_Flags : 39|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+ SG_ Inhibit_ACC_1_Flags : 7|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+
+BO_ 768 ACC_Dev_Adjust_Outer_Funnel: 8 ADAS
+ SG_ IMULongAccelFilt_mpss : 29|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ dropped_target_timer : 37|15@0+ (1,0) [0|32767] ""  Debug
+ SG_ HostLongAccelFilt_mpss : 21|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ hold_accel_in_curve_time : 54|15@0+ (1,0) [0|32767] "sec"  Debug
+ SG_ Estimated_Radius_Curvature : 7|14@0- (1,0) [-8192|8191] "m"  Debug
+ SG_ Outer_Funnel_State : 9|4@0+ (1,0) [0|8] "Enum"  Debug
+
+BO_ 769 ACC_Dev_Brake_Control: 8 ADAS
+ SG_ desired_accel : 63|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ Road_Grade_Accel : 55|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ ACCBrkngAct_0x7A9 : 14|1@0+ (1,0) [0|0] ""  Debug
+ SG_ ACCBSC_AutoBrkReqd : 13|1@0+ (1,0) [0|0] ""  Debug
+ SG_ freeze_I_term_brake : 12|1@0+ (1,0) [0|0] ""  Debug
+ SG_ initialize_I_term_brake : 11|1@0+ (1,0) [0|0] ""  Debug
+ SG_ Accel_Command_To_Brake : 47|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ P_term_brake : 39|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ I_term_brake : 31|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ speed_error_for_brake_mps : 10|11@0- (0.0625,0) [-64|63.9375] "mps"  Debug
+ SG_ Road_Grade_Accel_Modified : 7|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+
+BO_ 773 ACC_Dev_DSD: 8 ADAS
+ SG_ Headway_Index : 50|3@0+ (1,0) [0|7] "table index"  Debug
+ SG_ Host_Speed_mps : 29|10@0+ (0.0625,0) [0|63.9375] "m/sec"  Debug
+ SG_ Delta_Speed_Desired : 63|8@0- (0.0625,0) [-8|7.9375] "m/sec^2"  Debug
+ SG_ LROSScanIndex : 7|16@0+ (1,0) [0|65535] "Counts"  Debug
+ SG_ Desired_Range : 35|10@0+ (0.25,0) [0|255.75] "Meters"  Debug
+ SG_ ACCObjRange_mod : 23|10@0+ (0.25,0) [0|255.75] "Meters"  Debug
+
+BO_ 774 ACC_Dev_Engine_Control: 8 ADAS
+ SG_ bypass_engine_output_filter : 13|1@0+ (1,0) [0|0] ""  Debug
+ SG_ accel_after_override_selected : 15|1@0+ (1,0) [0|1] "Boolean"  Debug
+ SG_ allowed_spd_reset : 14|1@0+ (1,0) [0|1] "Boolean"  Debug
+ SG_ MABX_sw_version : 55|16@0+ (0.001,0) [0|65.535] ""  Debug
+ SG_ I_term_engine_init_value : 47|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ freeze_I_term_engine : 12|1@0+ (1,0) [0|0] ""  Debug
+ SG_ initialize_I_term_engine : 11|1@0+ (1,0) [0|0] ""  Debug
+ SG_ P_term_engine : 39|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ I_term_engine : 31|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ speed_error_for_engine_mps : 10|11@0- (0.0625,0) [-64|63.9375] "mps"  Debug
+ SG_ Accel_Command_To_Engine : 7|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+
+BO_ 775 ACC_Dev_Engine_Control_2: 8 ADAS
+ SG_ freeze_engine_integrator_flags : 7|32@0+ (1,0) [0|0] "Bit Mapped"  Debug
+
+BO_ 780 ACC_Dev_Limiter: 8 ADAS
+ SG_ Speed_Control_Active : 4|1@0+ (1,0) [0|1] ""  Debug
+ SG_ CRLT_Jerk_Timer_Active : 3|1@0+ (1,0) [0|1] ""  Debug
+ SG_ speed_limited_min : 22|1@0+ (1,0) [0|0] ""  Debug
+ SG_ speed_limited_max : 23|1@0+ (1,0) [0|0] ""  Debug
+ SG_ jerk_limited_min : 18|1@0+ (1,0) [0|0] ""  Debug
+ SG_ jerk_limited_max : 19|1@0+ (1,0) [0|0] ""  Debug
+ SG_ accel_limited_min : 20|1@0+ (1,0) [0|0] ""  Debug
+ SG_ accel_limited_max : 21|1@0+ (1,0) [0|0] ""  Debug
+ SG_ bypass_the_limiter : 2|1@0+ (1,0) [0|0] ""  Debug
+ SG_ feed_forward_LV_Accel : 63|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ Raw_Accel : 55|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ Allowed_Jerk : 47|8@0- (0.1,0) [-12.8|12.7] "mpsss"  Debug
+ SG_ Allowed_Accel : 39|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ Allowed_Speed : 17|10@0+ (0.0625,0) [0|63.9375] "mps"  Debug
+ SG_ Desired_Speed_Limited : 1|10@0+ (0.0625,0) [0|63.9375] "mps"  Debug
+
+BO_ 781 ACC_Dev_Limiter_Status: 8 ADAS
+ SG_ Lat_Accel_Limit_Active : 55|1@0+ (1,0) [0|0] ""  Debug
+ SG_ SensorPlausibilityActiveFault : 54|1@0+ (1,0) [0|0] ""  Debug
+ SG_ engine_at_min_torque : 53|1@0+ (1,0) [0|0] ""  Debug
+ SG_ Overspeed_Decel_Active : 52|1@0+ (1,0) [0|0] ""  Debug
+ SG_ Tight_Curve : 51|1@0+ (1,0) [0|0] ""  Debug
+ SG_ Speed_Error_For_Limiter_mps : 50|11@0- (0.0625,0) [-64|63.9375] "mps"  Debug
+ SG_ Jerk_Limit_Min : 47|8@0- (0.1,0) [-12.8|12.7] "mpsss"  Debug
+ SG_ Jerk_Limit_Max : 39|8@0- (0.1,0) [-12.8|12.7] "mpsss"  Debug
+ SG_ Accel_Limit_Min : 31|8@0- (0.0625,-2) [-10|5.9375] "mpss"  Debug
+ SG_ Accel_Limit_Max : 23|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ Speed_Limit_Min : 15|8@0+ (0.25,0) [0|64] "mps"  Debug
+ SG_ Speed_Limit_Max : 7|8@0+ (0.25,0) [0|64] "mps"  Debug
+
+BO_ 782 ACC_Dev_Target_Info: 8 ADAS
+ SG_ ACCObjTrackID : 7|7@0+ (1,0) [0|127] "Counts" Vector__XXX
+ SG_ DSDforPosLVAccelSelected : 8|1@0+ (1,0) [0|1] "Boolean"  Debug
+ SG_ ACCObjTrackID_CIPV2 : 15|7@0+ (1,0) [0|127] "Counts"  Debug
+ SG_ LV_Speed_mps : 41|10@0+ (0.0625,0) [0|64] "mps"  Debug
+ SG_ LV_Accel_mpss : 63|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ ACCObjRangeRate : 35|10@0- (0.125,0) [-64|63.875] "mps"  Debug
+ SG_ ACCObjRange_radar : 29|10@0+ (0.25,0) [0|255.75] "Meters"  Debug
+ SG_ ACCObjRangeAcceleration : 23|10@0- (0.05,0) [-25.6|25.55] "m/s/s"  Debug
+
+BO_ 783 ACC_Dev_Vehicle_State: 8 ADAS
+ SG_ Motion_Status : 63|2@0+ (1,0) [0|3] ""  Debug
+ SG_ MinRangeLostTarget : 29|1@0+ (1,0) [0|1] ""  Debug
+ SG_ CloseRangeLostTarget : 30|1@0+ (1,0) [0|1] ""  Debug
+ SG_ ACCDrvrSeltdSpd_mps : 25|10@0+ (0.0625,0) [0|63.9375] "m/sec"  Debug
+ SG_ ACCA_State : 28|3@0+ (1,0) [0|0] "Enum"  Debug
+ SG_ Host_Stopped : 61|1@0+ (1,0) [0|0] ""  Debug
+ SG_ ACC_Mode : 60|5@0+ (1,0) [0|31] "ENUM"  Debug
+ SG_ Time_To_Collision : 54|7@0+ (0.25,0) [0|32] "sec"  Debug
+ SG_ HeadwayTime : 47|8@0+ (0.05,0) [0|12.75] "Sec"  Debug
+ SG_ LV_Accel_Low_Noise : 23|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ Host_Long_Accel_mpss : 15|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+ SG_ Host_Lat_Accel_mpss : 7|8@0- (0.0625,0) [-8|7.9375] "mpss"  Debug
+
+BO_ 796 LCK_Lat2Long_dSpace: 8 ADAS
+ SG_ InvalidLane_magic : 23|8@0+ (1,0) [0|0] ""  Debug
+ SG_ InhibitActivationLane_magic : 15|8@0+ (1,0) [0|0] ""  Debug
+ SG_ f_hands_on_wheel : 56|1@1+ (1,0) [0|0] ""  Debug
+ SG_ f_hands_off_disable : 57|1@1+ (1,0) [0|0] ""  Debug
+ SG_ f_driv_override_right : 59|1@1+ (1,0) [0|0] ""  Debug
+ SG_ f_driv_override_left : 58|1@1+ (1,0) [0|0] ""  Debug
+ SG_ ho_state : 43|3@0+ (1,0) [0|7] ""  Debug
+ SG_ speed_mps : 55|8@0+ (0.2,0) [0|51] "m/s"  Debug
+ SG_ LCK_Mode : 3|4@0+ (1,0) [0|0] ""  Debug
+
+BO_ 797 LCK_ModeTransition: 8 ADAS
+ SG_ ACTIVE2READY_Magic_Out : 55|16@0+ (1,0) [0|0] ""  Debug
+ SG_ READY2ACTIVE_Magic_Out : 39|16@0+ (1,0) [0|0] ""  Debug
+ SG_ READY2IDLE_Magic_Out : 23|16@0+ (1,0) [0|0] ""  Debug
+ SG_ IDLE2READY_Magic_Out : 7|16@0+ (1,0) [0|0] ""  Debug
+
+BO_ 798 LQR_Final_Terms_Angle: 8 ADAS
+ SG_ LQR_angle_integral : 48|14@1- (0.0001,0) [-0.8192|0.8191] "rad"  Debug
+ SG_ LQR_angle_cur_plus_ff : 32|14@1- (0.0001,0) [-0.8192|0.8191] "rad"  Debug
+ SG_ LQR_angle_feedforward : 16|14@1- (0.0001,0) [-0.8192|0.8191] "rad"  Debug
+ SG_ LQR_angle_current : 0|14@1- (0.0001,0) [-0.8192|0.8191] "rad"  Debug
+
+BO_ 799 LQR_Final_Terms_Torque: 8 ADAS
+ SG_ LQR_torque_robust : 32|15@1- (0.001,0) [-16.384|16.383] "Nm"  Debug
+ SG_ LQR_torque_PID : 48|15@1- (0.001,0) [-16.384|16.383] "Nm"  Debug
+ SG_ LQR_torque_integral : 16|15@1- (0.001,0) [-16.384|16.383] "Nm"  Debug
+ SG_ LQR_torque_cur_plus_ff : 0|15@1- (0.001,0) [-16.384|16.383] "Nm"  Debug
+
+BO_ 800 LQR_Params: 8 ADAS
+ SG_ w_LQR_a1 : 55|8@0+ (0.1,0) [0|0] ""  Debug
+ SG_ LQR_Kappa_Gain : 63|8@0+ (0.1,0) [0|0] ""  Debug
+ SG_ LQR_Entry_Gain : 47|8@0+ (0.1,0) [0|0] ""  Debug
+ SG_ LQR_Curve_Gain : 39|8@0+ (0.1,0) [0|0] ""  Debug
+ SG_ w_LQR_a0_dot : 31|8@0- (0.1,0) [0|0] ""  Debug
+ SG_ w_LQR_a0 : 23|8@0+ (0.1,0) [0|0] ""  Debug
+ SG_ Car_default : 15|8@0+ (5000,0) [0|0] ""  Debug
+ SG_ Caf_default : 7|8@0+ (5000,0) [0|0] ""  Debug
+
+BO_ 795 LCK_Ctrl_Info_8: 8 ADAS
+ SG_ LCK_LatCtrl_I_Term_Cur : 55|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_LatCtrl_I_Term_Prvd : 39|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_LatCtrl_P_Term_Cur : 23|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_LatCtrl_P_Term_Prvd : 7|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+
+BO_ 793 LCK_Ctrl_Info_6: 8 ADAS
+ SG_ LCK_FfwFac_CvatRate : 53|12@0+ (0.001,0) [0|4.095] ""  Debug
+ SG_ LCK_FfwFac_Dy : 36|14@0+ (0.0001,0) [0|1.6383] ""  Debug
+ SG_ LCK_FfwTorq_Delta : 31|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_FfwTorq_Basic : 12|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_Ffw_Ctrl_Cmd : 7|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+
+BO_ 794 LCK_Ctrl_Info_7: 8 ADAS
+ SG_ LCK_Inner_Curve_Flag_Current : 15|1@0+ (1,0) [0|1] ""  Debug
+ SG_ LCK_Inner_Curve_Flag_Previewed : 0|1@0+ (1,0) [0|1] ""  Debug
+ SG_ LCK_Straight_Lane_Flag : 1|1@0+ (1,0) [0|1] ""  Debug
+ SG_ LCK_Veh_In_Lane_Cent_Flag : 2|1@0+ (1,0) [0|1] ""  Debug
+ SG_ LCK_I_Term_Frozen_Flag : 3|1@0+ (1,0) [0|1] ""  Debug
+ SG_ LCK_I_Term_Reset_Flag : 4|1@0+ (1,0) [0|1] ""  Debug
+ SG_ LCK_SPP_Flase_Rec_Type : 7|3@0+ (1,0) [0|7] ""  Debug
+
+BO_ 792 LCK_Ctrl_Info_5: 8 ADAS
+ SG_ LCK_FinalTorqCmd : 55|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_PIDTorqCmd_Percent : 39|16@0- (0.01,0) [-327.68|327.67] ""  Debug
+ SG_ LCK_PID_TorqCmd : 23|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_PIDPlusFfw_TorqCmd : 7|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+
+BO_ 791 LCK_Ctrl_Info_4: 8 ADAS
+ SG_ LCK_HedCtrl_D : 55|10@0+ (0.01,0) [0|10.23] ""  Debug
+ SG_ LCK_HedCtrl_P : 39|10@0+ (0.01,0) [0|10.23] ""  Debug
+ SG_ LCK_HedCtrl_Cmd : 17|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_HedCtrl_P_Term : 12|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_HedCtrl_D_Term : 7|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+
+BO_ 790 LCK_Ctrl_Info_3: 8 ADAS
+ SG_ LCK_LatCtrl_D : 39|14@0+ (0.001,0) [0|16.383] ""  Debug
+ SG_ LCK_LatCtrl_I : 23|14@0+ (0.001,0) [0|16.383] ""  Debug
+ SG_ LCK_LatCtrl_P : 7|14@0+ (0.001,0) [0|16.383] ""  Debug
+
+BO_ 789 LCK_Ctrl_Info_2: 8 ADAS
+ SG_ LCK_LatCtrl_Cmd : 23|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_LatCtrl_D_Term : 55|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_LatCtrl_I_Term : 39|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_LatCtrl_P_Term : 7|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+
+BO_ 788 LCK_Ctrl_Info_1: 8 ADAS
+ SG_ LCK_CurvatureRate : 39|14@0- (1E-006,0) [-0.008192|0.008191] ""  Debug
+ SG_ LCK_RoadRadius : 55|16@0- (1,0) [-32768|32767] ""  Debug
+ SG_ LCK_FutCurv : 23|14@0- (1E-005,0) [-0.08192|0.08191] ""  Debug
+ SG_ LCK_CurCurv : 7|14@0- (1E-005,0) [-0.08192|0.08191] ""  Debug
+
+BO_ 787 LCK_Ctrl_Info_0: 8 ADAS
+ SG_ LCK_Current_Dy : 12|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_Lat_Rate : 17|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+ SG_ LCK_HeadingAngRate : 55|11@0- (0.01,0) [-10.24|10.23] ""  Debug
+ SG_ LCK_HeadingAng : 39|11@0- (0.01,0) [-10.24|10.23] ""  Debug
+ SG_ LCK_Previewed_Dy : 7|10@0- (0.01,0) [-5.12|5.11] ""  Debug
+
+
+
+BA_DEF_ BU_  "ILUsed" ENUM  "No","Yes";
+BA_DEF_  "ILTxTimeout" INT 0 10000;
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","NotUsed","OnChange","NotUsed","NotUsed","NotUsed","NoSigSendType";
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 10000;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ SG_  "GenSigStartValue" INT -2147483648 0;
+BA_DEF_ SG_  "GenSigLongName" STRING ;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NoMsgSendType";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 2 50000;
+BA_DEF_DEF_  "ILUsed" "No";
+BA_DEF_DEF_  "ILTxTimeout" 400;
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_  "GenMsgILSupport" "No";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigLongName" "";
+BA_DEF_DEF_  "GenMsgSendType" "Cyclic";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "GenMsgCycleTime" 50;
+BA_ "BusType" "CAN";
+BA_ "DBName" "DebugCAN";
+BA_ "GenMsgILSupport" BO_ 807 1;
+BA_ "GenMsgILSupport" BO_ 805 1;
+BA_ "GenMsgILSupport" BO_ 806 1;
+BA_ "GenMsgILSupport" BO_ 804 1;
+BA_ "GenMsgCycleTime" BO_ 1059 20;
+BA_ "GenMsgILSupport" BO_ 1059 1;
+BA_ "GenMsgCycleTime" BO_ 1025 20;
+BA_ "GenMsgILSupport" BO_ 1025 1;
+BA_ "GenMsgCycleTime" BO_ 1024 20;
+BA_ "GenMsgILSupport" BO_ 1024 1;
+BA_ "GenMsgCycleTime" BO_ 1027 20;
+BA_ "GenMsgILSupport" BO_ 1027 1;
+BA_ "GenMsgCycleTime" BO_ 1026 20;
+BA_ "GenMsgILSupport" BO_ 1026 1;
+BA_ "GenMsgCycleTime" BO_ 1029 20;
+BA_ "GenMsgILSupport" BO_ 1029 1;
+BA_ "GenMsgCycleTime" BO_ 1028 20;
+BA_ "GenMsgILSupport" BO_ 1028 1;
+BA_ "GenMsgCycleTime" BO_ 1031 20;
+BA_ "GenMsgILSupport" BO_ 1031 1;
+BA_ "GenMsgCycleTime" BO_ 1030 20;
+BA_ "GenMsgILSupport" BO_ 1030 1;
+BA_ "GenMsgCycleTime" BO_ 1033 20;
+BA_ "GenMsgILSupport" BO_ 1033 1;
+BA_ "GenMsgCycleTime" BO_ 1032 20;
+BA_ "GenMsgILSupport" BO_ 1032 1;
+BA_ "GenMsgCycleTime" BO_ 1035 20;
+BA_ "GenMsgILSupport" BO_ 1035 1;
+BA_ "GenMsgCycleTime" BO_ 1034 20;
+BA_ "GenMsgILSupport" BO_ 1034 1;
+BA_ "GenMsgCycleTime" BO_ 1037 20;
+BA_ "GenMsgILSupport" BO_ 1037 1;
+BA_ "GenMsgCycleTime" BO_ 1036 20;
+BA_ "GenMsgILSupport" BO_ 1036 1;
+BA_ "GenMsgCycleTime" BO_ 1039 20;
+BA_ "GenMsgILSupport" BO_ 1039 1;
+BA_ "GenMsgCycleTime" BO_ 1038 20;
+BA_ "GenMsgILSupport" BO_ 1038 1;
+BA_ "GenMsgCycleTime" BO_ 1041 20;
+BA_ "GenMsgILSupport" BO_ 1041 1;
+BA_ "GenMsgCycleTime" BO_ 1040 20;
+BA_ "GenMsgILSupport" BO_ 1040 1;
+BA_ "GenMsgCycleTime" BO_ 1043 20;
+BA_ "GenMsgILSupport" BO_ 1043 1;
+BA_ "GenMsgCycleTime" BO_ 1042 20;
+BA_ "GenMsgILSupport" BO_ 1042 1;
+BA_ "GenMsgCycleTime" BO_ 1045 20;
+BA_ "GenMsgILSupport" BO_ 1045 1;
+BA_ "GenMsgCycleTime" BO_ 1044 20;
+BA_ "GenMsgILSupport" BO_ 1044 1;
+BA_ "GenMsgCycleTime" BO_ 1047 20;
+BA_ "GenMsgILSupport" BO_ 1047 1;
+BA_ "GenMsgCycleTime" BO_ 1046 20;
+BA_ "GenMsgILSupport" BO_ 1046 1;
+BA_ "GenMsgCycleTime" BO_ 1049 20;
+BA_ "GenMsgILSupport" BO_ 1049 1;
+BA_ "GenMsgCycleTime" BO_ 1048 20;
+BA_ "GenMsgILSupport" BO_ 1048 1;
+BA_ "GenMsgCycleTime" BO_ 1051 20;
+BA_ "GenMsgILSupport" BO_ 1051 1;
+BA_ "GenMsgCycleTime" BO_ 1050 20;
+BA_ "GenMsgILSupport" BO_ 1050 1;
+BA_ "GenMsgCycleTime" BO_ 1053 20;
+BA_ "GenMsgILSupport" BO_ 1053 1;
+BA_ "GenMsgCycleTime" BO_ 1052 20;
+BA_ "GenMsgILSupport" BO_ 1052 1;
+BA_ "GenMsgCycleTime" BO_ 1055 20;
+BA_ "GenMsgILSupport" BO_ 1055 1;
+BA_ "GenMsgCycleTime" BO_ 1054 20;
+BA_ "GenMsgILSupport" BO_ 1054 1;
+BA_ "GenMsgILSupport" BO_ 1893 1;
+BA_ "GenMsgCycleTime" BO_ 1893 100;
+BA_ "GenMsgILSupport" BO_ 1528 1;
+BA_ "GenMsgCycleTime" BO_ 1528 40;
+BA_ "GenMsgILSupport" BO_ 1919 1;
+BA_ "GenMsgCycleTime" BO_ 1919 20;
+BA_ "GenMsgILSupport" BO_ 1903 1;
+BA_ "GenMsgCycleTime" BO_ 1903 20;
+BA_ "GenMsgILSupport" BO_ 1901 1;
+BA_ "GenMsgCycleTime" BO_ 1901 20;
+BA_ "GenMsgILSupport" BO_ 1902 1;
+BA_ "GenMsgCycleTime" BO_ 1902 20;
+BA_ "GenMsgCycleTime" BO_ 1904 20;
+BA_ "GenMsgILSupport" BO_ 1904 1;
+BA_ "GenMsgCycleTime" BO_ 1905 20;
+BA_ "GenMsgILSupport" BO_ 1905 1;
+BA_ "GenMsgCycleTime" BO_ 1906 20;
+BA_ "GenMsgILSupport" BO_ 1906 1;
+BA_ "GenMsgCycleTime" BO_ 1907 20;
+BA_ "GenMsgILSupport" BO_ 1907 1;
+BA_ "GenMsgCycleTime" BO_ 1908 20;
+BA_ "GenMsgILSupport" BO_ 1908 1;
+BA_ "GenMsgCycleTime" BO_ 1909 20;
+BA_ "GenMsgILSupport" BO_ 1909 1;
+BA_ "GenMsgCycleTime" BO_ 1910 20;
+BA_ "GenMsgILSupport" BO_ 1910 1;
+BA_ "GenMsgCycleTime" BO_ 1911 20;
+BA_ "GenMsgILSupport" BO_ 1911 1;
+BA_ "GenMsgCycleTime" BO_ 1520 40;
+BA_ "GenMsgILSupport" BO_ 1520 1;
+BA_ "GenMsgCycleTime" BO_ 1521 40;
+BA_ "GenMsgILSupport" BO_ 1521 1;
+BA_ "GenMsgCycleTime" BO_ 1522 40;
+BA_ "GenMsgILSupport" BO_ 1522 1;
+BA_ "GenMsgCycleTime" BO_ 1523 40;
+BA_ "GenMsgILSupport" BO_ 1523 1;
+BA_ "GenMsgCycleTime" BO_ 1524 40;
+BA_ "GenMsgILSupport" BO_ 1524 1;
+BA_ "GenMsgCycleTime" BO_ 1525 40;
+BA_ "GenMsgILSupport" BO_ 1525 1;
+BA_ "GenMsgCycleTime" BO_ 1526 40;
+BA_ "GenMsgILSupport" BO_ 1526 1;
+BA_ "GenMsgCycleTime" BO_ 1527 40;
+BA_ "GenMsgILSupport" BO_ 1527 1;
+BA_ "GenMsgCycleTime" BO_ 1914 20;
+BA_ "GenMsgILSupport" BO_ 1914 1;
+BA_ "GenMsgCycleTime" BO_ 1915 20;
+BA_ "GenMsgILSupport" BO_ 1915 1;
+BA_ "GenMsgCycleTime" BO_ 1916 20;
+BA_ "GenMsgILSupport" BO_ 1916 1;
+BA_ "GenMsgCycleTime" BO_ 1917 20;
+BA_ "GenMsgILSupport" BO_ 1917 1;
+BA_ "GenMsgCycleTime" BO_ 1889 100;
+BA_ "GenMsgILSupport" BO_ 1889 1;
+BA_ "GenMsgCycleTime" BO_ 1890 100;
+BA_ "GenMsgILSupport" BO_ 1890 1;
+BA_ "GenMsgCycleTime" BO_ 1891 100;
+BA_ "GenMsgILSupport" BO_ 1891 1;
+BA_ "GenMsgCycleTime" BO_ 1892 100;
+BA_ "GenMsgILSupport" BO_ 1892 1;
+BA_ "GenMsgCycleTime" BO_ 1792 100;
+BA_ "GenMsgILSupport" BO_ 1792 1;
+BA_ "GenMsgILSupport" BO_ 785 1;
+BA_ "GenMsgILSupport" BO_ 784 1;
+BA_ "GenMsgILSupport" BO_ 786 1;
+BA_ "GenMsgILSupport" BO_ 801 1;
+BA_ "GenMsgILSupport" BO_ 776 1;
+BA_ "GenMsgILSupport" BO_ 802 1;
+BA_ "GenMsgILSupport" BO_ 803 1;
+BA_ "GenMsgILSupport" BO_ 772 1;
+BA_ "GenMsgILSupport" BO_ 771 1;
+BA_ "GenMsgILSupport" BO_ 770 1;
+BA_ "GenMsgILSupport" BO_ 779 1;
+BA_ "GenMsgILSupport" BO_ 778 1;
+BA_ "GenMsgILSupport" BO_ 777 1;
+BA_ "GenMsgILSupport" BO_ 768 1;
+BA_ "GenMsgILSupport" BO_ 769 1;
+BA_ "GenMsgILSupport" BO_ 773 1;
+BA_ "GenMsgILSupport" BO_ 774 1;
+BA_ "GenMsgILSupport" BO_ 775 1;
+BA_ "GenMsgILSupport" BO_ 780 1;
+BA_ "GenMsgILSupport" BO_ 781 1;
+BA_ "GenMsgILSupport" BO_ 782 1;
+BA_ "GenMsgILSupport" BO_ 783 1;
+BA_ "GenMsgILSupport" BO_ 796 1;
+BA_ "GenMsgILSupport" BO_ 797 1;
+BA_ "GenMsgILSupport" BO_ 798 1;
+BA_ "GenMsgILSupport" BO_ 799 1;
+BA_ "GenMsgILSupport" BO_ 800 1;
+BA_ "GenMsgILSupport" BO_ 795 1;
+BA_ "GenMsgILSupport" BO_ 793 1;
+BA_ "GenMsgILSupport" BO_ 794 1;
+BA_ "GenMsgILSupport" BO_ 792 1;
+BA_ "GenMsgILSupport" BO_ 791 1;
+BA_ "GenMsgILSupport" BO_ 790 1;
+BA_ "GenMsgILSupport" BO_ 789 1;
+BA_ "GenMsgILSupport" BO_ 788 1;
+BA_ "GenMsgILSupport" BO_ 787 1;
+VAL_ 1025 DetectionSensor_01 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1024 MC_object_class_01 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1024 Movement_01 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1024 Status_01 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1027 DetectionSensor_02 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1026 MC_object_class_02 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1026 Movement_02 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1026 Status_02 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1029 DetectionSensor_03 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1028 MC_object_class_03 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1028 Movement_03 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1028 Status_03 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1031 DetectionSensor_04 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1030 MC_object_class_04 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1030 Movement_04 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1030 Status_04 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1033 DetectionSensor_05 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1032 MC_object_class_05 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1032 Movement_05 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1032 Status_05 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1035 DetectionSensor_06 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1034 MC_object_class_06 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1034 Movement_06 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1034 Status_06 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1037 DetectionSensor_07 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1036 MC_object_class_07 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1036 Movement_07 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1036 Status_07 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1039 DetectionSensor_08 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1038 MC_object_class_08 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1038 Movement_08 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1038 Status_08 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1041 DetectionSensor_09 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1040 MC_object_class_09 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1040 Movement_09 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1040 Status_09 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1043 DetectionSensor_10 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1042 MC_object_class_10 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1042 Movement_10 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1042 Status_10 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1045 DetectionSensor_11 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1044 MC_object_class_11 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1044 Movement_11 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1044 Status_11 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1047 DetectionSensor_12 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1046 MC_object_class_12 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1046 Movement_12 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1046 Status_12 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1049 DetectionSensor_13 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1048 MC_object_class_13 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1048 Movement_13 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1048 Status_13 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1051 DetectionSensor_14 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1050 MC_object_class_14 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1050 Movement_14 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1050 Status_14 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1053 DetectionSensor_15 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1052 MC_object_class_15 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1052 Movement_15 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1052 Status_15 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1055 DetectionSensor_16 4 "TrackletsAndVision" 3 "VisionOnly" 2 "MultipleTracklets" 1 "SingleTracklet" 0 "NoMatchedMeasurements" ;
+VAL_ 1054 MC_object_class_16 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1054 Movement_16 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1054 Status_16 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1901 FCW 1 "FCWOn" 0 "FCWOff" ;
+VAL_ 1901 TargetVehicle_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1904 AdditionVehicle1_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1904 AdditionVehicle2_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1905 AdditionVehicle3_Type 5 "SpecialCar" 4 "truck" 3 "Bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1905 AdditionVehicle4_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1906 AdditionVehicle5_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1906 AdditionVehicle6_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1907 AdditionVehicle7_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1907 AdditionVehicle8_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1908 AdditionVehicle9_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1908 AdditionVehicle10_Type 5 "SpecialCar" 4 "truck" 3 "Bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1909 AdditionVehicle11_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1909 AdditionVehicle12_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1910 AdditionVehicle13_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1910 AdditionVehicle14_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1911 AdditionVehicle15_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1911 AdditionVehicle16_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1520 Lane1_Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1520 Lane1_Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1521 Lane1_LineCrossing 1 "LineCrossing" 0 "NoLineCross" ;
+VAL_ 1521 Lane1_LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1522 Lane2_Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1522 Lane2_Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1523 Lane2_LineCrossing 1 "LineCrossing" 0 "NoLineCross" ;
+VAL_ 1523 Lane2_LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1524 Lane3_Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1524 Lane3_Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1525 Lane3_LineCrossing 1 "LineCrossing" 0 "NoLineCross" ;
+VAL_ 1525 Lane3_LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1526 Lane4_Type 15 "Invalid" 6 "Barrier" 5 "Bott'sDots" 4 "DoubleLane" 3 "Dashed" 2 "RoadEdge" 1 "Solid" 0 "Undecided" ;
+VAL_ 1526 Lane4_Quality 3 "High" 2 "Medium" 1 "Low" 0 "Unknown" ;
+VAL_ 1527 Lane4_LineCrossing 1 "LineCrossing" 0 "NoLineCross" ;
+VAL_ 1527 Lane4_LineMarkColor 1 "Yellow" 0 "White" ;
+VAL_ 1914 TargetPedestrian_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1915 TargetPedestrian1_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1915 TargetPedestrian2_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1916 TargetPedestrian3_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1916 TargetPedestrian4_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1917 TargetPedestrian5_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1917 TargetPedestrian6_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1890 Can_Msg1_Ender 1 "finish" 0 "NoFinish" ;
+VAL_ 1891 Can_Msg2_Ender 1 "finish" 0 "NoFinish" ;
+VAL_ 1892 Can_Msg3_Ender 1 "finish" 0 "NoFinish" ;
+VAL_ 1792 Sound_type 7 "Stop&Go" 6 "FCW+PCW" 5 "UFCW" 4 "TSR" 3 "HW" 2 "LDWRight" 1 "LDWLeft" 0 "silent" ;
+VAL_ 1792 Time_Indicator 1 "night" 0 "day" ;
+VAL_ 1792 ZeroSpeed 1 "stop" 0 "run" ;
+VAL_ 1792 HMW_valid 1 "on" 0 "off" ;
+VAL_ 1792 LDWoff 1 "disable" 0 "enable" ;
+VAL_ 1792 LeftLDWon 1 "warning" 0 "NoWarning" ;
+VAL_ 1792 RightLDWon 1 "warning" 0 "NoWarning" ;
+VAL_ 1792 FCW_on 1 "warning" 0 "NoWarning" ;
+VAL_ 1792 PedsFCW 1 "warning" 0 "NoWarning" ;
+VAL_ 1792 PedInDZ 1 "PedInDZ" 0 "NoPedInDZ" ;
+VAL_ 1792 TSR_enabled 1 "on" 0 "off" ;
+VAL_ 1792 TSR_Level 7 "30-35kmh" 6 "25-30kmh" 5 "20-25kmh" 4 "15-20kmh" 3 "10-15kmh" 2 "5-10kmh" 1 "0-5kmh" 0 "save" ;
+VAL_ 1792 HMW_Level 3 "HW<=0.6" 2 "HW<=HWConfig" 1 "HWM>HWConfig" 0 "NoCar" ;
+

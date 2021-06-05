@@ -1,3 +1,4 @@
+from parsers.d1_fusion import parse_d1
 from parsers.x1 import parse_x1
 from parsers.x1l import parse_x1l
 from parsers.x1j import parse_x1j
@@ -36,7 +37,7 @@ parsers_dict = {
     "x1":       parse_x1,
     "x1j":      parse_x1j,
     "x1_fusion": parse_x1,
-    "d1_fusion": parse_x1,
+    "d1_fusion": parse_d1,
     "j2_fusion": parse_x1,
     "a1j_fusion": parse_x1,
     "x1l":      parse_x1l,
