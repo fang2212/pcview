@@ -17,16 +17,14 @@
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "q3control", "can1": "ifv300"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mbq4", "can1": "gs4_debug"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "ars", "can1": "blank"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d4", "can0": "d1_fusion", "can1": "ars410"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d5", "can0": "blank", "can1": "ifv300"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d4", "can0": "j2_fusion", "can1": "ars410"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d5", "can0": "d1_fusion", "can1": "d1_vcan"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
                 {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}},
                 {"model":  "cv22", "params": {"mac":  "6a:92:5e:c0:96:00", "is_main":  true}},
                 {"model":  "cv22_novid", "params": {"mac":  "6a:92:52:69:87:00", "is_main":  false}},
                 {"model":  "bynav"},
-                {"model":  "j2_zmq"},
-                {"model":  "d1_udp"},
-                {"model":  "q4_100"}
+                {"model":  "d1_udp"}
             ],
             "installation": {
                 "esr": {
@@ -51,7 +49,7 @@
                     "pitch": 0,
                     "height": 0.37,
                     "lon_offset": 0.0,
-                    "yaw": 0
+                    "yaw": 0.3
                 },
                 "lmr": {
                     "yaw": 0.0,
@@ -99,6 +97,14 @@
                       "pitch": 0.0,
                       "height": 1.44,
                       "lon_offset": -3.53,
+                      "yaw": 0
+                },
+                 "d1_fusion": {
+                      "roll": 0.0,
+                      "lat_offset": 0.27,
+                      "pitch": 0.0,
+                      "height": 1.49,
+                      "lon_offset": -3.6,
                       "yaw": 0
                 },
                 "rtk": {
