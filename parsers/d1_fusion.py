@@ -252,7 +252,7 @@ def parse_d1(id, data, ctx=None):
                     ret.append(obs.copy())
                 return ret
 
-        if id == 0x41f:
+        if id == 0x413:
             ret = []
             if ctx.get('fusion'):
                 for key in ctx['fusion']:
