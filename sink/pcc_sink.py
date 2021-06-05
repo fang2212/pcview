@@ -269,10 +269,7 @@ class UDPSink(Thread):
     def pkg_handler(self, msg):
         if self.channel == "d1_udp":
             timestamp = time.time()
-            msg = struct.pack("<d", timestamp) + msg
-
-            r = {'type': self.channel, 'source': self.source, 'log_name': self.source}
-            r['buf'] = msg
+            r = {'type': self.channel, 'source': self.source, 'log_name': self.source, 'buf': msg}
             self.fileHandler.insert_general_bin_raw(r)
             self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
         elif self.channel == 'q4_100':

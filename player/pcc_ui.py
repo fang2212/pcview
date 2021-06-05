@@ -146,7 +146,7 @@ class Player(object):
             print('Error indent', obs)
             return
         source = obs['source'].split('.')[0]
-        sensor = obs.get('sensor')
+        sensor = obs.get('sensor') or source
         color = self.color_obs.get(source)
         # if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
         #     color = self.colx1_fusion_camor_obs.get('x1_fusion_cam')
