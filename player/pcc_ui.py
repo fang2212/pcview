@@ -75,7 +75,7 @@ class Player(object):
             'x1j': FlatColor.amethyst,
             'xyd2': FlatColor.Blue,
             "j2_fusion": FlatColor.light_green,
-            "d1_fusion": FlatColor.light_blue,
+            "d1_fusion": FlatColor.violet,
             'default': FlatColor.clouds,
         }
 
@@ -145,10 +145,11 @@ class Player(object):
         except Exception as e:
             print('Error indent', obs)
             return
-        sensor = obs.get('sensor') or obs['source'].split('.')[0]
-        color = self.color_obs.get(sensor)
-        if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
-            color = self.color_obs.get('x1_fusion_cam')
+        source = obs['source'].split('.')[0]
+        sensor = obs.get('sensor')
+        color = self.color_obs.get(source)
+        # if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
+        #     color = self.colx1_fusion_camor_obs.get('x1_fusion_cam')
         if not color:
             color = self.color_obs['default']
 

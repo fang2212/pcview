@@ -253,11 +253,12 @@ class UDPSink(Thread):
         self.type = "ucp_sink"
 
     def _init_port(self):
-        print('connecting', self.ip, self.port)
+        print('udp connecting', self.ip, self.port)
 
-        # udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # # 绑定端口号
-        # udpSocket.bind(("", 5003))
+        # 0.0.0.*的ip代表是广播类的，需要改为空字符串
+        if self.ip.startswith("0.0.0"):
+            self.ip = ""
+
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._socket.bind((self.ip, self.port))
 
@@ -266,7 +267,15 @@ class UDPSink(Thread):
         return bs
 
     def pkg_handler(self, msg):
-        if self.channel == 'q4_100':
+        if self.channel == "d1_udp":
+            timestamp = time.time()
+            msg = struct.pack("<d", timestamp) + msg
+
+            r = {'type': self.channel, 'source': self.source, 'log_name': self.source}
+            r['buf'] = msg
+            self.fileHandler.insert_general_bin_raw(r)
+            self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
+        elif self.channel == 'q4_100':
 
             # no timestamp , use local timestamp
 

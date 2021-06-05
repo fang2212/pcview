@@ -25,6 +25,7 @@
                 {"model":  "cv22_novid", "params": {"mac":  "6a:92:52:69:87:00", "is_main":  false}},
                 {"model":  "bynav"},
                 {"model":  "j2_zmq"},
+                {"model":  "d1_udp"},
                 {"model":  "q4_100"}
             ],
             "installation": {

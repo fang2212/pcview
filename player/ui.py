@@ -57,6 +57,7 @@ class FlatColor(object):  # in BGR
     concrete = (0xa6, 0xa5, 0x95)
     dark_red = (0x10, 0x10, 0x80)
     emerald = (0x71, 0xcc, 0x2e)
+    violet = (255, 0, 255)                  # 紫色
     light_green = (154, 255, 154)           # 淡绿色
     light_blue = (255, 225, 202)            # 淡蓝色
     peter_river = (0xdb, 0x98, 0x34)

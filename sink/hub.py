@@ -422,7 +422,6 @@ class Hub(Thread):
             mac = cfg.get('mac')
             # print('-------------', cfg)
             if cfg.get('force_ip'):  # force to connect via pre-defined ip
-                print('config force ip device.')
                 if 'ip' not in cfg:
                     print('undefined ip addr for ip-force device', cfg['mac'])
                     continue

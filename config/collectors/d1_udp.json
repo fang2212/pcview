@@ -1,0 +1,15 @@
+{
+  "type": "general",
+  "mac": "00:e0:0c:c4:d5:41",
+  "ip": "0.0.0.0",
+  "force_ip": true,
+  "ports": {
+    "udp": {
+      "enable": true,
+      "port": 5001,
+      "protocol": "d1_udp",
+      "transport": "udp",
+      "topic": "d1_udp"
+    }
+  }
+}

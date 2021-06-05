@@ -283,6 +283,8 @@ def load_config(jsonspec):
             configs[idx] = coll
         except Exception as e:
             configs.append(coll)
+    # configs[0] = spec[0]
+    # configs[1] = spec[1]
     config = dic2obj(configs[0])
     print(bcl.WARN + 'configs:' + bcl.ENDC)
     for c in configs:
@@ -329,15 +331,11 @@ def load_cfg(jsonspec, local='config/local.json'):
                 def_name = 'config/collectors/{}.json'.format(entry)
                 clct = json.load(open(def_name))
                 if spec['version'] >= 1.0:
-                    if item.get('alias'):
-                        clct['alias'] = item.get('alias')
                     if item.get('params'):
                         clct.update(item['params'])
                         if clct['type'] == 'x1_collector':
-                            if 'can0' in item['params']:
-                                clct['ports']['can0']['topic'] = item['params']['can0']
-                            if 'can1' in item['params']:
-                                clct['ports']['can1']['topic'] = item['params']['can1']
+                            clct['ports']['can0']['topic'] = item['params']['can0']
+                            clct['ports']['can1']['topic'] = item['params']['can1']
                         if item['params'].get('is_main'):
                             main_collector = item['params']['is_main']
                 else:

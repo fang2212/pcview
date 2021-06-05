@@ -17,7 +17,7 @@
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d", "can0": "q3control", "can1": "mbq3"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "x1j", "can1": "debug"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "ars", "can1": "mbq"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d4", "can0": "x1_fusion", "can1": "ifv300"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d4", "can0": "x1_fusion", "can1": "mbq3"}},
                 {"model":  "x1j_1v", "params": {"mac": "5a:31:4f:44:a8:f2"}},
                 {"model":  "x1j_1v1r", "params": {"mac": "5a:31:44:3d:e9:14", "is_main":  true}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
