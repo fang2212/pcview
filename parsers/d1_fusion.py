@@ -180,6 +180,7 @@ def parse_d1(id, data, ctx=None):
         if id == 0x5f7:
             res = []
             for lane in d1_lane:
+                # print(d1_lane[lane])
                 res.append(d1_lane[lane])
             # res = d1_lane.copy()
             d1_lane.clear()

@@ -241,19 +241,19 @@ class Player(object):
             return
 
         id = obs['id']
-        sensor = obs.get('sensor') or obs['source'].split('.')[0]
+        source = obs['source'].split('.')[0]
         if 'pos_lon' in obs:
             # x = obs['pos_lon']
             # y = obs['pos_lat']
-            x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], sensor)
+            x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], source)
         elif 'range' in obs:
-            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], sensor)
+            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], source)
         else:
             print('no distance in obs', obs)
             return
         u, v = self.transform.trans_gnd2ipm(x, y)
 
-        color = self.color_obs.get(sensor) or self.color_obs['default']
+        color = self.color_obs.get(source) or self.color_obs['default']
 
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
             color = self.color_obs.get('x1_fusion_cam')
@@ -294,6 +294,9 @@ class Player(object):
             color: CVColor 车道线颜色
         """
         r = data.get('range')
+        # print(data)
+        if data.get("source") == "x1_fusion.5" or data.get("source") == "d1_fusion.5":
+            print(r, (data['a0'], data['a1'], data['a2'], data['a3']))
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
         source = data['source']
         if 'j2' in source:
