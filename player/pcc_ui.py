@@ -294,9 +294,6 @@ class Player(object):
             color: CVColor 车道线颜色
         """
         r = data.get('range')
-        # print(data)
-        if data.get("source") == "x1_fusion.5" or data.get("source") == "d1_fusion.5":
-            print(r, (data['a0'], data['a1'], data['a2'], data['a3']))
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
         source = data['source']
         if 'j2' in source:
