@@ -13,20 +13,13 @@ import cantools
 # db_d1 = cantools.database.load_file('dbc/MINIEYE_CAR.dbc', strict=False)
 # db_d1.add_dbc_file('dbc/MINIEYE_PED.dbc')
 # db_d1.add_dbc_file('dbc/MINIEYE_LANE.dbc')
-db_d1 = cantools.database.load_file('dbc/minieye_debug.dbc', strict=False)
+db_d1 = cantools.database.load_file('dbc/minieye_debug_v0.1_20210407.dbc', strict=False)
 # db_d1.add_dbc_file('dbc/ESR DV3_64Tgt.dbc')
 
 cipv = {}
 cipp = {}
 d1_lane = {}
 spp_lane = {}
-detection_sensor = {
-    0: 'no_matched_measurements',
-    1: 'single_radar_only',
-    2: 'multi_radar_only',
-    3: 'vision_only',
-    4: 'radar and vision',
-}
 
 
 def parse_d1(id, data, ctx=None):
@@ -225,60 +218,25 @@ def parse_d1(id, data, ctx=None):
 
         if ret:
             return ret
-
-    elif 0x400 <= id <= 0x41f:
-        # print("0x%x" % id, r)
+    elif id == 0x401:
+        if not ctx.get('fusion', {}).get("id"):
+            return
+        data = {
+            "type": "obstacle",
+            "sensor": "d1_fusion",
+            "pos_lon": r['L_long_rel_01'],
+            "pos_lat": r['L_lat_rel_01'],
+            "vel_lon": r["V_long_obj_01"],
+            "vel_lat": r["V_lat_obj_01"],
+            "acc_lon": r["Accel_long_obj_01"],
+            "TTC": -r['L_long_rel_01'] / r['V_long_obj_01'] if r['V_long_obj_01'] < 0 else 7.0,
+            "detection_sensor":  r['DetectionSensor_01'],
+            'cipo': True,
+            "height": 1.5,
+            "id": ctx['fusion'].get("id")
+        }
+        return data
+    elif id == 0x400:
         if 'fusion' not in ctx:
             ctx['fusion'] = {}
-            # return
-        index = (id - 0x400) // 2
-        # print("index:", index)
-        if id & 1:
-            if index in ctx['fusion']:
-                ctx['fusion'][index]['pos_lon'] = r['L_long_rel_' + '%02d' % (index + 1)]
-                ctx['fusion'][index]['pos_lat'] = r['L_lat_rel_' + '%02d' % (index + 1)]
-                ctx['fusion'][index]['vel_lon'] = r['V_long_obj_' + '%02d' % (index + 1)]
-                ctx['fusion'][index]['vel_lat'] = r['V_lat_obj_' + '%02d' % (index + 1)]
-                ctx['fusion'][index]['acc_lon'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
-                ctx['fusion'][index]['TTC'] = -r['L_long_rel_' + '%02d' % (index + 1)] / r[
-                    'V_long_obj_' + '%02d' % (index + 1)] if r['V_long_obj_' + '%02d' % (index + 1)] < 0 else 7.0
-                ctx['fusion'][index]['detection_sensor'] = detection_sensor.get(
-                    r['DetectionSensor_' + '%02d' % (index + 1)])
-                ctx['fusion'][index]['cipo'] = True if id == 0x401 else False
-                ctx['fusion'][index]['type'] = 'obstacle'
-                ctx['fusion'][index]['sensor'] = 'd1_fusion'
-                # ctx['fusion'][index]['class'] = 'fusion'
-                # ctx['fusion'][index]['color'] = 7
-                # ctx['fusion'][index]['width'] = 1.5
-                ctx['fusion'][index]['height'] = 1.5
-        else:
-            ctx['fusion'][index] = dict()
-            ctx['fusion'][index]['id'] = r['TrackID_' + '%02d' % (index + 1)]
-            ctx['fusion'][index]['width'] = r['Width_' + '%02d' % (index + 1)]
-            ctx['fusion'][index]['acc_lat'] = r['Accel_lat_obj_' + '%02d' % (index + 1)]
-            ctx['fusion'][index]['status'] = r['Status_' + '%02d' % (index + 1)]
-            ctx['fusion'][index]['class'] = r['MC_object_class_' + '%02d' % (index + 1)]
-            ctx['fusion'][index]['vis_track_id'] = r['Vis_Track_ID_' + '%02d' % (index + 1)]
-            # ctx['fusion'][index]['confidence'] = r['Confidence_'+'%02d' % (index+1)]
-
-            if index >= 16:
-                ret = []
-                for key in ctx['fusion']:
-                    if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in \
-                            ctx['fusion'][key] or ctx['fusion'][key]['pos_lon'] == 0:
-                        continue
-                    obs = ctx['fusion'][key]
-                    ret.append(obs.copy())
-                return ret
-
-        if id == 0x413:
-            ret = []
-            if ctx.get('fusion'):
-                for key in ctx['fusion']:
-                    if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in \
-                            ctx['fusion'][key] or ctx['fusion'][key]['pos_lon'] == 0:
-                        continue
-                    obs = ctx['fusion'][key]
-                    ret.append(obs.copy())
-                ctx.pop('fusion')
-                return ret
+        ctx['fusion']["id"] = r["TrackID_01"]

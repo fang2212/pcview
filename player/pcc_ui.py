@@ -79,6 +79,14 @@ class Player(object):
             'default': FlatColor.clouds,
         }
 
+        self.detection_color = {
+            'Unknown': 'fail',
+            'SingleTrack': 'pass',
+            'MultipleTrack': 'pass',
+            'Vision Only': 'pass',
+            'Radar And Vision': 'pass'
+        }
+
         self.param_bg_width = 160
 
         # for col in self.columns:
@@ -573,20 +581,15 @@ class Player(object):
             self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
         elif obs.get('class') == 'pedestrian':
             line = 40
-            # BaseDraw.draw_text(img, 'CIPPed: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
             self.show_text_info(obs['source'], line, 'CIPPed: {}'.format(obs['id']))
         elif obs.get('class') == 'object':
-            # line = 100
-            # BaseDraw.draw_text(img, 'CIPO: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
             self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']))
         else:
-            # line = 100
-            # BaseDraw.draw_text(img, 'CIPVeh: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
             self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']))
 
+        if "detection_sensor" in obs:
+            self.show_text_info(obs['source'], 60, '{}'.format(obs['detection_sensor']), self.detection_color.get(obs.get("detection_sensor")))
         if 'TTC' in obs:
-            # BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line + 20), 0.5, CVColor.White,
-            #                    1)
             self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), style)
         dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
         angle = obs.get('angle') if 'angle' in obs else atan2(obs['pos_lat'], obs['pos_lon']) * 180 / pi
