@@ -285,13 +285,14 @@ class Player(object):
             BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v - 9), 0.4, color, 1)
             BaseDraw.draw_text(img, '{:.1f}'.format(x), (u + 10, v + 3), 0.4, color, 1)
 
-    def show_lane(self, img, data, color=CVColor.Cyan):
+    def show_lane(self, img, data, color=CVColor.Cyan, style=""):
         """绘制车道线
         Args:
             img: 原始图片
             ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
             width: float 车道线宽度
             color: CVColor 车道线颜色
+            :param style: 线条格式，虚线为“dotted”
         """
         r = data.get('range')
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
@@ -303,8 +304,13 @@ class Player(object):
         if not p:
             return
 
-        for i in range(2, len(p) - 1, 1):
-            BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
+        if style == "dotted":
+            for i in range(2, len(p) - 1, 1):
+                if i % 3 == 0:
+                    BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
+        else:
+            for i in range(2, len(p) - 1, 1):
+                BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
 
             # for now: only mbq4 used
         a0, a1, a2, a3 = ratios
@@ -1134,7 +1140,7 @@ class Player(object):
             color = self.color_obs['default']
         # self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
         # lane message
-        self.show_lane(img, data, color=color)
+        self.show_lane(img, data, color=color, style=data.get("style"))
 
     def draw_lane_ipm(self, img, data):
         if len(data) == 0:

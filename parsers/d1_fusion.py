@@ -19,6 +19,7 @@ db_d1 = cantools.database.load_file('dbc/minieye_debug.dbc', strict=False)
 cipv = {}
 cipp = {}
 d1_lane = {}
+spp_lane = {}
 detection_sensor = {
     0: 'no_matched_measurements',
     1: 'single_radar_only',
@@ -38,7 +39,25 @@ def parse_d1(id, data, ctx=None):
     # print("0x%x" % id, r)
     if not ctx.get('d1_obs'):
         ctx['d1_obs'] = list()
-    if id == 0x76f:  # start of epoch
+
+    # 车中线 int:272
+    if id == 0x110:
+        return {
+            "type": "lane",
+            "type_class": "d1_spp",
+            "range": 50,
+            "a0": r["COEFF_A0"],
+            "a1": r["COEFF_A1"],
+            "a2": r["COEFF_A2"],
+            "a3": r["COEFF_A3"],
+            "style": spp_lane.get("style")
+        }
+
+    # 车中线显示状态 int:796
+    elif id == 0x31c:
+        spp_lane["style"] = "" if r["LCK_Mode"] == 4 else "dotted"      # 正常显示为直线，否则虚线
+
+    elif id == 0x76f:  # start of epoch
         ctx['d1_obs'].clear()
         cipv.clear()
         return {'type': 'vehicle_state', 'speed': r['speed'] / 3.6}
@@ -189,7 +208,6 @@ def parse_d1(id, data, ctx=None):
 
     # fusion
     elif id == 0x420:
-        print("==============1056")
         ret = []
         if ctx.get('fusion'):
             for key in ctx['fusion']:
