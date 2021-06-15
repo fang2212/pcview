@@ -186,11 +186,13 @@ class sched_nn_sender(Process):
 
 class LogPlayer(Process):
 
-    def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, ratio=1.0, loop=False, nnsend=False,
-                 nosort=False, real_interval=False, chmain=None):
+    def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, start_time=0, end_time=None, ratio=1.0,
+                 loop=False, nnsend=False, nosort=False, real_interval=False, chmain=None):
         super(LogPlayer, self).__init__()
         self.start_frame = int(start_frame) if start_frame else 0
         self.end_frame = int(end_frame) if end_frame else 9999999999999
+        self.start_time = int(start_time) if start_time else 0
+        self.end_time = int(end_time) if end_time else 9999999999999
         # self.daemon = False
         self.time_aligned = True
         self.log_path = log_path
@@ -706,8 +708,9 @@ def start_replay(source_path, args, show_video=True):
     chmain = args.chmain
     r_sort, cfg = prep_replay(source_path, ns=ns, chmain=chmain)
 
-    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=args.start_frame, end_frame=args.end_frame, loop=args.loop,
-                         nnsend=args.send, real_interval=args.real_interval, chmain=chmain)
+    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=args.start_frame, end_frame=args.end_frame,
+                         start_time=args.start_time, end_time=args.end_time, loop=args.loop, nnsend=args.send,
+                         real_interval=args.real_interval, chmain=chmain)
 
     if args.web:
         if not show_video:
@@ -748,6 +751,8 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--send', action="store_true")
     parser.add_argument('-sf', '--start_frame', default=0)
     parser.add_argument('-ef', '--end_frame', default=None)
+    parser.add_argument('-st', '--start_time', default=0)
+    parser.add_argument('-et', '--end_time', default=None)
     parser.add_argument('-ri', '--real_interval', action="store_true")
     parser.add_argument('-chmain', default=None, help="change main video")
 

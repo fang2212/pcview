@@ -24,12 +24,14 @@ col_count = 4
 
 class Statistics:
 
-    def __init__(self, log_path, save_path=None):
+    def __init__(self, log_path, save_path=None, assign_ids=None):
+
         self.other_list = ['gsensor', "camera"]     # 不参与统计的字段
         self.log_path = log_path
         self.save_path = save_path
         # self.pool = Pool(4)                         # 初始化进程池
 
+        self.assign_ids = assign_ids                # 指定渲染id
         self.can_map = {}                           # CAN设备数据统计映射表
         self.device_map = {}                        # 设备数据统计映射表
 
@@ -81,6 +83,11 @@ class Statistics:
             "name": can_data[2],
             "id": can_data[3]
         }
+
+        # 如果指定id 并当前id不在指定范围内
+        if self.assign_ids and can_data[3] not in self.assign_ids:
+            return
+
         # 更新CAN数据表
         if not self.can_map.get(can_data[2]):
             logger.debug(f"设备：{can_data[2]}")
@@ -93,6 +100,9 @@ class Statistics:
             self.can_map[can_data[2]][can_data[3]] = [data]
 
     def other_collect(self, other_data):
+        if self.assign_ids:
+            return
+
         data = {
             "ts": float(other_data[0] + other_data[1]),
             "name": other_data[2],
@@ -119,7 +129,6 @@ class Statistics:
             统计CAN数据接收情况
             """
         for can in self.can_map:
-            print(f"statistics can:{can}")
             id_list = list(self.can_map[can].keys())
             img_num = 1
             for i in range(0, len(id_list), self.img_contain):
@@ -127,7 +136,7 @@ class Statistics:
                 render_list = [self.can_map[can][can_id] for can_id in split_can_id]
 
                 over_count = len(render_list) % col_count
-                if over_count != 0:
+                if over_count != 0 and len(render_list) > col_count:
                     over_list = render_list[:-over_count]
                     if not over_list:
                         continue
@@ -188,6 +197,11 @@ class Statistics:
             min_interval = np.min(interval_list)
             max_interval = np.max(interval_list)
             std_interval = np.std(interval_list)
+
+            # 将时间轴进行计算，通过减去最小值从0开始计算
+            min_ts = np.min(timestamp_list)
+            timestamp_list = [i-min_ts for i in timestamp_list]
+
             # 写入到表格对象中
             col_data = [can_id_data[0].get('name', ""), can_id_data[0].get('id', ""), avg_interval, min_interval, max_interval, std_interval]
             for i, d in enumerate(col_data):
@@ -204,7 +218,7 @@ class Statistics:
             plt.legend([avg_line, min_line, max_line], [f'avg:{"%.8f" % avg_interval}', f'min:{"%.8f" % min_interval}',
                                                         f'max:{"%.8f" % max_interval}'], bbox_to_anchor=(0, -0.23, 1, 2),
                        loc="lower left", mode="expand", borderaxespad=0, ncol=3)
-            plt.plot(timestamp_list[1:], interval_list, s=1, marker='.')  # s表示面积，marker表示图形
+            plt.plot(timestamp_list[1:], interval_list, marker='.', linewidth=1)  # s表示面积，marker表示图形
 
         plt.subplots_adjust(left=0, bottom=0, right=1, top=1, hspace=0.1, wspace=0.1)
         plt.tight_layout()
@@ -249,7 +263,8 @@ if __name__ == "__main__":
     # 解析命令行参数
     parser = argparse.ArgumentParser()
     parser.add_argument('path', nargs='+', help='包含log.txt的路径')
-    parser.add_argument('--debug', action='store_true', help='调试模式', default=False)
+    parser.add_argument('--id', "-i", nargs='*', help='包含log.txt的路径')
+    parser.add_argument('--debug', "-d", action='store_true', help='调试模式', default=False)
     parser.add_argument('--save', '-s', help='保存统计图表文件夹路径（默认当前目录）')
     args = parser.parse_args()
 
@@ -271,6 +286,6 @@ if __name__ == "__main__":
 
     logger.debug(f"wait statistics count: {len(log_path_list)}")
     for path in tqdm(log_path_list):
-        task = Statistics(path, save_path=args.save)
+        task = Statistics(path, save_path=args.save, assign_ids=args.id)
         task.run()
         logger.warning("运行结束")
