@@ -923,7 +923,7 @@ class Player(object):
         # 图上绘制检测到的角点
         cv2.drawChessboardCorners(img, (7, 7), corners2, ret)
 
-    def show_lane_ipm(self, img, data, color=CVColor.Cyan):
+    def show_lane_ipm(self, img, data, color=CVColor.Cyan, style=""):
         """绘制车道线
         Args:
             img: 原始图片
@@ -938,8 +938,13 @@ class Player(object):
             return
         p = self.transform.getp_ipm_from_poly(ratios, 1, 0, r, sensor=data['source'])
 
-        for i in range(1, len(p) - 1, 1):
-            BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
+        if style == "dotted":
+            for i in range(2, len(p) - 1, 1):
+                if i % 3 == 0:
+                    BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
+        else:
+            for i in range(2, len(p) - 1, 1):
+                BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
 
         # p = self.transform.getp_ipm_from_poly(ratios, 1, r, 160, param=install_para)
         #
@@ -1159,7 +1164,7 @@ class Player(object):
         if not color:
             color = self.color_obs['default']
 
-        self.show_lane_ipm(img, data, color)
+        self.show_lane_ipm(img, data, color, style=data.get("style"))
 
     def show_host_path(self, img, spd, yr, yrbias=0.0017, cipv_dist=200.0):
         # if spd < 5:
