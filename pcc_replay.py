@@ -660,20 +660,19 @@ class LogPlayer(Process):
 
 
 def prep_replay(source, ns=False, chmain=None):
-    print("source:", source)
+    print("source:", source, "ns:", ns)
     if os.path.isdir(source):
         loglist = sorted(os.listdir(source), reverse=True)
         source = os.path.join(os.path.join(source, loglist[0]), 'log.txt')
 
-    r_sort = os.path.join(os.path.dirname(source), 'log_sort.txt')
-
-    if os.path.exists(r_sort):
-        pass
+    if ns:
+        r_sort = source
     else:
-        if ns:
-            r_sort = source
-        else:
+        r_sort = os.path.join(os.path.dirname(source), 'log_sort.txt')
+        if not os.path.exists(r_sort):
             r_sort = mytools.sort_big_file(source)
+
+
 
     config_path = os.path.join(os.path.dirname(source), 'config.json')
     install_path = os.path.join(os.path.dirname(source), 'installation.json')
@@ -767,5 +766,4 @@ if __name__ == "__main__":
             start_replay(os.path.join(d, "log.txt"), args, show_video=False)
     else:
         start_replay(source, args)
-        print(source)
 
