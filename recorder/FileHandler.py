@@ -210,7 +210,7 @@ class FileHandler(Process):
                 self.record_video_log(msg)
 
             # 写入到log.txt文件的间隔时间
-            if t0 - self.log_fp_last_write > 1 and self.log_fp:
+            if t0 - self.log_fp_last_write > 3 and self.log_fp:
                 self.log_fp.flush()
                 self.log_fp_last_write = time.time()
 
