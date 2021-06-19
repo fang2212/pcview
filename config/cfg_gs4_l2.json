@@ -16,7 +16,7 @@
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "j2", "can1": "gs4"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "q3control", "can1": "ifv300"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mbq4", "can1": "gs4_debug"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "ars", "can1": "blank"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "ars", "can1": "ars410"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d4", "can0": "j2_fusion", "can1": "ars410"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d5", "can0": "d1_fusion", "can1": "d1_vcan"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
@@ -47,9 +47,9 @@
                     "roll": 0.0,
                     "lat_offset": 0.35,
                     "pitch": 0,
-                    "height": 0.37,
+                    "height": 0.45,
                     "lon_offset": 0.0,
-                    "yaw": 0.3
+                    "yaw": 0
                 },
                 "lmr": {
                     "yaw": 0.0,
@@ -95,15 +95,23 @@
                       "roll": 0.0,
                       "lat_offset": -0.03,
                       "pitch": 0.0,
-                      "height": 1.44,
+                      "height": 1.39,
                       "lon_offset": -3.53,
                       "yaw": 0
                 },
                  "d1_fusion": {
                       "roll": 0.0,
-                      "lat_offset": 0.27,
+                      "lat_offset": 0,
                       "pitch": 0.0,
                       "height": 1.49,
+                      "lon_offset": 0,
+                      "yaw": 0
+                },
+                 "j2_fusion": {
+                      "roll": 0.0,
+                      "lat_offset": 0,
+                      "pitch": 0.0,
+                      "height": 1.39,
                       "lon_offset": 0,
                       "yaw": 0
                 },

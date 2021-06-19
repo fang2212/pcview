@@ -104,15 +104,13 @@ class Statistics:
             return
 
         data = {
-            "ts": float(other_data[0] + other_data[1]),
+            "ts": float(other_data[0]) + float(other_data[1]) / 1000000,
             "name": other_data[2],
         }
         # 更新设备数据表
         if not self.device_map.get(other_data[2]):
             logger.debug(f"设备：{other_data[2]}")
             self.device_map[other_data[2]] = []
-
-        self.device_map[other_data[2]].append(data)
 
         self.device_map[other_data[2]].append(data)
 
