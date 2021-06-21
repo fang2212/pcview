@@ -8,7 +8,10 @@ import openpyxl
 from tqdm import tqdm
 
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+
+mpl.rcParams['agg.path.chunksize'] = 10000
 
 logger = logging.getLogger(__name__)
 fh = logging.StreamHandler()
@@ -69,7 +72,7 @@ class Statistics:
 
                 if "CAN" in cols[2]:
                     self.can_collect(cols)
-                elif "gsensor" in cols[2] or "camera" in cols[2]:
+                elif not ("voice_note" in cols[2] or "pinpoint" in cols[2]):
                     self.other_collect(cols)
 
         self.statistics_can()
@@ -104,7 +107,7 @@ class Statistics:
             return
 
         data = {
-            "ts": float(other_data[0] + other_data[1]),
+            "ts": float(other_data[0]) + float(other_data[1]) / 1000000,
             "name": other_data[2],
         }
         # 更新设备数据表
@@ -121,8 +124,9 @@ class Statistics:
         for device in self.device_map:
             render_list.append(self.device_map[device])
             file_name = os.path.join(self.save_path,
-                                     f'{device}_{time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(self.device_map[device][0].get("ts")))}.png')
+                                     f'{device.replace(".", "_")}_{time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(self.device_map[device][0].get("ts")))}.png')
             self.render_can([self.device_map[device]], file_name=file_name, title=f"")
+            self.device_map[device] = {}
 
     def statistics_can(self):
         """
@@ -151,6 +155,7 @@ class Statistics:
                 self.render_can(render_list, title=f"{can}_{img_num}", file_name=file_name)
                 # self.pool.apply(render_can, args=(render_list, f"{can}_{img_num}", self.save_path))
                 img_num += 1
+            self.can_map[can] = {}
             # pool.close()
             # pool.join()
 
@@ -170,11 +175,13 @@ class Statistics:
         plt.rcParams['figure.figsize'] = 10 * render_col_count, render_row_count * 6
 
         count = 0
+        has_draw = False
         for can_id_data in data_list:
             data_count = len(can_id_data)
             if data_count <= 1:
                 continue
 
+            logger.debug("draw point count: {}, file:{}".format(data_count, file_name))
             count += 1
             # 渲染子图图表
             plt.subplot(render_row_count, render_col_count, count)
@@ -219,11 +226,18 @@ class Statistics:
                                                         f'max:{"%.8f" % max_interval}'], bbox_to_anchor=(0, -0.23, 1, 2),
                        loc="lower left", mode="expand", borderaxespad=0, ncol=3)
             plt.plot(timestamp_list[1:], interval_list, marker='.', linewidth=1)  # s表示面积，marker表示图形
+            has_draw = True
+
+        if not has_draw:
+            return
 
         plt.subplots_adjust(left=0, bottom=0, right=1, top=1, hspace=0.1, wspace=0.1)
         plt.tight_layout()
-        plt.suptitle(title, fontsize="xx-large")
+        # plt.suptitle(title, fontsize="xx-large")
+        # print(file_name)
+        # plt.show()
         plt.savefig(file_name, dpi=200, format='png')
+        plt.clf()
         plt.close()
 
     def export_excel(self):
