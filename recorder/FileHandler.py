@@ -26,7 +26,7 @@ class FileHandler(Process):
     def __init__(self, redirect=False, uniconf=None):
         super(FileHandler, self).__init__()
         self.ctrl_queue = Queue()                   # 控制事件队列
-        self.log_queue = Queue()      # 记录数据队列
+        self.log_queue = Queue(200000)      # 记录数据队列
         self.running = True                         # 是否运行
 
         self._max_cnt = 1200
@@ -194,6 +194,7 @@ class FileHandler(Process):
                     now_fps = 30
                 if self.video_streams[source].get('video_writer'):
                     self.video_streams[source]['video_writer'].finish_video()
+                print("fps:", now_fps)
                 self.video_streams[source]['video_writer'] = MJPEGWriter(video_path, w, h, now_fps)
                 self.video_streams[source]['video_writer'].write_header()
                 print("video start over.", self.video_streams[source]['frame_cnt'], video_path)
@@ -265,6 +266,7 @@ class FileHandler(Process):
         tv_us = (ts - tv_s) * 1000000
         kw = 'camera' if msg['is_main'] else source
         log_line = "%.10d %.6d " % (tv_s, tv_us) + kw + ' ' + '{}'.format(frame_id) + "\n"
+        # print(self.video_streams[source]['frame_cnt'])
         if self.log_fp:
             self.log_fp.write(log_line)
 

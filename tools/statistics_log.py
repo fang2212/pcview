@@ -117,8 +117,6 @@ class Statistics:
 
         self.device_map[other_data[2]].append(data)
 
-        self.device_map[other_data[2]].append(data)
-
     def statistics_other(self):
         render_list = []
         for device in self.device_map:
