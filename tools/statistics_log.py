@@ -32,6 +32,11 @@ class Statistics:
         self.other_list = ['gsensor', "camera"]     # 不参与统计的字段
         self.log_path = log_path
         self.save_path = save_path
+        self.log_camera_start_ts = 0
+        self.log_camera_end_ts = 0
+        self.log_start_ts = 0
+        self.log_end_ts = 0
+        self.log_long_ts = 0
         # self.pool = Pool(4)                         # 初始化进程池
 
         self.assign_ids = assign_ids                # 指定渲染id
@@ -70,19 +75,34 @@ class Statistics:
                 # 格式化日志数据
                 cols = line.strip().split(" ")
 
-                if "CAN" in cols[2]:
-                    self.can_collect(cols)
-                elif not ("voice_note" in cols[2] or "pinpoint" in cols[2]):
-                    self.other_collect(cols)
+                # 记录log开始结束的时间点
+                ts = float(cols[0]) + float(cols[1]) / 1000000
+                if self.log_start_ts == 0 or self.log_start_ts > ts:
+                    self.log_start_ts = ts
+                if self.log_end_ts < ts:
+                    self.log_end_ts = ts
 
+                if "CAN" in cols[2]:
+                    self.can_collect(cols, ts)
+                elif not ("voice_note" in cols[2] or "pinpoint" in cols[2]):
+                    self.other_collect(cols, ts)
+
+        self.log_long_ts = self.log_end_ts - self.log_start_ts
+        logger.debug("视频开始时间：{} {}".format(self.log_camera_start_ts, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.log_camera_start_ts))))
+        logger.debug("视频结束时间：{} {}".format(self.log_camera_end_ts, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.log_camera_end_ts))))
+        logger.debug("log.txt开始时间：{} {}".format(self.log_start_ts, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(
+            self.log_start_ts))))
+        logger.debug("log.txt结束时间：{} {}".format(self.log_end_ts,
+                                           time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.log_end_ts))))
+        logger.debug("log总时长跨度：{}".format(self.log_long_ts))
         self.statistics_can()
         self.statistics_other()
 
         self.export_excel()
 
-    def can_collect(self, can_data):
+    def can_collect(self, can_data, ts):
         data = {
-            "ts": float(can_data[0]) + float(can_data[1]) / 1000000,
+            "ts": ts,
             "name": can_data[2],
             "id": can_data[3]
         }
@@ -102,14 +122,23 @@ class Statistics:
         else:
             self.can_map[can_data[2]][can_data[3]] = [data]
 
-    def other_collect(self, other_data):
+    def other_collect(self, other_data, ts):
         if self.assign_ids:
             return
 
         data = {
-            "ts": float(other_data[0]) + float(other_data[1]) / 1000000,
+            "ts": ts,
             "name": other_data[2],
         }
+        self.log_end_ts = ts
+
+        # 记录视频开始结尾时间
+        if "camera" in other_data[2]:
+            if self.log_camera_start_ts == 0 or self.log_camera_start_ts > ts:
+                self.log_camera_start_ts = ts
+            if self.log_camera_end_ts < ts:
+                self.log_camera_end_ts = ts
+
         # 更新设备数据表
         if not self.device_map.get(other_data[2]):
             logger.debug(f"设备：{other_data[2]}")
@@ -124,7 +153,7 @@ class Statistics:
             file_name = os.path.join(self.save_path,
                                      f'{device.replace(".", "_")}_{time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(self.device_map[device][0].get("ts")))}.png')
             self.render_can([self.device_map[device]], file_name=file_name, title=f"")
-            self.device_map[device] = {}
+            self.device_map[device] = None
 
     def statistics_can(self):
         """
@@ -150,10 +179,10 @@ class Statistics:
                     if not render_list:
                         continue
                 file_name = os.path.join(self.save_path, f'{can}_{img_num}_{time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(render_list[0][0].get("ts")))}.png')
-                self.render_can(render_list, title=f"{can}_{img_num}", file_name=file_name)
+                self.render_can(render_list, title=f"{can}", file_name=file_name)
                 # self.pool.apply(render_can, args=(render_list, f"{can}_{img_num}", self.save_path))
                 img_num += 1
-            self.can_map[can] = {}
+            self.can_map[can] = None
             # pool.close()
             # pool.join()
 
@@ -179,7 +208,7 @@ class Statistics:
             if data_count <= 1:
                 continue
 
-            logger.debug("draw point count: {}, file:{}".format(data_count, file_name))
+            # logger.debug("draw point count: {}, file:{}".format(data_count, file_name))
             count += 1
             # 渲染子图图表
             plt.subplot(render_row_count, render_col_count, count)
@@ -204,8 +233,7 @@ class Statistics:
             std_interval = np.std(interval_list)
 
             # 将时间轴进行计算，通过减去最小值从0开始计算
-            min_ts = np.min(timestamp_list)
-            timestamp_list = [i-min_ts for i in timestamp_list]
+            timestamp_list = [i-self.log_camera_start_ts for i in timestamp_list]
 
             # 写入到表格对象中
             col_data = [can_id_data[0].get('name', ""), can_id_data[0].get('id', ""), avg_interval, min_interval, max_interval, std_interval]
@@ -214,9 +242,10 @@ class Statistics:
             self.excel_row_pos += 1
 
             # 渲染
-            plt.title(f"{'can id:'+can_id_data[0].get('id') if can_id_data[0].get('id') else ''} count:({data_count}) time:{int(can_id_data[-1].get('ts') - can_id_data[0].get('ts'))}s std/avg:{'%.3f' % (std_interval/avg_interval)}")
+            plt.title(f"{title +' id:'+can_id_data[0].get('id') if can_id_data[0].get('id') else ''} count:({data_count}) time:{int(self.log_long_ts)}s std/avg:{'%.3f' % (std_interval/avg_interval)}")
             plt.xlabel("timestamp")
             plt.ylabel("interval(s)")
+            plt.xlim([self.log_start_ts - self.log_camera_start_ts, self.log_end_ts - self.log_camera_start_ts])
             avg_line = plt.axhline(y=avg_interval, color="r", linestyle="--", linewidth=1)
             min_line = plt.axhline(y=min_interval, color="g", linestyle="--", linewidth=1)
             max_line = plt.axhline(y=max_interval, color="y", linestyle="--", linewidth=1)
