@@ -673,6 +673,75 @@ class PinodeSinkGeneral(NNSink):
             return data
 
 
+class CANCollectSink(NNSink):
+    def __init__(self, queue, ip, port, type_list, index, fileHandler, isheadless=False, ports=None):
+        super(CANCollectSink, self).__init__(queue, ip, port, "can", index, isheadless)
+        self.fileHandler = fileHandler
+        self.type_list = type_list
+        self.parser = {}
+        for t in type_list:
+            self.parser[t] = parsers_dict.get(t, "default")
+        print('CANCollectSink initialized.', self.type, ip, port)
+
+        self.source = []
+        self.context = {}
+        self.parse_event = Event()
+        self.parse_event.set()
+        self.type = 'can_collect_sink'
+        self.log_types = {
+            'can0': 'CANCollect' + '{:01d}-{:01d}'.format(self.index, 1),
+            'can1': 'CANCollect' + '{:01d}-{:01d}'.format(self.index, 2),
+            'can2': 'CANCollect' + '{:01d}-{:01d}'.format(self.index, 3),
+            'can3': 'CANCollect' + '{:01d}-{:01d}'.format(self.index, 4)
+        }
+
+        self.init_env()
+
+    def init_env(self):
+        for i, t in enumerate(self.type_list):
+            self.context[t] = {"source": "{}.{:d}-{:d}".format(t, self.index, i+1)}
+            self.source.append('{}.{:d}-{:d}'.format(t, self.index, i))
+
+    def pkg_handler(self, msg):
+        msg = memoryview(msg).tobytes()
+        if not msg:
+            print("not msg")
+            return
+        channel = msg[0]
+        can_id = struct.unpack('<i', msg[1:5])[0]
+        timestamp = struct.unpack('<d', msg[5:13])[0]
+        data = msg[13:]
+
+        log_type = self.log_types.get("can{}".format(channel))
+        # print('CAN sink save raw.', self.source)
+        self.fileHandler.insert_raw((timestamp, log_type, '0x%x' % can_id + ' ' + data.hex()))
+
+        if not self.parse_event.is_set():
+            print("not set")
+            return
+
+        msg_type = self.type_list[channel]
+        parser = self.parser[msg_type]
+        print(channel, msg_type, '0x%x' % can_id, data.hex(), parser)
+        ret = parser(can_id, data, self.context[msg_type])
+        if ret is None:
+            return None
+        print(ret)
+
+        if isinstance(ret, list):
+            # print('r is list')
+            for obs in ret:
+                obs['ts'] = timestamp
+                obs['source'] = self.source[channel]
+                # print(obs)
+        else:
+            ret['ts'] = timestamp
+            ret['source'] = self.source[channel]
+            # print(r['source'])
+        print(can_id, ret, self.source[channel])
+        return can_id, ret, self.source[channel]
+
+
 class CANSink(NNSink):
     def __init__(self, queue, ip, port, channel, type, index, fileHandler, isheadless=False):
         super(CANSink, self).__init__(queue, ip, port, channel, index, isheadless)
@@ -784,6 +853,7 @@ class CANSink(NNSink):
             # print(r)
             if ret is None:
                 return None
+            # print("data:", data)
             if isinstance(ret, list):
                 # print('r is list')
                 for obs in ret:

@@ -160,7 +160,7 @@ class Hub(Thread):
             print('index {}'.format(ol['idx']), bcl.OKBL + ip + bcl.ENDC, ol.get('mac'), 'type:', ol['type'])
             print('definition:', ol['defs_path'])
             for iface in ol['ports']:
-                print('--', iface, ol['ports'][iface]['topic'] + '.{}'.format(ol['idx']), ol['ports'][iface]['port'],
+                print('--', iface, ol['ports'][iface]['topic'] + '.{}'.format(ol['idx']), ol['ports'][iface].get('port') or ol.get("port"),
                       'enabled' if ol['ports'][iface]['enable'] else bcl.FAIL + 'disabled' + bcl.ENDC)
         print(bcl.OKGR + '---------------- ----------------- ---------------' + bcl.ENDC)
 
@@ -173,7 +173,7 @@ class Hub(Thread):
                 for ip in self.finder.found:
                     mac = self.finder.found[ip]['mac']
                     for cfg in self.configs:
-                        if cfg['mac'] == mac:
+                        if cfg.get("mac") and cfg['mac'] == mac:
                             if ip not in self.online:
                                 self.init_collector(cfg)
             time.sleep(5)
@@ -303,6 +303,12 @@ class Hub(Thread):
                 #           'isheadless': self.headless}
                 self.sinks.append(pisink)
                 self.online[ip]['msg_types'].append(name + '.{}'.format(idx))
+        elif "can_collector" in cfg.get("type"):
+            type_list = [cfg["ports"][i]["topic"] for i in cfg.get("ports") if cfg["ports"][i].get("topic")]
+            can_collector = CANCollectSink(self.msg_queue, ip=ip, port=cfg.get("port"), type_list=type_list,
+                                           index=idx, fileHandler=self.fileHandler, ports=cfg.get("ports"))
+            self.sinks.append(can_collector)
+            self.online[ip]['msg_types'].extend([t+'.{}'.format(idx) for t in type_list])
         elif "collector" in cfg.get('type'):
             for iface in cfg['ports']:
                 if not cfg['ports'][iface].get('enable') and not is_main:
@@ -418,6 +424,7 @@ class Hub(Thread):
 
     def init_collectors(self):
         self.online = {}
+
         for idx, cfg in enumerate(self.configs):  # match cfg and finder results
             mac = cfg.get('mac')
             # print('-------------', cfg)
