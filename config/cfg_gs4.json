@@ -21,7 +21,8 @@
                 {"model":  "x1_fusion", "params": {"mac":  "5a:31:d3:59:12:06"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
                 {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}},
-                {"model":  "cv22", "params": {"ip":  "192.168.98.231", "force_ip":  true, "is_main":  true}}
+                {"model":  "cv22", "params": {"ip":  "192.168.98.231", "force_ip":  true, "is_main":  true}},
+                {"model":  "bynav"}
             ],
             "installation": {
                 "esr": {
