@@ -1,3 +1,4 @@
+from parsers.d1_fusion import parse_d1
 from parsers.x1 import parse_x1
 from parsers.x1l import parse_x1l
 from parsers.x1j import parse_x1j
@@ -15,6 +16,7 @@ from parsers.pim222 import parse_pim222
 from parsers.j2 import parser_j2
 from parsers.rt_range import parser_rt
 from parsers.q4_100 import parser_q4_100
+from parsers.gs4_debug import parser_gs4
 
 def default_parser(id, data, type=None):
     return None
@@ -35,6 +37,9 @@ parsers_dict = {
     "x1":       parse_x1,
     "x1j":      parse_x1j,
     "x1_fusion": parse_x1,
+    "d1_fusion": parse_d1,
+    "j2_fusion": parse_x1,
+    "a1j_fusion": parse_x1,
     "x1l":      parse_x1l,
     "x1d3":     parse_x1d3,
     "drtk":     parse_rtk,
@@ -52,6 +57,7 @@ parsers_dict = {
     "ars410": parse_ars410,
     "rt_range": parser_rt,
     "q4_100": parser_q4_100,
+    "gs4_debug": parser_gs4,
     "default":  default_parser
 }
 

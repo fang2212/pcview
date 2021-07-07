@@ -511,6 +511,8 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--send', action="store_true")
     parser.add_argument('-sf', '--start_frame', default=0, help="指定开始帧数")
     parser.add_argument('-ef', '--end_frame', default=None, help="指定结束帧数")
+    parser.add_argument('-st', '--start_time', default=0)
+    parser.add_argument('-et', '--end_time', default=None)
     parser.add_argument('-ri', '--real_interval', action="store_true", help="是否以真实速度进行回放")
     parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
     parser.add_argument('-chmain', default=None, help="change main video")

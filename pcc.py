@@ -285,6 +285,7 @@ class PCC(object):
 
     def start(self):
         self.player.start_time = datetime.now()
+
         last_ts = time.time()
 
         while not self.exit:
@@ -477,7 +478,7 @@ class PCC(object):
 
         # if not self.replay:
         #     self.player.show_warning_ifc(img, self.supervisor.check())
-        self.player.show_intrinsic_para(img)
+        # self.player.show_intrinsic_para(img)
 
         self.player.render_text_info(img)
 
@@ -963,7 +964,7 @@ class PCC(object):
         for source in video_cp:
             d = video_cp[source]
             if type(d) == dict and 'ts' in d:
-                    all_ts.append(d['ts'])
+                all_ts.append(d['ts'])
 
         all_ts = np.array(all_ts)
         dt = np.ptp(all_ts)

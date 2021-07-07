@@ -49,18 +49,24 @@ class CVColor(object):
 
 
 class FlatColor(object):  # in BGR
-    turquoise = (0x9c, 0xa0, 0x16)
-    emerald = (0x71, 0xcc, 0x2e)
-    peter_river = (0xdb, 0x98, 0x34)
-    amethyst = (0xb6, 0x59, 0x9b)
-    wet_asphalt = (0x5e, 0x49, 0x34)
-    sun_flower = (0x0f, 0xc4, 0xf1)
-    carrot = (0x22, 0x7e, 0xe6)
+    Blue = (200, 0, 0)
     alizarin = (0x3c, 0x4c, 0xe7)
+    amethyst = (0xb6, 0x59, 0x9b)
+    carrot = (0x22, 0x7e, 0xe6)
     clouds = (0xf1, 0xf0, 0xec)
     concrete = (0xa6, 0xa5, 0x95)
-    Blue = (200, 0, 0)
     dark_red = (0x10, 0x10, 0x80)
+    emerald = (0x71, 0xcc, 0x2e)
+    violet = (255, 0, 255)                  # 紫色
+    light_green = (154, 255, 154)           # 淡绿色
+    light_blue = (255, 225, 202)            # 淡蓝色
+    peter_river = (0xdb, 0x98, 0x34)
+    pink = (166, 171, 248)                  # 粉色
+    peach = (157, 153, 245)                 # 桃色
+    sun_flower = (0x0f, 0xc4, 0xf1)
+    turquoise = (0x9c, 0xa0, 0x16)
+    yellow_green = (112, 255, 202)          # 黄绿色
+    wet_asphalt = (0x5e, 0x49, 0x34)
 
 
 class FPSCnt(object):

@@ -1,0 +1,186 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Debug GW2
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ ttc : 0|16@1+ (0.01,0) [0|655.35] "" Vector__XXX
+ SG_ Lane1_CanMsgEnd : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Lane2_CanMsgEnd : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Lane3_CanMsgEnd : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Lane4_CanMsgEnd : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1903 Frameid_Car: 8 GW2
+ SG_ frameid_car : 0|32@1+ (1,0) [0|4294967295] ""  Debug
+ SG_ speed : 32|8@1+ (1,0) [0|255] "km/h"  Debug
+
+BO_ 1528 Frameid_Lane: 8 GW2
+ SG_ frameid_lane : 0|32@1+ (1,0) [0|4294967295] ""  Debug
+ SG_ turn_left : 32|1@1+ (1,0) [0|1] ""  Debug
+ SG_ turn_right : 33|1@1+ (1,0) [0|1] ""  Debug
+
+BO_ 1059 TRACK_C_01: 6 GW2
+ SG_ yawrate : 40|8@1- (0.005,0) [-0.5|0.5] "" Vector__XXX
+ SG_ ttc : 24|16@1+ (0.01,0) [0|10] "sec" Vector__XXX
+ SG_ Dist2Traj_ttc : 8|16@1- (0.02,0) [-5|5] "m" Vector__XXX
+ SG_ Colli_Prop : 0|8@1+ (0.01,0) [0|1] "" Vector__XXX
+
+BO_ 1025 TRACK_B_01: 8 GW2
+ SG_ TRACK_01_CountMsg2 : 36|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Accel_long_obj_01 : 56|8@1- (0.1,0) [-12.5|12.5] "m/s2"  Debug
+ SG_ DetectionSensor_01 : 52|3@1+ (1,0) [0|7] ""  Debug
+ SG_ L_lat_rel_01 : 40|12@1- (0.05,0) [-100|100] "m"  Debug
+ SG_ L_long_rel_01 : 24|12@1- (0.1,0) [0|200] "m"  Debug
+ SG_ V_lat_obj_01 : 12|12@1- (0.1,0) [-50|50] "m/s"  Debug
+ SG_ V_long_obj_01 : 0|12@1- (0.1,0) [-100|100] "m/s"  Debug
+
+BO_ 1024 TRACK_A_01: 8 GW2
+ SG_ TRACK_01_CountMsg1 : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Confidence_01 : 48|8@1+ (0.01,0) [0|1] "" Vector__XXX
+ SG_ TrackID_01 : 0|8@1+ (1,0) [0|63] ""  Debug
+ SG_ Width_01 : 40|5@1+ (0.1,0) [0|3.1] "m"  Debug
+ SG_ Vis_Track_ID_01 : 32|6@1+ (1,0) [0|63] ""  Debug
+ SG_ Accel_lat_obj_01 : 24|8@1- (0.1,0) [-10|10] "m/s2"  Debug
+ SG_ MC_object_class_01 : 16|4@1+ (1,0) [0|10] ""  Debug
+ SG_ Movement_01 : 12|4@1+ (1,0) [0|15] ""  Debug
+ SG_ Status_01 : 8|4@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1893 Frameid_TSR: 8 GW2
+ SG_ frameid_tsr : 0|32@1+ (1,0) [0|4294967295] ""  Debug
+
+BO_ 1919 Frameid_PED: 8 GW2
+ SG_ frameid_ped : 0|32@1+ (1,0) [0|4294967295] ""  Debug
+
+BO_ 1901 KeyCarFrameA1: 8 GW2
+ SG_ FCW : 0|1@1+ (1,0) [0|1] ""  Debug
+ SG_ Vehicle_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ TargetVehicle_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ TargetVehicle_PosY : 32|10@1- (0.0625,0) [-31.9375|31.9375] "m"  Debug
+ SG_ TargetVehicle_Type : 48|3@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1902 KeyCarFrameA2: 8 GW2
+ SG_ TargetVehicle_TTC : 0|10@1+ (0.01,0) [0|10] "sec"  Debug
+ SG_ TargetVehicle_VelX : 16|12@1- (0.0625,0) [-127.93|127.93] "m/sec"  Debug
+ SG_ TargetVehicle_AccelX : 32|10@1- (0.03,0) [-14.97|14.97] "m/sec^2"  Debug
+ SG_ TargetVehicle_Width : 48|8@1+ (0.05,0) [0|12.5] "M"  Debug
+ SG_ TargetVehicle_Confidence : 56|6@1+ (0.02,0) [0|1] ""  Debug
+
+BO_ 1914 PED_Frame_C: 8 GW2
+ SG_ TargetPedestrian_TTC : 30|10@1+ (0.01,0) [0|10] "s"  Debug
+ SG_ TargetPedestrian_ID : 0|6@1+ (1,0) [0|63] ""  Debug
+ SG_ TargetPedestrian_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ TargetPedestrian_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian_VelX : 40|12@1- (0.0625,0) [-127.93|127.93] "m/sec"  Debug
+ SG_ TargetPedestrian_VelY : 52|8@1- (0.0625,0) [-8|7.9375] "m/sec"  Debug
+ SG_ TargetPedestrian_Type : 60|3@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1915 PED1_Frame_D: 8 GW2
+ SG_ AdditionPedestrianNumber1 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ AdditionPedestrian1_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian1_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian1_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian1_Type : 30|3@1+ (1,0) [0|7] ""  Debug
+ SG_ AdditionPedestrian2_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian2_PosX : 39|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian2_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian2_Type : 61|3@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1916 PED2_Frame_D: 8 GW2
+ SG_ AdditionPedestrianNumber2 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ AdditionPedestrian3_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian3_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian3_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian3_Type : 30|3@1+ (1,0) [0|7] ""  Debug
+ SG_ AdditionPedestrian4_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian4_PosX : 39|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian4_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian4_Type : 61|3@1+ (1,0) [0|7] ""  Debug
+
+BO_ 1917 PED3_Frame_D: 8 GW2
+ SG_ AdditionPedestrianNumber3 : 0|2@1+ (1,0) [0|2] ""  Debug
+ SG_ AdditionPedestrian5_ID : 2|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian5_PosX : 8|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian5_PosY : 20|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian5_Type : 30|3@1+ (1,0) [0|7] ""  Debug
+ SG_ AdditionPedestrian6_ID : 33|6@1+ (1,0) [0|63] ""  Debug
+ SG_ AdditionPedestrian6_PosX : 39|12@1+ (0.0625,0) [0|250] "m"  Debug
+ SG_ AdditionPedestrian6_PosY : 51|10@1- (0.0625,0) [-32|31.9375] "m"  Debug
+ SG_ TargetPedestrian6_Type : 61|3@1+ (1,0) [0|7] ""  Debug
+
+
+
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+BA_DEF_ SG_  "GenSigStartValue" INT -2147483648 0;
+BA_DEF_ SG_  "GenSigLongName" STRING ;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "cyclic","spontaneous","cyclicIfActive","spontaneousWithDelay","immediate";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 2 50000;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigLongName" "";
+BA_DEF_DEF_  "GenMsgSendType" "cyclic";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "GenMsgCycleTime" 50;
+BA_ "GenMsgCycleTime" BO_ 1903 20;
+BA_ "GenMsgCycleTime" BO_ 1528 40;
+BA_ "GenMsgCycleTime" BO_ 1059 20;
+BA_ "GenMsgCycleTime" BO_ 1025 20;
+BA_ "GenMsgCycleTime" BO_ 1024 20;
+BA_ "GenMsgCycleTime" BO_ 1893 100;
+BA_ "GenMsgCycleTime" BO_ 1919 20;
+BA_ "GenMsgCycleTime" BO_ 1901 20;
+BA_ "GenMsgCycleTime" BO_ 1902 20;
+BA_ "GenMsgCycleTime" BO_ 1914 20;
+BA_ "GenMsgCycleTime" BO_ 1915 20;
+BA_ "GenMsgCycleTime" BO_ 1916 20;
+BA_ "GenMsgCycleTime" BO_ 1917 20;
+VAL_ 3221225472 Lane1_CanMsgEnd 1 "Finish" 0 "NoFinish" ;
+VAL_ 3221225472 Lane2_CanMsgEnd 1 "Finish" 0 "NoFinish" ;
+VAL_ 3221225472 Lane3_CanMsgEnd 1 "Finish" 0 "NoFinish" ;
+VAL_ 3221225472 Lane4_CanMsgEnd 1 "Finish" 0 "NoFinish" ;
+VAL_ 1025 DetectionSensor_01 4 "Radar And Vision" 3 "Vision Only" 2 "MultipleTrack" 1 "SingleTrack" 0 "Unknown" ;
+VAL_ 1024 MC_object_class_01 7 "Bicycle" 6 "Pedestrian" 5 "SpecialCar" 4 "BoxTruck" 3 "Bus" 2 "Motorcycle" 1 "Car" 0 "Undetermined" ;
+VAL_ 1024 Movement_01 15 "NotAvailable" 14 "Error" 13 "Reserved" 12 "Reserved" 11 "NoTrack" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "TrackStoppedFromOncoming" 3 "TrackOncoming" 2 "TrackMoving" 1 "TrackStopppedFromMoving" 0 "Stationary" ;
+VAL_ 1024 Status_01 7 "Reserved" 6 "Coasted" 5 "Updated" 4 "NewUpdated" 3 "NewCoasted" 2 "New" 1 "Merged" 0 "Invalid" ;
+VAL_ 1901 FCW 1 "FCWOn" 0 "FCWOff" ;
+VAL_ 1901 TargetVehicle_Type 5 "SpecialCar" 4 "truck" 3 "bus" 2 "minibus" 1 "car" 0 "NoVehicle" ;
+VAL_ 1914 TargetPedestrian_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1915 TargetPedestrian1_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1915 TargetPedestrian2_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1916 TargetPedestrian3_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1916 TargetPedestrian4_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1917 TargetPedestrian5_Type 3 "Pedestrian" 4 "Bicycle" ;
+VAL_ 1917 TargetPedestrian6_Type 3 "Pedestrian" 4 "Bicycle" ;
+

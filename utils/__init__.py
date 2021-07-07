@@ -1,5 +1,7 @@
 import os
 
+import cv2
+
 from utils.log import logger
 
 
@@ -27,8 +29,25 @@ def log_list_from_path(path):
         return log_list
 
 
+def get_source_info_opencv(source_name):
+    return_value = 0
+    try:
+        cap = cv2.VideoCapture(source_name)
+        width = cap.get(cv2.CAP_PROP_FRAME_WIDTH )
+        height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        print("source: {} \nwidth:{} \nheight:{} \nfps:{} \nnum_frames:{}".format(source_name, width, height, fps, num_frames))
+    except (OSError, TypeError, ValueError, KeyError, SyntaxError) as e:
+        print("init_source:{} error. {}\n".format(source_name, str(e)))
+        return_value = -1
+    return return_value
+
+
 if __name__ == '__main__':
-    test_list = [1,2,3,4,5,6,7]
-    print(test_list[:-4])
-    print(test_list[-4:])
+    path = "/home/li/work/video"
+    for f in os.listdir(path):
+        print("==="*6)
+        print("file:", f)
+        get_source_info_opencv(os.path.join(path, f))
     # print(log_list_from_path("/mnt/cve_drive01/"))

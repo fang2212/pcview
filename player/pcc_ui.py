@@ -52,26 +52,40 @@ class Player(object):
         self.color_seq = [CVColor.White, CVColor.Red, CVColor.Green, CVColor.deeporange, CVColor.purple,
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
-        self.color_obs = {'ifv300': FlatColor.peter_river,
-                          'mbq3': FlatColor.peter_river,
-                          'esr': FlatColor.alizarin,
-                          'lmr': FlatColor.emerald,
-                          'x1': FlatColor.amethyst,
-                          'x1_fusion': CVColor.Red,
-                          'x1_fusion_cam': FlatColor.dark_red,
-                          'x1j': FlatColor.amethyst,
-                          'rtk': FlatColor.sun_flower,
-                          'ars': FlatColor.emerald,
-                          'gps': FlatColor.clouds,
-                          'sta77': FlatColor.wet_asphalt,
-                          'mbq4': FlatColor.turquoise,
-                          'xyd2': FlatColor.Blue,
-                          'anc': FlatColor.carrot,
-                          'ctlrr': FlatColor.alizarin,
-                          "q4_100": FlatColor.turquoise,
-                          "j2": FlatColor.carrot,
-                          "ars410": FlatColor.wet_asphalt,
-                          'default': FlatColor.clouds}
+        self.color_obs = {
+            "ars410": FlatColor.peach,
+            "gs4_debug": FlatColor.pink,
+            "j2": FlatColor.carrot,
+            "q4_100": FlatColor.turquoise,
+            'anc': FlatColor.carrot,
+            'ars': FlatColor.emerald,
+            'ctlrr': FlatColor.alizarin,
+            'esr': FlatColor.alizarin,
+            'gps': FlatColor.clouds,
+            'ifv300': FlatColor.peter_river,
+            'lmr': FlatColor.emerald,
+            'mbq3': FlatColor.peter_river,
+            'mbq4': FlatColor.turquoise,
+            'rtk': FlatColor.sun_flower,
+            'sta77': FlatColor.wet_asphalt,
+            'x1': FlatColor.amethyst,
+            'x1_fusion': CVColor.Red,
+            "a1j_fusion": FlatColor.yellow_green,
+            'x1_fusion_cam': FlatColor.dark_red,
+            'x1j': FlatColor.amethyst,
+            'xyd2': FlatColor.Blue,
+            "j2_fusion": FlatColor.light_green,
+            "d1_fusion": FlatColor.violet,
+            'default': FlatColor.clouds,
+        }
+
+        self.detection_color = {
+            'Unknown': 'fail',
+            'SingleTrack': 'pass',
+            'MultipleTrack': 'pass',
+            'Vision Only': 'pass',
+            'Radar And Vision': 'pass'
+        }
 
         self.param_bg_width = 160
 
@@ -134,11 +148,11 @@ class Player(object):
         except Exception as e:
             print('Error indent', obs)
             return
-
-        sensor = obs.get('sensor') or obs['source'].split('.')[0]
-        color = self.color_obs.get(sensor)
-        if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
-            color = self.color_obs.get('x1_fusion_cam')
+        source = obs['source'].split('.')[0]
+        sensor = obs.get('sensor') or source
+        color = self.color_obs.get(source)
+        # if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
+        #     color = self.colx1_fusion_camor_obs.get('x1_fusion_cam')
         if not color:
             color = self.color_obs['default']
 
@@ -230,19 +244,19 @@ class Player(object):
             return
 
         id = obs['id']
-        sensor = obs.get('sensor') or obs['source'].split('.')[0]
+        source = obs['source'].split('.')[0]
         if 'pos_lon' in obs:
             # x = obs['pos_lon']
             # y = obs['pos_lat']
-            x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], sensor)
+            x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], source)
         elif 'range' in obs:
-            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], sensor)
+            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], source)
         else:
             print('no distance in obs', obs)
             return
         u, v = self.transform.trans_gnd2ipm(x, y)
 
-        color = self.color_obs.get(sensor) or self.color_obs['default']
+        color = self.color_obs.get(source) or self.color_obs['default']
 
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
             color = self.color_obs.get('x1_fusion_cam')
@@ -274,13 +288,14 @@ class Player(object):
             BaseDraw.draw_text(img, '{}'.format(id), (u + 10, v - 9), 0.4, color, 1)
             BaseDraw.draw_text(img, '{:.1f}'.format(x), (u + 10, v + 3), 0.4, color, 1)
 
-    def show_lane(self, img, data, color=CVColor.Cyan):
+    def show_lane(self, img, data, color=CVColor.Cyan, style=""):
         """绘制车道线
         Args:
             img: 原始图片
             ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
             width: float 车道线宽度
             color: CVColor 车道线颜色
+            :param style: 线条格式，虚线为“dotted”
         """
         r = data.get('range')
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
@@ -292,8 +307,13 @@ class Player(object):
         if not p:
             return
 
-        for i in range(2, len(p) - 1, 1):
-            BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
+        if style == "dotted":
+            for i in range(2, len(p) - 1, 1):
+                if i % 3 == 0:
+                    BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
+        else:
+            for i in range(2, len(p) - 1, 1):
+                BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
 
             # for now: only mbq4 used
         a0, a1, a2, a3 = ratios
@@ -557,20 +577,15 @@ class Player(object):
             self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
         elif obs.get('class') == 'pedestrian':
             line = 40
-            # BaseDraw.draw_text(img, 'CIPPed: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
             self.show_text_info(obs['source'], line, 'CIPPed: {}'.format(obs['id']))
         elif obs.get('class') == 'object':
-            # line = 100
-            # BaseDraw.draw_text(img, 'CIPO: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
             self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']))
         else:
-            # line = 100
-            # BaseDraw.draw_text(img, 'CIPVeh: {}'.format(obs['id']), (indent + 18, line), 0.5, CVColor.White, 1)
             self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']))
 
+        if "detection_sensor" in obs:
+            self.show_text_info(obs['source'], 60, '{}'.format(obs['detection_sensor']), self.detection_color.get(obs.get("detection_sensor")))
         if 'TTC' in obs:
-            # BaseDraw.draw_text(img, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), (indent + 2, line + 20), 0.5, CVColor.White,
-            #                    1)
             self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), style)
         dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
         angle = obs.get('angle') if 'angle' in obs else atan2(obs['pos_lat'], obs['pos_lon']) * 180 / pi
@@ -904,7 +919,7 @@ class Player(object):
         # 图上绘制检测到的角点
         cv2.drawChessboardCorners(img, (7, 7), corners2, ret)
 
-    def show_lane_ipm(self, img, data, color=CVColor.Cyan):
+    def show_lane_ipm(self, img, data, color=CVColor.Cyan, style=""):
         """绘制车道线
         Args:
             img: 原始图片
@@ -919,8 +934,13 @@ class Player(object):
             return
         p = self.transform.getp_ipm_from_poly(ratios, 1, 0, r, sensor=data['source'])
 
-        for i in range(1, len(p) - 1, 1):
-            BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
+        if style == "dotted":
+            for i in range(2, len(p) - 1, 1):
+                if i % 3 == 0:
+                    BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
+        else:
+            for i in range(2, len(p) - 1, 1):
+                BaseDraw.draw_line(img, p[i], p[i + 1], color, 2)
 
         # p = self.transform.getp_ipm_from_poly(ratios, 1, r, 160, param=install_para)
         #
@@ -1124,7 +1144,7 @@ class Player(object):
             color = self.color_obs['default']
         # self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
         # lane message
-        self.show_lane(img, data, color=color)
+        self.show_lane(img, data, color=color, style=data.get("style"))
 
     def draw_lane_ipm(self, img, data):
         if len(data) == 0:
@@ -1140,7 +1160,7 @@ class Player(object):
         if not color:
             color = self.color_obs['default']
 
-        self.show_lane_ipm(img, data, color)
+        self.show_lane_ipm(img, data, color, style=data.get("style"))
 
     def show_host_path(self, img, spd, yr, yrbias=0.0017, cipv_dist=200.0):
         # if spd < 5:

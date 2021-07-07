@@ -31,12 +31,16 @@ class CIPOFilter(object):
         if len(sobs) == 0:
             cipo_id = -1
         else:
-            cipo_id = sobs[0]['id']
+            if sobs[0].get("id"):
+                cipo_id = sobs[0]['id']
+            else:
+                return
         ret = []
         for obs in obslist:
-            if obs['id'] == cipo_id:
-                obs['cipo'] = True
-            ret.append(obs)
+            if obs.get('id'):
+                if obs['id'] == cipo_id:
+                    obs['cipo'] = True
+                ret.append(obs)
         return ret
 
 
