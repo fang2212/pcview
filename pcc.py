@@ -307,7 +307,9 @@ class PCC(object):
             begin_ts = time.time()
             d = self.sink_process.pop_resulte()
             if not d:
+                # print("not data")
                 continue
+            # print(d)
 
             # 处理数据
             pop_ts = time.time()

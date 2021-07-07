@@ -212,7 +212,7 @@ class UDPSink(Sink):
     def pkg_handler(self, msg):
         if self.msg_type == "d1_udp":
             timestamp = time.time()
-            r = {'type': self.channel, 'source': self.source, 'log_name': self.source, 'buf': msg}
+            r = {'type': self.msg_type, 'source': self.source, 'log_name': self.source, 'buf': msg}
             self.fileHandler.insert_general_bin_raw(r)
             self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
         elif self.msg_type == 'q4_100':
