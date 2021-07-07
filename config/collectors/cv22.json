@@ -1,7 +1,7 @@
 {
   "type": "cv22_algo",
   "mac": "5a:31:d3:59:12:06",
-  "force_ip": true,
+  "force_ip": false,
   "ip": "192.168.98.231",
   "work_mode": "collector",
   "repeater": false,
@@ -27,7 +27,6 @@
       "protocol": "msgpack",
       "topic": "ped,vehicle"
     },
-
     "lane": {
       "enable": true,
       "port": 24012,
@@ -48,6 +47,20 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "roadmark"
+    },
+   "x1_fusion": {
+      "enable": true,
+      "port": 24015,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "finish,pcview"
+    },
+   "lane_profiling": {
+      "enable": true,
+      "port": 24020,
+      "transport": "libflow",
+      "protocol": "general_bin",
+      "topic": "lane_profiling_data"
     }
   }
 }

@@ -52,6 +52,7 @@ def decode_with_def(defs, line):
 
     return r
 
+ub482_defs = load_log_defs('config/logdefs/ub482.logdef')
 
 if __name__ == '__main__':
     ub482_defs = load_log_defs('../config/logdefs/ub482.logdef')
@@ -61,5 +62,3 @@ if __name__ == '__main__':
     print('decoded:', decoded)
     encoded = compose_from_def(ub482_defs, decoded)
     print('encoded:', encoded)
-else:
-    ub482_defs = load_log_defs('config/logdefs/ub482.logdef')

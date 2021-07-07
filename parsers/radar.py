@@ -37,7 +37,68 @@ db_ctlrr = cantools.database.load_file('dbc/[CT]CTLRR-320_CAN_V4.dbc', strict=Fa
 db_vfr = cantools.database.load_file('dbc/TSMTC_VFR_MR_316.dbc', strict=False)
 # trans_polar2rcs = Transform().trans_polar2rcs
 
+db_ars410 = cantools.database.load_file('dbc/ARS410output.dbc', strict=False)
 ars_filter = CIPOFilter()
+
+
+def parse_ars410(id, buf, ctx=None):
+    ids = [m.frame_id for m in db_ars410.messages]
+    if id not in ids:
+        return None
+
+    if ctx is not None and not ctx.get('filter'):
+        ctx['filter'] = CIPOFilter()
+
+    r = db_ars410.decode_message(id, buf, decode_choices=False)
+
+    if 0x20 <= id <= 0x47:
+        obj_idx = id - 0x20
+
+        if 'obs' not in ctx:
+            ctx['obs'] = {}
+
+        ctx['obs'][obj_idx] = {}
+
+        # ret = {'type': 'obstacle', 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle, 'pos_lat': y_raw,
+        #        'pos_lon': x_raw, 'vel_lat': vy, 'vel_lon': vx, 'RCS': rcs, 'TTC': ttc}
+
+        ret = {'type': 'obstacle', 'sensor_type': 'radar', 'pos_lat': -r['FRS_Obj_YPos'],
+               'pos_lon': r['FRS_Obj_XPos'], 'vel_lat': -r['FRS_Obj_YVelRel'], 'vel_lon': r['FRS_Obj_XVelRel']}
+        ret['range'] = sqrt(ret['pos_lon']**2 + ret['pos_lat']**2)
+
+        ret['angle'] = atan2(ret['pos_lat'], ret['pos_lon']) * 180 / pi
+        ttc = ret['pos_lon'] / -ret['vel_lon'] if ret['vel_lon'] < 0 else 7
+        if ttc > 7:
+            ttc = 7
+        ret['TTC'] = ttc
+        ctx['obs'][obj_idx] = ret
+
+    if 0x50 <= id <= 0x77:
+        obj_idx = id - 0x50
+        if "obs" in ctx and obj_idx in ctx['obs']:
+
+            if r['FRS_Obj_ValidFlag']:
+                ctx['obs'][obj_idx]['id'] = r['Obj_ID']
+                ctx['obs'][obj_idx]['prob'] = r['FRS_Obj_ExstProb']
+                ctx['obs'][obj_idx]['valid'] = r['FRS_Obj_ValidFlag']
+            else:
+                ctx['obs'].pop(obj_idx)
+
+        if id == 0x77:
+            ret = []
+            for i in range(0x77):
+                if 'obs' in ctx and i in ctx['obs']:
+                    ret.append(ctx['obs'][i])
+
+            ret = ctx['filter'].add_cipo(ret)
+            ctx['obs'] = {}
+
+            return ret
+
+    if id == 0x80:
+        yaw_rate_ars = r['FRS_Host_Yaw']
+        speed = r['FRS_HostSpeed'] * 3.6
+        return {'type': 'vehicle_state', 'yaw_rate': -yaw_rate_ars / 180 * pi, 'speed': speed}
 
 
 def parse_ars(id, buf, ctx=None):

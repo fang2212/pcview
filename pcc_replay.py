@@ -12,6 +12,9 @@ import time
 from multiprocessing import Process, Queue, Manager, freeze_support
 import json
 from threading import Thread
+
+from tqdm import tqdm
+
 from parsers import ublox
 from recorder.convert import *
 from collections import deque
@@ -183,11 +186,13 @@ class sched_nn_sender(Process):
 
 class LogPlayer(Process):
 
-    def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, ratio=1.0, loop=False, nnsend=False,
-                 nosort=False, real_interval=False, chmain=None):
+    def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, start_time=0, end_time=None, ratio=1.0,
+                 loop=False, nnsend=False, nosort=False, real_interval=False, chmain=None):
         super(LogPlayer, self).__init__()
         self.start_frame = int(start_frame) if start_frame else 0
         self.end_frame = int(end_frame) if end_frame else 9999999999999
+        self.start_time = int(start_time) if start_time else 0
+        self.end_time = int(end_time) if end_time else 9999999999999
         # self.daemon = False
         self.time_aligned = True
         self.log_path = log_path
@@ -245,6 +250,7 @@ class LogPlayer(Process):
         if chmain:
             self.video_dir = chmain
             self.video_log_key = chmain
+        self.chmain = chmain
 
     def init_env(self):
         self.shared['replay_sync'] = True
@@ -269,6 +275,7 @@ class LogPlayer(Process):
         self.main_idx = get_main_index(self.log_path)
         main_dev = get_main_dev(self.log_path)
 
+        chmain = self.chmain
         if chmain is not None:
             idx = int(chmain.split(".")[-1])
             for f in self.cfg.configs:
@@ -281,6 +288,8 @@ class LogPlayer(Process):
             self.x1_parser = PcvParser(open(x1_log))
         else:
             self.x1_parser = None
+
+        self.bin_rf = {}
 
         for idx, cfg in enumerate(self.cfg.configs):
             if 'can_types' in cfg:
@@ -311,7 +320,7 @@ class LogPlayer(Process):
             # print(can, self.can_types[can])
             for type in parsers_dict:
                 if type == self.can_types[can].split('.')[0]:
-                    print('----', can, type)
+                    print('----', can, type, parsers_dict[type])
                     self.parser[can].append(parsers_dict[type])
             if len(self.parser[can]) == 0:
                 self.parser[can] = [parsers_dict['default']]
@@ -417,7 +426,7 @@ class LogPlayer(Process):
             line = line.strip()
             if line == '':
                 continue
-
+            # print(line)
             # if 'replay_speed' in self.d:
             #     self.replay_speed = self.d['replay_speed']
 
@@ -456,8 +465,11 @@ class LogPlayer(Process):
                     print('fid from log drop backward', self.now_frame_id, self.start_frame)
                     while self.now_frame_id < self.start_frame:
                         line = rf.readline().strip()
+                        if line == "":
+                            continue
+
                         cols = line.split(' ')
-                        if cols[2] == 'camera':
+                        if cols[2] == self.video_log_key:
                             self.now_frame_id = int(cols[3])
                             _, jpg = next(self.jpeg_extractor)
                 if jpg is None or lcnt % self.replay_speed != 0:
@@ -577,7 +589,7 @@ class LogPlayer(Process):
             #     r = {'source': cols[2], 'type': cols[2], 'ts': ts, 'range': range, 'angle': angle, 'height': height}
             #     self.cache['can'].append(r.copy())
 
-            elif 'rtk' in cols[2]:  # new ub482
+            elif 'pinpoint' in cols[2]:  # new ub482
                 kw = cols[2].split('.')[-1]
                 source = '.'.join(cols[2].split('.')[0:2])
                 if kw in ub482_defs:
@@ -625,6 +637,22 @@ class LogPlayer(Process):
                     r['source'] = cols[2]
                     self.msg_queue.put((0x00, r, r['source']))
 
+            elif 'q4_100' in cols[2]:
+                if cols[2] not in self.bin_rf:
+                    self.bin_rf[cols[2]] = open(os.path.join(os.path.dirname(self.log_path), cols[2], cols[2] + ".bin"), "rb")
+                sz = int(cols[3])
+                bts = self.bin_rf[cols[2]].read(sz)
+                ret = parsers_dict.get("q4_100", "default")(0, bts)
+                if ret is None:
+                    continue
+                if type(ret) != list:
+                    ret = [ret]
+
+                for obs in ret:
+                    obs['ts'] = ts
+                    obs['source'] = cols[2]
+                self.msg_queue.put(("q4_100", ret.copy(), cols[2]))
+
         print(bcl.OKBL+'log.txt reached the end.'+bcl.ENDC)
         rf.close()
         return
@@ -633,19 +661,19 @@ class LogPlayer(Process):
 
 
 def prep_replay(source, ns=False, chmain=None):
+    print("source:", source, "ns:", ns)
     if os.path.isdir(source):
         loglist = sorted(os.listdir(source), reverse=True)
         source = os.path.join(os.path.join(source, loglist[0]), 'log.txt')
 
-    r_sort = os.path.join(os.path.dirname(source), 'log_sort.txt')
-
-    if os.path.exists(r_sort):
-        pass
+    if ns:
+        r_sort = source
     else:
-        if ns:
-            r_sort = source
-        else:
+        r_sort = os.path.join(os.path.dirname(source), 'log_sort.txt')
+        if not os.path.exists(r_sort):
             r_sort = mytools.sort_big_file(source)
+
+
 
     config_path = os.path.join(os.path.dirname(source), 'config.json')
     install_path = os.path.join(os.path.dirname(source), 'installation.json')
@@ -665,6 +693,42 @@ def prep_replay(source, ns=False, chmain=None):
             print("no", chmain, "installation")
     # return source
     return r_sort, uniconf
+
+
+def start_replay(source_path, args, show_video=True):
+    from pcc import PCC
+    if args.render:
+        if args.output:
+            odir = args.output
+        else:
+            odir = os.path.dirname(source_path)
+    else:
+        odir = None
+    ns = args.nosort
+    chmain = args.chmain
+    r_sort, cfg = prep_replay(source_path, ns=ns, chmain=chmain)
+
+    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=args.start_frame, end_frame=args.end_frame,
+                         start_time=args.start_time, end_time=args.end_time, loop=args.loop, nnsend=args.send,
+                         real_interval=args.real_interval, chmain=chmain)
+
+    if args.web:
+        if not show_video:
+            return
+        from video_server import PccServer
+        server = PccServer()
+        server.start()
+        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=server)
+        replayer.start()
+        pcc.start()
+        while True:
+            time.sleep(1)
+    else:
+        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, show_video=show_video)
+        replayer.start()
+        pcc.start()
+        replayer.join()
+        pcc.control(ord('q'))
 
 
 if __name__ == "__main__":
@@ -687,49 +751,20 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--send', action="store_true")
     parser.add_argument('-sf', '--start_frame', default=0)
     parser.add_argument('-ef', '--end_frame', default=None)
+    parser.add_argument('-st', '--start_time', default=0)
+    parser.add_argument('-et', '--end_time', default=None)
     parser.add_argument('-ri', '--real_interval', action="store_true")
     parser.add_argument('-chmain', default=None, help="change main video")
 
     args = parser.parse_args()
     source = args.input_path
-    if args.render:
-        if args.output:
-            odir = args.output
-        else:
-            odir = os.path.dirname(source)
-    else:
-        odir = None
 
     freeze_support()
-    # source = sys.argv[1]
-    print(source)
-    # source = local_cfg.log_root  # 这个是为了采集的时候，直接看最后一个视频
 
-    from tools import mytools
-    ns = args.nosort
-    chmain = args.chmain
-    r_sort, cfg = prep_replay(source, ns=ns, chmain=chmain)
-    from pcc import PCC
-
-    replayer = LogPlayer(r_sort, cfg, ratio=0.2, start_frame=args.start_frame, end_frame=args.end_frame, loop=args.loop,
-                         nnsend=args.send, real_interval=args.real_interval, chmain=chmain)
-    if args.web:
-        from video_server import PccServer
-        server = PccServer()
-        server.start()
-        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=server)
-        print(os.getpid())
-        replayer.start()
-        pcc.start()
-        while True:
-            time.sleep(1)
+    if os.path.isdir(source):
+        dirs = [os.path.join(source, d) for d in os.listdir(source) if os.path.isdir(os.path.join(source, d))]
+        for d in tqdm(dirs):
+            start_replay(os.path.join(d, "log.txt"), args, show_video=False)
     else:
-        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg)
-        replayer.start()
-        pcc.start()
-        replayer.join()
-        pcc.control(ord('q'))
-        os._exit(0)
-
-
+        start_replay(source, args)
 

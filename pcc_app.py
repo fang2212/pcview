@@ -13,7 +13,6 @@ import shutil
 import platform
 from sink.hub import Hub
 from threading import Thread
-from recorder.FileHandler import FileHandler
 
 machine_arch = platform.machine()
 
@@ -28,6 +27,7 @@ parser.add_argument('-c', '--config', default=None)
 parser.add_argument('-hl', '--headless', help='headless mode', action="store_true")
 parser.add_argument('-a', '--auto', help='auto recording', action="store_true")
 parser.add_argument('-w', '--web', help='web ui', action="store_true")
+parser.add_argument('-da', '--draw_algo', help='show algo data', action="store_true")
 # load_cfg(sys.argv[1])
 
 args = parser.parse_args()
@@ -67,7 +67,7 @@ if args.config:
 else:
     cve_conf = load_cfg(args.cfg_path)
 cve_conf.local_cfg = local_cfg
-print(cve_conf.local_cfg.log_root)
+print("log path:", cve_conf.local_cfg.log_root)
 
 _startup_cwd = os.getcwd()
 
@@ -103,9 +103,7 @@ if args.direct:
     print('PCC starts in direct-mode.')
 
     # cve_conf.local_cfg = get_local_cfg()
-    logger = FileHandler(uniconf=cve_conf)
-    logger.start()
-    hub = Hub(uniconf=cve_conf, direct_cfg=sys.argv[2], logger=logger)
+    hub = Hub(uniconf=cve_conf, direct_cfg=sys.argv[2])
     pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf)
     # hub.start()
     pcc.start()
@@ -181,11 +179,9 @@ elif args.web:  # start webui PCC
     print('PCC starts in webui mode. architect:', machine_arch)
     server = video_server.PccServer()
     server.start()
-    logger = FileHandler(uniconf=cve_conf)
-    logger.start()
-    hub = Hub(uniconf=cve_conf, logger=logger)
+    hub = Hub(uniconf=cve_conf)
 
-    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo)
     pcc_thread = Thread(target=pcc.start, name='pcc_thread')
     hub.start()
 
@@ -256,17 +252,15 @@ elif args.web:  # start webui PCC
             time.sleep(0.1)
 
 else:  # normal standalone PCC
-    print('PCC starts in normal mode.')
+    print(f'PCC starts in normal mode. pid:{os.getpid()}')
     # cve_conf = load_cfg(args.cfg_path)
     # local_cfg = get_local_cfg()
     if args.auto:
         auto_rec = True
     else:
         auto_rec = False
-    logger = FileHandler(uniconf=cve_conf)
-    logger.start()
-    hub = Hub(uniconf=cve_conf, logger=logger)
-    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec)
+    hub = Hub(uniconf=cve_conf)
+    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec, draw_algo=args.draw_algo)
     hub.start()
     sup = init_checkers(pcc)
     pcc.start()

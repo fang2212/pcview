@@ -1,0 +1,17 @@
+{
+  "type": "x1_algo",
+  "mac": "5a:31:d3:59:12:06",
+  "ip": "127.0.0.1",
+  "force_ip": true,
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": true,
+      "port": 24011,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "pcview"
+    }
+  }
+}

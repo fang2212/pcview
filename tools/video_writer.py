@@ -290,7 +290,7 @@ if __name__ == "__main__":
                     if fid is not None:
                         fid = None
 
-    video_dir = '/home/nan/data/20191122154341_ramp_in/video'
+    video_dir = '/home/minieye/replay_bug_data/20210517122708/video'
     jpgs = jpeg_extractor(video_dir)
     output_file = os.path.join(video_dir, 'camera_0000_remux.avi')
     mw = MJPEGWriter(output_file, 1280, 720, 20)

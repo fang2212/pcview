@@ -1,3 +1,4 @@
+from parsers.d1_fusion import parse_d1
 from parsers.x1 import parse_x1
 from parsers.x1l import parse_x1l
 from parsers.x1j import parse_x1j
@@ -12,8 +13,10 @@ from parsers.df_d530 import parse_dfd530
 from parsers.x1d3 import parse_x1d3
 from parsers.novatel import parse_novatel
 from parsers.pim222 import parse_pim222
-from parsers.chcnav import parse_cgi220
 from parsers.j2 import parser_j2
+from parsers.rt_range import parser_rt
+from parsers.q4_100 import parser_q4_100
+from parsers.gs4_debug import parser_gs4
 
 def default_parser(id, data, type=None):
     return None
@@ -34,6 +37,9 @@ parsers_dict = {
     "x1":       parse_x1,
     "x1j":      parse_x1j,
     "x1_fusion": parse_x1,
+    "d1_fusion": parse_d1,
+    "j2_fusion": parse_x1,
+    "a1j_fusion": parse_x1,
     "x1l":      parse_x1l,
     "x1d3":     parse_x1d3,
     "drtk":     parse_rtk,
@@ -47,23 +53,21 @@ parsers_dict = {
     "d530":     parse_dfd530,
     "novatel":  parse_novatel,
     "pim222":   parse_pim222,
-    "nmea-like":    parse_cgi220,
-    "j2":       parser_j2,
+    "j2": parser_j2,
+    "ars410": parse_ars410,
+    "rt_range": parser_rt,
+    "q4_100": parser_q4_100,
+    "gs4_debug": parser_gs4,
     "default":  default_parser
 }
 
-
 from multiprocessing import Queue, Process
 import time
-
-
 class MiniDecoder(Process):
-    inq = Queue(maxsize=200)
-
     def __init__(self, parsers=parsers_dict, can_types={}, oq=None):
         super(MiniDecoder, self).__init__()
         self.parsers = parsers
-
+        self.inq = Queue(maxsize=200)
         self.oq = oq
         self.can_types = can_types
 
@@ -78,11 +82,9 @@ class MiniDecoder(Process):
                     kw = src.split('.')[0]
 
                 if kw:
-                    if src not in ctx:
-                        ctx[src] = {}
                     parser = self.parsers.get(kw)
                     if parser:
-                        r = parser(msg_id, msg, ctx[src])
+                        r = parser(msg_id, msg, ctx)
                         if r and self.oq:
                             r['source'] = src
                             if 'ts' not in r:

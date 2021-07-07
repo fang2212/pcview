@@ -12,3 +12,8 @@ flask-socketio
 psutil
 eventlet
 python-nmap
+openpyxl
+tqdm
+zmq
+opencv-python
+nnpy

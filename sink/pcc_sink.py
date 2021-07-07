@@ -12,6 +12,7 @@ import can
 import msgpack
 import nnpy
 import socket
+import zmq
 
 async_for_sink = False
 
@@ -38,11 +39,11 @@ nn_impl = 'nanomsg'
 # import nanomsg
 
 # import pynng
-# from parsers import ublox, rtcm3
-# from parsers.drtk import V1_msg, v1_handlers
-# from parsers.parser import parsers_dict
-# from recorder.convert import *
-# from tools import mytools
+from parsers import ublox, rtcm3
+from parsers.drtk import V1_msg, v1_handlers
+from parsers.parser import parsers_dict
+from recorder.convert import *
+from tools import mytools
 from collections import deque
 
 
@@ -110,7 +111,7 @@ class NNSink(Thread):
 
             buf = self.read()
             if not buf:
-                time.sleep(0.02)
+                time.sleep(0.001)
                 continue
             t0 = time.time()
             msg_cnt += 1
@@ -137,7 +138,8 @@ class NNSink(Thread):
                 if not self.queue.full():
                     self.queue.put((r))
                 else:
-                    time.sleep(0.005)
+                    print("full")
+                    time.sleep(0.001)
                     continue
 
             # time.sleep(0.01)
@@ -155,69 +157,42 @@ class NNSink(Thread):
         pass
 
 
-class TCPSink(Thread):
-    def __init__(self, queue, ip, port, channel, protocol, index, fileHandler):
-        super(TCPSink, self).__init__()
+class ZmqSink(Thread):
+    def __init__(self, queue, ip, port, topic, protocol, index, fileHandler):
+        super(ZmqSink, self).__init__()
         self.ip = ip
         self.port = port
-        self.channel = channel
+        self.channel = topic
         self.queue = queue
-        self.source = 'tcp.{:d}'.format(index)
+        self.source = '{}.{:d}'.format(topic, index)
         self.index = index
-        self.filehandler = fileHandler
+        self.fileHandler = fileHandler
         self.protocol = protocol
         self.ctx = dict()
         self._buf = b''
         self.exit = Event()
-        self.type = "tcp_sink"
+        self.type = "zmq_sink"
+        self.context = None
 
     def _init_port(self):
-        print('connecting tcp', self.ip, self.port)
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socket.connect((self.ip, self.port))
+        print('connecting', self.ip, self.port)
+        self.context = zmq.Context()
+        self._socket = self.context.socket(zmq.SUB)
+        url = "tcp://%s:%d" % (self.ip, self.port)
+
+        self._socket.connect(url)
+        self._socket.setsockopt(zmq.SUBSCRIBE, b'')  # 接收所有消息
 
     def read(self):
-        bs = self._socket.recv(2048)  # flags=nnpy.DONTWAIT
+        bs = self._socket.recv()
         return bs
 
     def pkg_handler(self, msg):
-        from parsers.parser import parsers_dict
-        if self.protocol == 'novatel' or self.protocol=='nmea-like':
-            sync_start = b'#' if self.protocol=='novatel' else b'$'
-            # if self.protocol == 'nmea-like':
-            #     print(msg)
-            ret = []
-            self._buf += msg
-            while True:
-                a = self._buf.find(sync_start)
-                b = self._buf.find(b'\r\n')
-                if a == -1 or b == -1 or len(self._buf) == 0 or a > b:
-                    if a > -1:
-                        self._buf = self._buf[a:]
-                    break
+        if self.channel == 'j2_zmq':
 
-                phr = self._buf[a:b].decode()
-                # print(a, b, self._buf[a:b])
-                self._buf = self._buf[b + 2:]
-                try:
-                    parser = parsers_dict.get(self.protocol)
-                    if not parser:
-                        return
-                    r = parser(None, phr, self.ctx)
-                except Exception as e:
-                    print('error parsing novatel,', phr)
-                    raise e
-                    return
-                if not r:
-                    return
-                r['source'] = self.source
-                ret.append(r)
-                self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), phr))
-            return self.channel, ret, self.source
-        # elif self.protocol == 'nmea-like':
-        #     print(msg)
-
-
+            r = {'type': self.channel, 'source': self.source, 'log_name': self.source}
+            r['buf'] = msg
+            self.fileHandler.insert_general_bin_raw(r)
 
 
     def run(self):
@@ -260,10 +235,208 @@ class TCPSink(Thread):
         print('sink', self.source, 'exit.')
 
 
+
+class UDPSink(Thread):
+    def __init__(self, queue, ip, port, topic, protocol, index, fileHandler):
+        super(UDPSink, self).__init__()
+        self.ip = ip
+        self.port = port
+        self.channel = topic
+        self.queue = queue
+        self.source = '{}.{:d}'.format(topic, index)
+        self.index = index
+        self.fileHandler = fileHandler
+        self.protocol = protocol
+        self.ctx = dict()
+        self._buf = b''
+        self.exit = Event()
+        self.type = "ucp_sink"
+
+    def _init_port(self):
+        print('udp connecting', self.ip, self.port)
+
+        # 0.0.0.*的ip代表是广播类的，需要改为空字符串
+        if self.ip.startswith("0.0.0"):
+            self.ip = ""
+
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._socket.bind((self.ip, self.port))
+
+    def read(self):
+        bs = self._socket.recv(66666)
+        return bs
+
+    def pkg_handler(self, msg):
+        if self.channel == "d1_udp":
+            timestamp = time.time()
+            r = {'type': self.channel, 'source': self.source, 'log_name': self.source, 'buf': msg}
+            self.fileHandler.insert_general_bin_raw(r)
+            self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
+        elif self.channel == 'q4_100':
+
+            # no timestamp , use local timestamp
+
+            timestamp = time.time()
+            msg = struct.pack("<d", timestamp) + msg
+
+            r = {'type': self.channel, 'source': self.source, 'log_name': self.source}
+            r['buf'] = msg
+            self.fileHandler.insert_general_bin_raw(r)
+            self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
+            ret = parsers_dict.get(self.protocol, "default")(0, msg, self.ctx)
+            if ret is None:
+                return ret
+            if type(ret) != list:
+                ret = [ret]
+
+            for obs in ret:
+                obs['ts'] = timestamp
+                obs['source'] = self.source
+            # log_bytes = data.hex()
+            # print('CAN sink save raw.', self.source)
+
+            return self.channel, ret, self.source
+
+    def run(self):
+        pid = os.getpid()
+        print('sink {} pid:'.format(self.source), pid)
+        time0 = time.time()
+        self._init_port()
+        pt_sum = 0
+        next_check = 0
+        self.pid = os.getpid()
+        last_ts = 0
+        msg_cnt = 0
+        throuput = 0
+        # if 'can' in self.type:
+        #     print(self.type, 'start.')
+        while not self.exit.is_set():
+
+            buf = self.read()
+            if not buf:
+                time.sleep(0.001)
+                continue
+            t0 = time.time()
+            msg_cnt += 1
+            # throuput += len(buf)
+            r = self.pkg_handler(buf)
+            if r is not None:
+                if isinstance(r[1], dict):
+                    r[1]['ts_arrival'] = t0
+                elif isinstance(r[1], list):
+                    for item in r[1]:
+                        item['ts_arrival'] = t0
+                else:
+                    print(r)
+                if not self.queue.full():
+                    self.queue.put((r))
+                else:
+                    time.sleep(0.001)
+                    continue
+
+        print('sink', self.source, 'exit.')
+
+
+
+class TCPSink(Thread):
+    def __init__(self, queue, ip, port, channel, protocol, index, fileHandler):
+        super(TCPSink, self).__init__()
+        self.ip = ip
+        self.port = port
+        self.channel = channel
+        self.queue = queue
+        self.source = 'tcp.{:d}'.format(index)
+        self.index = index
+        self.filehandler = fileHandler
+        self.protocol = protocol
+        self.ctx = dict()
+        self._buf = b''
+        self.exit = Event()
+        self.type = "tcp_sink"
+
+    def _init_port(self):
+        print('connecting', self.ip, self.port)
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.connect((self.ip, self.port))
+
+    def read(self):
+        bs = self._socket.recv(2048)  # flags=nnpy.DONTWAIT
+        return bs
+
+    def pkg_handler(self, msg):
+        if self.protocol == 'novatel':
+            # print(msg)
+            ret = []
+            self._buf += msg
+            while True:
+                a = self._buf.find(b'#')
+                b = self._buf.find(b'\r\n')
+                if a == -1 or b == -1 or len(self._buf) == 0 or a > b:
+                    if a > -1:
+                        self._buf = self._buf[a:]
+                    break
+
+                phr = self._buf[a:b].decode()
+                # print(a, b, self._buf[a:b])
+                self._buf = self._buf[b + 2:]
+                try:
+                    parser = parsers_dict.get(self.protocol)
+                    if not parser:
+                        return
+                    r = parser(None, phr, self.ctx)
+                except Exception as e:
+                    print('error parsing novatel,', phr)
+                    # raise e
+                    return
+                if not r:
+                    return
+                r['source'] = self.source
+                ret.append(r)
+                self.filehandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), phr))
+            return self.channel, ret, self.source
+
+    def run(self):
+        pid = os.getpid()
+        print('sink {} pid:'.format(self.source), pid)
+        time0 = time.time()
+        self._init_port()
+        pt_sum = 0
+        next_check = 0
+        self.pid = os.getpid()
+        last_ts = 0
+        msg_cnt = 0
+        throuput = 0
+        # if 'can' in self.type:
+        #     print(self.type, 'start.')
+        while not self.exit.is_set():
+
+            buf = self.read()
+            if not buf:
+                time.sleep(0.001)
+                continue
+            t0 = time.time()
+            msg_cnt += 1
+            # throuput += len(buf)
+            r = self.pkg_handler(buf)
+            if r is not None:
+                if isinstance(r[1], dict):
+                    r[1]['ts_arrival'] = t0
+                elif isinstance(r[1], list):
+                    for item in r[1]:
+                        item['ts_arrival'] = t0
+                else:
+                    print(r)
+                if not self.queue.full():
+                    self.queue.put((r))
+                else:
+                    time.sleep(0.001)
+                    continue
+
+        print('sink', self.source, 'exit.')
+
 class PinodeSink(NNSink):
     def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
         super(PinodeSink, self).__init__(queue, ip, port, channel, index, isheadless)
-        from parsers import ublox, rtcm3
         # print('pi_node connected.', ip, port, channel, index)
         self.source = 'rtk.{:d}'.format(index)
         self.index = index
@@ -283,49 +456,20 @@ class PinodeSink(NNSink):
     def pkg_handler(self, msg):
         # if self.resname == 'pim222':
         # print(self.resname, '-----------------------------------------hahahahha')
-        from recorder.convert import compose_from_def, load_log_defs, decode_with_def, ub482_defs
 
         msg = memoryview(msg).tobytes()
         if self.resname == 'pim222':
             from parsers.pim222 import parse_pim222
             source = 'pim222.{}'.format(self.index)
-            # print(msg)
-            # if not msg.startswith(b'$'):
-            #     return
-            ret = []
-            # msg = msg.replace(b'\x00', b'')
-            self._buf += msg
-            # print('msg:', msg)
-            while True:
-                a = self._buf.find(b'$')
-                b = self._buf.find(b'\r\n')
-                # print(a,b)
-                if a == -1 or b == -1 or len(self._buf) == 0 or a > b:
-                    if a > -1:
-                        self._buf = self._buf[a:]
-                    break
-                phr = self._buf[a:b].replace(b'\x00', b'').decode()
-                # phr = self._buf[a:b].decode()
-
-                # print(a, b, self._buf[a:b])
-                self._buf = self._buf[b + 2:]
-                try:
-                    r = parse_pim222(None, phr, self.ctx)
-                except Exception as e:
-                    print('error parsing pim222-like:', phr)
-                    # raise e
-                    continue
-                if r:
-                    r['source'] = source
-                    ret.append(r)
-                    self.fileHandler.insert_raw((r['ts'], r['source'] + '.{}'.format(r['type']), phr))
+            if not msg.startswith(b'$'):
+                return
             # print('pim222 pkg handler')
-            # self.fileHandler.insert_raw((time.time(), source, msg.decode().strip()))
-            # r = parse_pim222(None, msg, self.ctx)
-            # if r:
-            #     r['source'] = source
+            self.fileHandler.insert_raw((time.time(), source, msg.decode().strip()))
+            r = parse_pim222(None, msg, self.ctx)
+            if r:
+                r['source'] = source
                 # print(r)
-            return self.channel, ret, source
+                return self.channel, r, source
         # print(self.resname, msg)
         data = self.decode_pinode_res(self.resname, msg)
         if not data:
@@ -371,8 +515,6 @@ class PinodeSink(NNSink):
         # return bs
 
     def decode_pinode_res(self, resname, msg):
-        from parsers.parser import parsers_dict
-        from parsers import ublox, rtcm3
         if resname == 'rtk':
             results = json.loads(msg.decode())
             for res in results:
@@ -433,7 +575,6 @@ class PinodeSinkGeneral(NNSink):
     def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
         super(PinodeSinkGeneral, self).__init__(queue, ip, port, channel, index, isheadless)
         # print('pi_node connected.', ip, port, channel, index)
-        from parsers import ublox, rtcm3
         self.source = 'rtk.{:d}'.format(index)
         self.index = index
         self.context = {'source': self.source}
@@ -446,7 +587,6 @@ class PinodeSinkGeneral(NNSink):
 
     def pkg_handler(self, msg):
         # print('-----------------------------------------hahahahha')
-        from recorder.convert import compose_from_def, load_log_defs, decode_with_def, ub482_defs
 
         msg = memoryview(msg).tobytes()
         # print(self.resname, msg)
@@ -489,8 +629,6 @@ class PinodeSinkGeneral(NNSink):
         return self.channel, data, self.source
 
     def decode_pinode_res(self, resname, msg):
-        from parsers.parser import parsers_dict
-        from parsers import ublox, rtcm3
         if resname == 'rtk':
             results = json.loads(msg.decode())
             for res in results:
@@ -537,7 +675,6 @@ class PinodeSinkGeneral(NNSink):
 
 class CANSink(NNSink):
     def __init__(self, queue, ip, port, channel, type, index, fileHandler, isheadless=False):
-        from parsers.parser import parsers_dict
         super(CANSink, self).__init__(queue, ip, port, channel, index, isheadless)
         self.fileHandler = fileHandler
         self.parser = []
@@ -791,7 +928,7 @@ class FlowSink(NNSink):
                     else:
                         self.cam_queue.put((*r, self.cls))
                 else:
-                    time.sleep(0.02)
+                    time.sleep(0.001)
 
     def run(self):
         import asyncio
@@ -810,7 +947,6 @@ class FlowSink(NNSink):
             # raise (e)
 
     def pkg_handler(self, msg):
-        from tools import mytools
         # print(msg)
         # if self.protocol != 'msgpack':
         #     r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name}
@@ -955,7 +1091,7 @@ class FlowSink(NNSink):
 
             pcv = mytools.convert(payload)
 
-            ## cv22_algo_data
+            # cv22_algo_data
             if 'data' in pcv and 'key' in pcv:
                 pcv[pcv['key']] = pcv['data']
                 pcv.pop('data')
@@ -975,13 +1111,13 @@ class FlowSink(NNSink):
 
 
 class RTKSink(NNSink):
+
     def __init__(self, queue, ip, port, msg_type, index, fileHandler, isheadless=False):
         NNSink.__init__(self, queue, ip, port, msg_type, index, isheadless)
         self.fileHandler = fileHandler
         self.source = 'drtk'
 
     def _init_port(self):
-        from parsers.drtk import V1_msg, v1_handlers
         # self._socket = can.interface.Bus()
         try:
             self._socket = can.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)
@@ -1010,7 +1146,6 @@ class RTKSink(NNSink):
             self.can_send(self._socket, data)
 
     def pkg_handler(self, msg):
-        from parsers.drtk import V1_msg, v1_handlers
         timestamp = time.time()
         # timestamp =
         self.v1msg.push(bytes(msg))
@@ -1035,45 +1170,3 @@ class RTKSink(NNSink):
             else:
                 # print('0x{:04x}'.format(msgid), msg)
                 pass
-
-
-class FileHandlerDummy(object):
-    def insert_jpg(self, r):
-        import cv2
-        import numpy as np
-        # print(r)
-        print("{frame_id}, {ts}, {source},".format(**r), len(r['img']))
-        # print('frame id:', data[0], "{type}, {ts}".format(**data[1]), 'img len:', len(data[1]['img']))
-        raw = cv2.imdecode(np.frombuffer(r['img'], np.uint8), cv2.IMREAD_COLOR)
-        cv2.imshow('MINIEYE-CVE', raw)
-        pass
-    def insert_raw(self, r):
-        # print("{frame_id}, {ts}, {source},".format(**r))
-        print(r)
-        pass
-
-
-if __name__ == "__main__":
-    from queue import Queue
-    import cv2
-
-    cv2.namedWindow('MINIEYE-CVE')
-
-    q = Queue(maxsize=100)
-    fhl = FileHandlerDummy()
-    camsink = CameraSink(q, '192.168.98.192', 1200, 'camera', 0, fhl, is_main=True, devname='camera')
-    camsink.start()
-
-    gsensor_sink = GsensorSink(q, '192.168.98.192', 1209, 'imu', 0, fhl)
-    gsensor_sink.start()
-
-    algo_sink = FlowSink(q, q, '192.168.98.181', 24011, 'algo', 1, fhl)
-    algo_sink.start()
-
-    while True:
-        data = q.get()
-        if data:
-            key = cv2.waitKey(1) & 0xff
-            # print('frame id:', data[0], "{type}, {ts}".format(**data[1]), 'img len:', len(data[1]['img']))
-        else:
-            time.sleep(0.01)

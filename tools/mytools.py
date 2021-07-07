@@ -54,6 +54,18 @@ def convert(data):
     return data
 
 
+def log_sort(log_path):
+    """
+    对log文件进行排序处理，并生成排序后的log_sort.txt
+    """
+    r_sort = os.path.join(os.path.dirname(log_path), 'log_sort.txt')
+
+    if os.path.exists(r_sort):
+        return r_sort
+    else:
+        return sort_big_file(log_path)
+
+
 def sort_big_file(filename, file_splits=4, my_cmp=None):
     idx = 0
     buf_file = []

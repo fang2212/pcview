@@ -1,4 +1,4 @@
 bestpos {sol_stat:s} {pos_type:s} {lat:.8f} {lon:.8f} {hgt:.8f} {undulation:f} {datum:s} {lat_sgm:f} {lon_sgm:f} {hgt_sgm:f} {diff_age:f} {sol_age:f} {#SVs:d} {#solSVs:d} {ext_sol_stat:x}
 heading {sol_stat:s} {pos_type:s} {length:f} {yaw:f} {pitch:f} {hdgstddev:f} {ptchstddev:f} {#SVs:d} {#solSVs:d} {#obs:d} {#multi:d} {ext_sol_stat:x}
 bestvel {sol_stat:s} {pos_type:s} {latency:f} {age:f} {hor_speed:f} {trk_gnd:f} {vert_speed:f}
-pinpoint {sol_stat:s} {pos_type:s} {lat:.8f} {lon:.8f} {hgt:.8f} {undulation:f} {datum:s} {lat_sgm:f} {lon_sgm:f} {hgt_sgm:f} {diff_age:f} {sol_age:f} {#SVs:d} {#solSVs:d} {ext_sol_stat:x}
+pinpoint {sol_stat:s} {pos_type:s} {lat:.8f} {lon:.8f} {hgt:.8f} {undulation:f} {lat_sgm:f} {lon_sgm:f} {hgt_sgm:f} {vel_n:f} {vel_e:f}
