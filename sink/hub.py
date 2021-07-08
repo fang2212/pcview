@@ -72,7 +72,7 @@ class Hub(Thread):
         self.sinks = []
 
         self.nodes = []
-        self.nodes_num = 5
+        self.nodes_num = 4
 
         self.network = self.uniconf.runtime['modules'].get('network') or '192.168.98.0/24'
         self.finder = CollectorFinder(self.network)
@@ -108,6 +108,7 @@ class Hub(Thread):
 
         # 初始化在线设备
         self.finder.start()
+        self.finder.take_request()
         time.sleep(0.6)
 
         cached_macs = get_cached_macs(self.uniconf.name, timeout=60 * 60 * 24)
@@ -147,7 +148,7 @@ class Hub(Thread):
     def run(self):
         logger.debug("hub pid:", os.getpid())
         while True:
-            self.finder.request()
+            self.finder.take_request()
             for ip in self.finder.found:
                 mac = self.finder.found[ip]['mac']
                 for cfg in self.configs:
@@ -302,7 +303,7 @@ class Hub(Thread):
         for ip in self.online:
             self.init_collector(self.online[ip])
 
-        logger.debug("sink num:{}".format(len(self.sinks)))
+        logger.info("sink num:{}".format(len(self.sinks)))
         for i, s in enumerate(self.sinks):
             self.nodes[i % self.nodes_num].add(s)
 

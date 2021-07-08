@@ -46,11 +46,18 @@ class CollectorFinder(Thread):
         self.s.detach()
         self.s.close()
 
-    def request(self):
+    def take_request(self):
         """
         请求在线设备
         :return:
         """
+        seg = self.network.split('.')
+        broadcast = '.'.join(seg[:3]) + '.255'
+        try:
+            self.s.sendto('Request MINIEYE'.encode('utf-8'), (broadcast, 1060))
+        except Exception as e:
+            logger.error("finder request err: {}".format(e))
+
         # 扫描在线ip
         self.nmap_scan()
         # 获取ip对应的mac地址
@@ -61,7 +68,6 @@ class CollectorFinder(Thread):
                 if ip not in self.found:
                     print('nmap found new device:', ip, mac)
                     self.found[ip] = {'mac': mac}
-                    yield ip, mac
 
     def nmap_scan(self):
         """
@@ -118,7 +124,7 @@ if __name__ == "__main__":
     finder = CollectorFinder()
     finder.start()
     for i in range(3):
-        finder.request()
+        finder.take_request()
         sleep(1)
 
     print("found:", finder.found)

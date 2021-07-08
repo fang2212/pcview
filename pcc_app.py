@@ -105,6 +105,7 @@ if args.web:  # 网页版启动方式
     hub = Hub(uniconf=cve_conf, sink_process=sink_process)
     pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo)
     pcc_thread = Thread(target=pcc.start, name='pcc_thread')
+    sink_process.start()
     hub.start()
 
     # print('-----------------------------------------------------------------------', os.getpid())
@@ -176,8 +177,6 @@ if args.web:  # 网页版启动方式
 
 else:  # normal standalone PCC
     print(f'PCC starts in normal mode. pid:{os.getpid()}')
-    # cve_conf = load_cfg(args.cfg_path)
-    # local_cfg = get_local_cfg()
     if args.auto:
         auto_rec = True
     else:
@@ -187,6 +186,7 @@ else:  # normal standalone PCC
     sink_process = SinkManage()
     hub = Hub(uniconf=cve_conf, sink_process=sink_process)
     pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec, draw_algo=args.draw_algo, sink_process=sink_process)
+    sink_process.start()
     hub.start()
     sup = init_checkers(pcc)
     pcc.start()

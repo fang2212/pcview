@@ -28,6 +28,9 @@ class SinkManage(Process):
         logger.warning("decode process starting, pid: {}".format(os.getpid()))
         while not self.exit.is_set():
             msg = self.decode_queue.get()
+            if not msg:
+                time.sleep(0.01)
+                continue
 
             if isinstance(msg, tuple):
                 # 直接将原数据放入结果队列
