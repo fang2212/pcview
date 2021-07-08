@@ -25,7 +25,7 @@ class SinkManage(Process):
         }
 
     def run(self):
-        logger.warning("decode process starting, pid: {}".format(os.getpid()))
+        logger.warning("{} pid: {}".format("SinkManage".ljust(20), os.getpid()))
         while not self.exit.is_set():
             msg = self.decode_queue.get()
             if not msg:
@@ -38,7 +38,7 @@ class SinkManage(Process):
             elif msg.get("type") and self.decode_dict.get(msg["type"]):
                 # 带有解析类型的进行解析处理
                 self.decode_dict.get(msg["type"], "default")(msg)
-        logger.warning("decode process exiting, pid:".format(os.getpid()))
+        logger.warning("SinkManage exiting, pid:".format(os.getpid()))
 
     # ****************** 操作类方法 ******************
 

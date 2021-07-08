@@ -307,10 +307,8 @@ class PCC(object):
             begin_ts = time.time()
             d = self.sink_process.pop_resulte()
             if not d:
-                continue
-            else:
                 time.sleep(0.01)
-            # print(d)
+                continue
 
             # 处理数据
             pop_ts = time.time()

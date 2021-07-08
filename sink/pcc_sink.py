@@ -53,7 +53,7 @@ class Sink(Thread):
 
     def run(self):
         self.pid = os.getpid()
-        logger.warning(f'{self.source} pid: {self.pid}')
+        logger.warning('{} pid: {}'.format(self.source.ljust(20), self.pid))
         self.task()
 
     def task(self):

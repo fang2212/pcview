@@ -36,7 +36,7 @@ class CollectorFinder(Thread):
                     data = json.loads(data.decode())
                 ip = address[0]
                 if ip not in self.found:
-                    print('found new device:', ip, data)
+                    print('found new device:', ip)
                 self.found[address[0]] = data
             except socket.error as e:
                 continue
