@@ -259,6 +259,11 @@ class Player(object):
         else:
             print('no distance in obs', obs)
             return
+
+        # j2_fusion的bug，会在0，0坐标中出现假坐标，对其进行屏蔽
+        if x == 0 and y == 0:
+            return
+
         u, v = self.transform.trans_gnd2ipm(x, y)
 
         color = self.color_obs.get(source) or self.color_obs['default']
