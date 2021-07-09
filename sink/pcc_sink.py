@@ -54,7 +54,11 @@ class Sink(Thread):
     def run(self):
         self.pid = os.getpid()
         logger.warning('{} pid: {}'.format(self.source.ljust(20), self.pid))
+        self.before_task()
         self.task()
+
+    def before_task(self):
+        pass
 
     def task(self):
         pass
@@ -107,8 +111,12 @@ class NNSink(Sink):
         self._init_port()
         self.pid = os.getpid()
         while not self.exit.is_set():
+            if self.port == 10086:
+                print(self.ip, self.port, "==============")
 
             buf = self.read()
+            if self.port == 10086:
+                print(buf)
             if not buf:
                 time.sleep(0.001)
                 continue

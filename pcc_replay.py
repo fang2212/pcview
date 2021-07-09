@@ -532,6 +532,9 @@ if __name__ == "__main__":
             continue
         log_path_list += log_list_from_path(path)
 
+    if not log_path_list:
+        logger.error("未识别到log路径")
+
     logger.debug("待回放的log路径：{}".format(log_path_list))
     for path in log_path_list:
         start_replay(path, args)
