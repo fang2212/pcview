@@ -916,7 +916,6 @@ class FlowSink(NNSink):
             # data = msgpack.packb(msg_lane)
             # await ws.send_bytes(data)
             async for msg in ws:
-                # print(msg[:100])
                 r = self.pkg_handler(msg)
                 if r is not None:
                     if isinstance(r[0], type("")):
@@ -943,7 +942,7 @@ class FlowSink(NNSink):
         try:
             loop.run_until_complete(self._run())
         except Exception as e:
-            print(bcl.FAIL+'error when initiating flow sink on'+bcl.ENDC, self.ip, self.port)
+            print(bcl.FAIL+'error:'+ str(e) + ' when initiating flow sink on'+bcl.ENDC, self.ip, self.port)
             # raise (e)
 
     def pkg_handler(self, msg):
@@ -998,10 +997,7 @@ class FlowSink(NNSink):
                         d['gyro'][0], d['gyro'][1], d['gyro'][2],
                         d['temp'], int(ts), 1000000 * (ts - int(ts)))))
                 return
-            elif topic == 'pcview':
-                pass
-                #  print(payload[:10])
-                
+            elif topic == 'pcview' or topic == "video":
                 if b'calib_param' in payload:
                     calib_params = msgpack.unpackb(payload)
                     calib_params = mytools.convert(calib_params)
@@ -1011,7 +1007,7 @@ class FlowSink(NNSink):
                         r.update(calib_params['calib_param'])
                         # print(r)
                         return 'calib_param', r
-                elif payload.startswith(b'\xff\x03'):  # jpeg pack header
+                else:  # jpeg pack header
                     # print(payload)
                     frame_id = int.from_bytes(payload[4:8], byteorder='little', signed=False)
                     # if frame_id - self.last_fid != 1:
@@ -1029,9 +1025,6 @@ class FlowSink(NNSink):
                     self.fileHandler.insert_jpg(r)
                     # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
                     return frame_id, r
-                else:
-                    # print('unknown payload begins with:', payload[:20])
-                    pass
             else:
                 # print(data)
                 pass
