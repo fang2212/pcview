@@ -17,6 +17,7 @@ from parsers.j2 import parser_j2
 from parsers.rt_range import parser_rt
 from parsers.q4_100 import parser_q4_100
 from parsers.gs4_debug import parser_gs4
+from parsers.x1_jac import parse_x1_jac
 
 def default_parser(id, data, type=None):
     return None
@@ -58,6 +59,7 @@ parsers_dict = {
     "rt_range": parser_rt,
     "q4_100": parser_q4_100,
     "gs4_debug": parser_gs4,
+    "x1_jac_demo": parse_x1_jac,
     "default":  default_parser
 }
 

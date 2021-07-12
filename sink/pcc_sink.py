@@ -997,7 +997,7 @@ class FlowSink(NNSink):
                         d['gyro'][0], d['gyro'][1], d['gyro'][2],
                         d['temp'], int(ts), 1000000 * (ts - int(ts)))))
                 return
-            elif topic == 'pcview' or topic == "video":
+            elif topic == 'pcview':
                 if b'calib_param' in payload:
                     calib_params = msgpack.unpackb(payload)
                     calib_params = mytools.convert(calib_params)
@@ -1007,7 +1007,7 @@ class FlowSink(NNSink):
                         r.update(calib_params['calib_param'])
                         # print(r)
                         return 'calib_param', r
-                else:  # jpeg pack header
+                elif payload.startswith(b'\xff\x03'):  # jpeg pack header
                     # print(payload)
                     frame_id = int.from_bytes(payload[4:8], byteorder='little', signed=False)
                     # if frame_id - self.last_fid != 1:
@@ -1025,9 +1025,23 @@ class FlowSink(NNSink):
                     self.fileHandler.insert_jpg(r)
                     # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
                     return frame_id, r
-            else:
-                # print(data)
-                pass
+            elif topic == "video":
+                frame_id = int.from_bytes(payload[4:8], byteorder='little', signed=False)
+                # if frame_id - self.last_fid != 1:
+                #     print("frame jump at", self.last_fid, frame_id, 'in', self.source)
+                self.last_fid = frame_id
+                ts = int.from_bytes(payload[16:24], byteorder='little', signed=False)
+                ts = ts / 1000000
+                jpg = payload[24:]
+                if msg.type in (aiohttp.WSMsgType.CLOSED,
+                                aiohttp.WSMsgType.ERROR):
+                    return None
+
+                r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
+                     'is_main': self.is_main, 'transport': 'libflow'}
+                self.fileHandler.insert_jpg(r)
+                # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
+                return frame_id, r
         elif msg_src == 'lane_profiling':
             if topic == 'lane_profiling_data':
                 r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name}
