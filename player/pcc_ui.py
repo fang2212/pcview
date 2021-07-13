@@ -963,6 +963,13 @@ class Player(object):
             return
         if 'speed' in data:
             self.show_veh_speed(img, data['speed'], data['source'])
+        if 'TTC' in data:
+            self.show_text_info(data['source'], 60, 'TTC: ' + '{:.2f}s'.format(data['TTC']))
+        if 'pos_lon' in data and 'pos_lat' in data:
+            dist = data.get('pos_lon') if 'pos_lon' in data else data['range']
+            angle = data.get('angle') if 'angle' in data else atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
+            # BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
+            self.show_text_info(data['source'], 80, 'R/A: {:.2f} / {:.2f}'.format(dist, angle))
         if 'yaw_rate' in data:
             self.show_yaw_rate(img, data['yaw_rate'], data['source'])
 

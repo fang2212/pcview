@@ -59,7 +59,7 @@ parsers_dict = {
     "rt_range": parser_rt,
     "q4_100": parser_q4_100,
     "gs4_debug": parser_gs4,
-    "x1_jac_demo": parse_x1_jac,
+    "x1_jac": parse_x1_jac,
     "default":  default_parser
 }
 

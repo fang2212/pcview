@@ -17,25 +17,29 @@ def parse_x1_jac(id, data, ctx=None):
         return None
     r = db_d1.decode_message(id, data)
 
-    # print("0x%x" % id, r)
     if not ctx.get('x1_jac'):
         ctx['x1_jac'] = list()
 
     if 0x76d <= id <= 0x76f:
-        if len(jac) == 7:
+        # print("0x%x" % id, r)
+        if len(jac) >= 7:
             jac.clear()
 
         if id == 0x76e:
             jac["TTC"] = r["TargetVehicle_TTC"]
         elif id == 0x76d:
-            jac['pos_lat'] = r['TargetVehicle_PosX']
-            jac['pos_lon'] = r['TargetVehicle_PosY']
+            jac['pos_lat'] = r['TargetVehicle_PosY']
+            jac['pos_lon'] = r['TargetVehicle_PosX']
             jac["id"] = r["Vehicle_ID"]
+            r = jac.copy()
+            r["type"] = "obstacle"
+            return r
         elif id == 0x76f:
             jac["speed"] = r["speed"]
 
         if len(jac) == 5:
-            jac["type"] = "obstacle"
+            jac["type"] = "vehicle_state"
             jac['sensor'] = 'x1_jac'
-            return jac
+            # print(jac)
+            return jac.copy()
 
