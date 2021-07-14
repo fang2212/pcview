@@ -705,7 +705,6 @@ class CANCollectSink(NNSink):
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
         if not msg:
-            print("not msg")
             return
         channel = msg[0]
         can_id = struct.unpack('<i', msg[1:5])[0]
@@ -713,33 +712,33 @@ class CANCollectSink(NNSink):
         data = msg[13:]
 
         log_type = self.log_types.get("can{}".format(channel))
-        # print('CAN sink save raw.', self.source)
+        # print(timestamp, log_type, '0x%x' % can_id + ' ' + data.hex())
         self.fileHandler.insert_raw((timestamp, log_type, '0x%x' % can_id + ' ' + data.hex()))
 
         if not self.parse_event.is_set():
             print("not set")
             return
 
-        msg_type = self.type_list[channel]
-        parser = self.parser[msg_type]
-        print(channel, msg_type, '0x%x' % can_id, data.hex(), parser)
-        ret = parser(can_id, data, self.context[msg_type])
-        if ret is None:
-            return None
-        print(ret)
-
-        if isinstance(ret, list):
-            # print('r is list')
-            for obs in ret:
-                obs['ts'] = timestamp
-                obs['source'] = self.source[channel]
-                # print(obs)
-        else:
-            ret['ts'] = timestamp
-            ret['source'] = self.source[channel]
-            # print(r['source'])
-        print(can_id, ret, self.source[channel])
-        return can_id, ret, self.source[channel]
+        # msg_type = self.type_list[channel]
+        # parser = self.parser[msg_type]
+        # print(channel, msg_type, '0x%x' % can_id, data.hex(), parser)
+        # ret = parser(can_id, data, self.context[msg_type])
+        # if ret is None:
+        #     return None
+        # print(ret)
+        #
+        # if isinstance(ret, list):
+        #     # print('r is list')
+        #     for obs in ret:
+        #         obs['ts'] = timestamp
+        #         obs['source'] = self.source[channel]
+        #         # print(obs)
+        # else:
+        #     ret['ts'] = timestamp
+        #     ret['source'] = self.source[channel]
+        #     # print(r['source'])
+        # print(can_id, ret, self.source[channel])
+        # return can_id, ret, self.source[channel]
 
 
 class CANSink(NNSink):

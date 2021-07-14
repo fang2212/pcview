@@ -418,7 +418,7 @@ class FileHandler(Process):
         if self.uniconf.local_cfg.save.raw and self.is_recording:
             self.log_queue.put(('raw', msg))
             if self.log_queue.full():
-                print("full")
+                print("log_queue full")
 
     def insert_pcv_raw(self, msg):
         if self.is_recording:
