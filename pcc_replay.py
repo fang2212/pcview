@@ -528,6 +528,9 @@ class LogPlayer(Process):
                         sender.sndq.put(msg)
 
                 # print(cols[2], '0x{:03x}'.format(int(cols[3], 16)), ts)
+                if msg_type not in self.parser:
+                    continue
+
                 for parser in self.parser[msg_type]:
                     # print("0x%x" % can_id, parser)
                     r = parser(int(cols[3], 16), data, self.context[msg_type])

@@ -39,7 +39,7 @@ def parse_x1(id, data, ctx=None):
     if not ctx.get('x1_obs'):
         ctx['x1_obs'] = list()
     if id == 0x76f:  # start of epoch
-        ctx['x1_obs'].clear()
+        # ctx['x1_obs'].clear()
         cipv.clear()
         return {'type': 'vehicle_state', 'speed': r['speed'] / 3.6}
 
