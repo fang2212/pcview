@@ -307,13 +307,17 @@ class Player(object):
             color: CVColor 车道线颜色
             :param style: 线条格式，虚线为“dotted”
         """
-        r = data.get('range')
+        max_range = data.get('range')
+        min_range = data.get("min_range", 0)
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
         source = data['source']
+        if max_range == 0:
+            return
+
         if 'j2' in source:
             source = ""
 
-        p = self.transform.getp_ifc_from_poly(ratios, 1, 0, r, sensor=source)
+        p = self.transform.getp_ifc_from_poly(ratios, 1, min_range, max_range, sensor=source)
         if not p:
             return
 
@@ -937,11 +941,12 @@ class Player(object):
             color: CVColor 车道线颜色
         """
         # sensor = data['source'].split('.')[0]
-        r = data['range']
+        max_range = data['range']
+        min_range = data.get("min_range", 0)
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
-        if r == 0:
+        if max_range == 0:
             return
-        p = self.transform.getp_ipm_from_poly(ratios, 1, 0, r, sensor=data['source'])
+        p = self.transform.getp_ipm_from_poly(ratios, 1, min_range, max_range, sensor=data['source'])
 
         if style == "dotted":
             for i in range(2, len(p) - 1, 1):
