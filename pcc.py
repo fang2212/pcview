@@ -802,7 +802,7 @@ class PCC(object):
 
         if data['type'] == 'pcv_data':
             # print('pcv_data', data)
-            if self.replay or (not self.replay and self.draw_algo):
+            if not self.replay and self.draw_algo:
                 for t in data["data"]:
                     self.flow_player.draw(t, img)
 
