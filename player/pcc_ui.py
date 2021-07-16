@@ -259,6 +259,11 @@ class Player(object):
         else:
             print('no distance in obs', obs)
             return
+
+        # j2_fusion的bug，会在0，0坐标中出现假坐标，对其进行屏蔽
+        if x == 0 and y == 0:
+            return
+
         u, v = self.transform.trans_gnd2ipm(x, y)
 
         color = self.color_obs.get(source) or self.color_obs['default']
@@ -302,13 +307,17 @@ class Player(object):
             color: CVColor 车道线颜色
             :param style: 线条格式，虚线为“dotted”
         """
-        r = data.get('range')
+        max_range = data.get('range')
+        min_range = data.get("min_range", 0)
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
         source = data['source']
+        if max_range == 0:
+            return
+
         if 'j2' in source:
             source = ""
 
-        p = self.transform.getp_ifc_from_poly(ratios, 1, 0, r, sensor=source)
+        p = self.transform.getp_ifc_from_poly(ratios, 1, min_range, max_range, sensor=source)
         if not p:
             return
 
@@ -932,11 +941,12 @@ class Player(object):
             color: CVColor 车道线颜色
         """
         # sensor = data['source'].split('.')[0]
-        r = data['range']
+        max_range = data['range']
+        min_range = data.get("min_range", 0)
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
-        if r == 0:
+        if max_range == 0:
             return
-        p = self.transform.getp_ipm_from_poly(ratios, 1, 0, r, sensor=data['source'])
+        p = self.transform.getp_ipm_from_poly(ratios, 1, min_range, max_range, sensor=data['source'])
 
         if style == "dotted":
             for i in range(2, len(p) - 1, 1):
@@ -958,6 +968,13 @@ class Player(object):
             return
         if 'speed' in data:
             self.show_veh_speed(img, data['speed'], data['source'])
+        if 'TTC' in data:
+            self.show_text_info(data['source'], 60, 'TTC: ' + '{:.2f}s'.format(data['TTC']))
+        if 'pos_lon' in data and 'pos_lat' in data:
+            dist = data.get('pos_lon') if 'pos_lon' in data else data['range']
+            angle = data.get('angle') if 'angle' in data else atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
+            # BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
+            self.show_text_info(data['source'], 80, 'R/A: {:.2f} / {:.2f}'.format(dist, angle))
         if 'yaw_rate' in data:
             self.show_yaw_rate(img, data['yaw_rate'], data['source'])
 
