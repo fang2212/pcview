@@ -304,7 +304,7 @@ class Hub(Thread):
                 self.sinks.append(pisink)
                 self.online[ip]['msg_types'].append(name + '.{}'.format(idx))
         elif "can_collector" in cfg.get("type"):
-            type_list = []
+            can_list = []
             for iface in cfg['ports']:
                 if 'rtk' in iface or 'gps' in iface:
                     pisink = PinodeSink(self.msg_queue, ip, cfg["ports"][iface]["port"], channel='can', index=idx, resname=iface,
@@ -312,13 +312,13 @@ class Hub(Thread):
                     self.sinks.append(pisink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
                 if "can" in iface:
-                    type_list.append(cfg["ports"][iface]["topic"])
+                    can_list.append(cfg["ports"][iface])
 
-            if type_list:
-                can_collector = CANCollectSink(self.msg_queue, ip=ip, port=cfg.get("port"), type_list=type_list,
-                                               index=idx, fileHandler=self.fileHandler, ports=cfg.get("ports"))
+            if can_list:
+                can_collector = CANCollectSink(self.msg_queue, ip=ip, port=cfg.get("port"), can_list=can_list,
+                                               index=idx, fileHandler=self.fileHandler)
                 self.sinks.append(can_collector)
-                self.online[ip]['msg_types'].extend([t+'.{}'.format(idx) for t in type_list])
+                self.online[ip]['msg_types'].extend([t["topic"]+'.{}'.format(idx) for t in can_list])
         elif "collector" in cfg.get('type'):
             for iface in cfg['ports']:
                 if not cfg['ports'][iface].get('enable') and not is_main:

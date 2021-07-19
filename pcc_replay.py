@@ -561,6 +561,24 @@ class LogPlayer(Process):
                 #     self.cache['can'].extend(r.copy())
                 # elif isinstance(r, dict):
                 #     self.cache['can'].append(r.copy())
+            elif "can" in cols[2]:
+                if not self.parser.get(cols[2]):
+                    msg_type = cols[2].split(".")[-1]
+                    idx = cols[2].split(".")[1]
+                    self.parser[cols[2]] = parsers_dict[msg_type] if parsers_dict.get(msg_type) else parsers_dict["default"]
+                    self.context[cols[2]] = {"source": "{}.{}".format(msg_type, idx)}
+                can_id = int(cols[3], 16).to_bytes(4, 'little')
+                data = bytes().fromhex(cols[4])
+
+                r = self.parser[cols[2]](int(cols[3], 16), data, self.context[cols[2]])
+                if r is None:
+                    continue
+                if isinstance(r, list):
+                    for idx, obs in enumerate(r):
+                        r[idx]['ts'] = ts
+                else:
+                    r['ts'] = ts
+                self.msg_queue.put((can_id, r.copy(), self.context[cols[2]]["source"]))
 
             elif cols[2] == 'Gsensor':
                 data = [int(x) for x in cols[3:9]]

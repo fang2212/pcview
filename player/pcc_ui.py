@@ -76,6 +76,7 @@ class Player(object):
             'xyd2': FlatColor.Blue,
             "j2_fusion": FlatColor.light_green,
             "d1_fusion": FlatColor.violet,
+            "bosch_mrr": FlatColor.yellow,
             'default': FlatColor.clouds,
         }
 

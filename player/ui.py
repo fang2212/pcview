@@ -66,6 +66,7 @@ class FlatColor(object):  # in BGR
     sun_flower = (0x0f, 0xc4, 0xf1)
     turquoise = (0x9c, 0xa0, 0x16)
     yellow_green = (112, 255, 202)          # 黄绿色
+    yellow = (57, 171, 242)                 # 黄色
     wet_asphalt = (0x5e, 0x49, 0x34)
 
 

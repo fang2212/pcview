@@ -1,3 +1,4 @@
+from parsers.bosch import bosch_mrr
 from parsers.d1_fusion import parse_d1
 from parsers.x1 import parse_x1
 from parsers.x1l import parse_x1l
@@ -60,6 +61,7 @@ parsers_dict = {
     "q4_100": parser_q4_100,
     "gs4_debug": parser_gs4,
     "x1_jac": parse_x1_jac,
+    "bosch_mrr": bosch_mrr,
     "default":  default_parser
 }
 
