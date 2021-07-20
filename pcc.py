@@ -800,6 +800,9 @@ class PCC(object):
         if role not in self.vehicles:
             self.vehicles[role] = Vehicle(role)
 
+        if data.get("status_show"):
+            self.player.show_status_info(img, data.get("source"), data["status_show"])
+
         if data['type'] == 'pcv_data':
             # print('pcv_data', data)
             if not self.replay and self.draw_algo:

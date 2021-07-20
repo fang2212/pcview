@@ -393,7 +393,7 @@ class Player(object):
             entry = self.columns[col]
             # indent = next_patch_x
             # y0 = next_patch_y
-            h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 24
+            h = max(self.columns[col]['buffer']) + 4 if self.columns[col]['buffer'] else 24
             h = 24 if h == 0 else h
             self.columns[col]['indent'] = indent
             self.columns[col]['y0'] = y0
@@ -487,6 +487,16 @@ class Player(object):
                            'lost frames: {}'.format(data['frame_id'] - self.video_streams[data['source']]['frame_cnt']),
                            (2, 80), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'dev: {}'.format(data['device']), (2, 100), 0.5, CVColor.White, 1)
+
+    def show_status_info(self, img, source, status_list):
+        """
+        显示状态栏信息
+        style: normal, warning, fail, pass
+        """
+        show_line = 40          # 显示的行位置，每20像素的高度为一行
+        for i in status_list:
+            self.show_text_info(source, show_line, i.get("text", ""), i.get("style", "normal"))
+            show_line += 20
 
     def show_frame_id(self, img, source, fn):
         # indent = self.columns['video']['indent']

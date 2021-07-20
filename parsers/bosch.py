@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # _*_ coding:utf-8 _*_
+from math import sqrt, pi, atan2
+
 import cantools
 
 bosch_db = cantools.database.load_file('dbc/FR5CP_SFCAN_Matrix_V1_20201202_Released.dbc', strict=False)
@@ -37,7 +39,7 @@ def bosch_mrr(cid, data, ctx=None):
         end_num = 33 if index == 6 else start_num + 5
         for i in range(start_num, end_num):
             if r["FR5CP_ObjExistProb_{}".format(i)] > 0:
-                ctx['bosch_obs'].append({
+                data = {
                     "source": ctx["source"],
                     'type': 'obstacle',
                     'sensor': 'bosch',
@@ -45,8 +47,21 @@ def bosch_mrr(cid, data, ctx=None):
                     'id': r["FR5CP_ObjID_{}".format(i)],
                     'pos_lon': r["FR5CP_ObjDistX_{}".format(i)],
                     'pos_lat': r["FR5CP_ObjDistY_{}".format(i)],
-                    'color': 1
-                })
+                    'vel_lon': r["FR5CP_ObjRelVelX_{}".format(i)],
+                    'vel_lat': -r["FR5CP_ObjRelVelY_{}".format(i)],
+                    'color': 1,
+                }
+                # data['range'] = sqrt(data['pos_lon']**2 + data['pos_lat']**2)
+                data['angle'] = atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
+                ttc = data['pos_lon'] / -data['vel_lon'] if data['vel_lon'] < 0 else 7
+                if ttc > 7:
+                    ttc = 7
+                # 状态框显示信息
+                data["status_show"] = [
+                    {"text": "TTC:{:.2f}s".format(ttc)},
+                    {"text": 'R/A: {:.2f} / {:.2f}'.format(data["pos_lon"], data['angle'])}
+                ]
+                ctx['bosch_obs'].append(data)
 
         if cid == 0x20a:
             r = ctx['bosch_obs'].copy()

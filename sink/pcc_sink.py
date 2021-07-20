@@ -685,7 +685,7 @@ class CANCollectSink(NNSink):
         self.can_list = can_list                  # 四个端口的信号类型列表
         self.parser = {}
         for t in can_list:
-            self.parser[t["topic"]] = parsers_dict.get(t["topic"], "default")
+            self.parser[t["topic"]] = parsers_dict.get(t["topic"], parsers_dict["default"])
         print('CANCollectSink initialized.', self.type, ip, port)
 
         self.source = []
@@ -702,7 +702,7 @@ class CANCollectSink(NNSink):
             source = '{}.{:01d}.can.{}'.format(t.get("origin_device", self.device), self.index, t["topic"])
             self.log_types["can{}".format(i)] = source                                          # 写入日志的信号名
             self.context[source] = {"source": "{}.{}".format(t["topic"], self.index)}           # 解析用的变量空间
-            self.source.append("{}.{}".format(t["topic"], self.index))              # 来源列表
+            self.source.append(source)              # 来源列表
 
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
@@ -721,15 +721,17 @@ class CANCollectSink(NNSink):
 
         msg_type = self.can_list[channel]["topic"]
         parser = self.parser[msg_type]
-        ret = parser(can_id, data, self.context[msg_type])
+        source = self.source[channel]
+        ret = parser(can_id, data, self.context[source])
         if ret is None:
             return None
+
         if isinstance(ret, list):
             for obs in ret:
                 obs['ts'] = timestamp
         else:
             ret['ts'] = timestamp
-        return can_id, ret, self.source[channel]
+        return can_id, ret, self.context[source]["source"]
 
 
 class CANSink(NNSink):
