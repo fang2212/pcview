@@ -738,13 +738,13 @@ def start_replay(source_path, args, show_video=True):
         from video_server import PccServer
         server = PccServer()
         server.start()
-        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, to_web=server)
+        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=odir, uniconf=cfg, to_web=server)
         replayer.start()
         pcc.start()
         while True:
             time.sleep(1)
     else:
-        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, save_replay_video=odir, uniconf=cfg, show_video=show_video)
+        pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=odir, uniconf=cfg, show_video=show_video)
         replayer.start()
         pcc.start()
         replayer.join()
@@ -769,6 +769,7 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--loop', action="store_true")
     parser.add_argument('-w', '--web', action="store_true")
     parser.add_argument('-s', '--send', action="store_true")
+    parser.add_argument('-sib', "--show_ipm_bg", action="store_true")
     parser.add_argument('-sf', '--start_frame', default=0)
     parser.add_argument('-ef', '--end_frame', default=None)
     parser.add_argument('-st', '--start_time', default=0)
