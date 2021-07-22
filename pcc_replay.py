@@ -472,6 +472,7 @@ class LogPlayer(Process):
                         if cols[2] == self.video_log_key:
                             self.now_frame_id = int(cols[3])
                             _, jpg = next(self.jpeg_extractor)
+                    print("跳到当前帧数：", self.now_frame_id)
                 if jpg is None or lcnt % self.replay_speed != 0:
                     self.now_frame_id = frame_id
                     pass_forward = True

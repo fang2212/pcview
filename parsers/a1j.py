@@ -16,7 +16,7 @@ import cantools
 db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190715.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/ESR DV3_64Tgt.dbc')
 
-cipv = {}
+cipv = {}       # Closest In Path Vehicle 路径上最近的车辆
 cipp = {}
 x1_lane = {}
 detection_sensor = {
@@ -40,7 +40,7 @@ def parse_a1j(id, data, ctx=None):
         ctx['x1_obs'] = list()
     if id == 0x76f:  # start of epoch
         # ctx['x1_obs'].clear()
-        cipv.clear()
+        # cipv.clear()
         return {'type': 'vehicle_state', 'speed': r['speed'] / 3.6}
 
     elif id == 0x77f:  # frame_ped
@@ -74,6 +74,7 @@ def parse_a1j(id, data, ctx=None):
         cipv['TTC'] = r['TargetVehicle_TTC']
 
         ctx['x1_obs'].append(cipv.copy())
+        cipv.clear()
         # return cipv
 
     elif 0x770 <= id <= 0x777:

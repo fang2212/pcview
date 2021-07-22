@@ -17,6 +17,7 @@ detection_sensor = {
     4: 'radar and vision',
 }
 
+mrr_status = {}
 
 def bosch_mrr(cid, data, ctx=None):
     ids = [m.frame_id for m in bosch_db.messages]
@@ -28,6 +29,8 @@ def bosch_mrr(cid, data, ctx=None):
     # print("0x%x" % id, r)
     if not ctx.get('bosch_obs'):
         ctx['bosch_obs'] = list()
+    if cid == 0x200:
+        mrr_status["status"] = r["FR5CP_FailureStatus"]
 
     if 0x203 <= cid <= 0x20a:
         # other car
@@ -57,10 +60,11 @@ def bosch_mrr(cid, data, ctx=None):
                 if ttc > 7:
                     ttc = 7
                 # 状态框显示信息
-                # data["status_show"] = [
-                #     {"text": "TTC:{:.2f}s".format(ttc)},
-                #     {"text": 'R/A: {:.2f} / {:.2f}'.format(data["pos_lon"], data['angle'])}
-                # ]
+                data["status_show"] = [
+                    {"text": "status:{}".format(mrr_status.get("status", "Failure"))}
+                    # {"text": "TTC:{:.2f}s".format(ttc)},
+                    # {"text": 'R/A: {:.2f} / {:.2f}'.format(data["pos_lon"], data['angle'])}
+                ]
                 ctx['bosch_obs'].append(data)
 
         if cid == 0x20a:
