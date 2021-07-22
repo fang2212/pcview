@@ -53,13 +53,19 @@ class Player(object):
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
         self.color_obs = {
+            "a1j": FlatColor.yellow_green,
+            "a1j_fusion": FlatColor.yellow_green,
             "ars410": FlatColor.peach,
+            "bosch_mrr": FlatColor.yellow,
+            "d1_fusion": FlatColor.violet,
             "gs4_debug": FlatColor.pink,
             "j2": FlatColor.carrot,
+            "j2_fusion": FlatColor.light_green,
             "q4_100": FlatColor.turquoise,
             'anc': FlatColor.carrot,
             'ars': FlatColor.emerald,
             'ctlrr': FlatColor.alizarin,
+            'default': FlatColor.clouds,
             'esr': FlatColor.alizarin,
             'gps': FlatColor.clouds,
             'ifv300': FlatColor.peter_river,
@@ -68,16 +74,12 @@ class Player(object):
             'mbq4': FlatColor.turquoise,
             'rtk': FlatColor.sun_flower,
             'sta77': FlatColor.wet_asphalt,
+            "wsk": FlatColor.pink,
             'x1': FlatColor.amethyst,
             'x1_fusion': CVColor.Red,
-            "a1j_fusion": FlatColor.yellow_green,
             'x1_fusion_cam': FlatColor.dark_red,
             'x1j': FlatColor.amethyst,
             'xyd2': FlatColor.Blue,
-            "j2_fusion": FlatColor.light_green,
-            "d1_fusion": FlatColor.violet,
-            "bosch_mrr": FlatColor.yellow,
-            'default': FlatColor.clouds,
         }
 
         self.detection_color = {

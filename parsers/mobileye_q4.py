@@ -6,6 +6,8 @@
 @Description:   
 @Create Time:     2019/8/29 上午10:38   
 """
+import math
+
 import cantools
 # import canmatrix
 # import decimal
@@ -166,6 +168,23 @@ def parser_mbq4(id, buf, ctx):
         if 'Lane_C2' in r:
             ctx['q4_lane'][lane_type]['a2'] = -r['Lane_C2']
             ctx['q4_lane'][lane_type]['a3'] = -r['Lane_C3']
+
+            if lane_type == "left_lane":
+                value = math.fabs(round(1/(2*r['Lane_C2']), 2))
+                ctx['q4_lane'][lane_type]["status_show"] = [
+                    {
+                        "text": "Rl:{}".format(value if value < 2500 else "straights"),
+                        "height": 40
+                    }
+                ]
+            elif lane_type == "right_lane":
+                value = math.fabs(round(1/(2*r['Lane_C2']), 2))
+                ctx['q4_lane'][lane_type]["status_show"] = [
+                    {
+                        "text": "Rr:{}".format(value if value < 2500 else "straights"),
+                        "height": 40
+                    }
+                ]
 
         # for i in range(0, 4):
         #     key = 'Lane_C' + str(i)

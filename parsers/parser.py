@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 from parsers.bosch import bosch_mrr
-=======
 from parsers.a1j import parse_a1j
->>>>>>> cve-new
 from parsers.d1_fusion import parse_d1
 from parsers.x1 import parse_x1
 from parsers.x1l import parse_x1l
@@ -60,6 +57,7 @@ parsers_dict = {
     "sta77":    parse_sta77,
     "sta77_3":  parse_sta77_3,
     "vfr":      parse_vfr,
+    "wsk":      parse_ars,
     "x1":       parse_x1,
     "x1_fusion": parse_x1,
     "x1_jac":   parse_x1_jac,

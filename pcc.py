@@ -808,6 +808,8 @@ class PCC(object):
             if not self.replay and self.draw_algo:
                 for t in data["data"]:
                     self.flow_player.draw(t, img)
+        elif data["type"] == "status":
+            self.player.update_column_ts(data.get('source'), data.get('ts'))
 
         elif data['type'] == 'obstacle':
             # dummy0 = {'type': 'obstacle', 'id': 20, 'source': 'x1.1', 'pos_lat': 0, 'pos_lon': 60, 'color': 1}
