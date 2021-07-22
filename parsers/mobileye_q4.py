@@ -182,7 +182,7 @@ def parser_mbq4(id, buf, ctx):
                 ctx['q4_lane'][lane_type]["status_show"] = [
                     {
                         "text": "Rr:{}".format(value if value < 2500 else "straights"),
-                        "height": 40
+                        "height": 60
                     }
                 ]
 

@@ -31,7 +31,7 @@ def parse_x1j(id, data, ctx=None):
     if not ctx.get('x1j_obs'):
         ctx['x1j_obs'] = list()
     if id == 0x76f:  # start of epoch
-        ctx['x1j_obs'].clear()
+        # ctx['x1j_obs'].clear()
         cipv.clear()
         return {'type': 'vehicle_state', 'speed': r['speed']}
 
@@ -149,7 +149,7 @@ def parse_x1j(id, data, ctx=None):
         if id == 0x77d:
             if ctx.get('x1j_obs'):
                 ret = ctx['x1j_obs'].copy()
-                # ctx['x1j_obs'].clear()
+                ctx['x1j_obs'].clear()
                 # print(ret)
                 return ret
     elif 0x5f0 <= id <= 0x5f7:

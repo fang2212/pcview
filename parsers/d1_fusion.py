@@ -51,7 +51,7 @@ def parse_d1(id, data, ctx=None):
         spp_lane["style"] = "" if r["LCK_Mode"] == 4 else "dotted"      # 正常显示为直线，否则虚线
 
     elif id == 0x76f:  # start of epoch
-        ctx['d1_obs'].clear()
+        # ctx['d1_obs'].clear()
         cipv.clear()
         return {'type': 'vehicle_state', 'speed': r['speed'] / 3.6}
 
