@@ -159,13 +159,12 @@ class LogPlayer(Process):
         self.paused_t = 0
         self.nosort = nosort
 
-        self.chmain = chmain
+        self.video_dir = "video"
+        self.video_log_key = "camera"
         if chmain:
             self.video_dir = chmain
             self.video_log_key = chmain
-        else:
-            self.video_dir = "video"
-            self.video_log_key = "camera"
+        self.chmain = chmain
 
     def init_env(self):
         self.shared['init_time'] = time.time()
@@ -182,8 +181,8 @@ class LogPlayer(Process):
                 except Exception as e:
                     continue
                 done = True
-
-        # 初始化视频图片生成器
+        while not self.msg_queue.empty():
+            self.msg_queue.get()
         self.jpeg_extractor = jpeg_extractor(os.path.dirname(self.log_path) + '/' + self.video_dir)
 
         # 初始化主设备
@@ -552,7 +551,7 @@ def start_replay(source_path, args):
         while True:
             time.sleep(1)
     else:
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, show_video=show_video, eclient=args.eclient)
         replay_hub.start()
         pcc.start()
         replay_hub.join()
@@ -575,7 +574,8 @@ if __name__ == "__main__":
     parser.add_argument('-ef', '--end_frame', default=None)
     parser.add_argument('-st', '--start_time', default=0)
     parser.add_argument('-et', '--end_time', default=None)
-    parser.add_argument('-ri', '--real_interval', action="store_true", help="是否以真实速度进行回放")
+    parser.add_argument('-ri', '--real_interval', action="store_true")
+    parser.add_argument('-e', '--eclient', action="store_true")
     parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
     parser.add_argument('-chmain', default=None, help="change main video")
     args = parser.parse_args()

@@ -173,7 +173,7 @@ class Player(object):
         height = obs.get('height')
         # print(obs['source'], obs['class'])
         height = height or width
-        if obs.get('class') == 'pedestrian' or obs.get('class') == 'PEDESTRIAN':
+        if obs.get('class') == 'pedestrian':
             height = 1.6
         # install_para = install[obs['source'].split('.')[0]]
 
@@ -324,11 +324,9 @@ class Player(object):
 
         if 'j2' in source:
             source = ""
-
         p = self.transform.getp_ifc_from_poly(ratios, 1, min_range, max_range, sensor=source)
         if not p:
             return
-
         if style == "dotted":
             for i in range(2, len(p) - 1, 1):
                 if i % 3 == 0:
@@ -383,7 +381,6 @@ class Player(object):
         # self.show_columns(img)
         # print(len(self.columns))
         self.img_height, self.img_width, _ = img.shape
-        # print(self.img_width, self.img_height)
         w = 160
         slots = {}
         for i in range(0, self.img_width, w):
@@ -514,7 +511,7 @@ class Player(object):
                            (2, 80), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'dev: {}'.format(data['device']), (2, 100), 0.5, CVColor.White, 1)
 
-    def show_status_info(self, img, source, status_list):
+    def show_status_info(self, source, status_list):
         """
         显示状态栏信息
         style: normal, warning, fail, pass
@@ -792,7 +789,7 @@ class Player(object):
             BaseDraw.draw_text(img, '#rtk:{}/{} #ori:{}/{}'.format(rtk['sat'][1], rtk['sat'][0], rtk['sat'][5],
                                                                    rtk['sat'][4]), (indent + 50, 20), 0.5, color, 1)
 
-    def show_target(self, img, target, host):
+    def show_target                                                                            (self, img, target, host):
         if not target or not host:
             return
         indent = self.get_indent(target['source'])
