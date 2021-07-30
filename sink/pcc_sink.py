@@ -13,6 +13,7 @@ import msgpack
 import nnpy
 import socket
 import zmq
+import paho.mqtt.client as mqtt
 
 async_for_sink = False
 
@@ -336,6 +337,81 @@ class UDPSink(Thread):
 
         print('sink', self.source, 'exit.')
 
+
+class MQTTSink(Thread):
+
+    def __init__(self, queue, ip, can_list, index, fileHandler, isheadless=False, device=""):
+        super(MQTTSink, self).__init__()
+        self.type = 'mqtt_sink'
+        self.ip = ip
+        self.device = device
+        self.index = index
+        self.fileHandler = fileHandler
+        self.can_list = can_list  # 四个端口的信号类型列表
+        self.parser = {}
+        self.queue = queue
+        for t in can_list:
+            self.parser[t["topic"]] = parsers_dict.get(t["topic"], parsers_dict["default"])
+
+        self.source = []
+        self.context = {}
+        self.log_types = {}
+        self.parse_event = Event()
+        self.parse_event.set()
+
+        self.init_env()
+        print('MQTTSink initialized.', self.type, ip)
+
+    def init_env(self):
+        # 根据传入四个端口信号进行初始化相关环境
+        for i, t in enumerate(self.can_list):
+            source = '{}.{:01d}.can.{}'.format(t.get("origin_device", self.device), self.index, t["topic"])
+            self.log_types["can{}".format(i)] = source  # 写入日志的信号名
+            self.context[source] = {"source": "{}.{}".format(t["topic"], self.index)}  # 解析用的变量空间
+            self.source.append(source)  # 来源列表
+
+    def _init_port(self):
+        print('mqtt connecting', self.ip)
+        client = mqtt.Client('canfd_mqtt')
+        client.connect(self.ip)
+        client.subscribe('pi_node/can_rcv/#')
+        client.on_message = self.pkg_handler
+        client.loop_start()
+
+    def run(self):
+        pid = os.getpid()
+        print('mqtt sink {} pid:'.format(self.source), pid)
+        self._init_port()
+
+    def pkg_handler(self, mosq, obj, msg):
+        msg = msg.payload
+        if not msg:
+            return
+        channel = msg[2]
+        dlc = msg[3]
+        can_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
+        timestamp = struct.unpack('<d', msg[8:16])[0]
+        data = msg[16:]
+
+        log_type = self.log_types.get("can{}".format(channel))
+        self.fileHandler.insert_raw((timestamp, log_type, '0x%x' % can_id + ' ' + data.hex()))
+
+        if not self.parse_event.is_set():
+            return
+
+        msg_type = self.can_list[channel]["topic"]
+        parser = self.parser[msg_type]
+        source = self.source[channel]
+        ret = parser(can_id, data, self.context[source])
+        if ret is None:
+            return None
+
+        if isinstance(ret, list):
+            for obs in ret:
+                obs['ts'] = timestamp
+        else:
+            ret['ts'] = timestamp
+        return can_id, ret, self.context[source]["source"]
 
 
 class TCPSink(Thread):

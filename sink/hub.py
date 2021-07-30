@@ -314,11 +314,15 @@ class Hub(Thread):
                 if "can" in iface:
                     can_list.append(cfg["ports"][iface])
 
-            if can_list:
+            if can_list[0]["transport"] == "nanomsg":
                 can_collector = CANCollectSink(self.msg_queue, ip=ip, port=cfg.get("port"), can_list=can_list,
                                                index=idx, fileHandler=self.fileHandler)
                 self.sinks.append(can_collector)
                 self.online[ip]['msg_types'].extend([t["topic"]+'.{}'.format(idx) for t in can_list])
+            elif can_list[0]["transport"] == "mqtt":
+                can_collector = MQTTSink(self.msg_queue, ip=ip, can_list=can_list, index=idx, fileHandler=self.fileHandler)
+                self.sinks.append(can_collector)
+                self.online[ip]['msg_types'].extend([t["topic"] + '.{}'.format(idx) for t in can_list])
         elif "collector" in cfg.get('type'):
             for iface in cfg['ports']:
                 if not cfg['ports'][iface].get('enable') and not is_main:
