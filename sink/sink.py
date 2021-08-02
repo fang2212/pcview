@@ -11,10 +11,10 @@ class SinkManage(Process):
     """
     信号管理类，对信号进行解析、修改操作
     """
-    def __init__(self):
+    def __init__(self, decode_queue=Queue(30000), result_queue=Queue(300000)):
         super().__init__()
-        self.decode_queue = Queue(30000)                # 解析队列
-        self.result_queue = Queue(30000)                # 消息队列
+        self.decode_queue = decode_queue                # 解析队列
+        self.result_queue = result_queue                # 消息队列
         self.exit = Event()                             # 退出控制
 
         self.context = {}                               # 基于source字段提供上下文空间

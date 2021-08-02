@@ -28,7 +28,7 @@ class FileHandler(Process):
     def __init__(self, redirect=False, uniconf=None):
         super(FileHandler, self).__init__()
         self.ctrl_queue = Queue()                   # 控制事件队列
-        self.log_queue = Queue(200000)      # 记录数据队列
+        self.log_queue = Queue(200000)              # 记录数据队列
         self.running = True                         # 是否运行
 
         self._max_cnt = 1200

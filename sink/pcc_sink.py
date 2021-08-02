@@ -38,14 +38,13 @@ class Sink(Thread):
     """
     信号解析基本类
     """
-    def __init__(self, ip, port, msg_type, index=0, sink_process=None):
+    def __init__(self, ip, port, msg_type, index=0):
         super().__init__()
         self.daemon = True  # 设置为守护线程
         self.ip = ip
         self.port = port
         self.msg_type = msg_type
         self.index = index
-        self.sink_process=sink_process
         self.source = 'sink.{}'.format(index)
         self.exit = Event()
 
@@ -88,13 +87,14 @@ class NNSink(Sink):
     """
     nnpy类型信号处理基类
     """
-    def __init__(self, ip, port, msg_type, index=0, sink_process=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, sink_process=sink_process)
+    def __init__(self, ip, port, msg_type, index=0, decode_queue=None, result_queue=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type)
         self.ip = ip
         self.port = port
         self.type = msg_type
         self.index = index
-        self.sink_process=sink_process
+        self.decode_queue = decode_queue
+        self.result_queue = result_queue
         self.source = 'nnpy_sink.{}'.format(index)
 
     def _init_port(self):
@@ -111,12 +111,7 @@ class NNSink(Sink):
         self._init_port()
         self.pid = os.getpid()
         while not self.exit.is_set():
-            if self.port == 10086:
-                print(self.ip, self.port, "==============")
-
             buf = self.read()
-            if self.port == 10086:
-                print(buf)
             if not buf:
                 time.sleep(0.001)
                 continue
@@ -130,19 +125,20 @@ class NNSink(Sink):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                self.sink_process.put_decode((r))
+                self.decode_queue.put((r))
 
 
 class ZmqSink(Sink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, sink_process=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, sink_process=sink_process)
+    def __init__(self, ip, port, msg_type, index, fileHandler, decode_queue=None, result_queue=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type)
         self.ip = ip
         self.port = port
         self.msg_type = msg_type
         self.source = '{}.{:d}'.format(msg_type, index)
+        self.decode_queue = decode_queue
+        self.result_queue = result_queue
         self.index = index
         self.fileHandler = fileHandler
-        self.sink_process = sink_process
         self.ctx = dict()
         self._buf = b''
         self.context = None
@@ -184,16 +180,17 @@ class ZmqSink(Sink):
                 else:
                     print(r)
 
-                self.sink_process.put_decode((r))
+                self.decode_queue.put((r))
 
 
 class UDPSink(Sink):
-    def __init__(self, ip, port, topic, protocol, index, file_andler, sink_process=None):
-        super(UDPSink, self).__init__(ip=ip, port=port, msg_type=topic, sink_process=sink_process)
+    def __init__(self, ip, port, topic, protocol, index, file_andler, decode_queue=None, result_queue=None):
+        super(UDPSink, self).__init__(ip=ip, port=port, msg_type=topic)
         self.ip = ip
         self.port = port
         self.msg_type = topic
-        self.sink_process = sink_process
+        self.decode_queue = decode_queue
+        self.result_queue = result_queue
         self.source = '{}.{:d}'.format(topic, index)
         self.index = index
         self.fileHandler = file_andler
@@ -536,7 +533,7 @@ class CameraSink(NNSink):
 
 class FlowSink(NNSink):
     def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo',
-                 log_name='pcv_log', topic='pcview', is_main=False, sink_process=None):
+                 log_name='pcv_log', topic='pcview', is_main=False, decode_queue=None, result_queue=None):
         super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, sink_process=sink_process)
         self.last_fid = 0
         self.fileHandler = fileHandler

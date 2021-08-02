@@ -3,6 +3,7 @@ import json
 import platform
 import shutil
 import sys
+from multiprocessing import Queue
 
 from config.config import dic2obj, bcl, load_cfg
 from pcc import *
@@ -48,7 +49,6 @@ else:
     except FileNotFoundError:
         logger.error('no media folder found.')
 
-
 if args.config:
     cve_conf = load_cfg(args.config)
 else:
@@ -59,6 +59,14 @@ cve_conf.local_cfg = local_cfg
 logger.warning("log path:{}".format(cve_conf.local_cfg.log_root))
 
 _startup_cwd = os.getcwd()
+
+# 初始化信号加载进程，对报文信号进行解析处理
+sink_manages = []
+manage_num = 2
+decode_queue = Queue(300000)
+result_queue = Queue(300000)
+for i in range(manage_num):
+    sink_manages.append(SinkManage(decode_queue=decode_queue, result_queue=result_queue))
 
 
 def init_checkers(pcc):
@@ -79,6 +87,7 @@ def init_checkers(pcc):
 
 if args.web:  # 网页版启动方式
     import video_server
+
 
     def respawn(self=None):
         """Re-execute the current process.
@@ -103,7 +112,8 @@ if args.web:  # 网页版启动方式
     # 初始化信号加载进程
     sink_process = SinkManage()
     hub = Hub(uniconf=cve_conf, sink_process=sink_process)
-    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo, sink_process=sink_process)
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo,
+              sink_process=sink_process)
     pcc_thread = Thread(target=pcc.start, name='pcc_thread')
     sink_process.start()
     hub.start()
@@ -182,10 +192,9 @@ else:  # normal standalone PCC
     else:
         auto_rec = False
 
-    # 初始化信号加载进程
-    sink_process = SinkManage()
-    hub = Hub(uniconf=cve_conf, sink_process=sink_process)
-    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec, draw_algo=args.draw_algo, sink_process=sink_process)
+    hub = Hub(uniconf=cve_conf, decode_queue=decode_queue, result_queue=result_queue)
+    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec, draw_algo=args.draw_algo,
+              decode_queue=decode_queue, result_queue=result_queue)
     sink_process.start()
     hub.start()
     sup = init_checkers(pcc)
