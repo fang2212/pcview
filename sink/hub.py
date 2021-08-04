@@ -278,10 +278,18 @@ class Hub(Thread):
                 port = cfg['ports'][item]['port']
                 proto = cfg['ports'][item].get('protocol')
                 topic = cfg['ports'][item].get('topic')
+                transport = cfg['ports'][item].get('transport')
 
-                sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
-                                index=idx, protocol=proto, topic=topic, log_name=item, fileHandler=self.fileHandler,
-                                is_main=is_main, name=cfg.get("type"))
+                if transport == "libflow":
+                    sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
+                                    index=idx, protocol=proto, topic=topic, log_name=item, fileHandler=self.fileHandler,
+                                    is_main=is_main, name=cfg.get("type"))
+                elif transport == "protoflow":
+                    sink = ProtoSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
+                                    index=idx, protocol=proto, topic=topic, log_name=item, fileHandler=self.fileHandler,
+                                    is_main=is_main, name=cfg.get("type"))
+                else:
+                    return
                 # sink.start()
                 # sink = {'stype': 'flow', 'msg_queue': self.msg_queue, 'cam_queue': self.cam_queue, 'ip': ip,
                 #         'port': port, 'channel': item, 'index': idx, 'fileHandler': self.fileHandler,
