@@ -40,7 +40,7 @@ def loop_traverse(items):
 
 
 class PCC(object):
-    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=None,
+    def __init__(self, hub, replay=False, rlog=None, ipm=None, ipm_bg=False, save_replay_video=None, uniconf=None, to_web=None,
                  auto_rec=False, draw_algo=False, show_video=True):
         super(PCC, self).__init__()
         self.draw_algo = draw_algo
@@ -67,7 +67,7 @@ class PCC(object):
         self.target = None
         self.rtk_pair = [{}, {}]
         self.ot = OrientTuner(uniconf)
-        self.show_ipm_bg = False
+        self.show_ipm_bg = ipm_bg
         self.auto_rec = auto_rec
         self.frame_cnt = 0
         self.refresh_rate = 20
@@ -802,7 +802,7 @@ class PCC(object):
 
         if data['type'] == 'pcv_data':
             # print('pcv_data', data)
-            if self.replay or (not self.replay and self.draw_algo):
+            if not self.replay and self.draw_algo:
                 for t in data["data"]:
                     self.flow_player.draw(t, img)
 
