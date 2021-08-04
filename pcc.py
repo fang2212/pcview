@@ -842,7 +842,7 @@ class PCC(object):
             self.draw_rtk(img, data)
             # print('------------', data['type'], data)
 
-        elif data['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint', 'inspva']:
+        elif data['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint']:
             pass
             # print('------------', data['type'])
             # print('ub482 ts:', data['ts'])
