@@ -413,7 +413,7 @@ class MQTTSink(Thread):
                 obs['ts'] = timestamp
         else:
             ret['ts'] = timestamp
-        return can_id, ret, self.context[source]["source"]
+        self.queue.put((can_id, ret, self.context[source]["source"]))
 
 
 class TCPSink(Thread):
