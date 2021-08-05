@@ -17,12 +17,11 @@ import asyncio
 
 
 class CollectorNode(kProcess):
-    def __init__(self, sinks):
-        super(CollectorNode, self).__init__()
+    def __init__(self, sinks, name=None):
+        super(CollectorNode, self).__init__(name=name)
         self.sinks = sinks
         self.exit = Event()
         self.q = kQueue()
-
 
     def run(self):
         # if async_for_sink:
@@ -95,7 +94,7 @@ class Hub(Thread):
 
         self.nodes = []
         for i in range(5):
-            self.nodes.append(CollectorNode([]))
+            self.nodes.append(CollectorNode([], name='collector_node{}'.format(i)))
 
         self.mac_ip = None
         self.online = {}
@@ -312,7 +311,8 @@ class Hub(Thread):
                 self.sinks.append(pisink)
                 self.online[ip]['msg_types'].append(name + '.{}'.format(idx))
         elif "can_collector" in cfg.get("type"):
-            can_list = []
+            can_list = {}
+            transport = cfg.get('transport')
             for iface in cfg['ports']:
                 if 'rtk' in iface or 'gps' in iface:
                     pisink = PinodeSink(self.msg_queue, ip, cfg["ports"][iface]["port"], channel='can', index=idx, resname=iface,
@@ -320,17 +320,18 @@ class Hub(Thread):
                     self.sinks.append(pisink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
                 if "can" in iface:
-                    can_list.append(cfg["ports"][iface])
+                    can_list[iface] = cfg["ports"][iface]
 
-            if can_list[0]["transport"] == "nanomsg":
+            if transport == "nanomsg":
                 can_collector = CANCollectSink(self.msg_queue, ip=ip, port=cfg.get("port"), can_list=can_list,
                                                index=idx, fileHandler=self.fileHandler)
                 self.sinks.append(can_collector)
-                self.online[ip]['msg_types'].extend([t["topic"]+'.{}'.format(idx) for t in can_list])
-            elif can_list[0]["transport"] == "mqtt":
-                can_collector = MQTTSink(self.msg_queue, ip=ip, can_list=can_list, index=idx, fileHandler=self.fileHandler)
+                self.online[ip]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
+            elif transport == "mqtt":
+                device = cfg.get('origin_device', cfg['name'])
+                can_collector = MQTTSink(self.msg_queue, ip=ip, can_list=can_list, index=idx, fileHandler=self.fileHandler, device=device)
                 self.sinks.append(can_collector)
-                self.online[ip]['msg_types'].extend([t["topic"] + '.{}'.format(idx) for t in can_list])
+                self.online[ip]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
         elif "collector" in cfg.get('type'):
             for iface in cfg['ports']:
                 if not cfg['ports'][iface].get('enable') and not is_main:
