@@ -10,6 +10,7 @@
     "can1": {
       "enable": true,
       "protocol": "canpack",
+      "cid": "canfd_mqtt",
       "dbc": "",
       "topic": "pi_node/can_rcv/0",
       "qos": 0
@@ -17,13 +18,15 @@
     "can2": {
       "enable": true,
       "protocol": "canpack",
+      "cid": "canfd_mqtt",
       "dbc": "",
-      "topic": "pi_node/can_rcv/1",
+      "topic": "socket_hil/can_replay/1",
       "qos": 0
     },
     "can3": {
       "enable": true,
       "protocol": "canpack",
+      "cid": "canfd_mqtt",
       "dbc": "",
       "topic": "pi_node/can_rcv/2",
       "qos": 0
@@ -31,6 +34,7 @@
     "can4": {
       "enable": true,
       "protocol": "canpack",
+      "cid": "canfd_mqtt",
       "dbc": "",
       "topic": "pi_node/can_rcv/3",
       "qos": 0

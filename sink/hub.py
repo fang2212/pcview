@@ -329,7 +329,7 @@ class Hub(Thread):
                 self.online[ip]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
             elif transport == "mqtt":
                 device = cfg.get('origin_device', cfg['name'])
-                can_collector = MQTTSink(self.msg_queue, ip=ip, can_list=can_list, index=idx, fileHandler=self.fileHandler, device=device)
+                can_collector = MQTTSink(self.msg_queue, ip=ip, can_list=can_list, index=idx, fileHandler=self.fileHandler, device=device, cid=cfg.get("cid"))
                 self.sinks.append(can_collector)
                 self.online[ip]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
         elif "collector" in cfg.get('type'):

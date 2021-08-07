@@ -15,10 +15,10 @@
     },
     "proto": {
       "enable": true,
-      "port": 24099,
+      "port": 24032,
       "transport": "protoflow",
       "protocol": "msgpack",
-      "topic": "imuinfo"
+      "topic": "roadmarking,vehicle,tsr,obs,vehicle_signal,ped"
     },
     "gsensor": {
       "enable": true,

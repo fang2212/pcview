@@ -1,9 +1,10 @@
 import asyncio
+import base64
 import json
 import struct
 import time
-# from pyproto import vehicle_pb2, pedestrian_pb2, roadmarking_pb2, object_attribute_pb2, object_pb2
-# from pyproto import calib_param_pb2, dev_object_pb2, vehicle_signal_pb2
+from pyproto import vehicle_pb2, pedestrian_pb2, roadmarking_pb2, object_attribute_pb2, object_pb2
+from pyproto import calib_param_pb2, dev_object_pb2, vehicle_signal_pb2
 # from multiprocessing import Process
 from threading import Thread
 # from threading import Event as tEvent
@@ -342,7 +343,7 @@ class UDPSink(Thread):
 
 class MQTTSink(Thread):
 
-    def __init__(self, queue, ip, can_list, index, fileHandler, isheadless=False, device=""):
+    def __init__(self, queue, ip, can_list, index, fileHandler, isheadless=False, device="", cid=""):
         super(MQTTSink, self).__init__()
         self.type = 'mqtt_sink'
         self.ip = ip
@@ -362,7 +363,7 @@ class MQTTSink(Thread):
         self.parse_event = Event()
         self.parse_event.set()
 
-        self.client = mqtt.Client('canfd_mqtt')
+        self.client = mqtt.Client(cid)
 
         self.topic_list = {}
         self.init_env()
@@ -375,6 +376,7 @@ class MQTTSink(Thread):
         for ch in self.can_list:
             t = self.can_list[ch]
             source = '{}.{}.{}.{}'.format(self.device, self.index, ch, t['dbc'])
+            self.source.append(source)
             # self.log_types["can{}".format(i)] = source  # 写入日志的信号名
             self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}  # 解析用的变量空间
             # self.source.append(source)  # 来源列表
@@ -417,6 +419,7 @@ class MQTTSink(Thread):
         timestamp = struct.unpack('<d', data[8:16])[0]
         can_data = data[16:]
 
+        print((timestamp, source, '0x%x' % can_id + ' ' + can_data.hex()))
         # print('can rcv ch={} id=0x{:x} dlc={} ts={} data={}'.format(channel, can_id, dlc, timestamp, can_data))
         self.fileHandler.insert_raw((timestamp, source, '0x%x' % can_id + ' ' + can_data.hex()))
 
@@ -444,6 +447,7 @@ class MQTTSink(Thread):
             # print('r is not list')
             ret['ts'] = timestamp
             ret['source'] = source
+
         self.queue.put((can_id, ret, source))
         # return can_id, ret, source
 
@@ -812,7 +816,7 @@ class CANCollectSink(NNSink):
         # 根据传入四个端口信号进行初始化相关环境
         for i, ch in self.can_list:
             t = self.can_list[ch]
-            source = '{}.{}.{}'.format(t.get("origin_device", self.device), self.index, ch)
+            source = '{}.{}.{}.{}'.format(t.get("origin_device", self.device), self.index, ch, t["dbc"])
             self.log_types["can{}".format(i)] = source                                          # 写入日志的信号名
             self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}           # 解析用的变量空间
             self.source.append(source)              # 来源列表
@@ -1054,8 +1058,10 @@ class FlowSink(NNSink):
         self.type = 'flow_sink'
         self.topic = topic
         self.source = name + '.{:d}'.format(index)
+        self.new_a1j = False        # 做个兼容处理，新的a1j不需要进行msgpack.unpack
 
     async def _run(self):
+        print("FlowSink Initialized", self.ip, self.port, self.topic)
         session = aiohttp.ClientSession()
         URL = 'ws://' + str(self.ip) + ':' + str(self.port)
         async with session.ws_connect(URL) as ws:
@@ -1121,22 +1127,43 @@ class FlowSink(NNSink):
             # raise (e)
 
     def pkg_handler(self, msg):
-        # print(msg)
-        # if self.protocol != 'msgpack':
-        #     r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name}
-        #     r['buf'] = msg.data
-        #     data = msgpack.unpackb(msg.data)
-        #     print(data)
-        #     # print(msg)
-        #     self.fileHandler.insert_general_bin_raw(r)
-        #     return 'algo_debug', r
+        # 判断是否新的a1j设备，如果是新a1j设备的话不需要进行解码处理
+        if not self.new_a1j:
+            try:
+                data = msgpack.unpackb(msg.data)
+            except Exception as e:
+                self.new_a1j = True
+                data = msg.data
+        else:
+            data = msg.data
 
-        data = msgpack.unpackb(msg.data)
-        # print('-----', data[b'topic'])
+        # 新a1j设备图片数据
+        if isinstance(data, bytes) and data.startswith(b'\xff\x03'):  # jpeg pack header
+            frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
+            self.last_fid = frame_id
+            ts = int.from_bytes(data[16:24], byteorder='little', signed=False)
+            ts = ts / 1000000
+            jpg = data[24:]
+            if msg.type in (aiohttp.WSMsgType.CLOSED,
+                            aiohttp.WSMsgType.ERROR):
+                return None
+
+            r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
+                 'is_main': self.is_main, 'transport': 'libflow'}
+            self.fileHandler.insert_jpg(r)
+            # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
+            return frame_id, r
+
+        if self.topic == "*":
+            # Q3华为mdc特殊处理数据
+            data["origin-source"] = data["source"]
+            data["source"] = self.source
+            data["data"] = base64.b64encode(data["data"]).decode('utf-8')
+            self.fileHandler.insert_pcv_raw(data)
+            return
+
         ts = time.time()
-        topic = None
-        # if 'topic' not in data:
-        #     return
+
         if b'data' in data:
             msg_src = data[b'source'].decode()
             payload = data[b'data']
@@ -1147,6 +1174,7 @@ class FlowSink(NNSink):
             topic = data['topic']
         else:
             return
+
 
         if msg_src == 'pcview':
             if topic == 'finish':
@@ -1194,6 +1222,8 @@ class FlowSink(NNSink):
                     if msg.type in (aiohttp.WSMsgType.CLOSED,
                                     aiohttp.WSMsgType.ERROR):
                         return None
+                    print({'ts': ts, 'img': "", 'frame_id': frame_id, 'type': 'video', 'source': self.source,
+                         'is_main': self.is_main, 'transport': 'libflow'})
 
                     r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
                          'is_main': self.is_main, 'transport': 'libflow'}
@@ -1291,91 +1321,99 @@ class FlowSink(NNSink):
 
             return 'x1_data', pcv, self.source
 
-#
-# class ProtoSink(NNSink):
-#     def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, protocol='msgpack', name='proto',
-#                  log_name='proto_log', topic='pcview', isheadless=False, is_main=False):
-#         super(ProtoSink, self).__init__(cam_queue, ip, port, channel, index, isheadless)
-#         self.last_fid = 0
-#         self.fileHandler = fileHandler
-#         self.ip = ip
-#         self.port = port
-#         self.cam_queue = cam_queue
-#         self.msg_queue = msg_queue
-#         self.protocol = protocol
-#         self.log_name = log_name
-#         self.is_main = is_main
-#         self.type = 'flow_sink'
-#         self.topic = topic
-#         self.source = name + '.{:d}'.format(index)
-#
-#         self.key_pb = {
-#             # "vehicle": vehicle_pb2.Vehicle,
-#             "pedestrian": pedestrian_pb2.Pedestrian,
-#             "roadmarking": roadmarking_pb2.Roadmarking,
-#             "object_attribute": object_attribute_pb2.Box3DGroup,
-#             "vehicle": object_pb2.ObjectList,
-#             "ped": object_pb2.ObjectList,
-#             "calib_param": calib_param_pb2.CalibParam,
-#             "tsr": object_pb2.ObjectList,
-#             "dev_object": dev_object_pb2.DevObjectList,
-#             "vehicle_signal": vehicle_signal_pb2.VehicleSignal,
-#             "obs": object_pb2.ObjectList
-#         }
-#
-#     async def _run(self):
-#         session = aiohttp.ClientSession()
-#         URL = 'ws://' + str(self.ip) + ':' + str(self.port)
-#         async with session.ws_connect(URL) as ws:
-#             msg = {
-#                 'source': 'pcview',
-#                 'topic': 'subscribe',
-#                 'data': self.topic,
-#             }
-#
-#             data = msgpack.packb(msg)
-#             await ws.send_bytes(data)
-#             async for msg in ws:
-#                 self.pkg_handler(msg)
-#
-#     def run(self):
-#         import asyncio
-#         import platform
-#
-#         if platform.python_version() > "3.6":
-#             from tornado.platform.asyncio import AnyThreadEventLoopPolicy
-#             asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
-#         else:
-#             asyncio.set_event_loop(asyncio.new_event_loop())
-#         loop = asyncio.get_event_loop()
-#         try:
-#             loop.run_until_complete(self._run())
-#         except Exception as e:
-#             print(bcl.FAIL+'error:'+ str(e) + ' when initiating proto flow sink on'+bcl.ENDC, self.ip, self.port)
-#
-#     def pkg_handler(self, msg):
-#         data = msgpack.unpackb(msg.data)
-#         # print('-----', data[b'topic'])
-#         if b'data' in data:
-#             payload = data[b'data']
-#             topic = data[b'topic'].decode()
-#         elif 'data' in data:
-#             payload = data['data']
-#             topic = data['topic']
-#         else:
-#             return
-#
-#         if topic in self.key_pb:
-#             pb = self.key_pb.get(topic)
-#             if pb is None:
-#                 return
-#             v = pb()
-#             v.ParseFromString(payload)
-#             if topic == "calib_param" or topic == "vehicle_signal":
-#                 frame_id = self.fileHandler.fid
-#             else:
-#                 frame_id = v.frame_id
-#             self.fileHandler.insert_pcv_raw({"source": self.source, "frame_id": frame_id, "type": topic, topic: v, "rec_ts": time.time()})
+
+class ProtoSink(NNSink):
+    def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, protocol='msgpack', name='proto',
+                 log_name='proto_log', topic='pcview', isheadless=False, is_main=False):
+        super(ProtoSink, self).__init__(cam_queue, ip, port, channel, index, isheadless)
+        self.last_fid = 0
+        self.fileHandler = fileHandler
+        self.ip = ip
+        self.port = port
+        self.cam_queue = cam_queue
+        self.msg_queue = msg_queue
+        self.protocol = protocol
+        self.log_name = log_name
+        self.is_main = is_main
+        self.type = 'prote_sink'
+        self.topic = topic
+        self.source = name + '.{:d}'.format(index)
+
+        self.key_pb = {
+            # "vehicle": vehicle_pb2.Vehicle,
+            "pedestrian": pedestrian_pb2.Pedestrian,
+            "roadmarking": roadmarking_pb2.Roadmarking,
+            "object_attribute": object_attribute_pb2.Box3DGroup,
+            "vehicle": object_pb2.ObjectList,
+            "ped": object_pb2.ObjectList,
+            "calib_param": calib_param_pb2.CalibParam,
+            "tsr": object_pb2.ObjectList,
+            "dev_object": dev_object_pb2.DevObjectList,
+            "vehicle_signal": vehicle_signal_pb2.VehicleSignal,
+            "obs": object_pb2.ObjectList
+        }
+
+    async def _run(self):
+        print("ProtoSink Initialized", self.ip, self.port, self.topic)
+        session = aiohttp.ClientSession()
+        URL = 'ws://' + str(self.ip) + ':' + str(self.port)
+        async with session.ws_connect(URL) as ws:
+            msg = {
+                'source': 'pcview',
+                'topic': 'subscribe',
+                'data': self.topic,
+            }
+
+            data = msgpack.packb(msg)
+            await ws.send_bytes(data)
+            async for msg in ws:
+                self.pkg_handler(msg)
+
+    def run(self):
+        import asyncio
+        import platform
+
+        if platform.python_version() > "3.6":
+            from tornado.platform.asyncio import AnyThreadEventLoopPolicy
+            asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+        else:
+            asyncio.set_event_loop(asyncio.new_event_loop())
+        loop = asyncio.get_event_loop()
+        try:
+            loop.run_until_complete(self._run())
+        except Exception as e:
+            print(bcl.FAIL+'error:'+ str(e) + ' when initiating proto flow sink on'+bcl.ENDC, self.ip, self.port)
+
+    def pkg_handler(self, msg):
+        data = msgpack.unpackb(msg.data)
+        # print('-----', data[b'topic'])
+        if b'data' in data:
+            payload = data[b'data']
+            topic = data[b'topic'].decode()
+        elif 'data' in data:
+            payload = data['data']
+            topic = data['topic']
+        else:
+            return
+
+        if topic in self.key_pb:
+            pb = self.key_pb.get(topic)
+            if pb is None:
+                return
+            v = pb()
+            v.ParseFromString(payload)
+            if topic == "calib_param" or topic == "vehicle_signal":
+                frame_id = self.fileHandler.fid
+            else:
+                frame_id = v.frame_id
+            try:
+                self.fileHandler.insert_pcv_raw(
+                    {"source": self.source, "frame_id": frame_id, "type": topic, topic: json.dumps(v),
+                     "rec_ts": time.time()})
+            except Exception as e:
+                pass
+                # print(e, v)
+                # print("===============")
 
 
 class RTKSink(NNSink):
