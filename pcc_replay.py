@@ -13,7 +13,10 @@ from multiprocessing import Process, Queue, Manager, freeze_support
 import json
 from threading import Thread
 
+import cv2
+import numpy as np
 from tqdm import tqdm
+from turbojpeg import TurboJPEG
 
 from parsers import ublox
 from recorder.convert import *
@@ -28,6 +31,8 @@ from parsers.novatel import parse_novatel
 from parsers.pim222 import parse_pim222
 # from numba import jit
 from tools import mytools
+
+jpeg = TurboJPEG()
 
 def jpeg_extractor(video_dir):
     """
@@ -67,6 +72,7 @@ def jpeg_extractor(video_dir):
                 jfid = int.from_bytes(jpg[24:28], byteorder="little")
                 if not jpg:
                     print('extracted empty frame:', fid)
+
                 yield fid, jpg
                 if fid is not None:
                     fid = None

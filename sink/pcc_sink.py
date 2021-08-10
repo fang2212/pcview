@@ -3,6 +3,9 @@ import base64
 import json
 import struct
 import time
+
+from google.protobuf import json_format
+
 from pyproto import vehicle_pb2, pedestrian_pb2, roadmarking_pb2, object_attribute_pb2, object_pb2
 from pyproto import calib_param_pb2, dev_object_pb2, vehicle_signal_pb2
 # from multiprocessing import Process
@@ -1247,6 +1250,9 @@ class FlowSink(NNSink):
                 self.fileHandler.insert_jpg(r)
                 # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
                 return frame_id, r
+            elif topic == "fusion_data":
+                r = {"source": self.source, "log_name": self.log_name, "buf": payload}
+                self.fileHandler.insert_general_bin_raw(r)
         elif msg_src == 'lane_profiling':
             if topic == 'lane_profiling_data':
                 r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name}
@@ -1407,13 +1413,12 @@ class ProtoSink(NNSink):
             else:
                 frame_id = v.frame_id
             try:
+                data = json_format.MessageToDict(v, preserving_proto_field_name=True)
                 self.fileHandler.insert_pcv_raw(
-                    {"source": self.source, "frame_id": frame_id, "type": topic, topic: json.dumps(v),
+                    {"source": self.source, "frame_id": frame_id, "type": topic, topic: data,
                      "rec_ts": time.time()})
             except Exception as e:
-                pass
-                # print(e, v)
-                # print("===============")
+                print("protobuf decode error:", e)
 
 
 class RTKSink(NNSink):

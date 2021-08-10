@@ -18,7 +18,7 @@
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mbq4", "can1": "gs4_debug"}},
                 {"model":  "can_collector", "params": {"port": 2021, "can0": "j2_fusion", "can1": "ars", "can2": "d1_fusion", "can3": "ars410"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
-                {"model":  "cv22", "params": {"mac":  "6a:92:5e:c0:96:00", "is_main":  true}},
+                {"model":  "cv22", "params": {"mac":  "6a:92:53:e1:97:00", "is_main":  true}},
                 {"model":  "cv22_novid", "params": {"mac":  "6a:92:52:69:87:00", "is_main":  false}},
                 {"model":  "bynav"},
                 {"model":  "d1_udp"}

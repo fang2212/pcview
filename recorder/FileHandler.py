@@ -199,8 +199,6 @@ class FileHandler(Process):
                 img = jpeg.decode(np.fromstring(data, np.uint8))
                 h, w, c = img.shape
                 now_fps = 20
-                if 'cv22' in source:
-                    now_fps = 30
                 if self.video_streams[source].get('video_writer'):
                     self.video_streams[source]['video_writer'].finish_video()
                 print("fps:", now_fps)

@@ -340,6 +340,8 @@ class PCC(object):
     def render(self, frame_cnt, show=True):
         if show:
             img_rendered = self.draw(self.cache, frame_cnt)  # render
+            if img_rendered is None:
+                return
             # ts_render = time.time()
             if self.to_web:
                 # self.web_img['now_image'] = comb.copy()
@@ -401,7 +403,11 @@ class PCC(object):
                     self.player.show_failure(img, 'feed lost, check connection.')
             else:
                 # return
-                mess['img_raw'] = jpeg.decode(np.fromstring(mess['img'], np.uint8))
+                try:
+                    mess['img_raw'] = jpeg.decode(np.fromstring(mess['img'], np.uint8))
+                except Exception as e:
+                    print("图片解码失败：", e)
+                    return
                 # mess['img_raw'] = self.jpeg_dec.decode(mess['img'])
                 img = mess['img_raw'].copy()
         except Exception as e:

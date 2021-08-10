@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package minieye;
+
+message OdometryPose {
+	uint64 timestamp = 1;                       // 时戳, milliseconds
+	float pitch = 2;							// 单位 rad
+	float pitch_var = 3;
+	bool is_pitch_valid = 4;					// pitch 是否可用
+
+	repeated float rot = 5;						// 姿态 惯性系 轴角对 x3
+	repeated float pos = 6;						// 位置 惯性系 x3
+	repeated float vel = 7;						// 速度 惯性系 x3
+
+	repeated float imu_acc = 8;					// imu acc x 3
+	repeated float imu_gyr = 9;					// imu gyr x 3
+	repeated float ba = 10;						// imu ba x 3
+	repeated float bg = 11;						// imu bg x 3
+	uint64 tick = 12;                           // 时戳, milliseconds
+}
+
+/*
+   {
+   "topic": "odometry",
+   "dds_mode": "shm",
+   "data_refresh_rate": 20,
+   "elem_max_size": 1000
+   }
+*/
+message Odometry {
+	OdometryPose filter_pose = 1;
+	OdometryPose predict_pose = 2;
+}

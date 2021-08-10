@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package visual;
+
+message Object2d {  // 检测目标
+    enum Category {   // 目标物分类
+        NONE = 0;       // 未分类
+        VEHICLE = 1;    // 车辆
+        PED = 2;        // 行人
+        TWOWHEEL = 3;   // 两轮车
+    }
+
+    enum VehicleClass { // 车型分类
+        NEGATIVE = 0;         // Negative
+        CAR = 1;
+        MINIBUS = 2;
+        BUS = 3;
+        TRUCK = 4;
+        SPECIAL = 5;
+        // NONSENSE = 6;   // 无意义
+    }
+
+    message Coord2d {
+        float x = 1;
+        float y = 2;
+    }
+
+    uint32 id = 1;
+    Coord2d coord = 2;
+    string stream = 3;   // 所属数据流（algo/MBQ3/esr/...）
+
+    // 其他信息
+    Category category = 4;
+    VehicleClass vehicle_class = 5;
+    uint32 cipv = 6;     // 0-Negative, 1-关键车，2-次关键车
+}
+
+message Lane {      // 车道线
+    uint32 id = 1;
+    repeated float coeff = 2; // 曲线系数，一般为4个系数
+    string stream = 3;   // 所属数据流（algo/MBQ3/MBQ4/...）
+}

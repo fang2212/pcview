@@ -27,7 +27,7 @@ def default_parser(id, data, type=None):
 
 parsers_dict = {
     "a1j":      parse_a1j,
-    "a1j_fusion": parse_x1,
+    "a1j_fusion": parse_a1j,
     "anc":      parse_anc,
     "ars":      parse_ars,
     "ars410":   parse_ars410,
@@ -41,6 +41,7 @@ parsers_dict = {
     "gs4_debug": parser_gs4,
     "hmb":      parse_hmb,
     "ifv300":   parse_ifv300,
+    "q3_fusion":   parse_ifv300,
     "j2":       parser_j2,
     "j2_fusion": parse_x1,
     "lmr":      parse_hawkeye_lmr,
