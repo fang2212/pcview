@@ -54,7 +54,7 @@ class Player(object):
 
         self.color_obs = {
             "a1j": FlatColor.yellow_green,
-            "a1j_fusion": FlatColor.yellow_green,
+            "a1j_fusion": CVColor.Crimson,
             "ars410": FlatColor.peach,
             "bosch_mrr": FlatColor.yellow,
             "d1_fusion": FlatColor.violet,
@@ -69,6 +69,7 @@ class Player(object):
             'esr': FlatColor.alizarin,
             'gps': FlatColor.clouds,
             'ifv300': FlatColor.peter_river,
+            'mbq3_fusion': FlatColor.peter_river,
             'lmr': FlatColor.emerald,
             'mbq3': FlatColor.peter_river,
             'mbq4': FlatColor.turquoise,

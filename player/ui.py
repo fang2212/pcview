@@ -46,6 +46,7 @@ class CVColor(object):
     purple = (0xb0, 0x27, 0x9c)
     bluegrey = (0x8b, 0x7D, 0x60)
     deeporange = (0x1a, 0xbc, 0xff)
+    Crimson = (65, 25, 237)
 
 
 class FlatColor(object):  # in BGR
