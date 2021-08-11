@@ -337,6 +337,7 @@ def load_cfg(jsonspec, local='config/local.json'):
                                 clct[param] = item['params'][param]
                             else:
                                 clct['ports'][param]['dbc'] = item['params'][param]
+                                clct['ports'][param]['topic'] = item['params'][param]
 
                         # clct.update(item['params'])
                         # if clct['type'] == 'x1_collector':
