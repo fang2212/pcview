@@ -29,15 +29,14 @@ class FileHandler(Process):
         self.ctrl_queue = Queue()                   # 控制事件队列
         self.running = True                         # 是否运行
 
-        self.log_mm = mmap.mmap(-1, 1024 * 1024 * 1024, access=os.O_RDWR)       # 共享内存匿名文件对象（1G大小）
-        self.__tell = Value('i', 0)                                             # 内存文件位置
-        self.log_write_index = 0                                                # log.txt已写入位置
-        self.lock = lock
+        self.log_mm = mmap.mmap(-1, 1024 * 1024 * 1024*2, access=os.O_RDWR)         # 共享内存匿名文件对象（2G大小）
+        self.__tell = Value('L', 0)                                                 # 内存文件位置
+        self.log_write_index = 0                                                    # log.txt已写入位置
+        self.lock = lock                                                            # mmap操作锁
 
         self._max_cnt = 1200
-        self.__path = Array('c', b'0'*100)
+        self.__path = Array('c', b'0'*100)          # log.txt文件路径
 
-        self.save_path = None                       # 日志保存路径
         self.log_fp = None                          # log.txt文件对象
         self.log_fp_last_write = 0                  # log.txt最后一次记录时间
         self.other_log_fps = {}                     # 其他类型的消息类型log文件对象
@@ -50,15 +49,6 @@ class FileHandler(Process):
             "stop": self._stop
         }
 
-        self.log_class_map = {                      # 不同类型的log记录方法映射表
-            "raw": self.record_raw_log,
-            "pcv": self.record_pcv_log,
-            "fusion": self.record_fusion_log,
-            "general_bin": self.record_general_bin_log,
-            "jpg": self.record_jpg_log,
-            "video": self.record_video_log
-        }
-
         # 通过0键来标记起点（结束）
         self.marking = Value('i', 0)
         self.__marking_start_time = Value("d", 0)
@@ -66,10 +56,10 @@ class FileHandler(Process):
         # 定位打点
         self.pinpoint = Manager().dict()
 
-        self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        self.recording_state = Value('i', 0)
-        self.__start_time = Value("d", 0)
-        self.__fid = Value("d", 0)
+        self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')           # 视频编码
+        self.recording_state = Value('i', 0)                    # 录制状态
+        self.__start_time = Value("d", 0)                       # 开始录制时间
+        self.__fid = Value("L", 0)                              # 视频帧数
 
         self.redirect = redirect
 
@@ -307,7 +297,7 @@ class FileHandler(Process):
         tv_us = (ts - tv_s) * 1000000
         kw = 'camera' if msg['is_main'] else source
         log_line = "%.10d %.6d " % (tv_s, tv_us) + kw + ' ' + '{}'.format(frame_id) + "\n"
-        self.__fid.value = frame_id
+        self.fid = frame_id
         # print(self.video_streams[source]['frame_cnt'])
 
         # 加锁 写入到内存
@@ -340,6 +330,14 @@ class FileHandler(Process):
             tv_us = (timestamp - tv_s) * 1000000
             log_line = "%.10d %.6d " % (tv_s, tv_us) + "mark start\n"
             self.write_to_mmap(log_line)
+        # 初始化定位标签，防止自动分割处理的时候无法后续处理 todo：待测试效果
+        if self.pinpoint:
+            self.insert_raw(
+                (time.time(), self.pinpoint.get('source') + '.pinpoint',
+                 compose_from_def(ub482_defs, self.pinpoint)))
+
+        self.recording_state.value = 1
+        self.start_time = time.time()
         print('start recording.')
 
     def _close(self, ctrl):
@@ -359,7 +357,8 @@ class FileHandler(Process):
         self.write_to_txt()
         self.log_fp.close()
         self.log_fp = None
-        self.save_path = None
+        self.tell = 0
+        self.log_write_index = 0
 
         for video in self.video_streams:
             self.video_streams[video]['video_writer'].release()
@@ -399,23 +398,12 @@ class FileHandler(Process):
                 os.makedirs(self.video_path)
 
         self.ctrl_queue.put({'act': 'start', 'path': self.path, 'video_path': self.video_path})
-        self.recording_state.value = 1
-        self.start_time = time.time()
-
-        # 初始化定位标签，防止自动分割处理的时候无法后续处理 todo：待测试效果
-        if self.pinpoint:
-            self.insert_raw(
-                    (time.time(), self.pinpoint.get('source') + '.pinpoint', compose_from_def(ub482_defs, self.pinpoint)))
         print('start recording:', self.path)
 
-    def stop_rec(self, clean_queue=True):
+    def stop_rec(self):
         self.ctrl_queue.put({'act': 'stop'})
         self.recording_state.value = 0
         self.start_time = 0
-
-        # 是否清除剩余未处理的日志信号
-        if clean_queue:
-            self.ctrl_queue.put({'act': 'clean'})
         print('stop recording.', self.is_recording)
 
     def save_param(self):
