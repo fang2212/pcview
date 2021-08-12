@@ -1225,8 +1225,6 @@ class FlowSink(NNSink):
                     if msg.type in (aiohttp.WSMsgType.CLOSED,
                                     aiohttp.WSMsgType.ERROR):
                         return None
-                    print({'ts': ts, 'img': "", 'frame_id': frame_id, 'type': 'video', 'source': self.source,
-                         'is_main': self.is_main, 'transport': 'libflow'})
 
                     r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
                          'is_main': self.is_main, 'transport': 'libflow'}
