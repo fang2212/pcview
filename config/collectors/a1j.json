@@ -1,0 +1,73 @@
+{
+  "type": "a1j_algo",
+  "mac": "5a:31:d3:59:12:06",
+  "force_ip": false,
+  "ip": "192.168.98.231",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": true,
+      "port": 24011,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "pcview"
+    },
+    "proto": {
+      "enable": true,
+      "port": 24032,
+      "transport": "protoflow",
+      "protocol": "msgpack",
+      "topic": "roadmarking,vehicle,tsr,obs,vehicle_signal,ped"
+    },
+    "gsensor": {
+      "enable": true,
+      "port": 24099,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "imuinfo"
+    },
+     "vehicle": {
+      "enable": true,
+      "port": 26012,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "ped,vehicle"
+    },
+    "lane": {
+      "enable": true,
+      "port": 24012,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "lane"
+    },
+    "autocalib": {
+      "enable": false,
+      "port": 24015,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "autocalib"
+    },
+    "roadmark": {
+      "enable": false,
+      "port": 24018,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "roadmark"
+    },
+   "x1_fusion": {
+      "enable": true,
+      "port": 24015,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "finish,pcview,fusion_data"
+    },
+   "lane_profiling": {
+      "enable": true,
+      "port": 24020,
+      "transport": "libflow",
+      "protocol": "general_bin",
+      "topic": "lane_profiling_data"
+    }
+  }
+}

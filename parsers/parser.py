@@ -1,5 +1,5 @@
 from parsers.bosch import bosch_mrr
-from parsers.a1j import parse_a1j
+from parsers.a1j import parse_a1j, parse_a1j_fusion
 from parsers.d1_fusion import parse_d1
 from parsers.x1 import parse_x1
 from parsers.x1l import parse_x1l
@@ -27,7 +27,7 @@ def default_parser(id, data, type=None):
 
 parsers_dict = {
     "a1j":      parse_a1j,
-    "a1j_fusion": parse_x1,
+    "a1j_fusion": parse_a1j_fusion,
     "anc":      parse_anc,
     "ars":      parse_ars,
     "ars410":   parse_ars410,
@@ -41,6 +41,7 @@ parsers_dict = {
     "gs4_debug": parser_gs4,
     "hmb":      parse_hmb,
     "ifv300":   parse_ifv300,
+    "mbq3_fusion":   parse_ifv300,
     "j2":       parser_j2,
     "j2_fusion": parse_x1,
     "lmr":      parse_hawkeye_lmr,

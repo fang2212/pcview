@@ -19,6 +19,7 @@ db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190715.dbc', 
 cipv = {}       # Closest In Path Vehicle 路径上最近的车辆
 cipp = {}
 x1_lane = {}
+a1j_fusion_lane = {}
 detection_sensor = {
     0: 'no_matched_measurements',
     1: 'single_radar_only',
@@ -187,27 +188,27 @@ def parse_a1j(id, data, ctx=None):
             # print(res)
             return res
 
-    # fusion
-    elif id == 0x420:
-        ret = []
-        if ctx.get('fusion'):
-            for key in ctx['fusion']:
-                if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in \
-                        ctx['fusion'][key] or ctx['fusion'][key]['pos_lon'] == 0:
-                    continue
-                obs = ctx['fusion'][key]
-                ret.append(obs.copy())
-            ctx.pop('fusion')
-            # print('fusion', ret)
 
-        ctx['fusion'] = {}
-        ctx['fusion']['frameid'] = r['FrameID']
-        ctx['fusion']['counter'] = r['Counter']
 
-        if ret:
-            return ret
+def parse_a1j_fusion(id, data, ctx=None):
+    """
+    a1j融合数据
+    :param id:
+    :param data:
+    :param ctx:
+    :return:
+    """
+    ids = [m.frame_id for m in db_x1.messages]
+    if id not in ids:
+        return None
+    r = db_x1.decode_message(id, data)
+    if ctx and ctx.get('parser_mode') == 'direct':
+        return r
+    # print("0x%x" % id, r)
+    if not ctx.get('x1_obs'):
+        ctx['x1_obs'] = list()
 
-    elif 0x400 <= id <= 0x41f:
+    if 0x400 <= id <= 0x41f:
         # print("0x%x" % id, r)
         if 'fusion' not in ctx:
             return
@@ -251,14 +252,66 @@ def parse_a1j(id, data, ctx=None):
                     ret.append(obs.copy())
                 return ret
 
-        # if id == 0x41f:
-        #     ret = []
-        #     for key in ctx['fusion']:
-        #         if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in \
-        #                 ctx['fusion'][key] or ctx['fusion'][key]['pos_lon'] == 0:
-        #             continue
-        #         obs = ctx['fusion'][key]
-        #         ret.append(obs.copy())
-        #     ctx.pop('fusion')
-        #     # print('fusion', ret)
-        #     return ret
+    # fusion
+    elif id == 0x420:
+        ret = []
+        if ctx.get('fusion'):
+            for key in ctx['fusion']:
+                if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in \
+                        ctx['fusion'][key] or ctx['fusion'][key]['pos_lon'] == 0:
+                    continue
+                obs = ctx['fusion'][key]
+                ret.append(obs.copy())
+            ctx.pop('fusion')
+            # print('fusion', ret)
+
+        ctx['fusion'] = {}
+        ctx['fusion']['frameid'] = r['FrameID']
+        ctx['fusion']['counter'] = r['Counter']
+
+        if ret:
+            return ret
+
+    elif 0x5f0 <= id <= 0x5f7:
+        # lane
+        index = (id - 0x5f0) // 2
+
+        if index not in a1j_fusion_lane:
+            a1j_fusion_lane[index] = {}
+
+        # lane Data A
+        tmp1 = 'Lane' + '%01d' % (index + 1) + '_Type'
+        if tmp1 in r:
+            a1j_fusion_lane[index] = dict()
+            a1j_fusion_lane[index]['Lane_Type'] = r['Lane' + '%01d' % (index + 1) + '_Type']
+            a1j_fusion_lane[index]['Quality'] = r['Lane' + '%01d' % (index + 1) + '_Quality']
+            a1j_fusion_lane[index]['a0'] = r['Lane' + '%01d' % (index + 1) + '_Position']
+            a1j_fusion_lane[index]['a2'] = r['Lane' + '%01d' % (index + 1) + '_Curvature']
+            a1j_fusion_lane[index]['a3'] = r['Lane' + '%01d' % (index + 1) + '_CurvatureDerivative']
+            a1j_fusion_lane[index]['WidthMarking'] = r['Lane' + '%01d' % (index + 1) + '_WidthMarking']
+
+        # lane Data B
+        tmp1 = 'Lane' + '%01d' % (index + 1) + '_HeadingAngle'
+        if tmp1 in r:
+            if not a1j_fusion_lane[index]:
+                return None
+
+            a1j_fusion_lane[index]['a1'] = r['Lane' + '%01d' % (index + 1) + '_HeadingAngle']
+            a1j_fusion_lane[index]['ViewRangeStart'] = r['Lane' + '%01d' % (index + 1) + '_ViewRangeStart']
+            a1j_fusion_lane[index]['range'] = r['Lane' + '%01d' % (index + 1) + '_ViewRangeEnd']
+            a1j_fusion_lane[index]['LineCrossing'] = r['Lane' + '%01d' % (index + 1) + '_LineCrossing']
+            a1j_fusion_lane[index]['LineMarkColor'] = r['Lane' + '%01d' % (index + 1) + '_LineMarkColor']
+
+            a1j_fusion_lane[index]['type'] = 'lane'
+            a1j_fusion_lane[index]['sensor'] = 'x1'
+            a1j_fusion_lane[index]['id'] = index
+            a1j_fusion_lane[index]['color'] = 4
+
+        if id == 0x5f7:
+            res = []
+            for lane in a1j_fusion_lane:
+                res.append(a1j_fusion_lane[lane])
+            # res = x1_lane.copy()
+            a1j_fusion_lane.clear()
+            # print(res)
+            return res

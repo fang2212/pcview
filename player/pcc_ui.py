@@ -54,7 +54,7 @@ class Player(object):
 
         self.color_obs = {
             "a1j": FlatColor.yellow_green,
-            "a1j_fusion": FlatColor.yellow_green,
+            "a1j_fusion": CVColor.Crimson,
             "ars410": FlatColor.peach,
             "bosch_mrr": FlatColor.yellow,
             "d1_fusion": FlatColor.violet,
@@ -69,6 +69,7 @@ class Player(object):
             'esr': FlatColor.alizarin,
             'gps': FlatColor.clouds,
             'ifv300': FlatColor.peter_river,
+            'mbq3_fusion': FlatColor.peter_river,
             'lmr': FlatColor.emerald,
             'mbq3': FlatColor.peter_river,
             'mbq4': FlatColor.turquoise,
@@ -429,7 +430,14 @@ class Player(object):
             if 'ifv300' in col:
                 BaseDraw.draw_text(img, 'q3', (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
             else:
-                BaseDraw.draw_text(img, col, (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
+                if '.can' in col:
+                    fields = col.split('.')
+                    devno = '.'.join(fields[:3])
+                    BaseDraw.draw_text(img, fields[-1], (indent + 22, y0 + 12), 0.4, CVColor.Cyan, 1)
+                    BaseDraw.draw_text(img, devno, (indent + 22, y0 + 24), 0.4, CVColor.Cyan, 1)
+                else:
+                    title = col
+                    BaseDraw.draw_text(img, title, (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
             dt = self.ts_now - self.columns[col]['ts']
 
             if dt > 999:

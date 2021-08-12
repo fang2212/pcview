@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package minieye;
+
+enum DataSource {
+	kMinieye   = 0; 
+	kEyeQ3     = 1;
+	kEyeQ4     = 2;
+	kJ2        = 3;
+	kLidar     = 4;
+}

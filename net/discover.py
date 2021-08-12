@@ -44,7 +44,6 @@ class CollectorFinder(Thread):
         for t in nm.all_hosts():
             # print(nm[t])
             ips.append(nm[t]['addresses']['ipv4'])
-
         return ips
 
     def load_cached_macs(self, cached_macs):
@@ -55,17 +54,18 @@ class CollectorFinder(Thread):
                     self.found[ip] = {'mac': mac}
 
     def get_macs(self):
-        ip_range = self.network or '192.168.98.0/24'
-        ip = ip_range.split('/')[0].split('.')
-        ip_kw = '.'.join(ip[:3])
+        ip_range = self.network.split(" ") if self.network else ['192.168.98.0/24']
+        ips = [ip.split('/')[0].split('.') for ip in ip_range]
+        ip_kws = ['.'.join(ip[:3]) for ip in ips]
         mac_ip = dict()
         with open('/proc/net/arp') as arp:
             for line in arp:
                 fields = list(filter(None, line.split(' ')))
                 mac = fields[3]
                 ip = fields[0].strip()
+                ip_prefix = '.'.join(ip.split('.')[:3])
                 # print(mac, ip)
-                if ip_kw in ip:
+                if ip_prefix in ip_kws:
                     mac_ip[mac] = ip
 
         # print('------- LAN devices found in arp -------')
