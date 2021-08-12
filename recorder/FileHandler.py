@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf8 -*-
 import json
+import mmap
 import os
 import time
 from queue import Empty
@@ -23,11 +24,15 @@ class FileHandler(Process):
     """
     日志记录进程，对视频进行录像、记录各种传感器的数据
     """
-    def __init__(self, redirect=False, uniconf=None):
+    def __init__(self, redirect=False, uniconf=None, lock=None):
         super(FileHandler, self).__init__()
         self.ctrl_queue = Queue()                   # 控制事件队列
-        self.log_queue = Queue(200000)      # 记录数据队列
         self.running = True                         # 是否运行
+
+        self.log_mm = mmap.mmap(-1, 1024 * 1024 * 1024, access=os.O_RDWR)       # 共享内存匿名文件对象（1G大小）
+        self.__tell = Value('i', 0)                                             # 内存文件位置
+        self.log_write_index = 0                                                # log.txt已写入位置
+        self.lock = lock
 
         self._max_cnt = 1200
         self.__path = Array('c', b'0'*100)
@@ -41,7 +46,6 @@ class FileHandler(Process):
 
         self.control_map = {                        # 控制方法映射表
             "start": self._start,
-            "clean": self._clean,
             "close": self._close,
             "stop": self._stop
         }
@@ -65,6 +69,7 @@ class FileHandler(Process):
         self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
         self.recording_state = Value('i', 0)
         self.__start_time = Value("d", 0)
+        self.__fid = Value("d", 0)
 
         self.redirect = redirect
 
@@ -73,6 +78,14 @@ class FileHandler(Process):
         self.uniconf = uniconf
         self.d = Manager().dict()
         self.d['installs'] = uniconf.installs
+
+    @property
+    def tell(self):
+        return self.__tell.value
+
+    @tell.setter
+    def tell(self, v):
+        self.__tell.value = v
 
     @property
     def is_marking(self):
@@ -100,6 +113,14 @@ class FileHandler(Process):
         self.__start_time.value = v
 
     @property
+    def fid(self):
+        return self.__fid.value
+
+    @fid.setter
+    def fid(self, v):
+        self.__fid.value = v
+
+    @property
     def path(self):
         with self.__path.get_lock():
             return self.__path.value.decode()
@@ -120,30 +141,50 @@ class FileHandler(Process):
                 self.stop_rec(clean_queue=False)
                 self.start_rec()
 
-            try:
-                log_class, msg = self.log_queue.get(block=True, timeout=0.001)
-            except Empty:
-                time.sleep(0.001)
-                continue
-
-            # log.txt记录
-            if self.log_class_map.get(log_class):
-                self.log_class_map.get(log_class)(msg)
-
             # 写入到log.txt文件的间隔时间
-            if t0 - self.log_fp_last_write > 3 and self.log_fp:
-                self.log_fp.flush()
-                self.log_fp_last_write = time.time()
+            if t0 - self.log_fp_last_write > 2 and self.log_fp:
+                self.write_to_txt()
+
+            time.sleep(0.1)
 
     # ****************************** 数据记录方法 ******************************
 
-    def record_raw_log(self, msg):
+    def write_to_mmap(self, content):
+        """
+        写入数据到mmap文件内存对象：加锁，写入
+        :return:
+        """
+        self.lock.acquire()
+        self.log_mm.seek(self.tell)
+        self.log_mm.write(bytes(content, 'utf-8'))
+        self.tell = self.log_mm.tell()
+        self.lock.release()
+
+    def write_to_txt(self):
+        """
+        将内存里面的数据存入到log.txt文件中
+        :return:
+        """
+        print("begin write:", self.log_write_index, self.tell)
+        self.lock.acquire()
+        end = self.tell
+        content = self.log_mm[self.log_write_index:end]
+        self.lock.release()
+
+        self.log_write_index = end
+        # 写入文件
         if self.log_fp:
-            timestamp, log_type, data = msg
-            tv_s = int(timestamp)
-            tv_us = (timestamp - tv_s) * 1000000
-            log_line = "%.10d %.6d " % (tv_s, tv_us) + log_type + ' ' + data + "\n"
-            self.log_fp.write(log_line)
+            self.log_fp.write(content)
+            self.log_fp.flush()
+            self.log_fp_last_write = time.time()
+
+    def record_raw_log(self, msg):
+        timestamp, log_type, data = msg
+        tv_s = int(timestamp)
+        tv_us = (timestamp - tv_s) * 1000000
+        log_line = "%.10d %.6d " % (tv_s, tv_us) + log_type + ' ' + data + "\n"
+
+        self.write_to_mmap(log_line)
 
     def record_pcv_log(self, msg):
         source = msg['source']
@@ -161,7 +202,7 @@ class FileHandler(Process):
         self.write_other_log(source, name, msg['buf'], bin=True)
 
     def record_jpg_log(self, msg):
-        if self.save_path:
+        if self.path:
             res = msg
             frame_id = res['frame_id']
             data = res['img']
@@ -169,9 +210,9 @@ class FileHandler(Process):
             is_main = res.get('is_main')
             if source not in self.video_streams:
                 if is_main:
-                    video_path = os.path.join(self.save_path, 'video')
+                    video_path = os.path.join(self.path, 'video')
                 else:
-                    video_path = os.path.join(self.save_path, source)
+                    video_path = os.path.join(self.path, source)
                 if not os.path.exists(video_path):
                     os.mkdir(video_path)
 
@@ -181,6 +222,7 @@ class FileHandler(Process):
                     'frame_reset': True,
                     'video_writer': None
                 }
+                print("new video streams:", self.video_streams[source])
 
             if self.video_streams[source]['frame_cnt'] % self._max_cnt == 0 or self.video_streams[source]['frame_reset']:
                 self.video_streams[source]['frame_reset'] = False
@@ -190,8 +232,6 @@ class FileHandler(Process):
                 img = jpeg.decode(np.fromstring(data, np.uint8))
                 h, w, c = img.shape
                 now_fps = 20
-                if 'cv22' in source:
-                    now_fps = 30
                 if self.video_streams[source].get('video_writer'):
                     self.video_streams[source]['video_writer'].finish_video()
                 print("fps:", now_fps)
@@ -204,13 +244,13 @@ class FileHandler(Process):
             self.write_video_log(msg)
 
     def record_video_log(self, msg):
-        if self.save_path:
+        if self.path:
             res = msg
             frame_id = res['frame_id']
             data = res['img']
             source = res['source']
             if source not in self.video_streams:
-                video_path = os.path.join(self.save_path, source)
+                video_path = os.path.join(self.path, source)
                 if not os.path.exists(video_path):
                     os.mkdir(video_path)
                 self.video_streams[source] = {
@@ -244,10 +284,11 @@ class FileHandler(Process):
 
     def write_other_log(self, source, name, msg, bin=False):
         """记录其他类型的消息日志"""
-        if not self.save_path:
+        if not self.path:
             return
-        log_dir = os.path.join(self.save_path, source)
+        log_dir = os.path.join(self.path, source)
         if not os.path.exists(log_dir):
+            print("mkdir:", log_dir)
             os.mkdir(log_dir)
         if source not in self.other_log_fps:
             self.other_log_fps[source] = {}
@@ -266,9 +307,11 @@ class FileHandler(Process):
         tv_us = (ts - tv_s) * 1000000
         kw = 'camera' if msg['is_main'] else source
         log_line = "%.10d %.6d " % (tv_s, tv_us) + kw + ' ' + '{}'.format(frame_id) + "\n"
+        self.__fid.value = frame_id
         # print(self.video_streams[source]['frame_cnt'])
-        if self.log_fp:
-            self.log_fp.write(log_line)
+
+        # 加锁 写入到内存
+        self.write_to_mmap(log_line)
 
         if msg.get('transport') == 'libflow':
             buf = json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n"
@@ -284,21 +327,20 @@ class FileHandler(Process):
                 self.control_map.get(ctrl['act'])(ctrl)
 
     def _start(self, ctrl):
-        self.save_path = ctrl['path']
-        self.log_fp = open(os.path.join(self.save_path, 'log.txt'), 'w+')
+        print("start:", ctrl)
+        self.tell = 0
+        self.log_write_index = 0
+        self.log_fp = open(os.path.join(self.path, 'log.txt'), 'w+b')
+        print("start path:", self.path)
 
         # 处理间隔录制的mark
         if self.is_marking:
             timestamp = time.time()
             tv_s = int(timestamp)
             tv_us = (timestamp - tv_s) * 1000000
-            log_line = "%.10d %.6d " % (tv_s, tv_us) + "mark start"
-            self.log_fp.write(log_line)
+            log_line = "%.10d %.6d " % (tv_s, tv_us) + "mark start\n"
+            self.write_to_mmap(log_line)
         print('start recording.')
-
-    def _clean(self, ctrl):
-        for i in range(self.log_queue.qsize()):
-            self.log_queue.get()
 
     def _close(self, ctrl):
         self.running = False
@@ -310,10 +352,11 @@ class FileHandler(Process):
             tv_s = int(timestamp)
             tv_us = (timestamp - tv_s) * 1000000
             log_line = "%.10d %.6d " % (tv_s, tv_us) + "mark end"
-            self.log_fp.write(log_line)
+
+            self.write_to_mmap(log_line)
 
         # 关闭文件
-        self.log_fp.flush()
+        self.write_to_txt()
         self.log_fp.close()
         self.log_fp = None
         self.save_path = None
@@ -397,40 +440,39 @@ class FileHandler(Process):
             self.marking.value = 1
             self.start_marking_time = time.time()
             print("start marking")
-            self.log_queue.put(("raw", (time.time(), "mark", "start")))
+            self.record_raw_log((time.time(), "mark", "start"))
 
     def end_mark(self):
         if self.is_recording:
             self.marking.value = 0
             print("end marking")
-            self.log_queue.put(("raw", (time.time(), "mark", "end")))
+            self.record_raw_log((time.time(), "mark", "end"))
 
     def insert_video(self, msg):
         self.last_image = msg
         if self.is_recording:
-            self.log_queue.put(('video', msg))
+            print("insert video")
+            self.record_video_log(msg)
 
     def insert_jpg(self, msg):
         if self.is_recording:
-            self.log_queue.put(('jpg', msg))
+            self.record_jpg_log(msg)
 
     def insert_raw(self, msg):
         if self.uniconf.local_cfg.save.raw and self.is_recording:
-            self.log_queue.put(('raw', msg))
-            if self.log_queue.full():
-                print("log_queue full")
+            self.record_raw_log(msg)
 
     def insert_pcv_raw(self, msg):
         if self.is_recording:
-            self.log_queue.put(('pcv', msg))
+            self.record_pcv_log(msg)
 
     def insert_fusion_raw(self, msg):
         if self.is_recording:
-            self.log_queue.put(('fusion', msg))
+            self.record_fusion_log(msg)
 
     def insert_general_bin_raw(self, msg):
         if self.is_recording:
-            self.log_queue.put(('general_bin', msg))
+            self.record_general_bin_log(msg)
 
     def get_last_image(self):
         if self.last_image:

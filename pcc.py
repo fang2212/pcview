@@ -263,9 +263,6 @@ class PCC(object):
 
                 t2 = time.time()
                 self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (t2 - t1))
-                if not self.replay:
-                    qsize = self.hub.fileHandler.log_queue.qsize()
-                    self.statistics['fileHandler_log_q_size'] = qsize
             except Exception as e:
                 print('pcc run error:', e)
                 traceback.print_exc()

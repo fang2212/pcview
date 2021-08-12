@@ -1,6 +1,6 @@
 import os
 import time
-from multiprocessing import Process as kProcess
+from multiprocessing import Process as kProcess, Lock
 from multiprocessing import Queue as kQueue
 from multiprocessing import Event
 from threading import Thread
@@ -111,7 +111,7 @@ class Hub(Thread):
         self.direct_cfg = direct_cfg
         self.fileHandler = None
         if local_cfg.save.log or local_cfg.save.alert or local_cfg.save.video:
-            self.fileHandler = FileHandler(uniconf=uniconf)
+            self.fileHandler = FileHandler(uniconf=uniconf, lock=Lock())
             # self.fileHandler.start()
             # self.fileHandler.start_rec()
 
