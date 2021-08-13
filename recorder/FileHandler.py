@@ -6,7 +6,7 @@ import os
 import time
 from queue import Empty
 from datetime import datetime
-from multiprocessing import Queue, Process, Array, Manager, Value
+from multiprocessing import Queue, Process, Array, Manager, Value, Lock
 
 from turbojpeg import TurboJPEG
 
@@ -33,6 +33,8 @@ class FileHandler(Process):
         self.__tell = Value('L', 0)                                                 # 内存文件位置
         self.log_write_index = 0                                                    # log.txt已写入位置
         self.lock = lock                                                            # mmap操作锁
+
+        self.pcv_lock = Lock()
 
         self._max_cnt = 1200
         self.__path = Array('c', b'0'*100)          # log.txt文件路径
@@ -179,7 +181,10 @@ class FileHandler(Process):
     def record_pcv_log(self, msg):
         source = msg['source']
         buf = json.dumps(msg) + "\n"
+
+        self.pcv_lock.acquire()
         self.write_other_log(source, 'pcv_log.txt', buf, bin=False)
+        self.pcv_lock.release()
 
     def record_fusion_log(self, msg):
         source = msg['source']
@@ -305,7 +310,9 @@ class FileHandler(Process):
 
         if msg.get('transport') == 'libflow':
             buf = json.dumps({"frame_id": frame_id, "create_ts": int(ts * 1000000)}) + "\n"
+            self.pcv_lock.acquire()
             self.write_other_log(source, 'pcv_log.txt', buf)
+            self.pcv_lock.release()
 
     # ****************************** 操作控制方法 ******************************
 

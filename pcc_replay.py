@@ -89,7 +89,12 @@ class PcvParser(object):
         # self.start()
 
     def read(self):
-        line = self.x1_fp.readline()
+        try:
+            line = self.x1_fp.readline()
+        except Exception as e:
+            print(e)
+            return
+
         if not line:
             return -1
 
@@ -291,6 +296,7 @@ class LogPlayer(Process):
         x1_log = os.path.dirname(self.log_path) + "/" + main_dev['type']+"." + str(main_dev['idx']) + '/pcv_log.txt'
         print(x1_log, main_dev, main_dev['type'])
         if main_dev and "algo" in main_dev['type'] and os.path.exists(x1_log):
+            print("x1_log:", x1_log)
             self.x1_parser = PcvParser(open(x1_log))
         else:
             self.x1_parser = None

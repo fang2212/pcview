@@ -1177,7 +1177,6 @@ class FlowSink(NNSink):
         else:
             return
 
-
         if msg_src == 'pcview':
             if topic == 'finish':
                 buf = payload
