@@ -1,0 +1,38 @@
+{
+  "type": "cv22_algo",
+  "mac": "5a:31:d3:59:12:06",
+  "force_ip": false,
+  "ip": "192.168.98.101",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": true,
+      "port": 10086,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "video"
+    },
+    "can0": {
+      "enable": false,
+      "port": 1207,
+      "protocol": null,
+      "transport": "nanomsg",
+      "topic": "mbq4"
+    },
+    "can1": {
+      "enable": false,
+      "port": 1208,
+      "protocol": null,
+      "transport": "nanomsg",
+      "topic": "ars"
+    },
+    "gsensor": {
+      "enable": false,
+      "port": 1209,
+      "protocol": null,
+      "transport": "nanomsg",
+      "topic": "gsensor"
+    }
+  }
+}
