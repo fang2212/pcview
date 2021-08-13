@@ -962,7 +962,6 @@ class CANSink(NNSink):
         #             break
         for parser in self.parser:
             ret = parser(can_id, data, self.context)
-            # print(r)
             if ret is None:
                 return None
             # print("data:", data)

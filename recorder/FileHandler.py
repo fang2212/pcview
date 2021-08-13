@@ -128,7 +128,7 @@ class FileHandler(Process):
             self.control_event()
 
             if self.is_recording and t0 - self.start_time > 600:
-                self.stop_rec(clean_queue=False)
+                self.stop_rec()
                 self.start_rec()
 
             # 写入到log.txt文件的间隔时间
@@ -360,17 +360,6 @@ class FileHandler(Process):
         self.tell = 0
         self.log_write_index = 0
 
-        for video in self.video_streams:
-            self.video_streams[video]['video_writer'].release()
-            self.video_streams[video]['frame_reset'] = True
-        self.video_streams.clear()
-
-        for source in self.other_log_fps:
-            for name in self.other_log_fps[source]:
-                self.other_log_fps[source][name].flush()
-                self.other_log_fps[source][name].close()
-        self.other_log_fps.clear()
-
     def close(self):
         self.ctrl_queue.put({'act': 'close'})
 
@@ -404,6 +393,17 @@ class FileHandler(Process):
         self.ctrl_queue.put({'act': 'stop'})
         self.recording_state.value = 0
         self.start_time = 0
+
+        for video in self.video_streams:
+            self.video_streams[video]['video_writer'].release()
+            self.video_streams[video]['frame_reset'] = True
+        self.video_streams.clear()
+
+        for source in self.other_log_fps:
+            for name in self.other_log_fps[source]:
+                self.other_log_fps[source][name].flush()
+                self.other_log_fps[source][name].close()
+        self.other_log_fps.clear()
         print('stop recording.', self.is_recording)
 
     def save_param(self):
@@ -439,7 +439,6 @@ class FileHandler(Process):
     def insert_video(self, msg):
         self.last_image = msg
         if self.is_recording:
-            print("insert video")
             self.record_video_log(msg)
 
     def insert_jpg(self, msg):
