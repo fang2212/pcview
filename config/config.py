@@ -336,8 +336,10 @@ def load_cfg(jsonspec, local='config/local.json'):
                             if 'can' not in param:
                                 clct[param] = item['params'][param]
                             else:
-                                clct['ports'][param]['dbc'] = item['params'][param]
-                                clct['ports'][param]['topic'] = item['params'][param]
+                                if clct['ports'][param].get("transport") == "mqtt":
+                                    clct['ports'][param]['dbc'] = item['params'][param]
+                                else:
+                                    clct['ports'][param]['topic'] = item['params'][param]
 
                         # clct.update(item['params'])
                         # if clct['type'] == 'x1_collector':
