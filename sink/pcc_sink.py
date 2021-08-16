@@ -372,6 +372,9 @@ class MQTTSink(Thread):
         self.init_env()
 
         print('MQTTSink initialized.', self.type, ip)
+        self.mq_time = 0
+        self.mq_count = 0
+        self.mq_last_time = time.time()
 
     def init_env(self):
         # 根据传入四个端口信号进行初始化相关环境
@@ -394,6 +397,7 @@ class MQTTSink(Thread):
         for topic in self.topic_list:
             self.client.subscribe(topic, self.topic_list[topic]['qos'])
         self.client.on_message = self.pkg_handler
+        self.mq_last_time = time.time()
         # client.loop_start()
 
     def run(self):
@@ -422,7 +426,6 @@ class MQTTSink(Thread):
         timestamp = struct.unpack('<d', data[8:16])[0]
         can_data = data[16:]
 
-        print((timestamp, source, '0x%x' % can_id + ' ' + can_data.hex()))
         # print('can rcv ch={} id=0x{:x} dlc={} ts={} data={}'.format(channel, can_id, dlc, timestamp, can_data))
         self.fileHandler.insert_raw((timestamp, source, '0x%x' % can_id + ' ' + can_data.hex()))
 
@@ -431,6 +434,13 @@ class MQTTSink(Thread):
 
         parser = self.parser[t["dbc"]]
         ret = parser(can_id, can_data, self.context[source])
+        now = time.time()
+        self.mq_time += now - self.mq_last_time
+        self.mq_last_time = now
+        self.mq_count += 1
+        print("avg time:", self.mq_time/self.mq_count)
+
+        print(timestamp, '0x%x' % can_id,  can_data.hex(), ret)
         if ret is None:
             return None
 

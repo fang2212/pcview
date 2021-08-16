@@ -52,7 +52,6 @@ def bosch_mrr(cid, data, ctx=None):
                     'pos_lat': r["FR5CP_ObjDistY_{}".format(i)],
                     'vel_lon': r["FR5CP_ObjRelVelX_{}".format(i)],
                     'vel_lat': -r["FR5CP_ObjRelVelY_{}".format(i)],
-                    'color': 1,
                 }
                 # data['range'] = sqrt(data['pos_lon']**2 + data['pos_lat']**2)
                 data['angle'] = atan2(data['pos_lat'], data['pos_lon']) * 180 / pi

@@ -94,7 +94,6 @@ class PcvParser(object):
         except Exception as e:
             print(e)
             return
-
         if not line:
             return -1
 

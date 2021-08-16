@@ -20,54 +20,12 @@
       "protocol": "msgpack",
       "topic": "roadmarking,vehicle,tsr,obs,vehicle_signal,ped"
     },
-    "gsensor": {
-      "enable": true,
-      "port": 24099,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "imuinfo"
-    },
-     "vehicle": {
-      "enable": true,
-      "port": 26012,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "ped,vehicle"
-    },
-    "lane": {
-      "enable": true,
-      "port": 24012,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "lane"
-    },
-    "autocalib": {
-      "enable": false,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "autocalib"
-    },
-    "roadmark": {
-      "enable": false,
-      "port": 24018,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "roadmark"
-    },
-   "x1_fusion": {
+    "a1j_fusion": {
       "enable": true,
       "port": 24015,
       "transport": "libflow",
       "protocol": "msgpack",
-      "topic": "finish,pcview"
-    },
-   "lane_profiling": {
-      "enable": true,
-      "port": 24020,
-      "transport": "libflow",
-      "protocol": "general_bin",
-      "topic": "lane_profiling_data"
+      "topic": "fusion_data"
     }
   }
 }
