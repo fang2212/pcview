@@ -1,10 +1,10 @@
 from parsers.bosch import bosch_mrr
-from parsers.a1j import parse_a1j, parse_a1j_fusion
+from parsers.a1j import parse_a1j, parse_a1j_fusion, parse_a1j_vision
 from parsers.d1_fusion import parse_d1
 from parsers.x1 import parse_x1
 from parsers.x1l import parse_x1l
 from parsers.x1j import parse_x1j
-from parsers.mobileye_q3 import parse_ifv300, parse_q3
+from parsers.mobileye_q3 import parse_ifv300, parse_q3, parse_ifv300_vision, parse_ifv300_fusion
 from parsers.mobileye_q2 import parse_mobileye
 from parsers.mqb_esp import parse_mqb
 from parsers.radar import *
@@ -28,6 +28,7 @@ def default_parser(id, data, type=None):
 parsers_dict = {
     "a1j":      parse_a1j,
     "a1j_fusion": parse_a1j_fusion,
+    "a1j_vision": parse_a1j_vision,
     "anc":      parse_anc,
     "ars":      parse_ars,
     "ars410":   parse_ars410,
@@ -41,12 +42,13 @@ parsers_dict = {
     "gs4_debug": parser_gs4,
     "hmb":      parse_hmb,
     "ifv300":   parse_ifv300,
-    "mbq3_fusion":   parse_ifv300,
     "j2":       parser_j2,
     "j2_fusion": parse_x1,
     "lmr":      parse_hawkeye_lmr,
     "mbq2":     parse_mobileye,
-    "mbq3":     parse_q3,
+    "mbq3":     parse_ifv300,
+    "mbq3_vision":     parse_ifv300_vision,
+    "mbq3_fusion":   parse_ifv300_fusion,
     "mbq4":     parser_mbq4,
     "mqb":      parse_mqb,
     "mrr":      parse_bosch_mrr,
@@ -54,6 +56,7 @@ parsers_dict = {
     "novatel":  parse_novatel,
     "pim222":   parse_pim222,
     "q4_100":   parser_q4_100,
+    "q3": parse_q3,
     "rt_range": parser_rt,
     "sta77":    parse_sta77,
     "sta77_3":  parse_sta77_3,

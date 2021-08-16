@@ -53,8 +53,9 @@ class Player(object):
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
         self.color_obs = {
-            "a1j": FlatColor.yellow_green,
-            "a1j_fusion": CVColor.Crimson,
+            "a1j": (59, 59, 238),
+            "a1j_fusion": (59, 59, 238),
+            "a1j_vision": (193, 182, 255),
             "ars410": FlatColor.peach,
             "bosch_mrr": FlatColor.yellow,
             "d1_fusion": FlatColor.violet,
@@ -68,10 +69,13 @@ class Player(object):
             'default': FlatColor.clouds,
             'esr': FlatColor.alizarin,
             'gps': FlatColor.clouds,
-            'ifv300': FlatColor.peter_river,
-            'mbq3_fusion': FlatColor.peter_river,
+            'ifv300': CVColor.Blue,
+            'ifv300_vision': (255, 144, 30),
+            'ifv300_fusion': CVColor.Blue,
             'lmr': FlatColor.emerald,
-            'mbq3': FlatColor.peter_river,
+            'mbq3': CVColor.Blue,
+            'mbq3_vision': (255, 144, 30),
+            'mbq3_fusion': CVColor.Blue,
             'mbq4': FlatColor.turquoise,
             'rtk': FlatColor.sun_flower,
             'sta77': FlatColor.wet_asphalt,
@@ -159,14 +163,7 @@ class Player(object):
             return
         source = obs['source'].split('.')[0]
         sensor = obs.get('sensor') or source
-        color = self.color_obs.get(source)
-        # if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
-        #     color = self.colx1_fusion_camor_obs.get('x1_fusion_cam')
-        if not color:
-            color = self.color_obs['default']
-
-        # if 'class' in obs and obs['class'] == 'truck':
-        #     print(obs)
+        color = obs.get("color") or self.color_obs.get(source) or self.color_obs['default']
 
         width = obs.get('width')
         width = width or 0.3
@@ -361,11 +358,11 @@ class Player(object):
         color = self.color_obs.get(data['sensor']) or self.color_obs['default']
         cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
 
-    def show_text_info(self, source, height, text, style='normal'):
+    def show_text_info(self, source, height, text, style='normal', size=None):
         if style is None:
             style = 'warning'
         self.get_indent(source)
-        self.columns[source]['buffer'][height] = {'text': text, 'style': style}
+        self.columns[source]['buffer'][height] = {'text': text, 'style': style, 'size': size}
         # print(source, height, text)
 
     def update_column_ts(self, source, ts):
@@ -453,9 +450,9 @@ class Player(object):
             #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:
                 # print(col, height, entry['buffer'])
+                # 字体颜色
                 style = entry['buffer'][height]['style']
                 style_list = {'normal': None, 'warning': CVColor.Yellow, 'fail': CVColor.Red, 'pass': CVColor.Green}
-
                 if isinstance(style, str) and style_list.get(style):
                     if style in style_list:
                         color = style_list.get(style)
@@ -466,9 +463,15 @@ class Player(object):
                     color = style
                 else:
                     color = CVColor.White
-                line_len = len(entry['buffer'][height]['text'])
-                size = min(0.5 * 16 / line_len, 0.5)
-                size = max(0.24, size)
+
+                # 字体大小
+                if entry['buffer'][height].get("size"):
+                    size = entry['buffer'][height]['size']
+                else:
+                    line_len = len(entry['buffer'][height]['text'])
+                    size = min(0.5 * 16 / line_len, 0.5)
+                    size = max(0.24, size)
+
                 BaseDraw.draw_text(img, entry['buffer'][height]['text'], (entry['indent'] + 2, height + y0), size,
                                    color, 1)
 
@@ -505,7 +508,7 @@ class Player(object):
         """
         show_line = 40          # 显示的行位置，每20像素的高度为一行
         for i in status_list:
-            self.show_text_info(source, i.get("height", show_line), i.get("text", ""), i.get("style", "normal"))
+            self.show_text_info(source, i.get("height", show_line), i.get("text", ""), i.get("style", "normal"), i.get("size"))
             show_line = i.get("height", show_line) + 20
 
     def show_frame_id(self, img, source, fn):

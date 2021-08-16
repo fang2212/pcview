@@ -60,7 +60,6 @@ def parse_x1(id, data, ctx=None):
             cipv['pos_lon'] = r['TargetVehicle_PosX']
 
             # print('X %.1f', r['TargetVehicle_PosX'])
-            cipv['color'] = 4
             cipv['class'] = r['TargetVehicle_Type']
             # return {'type': 'obstacle','id': r['TargetID'], 'pos_lat': r['TargetVehiclePosY'], 'pos_lon': r['TargetVehiclePosX'], 'color': 3}
     elif id == 0x76e:
@@ -92,7 +91,6 @@ def parse_x1(id, data, ctx=None):
             x1_obs['ttc'] = 7
             x1_obs['vel_lon'] = 0
             x1_obs['cipv'] = False
-            x1_obs['color'] = 4
             x1_obs['width'] = 1.5
             x1_obs_list.append(x1_obs)
             ctx['x1_obs'].append(x1_obs.copy())
@@ -108,7 +106,6 @@ def parse_x1(id, data, ctx=None):
         cipp['vel_lon'] = r['TargetPedestrian_VelX']
         cipp['pos_lat'] = r['TargetPedestrian_PosY']
         cipp['pos_lon'] = r['TargetPedestrian_PosX']
-        cipp['color'] = 4
         cipp['class'] = 'pedestrian'
         cipp['TTC'] = r['TargetPedestrian_TTC']
         if cipp['pos_lon'] > 0.0:
@@ -130,7 +127,6 @@ def parse_x1(id, data, ctx=None):
             x1_ped['type'] = 'obstacle'
             x1_ped['sensor'] = 'x1'
             x1_ped['class'] = 'pedestrian'
-            x1_ped['color'] = 4
             x1_ped['vel_lon'] = 0
             # x1_ped['height'] = 1.6
             if x1_ped['pos_lon'] > 0:
@@ -175,7 +171,6 @@ def parse_x1(id, data, ctx=None):
             x1_lane[index]['type'] = 'lane'
             x1_lane[index]['sensor'] = 'x1'
             x1_lane[index]['id'] = index
-            x1_lane[index]['color'] = 4
 
         if id == 0x5f7:
             res = []
