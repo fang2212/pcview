@@ -250,7 +250,8 @@ class PCC(object):
                 t0 = time.time()
                 d = self.hub.pop_common()
                 if not d:
-                    time.sleep(0.001)
+                    if not self.replay:
+                        time.sleep(0.001)
                     continue
                 t1 = time.time()
                 self.statistics['frame_popping_cost'] = '{:.2f}'.format(1000 * (t1 - t0))

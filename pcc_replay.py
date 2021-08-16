@@ -89,11 +89,7 @@ class PcvParser(object):
         # self.start()
 
     def read(self):
-        try:
-            line = self.x1_fp.readline()
-        except Exception as e:
-            print(e)
-            return
+        line = self.x1_fp.readline()
         if not line:
             return -1
 
