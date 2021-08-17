@@ -267,7 +267,7 @@ class Player(object):
 
         u, v = self.transform.trans_gnd2ipm(x, y)
 
-        color = self.color_obs.get(source) or self.color_obs['default']
+        color = obs.get("color") or self.color_obs.get(source) or self.color_obs['default']
 
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
             color = self.color_obs.get('x1_fusion_cam')

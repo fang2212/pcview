@@ -1,0 +1,59 @@
+{
+  "type": "q3_algo",
+  "mac": "5a:31:d3:59:12:06",
+  "force_ip": false,
+  "ip": "192.168.30.42",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": false,
+      "port": 24011,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "pcview"
+    },
+    "proto": {
+      "enable": true,
+      "port": 24030,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "gsensor": {
+      "enable": true,
+      "port": 24031,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+     "vehicle": {
+      "enable": true,
+      "port": 24032,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "lane": {
+      "enable": true,
+      "port": 24033,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "autocalib": {
+      "enable": true,
+      "port": 24034,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "roadmark": {
+      "enable": true,
+      "port": 24035,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    }
+  }
+}
