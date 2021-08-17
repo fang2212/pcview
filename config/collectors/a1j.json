@@ -26,6 +26,13 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "fusion_data"
+    },
+    "gsensor": {
+      "enable": true,
+      "port": 24099,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "imuinfo"
     }
   }
 }
