@@ -13,19 +13,54 @@
       "protocol": "msgpack",
       "topic": "pcview"
     },
-    "proto": {
-      "enable": true,
-      "port": 24032,
-      "transport": "protoflow",
-      "protocol": "msgpack",
-      "topic": "roadmarking,vehicle,tsr,obs,vehicle_signal,ped"
-    },
     "a1j_fusion": {
       "enable": true,
       "port": 24015,
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "fusion_data"
+    },
+    "radar_data": {
+      "enable": true,
+      "port": 24016,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "radar_data"
+    },
+    "lane": {
+      "enable": true,
+      "port": 24017,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "lane_data"
+    },
+    "vehicle": {
+      "enable": true,
+      "port": 24017,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "vehicle_data"
+    },
+    "drive_data": {
+      "enable": true,
+      "port": 24018,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "drive_data"
+    },
+    "fusion_inject": {
+      "enable": true,
+      "port": 24019,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "fusion_inject"
+    },
+    "proto": {
+      "enable": true,
+      "port": 24032,
+      "transport": "protoflow",
+      "protocol": "msgpack",
+      "topic": "roadmarking,vehicle,tsr,obs,vehicle_signal,ped"
     },
     "gsensor": {
       "enable": true,

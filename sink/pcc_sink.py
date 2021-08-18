@@ -1256,7 +1256,7 @@ class FlowSink(NNSink):
                 self.fileHandler.insert_jpg(r)
                 # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
                 return frame_id, r
-            elif topic == "fusion_data":
+            elif topic in ["radar_data", "fusion_data", "vehicle_data", "lane_data", "drive_data", "fusion_inject"]:
                 r = {"source": self.source, "log_name": self.log_name, "buf": payload}
                 self.fileHandler.insert_general_bin_raw(r)
         elif msg_src == 'lane_profiling':
