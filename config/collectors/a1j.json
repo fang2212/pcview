@@ -27,12 +27,19 @@
       "protocol": "msgpack",
       "topic": "radar_data"
     },
-    "vehicle_lane": {
+    "lane": {
       "enable": true,
       "port": 24017,
       "transport": "libflow",
       "protocol": "msgpack",
-      "topic": "vehicle_data，lane_data"
+      "topic": "lane_data"
+    },
+    "vehicle": {
+      "enable": true,
+      "port": 24017,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "vehicle_data"
     },
     "drive_data": {
       "enable": true,
