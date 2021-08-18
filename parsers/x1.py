@@ -216,8 +216,7 @@ def parse_x1(id, data, ctx=None):
                 ctx['fusion'][index]['acc_lon'] = r['Accel_long_obj_' + '%02d' % (index + 1)]
                 ctx['fusion'][index]['TTC'] = -r['L_long_rel_' + '%02d' % (index + 1)] / r[
                     'V_long_obj_' + '%02d' % (index + 1)] if r['V_long_obj_' + '%02d' % (index + 1)] < 0 else 7.0
-                ctx['fusion'][index]['detection_sensor'] = detection_sensor.get(
-                    r['DetectionSensor_' + '%02d' % (index + 1)])
+                ctx['fusion'][index]['detection_sensor'] = r['DetectionSensor_' + '%02d' % (index + 1)]
                 ctx['fusion'][index]['cipo'] = True if id == 0x401 else False
                 ctx['fusion'][index]['type'] = 'obstacle'
                 ctx['fusion'][index]['sensor'] = 'x1_fusion'
