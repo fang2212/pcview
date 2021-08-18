@@ -1056,7 +1056,7 @@ class CameraSink(NNSink):
 
 class FlowSink(NNSink):
     def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, protocol='msgpack', name='x1_algo',
-                 log_name='pcv_log', topic='pcview', isheadless=False, is_main=False):
+                 log_name='pcv_log', topic='pcview', isheadless=False, is_main=False, mm=None, tell=None, lock=None):
         super(FlowSink, self).__init__(cam_queue, ip, port, channel, index, isheadless)
         self.last_fid = 0
         self.fileHandler = fileHandler
@@ -1069,6 +1069,9 @@ class FlowSink(NNSink):
         self.is_main = is_main
         self.type = 'flow_sink'
         self.topic = topic
+        self.mm = mm
+        self.tell = tell
+        self.lock = lock
         self.source = name + '.{:d}'.format(index)
         self.new_a1j = False        # 做个兼容处理，新的a1j不需要进行msgpack.unpack
 
@@ -1121,6 +1124,17 @@ class FlowSink(NNSink):
                         self.cam_queue.put((*r, self.cls))
                 else:
                     time.sleep(0.001)
+
+    def write_to_mmap(self, content):
+        """
+        写入数据到mmap文件内存对象：加锁，写入
+        :return:
+        """
+        self.lock.acquire()
+        self.mm.seek(self.tell.value)
+        self.mm.write(content)
+        self.tell.value = self.mm.tell()
+        self.lock.release()
 
     def run(self):
         import asyncio
@@ -1238,7 +1252,8 @@ class FlowSink(NNSink):
                          'is_main': self.is_main, 'transport': 'libflow'}
                     self.fileHandler.insert_jpg(r)
                     # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
-                    return frame_id, r
+                    self.write_to_mmap(msgpack.packb([frame_id, r, self.cls]) + b'\MMAP')
+                    # return frame_id, r
             elif topic == "video":
                 frame_id = int.from_bytes(payload[4:8], byteorder='little', signed=False)
                 # if frame_id - self.last_fid != 1:

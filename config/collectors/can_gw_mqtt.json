@@ -7,7 +7,7 @@
   "force_ip": true,
   "transport": "mqtt",
   "ports": {
-    "can1": {
+    "can0": {
       "enable": true,
       "protocol": "canpack",
       "cid": "canfd_mqtt",
@@ -16,7 +16,7 @@
       "transport": "mqtt",
       "qos": 0
     },
-    "can2": {
+    "can1": {
       "enable": true,
       "protocol": "canpack",
       "cid": "canfd_mqtt",
@@ -24,7 +24,7 @@
       "topic": "socket_hil/can_replay/1",
       "qos": 0
     },
-    "can3": {
+    "can2": {
       "enable": true,
       "protocol": "canpack",
       "cid": "canfd_mqtt",
@@ -32,7 +32,7 @@
       "topic": "pi_node/can_rcv/2",
       "qos": 0
     },
-    "can4": {
+    "can3": {
       "enable": true,
       "protocol": "canpack",
       "cid": "canfd_mqtt",

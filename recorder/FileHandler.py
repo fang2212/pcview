@@ -157,7 +157,6 @@ class FileHandler(Process):
         将内存里面的数据存入到log.txt文件中
         :return:
         """
-        print("begin write:", self.log_write_index, self.tell)
         self.lock.acquire()
         end = self.tell
         content = self.log_mm[self.log_write_index:end]

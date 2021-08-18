@@ -1,3 +1,4 @@
+import mmap
 import os
 import time
 from multiprocessing import Process as kProcess, Lock
@@ -75,6 +76,10 @@ class Hub(Thread):
         self.headless = headless
         # print(self.headless)
         self.msg_queue = kQueue(maxsize=3000)
+        self.mm = mmap.mmap(-1, 1024 * 1024 * 500, access=os.O_RDWR)
+        self.lock = Lock()
+        self.tell = Value('L', 0)
+        self.msg_list = []
         # self.cam_queue = kQueue()
         # self.sink = {}
         self.cache = {}
@@ -188,6 +193,40 @@ class Hub(Thread):
         for node in self.nodes:
             node.close()
 
+    def write_to_mmap(self, content):
+        """
+        写入数据到mmap文件内存对象：加锁，写入
+        :return:
+        """
+        self.lock.acquire()
+        self.mm.seek(self.tell.value)
+        self.mm.write(bytes(content, 'utf-8'))
+        self.tell.value = self.mm.tell()
+        self.lock.release()
+
+    def get_from_mmap(self):
+        """
+        从mmap文件内存对象读取数据：加锁，读取
+        :return:
+        """
+        end = self.tell.value
+        if end > 0:
+            self.lock.acquire()
+            self.mm.seek(0)
+            content = self.mm[:end]
+            self.tell.value = 0
+            self.lock.release()
+            lines = content.split(b'\MMAP')
+            for line in lines:
+                if line:
+                    try:
+                        data = msgpack.unpackb(line)
+                        self.msg_list.append((data[0], data[1], data[2]))
+                    except Exception as e:
+                        print("err", e)
+            #     yield
+            # self.tell.value = self.mm.tell()
+
     def get_veh_role(self, source):
         if source in self.type_roles:
             return self.type_roles[source]
@@ -282,7 +321,7 @@ class Hub(Thread):
                 if transport == "libflow":
                     sink = FlowSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
                                     index=idx, protocol=proto, topic=topic, log_name=item, fileHandler=self.fileHandler,
-                                    is_main=is_main, name=cfg.get("type"))
+                                    is_main=is_main, name=cfg.get("type"), mm=self.mm, tell=self.tell, lock=self.lock)
                 elif transport == "protoflow":
                     sink = ProtoSink(msg_queue=self.msg_queue, cam_queue=self.msg_queue, ip=ip, port=port, channel=item,
                                     index=idx, protocol=proto, topic=topic, log_name=item, fileHandler=self.fileHandler,
@@ -551,16 +590,22 @@ class Hub(Thread):
 
     def pop_common(self):
         # res = {}
-        if not self.msg_queue.empty():
-            try:
-                r = self.msg_queue.get()
-                fid, data, source = r
+        if self.msg_list:
+            data = self.msg_list.pop(0)
+            return data
+        else:
+            self.get_from_mmap()
 
-            except ValueError as e:
-                print('error when pop data:')
-                print(r)
-                raise e
-            return fid, data, source
+        # if not self.msg_queue.empty():
+        #     try:
+        #         r = self.msg_queue.get()
+        #         fid, data, source = r
+        #
+        #     except ValueError as e:
+        #         print('error when pop data:')
+        #         print(r)
+        #         raise e
+        #     return fid, data, source
 
     def parse_can_msgs(self, status):
         for sink in self.sinks:
