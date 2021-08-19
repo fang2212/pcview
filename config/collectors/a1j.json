@@ -55,6 +55,20 @@
       "protocol": "msgpack",
       "topic": "fusion_inject"
     },
+    "fusion_LaneAccimg": {
+      "enable": true,
+      "port": 10222,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "LaneAccImg"
+    },
+    "fusion_LanePostimg": {
+      "enable": true,
+      "port": 10224,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "LanePostImg"
+    },
     "proto": {
       "enable": true,
       "port": 24032,
