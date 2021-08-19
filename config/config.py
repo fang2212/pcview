@@ -340,6 +340,7 @@ def load_cfg(jsonspec, local='config/local.json'):
                             for port in clct['ports']:
                                 if "can" in port and item['params'].get(port):
                                     clct['ports'][port]['topic'] = item['params'][port]
+                                    clct['ports'][port]['dbc'] = item['params'][port]
                         if item['params'].get('is_main'):
                             main_collector = item['params']['is_main']
                 else:

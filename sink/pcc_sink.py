@@ -55,7 +55,7 @@ from collections import deque
 
 
 class NNSink(Thread):
-    def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False):
+    def __init__(self, queue, ip, port, msg_type, index=0, isheadless=False, mm=None, tell=None, lock=None):
         super(NNSink, self).__init__()
         self.daemon = True
         self.dev = ip
@@ -67,6 +67,10 @@ class NNSink(Thread):
         self.isheadless = isheadless
         self.profile_intv = 1
         self.exit = Event()
+
+        self.mm = mm                    # mmap内存对象
+        self.tell = tell                # 写入位置
+        self.lock = lock                # 写入读取锁
         # if 'can' in msg_type:
         #     self.cls = 'can'
         # print(self.type, 'start.')
@@ -84,6 +88,17 @@ class NNSink(Thread):
             self._socket = nnpy.Socket(nnpy.AF_SP, nnpy.SUB)
             self._socket.setsockopt(nnpy.SUB, nnpy.SUB_SUBSCRIBE, '')
             self._socket.connect(address)
+
+    def write_to_mmap(self, content):
+        """
+        写入数据到mmap文件内存对象：加锁，写入
+        :return:
+        """
+        self.lock.acquire()
+        self.mm.seek(self.tell.value)
+        self.mm.write(content)
+        self.tell.value = self.mm.tell()
+        self.lock.release()
 
     def read(self):
         # if nn_impl == 'pynng':
@@ -142,12 +157,8 @@ class NNSink(Thread):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                if not self.queue.full():
-                    self.queue.put((r))
-                else:
-                    print("full")
-                    time.sleep(0.001)
-                    continue
+
+                self.write_to_mmap(msgpack.packb((r)) + b'\MMAP')
 
             # time.sleep(0.01)
             # if t0 > next_check:
@@ -165,7 +176,7 @@ class NNSink(Thread):
 
 
 class ZmqSink(Thread):
-    def __init__(self, queue, ip, port, topic, protocol, index, fileHandler):
+    def __init__(self, queue, ip, port, topic, protocol, index, fileHandler, mm=None, tell=None, lock=None):
         super(ZmqSink, self).__init__()
         self.ip = ip
         self.port = port
@@ -181,6 +192,10 @@ class ZmqSink(Thread):
         self.type = "zmq_sink"
         self.context = None
 
+        self.mm = mm  # mmap内存对象
+        self.tell = tell  # 写入位置
+        self.lock = lock  # 写入读取锁
+
     def _init_port(self):
         print('connecting', self.ip, self.port)
         self.context = zmq.Context()
@@ -189,6 +204,17 @@ class ZmqSink(Thread):
 
         self._socket.connect(url)
         self._socket.setsockopt(zmq.SUBSCRIBE, b'')  # 接收所有消息
+
+    def write_to_mmap(self, content):
+        """
+        写入数据到mmap文件内存对象：加锁，写入
+        :return:
+        """
+        self.lock.acquire()
+        self.mm.seek(self.tell.value)
+        self.mm.write(content)
+        self.tell.value = self.mm.tell()
+        self.lock.release()
 
     def read(self):
         bs = self._socket.recv()
@@ -233,18 +259,14 @@ class ZmqSink(Thread):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                if not self.queue.full():
-                    self.queue.put((r))
-                else:
-                    time.sleep(0.001)
-                    continue
+
+                self.write_to_mmap(msgpack.packb((r)) + b'\MMAP')
 
         print('sink', self.source, 'exit.')
 
 
-
 class UDPSink(Thread):
-    def __init__(self, queue, ip, port, topic, protocol, index, fileHandler):
+    def __init__(self, queue, ip, port, topic, protocol, index, fileHandler, mm=None, tell=None, lock=None):
         super(UDPSink, self).__init__()
         self.ip = ip
         self.port = port
@@ -258,6 +280,21 @@ class UDPSink(Thread):
         self._buf = b''
         self.exit = Event()
         self.type = "ucp_sink"
+
+        self.mm = mm  # mmap内存对象
+        self.tell = tell  # 写入位置
+        self.lock = lock  # 写入读取锁
+
+    def write_to_mmap(self, content):
+        """
+        写入数据到mmap文件内存对象：加锁，写入
+        :return:
+        """
+        self.lock.acquire()
+        self.mm.seek(self.tell.value)
+        self.mm.write(content)
+        self.tell.value = self.mm.tell()
+        self.lock.release()
 
     def _init_port(self):
         print('udp connecting', self.ip, self.port)
@@ -335,18 +372,14 @@ class UDPSink(Thread):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                if not self.queue.full():
-                    self.queue.put((r))
-                else:
-                    time.sleep(0.001)
-                    continue
+                self.write_to_mmap(msgpack.packb((r)) + b'\MMAP')
 
         print('sink', self.source, 'exit.')
 
 
 class MQTTSink(Thread):
 
-    def __init__(self, queue, ip, can_list, index, fileHandler, isheadless=False, device="", cid=""):
+    def __init__(self, queue, ip, can_list, index, fileHandler, isheadless=False, device="", cid="", mm=None, tell=None, lock=None):
         super(MQTTSink, self).__init__()
         self.type = 'mqtt_sink'
         self.ip = ip
@@ -375,6 +408,21 @@ class MQTTSink(Thread):
         self.mq_time = 0
         self.mq_count = 0
         self.mq_last_time = time.time()
+
+        self.mm = mm  # mmap内存对象
+        self.tell = tell  # 写入位置
+        self.lock = lock  # 写入读取锁
+
+    def write_to_mmap(self, content):
+        """
+        写入数据到mmap文件内存对象：加锁，写入
+        :return:
+        """
+        self.lock.acquire()
+        self.mm.seek(self.tell.value)
+        self.mm.write(content)
+        self.tell.value = self.mm.tell()
+        self.lock.release()
 
     def init_env(self):
         # 根据传入四个端口信号进行初始化相关环境
@@ -461,12 +509,12 @@ class MQTTSink(Thread):
             ret['ts'] = timestamp
             ret['source'] = source
 
-        self.queue.put((can_id, ret, source))
+        self.write_to_mmap(msgpack.packb((can_id, ret, source)) + b'\MMAP')
         # return can_id, ret, source
 
 
 class TCPSink(Thread):
-    def __init__(self, queue, ip, port, channel, protocol, index, fileHandler):
+    def __init__(self, queue, ip, port, channel, protocol, index, fileHandler, mm=None, tell=None, lock=None):
         super(TCPSink, self).__init__()
         self.ip = ip
         self.port = port
@@ -480,6 +528,21 @@ class TCPSink(Thread):
         self._buf = b''
         self.exit = Event()
         self.type = "tcp_sink"
+
+        self.mm = mm  # mmap内存对象
+        self.tell = tell  # 写入位置
+        self.lock = lock  # 写入读取锁
+
+    def write_to_mmap(self, content):
+        """
+        写入数据到mmap文件内存对象：加锁，写入
+        :return:
+        """
+        self.lock.acquire()
+        self.mm.seek(self.tell.value)
+        self.mm.write(content)
+        self.tell.value = self.mm.tell()
+        self.lock.release()
 
     def _init_port(self):
         print('connecting', self.ip, self.port)
@@ -553,18 +616,14 @@ class TCPSink(Thread):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                if not self.queue.full():
-                    self.queue.put((r))
-                else:
-                    time.sleep(0.001)
-                    continue
+                self.write_to_mmap(msgpack.packb((r)) + b'\MMAP')
 
         print('sink', self.source, 'exit.')
 
 
 class PinodeSink(NNSink):
-    def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
-        super(PinodeSink, self).__init__(queue, ip, port, channel, index, isheadless)
+    def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False, mm=None, tell=None, lock=None):
+        super(PinodeSink, self).__init__(queue, ip, port, channel, index, isheadless, mm=mm, tell=tell, lock=lock)
         # print('pi_node connected.', ip, port, channel, index)
         self.source = 'rtk.{:d}'.format(index)
         self.index = index
@@ -700,8 +759,8 @@ class PinodeSink(NNSink):
 
 
 class PinodeSinkGeneral(NNSink):
-    def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False):
-        super(PinodeSinkGeneral, self).__init__(queue, ip, port, channel, index, isheadless)
+    def __init__(self, queue, ip, port, channel, index, resname, fileHandler, isheadless=False, mm=None, tell=None, lock=None):
+        super(PinodeSinkGeneral, self).__init__(queue, ip, port, channel, index, isheadless, mm=mm, tell=tell, lock=lock)
         # print('pi_node connected.', ip, port, channel, index)
         self.source = 'rtk.{:d}'.format(index)
         self.index = index
@@ -805,8 +864,8 @@ class CANCollectSink(NNSink):
     """
     can-fd设备有四个can端口，需做区分处理
     """
-    def __init__(self, queue, ip, port, can_list, index, fileHandler, isheadless=False, device=""):
-        super(CANCollectSink, self).__init__(queue, ip, port, "can", index, isheadless)
+    def __init__(self, queue, ip, port, can_list, index, fileHandler, isheadless=False, device="", mm=None, tell=None, lock=None):
+        super(CANCollectSink, self).__init__(queue, ip, port, "can", index, isheadless, mm=mm, tell=tell, lock=lock)
         self.type = 'can_collect_sink'
         self.device = device
         self.fileHandler = fileHandler
@@ -827,10 +886,10 @@ class CANCollectSink(NNSink):
 
     def init_env(self):
         # 根据传入四个端口信号进行初始化相关环境
-        for i, ch in self.can_list:
+        for ch in self.can_list:
             t = self.can_list[ch]
             source = '{}.{}.{}.{}'.format(t.get("origin_device", self.device), self.index, ch, t["dbc"])
-            self.log_types["can{}".format(i)] = source                                          # 写入日志的信号名
+            self.log_types[ch] = source                                          # 写入日志的信号名
             self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}           # 解析用的变量空间
             self.source.append(source)              # 来源列表
 
@@ -849,7 +908,7 @@ class CANCollectSink(NNSink):
         if not self.parse_event.is_set():
             return
 
-        msg_type = self.can_list[channel]["topic"]
+        msg_type = self.can_list["can{}".format(channel)]["topic"]
         parser = self.parser[msg_type]
         source = self.source[channel]
         ret = parser(can_id, data, self.context[source])
@@ -865,8 +924,8 @@ class CANCollectSink(NNSink):
 
 
 class CANSink(NNSink):
-    def __init__(self, queue, ip, port, channel, type, index, fileHandler, isheadless=False):
-        super(CANSink, self).__init__(queue, ip, port, channel, index, isheadless)
+    def __init__(self, queue, ip, port, channel, type, index, fileHandler, isheadless=False, mm=None, tell=None, lock=None):
+        super(CANSink, self).__init__(queue, ip, port, channel, index, isheadless, mm=mm, tell=tell, lock=lock)
         self.fileHandler = fileHandler
         self.parser = []
         for ptype in parsers_dict:
@@ -991,8 +1050,8 @@ class CANSink(NNSink):
 
 
 class GsensorSink(NNSink):
-    def __init__(self, queue, ip, port, channel, index, fileHandler, isheadless=False):
-        super(GsensorSink, self).__init__(queue, ip, port, channel, index, isheadless)
+    def __init__(self, queue, ip, port, channel, index, fileHandler, isheadless=False, mm=None, tell=None, lock=None):
+        super(GsensorSink, self).__init__(queue, ip, port, channel, index, isheadless, mm=mm, tell=tell, lock=lock)
         self.fileHandler = fileHandler
         self.type = 'gsensor_sink'
 
@@ -1012,8 +1071,8 @@ class GsensorSink(NNSink):
 
 
 class CameraSink(NNSink):
-    def __init__(self, queue, ip, port, channel, index, fileHandler, headless=False, is_main=False, devname=None):
-        super(CameraSink, self).__init__(queue, ip, port, channel, index, headless)
+    def __init__(self, queue, ip, port, channel, index, fileHandler, headless=False, is_main=False, devname=None, mm=None, tell=None, lock=None):
+        super(CameraSink, self).__init__(queue, ip, port, channel, index, headless, mm=mm, tell=tell, lock=lock)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.headless = headless
@@ -1057,7 +1116,7 @@ class CameraSink(NNSink):
 class FlowSink(NNSink):
     def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, protocol='msgpack', name='x1_algo',
                  log_name='pcv_log', topic='pcview', isheadless=False, is_main=False, mm=None, tell=None, lock=None):
-        super(FlowSink, self).__init__(cam_queue, ip, port, channel, index, isheadless)
+        super(FlowSink, self).__init__(cam_queue, ip, port, channel, index, isheadless, mm=mm, tell=tell, lock=lock)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.ip = ip
@@ -1069,9 +1128,6 @@ class FlowSink(NNSink):
         self.is_main = is_main
         self.type = 'flow_sink'
         self.topic = topic
-        self.mm = mm
-        self.tell = tell
-        self.lock = lock
         self.source = name + '.{:d}'.format(index)
         self.new_a1j = False        # 做个兼容处理，新的a1j不需要进行msgpack.unpack
 
@@ -1116,25 +1172,14 @@ class FlowSink(NNSink):
                 if r is not None:
                     if isinstance(r[0], type("")):
                         if 'x1_data' in r[0]:
-                            self.msg_queue.put((r[1]['frame_id'], r[1], r[0]))
+                            self.write_to_mmap(msgpack.packb((r[1]['frame_id'], r[1], r[0])) + b'\MMAP')
                         elif 'calib_param' in r[0]:
-                            self.msg_queue.put((r[1]['frame_id'], r[1], self.source))
+                            self.write_to_mmap(msgpack.packb((r[1]['frame_id'], r[1], self.source)) + b'\MMAP')
                             # print(self.source)
                     else:
-                        self.cam_queue.put((*r, self.cls))
+                        self.write_to_mmap(msgpack.packb((*r, self.cls)) + b'\MMAP')
                 else:
                     time.sleep(0.001)
-
-    def write_to_mmap(self, content):
-        """
-        写入数据到mmap文件内存对象：加锁，写入
-        :return:
-        """
-        self.lock.acquire()
-        self.mm.seek(self.tell.value)
-        self.mm.write(content)
-        self.tell.value = self.mm.tell()
-        self.lock.release()
 
     def run(self):
         import asyncio
@@ -1252,8 +1297,7 @@ class FlowSink(NNSink):
                          'is_main': self.is_main, 'transport': 'libflow'}
                     self.fileHandler.insert_jpg(r)
                     # self.fileHandler.insert_raw((ts, 'camera', '{}'.format(frame_id)))
-                    self.write_to_mmap(msgpack.packb([frame_id, r, self.cls]) + b'\MMAP')
-                    # return frame_id, r
+                    return frame_id, r
             elif topic == "video":
                 frame_id = int.from_bytes(payload[4:8], byteorder='little', signed=False)
                 # if frame_id - self.last_fid != 1:
@@ -1351,8 +1395,8 @@ class FlowSink(NNSink):
 
 class ProtoSink(NNSink):
     def __init__(self, cam_queue, msg_queue, ip, port, channel, index, fileHandler, protocol='msgpack', name='proto',
-                 log_name='proto_log', topic='pcview', isheadless=False, is_main=False):
-        super(ProtoSink, self).__init__(cam_queue, ip, port, channel, index, isheadless)
+                 log_name='proto_log', topic='pcview', isheadless=False, is_main=False, mm=None, tell=None, lock=None):
+        super(ProtoSink, self).__init__(cam_queue, ip, port, channel, index, isheadless, mm=mm, tell=tell, lock=lock)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.ip = ip
@@ -1444,8 +1488,8 @@ class ProtoSink(NNSink):
 
 class RTKSink(NNSink):
 
-    def __init__(self, queue, ip, port, msg_type, index, fileHandler, isheadless=False):
-        NNSink.__init__(self, queue, ip, port, msg_type, index, isheadless)
+    def __init__(self, queue, ip, port, msg_type, index, fileHandler, isheadless=False, mm=None, tell=None, lock=None):
+        NNSink.__init__(self, queue, ip, port, msg_type, index, isheadless, mm=mm, tell=tell, lock=lock)
         self.fileHandler = fileHandler
         self.source = 'drtk'
 
