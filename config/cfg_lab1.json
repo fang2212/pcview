@@ -54,8 +54,8 @@
                     "height": 1.2
                 },
                 "video": {
-                    "yaw": -1,
-                    "pitch": -3,
+                    "yaw": 0,
+                    "pitch":0.5,
                     "roll": 0,
                     "lat_offset": 0,
                     "lon_offset": 0,
