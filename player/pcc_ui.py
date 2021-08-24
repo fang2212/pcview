@@ -621,6 +621,7 @@ class Player(object):
         elif obs.get('class') == 'object':
             self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']))
         else:
+            color = obs.get("color") or self.color_obs['rtk']
             self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']))
 
         if "detection_sensor" in obs:
