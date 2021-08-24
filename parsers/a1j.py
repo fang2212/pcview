@@ -71,7 +71,7 @@ def parse_a1j(id, data, ctx=None):
 
             # print('X %.1f', r['TargetVehicle_PosX'])
             cipv['color'] = vision_color
-            cipv["status_show"] = [{"text": "vision color", "height": 180, "style": vision_color, "size": 0.6}]
+            cipv["status_show"] = [{"text": "vision color", "height": 80, "style": vision_color, "size": 0.6}]
             cipv['class'] = r['TargetVehicle_Type']
             # return {'type': 'obstacle','id': r['TargetID'], 'pos_lat': r['TargetVehiclePosY'], 'pos_lon': r['TargetVehiclePosX'], 'color': 3}
     elif id == 0x76e:
@@ -106,7 +106,7 @@ def parse_a1j(id, data, ctx=None):
             x1_obs['cipv'] = False
             x1_obs['color'] = vision_color
             x1_obs['width'] = 1.5
-            x1_obs["status_show"] = [{"text": "vision color", "height": 180, "style": vision_color, "size": 0.6}]
+            x1_obs["status_show"] = [{"text": "vision color", "height": 80, "style": vision_color, "size": 0.6}]
             x1_obs_list.append(x1_obs)
             ctx['x1_obs'].append(x1_obs.copy())
 
@@ -116,7 +116,7 @@ def parse_a1j(id, data, ctx=None):
         cipp['width'] = 0.3
         cipp['type'] = 'obstacle'
         cipp['sensor'] = 'x1'
-        cipp['cipo'] = True
+        cipp['cipo'] = False
         cipp['id'] = r['TargetPedestrian_ID']
         cipp['vel_lon'] = r['TargetPedestrian_VelX']
         cipp['pos_lat'] = r['TargetPedestrian_PosY']
@@ -234,7 +234,7 @@ def parse_a1j(id, data, ctx=None):
                 ctx['fusion'][index]['detection_sensor'] = r['DetectionSensor_' + '%02d' % (index + 1)]
                 ctx['fusion'][index]['cipo'] = True if id == 0x401 else False
                 ctx['fusion'][index]['type'] = 'obstacle'
-                ctx['fusion'][index]['sensor'] = 'x1_fusion'
+                ctx['fusion'][index]['sensor'] = 'a1j_fusion'
 
                 ctx['fusion'][index]['height'] = 1.5
         else:
