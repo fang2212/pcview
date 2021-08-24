@@ -612,7 +612,7 @@ class Player(object):
             line = 160
             style = self.color_obs.get(obs['source'])
             self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
-        elif obs.get("sensor") == "a1j_fusion":
+        elif obs.get("sensor") == "a1j_fusion" or obs.get("sensor") == "ifv300_fusion":
             line = 180
             self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
         elif obs.get('class') == 'pedestrian':
