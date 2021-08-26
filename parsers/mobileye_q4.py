@@ -285,7 +285,7 @@ def parser_mbq4(id, buf, ctx):
                         ctx['q4_obs'][id]['cipo'] = True
                     else:
                         ctx['q4_obs'][id]['cipo'] = False
-                    if len(ctx['q4_obs'][id]) == 23:
+                    if len(ctx['q4_obs'][id]) == 22:
                         res.append(ctx['q4_obs'][id])
                 except Exception as e:
                     print('q4 parse error', id, ctx['q4_obs'][id])

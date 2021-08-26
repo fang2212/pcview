@@ -540,6 +540,7 @@ class LogPlayer(Process):
 
                 # print(cols[2], '0x{:03x}'.format(int(cols[3], 16)), ts)
                 if msg_type not in self.parser:
+                    print("not has parser:", msg_type)
                     continue
 
                 for parser in self.parser[msg_type]:
