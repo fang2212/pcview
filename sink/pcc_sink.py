@@ -1,3 +1,18 @@
+import asyncio
+import base64
+import json
+import struct
+import time
+
+from google.protobuf import json_format
+
+from pyproto import vehicle_pb2, pedestrian_pb2, roadmarking_pb2, object_attribute_pb2, object_pb2
+from pyproto import calib_param_pb2, dev_object_pb2, vehicle_signal_pb2
+# from multiprocessing import Process
+from threading import Thread
+# from threading import Event as tEvent
+from multiprocessing import Value, Event
+import os
 import aiohttp
 import can
 import json
@@ -8,6 +23,7 @@ import socket
 import struct
 import time
 import zmq
+import paho.mqtt.client as mqtt
 
 from collections import deque
 from multiprocessing import Value, Event
@@ -17,6 +33,7 @@ from parsers import ublox, rtcm3
 from parsers.drtk import V1_msg, v1_handlers
 from parsers.parser import parsers_dict
 from recorder.convert import *
+from sink.sink import can_decode, pim222_decode
 from tools import mytools
 from utils import logger
 
@@ -38,7 +55,7 @@ class Sink(Thread):
     """
     信号解析基本类
     """
-    def __init__(self, ip, port, msg_type, index=0):
+    def __init__(self, ip, port, msg_type, index=0, mq=None):
         super().__init__()
         self.daemon = True  # 设置为守护线程
         self.ip = ip
@@ -46,7 +63,9 @@ class Sink(Thread):
         self.msg_type = msg_type
         self.index = index
         self.source = 'sink.{}'.format(index)
-        self.exit = Event()
+        self.exit = False
+
+        self.mq = mq  # mmap内存对象
 
         self.pid = None  # 进程id
 
@@ -71,7 +90,7 @@ class Sink(Thread):
         return bs
 
     def close(self):
-        self.exit.set()
+        self.exit = True
         logger.debug(f'sink {self.source} exit')
 
     def pkg_handler(self, msg_buf):
@@ -87,8 +106,8 @@ class NNSink(Sink):
     """
     nnpy类型信号处理基类
     """
-    def __init__(self, ip, port, msg_type, index=0, decode_queue=None, result_queue=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type)
+    def __init__(self, ip, port, msg_type, index=0, decode_queue=None, result_queue=None, mq=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, mq=mq)
         self.ip = ip
         self.port = port
         self.type = msg_type
@@ -110,7 +129,7 @@ class NNSink(Sink):
     def task(self):
         self._init_port()
         self.pid = os.getpid()
-        while not self.exit.is_set():
+        while not self.exit:
             buf = self.read()
             if not buf:
                 time.sleep(0.001)
@@ -125,18 +144,16 @@ class NNSink(Sink):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                self.decode_queue.put((r))
+                self.mq.put(r)
 
 
 class ZmqSink(Sink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, decode_queue=None, result_queue=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type)
+    def __init__(self, ip, port, msg_type, index, fileHandler, mq=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, mq=mq)
         self.ip = ip
         self.port = port
         self.msg_type = msg_type
         self.source = '{}.{:d}'.format(msg_type, index)
-        self.decode_queue = decode_queue
-        self.result_queue = result_queue
         self.index = index
         self.fileHandler = fileHandler
         self.ctx = dict()
@@ -149,6 +166,7 @@ class ZmqSink(Sink):
         url = "tcp://%s:%d" % (self.ip, self.port)
 
         self._socket.connect(url)
+        self._socket.setsockopt(zmq.SUBSCRIBE, b'')  # 接收所有消息
 
     def read(self):
         bs = self._socket.recv()
@@ -163,7 +181,7 @@ class ZmqSink(Sink):
     def task(self):
         self._init_port()
         msg_cnt = 0
-        while not self.exit.is_set():
+        while not self.exit:
             buf = self.read()
             if not buf:
                 time.sleep(0.001)
@@ -180,17 +198,17 @@ class ZmqSink(Sink):
                 else:
                     print(r)
 
-                self.decode_queue.put((r))
+                self.mq.put(r)
+
+        print('sink', self.source, 'exit.')
 
 
 class UDPSink(Sink):
-    def __init__(self, ip, port, topic, protocol, index, file_andler, decode_queue=None, result_queue=None):
-        super(UDPSink, self).__init__(ip=ip, port=port, msg_type=topic)
+    def __init__(self, ip, port, topic, protocol, index, file_andler, mq=None):
+        super(UDPSink, self).__init__(ip=ip, port=port, msg_type=topic, mq=mq)
         self.ip = ip
         self.port = port
         self.msg_type = topic
-        self.decode_queue = decode_queue
-        self.result_queue = result_queue
         self.source = '{}.{:d}'.format(topic, index)
         self.index = index
         self.fileHandler = file_andler
@@ -244,7 +262,7 @@ class UDPSink(Sink):
 
     def task(self):
         self._init_port()
-        while not self.exit.is_set():
+        while not self.exit:
             buf = self.read()
             if not buf:
                 time.sleep(0.001)
@@ -259,16 +277,17 @@ class UDPSink(Sink):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                self.sink_process.put_decode((r))
+                self.mq.put(r)
+
+        print('sink', self.source, 'exit.')
 
 
 class TCPSink(Sink):
-    def __init__(self, ip, port, msg_type, protocol, index, fileHandler, sink_process=None):
-        super(TCPSink, self).__init__(ip=ip, port=port, msg_type=msg_type, sink_process=sink_process)
+    def __init__(self, ip, port, msg_type, protocol, index, fileHandler, mq=None):
+        super(TCPSink, self).__init__(ip=ip, port=port, msg_type=msg_type, mq=mq)
         self.ip = ip
         self.port = port
         self.msg_type = msg_type
-        self.sink_process = sink_process
         self.source = 'tcp.{:d}'.format(index)
         self.index = index
         self.filehandler = fileHandler
@@ -276,9 +295,20 @@ class TCPSink(Sink):
         self.ctx = dict()
         self._buf = b''
         self.exit = Event()
+        self.type = "tcp_sink"
+
+    def _init_port(self):
+        print('connecting', self.ip, self.port)
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.connect((self.ip, self.port))
+
+    def read(self):
+        bs = self._socket.recv(2048)  # flags=nnpy.DONTWAIT
+        return bs
 
     def pkg_handler(self, msg):
         if self.protocol == 'novatel':
+            # print(msg)
             ret = []
             self._buf += msg
             while True:
@@ -290,6 +320,7 @@ class TCPSink(Sink):
                     break
 
                 phr = self._buf[a:b].decode()
+                # print(a, b, self._buf[a:b])
                 self._buf = self._buf[b + 2:]
                 try:
                     parser = parsers_dict.get(self.protocol)
@@ -309,7 +340,7 @@ class TCPSink(Sink):
     def task(self):
         self._init_port()
         self.pid = os.getpid()
-        while not self.exit.is_set():
+        while not self.exit:
             buf = self.read()
             if not buf:
                 time.sleep(0.001)
@@ -324,19 +355,20 @@ class TCPSink(Sink):
                         item['ts_arrival'] = t0
                 else:
                     print(r)
-                self.sink_process.put_decode((r))
+                self.mq.put(r)
+
+        print('sink', self.source, 'exit.')
 
 
 class PinodeSink(NNSink):
-    def __init__(self, ip, port, msg_type, index, resname, fileHandler, sink_process=None):
-        super().__init__(ip=ip, port=port, index=index, msg_type=msg_type, sink_process=sink_process)
+    def __init__(self, ip, port, msg_type, index, resname, fileHandler, mq=None):
+        super().__init__(ip=ip, port=port, index=index, msg_type=msg_type, mq=mq)
         self.source = 'rtk.{:d}'.format(index)
         self.msg_type = msg_type
         self.index = index
         self.context = {'source': self.source}
         self.resname = resname
         self.fileHandler = fileHandler
-        self.sink_process = sink_process
         self.type = 'pi_sink'
         logger.debug(f'inited pi_node sink res:{resname}')
         if resname == 'rtcm':
@@ -357,8 +389,7 @@ class PinodeSink(NNSink):
                 "source": source,
                 "data": msg,
             }
-            self.sink_process.put_decode({"data": decode_msg})
-            return
+            return pim222_decode(decode_msg)
 
         data = self.decode_pinode_res(self.resname, msg)
         if not data:
@@ -439,11 +470,195 @@ class PinodeSink(NNSink):
             return data
 
 
+class CANCollectSink(NNSink):
+    """
+    can-fd设备有四个can端口，需做区分处理
+    """
+    def __init__(self, ip, port, can_list, index, fileHandler, device='', mq=None):
+        super(CANCollectSink, self).__init__(ip, port, "can", index, mq=mq)
+        self.type = 'can_collect_sink'
+        self.fileHandler = fileHandler
+        self.can_list = can_list                  # 四个端口的信号类型列表
+        self.device = device
+        self.parser = {}
+        for ch in can_list:
+            t = can_list[ch]
+            self.parser[t["dbc"]] = parsers_dict.get(t["dbc"], parsers_dict["default"])
+        print('CANCollectSink initialized.', self.type, ip, port)
+
+        self.source = []
+        self.context = {}
+        self.log_types = {}
+        self.parse_event = Event()
+        self.parse_event.set()
+
+        self.init_env()
+
+    def init_env(self):
+        # 根据传入四个端口信号进行初始化相关环境
+        for ch in self.can_list:
+            t = self.can_list[ch]
+            source = '{}.{}.{}.{}'.format(t.get("origin_device", ''), self.index, ch, t["dbc"])
+            self.log_types[ch] = source                                                     # 写入日志的信号名
+            self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}         # 解析用的变量空间
+            self.source.append(source)              # 来源列表
+
+    def pkg_handler(self, msg):
+        msg = memoryview(msg).tobytes()
+        if not msg:
+            return
+        channel = msg[0]
+        can_id = struct.unpack('<i', msg[1:5])[0]
+        timestamp = struct.unpack('<d', msg[5:13])[0]
+        data = msg[13:]
+
+        log_type = self.log_types.get("can{}".format(channel))
+        self.fileHandler.insert_raw((timestamp, log_type, '0x%x' % can_id + ' ' + data.hex()))
+
+        if not self.parse_event.is_set():
+            return
+
+        msg_type = self.can_list["can{}".format(channel)]["dbc"]
+        parser = self.parser[msg_type]
+        source = self.source[channel]
+        ret = parser(can_id, data, self.context[source])
+        if ret is None:
+            return None
+
+        if isinstance(ret, list):
+            for obs in ret:
+                obs['ts'] = timestamp
+        else:
+            ret['ts'] = timestamp
+        return can_id, ret, self.context[source]["source"]
+
+
+class MQTTSink(NNSink):
+
+    def __init__(self, ip, can_list, index, fileHandler, device="", cid="", mq=None):
+        super(MQTTSink, self).__init__(ip, "*", can_list.join(','), mq=mq)
+        self.type = 'mqtt_sink'
+        self.ip = ip
+        self.device = device
+        self.index = index
+        self.fileHandler = fileHandler
+        self.can_list = can_list  # 四个端口的信号类型列表
+        self.parser = {}
+        for ch in can_list:
+            t = can_list[ch]
+            self.parser[t["dbc"]] = parsers_dict.get(t["dbc"], parsers_dict["default"])
+
+        self.source = []
+        self.context = {}
+        self.log_types = {}
+        self.parse_event = Event()
+        self.parse_event.set()
+
+        self.client = mqtt.Client(cid)
+
+        self.topic_list = {}
+        self.init_env()
+
+        print('MQTTSink initialized.', self.type, ip)
+        self.mq_time = 0
+        self.mq_count = 0
+        self.mq_last_time = time.time()
+
+    def init_env(self):
+        # 根据传入四个端口信号进行初始化相关环境
+
+        for ch in self.can_list:
+            t = self.can_list[ch]
+            source = '{}.{}.{}.{}'.format(self.device, self.index, ch, t['dbc'])
+            self.source.append(source)
+            # self.log_types["can{}".format(i)] = source  # 写入日志的信号名
+            self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}  # 解析用的变量空间
+            # self.source.append(source)  # 来源列表
+            self.topic_list[t['topic']] = self.can_list[ch]
+            self.topic_list[t['topic']]['name'] = ch
+            self.topic_list[t['topic']]['source'] = source
+
+    def _init_port(self):
+        print('mqtt connecting', self.ip)
+
+        self.client.connect(self.ip)
+        for topic in self.topic_list:
+            self.client.subscribe(topic, self.topic_list[topic]['qos'])
+        self.client.on_message = self.pkg_handler
+        self.mq_last_time = time.time()
+
+    def run(self):
+        pid = os.getpid()
+        print('mqtt sink {} pid:'.format(self.source), pid)
+        self._init_port()
+        self.client.loop_forever()
+
+    def close(self):
+        self.client.loop_stop()
+
+    def pkg_handler(self, mosq, obj, msg):
+        data = msg.payload
+
+        if not data:
+            return
+
+        topic = msg.topic
+        # print(topic, data)
+
+        t = self.topic_list.get(topic)
+        if not t:
+            return
+
+        source = t['source']
+        channel = data[2]
+        dlc = data[3]
+        can_id = int.from_bytes(data[4:8], byteorder="little", signed=False)
+        timestamp = struct.unpack('<d', data[8:16])[0]
+        can_data = data[16:]
+
+        # print('can rcv ch={} id=0x{:x} dlc={} ts={} data={}'.format(channel, can_id, dlc, timestamp, can_data))
+        self.fileHandler.insert_raw((timestamp, source, '0x%x' % can_id + ' ' + can_data.hex()))
+
+        if not self.parse_event.is_set():
+            return
+
+        parser = self.parser[t["dbc"]]
+        ret = parser(can_id, can_data, self.context[source])
+        # now = time.time()
+        # self.mq_time += now - self.mq_last_time
+        # self.mq_last_time = now
+        # self.mq_count += 1
+        # print("avg time:", self.mq_time/self.mq_count)
+        # print(timestamp, '0x%x' % can_id,  can_data.hex(), ret)
+
+        if ret is None:
+            return None
+
+        if isinstance(ret, list):
+            for obs in ret:
+                obs['ts'] = timestamp
+        else:
+            ret['ts'] = timestamp
+        # print(ret)
+        if isinstance(ret, list):
+            # print('r is list')
+            for obs in ret:
+                obs['ts'] = timestamp
+                obs['source'] = source
+                # print(obs)
+        else:
+            # print('r is not list')
+            ret['ts'] = timestamp
+            ret['source'] = source
+
+        self.mq.put((can_id, ret, source))
+        # return can_id, ret, source
+
+
 class CANSink(NNSink):
-    def __init__(self, ip, port, msg_type, type, index, fileHandler, sink_process=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, sink_process=sink_process)
+    def __init__(self, ip, port, msg_type, type, index, fileHandler, mq=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
         self.fileHandler = fileHandler                          # 日志对象
-        self.sink_process = sink_process
         self.source = '{}.{:d}'.format(type[0], index)
         self.type = 'can_sink'
         self.log_types = {'can0': 'CAN' + '{:01d}'.format(self.index * 2),
@@ -486,12 +701,12 @@ class CANSink(NNSink):
             "cid": can_id,
             "ts": timestamp
         }
-        self.sink_process.put_decode(decode_msg)
+        return can_decode(decode_msg)
 
 
 class GsensorSink(NNSink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, sink_process=None):
-        super(GsensorSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, sink_process=sink_process)
+    def __init__(self, ip, port, msg_type, index, fileHandler, mq=None):
+        super(GsensorSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
         self.fileHandler = fileHandler
         self.type = 'gsensor_sink'
 
@@ -508,8 +723,8 @@ class GsensorSink(NNSink):
 
 
 class CameraSink(NNSink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, is_main=False, devname=None, sink_process=None):
-        super(CameraSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, sink_process=sink_process)
+    def __init__(self, ip, port, msg_type, index, fileHandler, is_main=False, devname=None, mq=None):
+        super(CameraSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.source = '{:s}.{:d}'.format(devname, index)
@@ -533,20 +748,23 @@ class CameraSink(NNSink):
 
 class FlowSink(NNSink):
     def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo',
-                 log_name='pcv_log', topic='pcview', is_main=False, decode_queue=None, result_queue=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, sink_process=sink_process)
+                 log_name='pcv_log', topic='pcview', is_main=False, mq=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.ip = ip
         self.port = port
-        self.sink_process = sink_process
         self.log_name = log_name
         self.is_main = is_main
         self.type = 'flow_sink'
         self.topic = topic
         self.source = name + '.{:d}'.format(index)
+        self.new_a1j = False        # 做个兼容处理，新的a1j不需要进行msgpack.unpack
+
+        self.client = None
 
     async def _run(self):
+        print("FlowSink Initialized", self.ip, self.port, self.topic)
         session = aiohttp.ClientSession()
         URL = 'ws://' + str(self.ip) + ':' + str(self.port)
         async with session.ws_connect(URL) as ws:
@@ -558,19 +776,22 @@ class FlowSink(NNSink):
             data = msgpack.packb(msg)
             await ws.send_bytes(data)
             async for msg in ws:
+                if self.exit:
+                    break
+
                 r = self.pkg_handler(msg)
                 if r is not None:
                     if isinstance(r[0], type("")):
                         if 'x1_data' in r[0]:
-                            self.sink_process.put_decode((r[1]['frame_id'], r[1], r[0]))
+                            self.mq.put((r[1]['frame_id'], r[1], r[0]))
                         elif 'calib_param' in r[0]:
-                            self.sink_process.put_decode((r[1]['frame_id'], r[1], self.source))
+                            self.mq.put((r[1]['frame_id'], r[1], self.source))
                     else:
-                        self.sink_process.put_decode((*r, self.msg_type))
+                        self.mq.put((*r, self.msg_type))
                 else:
                     time.sleep(0.001)
 
-    def task(self):
+    def run(self):
         import asyncio
         import platform
 
@@ -579,14 +800,47 @@ class FlowSink(NNSink):
             asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
         else:
             asyncio.set_event_loop(asyncio.new_event_loop())
-        loop = asyncio.get_event_loop()
+        self.client = asyncio.get_event_loop()
         try:
-            loop.run_until_complete(self._run())
+            self.client.run_until_complete(self._run())
         except Exception as e:
             logger.error(f'error when initiating flow sink on {self.ip}:{self.port}, {e}')
 
     def pkg_handler(self, msg):
-        data = msgpack.unpackb(msg.data)
+        # 判断是否新的a1j设备，如果是新a1j设备的话不需要进行解码处理
+        if not self.new_a1j:
+            try:
+                data = msgpack.unpackb(msg.data)
+            except Exception as e:
+                self.new_a1j = True
+                data = msg.data
+        else:
+            data = msg.data
+
+        # 新a1j设备图片数据
+        if isinstance(data, bytes) and data.startswith(b'\xff\x03'):  # jpeg pack header
+            frame_id = int.from_bytes(data[4:8], byteorder='little', signed=False)
+            self.last_fid = frame_id
+            ts = int.from_bytes(data[16:24], byteorder='little', signed=False)
+            ts = ts / 1000000
+            jpg = data[24:]
+            if msg.type in (aiohttp.WSMsgType.CLOSED,
+                            aiohttp.WSMsgType.ERROR):
+                return None
+
+            r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
+                 'is_main': self.is_main, 'transport': 'libflow'}
+            self.fileHandler.insert_jpg(r)
+            return frame_id, r
+
+        if self.topic == "*":
+            # Q3华为mdc特殊处理数据
+            data["origin-source"] = data["source"]
+            data["source"] = self.source
+            data["data"] = base64.b64encode(data["data"]).decode('utf-8')
+            self.fileHandler.insert_pcv_raw(data)
+            return
+
         ts = time.time()
         if b'data' in data:
             msg_src = data[b'source'].decode()
@@ -645,9 +899,23 @@ class FlowSink(NNSink):
                     return frame_id, r
                 else:
                     pass
-            else:
-                # print(data)
-                pass
+            elif topic == "video":
+                frame_id = int.from_bytes(payload[4:8], byteorder='little', signed=False)
+                self.last_fid = frame_id
+                ts = int.from_bytes(payload[16:24], byteorder='little', signed=False)
+                ts = ts / 1000000
+                jpg = payload[24:]
+                if msg.type in (aiohttp.WSMsgType.CLOSED,
+                                aiohttp.WSMsgType.ERROR):
+                    return None
+
+                r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
+                     'is_main': self.is_main, 'transport': 'libflow'}
+                self.fileHandler.insert_jpg(r)
+                return frame_id, r
+            elif topic in ["radar_data", "fusion_data", "vehicle_data", "lane_data", "drive_data", "fusion_inject"]:
+                r = {"source": self.source, "log_name": self.log_name, "buf": payload}
+                self.fileHandler.insert_general_bin_raw(r)
         elif msg_src == 'lane_profiling':
             if topic == 'lane_profiling_data':
                 r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name, 'buf': payload}
@@ -704,3 +972,93 @@ class FlowSink(NNSink):
                 return None
 
             return 'x1_data', pcv, self.source
+
+
+class ProtoSink(NNSink):
+    def __init__(self, ip, port, msg_type, index, fileHandler, name='proto',
+                 log_name='proto_log', topic='pcview', mq=None):
+        super().__init__(ip, port, msg_type, index, mq=mq)
+        self.fileHandler = fileHandler
+        self.ip = ip
+        self.port = port
+        self.log_name = log_name
+        self.type = 'prote_sink'
+        self.topic = topic
+        self.source = name + '.{:d}'.format(index)
+
+        self.key_pb = {
+            # "vehicle": vehicle_pb2.Vehicle,
+            "pedestrian": pedestrian_pb2.Pedestrian,
+            "roadmarking": roadmarking_pb2.Roadmarking,
+            "object_attribute": object_attribute_pb2.Box3DGroup,
+            "vehicle": object_pb2.ObjectList,
+            "ped": object_pb2.ObjectList,
+            "calib_param": calib_param_pb2.CalibParam,
+            "tsr": object_pb2.ObjectList,
+            "dev_object": dev_object_pb2.DevObjectList,
+            "vehicle_signal": vehicle_signal_pb2.VehicleSignal,
+            "obs": object_pb2.ObjectList
+        }
+
+    async def _run(self):
+        print("ProtoSink Initialized", self.ip, self.port, self.topic)
+        session = aiohttp.ClientSession()
+        URL = 'ws://' + str(self.ip) + ':' + str(self.port)
+        async with session.ws_connect(URL) as ws:
+            msg = {
+                'source': 'pcview',
+                'topic': 'subscribe',
+                'data': self.topic,
+            }
+
+            data = msgpack.packb(msg)
+            await ws.send_bytes(data)
+            async for msg in ws:
+                if self.exit:
+                    break
+                self.pkg_handler(msg)
+
+    def run(self):
+        import asyncio
+        import platform
+
+        if platform.python_version() > "3.6":
+            from tornado.platform.asyncio import AnyThreadEventLoopPolicy
+            asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+        else:
+            asyncio.set_event_loop(asyncio.new_event_loop())
+        loop = asyncio.get_event_loop()
+        try:
+            loop.run_until_complete(self._run())
+        except Exception as e:
+            print(bcl.FAIL+'error:'+ str(e) + ' when initiating proto flow sink on'+bcl.ENDC, self.ip, self.port)
+
+    def pkg_handler(self, msg):
+        data = msgpack.unpackb(msg.data)
+        # print('-----', data[b'topic'])
+        if b'data' in data:
+            payload = data[b'data']
+            topic = data[b'topic'].decode()
+        elif 'data' in data:
+            payload = data['data']
+            topic = data['topic']
+        else:
+            return
+
+        if topic in self.key_pb:
+            pb = self.key_pb.get(topic)
+            if pb is None:
+                return
+            v = pb()
+            v.ParseFromString(payload)
+            if topic == "calib_param" or topic == "vehicle_signal":
+                frame_id = self.fileHandler.fid
+            else:
+                frame_id = v.frame_id
+            try:
+                data = json_format.MessageToDict(v, preserving_proto_field_name=True)
+                self.fileHandler.insert_pcv_raw(
+                    {"source": self.source, "frame_id": frame_id, "type": topic, topic: data,
+                     "rec_ts": time.time()})
+            except Exception as e:
+                print("protobuf decode error:", e)

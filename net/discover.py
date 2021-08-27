@@ -28,7 +28,7 @@ class CollectorFinder(Thread):
             return
 
         # 循环更新在线设备
-        while not self.exit.isSet():
+        while not self.exit.is_set():
             try:
                 ret = self.s.recvfrom(65536)
                 data, address = ret
@@ -99,16 +99,17 @@ class CollectorFinder(Thread):
         通过linux系统的arp文件获取ip对应的mac
         :return:
         """
-        ip_range = self.network or '192.168.98.0/24'
-        ip = ip_range.split('/')[0].split('.')
-        ip_kw = '.'.join(ip[:3])
+        ip_range = self.network.split(" ") if self.network else ['192.168.98.0/24']
+        ips = [ip.split('/')[0].split('.') for ip in ip_range]
+        ip_kws = ['.'.join(ip[:3]) for ip in ips]
         mac_ip = dict()
         with open('/proc/net/arp') as arp:
             for line in arp:
                 fields = list(filter(None, line.split(' ')))
                 mac = fields[3]
                 ip = fields[0].strip()
-                if ip_kw in ip:
+                ip_prefix = '.'.join(ip.split('.')[:3])
+                if ip_prefix in ip_kws:
                     mac_ip[mac] = ip
 
         return mac_ip

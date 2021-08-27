@@ -1,0 +1,44 @@
+{
+  "type": "can_collector",
+  "alias": "can_rcv",
+  "origin_device": "bm",
+  "ip": "192.168.98.180",
+  "port": 1883,
+  "force_ip": true,
+  "transport": "mqtt",
+  "ports": {
+    "can0": {
+      "enable": true,
+      "protocol": "canpack",
+      "cid": "canfd_mqtt",
+      "dbc": "",
+      "topic": "socket_hil/can_replay/0",
+      "transport": "mqtt",
+      "qos": 0
+    },
+    "can1": {
+      "enable": true,
+      "protocol": "canpack",
+      "cid": "canfd_mqtt",
+      "dbc": "",
+      "topic": "socket_hil/can_replay/1",
+      "qos": 0
+    },
+    "can2": {
+      "enable": true,
+      "protocol": "canpack",
+      "cid": "canfd_mqtt",
+      "dbc": "",
+      "topic": "pi_node/can_rcv/2",
+      "qos": 0
+    },
+    "can3": {
+      "enable": true,
+      "protocol": "canpack",
+      "cid": "canfd_mqtt",
+      "dbc": "",
+      "topic": "pi_node/can_rcv/3",
+      "qos": 0
+    }
+  }
+}

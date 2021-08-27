@@ -161,7 +161,7 @@ class Statistics:
             统计CAN数据接收情况
             """
         for can in self.can_map:
-            id_list = list(self.can_map[can].keys())
+            id_list = sorted(list(self.can_map[can].keys()))
             img_num = 1
             for i in range(0, len(id_list), self.img_contain):
                 split_can_id = id_list[i: i + self.img_contain]

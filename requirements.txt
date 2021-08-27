@@ -18,3 +18,4 @@ zmq
 opencv-python
 nnpy
 matplotlib
+paho-mqtt

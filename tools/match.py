@@ -31,7 +31,7 @@ class CIPOFilter(object):
         if len(sobs) == 0:
             cipo_id = -1
         else:
-            if sobs[0].get("id"):
+            if sobs[0].get("id") is not None:
                 cipo_id = sobs[0]['id']
             else:
                 return

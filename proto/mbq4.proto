@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package mobileye.q4;
+
+message ObjData { // q4 one obj data
+	uint64 timestamp = 1;      // 时戳(微秒)
+	int32 id = 2;              // 前方目标ID，范围：0~15
+	int32 type = 3;            // 前方目标分类编号，1为car，4为pedestrian
+	float x = 4;               // 摄像头坐标系下前方目标的相对纵向距离x，单位m
+	float vx = 5;              // 摄像头坐标系下前方目标的相对纵向速度vx，单位m/s
+	float ax = 6;              // 摄像头坐标系下前方目标的相对纵向加速度ax，单位m/s2
+	float y = 7;               // 摄像头坐标系下前方目标的相对横向距离y，单位m
+	float vy = 8;              // 摄像头坐标系下前方目标的绝对横向速度vy，单位m/s
+	float ttc = 9;             // 前方目标的碰撞时间ttc，单位s，范围0~7s
+	int32 cipv = 10;           // 前方目标是否为关键车(CIPV)，关键车为1，非关键车为0
+}
+
+message ObjDataList {
+	repeated ObjData objdatas = 1;
+}
+
+message Laneline { // 车道线属性
+	enum LanelinePositionType { // 位置
+		left_individ = 0;
+		left_parall = 1;
+		right_individ = 2;
+		right_parall = 3;
+		right_neightbor = 4;
+		left_neightbor = 5;
+	}
+	message CurveCoeff { // 曲线方程
+		float range = 1;  // range
+		double c0 = 2;
+		double c1 = 3;
+		double c2 = 4;
+		double c3 = 5;
+	}
+	LanelinePositionType pos_type = 1;                                // 位置
+	CurveCoeff curve = 2;
+}
+
+
+message LanelineList {
+	repeated Laneline lanelines = 1;
+}

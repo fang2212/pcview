@@ -1,3 +1,5 @@
+import sys
+
 from flask import Flask, render_template, Response, session, jsonify, request, redirect, send_file, url_for
 from werkzeug.utils import secure_filename
 import socketio
@@ -16,6 +18,7 @@ from engineio.async_drivers import eventlet
 from eventlet.hubs import epolls, kqueue, selects
 from dns import dnssec, e164, hash, namedict, tsigkeyring, update, version, zone
 #
+from utils import logger
 
 socketio_ver = socketio.__version__
 # print('socketio version:', socketio_ver)
@@ -366,6 +369,7 @@ class PccServer(Process):
 
     def run(self):
         # app.logger.setLevel(logging.ERROR)
+        logger.warning('{} pid:{}'.format("web server:".ljust(20), os.getpid()))
         socketio.run(app, host='0.0.0.0', port=self.port)
 
     def ws_send(self, topic, msg, cb=None):
@@ -384,6 +388,7 @@ class PccServer(Process):
         func = request.environ.get('werkzeug.server.shutdown')
         if func:
             func()
+        sys.exit(0)
 
 
 if __name__ == "__main__":

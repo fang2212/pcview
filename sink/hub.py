@@ -1,6 +1,7 @@
 import os
+import sys
 import time
-from multiprocessing import Process
+from multiprocessing import Process, Lock
 from multiprocessing import Queue
 from multiprocessing import Event
 from threading import Thread
@@ -9,9 +10,11 @@ from config.config import bcl
 from net.discover import CollectorFinder
 from recorder.FileHandler import FileHandler
 # from sink.pcc_sink_async import *
-from sink.sink import SinkManage
+from sink.mmap_queue import MMAPQueue
 from sink.pcc_sink import *
 from config.config import get_cached_macs, save_macs
+
+import mmap
 
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
@@ -54,11 +57,12 @@ class Hub(Thread):
     """
     def __init__(self, uniconf=None, decode_queue=None, result_queue=None):
         Thread.__init__(self)
+        self.exit = False
         self.setName('hub_thread')
-        self.decode_queue = decode_queue        # 信号解析进程
-        self.result_queue = result_queue        # 信号解析结果进程
-
-        self.max_cache = 40
+        self.msg_queue = Queue(maxsize=3000)
+        self.mq = MMAPQueue(1024 * 1024 * 500)
+        self.msg_list = []
+        self.cache = {}
         self.time_aligned = True
         self.last_res = {}
         self.uniconf = uniconf
@@ -140,15 +144,15 @@ class Hub(Thread):
             print('index {}'.format(ol['idx']), bcl.OKBL + ip + bcl.ENDC, ol.get('mac'), 'type:', ol['type'])
             print('definition:', ol['defs_path'])
             for iface in ol['ports']:
-                print('--', iface, ol['ports'][iface]['topic'] + '.{}'.format(ol['idx']), ol['ports'][iface]['port'],
+                print('--', iface, ol['ports'][iface]['topic'] + '.{}'.format(ol['idx']), ol['ports'][iface].get('port') or ol.get("port"),
                       'enabled' if ol['ports'][iface]['enable'] else bcl.FAIL + 'disabled' + bcl.ENDC)
         print(bcl.OKGR + '---------------- ----------------- ---------------' + bcl.ENDC)
 
         print('hub init done')
 
     def run(self):
-        logger.debug("hub pid:", os.getpid())
-        while True:
+        logger.warning('{} pid:{}'.format("HUB".ljust(20), os.getpid()))
+        while not self.exit:
             self.finder.take_request()
             for ip in self.finder.found:
                 mac = self.finder.found[ip]['mac']
@@ -156,17 +160,16 @@ class Hub(Thread):
                     if cfg['mac'].lower() == mac.lower():
                         if ip not in self.online:
                             self.init_collector(cfg)
-            time.sleep(5)
+            time.sleep(3)
+        logger.warning('{} pid:{}'.format("HUB exit".ljust(20), os.getpid()))
 
     def close(self):
-        print('closing finder..')
         self.finder.close()
-        print('closing file handler..')
         self.fileHandler.close()
-        print('closing sink node..')
 
         for node in self.nodes:
             node.close()
+        self.exit = True
 
     def get_veh_role(self, source):
         if source in self.type_roles:
@@ -198,9 +201,16 @@ class Hub(Thread):
                     continue
                 port = cfg['ports'][item]['port']
                 topic = cfg['ports'][item].get('topic')
+                transport = cfg['ports'][item].get('transport')
 
-                sink = FlowSink(ip=ip, port=port, msg_type=item, index=idx, topic=topic, log_name=item, fileHandler=self.fileHandler,
-                                is_main=is_main, name=cfg.get("type"), decode_queue=self.decode_queue, result_queue=self.result_queue)
+                if transport == "libflow":
+                    sink = FlowSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
+                                    name=cfg.get("type"), log_name=item, topic=topic, is_main=is_main, mq=self.mq)
+                elif transport == "protoflow":
+                    sink = ProtoSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
+                                     name=cfg.get("type"), topic=topic, log_name=item, mq=self.mq)
+                else:
+                    return
                 self.sinks.append(sink)
                 self.online[ip]['msg_types'].append(item + '.{}'.format(idx))
 
@@ -210,9 +220,34 @@ class Hub(Thread):
                     continue
                 port = cfg['ports'][name]['port']
                 pisink = PinodeSink(ip, port, msg_type='can', index=idx, resname=name,
-                                    fileHandler=self.fileHandler, decode_queue=self.decode_queue, result_queue=self.result_queue)
+                                    fileHandler=self.fileHandler, mq=self.mq)
                 self.sinks.append(pisink)
                 self.online[ip]['msg_types'].append(name + '.{}'.format(idx))
+        elif "can_collector" in cfg.get("type"):
+            can_list = {}
+            transport = cfg.get('transport')
+            for iface in cfg['ports']:
+                if cfg["ports"][iface].get("transport"):
+                    transport = cfg["ports"][iface].get("transport")
+                if 'rtk' in iface or 'gps' in iface:
+                    pisink = PinodeSink(ip, cfg["ports"][iface]["port"], msg_type="can", index=idx, resname=iface,
+                                        fileHandler=self.fileHandler, mq=self.mq)
+                    self.sinks.append(pisink)
+                    self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
+                if "can" in iface:
+                    can_list[iface] = cfg["ports"][iface]
+
+            if transport == "nanomsg":
+                can_collector = CANCollectSink(ip=ip, port=cfg.get("port"), index=idx, can_list=can_list,
+                                               device=cfg.get("origin_device"),
+                                               fileHandler=self.fileHandler, mq=self.mq)
+                self.sinks.append(can_collector)
+                self.online[ip]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
+            elif transport == "mqtt":
+                device = cfg.get('origin_device', cfg['name'])
+                can_collector = MQTTSink(ip=ip, can_list=can_list, index=idx, fileHandler=self.fileHandler, device=device, cid=cfg.get("cid"), mq=self.mq)
+                self.sinks.append(can_collector)
+                self.online[ip]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
         elif "collector" in cfg.get('type'):
             for iface in cfg['ports']:
                 if not cfg['ports'][iface].get('enable') and not is_main:
@@ -220,21 +255,22 @@ class Hub(Thread):
                 if 'can' in iface:
                     chn = cfg['ports'][iface]
                     cansink = CANSink(ip=ip, port=chn['port'], msg_type=iface, type=[chn['topic']],
-                                      index=idx, fileHandler=self.fileHandler, decode_queue=self.decode_queue, result_queue=self.result_queue)
+                                      fileHandler=self.fileHandler,
+                                      index=idx, mq=self.mq)
 
                     self.sinks.append(cansink)
                     self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'gsensor' in iface:
                     chn = cfg['ports'][iface]
                     gsink = GsensorSink(ip=ip, port=chn['port'], msg_type=iface, index=idx,
-                                        fileHandler=self.fileHandler, decode_queue=self.decode_queue, result_queue=self.result_queue)
+                                        fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(gsink)
                     self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'video' in iface:
                     port = cfg['ports']['video']['port']
                     vsink = CameraSink(ip=ip, port=port, msg_type='camera', index=idx,
                                        fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
-                                       devname=cfg.get('type'), decode_queue=self.decode_queue, result_queue=self.result_queue)
+                                       devname=cfg.get('type'), mq=self.mq)
                     self.sinks.append(vsink)
 
         elif cfg.get('type') == 'general':
@@ -245,37 +281,37 @@ class Hub(Thread):
                 if 'can' in iface:
                     chn = cfg['ports'][iface]
                     cansink = CANSink(ip=ip, port=port, msg_type=iface, type=[chn['topic']],
-                                      index=idx, fileHandler=self.fileHandler, decode_queue=self.decode_queue, result_queue=self.result_queue)
+                                      index=idx, fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(cansink)
                     self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'gsensor' in iface:
                     chn = cfg['ports'][iface]
                     gsink = GsensorSink(ip=ip, port=port, msg_type=iface, index=idx,
-                                        fileHandler=self.fileHandler, decode_queue=self.decode_queue, result_queue=self.result_queue)
+                                        fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(gsink)
                     self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'video' in iface:
                     vsink = CameraSink(ip=ip, port=port, msg_type='camera', index=idx,
                                        fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
-                                       devname=cfg.get('name'), decode_queue=self.decode_queue, result_queue=self.result_queue)
+                                       devname=cfg.get('name'), mq=self.mq)
                     self.sinks.append(vsink)
                 elif 'rtk' in iface or 'gps' in iface:
                     pisink = PinodeSink(ip, port, msg_type='can', index=idx, resname=iface,
-                                        fileHandler=self.fileHandler, decode_queue=self.decode_queue, result_queue=self.result_queue)
+                                        fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(pisink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
                 elif cfg['ports'][iface].get('transport') == 'tcp':
                     proto = cfg['ports'][iface]['protocol']
-                    tcpsink = TCPSink(ip, port, 'can', proto, idx, self.fileHandler, decode_queue=self.decode_queue, result_queue=self.result_queue)
+                    tcpsink = TCPSink(ip, port, 'can', proto, idx, self.fileHandler, mq=self.mq)
                     self.sinks.append(tcpsink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
                 elif cfg['ports'][iface].get("transport") == 'udp':
                     proto = cfg['ports'][iface]['protocol']
-                    udpsink = UDPSink(ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler, decode_queue=self.decode_queue, result_queue=self.result_queue)
+                    udpsink = UDPSink(ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler, mq=self.mq)
                     self.sinks.append(udpsink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
                 elif cfg['ports'][iface].get("transport") == 'zmq':
-                    zmqSink = ZmqSink(ip, port, cfg['ports'][iface]['topic'], idx, self.fileHandler, decode_queue=self.decode_queue, result_queue=self.result_queue)
+                    zmqSink = ZmqSink(ip, port, cfg['ports'][iface]['topic'], idx, self.fileHandler, mq=self.mq)
                     self.sinks.append(zmqSink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
 
@@ -315,6 +351,10 @@ class Hub(Thread):
             self.fileHandler.start()
 
         return self.online
+
+    def pop_common(self):
+        # res = {}
+        return self.mq.get(block=False)
 
     def parse_can_msgs(self, status):
         for sink in self.sinks:

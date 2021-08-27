@@ -40,12 +40,11 @@ def loop_traverse(items):
 
 
 class PCC(object):
-    def __init__(self, hub, replay=False, rlog=None, ipm=None, save_replay_video=None, uniconf=None, to_web=None,
-                 auto_rec=False, draw_algo=False, show_video=True, sink_process=None):
+    def __init__(self, hub, replay=False, rlog=None, ipm=None, ipm_bg=False, save_replay_video=None, uniconf=None, to_web=None,
+                 auto_rec=False, draw_algo=False, show_video=True):
         super(PCC, self).__init__()
         self.draw_algo = draw_algo
         self.hub = hub
-        self.sink_process = sink_process                # 解析进程
         self.cfg = uniconf
         self.player = Player(uniconf)
         self.exit = False
@@ -69,7 +68,7 @@ class PCC(object):
         self.target = None
         self.rtk_pair = [{}, {}]
         self.ot = OrientTuner(uniconf)
-        self.show_ipm_bg = False
+        self.show_ipm_bg = ipm_bg
         self.auto_rec = auto_rec
         self.frame_cnt = 0
         self.refresh_rate = 30
@@ -177,7 +176,10 @@ class PCC(object):
         """
         if not d:
             return
-        fid, data, source = d
+        try:
+            fid, data, source = d
+        except Exception as e:
+            print(e, d)
         if source not in self.cache['misc']:
             self.cache['misc'][source] = {}
             self.cache['info'][source] = {}
@@ -229,60 +231,6 @@ class PCC(object):
                     self.cache['misc'][source][entity] = data
                     self.cache['info'][source]['integrity'] = 'divided'
 
-    def adjust_interval(self):
-        if not self.enable_auto_interval_adjust:
-            return
-        iqsize = self.sink_process.result_queue.qsize()
-        self.statistics['pcc_inq_size'] = iqsize
-        if iqsize > 300:
-            self.display_interval = max(self.display_interval, self.run_cost) + 0.005
-        elif iqsize < 1 and self.run_cost < self.display_interval:
-            self.display_interval = self.display_interval - 0.005
-        else:
-            return {'status': 'ok'}
-        if self.cfg.runtime.get('low_profile'):
-            ll = 0.2
-        else:
-            ll = 0.05
-
-        if self.display_interval > 1.0:
-            self.display_interval = 1.0
-        elif self.display_interval < ll:
-            self.display_interval = ll
-        # print('refresh interval set to', self.display_interval, 'hub qsize:', iqsize)
-        return {'status': 'ok'}
-
-    def recv_data(self):
-        self.statistics['fileHandler_log_q_size'] = 0
-        while not self.exit:
-            try:
-                t0 = time.time()
-                d = self.sink_process.pop_resulte()
-                if not d:
-                    time.sleep(0.001)
-                    continue
-                t1 = time.time()
-                self.statistics['frame_popping_cost'] = '{:.2f}'.format(1000 * (t1 - t0))
-                new_frame = self.cache_data(d)
-                if new_frame:
-                    self.frame_cnt += 1
-                    if self.frame_cnt > 500:
-                        self.player.start_time = datetime.now()
-                        self.frame_cnt = 1
-
-                t2 = time.time()
-                self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (t2 - t1))
-                if not self.replay:
-                    qsize = self.hub.fileHandler.log_queue.qsize()
-                    self.statistics['fileHandler_log_q_size'] = qsize
-
-            except Exception as e:
-                print('pcc run error:', e)
-                traceback.print_exc()
-                # raise e
-                continue
-        logger.info("recv_data exit")
-
     def start(self):
         self.player.start_time = datetime.now()
 
@@ -290,7 +238,7 @@ class PCC(object):
 
         while not self.exit:
             # 回放检测信号进程是否结束
-            if self.replay and not self.sink_process.is_alive() and self.sink_process.result_queue.empty():
+            if self.replay and not self.hub.is_alive():
                 logger.warning('hub exit running.')
                 print('average frame cost: {:.1f}ms'.format(
                     1000 * self.frame_cost_total / self.frame_drawn_cnt)) if self.frame_drawn_cnt != 0 else None
@@ -305,9 +253,9 @@ class PCC(object):
 
             # 从信号进程取出数据
             begin_ts = time.time()
-            d = self.sink_process.pop_resulte()
+            d = self.hub.pop_common()
             if not d:
-                time.sleep(0.01)
+                time.sleep(0.001)
                 continue
 
             # 处理数据
@@ -340,10 +288,14 @@ class PCC(object):
                 time.sleep(0.001)
             self.statistics['refreshing_rate'] = '{:.1f}'.format(1.0 / self.display_interval)
 
+        self.hub.close()
+
     def render(self, frame_cnt, show=True):
         if show:
             img_rendered = self.draw(self.cache, frame_cnt)  # 处理图片，渲染数据信息
-
+            if img_rendered is None:
+                return
+            # ts_render = time.time()
             if self.to_web:
                 self.statistics['frame_total_cost'] = '{:.2f}ms'.format(self.frame_cost * 1000)
                 self.o_img_q.put(img_rendered)
@@ -390,10 +342,15 @@ class PCC(object):
         try:
             if 'img_raw' in mess and mess['img_raw'] is not None:  # reuse img
                 img = mess['img_raw'].copy()
+                # print('reuse video.')
                 if 'ts' not in mess or self.ts_sync_local() - mess['ts'] > 5.0:
                     self.player.show_failure(img, 'feed lost, check connection.')
             else:
-                mess['img_raw'] = jpeg.decode(np.fromstring(mess['img'], np.uint8))
+                try:
+                    mess['img_raw'] = jpeg.decode(np.fromstring(mess['img'], np.uint8))
+                except Exception as e:
+                    print("图片解码失败：", e)
+                    return
                 img = mess['img_raw'].copy()
         except Exception as e:
             logger.error('img decode error:{}'.format(e))
@@ -755,10 +712,15 @@ class PCC(object):
         if role not in self.vehicles:
             self.vehicles[role] = Vehicle(role)
 
+        if data.get("status_show"):
+            self.player.show_status_info(img, data.get("source"), data["status_show"])
+
         if data['type'] == 'pcv_data':
             if self.replay or (not self.replay and self.draw_algo):
                 for t in data["data"]:
                     self.flow_player.draw(t, img)
+        elif data["type"] == "status":
+            self.player.update_column_ts(data.get('source'), data.get('ts'))
 
         elif data['type'] == 'obstacle':
             self.player.show_obs(img, data)
@@ -777,9 +739,6 @@ class PCC(object):
             self.player.draw_vehicle_state(img, data)
             # print(data)
             self.player.update_column_ts(data['source'], data['ts'])
-            if 'yaw_rate' in data and self.show_ipm and not self.cfg.runtime.get('low_profile'):
-                # self.player.show_host_path(img, data['speed'], data['yaw_rate'], self.cipv)
-                self.player.show_host_path_ipm(self.ipm, data['speed'], data['yaw_rate'])
 
         elif data['type'] == 'CIPV':
             self.cipv = data
@@ -845,7 +804,6 @@ class PCC(object):
                 if self.vw is not None:
                     self.vw.release()
             self.exit = True
-            self.sink_process.close()
         elif key == ord('['):
             if self.pause and self.replay:
                 self.cache_pause_idx -= 1
@@ -944,7 +902,7 @@ class PCC(object):
         检查信号接收情况
         :return:
         """
-        if self.sink_process.result_queue.full():
+        if self.hub.mq.full():
             self.stuck_cnt += 1
         else:
             self.stuck_cnt = 0

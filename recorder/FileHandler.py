@@ -10,6 +10,7 @@ from multiprocessing import Queue, Process, Array, Manager, Value
 from turbojpeg import TurboJPEG
 
 from recorder.convert import ub482_defs, compose_from_def
+from sink.mmap_queue import MMAPQueue
 from tools.video_writer import MJPEGWriter
 import cv2
 import numpy as np
@@ -28,7 +29,7 @@ class FileHandler(Process):
     def __init__(self, redirect=False, uniconf=None):
         super(FileHandler, self).__init__()
         self.ctrl_queue = Queue()                   # 控制事件队列
-        self.log_queue = Queue(200000)              # 记录数据队列
+        self.mq = MMAPQueue(1024*1024*1024)              # 记录数据队列
         self.running = True                         # 是否运行
 
         self._max_cnt = 1200
@@ -112,30 +113,31 @@ class FileHandler(Process):
             self.__path.value = p.encode()
 
     def run(self):
-        print(f"file handle pid:{os.getpid()}")
+        logger.warning('{} pid: {}'.format("file handle".ljust(20), self.pid))
 
         while self.running:
             t0 = time.time()
             self.control_event()
 
-            if self.is_recording and t0 - self.start_time > 600:
+            if self.is_recording and t0 - self.start_time > 60:
                 self.stop_rec(clean_queue=False)
                 self.start_rec()
 
-            try:
-                log_class, msg = self.log_queue.get(block=True, timeout=0.001)
-            except Empty:
-                time.sleep(0.001)
+            msg = self.mq.get(block=False)
+            if not msg:
                 continue
+
+            log_class, data = msg
 
             # log.txt记录
             if self.log_class_map.get(log_class):
-                self.log_class_map.get(log_class)(msg)
+                self.log_class_map.get(log_class)(data)
 
             # 写入到log.txt文件的间隔时间
             if t0 - self.log_fp_last_write > 3 and self.log_fp:
                 self.log_fp.flush()
                 self.log_fp_last_write = time.time()
+        logger.warning("file handle exit, pid:".format(os.getpid()))
 
     # ****************************** 数据记录方法 ******************************
 
@@ -281,7 +283,7 @@ class FileHandler(Process):
     def control_event(self):
         """控制事件处理"""
         if not self.ctrl_queue.empty():
-            ctrl = self.ctrl_queue.get()
+            ctrl = self.ctrl_queue.get(block=False, timeout=0.01)
             if ctrl and self.control_map.get(ctrl['act']):
                 self.control_map.get(ctrl['act'])(ctrl)
 
@@ -299,13 +301,14 @@ class FileHandler(Process):
         print('start recording.')
 
     def _clean(self, ctrl):
-        for i in range(self.log_queue.qsize()):
-            self.log_queue.get()
+        for i in range(self.mq.qsize()):
+            self.mq.get()
 
     def _close(self, ctrl):
+        self._stop()
         self.running = False
 
-    def _stop(self, ctrl):
+    def _stop(self, ctrl=None):
         # 处理间隔录制的mark
         if self.is_marking:
             timestamp = time.time()
@@ -315,9 +318,10 @@ class FileHandler(Process):
             self.log_fp.write(log_line)
 
         # 关闭文件
-        self.log_fp.flush()
-        self.log_fp.close()
-        self.log_fp = None
+        if self.log_fp:
+            self.log_fp.flush()
+            self.log_fp.close()
+            self.log_fp = None
         self.save_path = None
 
         for video in self.video_streams:
@@ -399,40 +403,40 @@ class FileHandler(Process):
             self.marking.value = 1
             self.start_marking_time = time.time()
             print("start marking")
-            self.log_queue.put(("raw", (time.time(), "mark", "start")))
+            self.mq.put(("raw", (time.time(), "mark", "start")))
 
     def end_mark(self):
         if self.is_recording:
             self.marking.value = 0
             print("end marking")
-            self.log_queue.put(("raw", (time.time(), "mark", "end")))
+            self.mq.put(("raw", (time.time(), "mark", "end")))
 
     def insert_video(self, msg):
         self.last_image = msg
         if self.is_recording:
-            self.log_queue.put(('video', msg))
+            self.mq.put(('video', msg))
 
     def insert_jpg(self, msg):
         if self.is_recording:
-            self.log_queue.put(('jpg', msg))
+            self.mq.put(('jpg', msg))
 
     def insert_raw(self, msg):
         if self.uniconf.local_cfg.save.raw and self.is_recording:
-            self.log_queue.put(('raw', msg))
-            if self.log_queue.full():
+            self.mq.put(('raw', msg))
+            if self.mq.full():
                 print("full")
 
     def insert_pcv_raw(self, msg):
         if self.is_recording:
-            self.log_queue.put(('pcv', msg))
+            self.mq.put(('pcv', msg))
 
     def insert_fusion_raw(self, msg):
         if self.is_recording:
-            self.log_queue.put(('fusion', msg))
+            self.mq.put(('fusion', msg))
 
     def insert_general_bin_raw(self, msg):
         if self.is_recording:
-            self.log_queue.put(('general_bin', msg))
+            self.mq.put(('general_bin', msg))
 
     def get_last_image(self):
         if self.last_image:

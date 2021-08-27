@@ -12,11 +12,12 @@ class Supervisor(Thread):
         # self.checkers = checkers
         self.checkers = []
         self.result = []
+        self.exit = False
 
     def run(self):
         print('supervisor inited with {} tasks.'.format(len(self.checkers)))
 
-        while True:
+        while not self.exit:
             self.result.clear()
             ts_now = time.time()
             wait_until = 1.0
@@ -39,6 +40,10 @@ class Supervisor(Thread):
 
     def check(self):
         return self.result
+
+    def close(self):
+        print("supervisor exit")
+        self.exit = True
 
 
 def convert(data):

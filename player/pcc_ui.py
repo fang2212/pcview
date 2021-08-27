@@ -53,30 +53,38 @@ class Player(object):
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
         self.color_obs = {
+            "a1j": (59, 59, 238),
+            "a1j_fusion": (59, 59, 238),
+            "a1j_vision": (193, 182, 255),
             "ars410": FlatColor.peach,
+            "bosch_mrr": FlatColor.yellow,
+            "d1_fusion": FlatColor.violet,
             "gs4_debug": FlatColor.pink,
             "j2": FlatColor.carrot,
+            "j2_fusion": FlatColor.light_green,
             "q4_100": FlatColor.turquoise,
             'anc': FlatColor.carrot,
             'ars': FlatColor.emerald,
             'ctlrr': FlatColor.alizarin,
+            'default': FlatColor.clouds,
             'esr': FlatColor.alizarin,
             'gps': FlatColor.clouds,
-            'ifv300': FlatColor.peter_river,
+            'ifv300': CVColor.Blue,
+            'ifv300_vision': (255, 144, 30),
+            'ifv300_fusion': CVColor.Blue,
             'lmr': FlatColor.emerald,
-            'mbq3': FlatColor.peter_river,
+            'mbq3': CVColor.Blue,
+            'mbq3_vision': (255, 144, 30),
+            'mbq3_fusion': CVColor.Blue,
             'mbq4': FlatColor.turquoise,
             'rtk': FlatColor.sun_flower,
             'sta77': FlatColor.wet_asphalt,
+            "wsk": FlatColor.pink,
             'x1': FlatColor.amethyst,
             'x1_fusion': CVColor.Red,
-            "a1j_fusion": FlatColor.yellow_green,
             'x1_fusion_cam': FlatColor.dark_red,
             'x1j': FlatColor.amethyst,
             'xyd2': FlatColor.Blue,
-            "j2_fusion": FlatColor.light_green,
-            "d1_fusion": FlatColor.violet,
-            'default': FlatColor.clouds,
         }
 
         self.detection_color = {
@@ -150,14 +158,7 @@ class Player(object):
             return
         source = obs['source'].split('.')[0]
         sensor = obs.get('sensor') or source
-        color = self.color_obs.get(source)
-        # if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
-        #     color = self.colx1_fusion_camor_obs.get('x1_fusion_cam')
-        if not color:
-            color = self.color_obs['default']
-
-        # if 'class' in obs and obs['class'] == 'truck':
-        #     print(obs)
+        color = obs.get("color") or self.color_obs.get(source) or self.color_obs['default']
 
         width = obs.get('width')
         width = width or 0.3
@@ -254,9 +255,14 @@ class Player(object):
         else:
             print('no distance in obs', obs)
             return
+
+        # j2_fusion的bug，会在0，0坐标中出现假坐标，对其进行屏蔽
+        if x == 0 and y == 0:
+            return
+
         u, v = self.transform.trans_gnd2ipm(x, y)
 
-        color = self.color_obs.get(source) or self.color_obs['default']
+        color = obs.get("color") or self.color_obs.get(source) or self.color_obs['default']
 
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
             color = self.color_obs.get('x1_fusion_cam')
@@ -297,13 +303,17 @@ class Player(object):
             color: CVColor 车道线颜色
             :param style: 线条格式，虚线为“dotted”
         """
-        r = data.get('range')
+        max_range = data.get('range')
+        min_range = data.get("min_range", 0)
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
         source = data['source']
+        if max_range == 0:
+            return
+
         if 'j2' in source:
             source = ""
 
-        p = self.transform.getp_ifc_from_poly(ratios, 1, 0, r, sensor=source)
+        p = self.transform.getp_ifc_from_poly(ratios, 1, min_range, max_range, sensor=source)
         if not p:
             return
 
@@ -343,11 +353,11 @@ class Player(object):
         color = self.color_obs.get(data['sensor']) or self.color_obs['default']
         cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
 
-    def show_text_info(self, source, height, text, style='normal'):
+    def show_text_info(self, source, height, text, style='normal', size=None):
         if style is None:
             style = 'warning'
         self.get_indent(source)
-        self.columns[source]['buffer'][height] = {'text': text, 'style': style}
+        self.columns[source]['buffer'][height] = {'text': text, 'style': style, 'size': size}
         # print(source, height, text)
 
     def update_column_ts(self, source, ts):
@@ -378,7 +388,7 @@ class Player(object):
             entry = self.columns[col]
             # indent = next_patch_x
             # y0 = next_patch_y
-            h = max(self.columns[col]['buffer']) + 2 if self.columns[col]['buffer'] else 24
+            h = max(self.columns[col]['buffer']) + 4 if self.columns[col]['buffer'] else 24
             h = 24 if h == 0 else h
             self.columns[col]['indent'] = indent
             self.columns[col]['y0'] = y0
@@ -412,7 +422,14 @@ class Player(object):
             if 'ifv300' in col:
                 BaseDraw.draw_text(img, 'q3', (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
             else:
-                BaseDraw.draw_text(img, col, (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
+                if '.can' in col:
+                    fields = col.split('.')
+                    devno = '.'.join(fields[:3])
+                    BaseDraw.draw_text(img, fields[-1], (indent + 22, y0 + 12), 0.4, CVColor.Cyan, 1)
+                    BaseDraw.draw_text(img, devno, (indent + 22, y0 + 24), 0.4, CVColor.Cyan, 1)
+                else:
+                    title = col
+                    BaseDraw.draw_text(img, title, (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
             dt = self.ts_now - self.columns[col]['ts']
 
             if dt > 999:
@@ -428,9 +445,9 @@ class Player(object):
             #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:
                 # print(col, height, entry['buffer'])
+                # 字体颜色
                 style = entry['buffer'][height]['style']
                 style_list = {'normal': None, 'warning': CVColor.Yellow, 'fail': CVColor.Red, 'pass': CVColor.Green}
-
                 if isinstance(style, str) and style_list.get(style):
                     if style in style_list:
                         color = style_list.get(style)
@@ -441,9 +458,15 @@ class Player(object):
                     color = style
                 else:
                     color = CVColor.White
-                line_len = len(entry['buffer'][height]['text'])
-                size = min(0.5 * 16 / line_len, 0.5)
-                size = max(0.24, size)
+
+                # 字体大小
+                if entry['buffer'][height].get("size"):
+                    size = entry['buffer'][height]['size']
+                else:
+                    line_len = len(entry['buffer'][height]['text'])
+                    size = min(0.5 * 16 / line_len, 0.5)
+                    size = max(0.24, size)
+
                 BaseDraw.draw_text(img, entry['buffer'][height]['text'], (entry['indent'] + 2, height + y0), size,
                                    color, 1)
 
@@ -472,6 +495,16 @@ class Player(object):
                            'lost frames: {}'.format(data['frame_id'] - self.video_streams[data['source']]['frame_cnt']),
                            (2, 80), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'dev: {}'.format(data['device']), (2, 100), 0.5, CVColor.White, 1)
+
+    def show_status_info(self, img, source, status_list):
+        """
+        显示状态栏信息
+        style: normal, warning, fail, pass
+        """
+        show_line = 40          # 显示的行位置，每20像素的高度为一行
+        for i in status_list:
+            self.show_text_info(source, i.get("height", show_line), i.get("text", ""), i.get("style", "normal"), i.get("size"))
+            show_line = i.get("height", show_line) + 20
 
     def show_frame_id(self, img, source, fn):
         # indent = self.columns['video']['indent']
@@ -928,11 +961,12 @@ class Player(object):
             color: CVColor 车道线颜色
         """
         # sensor = data['source'].split('.')[0]
-        r = data['range']
+        max_range = data['range']
+        min_range = data.get("min_range", 0)
         ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
-        if r == 0:
+        if max_range == 0:
             return
-        p = self.transform.getp_ipm_from_poly(ratios, 1, 0, r, sensor=data['source'])
+        p = self.transform.getp_ipm_from_poly(ratios, 1, min_range, max_range, sensor=data['source'])
 
         if style == "dotted":
             for i in range(2, len(p) - 1, 1):
@@ -954,6 +988,13 @@ class Player(object):
             return
         if 'speed' in data:
             self.show_veh_speed(img, data['speed'], data['source'])
+        if 'TTC' in data:
+            self.show_text_info(data['source'], 60, 'TTC: ' + '{:.2f}s'.format(data['TTC']))
+        if 'pos_lon' in data and 'pos_lat' in data:
+            dist = data.get('pos_lon') if 'pos_lon' in data else data['range']
+            angle = data.get('angle') if 'angle' in data else atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
+            # BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
+            self.show_text_info(data['source'], 80, 'R/A: {:.2f} / {:.2f}'.format(dist, angle))
         if 'yaw_rate' in data:
             self.show_yaw_rate(img, data['yaw_rate'], data['source'])
 

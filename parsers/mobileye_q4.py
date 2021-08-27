@@ -6,6 +6,8 @@
 @Description:   
 @Create Time:     2019/8/29 上午10:38   
 """
+import math
+
 import cantools
 # import canmatrix
 # import decimal
@@ -167,6 +169,23 @@ def parser_mbq4(id, buf, ctx):
             ctx['q4_lane'][lane_type]['a2'] = -r['Lane_C2']
             ctx['q4_lane'][lane_type]['a3'] = -r['Lane_C3']
 
+            if lane_type == "left_lane":
+                value = math.fabs(round(1/(2*r['Lane_C2']), 2))
+                ctx['q4_lane'][lane_type]["status_show"] = [
+                    {
+                        "text": "Rl:{}".format(value if value < 2500 else "straights"),
+                        "height": 40
+                    }
+                ]
+            elif lane_type == "right_lane":
+                value = math.fabs(round(1/(2*r['Lane_C2']), 2))
+                ctx['q4_lane'][lane_type]["status_show"] = [
+                    {
+                        "text": "Rr:{}".format(value if value < 2500 else "straights"),
+                        "height": 60
+                    }
+                ]
+
         # for i in range(0, 4):
         #     key = 'Lane_C' + str(i)
         #     if key in r:
@@ -178,7 +197,6 @@ def parser_mbq4(id, buf, ctx):
                 return
             if len(ctx['q4_lane'][lane_type]) >= 5 and ctx['q4_lane'][lane_type]['track_ID'] > 0:
                 ctx['q4_lane'][lane_type]['id'] = lane_type
-                ctx['q4_lane'][lane_type]['color'] = 8
                 ctx['q4_lane'][lane_type]['type'] = 'lane'
                 ctx['q4_lane'][lane_type]['class'] = lane_type
 
@@ -209,7 +227,6 @@ def parser_mbq4(id, buf, ctx):
         if 'OBJ_ID' in r:
             if r['OBJ_Existence_Probability'] == 0:
                 return
-            ctx['q4_obs'][cur_id_key]['color'] = 8
             ctx['q4_obs'][cur_id_key]['type'] = 'obstacle'
             ctx['q4_obs'][cur_id_key]['sensor'] = 'mbq4'
             ctx['q4_rcnt'] = r['Rolling_Counter']
@@ -249,7 +266,6 @@ def parser_mbq4(id, buf, ctx):
         if (id-0x111 + 1) % 4 == 0:
             if 'id' in ctx['q4_obs'][cur_id_key]:
             # if len(ctx['q4_obs'][cur_id_key]) >= 6:
-                ctx['q4_obs'][cur_id_key]['color'] = 8
                 ctx['q4_obs'][cur_id_key]['type'] = 'obstacle'
                 ctx['q4_obs'][cur_id_key]['sensor'] = 'mbq4'
                 # res = ctx['q4_obs'][cur_id_key].copy()
@@ -298,7 +314,6 @@ def parser_mbq4(id, buf, ctx):
             obs['pos_lat'] = -r['TSR_Sign_Lateral_Distance']
             obs['pos_hgt'] = r['TSR_Sign_Height']
 
-            obs['color'] = 8
             obs['sensor'] = 'mbq4'
             res = obs.copy()
             if obs['pos_lon'] > 0.0:
@@ -410,7 +425,6 @@ def parser_mbq4_lane_tsr(id, buf, ctx):
             tt = len(ctx['q4_lane'][lane_type])
             if len(ctx['q4_lane'][lane_type]) >= 5 and ctx['q4_lane'][lane_type]['track_ID'] > 0:
                 ctx['q4_lane'][lane_type]['id'] = lane_type
-                ctx['q4_lane'][lane_type]['color'] = 8
                 ctx['q4_lane'][lane_type]['type'] = 'lane'
                 ctx['q4_lane'][lane_type]['class'] = lane_type
 

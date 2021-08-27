@@ -1,5 +1,6 @@
 import argparse
 import json
+import logging
 import platform
 import shutil
 import sys
@@ -8,7 +9,6 @@ from multiprocessing import Queue
 from config.config import dic2obj, bcl, load_cfg
 from pcc import *
 from sink.hub import Hub
-from sink.sink import SinkManage
 from tools.mytools import Supervisor
 
 machine_arch = platform.machine()
@@ -16,13 +16,17 @@ machine_arch = platform.machine()
 parser = argparse.ArgumentParser(description="process CVE log.")
 parser.add_argument('cfg_path', nargs='?', default='config/cfg_lab.json')
 parser.add_argument('-o', '--output', default=None, help="保存路径")
-parser.add_argument('-d', '--direct', default=None)
+parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
 parser.add_argument('-c', '--config', default=None)
 parser.add_argument('-a', '--auto', help='auto recording', action="store_true")
 parser.add_argument('-w', '--web', help='web ui', action="store_true")
 parser.add_argument('-da', '--draw_algo', help='show algo data', action="store_true")
 
 args = parser.parse_args()
+
+# 初始化信息输出等级
+if args.debug:
+    logger.setLevel(level=logging.DEBUG)
 
 local_cfg = dic2obj(json.load(open('config/local.json')))
 if args.output:
@@ -60,14 +64,6 @@ logger.warning("log path:{}".format(cve_conf.local_cfg.log_root))
 
 _startup_cwd = os.getcwd()
 
-# 初始化信号加载进程，对报文信号进行解析处理
-sink_manages = []
-manage_num = 2
-decode_queue = Queue(300000)
-result_queue = Queue(300000)
-for i in range(manage_num):
-    sink_manages.append(SinkManage(decode_queue=decode_queue, result_queue=result_queue))
-
 
 def init_checkers(pcc):
     """
@@ -76,10 +72,8 @@ def init_checkers(pcc):
     :return:
     """
     supervisor = Supervisor()
-    supervisor.add_check_task(pcc.check_status)
     supervisor.add_check_task(pcc.hub.fileHandler.check_file)
     supervisor.add_check_task(pcc.send_online_devices, interval=0.5)
-    supervisor.add_check_task(pcc.adjust_interval)
     supervisor.add_check_task(pcc.send_statistics, interval=0.5)
     supervisor.start()
     return supervisor
@@ -105,24 +99,21 @@ if args.web:  # 网页版启动方式
 
 
     video_server.set_local_path(local_cfg.log_root)
-    logger.warning('PCC starts in webui mode. architect:'.format(machine_arch))
+    logger.warning('{} pid:{}'.format("PCC: webui".ljust(20), os.getpid()))
     server = video_server.PccServer()
     server.start()
 
     # 初始化信号加载进程
-    sink_process = SinkManage()
-    hub = Hub(uniconf=cve_conf, sink_process=sink_process)
-    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo,
-              sink_process=sink_process)
+    hub = Hub(uniconf=cve_conf)
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo)
     pcc_thread = Thread(target=pcc.start, name='pcc_thread')
-    sink_process.start()
     hub.start()
 
     # print('-----------------------------------------------------------------------', os.getpid())
     sup = init_checkers(pcc)
     # sup.add_check_task(list_recorded_data)
     pcc_thread.start()
-    while True:
+    while hub.is_alive():
         if pcc.stuck_cnt > 10:
             print('pcc stuck count:', pcc.stuck_cnt)
             print('PCC stuck. restarting now.')
@@ -185,6 +176,9 @@ if args.web:  # 网页版启动方式
         else:
             time.sleep(0.1)
 
+    server.close()
+    logger.warning("main exit")
+
 else:  # normal standalone PCC
     logger.warning('{} pid:{}'.format("PCC: normal".ljust(20), os.getpid()))
     if args.auto:
@@ -192,11 +186,10 @@ else:  # normal standalone PCC
     else:
         auto_rec = False
 
-    hub = Hub(uniconf=cve_conf, decode_queue=decode_queue, result_queue=result_queue)
-    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec, draw_algo=args.draw_algo,
-              decode_queue=decode_queue, result_queue=result_queue)
-    sink_process.start()
+    hub = Hub(uniconf=cve_conf)
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=auto_rec, draw_algo=args.draw_algo)
     hub.start()
     sup = init_checkers(pcc)
     pcc.start()
+    logger.warning('{} pid:{}'.format("PCC: normal exit".ljust(20), os.getpid()))
     # pcc.join()

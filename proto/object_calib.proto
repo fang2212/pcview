@@ -1,0 +1,140 @@
+syntax = "proto3";
+import "geometry.proto";
+import "data_source.proto";
+
+// VERSION
+// 0.3
+
+package perception;
+
+// 目标分类
+enum ObjectType { 
+    kNone = 0;
+    kVehicle = 1;
+    kPed= 2;
+    kBike = 3;
+    kCone = 4;
+
+    kVehicleWheel = 5;
+    kVehiclePlate = 6;
+    kPedHead = 7;
+
+    kSmallTrafficSign = 10;
+    kBigTrafficSign = 11;
+    kTrafficLight = 12;
+}
+
+// 车辆姿态分类
+enum VehiclePose {
+    kInvalid = 0;                                // 背景
+    kLeftTail = 1;                               // 左侧同向车
+    kMidTail = 2;                                // 中间同向车
+    kRightTail = 3;                              // 右侧同向车
+    kLeftHead = 4;                               // 左侧对向车
+    kMidHead = 5;                                // 中间对向车
+    kRightHead = 6;                              // 右侧对向车
+    kLeftSide = 7;                               // 朝左横向车
+    kRightSide = 8;                              // 朝右横向车
+    kLeftCutIn = 9;                              // 左侧切入
+    kRightCutIn = 10;                            // 右侧切入
+    kLeftCutOut = 11;                            // 左侧切出
+    kRightCutOut = 12;                           // 右侧切出
+}
+
+// 车型细分类
+enum VehicleClass {
+    kNegative = 0;                               // 背景
+    kBus = 1;                                    // 大巴
+    kCar = 2;                                    // 小轿车,suv
+    kMiniBus = 3;                                // 面包车
+    kBucketTruck = 4;                            // 斗卡
+    kContainerTruck = 5;                         // 箱卡
+    kTricycle = 6;                               // 三轮车
+    kTanker = 7;                                 // 油罐车,晒水车（车身带有圆形,椭圆形,半圆形的罐）
+    kCementTankTruck = 8;                        // 水泥罐车
+    kPickup = 9;                                 // 皮卡
+    kSedimentTruck  = 10;                        // 渣土车
+    kIveco = 11;                                 // 依维柯
+    kSpecialCar = 12;                            // 异型车
+    kCityAuto = 13;                              // 市政车
+}
+
+
+
+message ImageInfo {
+    perception.common.Rect2f det_rect = 1;       // 检测框
+    perception.common.Rect2f reg_rect = 2;       // 回归框(尾部框)
+    perception.common.Rect2f track_rect = 3;     // 跟踪框
+    perception.common.Rect2f smooth_rect = 4;    // 光流跟踪框
+
+    perception.common.Box3D box = 10;            // 3dbox
+}
+
+message WorldInfo {
+    perception.common.Point3D vel = 1;           // 速度
+    perception.common.Point3D rel_vel = 2;       // 相对速度
+    perception.common.Point3D acc = 3;           // 加速度
+    perception.common.Point3D pos = 4;           // 位置
+    perception.common.Size3D  size = 5;          // 长宽高
+    perception.common.Angle3f angle = 6;         // 与自车的中心夹角 左边缘夹角 右边缘夹角
+
+    perception.common.Box3D box = 10;            // 3dbox
+
+    int32 id = 11;                               // 目标id
+    int32 cls = 12;                              // 类型分类
+    float val = 13;                              // 分类值
+    int32 pose = 14;                             // 姿态分类
+    float ttc = 15;                              // 碰撞时间
+    float headway = 16;                          // 时距=距离/自车速度
+  	int32 cipv = 17;                             // 前方目标是否为关键车(CIPV)，关键车为1，非关键车为0
+  	int32 cipp = 18;                             // 前方目标是否为关键人(CIPP)，关键人为1，非关键人为0
+}
+
+message SourceInfo {                             // 描述当真帧数据源的文件
+    string file_path = 1;                        // 数据地址
+    int32 frame_num = 2;                         // 帧序号
+    int32 frame_id = 3;                          // 算法计算时用到的frame_id
+}
+
+message CalibInfo {                              // 标定参数
+    float pitch = 1;
+    float yaw = 2;
+    float roll = 3;
+    float cu = 4;
+    float cv = 5;
+    float fu = 6;
+    float fv = 7;
+    float camera_height = 8;
+    float left_vehicle_edge_dist = 9;
+    float right_vehicle_edge_dist = 10;
+    float front_vehicle_edge_dist = 11;
+}
+
+message Object {
+    int32 hit_id = 1;                            // 目标检测ID
+    ObjectType hit_type = 2;                     // 目标检测类别enum
+    string hit_type_str = 6;                     // 目标检测类别string
+    float confidence = 3;                        // 检测置信度
+    int32 frame_cnt = 4;                         // frame count
+    int32 life_time = 5;                         // optional live ms 
+
+    ImageInfo image_info = 8;                    // 图像信息
+    WorldInfo world_info = 9;                    // 车辆坐标系下信息
+
+    int32 track_status = 10;                     // track状态
+    int32 trace_status = 11;                     // trace状态
+}
+
+message ObjectList {
+    repeated Object list = 1;                    // object list
+    SourceInfo source_info = 2;                  // frame source
+
+    string version = 3;                          // 版本号
+
+	uint64 frame_id = 4;                         // 帧ID
+    uint64 timestamp = 5;                        // 时戳
+    float speed = 6;                             // host speed
+	minieye.DataSource data_source = 15;         // 描述数据源 字节数: 4
+
+    CalibInfo calib_info = 16;                   // 标定参数
+}

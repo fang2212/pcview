@@ -10,11 +10,15 @@ import argparse
 import logging
 import struct
 import time
-from multiprocessing import Process, Queue, Manager, freeze_support
+from multiprocessing import Process, Queue, Manager, freeze_support, Event
 import json
 from threading import Thread
 
+import cv2
+import msgpack
+import numpy as np
 from tqdm import tqdm
+from turbojpeg import TurboJPEG
 
 from parsers import ublox
 from recorder.convert import *
@@ -25,7 +29,8 @@ from config.config import CVECfg, load_config, load_installation
 from pcc import PCC
 from parsers.parser import parsers_dict
 from config.config import *
-from sink.sink import SinkManage
+from sink.mmap_queue import MMAPQueue
+from sink.sink import can_decode, pim222_decode, q4_decode
 from tools.log_info import *
 from parsers.novatel import parse_novatel
 from parsers.pim222 import parse_pim222
@@ -33,6 +38,8 @@ from parsers.pim222 import parse_pim222
 from tools import mytools
 from utils import logger, log_list_from_path
 
+
+jpeg = TurboJPEG()
 
 def jpeg_extractor(video_dir):
     """
@@ -70,6 +77,7 @@ def jpeg_extractor(video_dir):
                 fcnt += 1
                 if not jpg:
                     print('extracted empty frame:', fid)
+
                 yield fid, jpg
                 if fid is not None:
                     fid = None
@@ -129,22 +137,27 @@ class PcvParser(object):
 
 class LogPlayer(Process):
 
-    def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, loop=False, nosort=False,
-                 real_interval=False, chmain=None, sink_process=None):
+    def __init__(self, log_path, uniconf=None, start_frame=0, end_frame=None, start_time=0, end_time=None,
+                 loop=False, nosort=False, real_interval=False, chmain=None):
         super(LogPlayer, self).__init__()
         self.daemon = True
-        self.bin_rf = {}                # bin文件对象集合
+        self.exit = Event()
+        self.bin_rf = {}  # bin文件对象集合
         self.x1_parser = None
-        self.start_frame = int(start_frame) if start_frame else 0  # 开始帧数
-        self.end_frame = int(end_frame) if end_frame else 9999999999999  # 结束帧数
+        self.start_frame = int(start_frame) if start_frame else 0
+        self.end_frame = int(end_frame) if end_frame else 9999999999999
+        self.start_time = int(start_time) if start_time else 0
+        self.end_time = int(end_time) if end_time else 9999999999999
+        self.time_aligned = True
         self.log_path = log_path
         self.jpeg_extractor = None          # 视频图片提取生成器
-        self.sink_process = sink_process  # 信号进程
 
         self.shared = Manager().dict()
         self.shared["ready"] = False  # 播放前的数据是否加载完成
         self.shared['init_time'] = 0  # 初始化时间
         self.shared['log_start'] = 0  # 第一条log数据的记录时间
+
+        self.mq = MMAPQueue(1024 * 1024 * 500)
 
         self.parser = {}
         self.can_types = {}
@@ -202,7 +215,17 @@ class LogPlayer(Process):
 
         # 统计can设备类型
         for idx, cfg in enumerate(self.cfg.configs):
-            if 'msg_types' in cfg:
+            if 'can_types' in cfg:
+                cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
+                cantypes1 = ' '.join(cfg['can_types']['can1']) + '.{:01}'.format(idx)
+                self.can_types['CAN' + '{:01d}'.format(idx * 2)] = cantypes0
+                self.can_types['CAN' + '{:01d}'.format(idx * 2 + 1)] = cantypes1
+                if len(cfg['can_types']['can0']) > 0:
+                    self.msg_types.append([cantypes0])
+                if len(cfg['can_types']['can1']) > 0:
+                    self.msg_types.append([cantypes1])
+            elif 'msg_types' in cfg:
+                # print(cfg)
                 if 'can0' in cfg['ports']:
                     msg_type = cfg['ports']['can0']['topic']
                     self.can_types['CAN' + '{:01d}'.format(idx * 2)] = msg_type + '.{}'.format(idx)
@@ -238,13 +261,17 @@ class LogPlayer(Process):
         :param sink:
         :return:
         """
-        if self.real_interval and sink.get("type", "no_type") == "video":   # 是否以真实速度来回放
-            sink_ts = sink['ts'] if isinstance(sink, dict) else sink[0]['ts']
+        if self.real_interval and sink[2] == "camera":   # 是否以真实速度来回放
+            sink_ts = sink[1]['ts'] if isinstance(sink[1], dict) else sink[1][0]['ts']
             dt = (sink_ts - self.shared['log_start']) / self.replay_speed - (time.time() - self.paused_t - self.shared['init_time'])
             if dt > 0:
                 time.sleep(dt)
 
-        self.sink_process.put_decode(sink.get("data"))
+        while self.mq.full():
+            print("full")
+            time.sleep(0.01)
+        # print(sink[0], sink[2])
+        self.mq.put(sink)
 
     def pause(self, pause):
         if pause:
@@ -255,6 +282,9 @@ class LogPlayer(Process):
     def add_pause(self, t):
         self.paused_t += t
 
+    def close(self):
+        self.exit.set()
+
     def run(self):
         logger.warning("log player starting, pid: {}".format(os.getpid()))
         self._do_replay()
@@ -264,16 +294,17 @@ class LogPlayer(Process):
             while True:
                 self._do_replay()
                 time.sleep(0.5)
-        self.sink_process.close()
         logger.warning('log player exit replaying.')
 
     def _do_replay(self):
         self.init_env()
         rtk_dec = False
         rf = open(self.log_path)
-        ctx = {}
         start_time = time.time()
         for line in rf:
+            if self.exit.is_set():
+                break
+
             if self.pause_state:
                 logger.warning('replay paused.')
                 while self.pause_state:
@@ -319,14 +350,14 @@ class LogPlayer(Process):
                     continue
 
                 r = {'ts': ts, 'img': jpg, 'is_main': True, 'source': 'video', 'type': 'video'}
-                self.put_sink({"ts": ts, "data": (frame_id, r, 'camera'), "type": "video"})
+                self.put_sink((frame_id, r, 'camera'))
 
                 if self.x1_parser:
                     res = self.x1_parser.get_frame(frame_id)
                     if res:
                         res['ts'] = ts
                         res['source'] = 'x1_data'
-                        self.put_sink({"ts": ts, "data": (frame_id, res, res['source'])})
+                        self.put_sink((frame_id, res, res['source']))
 
                 # 超出视频范围，退出处理
                 if self.now_frame_id >= self.end_frame:
@@ -349,7 +380,9 @@ class LogPlayer(Process):
                     "cid": int(cols[3], 16),
                     "ts": ts
                 }
-                self.put_sink({"ts": ts, "data": decode_msg})
+                data = can_decode(decode_msg)
+                if data:
+                    self.put_sink(data)
 
             elif 'rtk' in cols[2] and 'sol' in cols[2]:  # old d-rtk
                 rtk_dec = True
@@ -364,7 +397,7 @@ class LogPlayer(Process):
                     vehstate = {'type': 'vehicle_state', 'pitch': r['pitch'], 'yaw': r['yaw'], 'ts': ts}
                 else:
                     vehstate = None
-                self.put_sink({"ts": ts, "data": (0xc7, [r, vehstate], source)})
+                self.put_sink((0xc7, [r, vehstate], source))
 
             # 定位打点
             elif 'pinpoint' in cols[2]:
@@ -377,17 +410,17 @@ class LogPlayer(Process):
                     r['ts'] = ts
                     r['type'] = kw
                     r['source'] = '.'.join(cols[2].split('.')[:2])
-                    self.put_sink({"ts": ts, "data": (0xc7, r, source)})
+                    self.put_sink((0xc7, r, source))
 
             elif 'NMEA' in cols[2] or 'gps' in cols[2]:
                 r = ublox.decode_nmea(cols[3])
                 r['source'] = cols[2]
-                self.put_sink({"ts": ts, "data": (0x00, r, cols[2])})
+                self.put_sink((0x00, r, cols[2]))
             elif 'inspva' in cols[2]:
                 try:
                     r = parse_novatel(None, cols[3], None)
                     r['source'] = '.'.join(cols[2].split('.')[0:2])
-                    self.put_sink({"ts": ts, "data": (0x00, r, r['source'])})
+                    self.put_sink((0x00, r, r['source']))
                 except Exception as e:
                     raise e
             elif 'pim222' in cols[2]:
@@ -396,7 +429,9 @@ class LogPlayer(Process):
                     "source": cols[2],
                     "data": cols[3],
                 }
-                self.put_sink({"ts": ts, "data": decode_msg})
+                data = pim222_decode(decode_msg)
+                if data:
+                    self.put_sink(data)
 
             elif 'q4_100' in cols[2]:
                 if cols[2] not in self.bin_rf:
@@ -412,12 +447,17 @@ class LogPlayer(Process):
                     "data": buf_string,
                     "ts": ts
                 }
-                self.put_sink({"ts": ts, "data": decode_msg})
+                data = q4_decode(decode_msg)
+                if data:
+                    self.put_sink(data)
 
         logger.debug(bcl.OKBL + 'log.txt reached the end.' + bcl.ENDC)
         logger.info("take time: {}".format(time.time() - start_time))
         rf.close()
         return
+
+    def pop_common(self):
+        return self.mq.get()
 
 
 def prep_replay(source, ns=False, chmain=None):
@@ -472,29 +512,22 @@ def start_replay(source_path, args):
     r_sort, cfg = prep_replay(source_path, ns=ns, chmain=chmain)
 
     # 初始化信号加载进程
-    sink_process = SinkManage()
     replay_hub = LogPlayer(r_sort, cfg, start_frame=args.start_frame, end_frame=args.end_frame,
-                           chmain=chmain, loop=args.loop, real_interval=args.real_interval,
-                           sink_process=sink_process)
+                           chmain=chmain, loop=args.loop, real_interval=args.real_interval)
 
     if args.web:
         from video_server import PccServer
         server = PccServer()
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, save_replay_video=save_dir, uniconf=cfg,
-                  sink_process=sink_process, to_web=server)
-        sink_process.start()
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, save_replay_video=save_dir, uniconf=cfg, to_web=server)
         server.start()
         replay_hub.start()
         pcc.start()
         while True:
             time.sleep(1)
     else:
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, save_replay_video=save_dir, uniconf=cfg,
-                  sink_process=sink_process)
-        sink_process.start()
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, save_replay_video=save_dir, uniconf=cfg)
         replay_hub.start()
         pcc.start()
-        sink_process.join()
         replay_hub.join()
         pcc.control(ord('q'))
 
@@ -509,8 +542,9 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--loop', action="store_true")
     parser.add_argument('-w', '--web', action="store_true")
     parser.add_argument('-s', '--send', action="store_true")
-    parser.add_argument('-sf', '--start_frame', default=0, help="指定开始帧数")
-    parser.add_argument('-ef', '--end_frame', default=None, help="指定结束帧数")
+    parser.add_argument('-sib', "--show_ipm_bg", action="store_true")
+    parser.add_argument('-sf', '--start_frame', default=0)
+    parser.add_argument('-ef', '--end_frame', default=None)
     parser.add_argument('-st', '--start_time', default=0)
     parser.add_argument('-et', '--end_time', default=None)
     parser.add_argument('-ri', '--real_interval', action="store_true", help="是否以真实速度进行回放")
