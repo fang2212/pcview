@@ -164,6 +164,7 @@ def parse_a1j(id, data, ctx=None):
         tmp1 = 'Lane' + '%01d' % (index + 1) + '_Type'
         if tmp1 in r:
             x1_lane[index] = dict()
+            x1_lane[index]['color'] = fusion_color
             x1_lane[index]['Lane_Type'] = r['Lane' + '%01d' % (index + 1) + '_Type']
             x1_lane[index]['Quality'] = r['Lane' + '%01d' % (index + 1) + '_Quality']
             x1_lane[index]['a0'] = r['Lane' + '%01d' % (index + 1) + '_Position']

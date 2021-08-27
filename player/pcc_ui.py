@@ -53,7 +53,7 @@ class Player(object):
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
         self.color_obs = {
-            "a1j": (59, 59, 238),
+            "a1j": (193, 182, 255),
             "a1j_fusion": (59, 59, 238),
             "a1j_vision": (193, 182, 255),
             "ars410": FlatColor.peach,

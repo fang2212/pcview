@@ -13,7 +13,7 @@
         "ego": {
             "enable": true,
             "collectors": [
-                {"model":  "socket_hil", "params": {"ip": "192.168.98.120", "force_ip": true, "can0": "q3control", "can1": "ifv300", "is_main":true}},
+                {"model":  "socket_hil", "params": {"ip": "192.168.98.145", "force_ip": true, "can0": "q3control", "can1": "ifv300", "is_main":true}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "x1_fusion", "can1": "ifv300"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
                 {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}},
