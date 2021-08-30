@@ -8,7 +8,6 @@ __progname__ = 'run'
 from datetime import datetime
 from math import fabs
 from multiprocessing import Manager
-from threading import Thread
 import cv2
 from turbojpeg import TurboJPEG
 
@@ -25,7 +24,6 @@ from models.road import Road
 from tools.cpu_mem_info import *
 import numpy as np
 import copy
-import traceback
 
 from utils import logger
 
@@ -71,7 +69,7 @@ class PCC(object):
         self.show_ipm_bg = ipm_bg
         self.auto_rec = auto_rec
         self.frame_cnt = 0
-        self.refresh_rate = 30
+        self.refresh_rate = 20
         if uniconf.runtime.get('low_profile'):
             self.refresh_rate = 5
         self.display_interval = 1.0 / self.refresh_rate
@@ -180,6 +178,7 @@ class PCC(object):
             fid, data, source = d
         except Exception as e:
             print(e, d)
+
         if source not in self.cache['misc']:
             self.cache['misc'][source] = {}
             self.cache['info'][source] = {}
@@ -254,26 +253,27 @@ class PCC(object):
             # 从信号进程取出数据
             begin_ts = time.time()
             d = self.hub.pop_common()
-            if not d:
-                time.sleep(0.001)
-                continue
+            if d:
+                # 处理数据
+                pop_ts = time.time()
+                self.statistics['frame_popping_cost'] = '{:.2f}'.format(1000 * (pop_ts - begin_ts))
+                # 缓存信号数据，等待视频渲染
+                new_frame = self.cache_data(d)
+                if not new_frame:
+                    continue
 
-            # 处理数据
-            pop_ts = time.time()
-            self.statistics['frame_popping_cost'] = '{:.2f}'.format(1000 * (pop_ts - begin_ts))
-            # 缓存信号数据，等待视频渲染
-            new_frame = self.cache_data(d)
-            if not new_frame:
-                continue
+                if new_frame:
+                    self.frame_cnt += 1
+                    if self.frame_cnt > 500:
+                        self.player.start_time = datetime.now()
+                        self.frame_cnt = 1
 
-            if new_frame:
-                self.frame_cnt += 1
-                if self.frame_cnt > 500:
-                    self.player.start_time = datetime.now()
-                    self.frame_cnt = 1
-
-            cache_ts = time.time()
-            self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (cache_ts - pop_ts))
+                cache_ts = time.time()
+                self.statistics['frame_caching_cost'] = '{:.2f}'.format(1000 * (cache_ts - pop_ts))
+            else:
+                if self.replay:
+                    time.sleep(0.01)
+                    continue
 
             # render begins
             if self.replay or begin_ts - last_ts > self.display_interval:
@@ -482,7 +482,7 @@ class PCC(object):
                     odir = self.save_replay_video
                 else:
                     odir = os.path.dirname(self.rlog)
-                self.vw = VideoRecorder(odir, fps=30)
+                self.vw = VideoRecorder(odir, fps=20)
                 self.vw.set_writer("replay-render", img_rendered.shape[1], img_rendered.shape[0])
                 print('--------save replay video', odir)
             self.vw.write(img_rendered)
@@ -490,16 +490,6 @@ class PCC(object):
     def draw_rtk(self, img, data):
         if len(data) == 0 or data.get('source') is None:
             return
-
-        # print("data:", data)
-        if data['source'] == 'rtk.2':
-            dt0 = data['ts'] - data['ts_origin']
-            # self.rtkplot.update('rtk0', data['ts_origin'], dt0)
-            self.rtk_pair[0] = data
-        if 'rtk' in data['source'] and data['source'] != 'rtk.2':
-            dt1 = data['ts'] - data['ts_origin']
-            # self.rtkplot.update('rtk1', data['ts_origin'], dt1)
-            self.rtk_pair[1] = data
 
         if len(self.rtk_pair[0]) > 0 and len(self.rtk_pair[1]) > 0:
             self.player.show_target(img, self.rtk_pair[1], self.rtk_pair[0])

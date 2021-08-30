@@ -17,6 +17,7 @@ def can_decode(msg):
     source = msg.get("source")
     data = msg.get("data")
     parsers = msg.get("parsers")
+    dbc = msg.get('dbc')
     can_id = msg.get("cid")
     timestamp = msg.get("ts")
 
@@ -24,10 +25,13 @@ def can_decode(msg):
         context[source] = {"source": source}
 
     ret = None
-    for parser in parsers:
-        ret = parser(can_id, data, context[source])
-        if ret is not None:
-            break
+    if parsers:
+        for parser in parsers:
+            ret = parser(can_id, data, context[source])
+            if ret is not None:
+                break
+    else:
+        ret = parsers_dict.get(dbc, parsers_dict['default'])(can_id, data, context[source])
 
     if ret is None:
         return

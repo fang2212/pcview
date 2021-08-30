@@ -8,24 +8,11 @@
 # @Desc    : log replayer for collected data
 import argparse
 import logging
-import struct
-import time
-from multiprocessing import Process, Queue, Manager, freeze_support, Event
-import json
-from threading import Thread
-
-import cv2
-import msgpack
-import numpy as np
-from tqdm import tqdm
+from multiprocessing import Process, Manager, freeze_support, Event
 from turbojpeg import TurboJPEG
 
 from parsers import ublox
 from recorder.convert import *
-from collections import deque
-import shutil
-import os
-from config.config import CVECfg, load_config, load_installation
 from pcc import PCC
 from parsers.parser import parsers_dict
 from config.config import *
@@ -33,8 +20,6 @@ from sink.mmap_queue import MMAPQueue
 from sink.sink import can_decode, pim222_decode, q4_decode
 from tools.log_info import *
 from parsers.novatel import parse_novatel
-from parsers.pim222 import parse_pim222
-# from numba import jit
 from tools import mytools
 from utils import logger, log_list_from_path
 
@@ -267,10 +252,6 @@ class LogPlayer(Process):
             if dt > 0:
                 time.sleep(dt)
 
-        while self.mq.full():
-            print("full")
-            time.sleep(0.01)
-        # print(sink[0], sink[2])
         self.mq.put(sink)
 
     def pause(self, pause):
@@ -363,7 +344,7 @@ class LogPlayer(Process):
                 if self.now_frame_id >= self.end_frame:
                     logger.error('log player reached the end frame:'.format(self.end_frame))
                     break
-            elif 'CAN' in cols[2]:
+            elif 'CAN' in cols[2]:      # 旧can source数据格式
                 msg_type = cols[2]
                 if int(cols[3], 16) == 0xc7 and rtk_dec:
                     continue
@@ -383,7 +364,23 @@ class LogPlayer(Process):
                 data = can_decode(decode_msg)
                 if data:
                     self.put_sink(data)
+            elif 'can' in cols[2]:      # 新can source数据格式
+                info_list = cols[2].split('.')
+                index = info_list[1]
+                dbc = info_list[3]
+                data = bytes().fromhex(cols[4])
 
+                decode_msg = {
+                    "type": "can",
+                    "dbc": dbc,
+                    "source": '{}.{}'.format(dbc, index),
+                    "data": data,
+                    "cid": int(cols[3], 16),
+                    "ts": ts
+                }
+                data = can_decode(decode_msg)
+                if data:
+                    self.put_sink(data)
             elif 'rtk' in cols[2] and 'sol' in cols[2]:  # old d-rtk
                 rtk_dec = True
                 source = '.'.join(cols[2].split('.')[0:2])
@@ -453,11 +450,14 @@ class LogPlayer(Process):
 
         logger.debug(bcl.OKBL + 'log.txt reached the end.' + bcl.ENDC)
         logger.info("take time: {}".format(time.time() - start_time))
+        while not self.mq.empty():
+            time.sleep(0.1)
+
         rf.close()
         return
 
     def pop_common(self):
-        return self.mq.get()
+        return self.mq.get(block=False)
 
 
 def prep_replay(source, ns=False, chmain=None):
@@ -503,8 +503,11 @@ def start_replay(source_path, args):
 
     # 初始化保存路径
     save_dir = None
-    if args.render and args.output and os.path.exists(args.output):
-        save_dir = os.path.dirname(source_path)
+    if args.render:
+        if args.output and os.path.exists(args.output):
+            save_dir = args.output
+        else:
+            save_dir = os.path.dirname(source_path)
 
     # 加载配置
     ns = args.nosort
@@ -529,6 +532,7 @@ def start_replay(source_path, args):
         replay_hub.start()
         pcc.start()
         replay_hub.join()
+        print("replay_hub end join")
         pcc.control(ord('q'))
 
 

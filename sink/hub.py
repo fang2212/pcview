@@ -139,9 +139,9 @@ class Hub(Thread):
         self.init_collectors()
 
         print(bcl.OKGR + '---------------- collectors online ---------------' + bcl.ENDC)
-        for ip in self.online:
-            ol = self.online[ip]
-            print('index {}'.format(ol['idx']), bcl.OKBL + ip + bcl.ENDC, ol.get('mac'), 'type:', ol['type'])
+        for ip_type in self.online:
+            ol = self.online[ip_type]
+            print('index {}'.format(ol['idx']), bcl.OKBL + ip_type + bcl.ENDC, ol.get('mac'))
             print('definition:', ol['defs_path'])
             for iface in ol['ports']:
                 print('--', iface, ol['ports'][iface]['topic'] + '.{}'.format(ol['idx']), ol['ports'][iface].get('port') or ol.get("port"),
@@ -157,8 +157,9 @@ class Hub(Thread):
             for ip in self.finder.found:
                 mac = self.finder.found[ip]['mac']
                 for cfg in self.configs:
-                    if cfg['mac'].lower() == mac.lower():
-                        if ip not in self.online:
+                    if cfg.get('mac', '').lower() == mac.lower():
+                        ip_type = "{}@{}".format(ip, cfg['type'])
+                        if ip_type not in self.online:
                             self.init_collector(cfg)
             time.sleep(3)
         logger.warning('{} pid:{}'.format("HUB exit".ljust(20), os.getpid()))
@@ -174,10 +175,10 @@ class Hub(Thread):
     def get_veh_role(self, source):
         if source in self.type_roles:
             return self.type_roles[source]
-        for ip in self.online:
-            for data_type in self.online[ip]['msg_types']:
+        for ip_type in self.online:
+            for data_type in self.online[ip_type]['msg_types']:
                 if data_type == source:
-                    role = self.online[ip].get('veh_tag') or 'default'
+                    role = self.online[ip_type].get('veh_tag') or 'default'
                     self.type_roles[source] = role
                     return role
 
@@ -190,7 +191,8 @@ class Hub(Thread):
         ip = cfg['ip']
         idx = cfg['idx']
         is_main = cfg.get('is_main')
-        self.online[ip]['msg_types'] = []
+        ip_type = "{}@{}".format(ip, cfg['type'])
+        self.online[ip_type]['msg_types'] = []
 
         if 'type' not in cfg:
             return
@@ -212,17 +214,17 @@ class Hub(Thread):
                 else:
                     return
                 self.sinks.append(sink)
-                self.online[ip]['msg_types'].append(item + '.{}'.format(idx))
+                self.online[ip_type]['msg_types'].append(item + '.{}'.format(idx))
 
         elif cfg.get('type') == 'pi_node':
             for name in cfg['ports']:
                 if not cfg['ports'][name].get('enable'):
                     continue
                 port = cfg['ports'][name]['port']
-                pisink = PinodeSink(ip, port, msg_type='can', index=idx, resname=name,
+                pisink = PinodeSink(ip, port, msg_type=name, index=idx, resname=name,
                                     fileHandler=self.fileHandler, mq=self.mq)
                 self.sinks.append(pisink)
-                self.online[ip]['msg_types'].append(name + '.{}'.format(idx))
+                self.online[ip_type]['msg_types'].append(name + '.{}'.format(idx))
         elif "can_collector" in cfg.get("type"):
             can_list = {}
             transport = cfg.get('transport')
@@ -230,10 +232,10 @@ class Hub(Thread):
                 if cfg["ports"][iface].get("transport"):
                     transport = cfg["ports"][iface].get("transport")
                 if 'rtk' in iface or 'gps' in iface:
-                    pisink = PinodeSink(ip, cfg["ports"][iface]["port"], msg_type="can", index=idx, resname=iface,
+                    pisink = PinodeSink(ip, cfg["ports"][iface]["port"], msg_type=iface, index=idx, resname=iface,
                                         fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(pisink)
-                    self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
+                    self.online[ip_type]['msg_types'].append(iface + '.{}'.format(idx))
                 if "can" in iface:
                     can_list[iface] = cfg["ports"][iface]
 
@@ -242,12 +244,12 @@ class Hub(Thread):
                                                device=cfg.get("origin_device"),
                                                fileHandler=self.fileHandler, mq=self.mq)
                 self.sinks.append(can_collector)
-                self.online[ip]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
+                self.online[ip_type]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
             elif transport == "mqtt":
                 device = cfg.get('origin_device', cfg['name'])
                 can_collector = MQTTSink(ip=ip, can_list=can_list, index=idx, fileHandler=self.fileHandler, device=device, cid=cfg.get("cid"), mq=self.mq)
                 self.sinks.append(can_collector)
-                self.online[ip]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
+                self.online[ip_type]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
         elif "collector" in cfg.get('type'):
             for iface in cfg['ports']:
                 if not cfg['ports'][iface].get('enable') and not is_main:
@@ -259,13 +261,13 @@ class Hub(Thread):
                                       index=idx, mq=self.mq)
 
                     self.sinks.append(cansink)
-                    self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
+                    self.online[ip_type]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'gsensor' in iface:
                     chn = cfg['ports'][iface]
                     gsink = GsensorSink(ip=ip, port=chn['port'], msg_type=iface, index=idx,
                                         fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(gsink)
-                    self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
+                    self.online[ip_type]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'video' in iface:
                     port = cfg['ports']['video']['port']
                     vsink = CameraSink(ip=ip, port=port, msg_type='camera', index=idx,
@@ -283,37 +285,37 @@ class Hub(Thread):
                     cansink = CANSink(ip=ip, port=port, msg_type=iface, type=[chn['topic']],
                                       index=idx, fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(cansink)
-                    self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
+                    self.online[ip_type]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'gsensor' in iface:
                     chn = cfg['ports'][iface]
                     gsink = GsensorSink(ip=ip, port=port, msg_type=iface, index=idx,
                                         fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(gsink)
-                    self.online[ip]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
+                    self.online[ip_type]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'video' in iface:
                     vsink = CameraSink(ip=ip, port=port, msg_type='camera', index=idx,
                                        fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
                                        devname=cfg.get('name'), mq=self.mq)
                     self.sinks.append(vsink)
                 elif 'rtk' in iface or 'gps' in iface:
-                    pisink = PinodeSink(ip, port, msg_type='can', index=idx, resname=iface,
+                    pisink = PinodeSink(ip, port, msg_type=iface, index=idx, resname=iface,
                                         fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(pisink)
-                    self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
+                    self.online[ip_type]['msg_types'].append(iface + '.{}'.format(idx))
                 elif cfg['ports'][iface].get('transport') == 'tcp':
                     proto = cfg['ports'][iface]['protocol']
-                    tcpsink = TCPSink(ip, port, 'can', proto, idx, self.fileHandler, mq=self.mq)
+                    tcpsink = TCPSink(ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler, mq=self.mq)
                     self.sinks.append(tcpsink)
-                    self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
+                    self.online[ip_type]['msg_types'].append(iface + '.{}'.format(idx))
                 elif cfg['ports'][iface].get("transport") == 'udp':
                     proto = cfg['ports'][iface]['protocol']
                     udpsink = UDPSink(ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler, mq=self.mq)
                     self.sinks.append(udpsink)
-                    self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
+                    self.online[ip_type]['msg_types'].append(iface + '.{}'.format(idx))
                 elif cfg['ports'][iface].get("transport") == 'zmq':
                     zmqSink = ZmqSink(ip, port, cfg['ports'][iface]['topic'], idx, self.fileHandler, mq=self.mq)
                     self.sinks.append(zmqSink)
-                    self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))
+                    self.online[ip_type]['msg_types'].append(iface + '.{}'.format(idx))
 
         else:  # no type, default is x1 collector
             pass
@@ -321,24 +323,23 @@ class Hub(Thread):
     def init_collectors(self):
         self.online = {}
         for idx, cfg in enumerate(self.configs):  # match cfg and finder results
+            cfg['idx'] = idx
             if cfg.get('force_ip'):  # force to connect via pre-defined ip
                 if 'ip' not in cfg:
                     logger.error('undefined ip addr for ip-force device: {}'.format(cfg))
                     continue
                 ip = cfg['ip']
-                cfg['idx'] = idx
-                self.online[ip] = cfg
-                logger.warning('config force ip device: {}'.format(ip))
+                self.online["{}@{}".format(ip, cfg['type'])] = cfg
+                logger.debug('config force ip device: {}'.format(ip))
 
             for ip in self.finder.found:
-                if cfg.get('mac').lower() == self.finder.found[ip]['mac'].lower():
+                if cfg.get('mac', '').lower() == self.finder.found[ip]['mac'].lower():
                     cfg['ip'] = ip
-                    cfg['idx'] = idx
-                    self.online[ip] = cfg
+                    self.online["{}@{}".format(ip, cfg['type'])] = cfg
                     break
 
-        for ip in self.online:
-            self.init_collector(self.online[ip])
+        for ip_type in self.online:
+            self.init_collector(self.online[ip_type])
 
         logger.info("sink num:{}".format(len(self.sinks)))
         for i, s in enumerate(self.sinks):
