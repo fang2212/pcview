@@ -71,7 +71,10 @@ class Sink(Thread):
 
     def run(self):
         self.pid = os.getpid()
-        logger.warning('{} pid: {}'.format(self.source.ljust(20), self.pid))
+        if isinstance(self.source, list):
+            logger.warning('{} pid: {}'.format(','.join(self.source).ljust(20), self.pid))
+        else:
+            logger.warning('{} pid: {}'.format(self.source.ljust(20), self.pid))
         self.before_task()
         self.task()
 

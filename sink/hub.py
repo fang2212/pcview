@@ -157,7 +157,7 @@ class Hub(Thread):
             for ip in self.finder.found:
                 mac = self.finder.found[ip]['mac']
                 for cfg in self.configs:
-                    if cfg['mac'].lower() == mac.lower():
+                    if cfg.get('mac', '').lower() == mac.lower():
                         if ip not in self.online:
                             self.init_collector(cfg)
             time.sleep(3)
@@ -331,7 +331,7 @@ class Hub(Thread):
                 logger.warning('config force ip device: {}'.format(ip))
 
             for ip in self.finder.found:
-                if cfg.get('mac').lower() == self.finder.found[ip]['mac'].lower():
+                if cfg.get('mac', '').lower() == self.finder.found[ip]['mac'].lower():
                     cfg['ip'] = ip
                     cfg['idx'] = idx
                     self.online[ip] = cfg

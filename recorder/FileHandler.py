@@ -65,9 +65,10 @@ class FileHandler(Process):
         # 定位打点
         self.pinpoint = Manager().dict()
 
-        self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        self.recording_state = Value('i', 0)
-        self.__start_time = Value("d", 0)
+        self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')           # 视频编码
+        self.recording_state = Value('i', 0)                    # 录制状态
+        self.__start_time = Value("d", 0)                       # 开始录制时间
+        self.__fid = Value("L", 0)                              # 视频帧数
 
         self.redirect = redirect
 
@@ -101,6 +102,14 @@ class FileHandler(Process):
     @start_time.setter
     def start_time(self, v):
         self.__start_time.value = v
+
+    @property
+    def fid(self):
+        return self.__fid.value
+
+    @fid.setter
+    def fid(self, v):
+        self.__fid.value = v
 
     @property
     def path(self):
@@ -270,6 +279,7 @@ class FileHandler(Process):
         tv_us = (ts - tv_s) * 1000000
         kw = 'camera' if msg['is_main'] else source
         log_line = "%.10d %.6d " % (tv_s, tv_us) + kw + ' ' + '{}'.format(frame_id) + "\n"
+        self.fid = frame_id
         # print(self.video_streams[source]['frame_cnt'])
         if self.log_fp:
             self.log_fp.write(log_line)
