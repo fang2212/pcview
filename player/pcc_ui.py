@@ -53,7 +53,7 @@ class Player(object):
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
         self.color_obs = {
-            "a1j": (59, 59, 238),
+            "a1j": (193, 182, 255),
             "a1j_fusion": (59, 59, 238),
             "a1j_vision": (193, 182, 255),
             "ars410": FlatColor.peach,
@@ -606,7 +606,10 @@ class Player(object):
         style = 'normal'
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
             line = 160
-            style = self.color_obs.get('x1_fusion_cam')
+            style = self.color_obs.get(obs['source'])
+            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
+        elif obs.get("sensor") == "a1j_fusion" or obs.get("sensor") == "ifv300_fusion":
+            line = 180
             self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
         elif obs.get('class') == 'pedestrian':
             line = 40
@@ -614,6 +617,7 @@ class Player(object):
         elif obs.get('class') == 'object':
             self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']))
         else:
+            color = obs.get("color") or self.color_obs['rtk']
             self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']))
 
         if "detection_sensor" in obs:

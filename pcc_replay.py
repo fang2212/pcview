@@ -511,21 +511,21 @@ def start_replay(source_path, args):
     chmain = args.chmain
     r_sort, cfg = prep_replay(source_path, ns=ns, chmain=chmain)
 
-    # 初始化信号加载进程
     replay_hub = LogPlayer(r_sort, cfg, start_frame=args.start_frame, end_frame=args.end_frame,
-                           chmain=chmain, loop=args.loop, real_interval=args.real_interval)
+                         start_time=args.start_time, end_time=args.end_time, loop=args.loop,
+                         real_interval=args.real_interval, chmain=chmain)
 
     if args.web:
         from video_server import PccServer
         server = PccServer()
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, save_replay_video=save_dir, uniconf=cfg, to_web=server)
         server.start()
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, to_web=server)
         replay_hub.start()
         pcc.start()
         while True:
             time.sleep(1)
     else:
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, save_replay_video=save_dir, uniconf=cfg)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg)
         replay_hub.start()
         pcc.start()
         replay_hub.join()

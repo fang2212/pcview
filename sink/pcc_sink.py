@@ -913,7 +913,7 @@ class FlowSink(NNSink):
                      'is_main': self.is_main, 'transport': 'libflow'}
                 self.fileHandler.insert_jpg(r)
                 return frame_id, r
-            elif topic in ["radar_data", "fusion_data", "vehicle_data", "lane_data", "drive_data", "fusion_inject"]:
+            elif topic in ["radar_data", "fusion_data", "vehicle_data", "lane_data", "drive_data", "fusion_inject", "LanePostImg", "LaneAccImg"]:
                 r = {"source": self.source, "log_name": self.log_name, "buf": payload}
                 self.fileHandler.insert_general_bin_raw(r)
         elif msg_src == 'lane_profiling':

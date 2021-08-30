@@ -127,7 +127,7 @@ def parse_ifv300(id, buf, ctx=None):
             obs['pos_lat'] = r['VIS_OBS_LAT_POS_' + idx]
             obs['vel_lat'] = r['VIS_OBS_LAT_VEL_' + idx]
             obs['color'] = vision_color       # blue
-            obs["status_show"] = [{"text": "vision color", "height": 180, "style": vision_color, "size": 0.6}]
+            obs["status_show"] = [{"text": "vision color", "height": 80, "style": vision_color, "size": 0.6}]
             # send = obs.copy()
             # print(send)
             obs_list.append(obs.copy())
@@ -146,9 +146,9 @@ def parse_ifv300(id, buf, ctx=None):
         if idx == 0:
             ctx['rt'].clear()
         pf = 'RT{}A_'.format(idx + 1)
-        res = {'type': 'obstacle', 'sensor': 'ifv300', 'idx': idx, 'pos_lon': r[pf + 'L_long_rel'], 'pos_lat': r[pf + 'L_lat_rel'],
+        res = {'type': 'obstacle', 'sensor': 'ifv300_fusion', 'idx': idx, 'pos_lon': r[pf + 'L_long_rel'], 'pos_lat': r[pf + 'L_lat_rel'],
                'a_lon': r[pf + 'A_long_obj'], 'vel_lon': r[pf + 'V_long_obj'], 'vel_lat': r[pf + 'V_lat_obj'],
-               'sensor_source': r[pf + 'DetectionSensor'], "color": CVColor.Blue,
+               'sensor_source': r[pf + 'DetectionSensor'], "color": CVColor.Blue, "cipo": True if id == 0x760 else False,
                "status_show": [{"text": "fusion color", "height": 160, "style": fusion_color, "size": 0.6}]}
         ctx['rt'].append(res)
         return
@@ -165,6 +165,7 @@ def parse_ifv300(id, buf, ctx=None):
         ctx['rt'][idx]['status'] = r[pf + 'Status']
         ctx['rt'][idx]['move'] = r[pf + 'Movement']
         ctx['rt'][idx]['a_lat'] = r[pf + 'A_lat_obj']
+        ctx['rt'][idx]['cipo'] = True if id == 0x761 else False,
 
         return
 
@@ -182,6 +183,7 @@ def parse_ifv300(id, buf, ctx=None):
         ctx['rt'][idx]['vis_id'] = r[pf + 'visTrkID']
         ctx['rt'][idx]['width'] = r[pf + 'Width']
         ctx['rt'][idx]['class'] = r[pf + 'MC_object_class']
+        ctx['rt'][idx]['cipo'] = True if id == 0x762 else False,
 
         ret = ctx['rt'][idx]
         ret["color"] = fusion_color
@@ -423,7 +425,7 @@ def parse_ifv300_fusion(id, buf, ctx=None):
         pf = 'RT{}A_'.format(idx + 1)
         res = {'type': 'obstacle', 'sensor': 'ifv300', 'idx': idx, 'pos_lon': r[pf + 'L_long_rel'], 'pos_lat': r[pf + 'L_lat_rel'],
                'a_lon': r[pf + 'A_long_obj'], 'vel_lon': r[pf + 'V_long_obj'], 'vel_lat': r[pf + 'V_lat_obj'],
-               'sensor_source': r[pf + 'DetectionSensor'], "color": CVColor.Blue}
+               'sensor_source': r[pf + 'DetectionSensor'], "color": CVColor.Blue, "cipo": True if id == 0x760 else False,}
         ctx['rt'].append(res)
         return
 
@@ -439,6 +441,7 @@ def parse_ifv300_fusion(id, buf, ctx=None):
         ctx['rt'][idx]['status'] = r[pf + 'Status']
         ctx['rt'][idx]['move'] = r[pf + 'Movement']
         ctx['rt'][idx]['a_lat'] = r[pf + 'A_lat_obj']
+        ctx['rt'][idx]['cipo'] = True if id == 0x761 else False,
 
         return
 
@@ -456,6 +459,7 @@ def parse_ifv300_fusion(id, buf, ctx=None):
         ctx['rt'][idx]['vis_id'] = r[pf + 'visTrkID']
         ctx['rt'][idx]['width'] = r[pf + 'Width']
         ctx['rt'][idx]['class'] = r[pf + 'MC_object_class']
+        ctx['rt'][idx]['cipo'] = True if id == 0x762 else False,
 
         ret = ctx['rt'][idx]
         ret["color"] = CVColor.Blue
