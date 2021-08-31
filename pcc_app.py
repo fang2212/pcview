@@ -4,7 +4,6 @@ import logging
 import platform
 import shutil
 import sys
-from multiprocessing import Queue
 
 from config.config import dic2obj, bcl, load_cfg
 from pcc import *
@@ -28,6 +27,11 @@ args = parser.parse_args()
 if args.debug:
     logger.setLevel(level=logging.DEBUG)
 
+if args.config:
+    cve_conf = load_cfg(args.config)
+else:
+    cve_conf = load_cfg(args.cfg_path)
+
 local_cfg = dic2obj(json.load(open('config/local.json')))
 if args.output:
     local_cfg.log_root = args.output
@@ -41,7 +45,7 @@ else:
         for udev in udevs:
             save_path = os.path.join(mount_root, udev, 'cve_data')
             if os.path.exists(save_path):
-                logger.info('found cve dir {}'.format(save_path))
+                logger.warning('found cve dir {}'.format(save_path))
                 local_cfg.log_root = save_path
                 dir_found = True
                 break
@@ -53,12 +57,6 @@ else:
     except FileNotFoundError:
         logger.error('no media folder found.')
 
-if args.config:
-    cve_conf = load_cfg(args.config)
-else:
-    cve_conf = load_cfg(args.cfg_path)
-
-local_cfg = dic2obj(json.load(open('config/local.json')))
 cve_conf.local_cfg = local_cfg
 logger.warning("log path:{}".format(cve_conf.local_cfg.log_root))
 

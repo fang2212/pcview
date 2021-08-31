@@ -19,9 +19,9 @@ class MMAPQueue:
 
     def put(self, msg, block=False):
         data = msgpack.packb(msg)
-        content = data + b'$MMAP$'
+        content = len(data).to_bytes(4, byteorder='big') + data
         content_len = len(content)
-        while block and self.count.value + content_len > self.mmap_size:
+        while block and self.count.value + content_len > self.mmap_size and block:
             # print("full sleep")
             time.sleep(0.001)
         return self.write(content)
@@ -37,19 +37,16 @@ class MMAPQueue:
             else:
                 return
 
-        end_index = self.find(b'$MMAP$')
-        if end_index == -1:
-            raise IndexError("未找到结尾数据 MMAPQueue出现异常")
-        content_len = self.long(self.head.value, end_index) + 5
-        head = self.head.value
-        tail = end_index
-        msg = self.remove(content_len)
+        before_head = self.head.value
+        head_info = self.remove(4)      # 获取数据长度
+        data_len = int.from_bytes(head_info, byteorder='big')
+        msg = self.remove(data_len)
         try:
-            data = msgpack.unpackb(msg.split(b'$MMAP$')[0])
+            data = msgpack.unpackb(msg, strict_map_key=False)
             return data
         except Exception as e:
-            print(head, tail, content_len, msg, len(msg))
-            print(self.mmap[head-30:tail+30])
+            print(before_head, data_len, msg, len(msg))
+            print(self.mmap[before_head-10:data_len+10])
             raise ValueError("无法正常解析数据 MMAPQueue出现异常:", e)
 
     def write(self, content):
@@ -125,7 +122,15 @@ class MMAPQueue:
         return self.count
 
     def qsize(self):
-        return self.queue_size
+        return self.queue_size.value
+
+    def clear(self):
+        self.lock.acquire()
+        self.head.value = 0
+        self.tail.value = 0
+        self.count.value = 0
+        self.queue_size.value = 0
+        self.lock.release()
 
     def find(self, content):
         self.mmap.seek(self.head.value)

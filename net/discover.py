@@ -36,7 +36,7 @@ class CollectorFinder(Thread):
                     data = json.loads(data.decode())
                 ip = address[0]
                 if ip not in self.found:
-                    print('found new device:', ip)
+                    print('found new device:', ip, data)
                 self.found[address[0]] = data
             except socket.error as e:
                 continue
@@ -99,9 +99,8 @@ class CollectorFinder(Thread):
         通过linux系统的arp文件获取ip对应的mac
         :return:
         """
-        ip_range = self.network.split(" ") if self.network else ['192.168.98.0/24']
-        ips = [ip.split('/')[0].split('.') for ip in ip_range]
-        ip_kws = ['.'.join(ip[:3]) for ip in ips]
+        ip = self.network.split('/')[0].split('.')
+        ip_kw = '.'.join(ip[:3])
         mac_ip = dict()
         with open('/proc/net/arp') as arp:
             for line in arp:
@@ -109,9 +108,8 @@ class CollectorFinder(Thread):
                 mac = fields[3]
                 ip = fields[0].strip()
                 ip_prefix = '.'.join(ip.split('.')[:3])
-                if ip_prefix in ip_kws:
+                if ip_prefix == ip_kw:
                     mac_ip[mac] = ip
-
         return mac_ip
 
     def find(self):

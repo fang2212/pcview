@@ -3,13 +3,9 @@
 import json
 import os
 import time
-from queue import Empty
 from datetime import datetime
 from multiprocessing import Queue, Process, Array, Manager, Value
-
 from turbojpeg import TurboJPEG
-
-from recorder.convert import ub482_defs, compose_from_def
 from sink.mmap_queue import MMAPQueue
 from tools.video_writer import MJPEGWriter
 import cv2
@@ -128,15 +124,19 @@ class FileHandler(Process):
             t0 = time.time()
             self.control_event()
 
-            if self.is_recording and t0 - self.start_time > 60:
+            if self.is_recording and t0 - self.start_time > 600:
                 self.stop_rec(clean_queue=False)
                 self.start_rec()
 
             msg = self.mq.get(block=False)
             if not msg:
+                time.sleep(0.01)
                 continue
 
-            log_class, data = msg
+            try:
+                log_class, data = msg
+            except Exception as e:
+                logger.error("err: {}, msg: {}".format(e, msg))
 
             # log.txt记录
             if self.log_class_map.get(log_class):
@@ -203,8 +203,6 @@ class FileHandler(Process):
                 img = jpeg.decode(np.fromstring(data, np.uint8))
                 h, w, c = img.shape
                 now_fps = 20
-                if 'cv22' in source:
-                    now_fps = 30
                 if self.video_streams[source].get('video_writer'):
                     self.video_streams[source]['video_writer'].finish_video()
                 print("fps:", now_fps)
@@ -311,8 +309,7 @@ class FileHandler(Process):
         print('start recording.')
 
     def _clean(self, ctrl):
-        for i in range(self.mq.qsize()):
-            self.mq.get()
+        self.mq.clear()
 
     def _close(self, ctrl):
         self._stop()

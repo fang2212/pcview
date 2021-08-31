@@ -8,24 +8,11 @@
 # @Desc    : log replayer for collected data
 import argparse
 import logging
-import struct
-import time
-from multiprocessing import Process, Queue, Manager, freeze_support, Event
-import json
-from threading import Thread
-
-import cv2
-import msgpack
-import numpy as np
-from tqdm import tqdm
+from multiprocessing import Process, Manager, freeze_support, Event
 from turbojpeg import TurboJPEG
 
 from parsers import ublox
 from recorder.convert import *
-from collections import deque
-import shutil
-import os
-from config.config import CVECfg, load_config, load_installation
 from pcc import PCC
 from parsers.parser import parsers_dict
 from config.config import *
@@ -33,8 +20,6 @@ from sink.mmap_queue import MMAPQueue
 from sink.sink import can_decode, pim222_decode, q4_decode
 from tools.log_info import *
 from parsers.novatel import parse_novatel
-from parsers.pim222 import parse_pim222
-# from numba import jit
 from tools import mytools
 from utils import logger, log_list_from_path
 
@@ -453,11 +438,14 @@ class LogPlayer(Process):
 
         logger.debug(bcl.OKBL + 'log.txt reached the end.' + bcl.ENDC)
         logger.info("take time: {}".format(time.time() - start_time))
+        while not self.mq.empty():
+            time.sleep(0.1)
+
         rf.close()
         return
 
     def pop_common(self):
-        return self.mq.get()
+        return self.mq.get(block=False)
 
 
 def prep_replay(source, ns=False, chmain=None):
@@ -529,6 +517,7 @@ def start_replay(source_path, args):
         replay_hub.start()
         pcc.start()
         replay_hub.join()
+        print("replay_hub end join")
         pcc.control(ord('q'))
 
 
