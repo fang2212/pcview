@@ -230,7 +230,7 @@ class Hub(Thread):
                 if cfg["ports"][iface].get("transport"):
                     transport = cfg["ports"][iface].get("transport")
                 if 'rtk' in iface or 'gps' in iface:
-                    pisink = PinodeSink(ip, cfg["ports"][iface]["port"], msg_type="can", index=idx, resname=iface,
+                    pisink = PinodeSink(ip, cfg["ports"][iface]["port"], msg_type=iface, index=idx, resname=iface,
                                         fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(pisink)
                     self.online[ip]['msg_types'].append(iface + '.{}'.format(idx))

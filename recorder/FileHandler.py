@@ -431,7 +431,7 @@ class FileHandler(Process):
         if self.uniconf.local_cfg.save.raw and self.is_recording:
             self.mq.put(('raw', msg))
             if self.mq.full():
-                print("full")
+                logger.debug("mq full size:{}, count:{}".format(self.mq.mmap_size, self.mq.count.value))
 
     def insert_pcv_raw(self, msg):
         if self.is_recording:

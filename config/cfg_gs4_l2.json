@@ -26,7 +26,8 @@
                 {"model":  "cv22_novid", "params": {"mac":  "6a:92:52:69:87:00"}},
                 {"model":  "cv22_nopcv", "params": {"mac":  "6a:92:53:0f:97:00", "is_main":  false}},
                 {"model":  "bynav"},
-                {"model":  "d1_udp"}
+                {"model":  "d1_udp"},
+                {"model":  "x1_fusion", "params": {"mac": "5a:31:44:3d:e9:14", "is_main":  false}}
             ],
             "installation": {
                 "esr": {

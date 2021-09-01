@@ -323,6 +323,7 @@ if __name__ == "__main__":
     log_path_list = []
     for path in args.path:
         if not os.path.exists(path):
+            logger.error("该路径不存在：{}".format(path))
             continue
         log_path_list += log_list_from_path(path)
 

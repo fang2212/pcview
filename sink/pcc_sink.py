@@ -501,7 +501,7 @@ class CANCollectSink(NNSink):
         # 根据传入四个端口信号进行初始化相关环境
         for ch in self.can_list:
             t = self.can_list[ch]
-            source = '{}.{}.{}.{}'.format(t.get("origin_device", ''), self.index, ch, t["dbc"])
+            source = '{}.{}.{}.{}'.format(t.get("origin_device", self.device), self.index, ch, t["dbc"])
             self.log_types[ch] = source                                                     # 写入日志的信号名
             self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}         # 解析用的变量空间
             self.source.append(source)              # 来源列表
@@ -572,7 +572,7 @@ class MQTTSink(NNSink):
 
         for ch in self.can_list:
             t = self.can_list[ch]
-            source = '{}.{}.{}.{}'.format(self.device, self.index, ch, t['dbc'])
+            source = '{}.{}.{}.{}'.format(t.get('origin_device', self.device), self.index, ch, t['dbc'])
             self.source.append(source)
             # self.log_types["can{}".format(i)] = source  # 写入日志的信号名
             self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}  # 解析用的变量空间
@@ -728,7 +728,6 @@ class GsensorSink(NNSink):
 class CameraSink(NNSink):
     def __init__(self, ip, port, msg_type, index, fileHandler, is_main=False, devname=None, mq=None):
         super(CameraSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
-        self.last_fid = 0
         self.fileHandler = fileHandler
         self.source = '{:s}.{:d}'.format(devname, index)
         self.is_main = is_main
@@ -739,7 +738,6 @@ class CameraSink(NNSink):
         msg = memoryview(msg).tobytes()
         jpg = msg[16:]
         frame_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
-        self.last_fid = frame_id
         timestamp, = struct.unpack('<d', msg[8:16])
 
         r = {'ts': timestamp, 'type': 'video', 'img': jpg, 'frame_id': frame_id, 'source': self.source,
@@ -790,7 +788,7 @@ class FlowSink(NNSink):
                         elif 'calib_param' in r[0]:
                             self.mq.put((r[1]['frame_id'], r[1], self.source))
                     else:
-                        self.mq.put((*r, self.msg_type))
+                        self.mq.put((*r, self.source))
                 else:
                     time.sleep(0.001)
 
@@ -883,7 +881,7 @@ class FlowSink(NNSink):
                     calib_params = msgpack.unpackb(payload)
                     calib_params = mytools.convert(calib_params)
                     if calib_params:
-                        r = {'type': 'calib_param', 'source': self.source, 'ts': 0, 'frame_id': calib_params['frame_id']}
+                        r = {'type': 'calib_param', 'source': self.source, 'ts': time.time(), 'frame_id': calib_params['frame_id']}
                         r.update(calib_params['calib_param'])
                         return 'calib_param', r
                 elif payload.startswith(b'\xff\x03'):  # jpeg pack header

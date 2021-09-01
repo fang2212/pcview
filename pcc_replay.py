@@ -252,10 +252,6 @@ class LogPlayer(Process):
             if dt > 0:
                 time.sleep(dt)
 
-        while self.mq.full():
-            print("full")
-            time.sleep(0.01)
-        # print(sink[0], sink[2])
         self.mq.put(sink)
 
     def pause(self, pause):
@@ -348,7 +344,7 @@ class LogPlayer(Process):
                 if self.now_frame_id >= self.end_frame:
                     logger.error('log player reached the end frame:'.format(self.end_frame))
                     break
-            elif 'CAN' in cols[2]:
+            elif 'CAN' in cols[2]:      # 旧can source数据格式
                 msg_type = cols[2]
                 if int(cols[3], 16) == 0xc7 and rtk_dec:
                     continue
@@ -368,7 +364,23 @@ class LogPlayer(Process):
                 data = can_decode(decode_msg)
                 if data:
                     self.put_sink(data)
+            elif 'can' in cols[2]:      # 新can source数据格式
+                info_list = cols[2].split('.')
+                index = info_list[1]
+                dbc = info_list[3]
+                data = bytes().fromhex(cols[4])
 
+                decode_msg = {
+                    "type": "can",
+                    "dbc": dbc,
+                    "source": '{}.{}'.format(dbc, index),
+                    "data": data,
+                    "cid": int(cols[3], 16),
+                    "ts": ts
+                }
+                data = can_decode(decode_msg)
+                if data:
+                    self.put_sink(data)
             elif 'rtk' in cols[2] and 'sol' in cols[2]:  # old d-rtk
                 rtk_dec = True
                 source = '.'.join(cols[2].split('.')[0:2])
@@ -491,8 +503,11 @@ def start_replay(source_path, args):
 
     # 初始化保存路径
     save_dir = None
-    if args.render and args.output and os.path.exists(args.output):
-        save_dir = os.path.dirname(source_path)
+    if args.render:
+        if args.output and os.path.exists(args.output):
+            save_dir = args.output
+        else:
+            save_dir = os.path.dirname(source_path)
 
     # 加载配置
     ns = args.nosort

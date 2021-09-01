@@ -5,6 +5,8 @@ from multiprocessing import Value, Lock
 
 import msgpack
 
+from utils import logger
+
 
 class MMAPQueue:
 
@@ -17,11 +19,11 @@ class MMAPQueue:
         self.lock = Lock()
         self.queue_size = Value('L', 0)     # 队列数据数量
 
-    def put(self, msg, block=False):
+    def put(self, msg, block=True):
         data = msgpack.packb(msg)
         content = len(data).to_bytes(4, byteorder='big') + data
         content_len = len(content)
-        while block and self.count.value + content_len > self.mmap_size and block:
+        while block and self.count.value + content_len > self.mmap_size:
             # print("full sleep")
             time.sleep(0.001)
         return self.write(content)
@@ -45,13 +47,13 @@ class MMAPQueue:
             data = msgpack.unpackb(msg, strict_map_key=False)
             return data
         except Exception as e:
-            print(before_head, data_len, msg, len(msg))
-            print(self.mmap[before_head-10:data_len+10])
+            logger.error(before_head, data_len, msg, len(msg))
+            logger.debug(self.mmap[before_head-10:data_len+10])
             raise ValueError("无法正常解析数据 MMAPQueue出现异常:", e)
 
     def write(self, content):
         if self.count.value + len(content) > self.mmap_size:
-            print("mmap queue full")
+            # print("mmap queue full")
             # print("full", self.mmap[:])
             return False
         else:

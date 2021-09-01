@@ -178,6 +178,7 @@ class PCC(object):
             fid, data, source = d
         except Exception as e:
             print(e, d)
+
         if source not in self.cache['misc']:
             self.cache['misc'][source] = {}
             self.cache['info'][source] = {}
@@ -481,7 +482,7 @@ class PCC(object):
                     odir = self.save_replay_video
                 else:
                     odir = os.path.dirname(self.rlog)
-                self.vw = VideoRecorder(odir, fps=30)
+                self.vw = VideoRecorder(odir, fps=20)
                 self.vw.set_writer("replay-render", img_rendered.shape[1], img_rendered.shape[0])
                 print('--------save replay video', odir)
             self.vw.write(img_rendered)
