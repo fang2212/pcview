@@ -62,7 +62,7 @@ class Sink(Thread):
         self.port = port
         self.msg_type = msg_type
         self.index = index
-        self.source = 'sink.{}'.format(index)
+        self.source = '{}.{}'.format(self.msg_type, index)
         self.exit = False
 
         self.mq = mq  # mmap内存对象
@@ -219,7 +219,7 @@ class UDPSink(Sink):
         self.ctx = dict()
         self._buf = b''
         self.exit = Event()
-        self.type = "ucp_sink"
+        self.type = "udp_sink"
 
     def _init_port(self):
         print('udp connecting', self.ip, self.port)
@@ -291,7 +291,7 @@ class TCPSink(Sink):
         self.ip = ip
         self.port = port
         self.msg_type = msg_type
-        self.source = 'tcp.{:d}'.format(index)
+        self.source = '{}.{:d}'.format(msg_type, index)
         self.index = index
         self.filehandler = fileHandler
         self.protocol = protocol
@@ -301,7 +301,7 @@ class TCPSink(Sink):
         self.type = "tcp_sink"
 
     def _init_port(self):
-        print('connecting', self.ip, self.port)
+        print('tcp connecting', self.ip, self.port)
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.connect((self.ip, self.port))
 
@@ -311,7 +311,6 @@ class TCPSink(Sink):
 
     def pkg_handler(self, msg):
         if self.protocol == 'novatel':
-            # print(msg)
             ret = []
             self._buf += msg
             while True:
@@ -343,7 +342,7 @@ class TCPSink(Sink):
     def task(self):
         self._init_port()
         self.pid = os.getpid()
-        while not self.exit:
+        while not self.exit.is_set():
             buf = self.read()
             if not buf:
                 time.sleep(0.001)
@@ -366,7 +365,7 @@ class TCPSink(Sink):
 class PinodeSink(NNSink):
     def __init__(self, ip, port, msg_type, index, resname, fileHandler, mq=None):
         super().__init__(ip=ip, port=port, index=index, msg_type=msg_type, mq=mq)
-        self.source = 'rtk.{:d}'.format(index)
+        self.source = '{}.{:d}'.format(msg_type, index)
         self.msg_type = msg_type
         self.index = index
         self.context = {'source': self.source}
@@ -407,9 +406,8 @@ class PinodeSink(NNSink):
                 r['source'] = 'gps.{:d}'.format(self.index)
             if r['type'] in ub482_defs:
                 # print(r)
-                if self.fileHandler.is_recording:
-                    self.fileHandler.insert_raw(
-                        (r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
+                self.fileHandler.insert_raw(
+                    (r['ts'], r['source'] + '.' + r['type'], compose_from_def(ub482_defs, r)))
 
             elif r['type'] == 'rtk':  # old d-rtk
                 timestamp = r['ts_origin']
@@ -479,7 +477,7 @@ class CANCollectSink(NNSink):
     """
     def __init__(self, ip, port, can_list, index, fileHandler, device='', mq=None):
         super(CANCollectSink, self).__init__(ip, port, "can", index, mq=mq)
-        self.type = 'can_collect_sink'
+        self.type = 'can_sink'
         self.fileHandler = fileHandler
         self.can_list = can_list                  # 四个端口的信号类型列表
         self.device = device

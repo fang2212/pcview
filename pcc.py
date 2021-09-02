@@ -491,16 +491,6 @@ class PCC(object):
         if len(data) == 0 or data.get('source') is None:
             return
 
-        # print("data:", data)
-        if data['source'] == 'rtk.2':
-            dt0 = data['ts'] - data['ts_origin']
-            # self.rtkplot.update('rtk0', data['ts_origin'], dt0)
-            self.rtk_pair[0] = data
-        if 'rtk' in data['source'] and data['source'] != 'rtk.2':
-            dt1 = data['ts'] - data['ts_origin']
-            # self.rtkplot.update('rtk1', data['ts_origin'], dt1)
-            self.rtk_pair[1] = data
-
         if len(self.rtk_pair[0]) > 0 and len(self.rtk_pair[1]) > 0:
             self.player.show_target(img, self.rtk_pair[1], self.rtk_pair[0])
             if self.show_ipm:
