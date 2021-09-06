@@ -1,0 +1,94 @@
+{
+    "x1_fusion": {
+        "type": "can",
+        "ids": ["0x5f0", "0x400", "0x401"],
+        "cycle": 50,
+	"height_per": 10,
+	"low_per": 10
+    },
+    "j2_fusion": {
+        "type": "can",
+        "ids": ["0x5f0", "0x400", "0x401"],
+        "cycle": 50,
+        "height_per": 10,
+        "low_per": 10
+    },
+    "d1_fusion": {
+        "type": "can",
+        "ids": ["0x5f0", "0x400", "0x401"],
+        "cycle": 50
+    },
+    "a1j_fusion": {
+        "type": "can",
+        "ids": ["0x5f0", "0x400", "0x401"],
+        "cycle": 50
+    },
+    "a1j": {
+        "type": "can",
+        "ids": ["0x76d", "0x77a", "0x5f0"],
+        "cycle": 50
+    },
+    "x1j": {
+        "type": "can",
+        "ids": ["0x76d", "0x77a", "0x5f0"],
+        "cycle": 50
+    },
+    "j2": {
+        "type": "can",
+        "ids": ["0x402", "0x501", "0x502"],
+        "cycle": 33
+    },
+    "mbq4": {
+        "type": "can",
+        "ids": ["0x130", "0x12c", "0x120"],
+        "cycle": 33
+    },
+    "ifv300": {
+        "type": "can",
+        "ids": ["0x133", "0x215", "0x103"],
+        "cycle": 50
+    },
+    "ars": {
+        "type": "can",
+        "ids": ["0x60a", "0x300", "0x301"],
+        "cycle": 50
+    },
+    "ars410": {
+        "type": "can",
+        "ids": ["0x20", "0x80", "0x3d"],
+        "cycle": 50
+    },
+    "gs4": {
+        "type": "can",
+        "ids": ["0x26a", "0x3b6", "0x186"],
+        "cycle": 20
+    },
+    "gs4_debug": {
+        "type": "can",
+        "ids": ["0x7bb", "0x7be", "0x7b8"],
+        "cycle": 25
+    },
+    "q3control": {
+        "type": "can",
+        "ids": ["0x19c", "0x3a6", "0x187"],
+        "cycle": 20
+    },
+    "camera": {
+        "type": "keyword",
+        "cycle": 50,
+        "height_per": 10,
+        "low_per": 10
+    },
+    "camera": {
+        "type": "keyword",
+        "cycle": 30,
+        "height_per": 10,
+        "low_per": 10
+    },
+    "cv22_algo.9.gsensor": {
+        "type": "keyword",
+        "cycle": 10,
+        "height_per": 10,
+        "low_per": 10
+    }
+}

@@ -827,12 +827,13 @@ class CANCollectSink(NNSink):
 
     def init_env(self):
         # 根据传入四个端口信号进行初始化相关环境
-        for i, ch in self.can_list:
+        # 根据传入四个端口信号进行初始化相关环境
+        for ch in self.can_list:
             t = self.can_list[ch]
-            source = '{}.{}.{}.{}'.format(t.get("origin_device", self.device), self.index, ch, t["dbc"])
-            self.log_types["can{}".format(i)] = source                                          # 写入日志的信号名
-            self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}           # 解析用的变量空间
-            self.source.append(source)              # 来源列表
+            source = '{}.{}.{}.{}'.format(t.get("origin_device", ''), self.index, ch, t["dbc"])
+            self.log_types[ch] = source  # 写入日志的信号名
+            self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}  # 解析用的变量空间
+            self.source.append(source)  # 来源列表
 
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
@@ -849,7 +850,7 @@ class CANCollectSink(NNSink):
         if not self.parse_event.is_set():
             return
 
-        msg_type = self.can_list[channel]["topic"]
+        msg_type = self.can_list["can{}".format(channel)]["dbc"]
         parser = self.parser[msg_type]
         source = self.source[channel]
         ret = parser(can_id, data, self.context[source])
