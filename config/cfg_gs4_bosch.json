@@ -13,13 +13,13 @@
         "ego": {
             "enable": true,
             "collectors": [
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d", "can0": "blank", "can1": "gs4"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "blank", "can1": "gs4"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "q3control", "can1": "mbq3"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mbq4", "can1": "gs4_debug"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "ars", "can1": "blank"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d", "can0": "ars", "can1": "blank"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d4", "can0": "j2_fusion_", "can1": "ars410"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d5", "can0": "d1_fusion", "can1": "blank"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d6", "can0": "a1j", "can1": "gs4"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d", "can0": "d1_fusion", "can1": "blank"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d", "can0": "a1j", "can1": "gs4"}},
                 {"model":  "can_collector", "params": {"port": 2021, "can0": "bosch_mrr", "can1": "bosch_r", "can2": "bosch_f", "can3": "blank"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
                 {"model":  "a1j", "params": {"mac":  "6a:92:53:df:97:00", "is_main":  true}},

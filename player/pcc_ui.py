@@ -455,7 +455,7 @@ class Player(object):
                     else:
                         if style == 'critical':
                             pass
-                elif isinstance(style, tuple) or isinstance(style, list):
+                elif isinstance(style, tuple):
                     color = style
                 else:
                     color = CVColor.White

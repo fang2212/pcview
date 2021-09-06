@@ -3,36 +3,49 @@
   "ip": "192.168.98.180",
   "force_ip": true,
   "work_mode": "collector",
-  "transport": "nanomsg",
   "port": 2021,
   "ports": {
     "can0": {
       "enable": true,
       "protocol": null,
       "transport": "nanomsg",
-      "origin_device": "bm-x4",
+      "origin_device": "canfd-x4",
       "topic": ""
     },
     "can1": {
       "enable": true,
       "protocol": null,
       "transport": "nanomsg",
-      "origin_device": "bm-x4",
+      "origin_device": "canfd-x4",
       "topic": ""
     },
     "can2": {
       "enable": true,
       "protocol": null,
       "transport": "nanomsg",
-      "origin_device": "bm-x4",
+      "origin_device": "canfd-x4",
       "topic": ""
     },
     "can3": {
       "enable": true,
       "protocol": null,
       "transport": "nanomsg",
-      "origin_device": "bm-x4",
+      "origin_device": "canfd-x4",
       "topic": ""
+    },
+    "rtk": {
+      "enable": true,
+      "port": 1210,
+      "protocol": "json",
+      "transport": "nanomsg",
+      "topic": "ub482"
+    },
+    "gps": {
+      "enable": true,
+      "port": 1220,
+      "protocol": "nmea",
+      "transport": "nanomsg",
+      "topic": "nmea"
     }
   }
 }

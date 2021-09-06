@@ -14,7 +14,7 @@
             "collectors": [
                 {"model": "x1_fusion_novid", "params": {"mac": "5a:31:90:5d:03:a3"}},
                 {"model": "x1_fusion", "params": {"mac": "5a:31:6e:f3:dd:83", "is_main": true}},
-                {"model": "can_gw_mqtt", "params": {"can1": "ars", "can2": "x1_fusion"}}
+                {"model": "can_gw_mqtt", "params": {"can1": "ifv300", "can2": "x1_fusion"}}
 
             ],
             "installation": {

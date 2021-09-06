@@ -1,9 +1,8 @@
 import mmap
 import os
 import time
+import pickle
 from multiprocessing import Value, Lock
-
-import msgpack
 
 from utils import logger
 
@@ -20,7 +19,7 @@ class MMAPQueue:
         self.queue_size = Value('L', 0)     # 队列数据数量
 
     def put(self, msg, block=True):
-        data = msgpack.packb(msg)
+        data = pickle.dumps(msg)
         content = len(data).to_bytes(4, byteorder='big') + data
         content_len = len(content)
         while block and self.count.value + content_len > self.mmap_size:
@@ -44,12 +43,11 @@ class MMAPQueue:
         data_len = int.from_bytes(head_info, byteorder='big')
         msg = self.remove(data_len)
         try:
-            data = msgpack.unpackb(msg, strict_map_key=False)
+            data = pickle.loads(msg)
             return data
         except Exception as e:
-            logger.error(before_head, data_len, msg, len(msg))
-            logger.debug(self.mmap[before_head-10:data_len+10])
-            raise ValueError("无法正常解析数据 MMAPQueue出现异常:", e)
+            logger.error("开始位置：{}, 准备取数据长度：{}, 取到的数据长度：{}, 数据内容：{}".format(before_head, data_len, len(msg), f'{msg[:30]}...{msg[-30:]}' if len(msg) > 100 else msg))
+            raise ValueError("无法正常解析数据 MMAPQueue出现异常")
 
     def write(self, content):
         if self.count.value + len(content) > self.mmap_size:
@@ -88,7 +86,7 @@ class MMAPQueue:
             if num > self.count.value:
                 print("lost data, num:{}, count:{}".format(num, self.count.value))
                 num = self.count.value
-            if self.head.value + num >= self.mmap_size:
+            if self.head.value + num >= self.mmap_size:     # 获取长度超出循环，进行模运算获取剩余数据的数量
                 end_num = (self.head.value + num) % self.mmap_size
                 content = self.mmap[self.head.value:]
                 # self.mmap.seek(self.head.value)
@@ -161,7 +159,6 @@ class MMAPQueue:
             else:
                 front_num = self.mmap_size - self.head.value
                 return front_num + end + 1
-
 
 
 if __name__ == "__main__":

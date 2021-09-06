@@ -332,15 +332,12 @@ def load_cfg(jsonspec, local='config/local.json'):
                 clct = json.load(open(def_name))
                 if spec['version'] >= 1.0:
                     if item.get('params'):
-                        clct.update(item['params'])
-                        if clct['type'] == 'x1_collector':
-                            clct['ports']['can0']['topic'] = item['params']['can0']
-                            clct['ports']['can1']['topic'] = item['params']['can1']
-                        if clct['type'] == 'can_collector':
-                            for i in item['params']:
-                                if 'can' in i:
-                                    clct['ports'][i]['topic'] = item['params'][i]
-                                    clct['ports'][i]['dbc'] = item['params'][i]
+                        for param in item['params']:
+                            if 'can' not in param:
+                                clct[param] = item['params'][param]
+                            else:
+                                clct['ports'][param]['topic'] = item['params'][param]
+                                clct['ports'][param]['dbc'] = item['params'][param]
                         if item['params'].get('is_main'):
                             main_collector = item['params']['is_main']
                 else:
