@@ -265,7 +265,7 @@ class UDPSink(Sink):
 
     def task(self):
         self._init_port()
-        while not self.exit:
+        while not self.exit.is_set():
             buf = self.read()
             if not buf:
                 time.sleep(0.001)

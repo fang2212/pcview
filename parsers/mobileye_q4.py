@@ -173,7 +173,7 @@ def parser_mbq4(id, buf, ctx):
                 value = math.fabs(round(1/(2*r['Lane_C2']), 2))
                 ctx['q4_lane'][lane_type]["status_show"] = [
                     {
-                        "text": "Rl:{}".format(value if value < 2500 else "straights"),
+                        "text": "Rl:{}".format(value if value < 5000 else "straights"),
                         "height": 40
                     }
                 ]
@@ -181,7 +181,7 @@ def parser_mbq4(id, buf, ctx):
                 value = math.fabs(round(1/(2*r['Lane_C2']), 2))
                 ctx['q4_lane'][lane_type]["status_show"] = [
                     {
-                        "text": "Rr:{}".format(value if value < 2500 else "straights"),
+                        "text": "Rr:{}".format(value if value < 5000 else "straights"),
                         "height": 60
                     }
                 ]
@@ -234,7 +234,7 @@ def parser_mbq4(id, buf, ctx):
             ctx['q4_obs'][cur_id_key]['probability'] = r['OBJ_Existence_Probability']
             ctx['q4_obs'][cur_id_key]['status'] = r['OBJ_Measuring_Status']
             ctx['q4_obs'][cur_id_key]['motion_category'] = r['OBJ_Motion_Category']
-            ctx['q4_obs'][cur_id_key]['class'] = r['OBJ_Object_Class'].lower()
+            ctx['q4_obs'][cur_id_key]['class'] = str(r['OBJ_Object_Class']).lower()
             ctx['q4_obs'][cur_id_key]['motion_status'] = r['OBJ_Motion_Status']
             ctx['q4_obs'][cur_id_key]['brake_light'] = r['OBJ_Brake_Light']
             ctx['q4_obs'][cur_id_key]['turn_right'] = r['OBJ_Turn_Indicator_Right']
