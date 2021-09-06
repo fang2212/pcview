@@ -1,0 +1,164 @@
+
+{
+    "version": 1.0,
+    "name": "cfg_lab",
+    "modules": {
+        "GGA_reporter": {
+            "enable": false,
+            "ntrip_address": "ntrip.weaty.cn",
+            "port": 5001
+        }
+    },
+    "vehicles": {
+        "ego": {
+            "enable": true,
+            "collectors": [
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "j2_", "can1": "gs4"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "q3control", "can1": "ifv300"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mbq4", "can1": "gs4_debug"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "ars", "can1": "blank"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d4", "can0": "j2_fusion", "can1": "ars410"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d5", "can0": "d1_fusion", "can1": "blank"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d6", "can0": "a1j", "can1": "a1j"}},
+                {"model":  "can_collector", "params": {"port": 2021, "can0": "bosch_mrr", "can1": "bosch_r", "can2": "blank", "can3": "blank"}},
+                {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
+                {"model":  "cv22", "params": {"mac":  "6a:92:53:df:97:00", "is_main":  true}},
+                {"model":  "cv22_novid", "params": {"mac":  "6a:92:52:69:87:00"}},
+                {"model":  "cv22_nopcv", "params": {"mac":  "6a:92:53:0f:97:00", "is_main":  false}},
+                {"model":  "bynav"},
+                {"model":  "d1_udp"}
+            ],
+            "installation": {
+                "esr": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "lon_offset": 0.0,
+                    "height": 0.0
+                },
+                "ars": {
+                    "roll": 0.0,
+                    "lat_offset": 0.35,
+                    "pitch": 0,
+                    "height": 0.53,
+                    "lon_offset": 0.0,
+                    "yaw": 0
+                },
+                "ars410": {
+                    "roll": 0.0,
+                    "lat_offset": 0.35,
+                    "pitch": 0,
+                    "height": 0.45,
+                    "lon_offset": 0.0,
+                    "yaw": 0
+                },
+                "lmr": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "lon_offset": 0.0,
+                    "height": 0.0
+                },
+                "ifv300": {
+                    "roll": 0.0,
+                      "lat_offset": 0.0,
+                      "pitch": 0.0,
+                      "height": 1.50,
+                      "lon_offset": -1.6,
+                      "yaw": 0.0
+                 },
+                "mbq3": {
+                    "roll": 0.0,
+                      "lat_offset": 0.25,
+                      "pitch": 0.0,
+                      "height": 1.46,
+                      "lon_offset": -1.65,
+                      "yaw": 0.0
+                 },
+                 "q4_100": {
+                      "roll": 0.0,
+                      "lat_offset": -0.08,
+                      "pitch": 0.0,
+                      "height": 1.42,
+                      "lon_offset": -1.58,
+                      "yaw": 0
+                },
+                 "mbq4": {
+                      "roll": 0.0,
+                      "lat_offset": -0.06,
+                      "pitch": 0.0,
+                      "height": 1.42,
+                      "lon_offset": -1.58,
+                      "yaw": 0.0
+                },
+                 "j2": {
+                      "roll": 0.0,
+                      "lat_offset": -0.03,
+                      "pitch": 0.0,
+                      "height": 1.39,
+                      "lon_offset": -3.53,
+                      "yaw": 0
+                },
+                 "d1_fusion": {
+                      "roll": 0.0,
+                      "lat_offset": 0,
+                      "pitch": 0.0,
+                      "height": 1.49,
+                      "lon_offset": 0,
+                      "yaw": 0
+                },
+                 "j2_fusion": {
+                      "roll": 0.0,
+                      "lat_offset": 0,
+                      "pitch": 0.0,
+                      "height": 1.39,
+                      "lon_offset": 0,
+                      "yaw": 0
+                },
+                "rtk": {
+                    "yaw": 0.0,
+                    "pitch": -2.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.15,
+                    "lon_offset": -0.21,
+                    "height": 1.2
+                },
+                "video": {
+                    "yaw": 1.3,
+                    "pitch": 0.5,
+                    "roll": 1.2,
+                    "lat_offset": 0.12,
+                    "lon_offset": -1.58,
+                    "height": 1.48,
+                    "fu": 1295.9175,
+                    "fv": 1296.2201,
+                    "cu": 967.7107,
+                    "cv": 533.2411
+                },
+                "x1": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0,
+                    "lon_offset": 0,
+                    "height": 1.4
+                },
+		"a1j": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0,
+                    "lon_offset": 0,
+                    "height": 1.42
+                }
+
+            }
+        },
+        "other": {
+            "enable": false,
+            "collectors": []
+        }
+    }
+}

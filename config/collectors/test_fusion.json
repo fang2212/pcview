@@ -1,0 +1,15 @@
+{
+  "type": "general",
+  "mac": "5a:31:d3:59:12:06",
+  "ip": "127.0.0.1",
+  "force_ip": true,
+  "ports": {
+    "cantest": {
+      "enable": true,
+      "port": 2021,
+      "protocol": null,
+      "transport": "nanomsg",
+      "topic": "test"
+    }
+  }
+}
