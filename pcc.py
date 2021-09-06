@@ -343,7 +343,7 @@ class PCC(object):
             if 'img_raw' in mess and mess['img_raw'] is not None:  # reuse img
                 img = mess['img_raw'].copy()
                 # print('reuse video.')
-                if 'ts' not in mess or self.ts_sync_local() - mess['ts'] > 5.0:
+                if not self.pause and ('ts' not in mess or self.ts_sync_local() - mess['ts'] > 5.0):
                     self.player.show_failure(img, 'feed lost, check connection.')
             else:
                 try:
@@ -810,7 +810,7 @@ class PCC(object):
             # 如果是回放的话空格键是控制暂停\播放，否则是语音打点记录功能
             if self.replay:
                 self.pause = not self.pause
-                print('Pause:', self.pause)
+                logger.debug('Pause: {}'.format(self.pause))
                 if self.pause:
                     self.pause_t = time.time()
                 else:

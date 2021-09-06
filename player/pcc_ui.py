@@ -455,7 +455,7 @@ class Player(object):
                     else:
                         if style == 'critical':
                             pass
-                elif isinstance(style, tuple):
+                elif isinstance(style, tuple) or isinstance(style, list):
                     color = style
                 else:
                     color = CVColor.White
@@ -467,7 +467,6 @@ class Player(object):
                     line_len = len(entry['buffer'][height]['text'])
                     size = min(0.5 * 16 / line_len, 0.5)
                     size = max(0.24, size)
-
                 BaseDraw.draw_text(img, entry['buffer'][height]['text'], (entry['indent'] + 2, height + y0), size,
                                    color, 1)
 
