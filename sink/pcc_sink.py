@@ -915,6 +915,14 @@ class FlowSink(NNSink):
             elif topic in ["radar_data", "fusion_data", "vehicle_data", "lane_data", "drive_data", "fusion_inject", "LanePostImg", "LaneAccImg"]:
                 r = {"source": self.source, "log_name": self.log_name, "buf": payload}
                 self.fileHandler.insert_general_bin_raw(r)
+            elif topic == 'calib_param':
+                calib_params = msgpack.unpackb(payload)
+                calib_params = mytools.convert(calib_params)
+                if calib_params:
+                    r = {'type': 'calib_param', 'source': self.source, 'ts': time.time(),
+                         'frame_id': calib_params['frame_id']}
+                    r.update(calib_params['calib_param'])
+                    return 'calib_param', r
         elif msg_src == 'lane_profiling':
             if topic == 'lane_profiling_data':
                 r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name, 'buf': payload}
