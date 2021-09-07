@@ -9,6 +9,7 @@ from math import *
 from player.ui import BaseDraw, pack, logodir, CVColor, FlatColor
 from tools.geo import gps_bearing, gps_distance
 from tools.transform import Transform
+from utils import logger
 
 
 class InfoCard(object):
@@ -216,7 +217,11 @@ class Player(object):
             w = max(5, min(50, w))
             h = max(5, min(50, h))
             # print(int(x1), int(y1), int(w), width)
-            cv2.circle(img, (int(x0), int(y0 - 0.5 * h)), int(w), color, 1)
+            try:
+                cv2.circle(img, (int(x0), int(y0 - 0.5 * h)), int(w), color, 1)
+            except Exception as e:
+                logger.debug(f'雷达数据渲染失败参数：x0:{x0} y0:{y0}, h:{h}, w:{w}')
+                logger.error(f"渲染雷达数据失败，渲染参数：cve.circle(img, ({int(x0)}, {int(y0 - 0.5 * h)}), {int(w)}, color, 1))")
             # print(x1, y1, x, h)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
         elif obs.get('class') == 'pedestrian':
