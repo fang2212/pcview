@@ -115,12 +115,16 @@ class PCC(object):
                 cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
                 cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
                 cv2.createTrackbar('Roll  ', 'adj', 500, 1000, self.ot.update_roll)
+                logger.warning('{} pid:{}'.format("PCC: normal".ljust(20), os.getpid()))
             else:
                 import video_server
 
                 self.to_web = True
                 self.o_msg_q = video_server.msg_q
                 self.o_img_q = video_server.img_q
+                logger.warning('{} pid:{}'.format("PCC: web".ljust(20), os.getpid()))
+        else:
+            logger.warning('{} pid:{}'.format("PCC: eclient".ljust(20), os.getpid()))
 
         self.wav_cnt = 0
         self.audio = None
@@ -342,7 +346,17 @@ class PCC(object):
         self.player.clear()
         t0 = time.time()
         self.player.draw_img(mess["img"])
-        img = mess["img"]
+
+        if 'img_raw' in mess and mess['img_raw'] is not None:  # reuse img
+            img = mess['img_raw'].copy()
+        else:
+            try:
+                mess['img_raw'] = jpeg.decode(np.fromstring(mess['img'], np.uint8))
+            except Exception as e:
+                logger.error('img decode error:{}'.format(e))
+                return
+            img = mess['img_raw'].copy()
+
         misc_data = mess.get('misc')
         if misc_data:
             for source in list(mess['misc']):

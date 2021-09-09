@@ -62,7 +62,7 @@ def jpeg_extractor(video_dir):
                 buf = buf[b + 2:]
                 fcnt += 1
                 if not jpg:
-                    print('extracted empty frame:', fid)
+                    logger.warning(f'extracted empty frame:{fid}')
 
                 yield fid, jpg
                 if fid is not None:
@@ -159,12 +159,13 @@ class LogPlayer(Process):
         self.paused_t = 0
         self.nosort = nosort
 
-        self.video_dir = "video"
-        self.video_log_key = "camera"
+        self.chmain = chmain
         if chmain:
             self.video_dir = chmain
             self.video_log_key = chmain
-        self.chmain = chmain
+        else:
+            self.video_dir = "video"
+            self.video_log_key = "camera"
 
     def init_env(self):
         self.shared['init_time'] = time.time()
@@ -181,8 +182,8 @@ class LogPlayer(Process):
                 except Exception as e:
                     continue
                 done = True
-        while not self.msg_queue.empty():
-            self.msg_queue.get()
+
+        # 初始化视频图片生成器
         self.jpeg_extractor = jpeg_extractor(os.path.dirname(self.log_path) + '/' + self.video_dir)
 
         # 初始化主设备
@@ -551,7 +552,7 @@ def start_replay(source_path, args):
         while True:
             time.sleep(1)
     else:
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, show_video=show_video, eclient=args.eclient)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg)
         replay_hub.start()
         pcc.start()
         replay_hub.join()
