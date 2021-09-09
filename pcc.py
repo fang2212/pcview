@@ -665,6 +665,15 @@ class PCC(object):
         self.cfg.installs.update(r)
         self.hub.fileHandler.d['installs'] = self.cfg.installs
 
+    def handle_calib_params(self, data):
+        r = {data['source']: {'pitch': -data['pitch'], 'roll': -data['roll'], 'yaw': -data['yaw'],
+                              'fu': data['fu'], 'fv': data['fv'], 'cu': data['cu'],
+                              'cv': data['cv'], 'height': data['height'],
+                              'lon_offset': data['front_vehicle_edge_dist'],
+                              'lat_offset': 0.5 * (data['left_vehicle_edge_dist'] - data['right_vehicle_edge_dist'])}}
+        self.cfg.installs.update(r)
+        self.hub.fileHandler.d['installs'] = self.cfg.installs
+
     def specific_handle(self, img, data):
         src = data.get('source')
         if not src:
@@ -771,6 +780,8 @@ class PCC(object):
             self.player.show_heading_horizen(img, data)
         elif data['type'] == 'calib_param':
             self.handle_calib_param(data)
+        elif data['type'] == 'calib_params':
+            self.handle_calib_params(data)
         self.specific_handle(img, data)
         return True
 

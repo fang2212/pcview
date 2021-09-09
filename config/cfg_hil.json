@@ -13,12 +13,16 @@
         "ego": {
             "enable": true,
             "collectors": [
-                {"model":  "socket_hil", "params": {"ip": "192.168.98.145", "force_ip": true, "can0": "q3control", "can1": "ifv300", "is_main":true}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "x1_fusion", "can1": "ifv300"}},
+                {"model":  "socket_hil", "params": {"ip": "192.168.98.181", "force_ip": true, "can0": "q3control", "can1": "ifv300", "is_main":true}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "a1j", "can1": "a1j"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "a1j", "can1": "a1j"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "a1j", "can1": "a1j"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "a1j", "can1": "a1j"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
                 {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}},
-                {"model":  "cv22", "params": {"mac":  "6a:92:5f:57:96:00", "is_main":  false}},
+                {"model":  "a1j", "params": {"mac":  "6a:92:53:97:87:00", "is_main":  false}},
                 {"model":  "bynav"},
+                {"model":  "d1_udp"},
                 {"model": "can_gw_mqtt", "params": {"can1": "ifv300", "can2": "x1_fusion"}}
             ],
             "installation": {
