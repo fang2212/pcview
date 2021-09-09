@@ -21,6 +21,7 @@
       "cid": "canfd_mqtt",
       "dbc": "",
       "topic": "socket_hil/can_replay/1",
+      "transport": "mqtt",
       "qos": 0
     },
     "can3": {
@@ -29,6 +30,7 @@
       "cid": "canfd_mqtt",
       "dbc": "",
       "topic": "pi_node/can_rcv/2",
+      "transport": "mqtt",
       "qos": 0
     },
     "can4": {
@@ -37,6 +39,7 @@
       "cid": "canfd_mqtt",
       "dbc": "",
       "topic": "pi_node/can_rcv/3",
+      "transport": "mqtt",
       "qos": 0
     }
   }

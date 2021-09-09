@@ -265,7 +265,7 @@ class UDPSink(Sink):
 
     def task(self):
         self._init_port()
-        while not self.exit:
+        while not self.exit.is_set():
             buf = self.read()
             if not buf:
                 time.sleep(0.001)
@@ -537,7 +537,7 @@ class CANCollectSink(NNSink):
 class MQTTSink(NNSink):
 
     def __init__(self, ip, can_list, index, fileHandler, device="", cid="", mq=None):
-        super(MQTTSink, self).__init__(ip, "*", can_list.join(','), mq=mq)
+        super(MQTTSink, self).__init__(ip, "*", can_list, mq=mq)
         self.type = 'mqtt_sink'
         self.ip = ip
         self.device = device
@@ -763,7 +763,7 @@ class FlowSink(NNSink):
         self.client = None
 
     async def _run(self):
-        print("FlowSink Initialized", self.ip, self.port, self.topic)
+        logger.warning(f"FlowSink Initialized {self.ip}:{self.port} topic:{self.topic}")
         session = aiohttp.ClientSession()
         URL = 'ws://' + str(self.ip) + ':' + str(self.port)
         async with session.ws_connect(URL) as ws:
@@ -784,7 +784,7 @@ class FlowSink(NNSink):
                         if 'x1_data' in r[0]:
                             self.mq.put((r[1]['frame_id'], r[1], r[0]))
                         elif 'calib_param' in r[0]:
-                            self.mq.put((r[1]['frame_id'], r[1], self.source))
+                            self.mq.put((0, r[1], self.source))
                     else:
                         self.mq.put((*r, self.source))
                 else:
@@ -915,6 +915,13 @@ class FlowSink(NNSink):
             elif topic in ["radar_data", "fusion_data", "vehicle_data", "lane_data", "drive_data", "fusion_inject", "LanePostImg", "LaneAccImg"]:
                 r = {"source": self.source, "log_name": self.log_name, "buf": payload}
                 self.fileHandler.insert_general_bin_raw(r)
+            elif topic == 'calib_params':
+                calib_params = msgpack.unpackb(payload)
+                calib_params = mytools.convert(calib_params)
+                if calib_params:
+                    r = {'type': 'calib_params', 'source': self.source, 'ts': time.time()}
+                    r.update(calib_params)
+                    return 'calib_param', r
         elif msg_src == 'lane_profiling':
             if topic == 'lane_profiling_data':
                 r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name, 'buf': payload}

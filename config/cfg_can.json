@@ -13,13 +13,15 @@
         "ego": {
             "enable": true,
             "collectors": [
-                {"model":  "socket_hil", "params": {"ip": "192.168.98.145", "force_ip": true, "can0": "q3control", "can1": "ifv300", "is_main":true}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "x1_fusion", "can1": "ifv300"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "j2", "can1": "gs4"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "q3control", "can1": "ifv300"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mbq4", "can1": "gs4_debug"}},
+                {"model":  "can_collector", "params": {"port": 2021, "can0": "bosch_mrr", "can1": "bosch_r", "can2": "blank", "can3": "blank"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
-                {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}},
-                {"model":  "cv22", "params": {"mac":  "6a:92:5f:57:96:00", "is_main":  false}},
+                {"model":  "cv22", "params": {"mac":  "6a:92:5e:c0:96:00", "is_main":  true}},
+                {"model":  "cv22_novid", "params": {"mac":  "6a:92:52:69:87:00", "is_main":  false}},
                 {"model":  "bynav"},
-                {"model": "can_gw_mqtt", "params": {"can1": "ifv300", "can2": "x1_fusion"}}
+                {"model":  "d1_udp"}
             ],
             "installation": {
                 "esr": {

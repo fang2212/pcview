@@ -343,7 +343,7 @@ class PCC(object):
             if 'img_raw' in mess and mess['img_raw'] is not None:  # reuse img
                 img = mess['img_raw'].copy()
                 # print('reuse video.')
-                if 'ts' not in mess or self.ts_sync_local() - mess['ts'] > 5.0:
+                if not self.pause and ('ts' not in mess or self.ts_sync_local() - mess['ts'] > 5.0):
                     self.player.show_failure(img, 'feed lost, check connection.')
             else:
                 try:
@@ -665,6 +665,15 @@ class PCC(object):
         self.cfg.installs.update(r)
         self.hub.fileHandler.d['installs'] = self.cfg.installs
 
+    def handle_calib_params(self, data):
+        r = {data['source']: {'pitch': -data['pitch'], 'roll': -data['roll'], 'yaw': -data['yaw'],
+                              'fu': data['fu'], 'fv': data['fv'], 'cu': data['cu'],
+                              'cv': data['cv'], 'height': data['height'],
+                              'lon_offset': data['front_vehicle_edge_dist'],
+                              'lat_offset': 0.5 * (data['left_vehicle_edge_dist'] - data['right_vehicle_edge_dist'])}}
+        self.cfg.installs.update(r)
+        self.hub.fileHandler.d['installs'] = self.cfg.installs
+
     def specific_handle(self, img, data):
         src = data.get('source')
         if not src:
@@ -771,6 +780,8 @@ class PCC(object):
             self.player.show_heading_horizen(img, data)
         elif data['type'] == 'calib_param':
             self.handle_calib_param(data)
+        elif data['type'] == 'calib_params':
+            self.handle_calib_params(data)
         self.specific_handle(img, data)
         return True
 
@@ -810,7 +821,7 @@ class PCC(object):
             # 如果是回放的话空格键是控制暂停\播放，否则是语音打点记录功能
             if self.replay:
                 self.pause = not self.pause
-                print('Pause:', self.pause)
+                logger.debug('Pause: {}'.format(self.pause))
                 if self.pause:
                     self.pause_t = time.time()
                 else:

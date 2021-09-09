@@ -22,59 +22,38 @@
     },
     "radar_data": {
       "enable": true,
-      "port": 24015,
+      "port": 24016,
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "radar_data"
     },
     "lane": {
       "enable": true,
-      "port": 24015,
+      "port": 24017,
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "lane_data"
     },
     "vehicle": {
       "enable": true,
-      "port": 24015,
+      "port": 24017,
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "vehicle_data"
     },
     "drive_data": {
       "enable": true,
-      "port": 24015,
+      "port": 24018,
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "drive_data"
     },
     "fusion_inject": {
       "enable": true,
-      "port": 24015,
+      "port": 24019,
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "fusion_inject"
-    },
-    "calib": {
-      "enable": true,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "calib_params"
-    },
-    "fusion_LaneAccimg": {
-      "enable": true,
-      "port": 10222,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "LaneAccImg"
-    },
-    "fusion_LanePostimg": {
-      "enable": true,
-      "port": 10224,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "LanePostImg"
     },
     "proto": {
       "enable": true,

@@ -45,7 +45,7 @@ class SSHSession(object):
 def trigger_build(branch=None, local_path='.'):
     work_dir = '/home/minieye/work/pcview'
     suffix = 'cd {} && '.format(work_dir)
-    sess = SSHSession('192.168.50.113', username='minieye', password='minieye')
+    sess = SSHSession('192.168.51.162', username='mini', password='mini')
     if branch:
         sess.exec(suffix + 'git checkout {}'.format(branch))
     sess.exec(suffix + 'git pull')
@@ -56,7 +56,7 @@ def trigger_build(branch=None, local_path='.'):
 
     # retrieve binary
     local = os.path.join(local_path, 'pcc_app_replay_1804_{}_{}.tar.gz'.format(branch, int(time.time())))
-    sess.download(work_dir + '/dist/pcc_app.tar.gz', local)
+    # sess.download(work_dir + '/dist/pcc_app.tar.gz', local)
     return local_path
 
 
@@ -101,8 +101,8 @@ if __name__ == "__main__":
 
     home = os.environ['HOME']
     parser = argparse.ArgumentParser(description="pcc remote build and retrieve.")
-    parser.add_argument('-p', '--platform', default='1604')
-    parser.add_argument('-b', '--branch', default='cve-new')
+    parser.add_argument('-p', '--platform', default='1804')
+    parser.add_argument('-b', '--branch', default='can-getway')
     parser.add_argument('-t', '--target', default='pcc')  #
     parser.add_argument('-o', '--output', default=home)
 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
     elif args.platform == '1804':
         pack = trigger_build(args.branch, args.output)
-        print('retrieved pcc package at', pack)
+        print('retrieved 1804 pcc package at', pack)
     else:
         print('platform not recognized.')
 

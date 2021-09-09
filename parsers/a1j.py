@@ -250,8 +250,7 @@ def parse_a1j(id, data, ctx=None):
             ctx['fusion'][index]['vis_track_id'] = r['Vis_Track_ID_' + '%02d' % (index + 1)]
             # ctx['fusion'][index]['confidence'] = r['Confidence_'+'%02d' % (index+1)]
 
-            if index >= 16:
-                print("fusion:", len(ctx["fusion"]))
+            if index >= 15:
                 ret = []
                 for key in ctx['fusion']:
                     if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in \

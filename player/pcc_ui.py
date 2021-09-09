@@ -9,6 +9,7 @@ from math import *
 from player.ui import BaseDraw, pack, logodir, CVColor, FlatColor
 from tools.geo import gps_bearing, gps_distance
 from tools.transform import Transform
+from utils import logger
 
 
 class InfoCard(object):
@@ -53,7 +54,7 @@ class Player(object):
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
         self.color_obs = {
-            "a1j": (193, 182, 255),
+            "a1j": (59, 59, 238),
             "a1j_fusion": (59, 59, 238),
             "a1j_vision": (193, 182, 255),
             "ars410": FlatColor.peach,
@@ -216,7 +217,11 @@ class Player(object):
             w = max(5, min(50, w))
             h = max(5, min(50, h))
             # print(int(x1), int(y1), int(w), width)
-            cv2.circle(img, (int(x0), int(y0 - 0.5 * h)), int(w), color, 1)
+            try:
+                cv2.circle(img, (int(x0), int(y0 - 0.5 * h)), int(w), color, 1)
+            except Exception as e:
+                logger.debug(f'雷达数据渲染失败参数：x0:{x0} y0:{y0}, h:{h}, w:{w}')
+                logger.error(f"渲染雷达数据失败，渲染参数：cve.circle(img, ({int(x0)}, {int(y0 - 0.5 * h)}), {int(w)}, color, 1))")
             # print(x1, y1, x, h)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
         elif obs.get('class') == 'pedestrian':
@@ -354,11 +359,11 @@ class Player(object):
         color = self.color_obs.get(data['sensor']) or self.color_obs['default']
         cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
 
-    def show_text_info(self, source, height, text, style='normal', size=None):
+    def show_text_info(self, source, height, text, style='normal', size=None, expire_ts=None):
         if style is None:
             style = 'warning'
         self.get_indent(source)
-        self.columns[source]['buffer'][height] = {'text': text, 'style': style, 'size': size}
+        self.columns[source]['buffer'][height] = {'text': text, 'style': style, 'size': size, 'expire_ts': expire_ts}
         # print(source, height, text)
 
     def update_column_ts(self, source, ts):
@@ -445,6 +450,11 @@ class Player(object):
             # if col is not 'video':
             #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:
+                if not entry['buffer'][height]:
+                    continue
+                if entry['buffer'][height].get('expire_ts') and entry['buffer'][height].get('expire_ts') < time.time():
+                    entry['buffer'][height].clear()
+                    continue
                 # print(col, height, entry['buffer'])
                 # 字体颜色
                 style = entry['buffer'][height]['style']
@@ -467,7 +477,6 @@ class Player(object):
                     line_len = len(entry['buffer'][height]['text'])
                     size = min(0.5 * 16 / line_len, 0.5)
                     size = max(0.24, size)
-
                 BaseDraw.draw_text(img, entry['buffer'][height]['text'], (entry['indent'] + 2, height + y0), size,
                                    color, 1)
 
@@ -605,30 +614,31 @@ class Player(object):
         color = self.color_obs['rtk']
         line = 100
         style = 'normal'
+        expire_ts = time.time() + 0.5
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
             line = 160
             style = self.color_obs.get(obs['source'])
-            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
+            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style, expire_ts=expire_ts)
         elif obs.get("sensor") == "a1j_fusion" or obs.get("sensor") == "ifv300_fusion":
             line = 180
-            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
+            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style, expire_ts=expire_ts)
         elif obs.get('class') == 'pedestrian':
             line = 40
-            self.show_text_info(obs['source'], line, 'CIPPed: {}'.format(obs['id']))
+            self.show_text_info(obs['source'], line, 'CIPPed: {}'.format(obs['id']), expire_ts=expire_ts)
         elif obs.get('class') == 'object':
-            self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']))
+            self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']), expire_ts=expire_ts)
         else:
             color = obs.get("color") or self.color_obs['rtk']
-            self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']))
+            self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']), expire_ts=expire_ts)
 
         if "detection_sensor" in obs:
             self.show_text_info(obs['source'], 60, '{}'.format(obs['detection_sensor']), self.detection_color.get(obs.get("detection_sensor")))
         if 'TTC' in obs:
-            self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), style)
+            self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), style, expire_ts=expire_ts)
         dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
         angle = obs.get('angle') if 'angle' in obs else atan2(obs['pos_lat'], obs['pos_lon']) * 180 / pi
         # BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
-        self.show_text_info(obs['source'], line + 40, 'R/A: {:.2f} / {:.2f}'.format(dist, angle), style)
+        self.show_text_info(obs['source'], line + 40, 'R/A: {:.2f} / {:.2f}'.format(dist, angle), style, expire_ts=expire_ts)
         BaseDraw.draw_up_arrow(img, indent + 100, line - 12, color, 6)
 
     def show_heading_horizen(self, img, rtk):
@@ -1185,9 +1195,7 @@ class Player(object):
         #     color = self.color_seq[data['color']]
         # else:
         #     color = CVColor.Blue
-        color = self.color_obs.get(data['source'].split('.')[0])
-        if not color:
-            color = self.color_obs['default']
+        color = data.get('color') or self.color_obs.get(data['source'].split('.')[0]) or self.color_obs['default']
         # self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
         # lane message
         self.show_lane(img, data, color=color, style=data.get("style"))

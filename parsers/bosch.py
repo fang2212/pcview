@@ -49,7 +49,7 @@ def bosch_mrr(cid, data, ctx=None):
                     'sensor_type': 'radar',
                     'id': r["FR5CP_ObjID_{}".format(i)],
                     'pos_lon': r["FR5CP_ObjDistX_{}".format(i)],
-                    'pos_lat': r["FR5CP_ObjDistY_{}".format(i)],
+                    'pos_lat': -r["FR5CP_ObjDistY_{}".format(i)],
                     'vel_lon': r["FR5CP_ObjRelVelX_{}".format(i)],
                     'vel_lat': -r["FR5CP_ObjRelVelY_{}".format(i)],
                 }
