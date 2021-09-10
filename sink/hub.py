@@ -192,6 +192,8 @@ class Hub(Thread):
         idx = cfg['idx']
         is_main = cfg.get('is_main')
         ip_type = "{}@{}".format(ip, cfg['type'])
+        if not self.online[ip_type]:
+            self.online[ip_type] = {}
         self.online[ip_type]['msg_types'] = []
 
         if 'type' not in cfg:
