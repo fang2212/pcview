@@ -343,12 +343,16 @@ class PCC(object):
                 cv2.putText(img, key, (10, i*60 + 300), cv2.FONT_HERSHEY_COMPLEX, 3, (0, 0, 255), 2)
 
     def web_draw(self, mess, frame_cnt):
+        # 清除画布，防止叠加层一直叠加
         self.player.clear()
+
         t0 = time.time()
         self.player.draw_img(mess["img"])
 
         if 'img_raw' in mess and mess['img_raw'] is not None:  # reuse img
             img = mess['img_raw'].copy()
+            if not self.pause and ('ts' not in mess or self.ts_sync_local() - mess['ts'] > 5.0):
+                self.player.show_failure(img, 'feed lost, check connection.')
         else:
             try:
                 mess['img_raw'] = jpeg.decode(np.fromstring(mess['img'], np.uint8))
@@ -363,22 +367,22 @@ class PCC(object):
                 for entity in list(mess['misc'][source]):
                     self.draw_misc_data(img, mess['misc'][source][entity])
 
-        if 'ts' not in mess or self.ts_sync_local() - mess['ts'] > 5.0:
-            self.player.show_failure('feed lost, check connection.')
         frame_id = mess['frame_id']
         self.now_id = frame_id
         self.ts_now = mess['ts']
         self.player.ts_now = mess['ts']
         self.player.update_column_ts('video', mess['ts'])
+        self.player.show_frame_id('video', frame_id)
+        self.player.show_frame_cost(self.frame_cost)
+        self.player.show_datetime(self.ts_now)
 
         if self.ts0 == 0:
             self.ts0 = self.ts_now
 
-        if self.vehicles['ego'].dynamics.get('pinpoint'):
-            self.player.show_pinpoint(self.vehicles['ego'].dynamics['pinpoint'][0])
-        self.player.show_frame_id('video', frame_id)
-        self.player.show_frame_cost(self.frame_cost)
-        self.player.show_datetime(self.ts_now)
+        # 如果有定位标签的话，渲染定位信息
+        if self.vehicles['ego'].pinpoint:
+            self.player.show_pinpoint(img, self.vehicles['ego'].pinpoint)
+
         if self.show_ipm:
             self.m_g2i = self.transform.calc_g2i_matrix()
 
@@ -398,7 +402,6 @@ class PCC(object):
             self.player.show_video_info(img_small, video)
             img_aux = np.vstack((img_aux, img_small))
 
-
         if not self.replay:
             self.player.show_version(img, self.cfg)
             if self.hub.fileHandler.is_recording:
@@ -409,43 +412,28 @@ class PCC(object):
                 self.player.show_recording(img, 0)
 
         else:
-            self.player.show_replaying(img, self.ts_now - self.ts0)
+            self.player.show_replaying(self.ts_now - self.ts0)
 
         fps = self.player.cal_fps(frame_cnt)
-        self.player.show_fps(img, 'video', fps)
-
-        # if not self.replay:
-        #     self.player.show_warning_ifc(img, self.supervisor.check())
-        # self.player.show_intrinsic_para(img)
+        self.player.show_fps('video', fps)
 
         self.player.render_text_info(img)
 
-        # if img.shape[1] > 1280:
-        #     fx = 1280 / img.shape[1]
-        #     img = cv2.resize(img, None, fx=fx, fy=fx)
-        # if img.shape[0] > 960:
-        #     fx = 960 / img.shape[0]
-        #     img = cv2.resize(img, None, fx=fx, fy=fx)
+        if img.shape[1] > 1280:
+            fx = 1280 / img.shape[1]
+            img = cv2.resize(img, None, fx=fx, fy=fx)
+        if img.shape[0] > 960:
+            fx = 960 / img.shape[0]
+            img = cv2.resize(img, None, fx=fx, fy=fx)
 
         self.player.show_alarm_info(self.alarm_info)
-
-        # if self.show_ipm:
-        #     # print(img.shape)
-        #     # print(self.ipm.shape)
-        #     padding = np.zeros((img.shape[0] - self.ipm.shape[0], self.ipm.shape[1], 3), np.uint8)
-        #
-        #     comb = np.hstack((img, np.vstack((self.ipm, padding))))
-        # else:
-        #     # comb = img
-        #     padding = np.zeros((img.shape[0] - img_aux.shape[0], img_aux.shape[1], 3), np.uint8)
-        #     comb = np.hstack((img, np.vstack((img_aux, padding))))
 
         self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
         self.frame_drawn_cnt += 1
         self.frame_cost_total += self.frame_cost
 
         self.player.submit()
-        return comb
+        return img
 
     def draw(self, mess, frame_cnt):
         ts_ana = []
@@ -523,12 +511,7 @@ class PCC(object):
         if misc_data:
             for source in list(mess['misc']):
                 for entity in list(mess['misc'][source]):
-                    if source == 'x1j.0' and entity == 'obstacle.3':
-                        # print(mess['misc'][source][entity])
-                        pass
-                    if not self.draw_misc_data(img, mess['misc'][source][entity]):
-                        # print('draw misc data exited, source:', source)
-                        pass
+                    self.draw_misc_data(img, mess['misc'][source][entity])
 
         # t3 = time.time()
         ts_ana.append(('misc_data', time.time()))
@@ -542,14 +525,10 @@ class PCC(object):
                 self.player.show_recording(img, 0)
 
         else:
-            self.player.show_replaying(img, self.ts_now - self.ts0)
+            self.player.show_replaying(self.ts_now - self.ts0)
 
         fps = self.player.cal_fps(frame_cnt)
         self.player.show_fps(img, 'video', fps)
-
-        # if not self.replay:
-        #     self.player.show_warning_ifc(img, self.supervisor.check())
-        # self.player.show_intrinsic_para(img)
 
         self.player.render_text_info(img)
 

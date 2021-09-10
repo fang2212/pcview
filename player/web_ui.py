@@ -18,131 +18,11 @@ import numpy as np
 from math import *
 
 # from config.config import install
-from player.eclient_ui import BaseDraw, CVColor, FlatColor
+from player.eclient_ui import BaseDraw, CVColor
+from player.ui import FlatColor
 from tools.geo import gps_bearing, gps_distance
 from tools.transform import Transform
 # import roadmarking_pb2
-
-queue = queue.Queue(maxsize=1024)
-
-async def recv_image():
-    session = aiohttp.ClientSession()
-    URL = 'ws://192.168.98.181:24011'
-    async with session.ws_connect(URL) as ws:
-        msg = {
-            'source': 'pcview',
-            'topic': 'subscribe',
-            'data': "pcview",
-        }
-
-        data = msgpack.packb(msg)
-        await ws.send_bytes(data)
-
-        async for data in ws:
-            # {'time': 1623920616513654, 'source': 'pcview', 'topic': 'video', 'data': b'            if data.startswith(b'\xff\x03'):
-            r = msgpack.unpackb(data.data)
-            payload = r['data']
-            if payload.startswith(b'\xff\x03'):
-                frame_id = int.from_bytes(r['data'][4:8], byteorder='little', signed=False)
-                jpeg_data = r['data'][24:]
-                queue.put({'type': 'image', 'data': jpeg_data, "frame_id": frame_id})
-
-async def recv_algo_data():
-    url = 'ws://192.168.98.181:24011'
-    async with websockets.connect(url) as ws:
-        topics = ['pedestrian', 'vehicle', 'roadmarking']
-        subscribe = {'source': 'python', 'topic': 'subscribe', 'data': ','.join(topics)}
-        await ws.send(msgpack.packb(subscribe))
-
-        while True:
-            data = await ws.recv()
-
-            # {'time': 1538438996074003, 'source': 'ddsflow sender', 'topic': 'vehicle', 'data': b'
-            msg = msgpack.unpackb(data)
-            queue.put({'type': msg['topic'], 'data': msg['data']})
-
-def asyncio_thread_func(fun):
-    loop = asyncio.new_event_loop()
-    loop.run_until_complete(fun())
-
-
-def main():
-    # algo_thread = threading.Thread(target=asyncio_thread_func, args=(recv_algo_data,), daemon=True)
-    # algo_thread.start()
-
-    image_thread = threading.Thread(target=asyncio_thread_func, args=(recv_image,), daemon=True)
-    image_thread.start()
-
-    eClient = eclient.ElectronClient()
-    eClient.connect()
-
-    view2D = eClient.getPluginByName('plugin-2DView')
-    if not view2D:
-        print('Error: cannot find plugin-2DView')
-        exit(1)
-
-    mem_info = eClient.getSharedMemoryInfo()
-    mem = sharemem.ShareMem(mem_info['name'], mem_info['size'])
-    mem.open()
-
-    request = eClient.createPluginRequest([view2D])
-
-    while True:
-        jpeg_data = None
-        veh_data = None
-        ped_data = None
-        road_data = None
-
-        draw_lane_lines = []
-
-        msg = queue.get()
-        if msg['type'] == 'image':
-            jpeg_data = msg['data']
-        elif msg['type'] == 'vehicle':
-            veh_data = msg['data']
-        elif msg['type'] == 'pedestrian':
-            ped_data = msg['data']
-        # elif msg['type'] == 'roadmarking':
-        #     road_data = msg['data']
-        #     obj = roadmarking_pb2.Roadmarking()
-        #     obj.ParseFromString(road_data)
-        #     for line in obj.laneline.line:
-        #         coords = []
-        #         for point in line.fit_points_image_coord.pts_list:
-        #             coords.append(point.x)
-        #             coords.append(point.y)
-        #         draw_lane_lines.append(coords)
-
-        request.clearAll()
-
-        for coords in draw_lane_lines:
-            request.drawShape({
-                'type': 'POLYLINE',
-                'coords': coords,
-                'options': {
-                    'stroke': 'blue',
-                    'strokeWidth': 5,
-                },
-            })
-
-        if jpeg_data:
-            image = eClient.createAttachment('shared-memory')
-            offset = image.allocForWriting(len(jpeg_data))
-            mem.write_memory(offset, jpeg_data)
-            image.finishWriting()
-            request.drawImage(image, 'jpg')
-
-            request.drawShape({
-                'type': 'TEXT',
-                'text': "frame_id:{}".format(msg["frame_id"]),
-                'options': {
-                    'position': [80, 100],  # 文本位置
-                    'fontSize': 50,  # 字体大小
-                    'fill': 'red',  # 字体颜色
-                },
-            })
-
-        eClient.submitPluginRequests([request])
 
 
 class Player(object):
@@ -244,7 +124,7 @@ class Player(object):
     def show_dist_mark_ipm(self, img):
         pass
 
-    def show_parameters_background(self, img, rect, color=CVColor.Black, border_color=CVColor.LightGray, border_width=0):
+    def show_parameters_background(self, img, rect, color=BaseDraw.bgr_to_str(CVColor.Black, 0.6), border_color=BaseDraw.bgr_to_str(CVColor.LightGray), border_width=0):
         """左上角参数背景图"""
         BaseDraw.draw_alpha_rect(img, rect, color, border_color, border_width)
 
@@ -258,7 +138,7 @@ class Player(object):
         """
         source = obs['source'].split('.')[0]
         sensor = obs.get('sensor') or source
-        color = self.color_obs.get(source, self.color_obs['default'])
+        color = BaseDraw.bgr_to_str(self.color_obs.get(source, self.color_obs['default']))
 
         width = obs.get('width', 0.3)
         height = obs.get('height', width)
@@ -318,7 +198,7 @@ class Player(object):
             # 更新关键车信息
             self.show_cipo_info(img, obs)
             # 绘制关键车目标
-            BaseDraw.draw_arrow((x0, y0 + 3), (x0, y0 + 24), CVColor.Yellow, tail_width=4, head_width=16, head_length=8)
+            BaseDraw.draw_arrow((x0, y0 + 3), (x0, y0 + 24), BaseDraw.bgr_to_str(CVColor.Yellow), tail_width=4, head_width=16, head_length=8)
 
     def show_ipm_obs(self, img, obs):
         pass
@@ -373,11 +253,11 @@ class Player(object):
     def show_tsr(self, img, data):
         pass
 
-    def show_text_info(self, source, height, text, style='normal'):
+    def show_text_info(self, source, height, text, style='normal', expire_ts=None):
         if style is None:
             style = 'warning'
         self.get_indent(source)
-        self.columns[source]['buffer'][height] = {'text': text, 'style': style}
+        self.columns[source]['buffer'][height] = {'text': text, 'style': style, 'expire_ts': expire_ts}
 
     def update_column_ts(self, source, ts):
         if not source:
@@ -404,13 +284,13 @@ class Player(object):
             self.columns[col]['h'] = h
             slots[indent] = y0 + h + 4
 
-            color_lg = self.columns[col].get('color', CVColor.LightGray)
+            color_lg = BaseDraw.bgr_to_str(self.columns[col].get('color', CVColor.LightGray))
             self.show_parameters_background(img, (indent, y0, w if w <= self.img_width else self.img_width, h), border_color=color_lg, border_width=2)
             BaseDraw.draw_status_indent((indent + 10, y0 + 11), 12, color_lg)
             if 'ifv300' in col:
-                BaseDraw.draw_text('q3', (indent + 24, y0 + 18), 16, CVColor.Cyan, 1)
+                BaseDraw.draw_text('q3', (indent + 24, y0 + 18), 16, BaseDraw.bgr_to_str(CVColor.Cyan), 1)
             else:
-                BaseDraw.draw_text(col, (indent + 24, y0 + 18), 16, CVColor.Cyan, 1)
+                BaseDraw.draw_text(col, (indent + 24, y0 + 18), 16, BaseDraw.bgr_to_str(CVColor.Cyan), 1)
             dt = self.ts_now - self.columns[col]['ts']
 
             if dt > 999:
@@ -422,23 +302,53 @@ class Player(object):
             else:
                 delay_ms = '{:>+4d}ms'.format(int(dt * 1000))
 
-            BaseDraw.draw_text(delay_ms, (indent + 92, y0 + 18), 16, CVColor.White, 1)
+            BaseDraw.draw_text(delay_ms, (indent + 92, y0 + 18), 16, BaseDraw.bgr_to_str(CVColor.White), 1)
 
             for height in entry['buffer']:
+                if not entry['buffer'][height]:
+                    continue
+                if entry['buffer'][height].get('expire_ts') and entry['buffer'][height].get('expire_ts') < time.time():
+                    entry['buffer'][height].clear()
+                    continue
+                # print(col, height, entry['buffer'])
+                # 字体颜色
+                color = BaseDraw.bgr_to_str(CVColor.White)
                 style = entry['buffer'][height]['style']
                 style_list = {'normal': None, 'warning': CVColor.Yellow, 'fail': CVColor.Red, 'pass': CVColor.Green}
-
                 if isinstance(style, str) and style_list.get(style):
                     if style in style_list:
-                        color = style_list.get(style)
+                        color = BaseDraw.bgr_to_str(style_list.get(style))
+                    else:
+                        if style == 'critical':
+                            pass
                 elif isinstance(style, tuple):
-                    color = style
-                else:
-                    color = CVColor.White
+                    color = BaseDraw.bgr_to_str(style)
                 BaseDraw.draw_text(entry['buffer'][height]['text'], (entry['indent'] + 2, height + y0), 16, color, 1)
 
     def show_video_info(self, img, data):
-        pass
+        tnow = data['ts']
+        if data['source'] not in self.video_streams:
+            self.video_streams[data['source']] = {'frame_cnt': data['frame_id'] - 1, 'last_ts': 0, 'ts0': time.time(),
+                                                  'fps': 20}
+        if tnow == self.video_streams[data['source']]['last_ts']:
+            return
+        self.show_parameters_background(img, (0, 0, 160, 80))
+        BaseDraw.draw_text(data['source'], (2, 20), 0.5, BaseDraw.bgr_to_str(CVColor.Cyan), 1)
+        dt = self.ts_now - data['ts']
+        BaseDraw.draw_text('{:>+4d}ms'.format(int(dt * 1000)), (92, 20), 0.5, BaseDraw.bgr_to_str(CVColor.White), 1)
+        BaseDraw.draw_text('frame: {}'.format(data['frame_id']), (2, 40), 0.5, BaseDraw.bgr_to_str(CVColor.White), 1)
+
+        self.video_streams[data['source']]['frame_cnt'] += 1
+        # duration = time.time() - self.video_streams[data['source']]['ts0']
+        dt = tnow - self.video_streams[data['source']]['last_ts']
+        self.video_streams[data['source']]['last_ts'] = tnow
+        fps = 1 / dt
+        self.video_streams[data['source']]['fps'] = 0.9 * self.video_streams[data['source']]['fps'] + 0.1 * fps
+        BaseDraw.draw_text('fps: {:.1f}'.format(self.video_streams[data['source']]['fps']), (2, 60), 0.5,
+                           BaseDraw.bgr_to_str(CVColor.White), 1)
+        BaseDraw.draw_text('lost frames: {}'.format(data['frame_id'] - self.video_streams[data['source']]['frame_cnt']),
+                           (2, 80), 0.5, BaseDraw.bgr_to_str(CVColor.White), 1)
+        BaseDraw.draw_text('dev: {}'.format(data['device']), (2, 100), 0.5, BaseDraw.bgr_to_str(CVColor.White), 1)
 
     def show_status_info(self, source, status_list):
         """
@@ -453,17 +363,31 @@ class Player(object):
     def show_frame_id(self,  source, fn):
         self.show_text_info(source, 40, 'frame: ' + str(int(fn)))
 
-    def show_pinpoint(self, img, pp):
-        pass
+    def show_pinpoint(self, pp):
+        BaseDraw.draw_text('Pin: {lat:.8f} {lon:.8f} {hgt:.3f}'.format(**pp), (950, 710), 20, CVColor.White, 1)
 
     def show_frame_cost(self, cost):
-        pass
+        self.show_text_info('video', 80, 'render_cost: {}ms'.format(int(cost * 1000)))
 
-    def show_fps(self, img, source, fps):
-        pass
+    def show_fps(self, source, fps):
+        self.show_text_info(source, 60, 'fps: ' + str(int(fps)))
 
-    def show_datetime(self, img, ts=None):
-        pass
+    def show_datetime(self, ts=None):
+        """
+                视频的录制时间
+                :param img:
+                :param ts:
+                :return:
+                """
+        if ts is None:
+            ta = datetime.now()
+        else:
+            ta = time.localtime(ts)
+
+        date = time.strftime('%Y/%m/%d', ta)
+        time_ = time.strftime('%H:%M:%S', ta)
+        self.show_text_info('video', 100, '{}'.format(date))
+        self.show_text_info('video', 120, '{}'.format(time_))
 
     def show_ttc(self, img, ttc, source):
         pass
@@ -481,17 +405,29 @@ class Player(object):
     def show_q3_veh(self, img, speed, yr):
         pass
 
-    def show_recording(self, img, info):
-        pass
+    def show_recording(self, info):
+        if info == 0:
+            self.show_text_info('video', 140, '               ')
+            self.show_text_info('video', 160, '               ')
+            return
+        time_passed = time.time() - info
+        self.show_text_info('video', 140, '***[REC]***', BaseDraw.bgr_to_str(CVColor.Red))
+        self.show_text_info('video', 160, 'Rec time: {:.2f}s'.format(time_passed))
 
     def show_marking(self, img, start_time):
-        pass
+        time_passed = time.time() - start_time
+        BaseDraw.draw_text('Marking time: {:.2f}s'.format(time_passed), (100, 680), 3, BaseDraw.bgr_to_str(CVColor.Green), 3)
 
-    def show_replaying(self, img, dts):
-        pass
+    def show_replaying(self, dts):
+        time_passed = dts
+        self.show_text_info('video', 140, 'Replaying... ', BaseDraw.bgr_to_str(CVColor.Red))
+        self.show_text_info('video', 160, 'replay time: {:.2f}s'.format(time_passed))
 
     def show_version(self, img, cfg):
-        pass
+        if cfg.runtime.get('build_time'):
+            img_h = img.shape[0]
+            BaseDraw.draw_text(cfg.runtime.get('git_version') + ' ' + cfg.runtime.get('build_time'),
+                               (2, img_h - 6), 0.3, BaseDraw.bgr_to_str(CVColor.White), 1)
 
     def show_cipo_info(self, img, obs):
         """
@@ -500,28 +436,42 @@ class Player(object):
         :param obs:
         :return:
         """
+        try:
+            indent = self.get_indent(obs['source'])
+        except Exception as e:
+            print('Error:', obs)
+            return
+
+        color = self.color_obs['rtk']
         line = 100
         style = 'normal'
+        expire_ts = time.time() + 0.5
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
             line = 160
             style = self.color_obs.get('x1_fusion_cam')
-            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
+            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style, expire_ts=expire_ts)
+        elif obs.get("sensor") == "a1j_fusion" or obs.get("sensor") == "ifv300_fusion":
+            line = 180
+            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style, expire_ts=expire_ts)
+
         elif obs.get('class') == 'pedestrian':
             line = 40
-            self.show_text_info(obs['source'], line, 'CIPPed: {}'.format(obs['id']))
+            self.show_text_info(obs['source'], line, 'CIPPed: {}'.format(obs['id']), expire_ts=expire_ts)
         elif obs.get('class') == 'object':
-            self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']))
+            self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']), expire_ts=expire_ts)
         else:
-            self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']))
+            self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']), expire_ts=expire_ts)
 
         if "detection_sensor" in obs:
             self.show_text_info(obs['source'], 60, '{}'.format(obs['detection_sensor']),
                                 self.detection_color.get(obs.get("detection_sensor")))
         if 'TTC' in obs:
-            self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), style)
+            self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), style, expire_ts=expire_ts)
         dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
         angle = obs.get('angle') if 'angle' in obs else atan2(obs['pos_lat'], obs['pos_lon']) * 180 / pi
-        self.show_text_info(obs['source'], line + 40, 'R/A: {:.2f} / {:.2f}'.format(dist, angle), style)
+        self.show_text_info(obs['source'], line + 40, 'R/A: {:.2f} / {:.2f}'.format(dist, angle), style, expire_ts=expire_ts)
+
+        BaseDraw.draw_arrow((indent + 100, line - 18), (indent + 100, line), color=color, tail_width=6)
 
     def show_heading_horizen(self, img, rtk):
         pass
@@ -585,7 +535,11 @@ class Player(object):
                 BaseDraw.draw_text(key, (10, i*60 + 300), 30, "rgb(0, 0, 255)", 2)
 
     def cal_fps(self, frame_cnt):
-        pass
+        end_time = datetime.now()
+        duration = (end_time - self.start_time).total_seconds()
+        duration = duration if duration > 0 else 1
+        fps = frame_cnt / duration
+        return fps
 
     def show_intrinsic_para(self, img):
         pass
@@ -594,7 +548,11 @@ class Player(object):
         pass
 
     def show_warning_ifc(self, img, title):
-        pass
+        if isinstance(title, list):
+            for idx, t in enumerate(title):
+                BaseDraw.draw_text(t, (10, 200 + idx * 80), 2, CVColor.Red, 3)
+        else:
+            BaseDraw.draw_text(title, (10, 200), 2, CVColor.Red, 3)
 
     def show_ub482_common(self, img, data):
         pass
@@ -620,9 +578,7 @@ class Player(object):
         if data['type'] != 'lane':
             return
 
-        color = self.color_obs.get(data['source'].split('.')[0])
-        if not color:
-            color = self.color_obs['default']
+        color = BaseDraw.bgr_to_str(self.color_obs.get(data['source'].split('.')[0], self.color_obs['default']))
         self.show_lane(img, data, color=color, style=data.get("style"))
 
     def draw_lane_ipm(self, img, data):
@@ -637,7 +593,4 @@ class Player(object):
     def submit(self):
         BaseDraw.submit()
 
-
-if __name__ == "__main__":
-    main()
 

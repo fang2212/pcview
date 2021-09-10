@@ -19,59 +19,25 @@ mem.open()
 request = eClient.createPluginRequest([view2D])
 request.clearAll()
 
-class CVColor(object):
-    '''
-    basic color RGB define
-    '''
-    Red = "rgb(255, 0, 0)"
-    LightRed = "rgb(200, 80, 80)"
-    Green = "rgb(0, 255, 0)"
-    Grass = "rgb(76, 175, 80)"
-    Blue = "rgb(0, 0, 255)"
-    LightBlue = "rgb(120, 120, 240)"
-    Cyan = "rgba(0, 188, 212)"
-    Magenta = "rgb(255, 0, 255)"
-    Yellow = "rgb(255, 255, 0)"
-    Black = "rgba(0,0,0,0.5)"
-    White = "rgb(255, 255, 255)"
-    Grey = "rgb(120, 120, 120)"
-    Midgrey = "rgb(160, 160, 160)"
-    LightGray = "rgb(211, 211, 211)"
-    Pink = "rgb(255, 0, 255)"
-    indigo = "rgb(63, 81, 181)"
-    purple = "rgb(156, 39, 176)"
-    bluegrey = "rgb(96, 125, 139)"
-    deeporange = "rgb(255, 188, 26)"
-
-class FlatColor(object):  # in BGR
-    Blue = "rgb(0, 0, 200)"
-    alizarin = "rgb(231, 76, 60)"
-    amethyst = "rgb(155, 89, 182)"
-    carrot = "rgb(230, 126, 34)"
-    clouds = "rgb(236, 240, 241)"
-    concrete = "rgb(149, 165, 166)"
-    dark_red = "rgb(128, 16, 16)"
-    emerald = "rgb(46, 204, 113)"
-    violet = "rgb(255, 0, 255)"                  # 紫色
-    light_green = "rgb(154, 255, 154)"           # 淡绿色
-    light_blue = "rgb(202, 225, 255)"            # 淡蓝色
-    peter_river = "rgb(52, 152, 219)"
-    pink = "rgb(248, 171, 166)"                  # 粉色
-    peach = "rgb(245, 153, 157)"                 # 桃色
-    sun_flower = "rgb(241, 196, 15)"
-    turquoise = "rgb(22, 160, 156)"
-    yellow_green = "rgb(112, 255, 202)"          # 黄绿色
-    yellow = "rgb(242, 171, 57)"                 # 黄色
-    wet_asphalt = "rgb(52, 73, 94)"
 
 class BaseDraw(object):
     """
     基本的绘图函数
     """
+
     @classmethod
     def covert_alpha(cls, color, alpha=None):
         if alpha is not None:
             color = color[:3] + "a" + color[3:-2] + "," + str(alpha) + ")"
+        return color
+
+
+    @classmethod
+    def bgr_to_str(cls, color, alpha=None):
+        if alpha is None:
+            color = f"rgb({color[2]}, {color[1]}, {color[0]})"
+        else:
+            color = f"rgba({color[2]}, {color[1]}, {color[0]}, {alpha})"
         return color
 
     @classmethod
@@ -171,6 +137,8 @@ class BaseDraw(object):
 
     @classmethod
     def draw_rect(cls, point1, point2, color=None, border=None, border_color=None):
+        if isinstance(color, tuple):
+            color = BaseDraw.bgr_to_str(color)
         request.drawShape({
             'type': 'RECT',
             'coords': [
@@ -200,6 +168,8 @@ class BaseDraw(object):
         """
             绘制矩形四角框
         """
+        if isinstance(color, tuple):
+            color = BaseDraw.bgr_to_str(color)
         x1, y1 = point1
         x2, y2 = point2
         width = abs(x2 - x1)
@@ -236,6 +206,9 @@ class BaseDraw(object):
 
     @classmethod
     def draw_line(cls, img_content, ratios, start=0, end=0, dash=None, color=CVColor.White, thickness=1):
+        if isinstance(color, tuple):
+            color = BaseDraw.bgr_to_str(color)
+
         request.drawShape({
             'type': 'POLYNOMIAL_CURVE',
             'coeff': ratios,  # y = c0+c1*x+c2*x^2+c3*x^3
@@ -252,6 +225,9 @@ class BaseDraw(object):
 
     @classmethod
     def draw_quadratic_curve(cls, point_list, color=CVColor.White, thickness=1):
+        if isinstance(color, tuple):
+            color = BaseDraw.bgr_to_str(color)
+
         draw_list = np.array(point_list, int)
         coords = draw_list.flatten()
         request.drawShape({
@@ -266,6 +242,9 @@ class BaseDraw(object):
 
     @classmethod
     def draw_polyline(cls, point_list, dash='', color=CVColor.White, thickness=1):
+        if isinstance(color, tuple):
+            color = BaseDraw.bgr_to_str(color)
+
         draw_list = np.array(point_list, int)
         coords = draw_list.flatten()
         request.drawShape({
@@ -295,7 +274,7 @@ class BaseDraw(object):
         pass
 
     @classmethod
-    def draw_alpha_rect(cls, image_content, rect, color=CVColor.Black, border_color="", line_width=0):
+    def draw_alpha_rect(cls, image_content, rect, color='', border_color="", line_width=0):
         x, y, w, h = rect
         request.drawShape({
             'type': 'RECT',
