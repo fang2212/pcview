@@ -1,5 +1,6 @@
 rich
 numpy
+protobuf>=3.17.3
 python-can==3.3.4
 python-socketio==5.3.0
 pyserial

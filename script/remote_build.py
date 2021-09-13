@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import paramiko
 import time
 import os
@@ -43,7 +45,7 @@ class SSHSession(object):
 
 
 def trigger_build(branch=None, local_path='.'):
-    work_dir = '/home/minieye/work/pcview'
+    work_dir = '/home/mini/work/pcview'
     suffix = 'cd {} && '.format(work_dir)
     sess = SSHSession('192.168.51.162', username='mini', password='mini')
     if branch:
@@ -55,27 +57,32 @@ def trigger_build(branch=None, local_path='.'):
     # sess.exec(suffix + '')
 
     # retrieve binary
-    local = os.path.join(local_path, 'pcc_app_replay_1804_{}_{}.tar.gz'.format(branch, int(time.time())))
-    # sess.download(work_dir + '/dist/pcc_app.tar.gz', local)
+    pcc_app_local = os.path.join(local_path,
+                                 'pcc_app_replay_1804_{}_{}.tar.gz'.format(branch, datetime.now().strftime("%m%d")))
+    sess.download(work_dir + '/dist/pcc_app.tar.gz', pcc_app_local)
+    statistics_local = os.path.join(local_path,
+                                    'pcc_statistics_1804_{}_{}.tar.gz'.format(branch, datetime.now().strftime("%m%d")))
+    sess.download(work_dir + '/dist/statistics_log.tar.gz', statistics_local)
     return local_path
 
 
 def trigger_build_1604(branch=None, local_path='.'):
-    work_dir = '/home/minieye/work/pcview'
+    work_dir = '/home/mini/work/pcview'
     suffix = 'cd {} && '.format(work_dir)
-    sess = SSHSession('192.168.50.122', username='minieye', password='minieye')
+    sess = SSHSession('192.168.51.187', username='mini', password='mini')
     if branch:
         sess.exec(suffix + 'git checkout {}'.format(branch))
     sess.exec(suffix + 'git pull')
-    sess.exec(suffix + 'ifconfig')
 
     # sess.exec(suffix + '/home/nan/.local/bin/pyinstaller pcc_app.spec --noconfirm')
     sess.exec(suffix + 'bash pack_pcc_and_replay.sh')
     # sess.exec(suffix + '')
 
     # retrieve binary
-    local = os.path.join(local_path, 'pcc_app_replay_1604_{}_{}.tar.gz'.format(branch, int(time.time())))
-    sess.download(work_dir + '/dist/pcc_app.tar.gz', local)
+    pcc_app_local = os.path.join(local_path, 'pcc_app_replay_1604_{}_{}.tar.gz'.format(branch, datetime.now().strftime("%m%d")))
+    sess.download(work_dir + '/dist/pcc_app.tar.gz', pcc_app_local)
+    statistics_local = os.path.join(local_path, 'pcc_statistics_1604_{}_{}.tar.gz'.format(branch, datetime.now().strftime("%m%d")))
+    sess.download(work_dir + '/dist/statistics_log.tar.gz', statistics_local)
     return local_path
 
 
@@ -116,7 +123,10 @@ if __name__ == "__main__":
         pack = trigger_build(args.branch, args.output)
         print('retrieved 1804 pcc package at', pack)
     else:
-        print('platform not recognized.')
+        pack = trigger_build_1604(args.branch, args.output)
+        print('retrieved pcc package at', pack)
+        pack = trigger_build(args.branch, args.output)
+        print('retrieved 1804 pcc package at', pack)
 
 
     # pack = '/home/nan/release/pcc_app_1804_cve-new_1598513211.tar.gz'

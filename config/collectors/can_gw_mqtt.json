@@ -8,14 +8,14 @@
   "transport": "mqtt",
   "cid": "canfd_mqtt",
   "ports": {
-    "can1": {
+    "can0": {
       "enable": true,
       "protocol": "canpack",
       "dbc": "",
       "topic": "pi_node/can/0/rcv",
       "qos": 0
     },
-    "can2": {
+    "can1": {
       "enable": true,
       "protocol": "canpack",
       "dbc": "",
@@ -23,7 +23,7 @@
       "transport": "mqtt",
       "qos": 0
     },
-    "can3": {
+    "can2": {
       "enable": true,
       "protocol": "canpack",
       "dbc": "",
@@ -31,7 +31,7 @@
       "transport": "mqtt",
       "qos": 0
     },
-    "can4": {
+    "can3": {
       "enable": true,
       "protocol": "canpack",
       "dbc": "",
