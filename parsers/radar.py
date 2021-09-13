@@ -179,7 +179,7 @@ def parse_ars(id, buf, ctx=None):
         range = sqrt(x_raw ** 2 + y_raw ** 2)
         angle = atan2(y_raw, x_raw) * 180.0 / pi
         # x, y = trans_polar2rcs(angle, range, install['ars'])
-        ret = {'type': 'obstacle', 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle, 'color': 2}
+        ret = {'type': 'obstacle', 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle}
         return ret
 
 
@@ -252,7 +252,7 @@ def parse_esr(id, buf, ctx=None):
             #        'color': 1}
             ret = {'type': 'obstacle', 'sensor': 'esr', 'sensor_type': 'radar', 'class': 'object', 'id': tid,
                    'range': range_raw, 'angle': angle_raw,
-                   'range_rate': range_rate, 'TTC': ttc, 'TTC_m': ttc_m, 'TTC_a': ttc_a, 'color': 1}
+                   'range_rate': range_rate, 'TTC': ttc, 'TTC_m': ttc_m, 'TTC_a': ttc_a}
             ctx['obs'].append(ret)
             # if esr_filter.update(ret):
             #     ret['cipo'] = True
@@ -298,8 +298,7 @@ def parse_bosch_mrr(id, buf, ctx=None):
         idx = id - 0x660
         if r['X_Object%02d_wExist' % idx] > 0.0:
             # print('0x%x' % id, r)
-            return {'type': 'obstacle', 'sensor': 'mrr', 'sensor_type': 'radar', 'id': oid, 'pos_lon': x, 'pos_lat': y,
-                    'color': 1}
+            return {'type': 'obstacle', 'sensor': 'mrr', 'sensor_type': 'radar', 'id': oid, 'pos_lon': x, 'pos_lat': y}
     elif id == 0x680:
         r = db_mrr.decode_message(id, buf)
         # print('0x%x' % id, r)
@@ -402,7 +401,7 @@ def parse_hawkeye_lmr(id, buf, ctx=None):
             # y = sin(angle * pi / 180.0) * range
             # x, y = trans_polar2rcs(angle, range, install['lmr'])
             return {'type': 'obstacle', 'sensor': 'lmr', 'sensor_type': 'radar', 'id': id - 0x500, 'range': range,
-                    'angle': angle, 'color': 2}
+                    'angle': angle}
     return None
 
 
@@ -420,7 +419,7 @@ def parse_hmb(id, buf, ctx=None):
     # x, y = trans_polar2rcs(angle, range, install['hmb'])
     # print("hmb radar frame")
     result = {'type': 'obstacle', 'sensor': 'hmb', 'sensor_type': 'radar', 'id': id - 0x500, 'range': range,
-              'angle': angle, 'color': 4}
+              'angle': angle}
     return result
 
 
@@ -450,7 +449,7 @@ def parse_fusion_mrr(id, buf, ctx=None):
         # print(host_veh_clutter, nd_target, spres_target)
 
         result = {'type': 'obstacle', 'sensor': 'mrr_fusion', 'sensor_type': 'radar', 'id': idx, 'range': range,
-                  'angle': angle, 'color': 5,
+                  'angle': angle,
                   'snr': snr,
                   'scan_idx': scan_idx, 'amp': amp, 'valid': valid, 'range_rate': range_rate, 'super_res': spres_target}
         # if snr in ['High']:
@@ -493,7 +492,7 @@ def parse_sta77(id, buf, ctx=None):
             # x, y = trans_polar2rcs(angle, range, install['sta77'])
             ret = {'type': 'obstacle', 'sensor': 'sta77', 'sensor_type': 'radar', 'class': 'object', 'id': tid,
                    'range': range, 'angle': angle,
-                   'range_rate': range_rate, 'color': 7}
+                   'range_rate': range_rate}
             st77obs.append(ret)
             return None
     else:  # st77obs[-1]['id']==(((id&0x0FE)>>1)+1):
@@ -529,7 +528,7 @@ def parse_sta77_3(id, buf, ctx=None):
         range_rate = (buf[6] << 8 | buf[7])*0.1
         if range_lon > 0.5:
             ret = {'type': 'obstacle', 'sensor': 'sta77_3', 'sensor_type': 'radar', 'class': 'object', 'id': tid, 'range': range, 'angle': angle,
-                    'range_rate': range_rate, 'pos_lat': range_lat, 'pos_lon':range_lon, 'power': 0, 'tgt_status': 'update_99','dyn_prop': 'unknown', 'color': 7}
+                    'range_rate': range_rate, 'pos_lat': range_lat, 'pos_lon':range_lon, 'power': 0, 'tgt_status': 'update_99','dyn_prop': 'unknown'}
             st77obs_3.append(ret)
         return None
     else:
@@ -584,8 +583,7 @@ def parse_xyd2(id, buf, ctx=None):
             tid = id - 0x3FF
             ret = {'type': 'obstacle', 'sensor': 'xyd2', 'sensor_type': 'radar', 'class': 'object', 'id': tid,
                    'range': range_raw, 'angle': angle_raw, 'power': power,
-                   'tgt_status': tgt_status + '_%03d' % (tgt_confidence_coef) + '_%1d' % (update), 'dyn_prop': dyn_prop,
-                   'color': 1}
+                   'tgt_status': tgt_status + '_%03d' % (tgt_confidence_coef) + '_%1d' % (update), 'dyn_prop': dyn_prop}
             # x, y = trans_polar2rcs(angle, range, install['xyd2'])
             # ret = {'type': 'obstacle', 'id': tid, 'pos_lon': x, 'pos_lat': y, 'range': range, 'angle': angle,
             #        'range_rate': range_rate, 'power': power,'tgt_status': tgt_status+'_%03d'%(tgt_confidence_coef)+'_%1d'%(update),'dyn_prop':dyn_prop,'color': 1}
@@ -630,7 +628,7 @@ def parse_anc(id, buf, ctx=None):
         # x, y = trans_polar2rcs(angle, range, install['anc'])
         ret = {'type': 'obstacle', 'sensor': 'anc', 'sensor_type': 'radar', 'class': 'object',
                'id': tid, 'range': range, 'angle': angle, 'range_rate': range_rate,
-               'power': angle_raw, 'tgt_status': 'unknown', 'dyn_prop': 'unknown', 'color': 2}
+               'power': angle_raw, 'tgt_status': 'unknown', 'dyn_prop': 'unknown'}
         ancobs.append(ret)
         return None
     elif id == 0x520:
@@ -668,7 +666,7 @@ def parse_vfr(id, buf, ctx=None):
             range_rate = sqrt(vx_raw ** 2 + vy_raw ** 2)
             ret = {'type': 'obstacle', 'sensor': 'vfr', 'sensor_type': 'radar', 'class': 'object',
                    'id': tid, 'range': range, 'angle': angle, 'range_rate': range_rate,
-                   'power': confidence, 'tgt_status': 'unknown', 'dyn_prop': 'unknown', 'color': 2}
+                   'power': confidence, 'tgt_status': 'unknown', 'dyn_prop': 'unknown'}
             vfr['target_info'].append(ret)
             if len(vfr['target_info']) >= vfr['num_target']:
                 ret = vfr['target_info']

@@ -40,7 +40,6 @@ class Vehicle(object):
                          'hor_speed': deque(maxlen=20),
                          'vert_speed': deque(maxlen=20),
                          'trk_gnd': deque(maxlen=20),
-                         # 'pinpoint': deque(maxlen=20),
                          'road_grad_x': deque(maxlen=20)}
         self.pinpoint = None
         # self.road_gradient = 0.0

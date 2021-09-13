@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package minieye;
+
+message ImuData { // imu raw data
+	repeated int32 accel = 1;             // 加速度计数据
+	repeated int32 gyro = 2;              // 陀螺仪数据
+	int32 temp = 3;                       // 温度
+	uint64 timestamp = 4;                 // 时戳(毫秒)
+    uint64 tick = 5;                      // 硬件tick
+}
+
+/*
+	{
+	    "topic": "imu",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 100,
+		"buff_num": 100,
+	    "elem_max_size": 1000
+	} 
+*/
+message ImuDataList { // imu raw data list
+	repeated ImuData imu_datas = 1;       // imu data list
+	uint64 id = 2;                        // id
+}

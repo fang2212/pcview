@@ -1,0 +1,99 @@
+syntax = "proto3";
+import "google/protobuf/any.proto";
+
+package minieye;
+
+/*
+	 {
+	     "topic": "vehicle_signal",
+	     "dds_mode": "shm",
+	     "elem_max_size": 1000
+	 }
+*/
+// topic : "vehicle_signal"
+// breif : 周期性信号
+message VehicleSignal {
+	enum SignalType {
+		kCanSpeed = 0;            // 车速 (km/h)
+		kTurnLamp = 1;            // 转向灯信号 0:无，1：左，2 右
+		kHazardWarningLamp = 2;   // 危险报警灯信号 0：无， 1:有
+		kBraking = 3;             // 刹车信号  0：无， 1:有
+		kAccelerator = 4;         // 加速踏板  
+		kSteeringWheelAngle = 5;  // 方向盘转角 (°) 
+		kHeadingAngularRate = 6;  // 航向角速率 (rad/s) 
+		kFrontWiper = 7;          // 雨刮器信号, 0:无, 1:低速，2:中，3:高速，4:间歇1，5:间歇2
+        kDriveMode = 8;           // 驾驶模式　0: 无，1 manual，2 auto，3 steer only，4 speed only，5 emergency mode
+        kMovingDir = 9;           // 移动方向　0 invalid,1 standstill, 2 forward,3 backward
+        KYawRate = 10;            // YawRate  rad
+        KGearMode = 11;           // 档位模式 0 invalid,1 Neutral,2 Driving,2 Reverse 3 Parking
+	}
+	map<int32, float> signals = 1;      // pair : <SignalType, value> 车身信号
+	uint64 timestamp = 2;                           // 时戳, milliseconds
+	uint64 tick = 3;                                // 异构设备上的时钟
+}
+
+// topic : "command_signal"
+// brief : 触发式信号
+message CommandSignal {
+	enum SignalType {
+		kUnknown = 0;                             // 无意义
+		kStartAutocalib = 1;                      // 开启自标定 
+		kStartOfflineCalibrate = 2;               // 开启下线标定
+		kModLdwSensitivity = 3;                   // 修改LDW灵敏度
+		kModFcwSensitivity = 4;                   // 修改FCW灵敏度
+	}
+	SignalType signal = 1;                        // 信号类别 
+	google.protobuf.Any details = 2;              // 信号详细信息
+}
+
+// ----------- command signal details -------------------------
+// 下线标定输入参数
+message OfflineCalibSigDetail {
+	int32 camera_id = 1;                          // 相机id
+	int32 marker_type = 2;                        // 标靶类别 1-标靶1, 2-标靶2, 3-标靶3, 4-静态车道线标定, 5-外部写入标定
+	double camera_pitch = 3;                      // 仅外部写入标定时有效
+	double camera_yaw = 4;                        // 仅外部写入标定时有效
+	double camera_roll = 5;                       // 仅外部写入标定时有效
+	double camera_height = 6;
+	double left_dist_to_camera = 7;
+	double right_dist_to_camera = 8;
+	double front_wheel_camera_dist = 9;
+}
+
+// 下线标定输出结果
+message OfflineCalibRsp {
+	int32 camera_id = 1;                  // 相机id
+	int32 state = 2;       			      // 0 - 无意义, 1 - 已标定, 2 - 标定中, 3 - 暂停, 4 - 标定成功, 5 - 标定失败
+	int32 err_code = 3;                   // 0 - 检测不到目标, 1 - 目标数量太多, 2 - 车速不符合, 3 - 标定超时, 4 - 标定结果异常 5 - 输入参数异常, 7 - sna
+	double camera_pitch = 4;                      
+	double camera_yaw = 5;                        
+	double camera_roll = 6;
+    double camera_height = 7;
+    double process = 8;
+}
+
+// 自标定输入参数
+message AutoCalibSigDetail {
+	int32 camera_id = 1;                          // 相机id
+	double camera_height = 2;
+	double left_dist_to_camera = 3;
+	double right_dist_to_camera = 4;
+	double front_wheel_camera_dist = 5;
+}
+
+// 自标定输出结果
+message AutoCalibRsp {
+	int32 camera_id = 1;                  // 相机id
+	int32 state = 2;       			      // 0 - 未标定, 1 - 标定成功, 2 - 标定中, 3 - 标定失败
+	int32 err_code = 3;                   // 0 - 检测不到目标, 1 - 目标数量太多, 2 - 车速不符合, 3 - 标定超时, 4 - 标定结果异常 5 - 输入参数异常, 7 - sna
+	double camera_pitch = 4;                      
+	double camera_yaw = 5;                        
+	double camera_roll = 6;
+    double camera_height = 7;
+    double process = 8;
+}
+
+// 修改LDW告警级别命令输入参数 
+message LDWSensitivitySigDetail {
+	int32 warning_level = 1;                      // 告警级别
+}

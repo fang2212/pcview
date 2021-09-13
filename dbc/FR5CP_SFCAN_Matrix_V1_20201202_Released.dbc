@@ -1,0 +1,2118 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: FR5CP Vector_XXX
+
+
+BO_ 512 FR5CP_DTC1: 8 FR5CP
+ SG_ FR5CP_FailureStatus : 13|2@0+ (1,0) [0|3] ""  Vector_XXX
+
+BO_ 515 FR5CP_Group_1: 64 FR5CP
+ SG_ FR5CP_ObjID_1 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_1 : 15|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_1 : 10|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_1 : 21|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_1 : 73|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_1 : 52|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_1 : 71|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_1 : 25|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_1 : 46|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_1 : 91|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_2 : 103|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_2 : 111|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_2 : 106|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_2 : 117|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_2 : 169|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_2 : 148|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_2 : 167|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_2 : 121|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_2 : 142|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_2 : 187|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_3 : 199|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_3 : 207|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_3 : 202|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_3 : 213|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_3 : 265|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_3 : 244|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_3 : 263|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_3 : 217|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_3 : 238|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_3 : 283|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_4 : 295|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_4 : 303|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_4 : 298|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_4 : 309|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_4 : 361|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_4 : 340|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_4 : 359|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_4 : 313|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_4 : 334|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_4 : 379|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_5 : 391|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_5 : 399|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_5 : 394|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_5 : 405|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_5 : 457|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_5 : 436|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_5 : 455|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_5 : 409|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_5 : 430|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_5 : 475|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_1_MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_1_CRCChecksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 516 FR5CP_Group_2: 64 FR5CP
+ SG_ FR5CP_ObjID_6 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_6 : 15|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_6 : 10|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_6 : 21|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_6 : 73|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_6 : 52|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_6 : 71|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_6 : 25|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_6 : 46|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_6 : 91|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_7 : 103|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_7 : 111|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_7 : 106|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_7 : 117|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_7 : 169|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_7 : 148|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_7 : 167|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_7 : 121|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_7 : 142|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_7 : 187|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_8 : 199|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_8 : 207|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_8 : 202|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_8 : 213|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_8 : 265|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_8 : 244|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_8 : 263|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_8 : 217|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_8 : 238|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_8 : 283|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_9 : 295|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_9 : 303|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_9 : 298|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_9 : 309|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_9 : 361|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_9 : 340|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_9 : 359|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_9 : 313|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_9 : 334|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_9 : 379|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_10 : 391|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_10 : 399|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_10 : 394|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_10 : 405|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_10 : 457|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_10 : 436|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_10 : 455|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_10 : 409|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_10 : 430|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_10 : 475|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_2_MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_2_CRCChecksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 517 FR5CP_Group_3: 64 FR5CP
+ SG_ FR5CP_ObjID_11 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_11 : 15|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_11 : 10|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_11 : 21|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_11 : 73|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_11 : 52|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_11 : 71|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_11 : 25|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_11 : 46|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_11 : 91|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_12 : 103|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_12 : 111|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_12 : 106|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_12 : 117|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_12 : 169|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_12 : 148|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_12 : 167|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_12 : 121|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_12 : 142|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_12 : 187|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_13 : 199|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_13 : 207|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_13 : 202|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_13 : 213|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_13 : 265|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_13 : 244|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_13 : 263|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_13 : 217|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_13 : 238|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_13 : 283|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_14 : 295|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_14 : 303|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_14 : 298|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_14 : 309|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_14 : 361|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_14 : 340|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_14 : 359|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_14 : 313|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_14 : 334|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_14 : 379|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_15 : 391|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_15 : 399|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_15 : 394|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_15 : 405|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_15 : 457|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_15 : 436|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_15 : 455|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_15 : 409|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_15 : 430|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_15 : 475|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_3_MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_3_CRCChecksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 518 FR5CP_Group_4: 64 FR5CP
+ SG_ FR5CP_ObjID_16 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_16 : 15|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_16 : 10|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_16 : 21|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_16 : 73|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_16 : 52|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_16 : 71|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_16 : 25|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_16 : 46|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_16 : 91|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_17 : 103|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_17 : 111|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_17 : 106|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_17 : 117|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_17 : 169|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_17 : 148|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_17 : 167|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_17 : 121|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_17 : 142|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_17 : 187|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_18 : 199|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_18 : 207|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_18 : 202|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_18 : 213|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_18 : 265|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_18 : 244|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_18 : 263|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_18 : 217|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_18 : 238|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_18 : 283|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_19 : 295|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_19 : 303|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_19 : 298|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_19 : 309|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_19 : 361|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_19 : 340|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_19 : 359|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_19 : 313|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_19 : 334|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_19 : 379|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_20 : 391|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_20 : 399|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_20 : 394|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_20 : 405|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_20 : 457|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_20 : 436|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_20 : 455|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_20 : 409|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_20 : 430|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_20 : 475|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_4_MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_4_CRCChecksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 520 FR5CP_Group_5: 64 FR5CP
+ SG_ FR5CP_ObjID_21 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_21 : 15|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_21 : 10|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_21 : 21|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_21 : 73|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_21 : 52|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_21 : 71|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_21 : 25|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_21 : 46|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_21 : 91|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_22 : 103|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_22 : 111|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_22 : 106|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_22 : 117|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_22 : 169|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_22 : 148|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_22 : 167|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_22 : 121|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_22 : 142|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_22 : 187|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_23 : 199|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_23 : 207|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_23 : 202|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_23 : 213|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_23 : 265|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_23 : 244|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_23 : 263|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_23 : 217|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_23 : 238|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_23 : 283|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_24 : 295|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_24 : 303|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_24 : 298|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_24 : 309|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_24 : 361|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_24 : 340|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_24 : 359|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_24 : 313|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_24 : 334|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_24 : 379|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_25 : 391|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_25 : 399|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_25 : 394|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_25 : 405|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_25 : 457|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_25 : 436|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_25 : 455|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_25 : 409|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_25 : 430|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_25 : 475|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_5_MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_5_CRCChecksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 521 FR5CP_Group_6: 64 FR5CP
+ SG_ FR5CP_ObjID_26 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_26 : 15|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_26 : 10|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_26 : 21|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_26 : 73|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_26 : 52|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_26 : 71|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_26 : 25|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_26 : 46|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_26 : 91|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_27 : 103|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_27 : 111|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_27 : 106|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_27 : 117|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_27 : 169|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_27 : 148|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_27 : 167|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_27 : 121|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_27 : 142|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_27 : 187|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_28 : 199|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_28 : 207|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_28 : 202|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_28 : 213|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_28 : 265|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_28 : 244|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_28 : 263|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_28 : 217|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_28 : 238|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_28 : 283|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_29 : 295|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_29 : 303|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_29 : 298|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_29 : 309|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_29 : 361|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_29 : 340|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_29 : 359|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_29 : 313|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_29 : 334|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_29 : 379|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_30 : 391|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_30 : 399|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_30 : 394|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_30 : 405|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_30 : 457|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_30 : 436|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_30 : 455|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_30 : 409|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_30 : 430|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_30 : 475|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_6_MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_6_CRCChecksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 522 FR5CP_Group_7: 32 FR5CP
+ SG_ FR5CP_ObjID_31 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_31 : 15|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_31 : 10|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_31 : 21|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_31 : 73|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_31 : 52|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_31 : 71|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_31 : 25|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_31 : 46|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_31 : 91|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_ObjID_32 : 103|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ FR5CP_ObjExistProb_32 : 111|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjObstacleProb_32 : 106|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ FR5CP_ObjDistX_32 : 117|12@0+ (0.0625,0) [0|254.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistY_32 : 169|14@0+ (0.0078125,-64) [-64|63.9921875] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelX_32 : 148|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelY_32 : 167|13@0+ (0.0312,-128) [-128|126.9976] "mps"  Vector_XXX
+ SG_ FR5CP_ObjAccelX_32 : 121|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjAccelY_32 : 142|10@0+ (0.03125,-16) [-16|15.96875] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjType_32 : 187|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_7_MsgCounter : 235|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_7_CRCChecksum : 247|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 523 FR5CP_Group_8: 64 FR5CP
+ SG_ FR5CP_ObjDistXStd_1 : 7|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_1 : 1|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_1 : 11|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_1 : 21|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_1 : 31|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_1 : 25|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_1 : 35|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_1 : 47|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_2 : 55|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_2 : 49|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd2 : 59|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_2 : 69|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_2 : 79|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_2 : 73|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_2 : 83|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_2 : 95|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_3 : 103|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_3 : 97|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_3 : 107|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_3 : 117|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_3 : 127|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_3 : 121|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_3 : 131|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_3 : 143|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_4 : 151|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_4 : 145|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_4 : 155|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_4 : 165|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_4 : 175|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_4 : 169|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_4 : 179|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_4 : 191|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_5 : 199|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_5 : 193|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_5 : 203|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_5 : 213|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_5 : 223|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_5 : 217|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_5 : 227|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_5 : 239|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_6 : 247|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_6 : 241|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_6 : 251|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_6 : 261|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_6 : 271|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_6 : 265|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_6 : 275|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_6 : 287|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_7 : 295|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_7 : 289|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_7 : 299|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_7 : 309|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_7 : 319|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_7 : 313|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_7 : 323|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_7 : 335|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_8 : 343|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_8 : 337|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_8 : 347|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_8 : 357|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_8 : 367|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_8 : 361|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_8 : 371|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_8 : 383|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_9 : 391|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_9 : 385|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_9 : 395|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_9 : 405|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_9 : 415|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_9 : 409|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_9 : 419|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_9 : 431|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_10 : 439|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_10 : 433|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_10 : 443|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_10 : 453|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_10 : 463|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_10 : 457|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_10 : 467|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_10 : 479|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_Group_8_MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_8_CRCChecksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 524 FR5CP_Group_9: 64 FR5CP
+ SG_ FR5CP_ObjDistXStd_11 : 7|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_11 : 1|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_11 : 11|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_11 : 21|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_11 : 31|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_11 : 25|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_11 : 35|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_11 : 47|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_12 : 55|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_12 : 49|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_12 : 59|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_12 : 69|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_12 : 79|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_12 : 73|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_12 : 83|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_12 : 95|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_13 : 103|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_13 : 97|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_13 : 107|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_13 : 117|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_13 : 127|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_13 : 121|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_13 : 131|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_13 : 143|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_14 : 151|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_14 : 145|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_14 : 155|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_14 : 165|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_14 : 175|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_14 : 169|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_14 : 179|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_14 : 191|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_15 : 199|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_15 : 193|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_15 : 203|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_15 : 213|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_15 : 223|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_15 : 217|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_15 : 227|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_15 : 239|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_16 : 247|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_16 : 241|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_16 : 251|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_16 : 261|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_16 : 271|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_16 : 265|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_16 : 275|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_16 : 287|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_17 : 295|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_17 : 289|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_17 : 299|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_17 : 309|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_17 : 319|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_17 : 313|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_17 : 323|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_17 : 335|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_18 : 343|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_18 : 337|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_18 : 347|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_18 : 357|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_18 : 367|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_18 : 361|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_18 : 371|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_18 : 383|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_19 : 391|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_19 : 385|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_19 : 395|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_19 : 405|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_19 : 415|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_19 : 409|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_19 : 419|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_19 : 431|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_20 : 439|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_20 : 433|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_20 : 443|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_20 : 453|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_20 : 463|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_20 : 457|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_20 : 467|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_20 : 479|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_Group_9_MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_9_CRCChecksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 525 FR5CP_Group_10: 64 FR5CP
+ SG_ FR5CP_ObjDistXStd_21 : 7|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_21 : 1|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_21 : 11|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_21 : 21|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_21 : 31|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_21 : 25|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_21 : 35|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_21 : 47|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_22 : 55|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_22 : 49|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_22 : 59|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_22 : 69|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_22 : 79|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_22 : 73|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_22 : 83|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_22 : 95|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_23 : 103|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_23 : 97|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_23 : 107|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_23 : 117|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_23 : 127|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_23 : 121|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_23 : 131|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_23 : 143|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_24 : 151|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_24 : 145|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_24 : 155|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_24 : 165|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_24 : 175|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_24 : 169|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_24 : 179|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_24 : 191|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_25 : 199|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_25 : 193|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_25 : 203|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_25 : 213|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_25 : 223|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_25 : 217|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_25 : 227|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_25 : 239|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_26 : 247|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_26 : 241|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_26 : 251|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_26 : 261|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_26 : 271|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_26 : 265|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_26 : 275|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_26 : 287|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_27 : 295|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_27 : 289|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_27 : 299|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_27 : 309|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_27 : 319|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_27 : 313|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_27 : 323|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_27 : 335|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_28 : 343|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_28 : 337|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_28 : 347|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_28 : 357|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_28 : 367|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_28 : 361|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_28 : 371|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_28 : 383|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_29 : 391|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_29 : 385|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_29 : 395|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_29 : 405|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_29 : 415|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_29 : 409|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_29 : 419|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_29 : 431|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_30 : 439|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_30 : 433|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_30 : 443|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_30 : 453|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_30 : 463|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_30 : 457|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_30 : 467|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_30 : 479|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_Group_10_MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_10_CRCChecksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 526 FR5CP_Group_11: 16 FR5CP
+ SG_ FR5CP_ObjDistXStd_31 : 7|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_31 : 1|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_31 : 11|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_31 : 21|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_31 : 31|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_31 : 25|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_31 : 35|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_31 : 47|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_ObjDistXStd_32 : 55|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjDistYStd_32 : 49|6@0+ (0.0625,0) [0|3.9375] "m"  Vector_XXX
+ SG_ FR5CP_ObjRelVelXStd_32 : 59|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRelVelYStd_32 : 69|6@0+ (0.0625,0) [0|3.9375] "mps"  Vector_XXX
+ SG_ FR5CP_ObjRAccelXStd_32 : 79|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjRAccelYStd_32 : 73|6@0+ (0.0625,0) [0|3.9375] "mps2"  Vector_XXX
+ SG_ FR5CP_ObjFusionSig_32 : 83|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_ObjFusionCamID_32 : 95|8@0+ (1,0) [0|254] ""  Vector_XXX
+ SG_ FR5CP_Group_11_MsgCounter : 115|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ FR5CP_Group_11_CRCChecksum : 127|8@0+ (1,0) [0|255] ""  Vector_XXX
+
+BO_ 400 FR5CP_DTC2: 16 FR5CP
+ SG_ FR5CP_VBAT_HIGH : 0|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_VBAT_LOW : 1|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_PCAN_BUSOFF : 2|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_SFCAN_CANBUS : 3|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_FR5CP_Blind : 22|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_Alignment_Never_Done : 24|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_Alignment_Not_OK : 25|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_FR5CP_Misalign : 46|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_Camera_Invalid : 48|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_HW_Fail : 54|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ FR5CP_SW_Fail : 61|1@0+ (1,0) [0|1] ""  Vector_XXX
+
+
+
+CM_ SG_ 512 FR5CP_FailureStatus "The FR5CP failure status";
+CM_ SG_ 515 FR5CP_ObjID_1 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 515 FR5CP_ObjExistProb_1 "The probability of an object to exist in reality";
+CM_ SG_ 515 FR5CP_ObjObstacleProb_1 "The probability of an object being an obstacle";
+CM_ SG_ 515 FR5CP_ObjDistX_1 "Position of target vehicle in x-direction";
+CM_ SG_ 515 FR5CP_ObjDistY_1 "Position of target vehicle in y-direction";
+CM_ SG_ 515 FR5CP_ObjRelVelX_1 "Relative target object velocity in x-direction";
+CM_ SG_ 515 FR5CP_ObjRelVelY_1 "Relative target object velocity in y-direction";
+CM_ SG_ 515 FR5CP_ObjType_1 "Class of object type";
+CM_ SG_ 515 FR5CP_ObjID_2 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 515 FR5CP_ObjExistProb_2 "The probability of an object to exist in reality";
+CM_ SG_ 515 FR5CP_ObjObstacleProb_2 "The probability of an object being an obstacle";
+CM_ SG_ 515 FR5CP_ObjDistX_2 "Position of target vehicle in x-direction";
+CM_ SG_ 515 FR5CP_ObjDistY_2 "Position of target vehicle in y-direction";
+CM_ SG_ 515 FR5CP_ObjRelVelX_2 "Relative target object velocity in x-direction";
+CM_ SG_ 515 FR5CP_ObjRelVelY_2 "Relative target object velocity in y-direction";
+CM_ SG_ 515 FR5CP_ObjType_2 "Class of object type";
+CM_ SG_ 515 FR5CP_ObjID_3 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 515 FR5CP_ObjExistProb_3 "The probability of an object to exist in reality";
+CM_ SG_ 515 FR5CP_ObjObstacleProb_3 "The probability of an object being an obstacle";
+CM_ SG_ 515 FR5CP_ObjDistX_3 "Position of target vehicle in x-direction";
+CM_ SG_ 515 FR5CP_ObjDistY_3 "Position of target vehicle in y-direction";
+CM_ SG_ 515 FR5CP_ObjRelVelX_3 "Relative target object velocity in x-direction";
+CM_ SG_ 515 FR5CP_ObjRelVelY_3 "Relative target object velocity in y-direction";
+CM_ SG_ 515 FR5CP_ObjType_3 "Class of object type";
+CM_ SG_ 515 FR5CP_ObjID_4 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 515 FR5CP_ObjExistProb_4 "The probability of an object to exist in reality";
+CM_ SG_ 515 FR5CP_ObjObstacleProb_4 "The probability of an object being an obstacle";
+CM_ SG_ 515 FR5CP_ObjDistX_4 "Position of target vehicle in x-direction";
+CM_ SG_ 515 FR5CP_ObjDistY_4 "Position of target vehicle in y-direction";
+CM_ SG_ 515 FR5CP_ObjRelVelX_4 "Relative target object velocity in x-direction";
+CM_ SG_ 515 FR5CP_ObjRelVelY_4 "Relative target object velocity in y-direction";
+CM_ SG_ 515 FR5CP_ObjType_4 "Class of object type";
+CM_ SG_ 515 FR5CP_ObjID_5 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 515 FR5CP_ObjExistProb_5 "The probability of an object to exist in reality";
+CM_ SG_ 515 FR5CP_ObjObstacleProb_5 "The probability of an object being an obstacle";
+CM_ SG_ 515 FR5CP_ObjDistX_5 "Position of target vehicle in x-direction";
+CM_ SG_ 515 FR5CP_ObjDistY_5 "Position of target vehicle in y-direction";
+CM_ SG_ 515 FR5CP_ObjRelVelX_5 "Relative target object velocity in x-direction";
+CM_ SG_ 515 FR5CP_ObjRelVelY_5 "Relative target object velocity in y-direction";
+CM_ SG_ 515 FR5CP_ObjType_5 "Class of object type";
+CM_ SG_ 515 FR5CP_Group_1_MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 515 FR5CP_Group_1_CRCChecksum "CRC16";
+CM_ SG_ 516 FR5CP_ObjID_6 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 516 FR5CP_ObjExistProb_6 "The probability of an object to exist in reality";
+CM_ SG_ 516 FR5CP_ObjObstacleProb_6 "The probability of an object being an obstacle";
+CM_ SG_ 516 FR5CP_ObjDistX_6 "Position of target vehicle in x-direction";
+CM_ SG_ 516 FR5CP_ObjDistY_6 "Position of target vehicle in y-direction";
+CM_ SG_ 516 FR5CP_ObjRelVelX_6 "Relative target object velocity in x-direction";
+CM_ SG_ 516 FR5CP_ObjRelVelY_6 "Relative target object velocity in y-direction";
+CM_ SG_ 516 FR5CP_ObjType_6 "Class of object type";
+CM_ SG_ 516 FR5CP_ObjID_7 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 516 FR5CP_ObjExistProb_7 "The probability of an object to exist in reality";
+CM_ SG_ 516 FR5CP_ObjObstacleProb_7 "The probability of an object being an obstacle";
+CM_ SG_ 516 FR5CP_ObjDistX_7 "Position of target vehicle in x-direction";
+CM_ SG_ 516 FR5CP_ObjDistY_7 "Position of target vehicle in y-direction";
+CM_ SG_ 516 FR5CP_ObjRelVelX_7 "Relative target object velocity in x-direction";
+CM_ SG_ 516 FR5CP_ObjRelVelY_7 "Relative target object velocity in y-direction";
+CM_ SG_ 516 FR5CP_ObjType_7 "Class of object type";
+CM_ SG_ 516 FR5CP_ObjID_8 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 516 FR5CP_ObjExistProb_8 "The probability of an object to exist in reality";
+CM_ SG_ 516 FR5CP_ObjObstacleProb_8 "The probability of an object being an obstacle";
+CM_ SG_ 516 FR5CP_ObjDistX_8 "Position of target vehicle in x-direction";
+CM_ SG_ 516 FR5CP_ObjDistY_8 "Position of target vehicle in y-direction";
+CM_ SG_ 516 FR5CP_ObjRelVelX_8 "Relative target object velocity in x-direction";
+CM_ SG_ 516 FR5CP_ObjRelVelY_8 "Relative target object velocity in y-direction";
+CM_ SG_ 516 FR5CP_ObjType_8 "Class of object type";
+CM_ SG_ 516 FR5CP_ObjID_9 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 516 FR5CP_ObjExistProb_9 "The probability of an object to exist in reality";
+CM_ SG_ 516 FR5CP_ObjObstacleProb_9 "The probability of an object being an obstacle";
+CM_ SG_ 516 FR5CP_ObjDistX_9 "Position of target vehicle in x-direction";
+CM_ SG_ 516 FR5CP_ObjDistY_9 "Position of target vehicle in y-direction";
+CM_ SG_ 516 FR5CP_ObjRelVelX_9 "Relative target object velocity in x-direction";
+CM_ SG_ 516 FR5CP_ObjRelVelY_9 "Relative target object velocity in y-direction";
+CM_ SG_ 516 FR5CP_ObjType_9 "Class of object type";
+CM_ SG_ 516 FR5CP_ObjID_10 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 516 FR5CP_ObjExistProb_10 "The probability of an object to exist in reality";
+CM_ SG_ 516 FR5CP_ObjObstacleProb_10 "The probability of an object being an obstacle";
+CM_ SG_ 516 FR5CP_ObjDistX_10 "Position of target vehicle in x-direction";
+CM_ SG_ 516 FR5CP_ObjDistY_10 "Position of target vehicle in y-direction";
+CM_ SG_ 516 FR5CP_ObjRelVelX_10 "Relative target object velocity in x-direction";
+CM_ SG_ 516 FR5CP_ObjRelVelY_10 "Relative target object velocity in y-direction";
+CM_ SG_ 516 FR5CP_ObjType_10 "Class of object type";
+CM_ SG_ 516 FR5CP_Group_2_MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 516 FR5CP_Group_2_CRCChecksum "CRC16";
+CM_ SG_ 517 FR5CP_ObjID_11 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 517 FR5CP_ObjExistProb_11 "The probability of an object to exist in reality";
+CM_ SG_ 517 FR5CP_ObjObstacleProb_11 "The probability of an object being an obstacle";
+CM_ SG_ 517 FR5CP_ObjDistX_11 "Position of target vehicle in x-direction";
+CM_ SG_ 517 FR5CP_ObjDistY_11 "Position of target vehicle in y-direction";
+CM_ SG_ 517 FR5CP_ObjRelVelX_11 "Relative target object velocity in x-direction";
+CM_ SG_ 517 FR5CP_ObjRelVelY_11 "Relative target object velocity in y-direction";
+CM_ SG_ 517 FR5CP_ObjType_11 "Class of object type";
+CM_ SG_ 517 FR5CP_ObjID_12 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 517 FR5CP_ObjExistProb_12 "The probability of an object to exist in reality";
+CM_ SG_ 517 FR5CP_ObjObstacleProb_12 "The probability of an object being an obstacle";
+CM_ SG_ 517 FR5CP_ObjDistX_12 "Position of target vehicle in x-direction";
+CM_ SG_ 517 FR5CP_ObjDistY_12 "Position of target vehicle in y-direction";
+CM_ SG_ 517 FR5CP_ObjRelVelX_12 "Relative target object velocity in x-direction";
+CM_ SG_ 517 FR5CP_ObjRelVelY_12 "Relative target object velocity in y-direction";
+CM_ SG_ 517 FR5CP_ObjType_12 "Class of object type";
+CM_ SG_ 517 FR5CP_ObjID_13 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 517 FR5CP_ObjExistProb_13 "The probability of an object to exist in reality";
+CM_ SG_ 517 FR5CP_ObjObstacleProb_13 "The probability of an object being an obstacle";
+CM_ SG_ 517 FR5CP_ObjDistX_13 "Position of target vehicle in x-direction";
+CM_ SG_ 517 FR5CP_ObjDistY_13 "Position of target vehicle in y-direction";
+CM_ SG_ 517 FR5CP_ObjRelVelX_13 "Relative target object velocity in x-direction";
+CM_ SG_ 517 FR5CP_ObjRelVelY_13 "Relative target object velocity in y-direction";
+CM_ SG_ 517 FR5CP_ObjType_13 "Class of object type";
+CM_ SG_ 517 FR5CP_ObjID_14 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 517 FR5CP_ObjExistProb_14 "The probability of an object to exist in reality";
+CM_ SG_ 517 FR5CP_ObjObstacleProb_14 "The probability of an object being an obstacle";
+CM_ SG_ 517 FR5CP_ObjDistX_14 "Position of target vehicle in x-direction";
+CM_ SG_ 517 FR5CP_ObjDistY_14 "Position of target vehicle in y-direction";
+CM_ SG_ 517 FR5CP_ObjRelVelX_14 "Relative target object velocity in x-direction";
+CM_ SG_ 517 FR5CP_ObjRelVelY_14 "Relative target object velocity in y-direction";
+CM_ SG_ 517 FR5CP_ObjType_14 "Class of object type";
+CM_ SG_ 517 FR5CP_ObjID_15 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 517 FR5CP_ObjExistProb_15 "The probability of an object to exist in reality";
+CM_ SG_ 517 FR5CP_ObjObstacleProb_15 "The probability of an object being an obstacle";
+CM_ SG_ 517 FR5CP_ObjDistX_15 "Position of target vehicle in x-direction";
+CM_ SG_ 517 FR5CP_ObjDistY_15 "Position of target vehicle in y-direction";
+CM_ SG_ 517 FR5CP_ObjRelVelX_15 "Relative target object velocity in x-direction";
+CM_ SG_ 517 FR5CP_ObjRelVelY_15 "Relative target object velocity in y-direction";
+CM_ SG_ 517 FR5CP_ObjType_15 "Class of object type";
+CM_ SG_ 517 FR5CP_Group_3_MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 517 FR5CP_Group_3_CRCChecksum "CRC16";
+CM_ SG_ 518 FR5CP_ObjID_16 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 518 FR5CP_ObjExistProb_16 "The probability of an object to exist in reality";
+CM_ SG_ 518 FR5CP_ObjObstacleProb_16 "The probability of an object being an obstacle";
+CM_ SG_ 518 FR5CP_ObjDistX_16 "Position of target vehicle in x-direction";
+CM_ SG_ 518 FR5CP_ObjDistY_16 "Position of target vehicle in y-direction";
+CM_ SG_ 518 FR5CP_ObjRelVelX_16 "Relative target object velocity in x-direction";
+CM_ SG_ 518 FR5CP_ObjRelVelY_16 "Relative target object velocity in y-direction";
+CM_ SG_ 518 FR5CP_ObjType_16 "Class of object type";
+CM_ SG_ 518 FR5CP_ObjID_17 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 518 FR5CP_ObjExistProb_17 "The probability of an object to exist in reality";
+CM_ SG_ 518 FR5CP_ObjObstacleProb_17 "The probability of an object being an obstacle";
+CM_ SG_ 518 FR5CP_ObjDistX_17 "Position of target vehicle in x-direction";
+CM_ SG_ 518 FR5CP_ObjDistY_17 "Position of target vehicle in y-direction";
+CM_ SG_ 518 FR5CP_ObjRelVelX_17 "Relative target object velocity in x-direction";
+CM_ SG_ 518 FR5CP_ObjRelVelY_17 "Relative target object velocity in y-direction";
+CM_ SG_ 518 FR5CP_ObjType_17 "Class of object type";
+CM_ SG_ 518 FR5CP_ObjID_18 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 518 FR5CP_ObjExistProb_18 "The probability of an object to exist in reality";
+CM_ SG_ 518 FR5CP_ObjObstacleProb_18 "The probability of an object being an obstacle";
+CM_ SG_ 518 FR5CP_ObjDistX_18 "Position of target vehicle in x-direction";
+CM_ SG_ 518 FR5CP_ObjDistY_18 "Position of target vehicle in y-direction";
+CM_ SG_ 518 FR5CP_ObjRelVelX_18 "Relative target object velocity in x-direction";
+CM_ SG_ 518 FR5CP_ObjRelVelY_18 "Relative target object velocity in y-direction";
+CM_ SG_ 518 FR5CP_ObjType_18 "Class of object type";
+CM_ SG_ 518 FR5CP_ObjID_19 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 518 FR5CP_ObjExistProb_19 "The probability of an object to exist in reality";
+CM_ SG_ 518 FR5CP_ObjObstacleProb_19 "The probability of an object being an obstacle";
+CM_ SG_ 518 FR5CP_ObjDistX_19 "Position of target vehicle in x-direction";
+CM_ SG_ 518 FR5CP_ObjDistY_19 "Position of target vehicle in y-direction";
+CM_ SG_ 518 FR5CP_ObjRelVelX_19 "Relative target object velocity in x-direction";
+CM_ SG_ 518 FR5CP_ObjRelVelY_19 "Relative target object velocity in y-direction";
+CM_ SG_ 518 FR5CP_ObjType_19 "Class of object type";
+CM_ SG_ 518 FR5CP_ObjID_20 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 518 FR5CP_ObjExistProb_20 "The probability of an object to exist in reality";
+CM_ SG_ 518 FR5CP_ObjObstacleProb_20 "The probability of an object being an obstacle";
+CM_ SG_ 518 FR5CP_ObjDistX_20 "Position of target vehicle in x-direction";
+CM_ SG_ 518 FR5CP_ObjDistY_20 "Position of target vehicle in y-direction";
+CM_ SG_ 518 FR5CP_ObjRelVelX_20 "Relative target object velocity in x-direction";
+CM_ SG_ 518 FR5CP_ObjRelVelY_20 "Relative target object velocity in y-direction";
+CM_ SG_ 518 FR5CP_ObjType_20 "Class of object type";
+CM_ SG_ 518 FR5CP_Group_4_MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 518 FR5CP_Group_4_CRCChecksum "CRC16";
+CM_ SG_ 520 FR5CP_ObjID_21 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 520 FR5CP_ObjExistProb_21 "The probability of an object to exist in reality";
+CM_ SG_ 520 FR5CP_ObjObstacleProb_21 "The probability of an object being an obstacle";
+CM_ SG_ 520 FR5CP_ObjDistX_21 "Position of target vehicle in x-direction";
+CM_ SG_ 520 FR5CP_ObjDistY_21 "Position of target vehicle in y-direction";
+CM_ SG_ 520 FR5CP_ObjRelVelX_21 "Relative target object velocity in x-direction";
+CM_ SG_ 520 FR5CP_ObjRelVelY_21 "Relative target object velocity in y-direction";
+CM_ SG_ 520 FR5CP_ObjType_21 "Class of object type";
+CM_ SG_ 520 FR5CP_ObjID_22 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 520 FR5CP_ObjExistProb_22 "The probability of an object to exist in reality";
+CM_ SG_ 520 FR5CP_ObjObstacleProb_22 "The probability of an object being an obstacle";
+CM_ SG_ 520 FR5CP_ObjDistX_22 "Position of target vehicle in x-direction";
+CM_ SG_ 520 FR5CP_ObjDistY_22 "Position of target vehicle in y-direction";
+CM_ SG_ 520 FR5CP_ObjRelVelX_22 "Relative target object velocity in x-direction";
+CM_ SG_ 520 FR5CP_ObjRelVelY_22 "Relative target object velocity in y-direction";
+CM_ SG_ 520 FR5CP_ObjType_22 "Class of object type";
+CM_ SG_ 520 FR5CP_ObjID_23 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 520 FR5CP_ObjExistProb_23 "The probability of an object to exist in reality";
+CM_ SG_ 520 FR5CP_ObjObstacleProb_23 "The probability of an object being an obstacle";
+CM_ SG_ 520 FR5CP_ObjDistX_23 "Position of target vehicle in x-direction";
+CM_ SG_ 520 FR5CP_ObjDistY_23 "Position of target vehicle in y-direction";
+CM_ SG_ 520 FR5CP_ObjRelVelX_23 "Relative target object velocity in x-direction";
+CM_ SG_ 520 FR5CP_ObjRelVelY_23 "Relative target object velocity in y-direction";
+CM_ SG_ 520 FR5CP_ObjType_23 "Class of object type";
+CM_ SG_ 520 FR5CP_ObjID_24 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 520 FR5CP_ObjExistProb_24 "The probability of an object to exist in reality";
+CM_ SG_ 520 FR5CP_ObjObstacleProb_24 "The probability of an object being an obstacle";
+CM_ SG_ 520 FR5CP_ObjDistX_24 "Position of target vehicle in x-direction";
+CM_ SG_ 520 FR5CP_ObjDistY_24 "Position of target vehicle in y-direction";
+CM_ SG_ 520 FR5CP_ObjRelVelX_24 "Relative target object velocity in x-direction";
+CM_ SG_ 520 FR5CP_ObjRelVelY_24 "Relative target object velocity in y-direction";
+CM_ SG_ 520 FR5CP_ObjType_24 "Class of object type";
+CM_ SG_ 520 FR5CP_ObjID_25 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 520 FR5CP_ObjExistProb_25 "The probability of an object to exist in reality";
+CM_ SG_ 520 FR5CP_ObjObstacleProb_25 "The probability of an object being an obstacle";
+CM_ SG_ 520 FR5CP_ObjDistX_25 "Position of target vehicle in x-direction";
+CM_ SG_ 520 FR5CP_ObjDistY_25 "Position of target vehicle in y-direction";
+CM_ SG_ 520 FR5CP_ObjRelVelX_25 "Relative target object velocity in x-direction";
+CM_ SG_ 520 FR5CP_ObjRelVelY_25 "Relative target object velocity in y-direction";
+CM_ SG_ 520 FR5CP_ObjType_25 "Class of object type";
+CM_ SG_ 520 FR5CP_Group_5_MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 520 FR5CP_Group_5_CRCChecksum "CRC16";
+CM_ SG_ 521 FR5CP_ObjID_26 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 521 FR5CP_ObjExistProb_26 "The probability of an object to exist in reality";
+CM_ SG_ 521 FR5CP_ObjObstacleProb_26 "The probability of an object being an obstacle";
+CM_ SG_ 521 FR5CP_ObjDistX_26 "Position of target vehicle in x-direction";
+CM_ SG_ 521 FR5CP_ObjDistY_26 "Position of target vehicle in y-direction";
+CM_ SG_ 521 FR5CP_ObjRelVelX_26 "Relative target object velocity in x-direction";
+CM_ SG_ 521 FR5CP_ObjRelVelY_26 "Relative target object velocity in y-direction";
+CM_ SG_ 521 FR5CP_ObjType_26 "Class of object type";
+CM_ SG_ 521 FR5CP_ObjID_27 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 521 FR5CP_ObjExistProb_27 "The probability of an object to exist in reality";
+CM_ SG_ 521 FR5CP_ObjObstacleProb_27 "The probability of an object being an obstacle";
+CM_ SG_ 521 FR5CP_ObjDistX_27 "Position of target vehicle in x-direction";
+CM_ SG_ 521 FR5CP_ObjDistY_27 "Position of target vehicle in y-direction";
+CM_ SG_ 521 FR5CP_ObjRelVelX_27 "Relative target object velocity in x-direction";
+CM_ SG_ 521 FR5CP_ObjRelVelY_27 "Relative target object velocity in y-direction";
+CM_ SG_ 521 FR5CP_ObjType_27 "Class of object type";
+CM_ SG_ 521 FR5CP_ObjID_28 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 521 FR5CP_ObjExistProb_28 "The probability of an object to exist in reality";
+CM_ SG_ 521 FR5CP_ObjObstacleProb_28 "The probability of an object being an obstacle";
+CM_ SG_ 521 FR5CP_ObjDistX_28 "Position of target vehicle in x-direction";
+CM_ SG_ 521 FR5CP_ObjDistY_28 "Position of target vehicle in y-direction";
+CM_ SG_ 521 FR5CP_ObjRelVelX_28 "Relative target object velocity in x-direction";
+CM_ SG_ 521 FR5CP_ObjRelVelY_28 "Relative target object velocity in y-direction";
+CM_ SG_ 521 FR5CP_ObjType_28 "Class of object type";
+CM_ SG_ 521 FR5CP_ObjID_29 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 521 FR5CP_ObjExistProb_29 "The probability of an object to exist in reality";
+CM_ SG_ 521 FR5CP_ObjObstacleProb_29 "The probability of an object being an obstacle";
+CM_ SG_ 521 FR5CP_ObjDistX_29 "Position of target vehicle in x-direction";
+CM_ SG_ 521 FR5CP_ObjDistY_29 "Position of target vehicle in y-direction";
+CM_ SG_ 521 FR5CP_ObjRelVelX_29 "Relative target object velocity in x-direction";
+CM_ SG_ 521 FR5CP_ObjRelVelY_29 "Relative target object velocity in y-direction";
+CM_ SG_ 521 FR5CP_ObjType_29 "Class of object type";
+CM_ SG_ 521 FR5CP_ObjID_30 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 521 FR5CP_ObjExistProb_30 "The probability of an object to exist in reality";
+CM_ SG_ 521 FR5CP_ObjObstacleProb_30 "The probability of an object being an obstacle";
+CM_ SG_ 521 FR5CP_ObjDistX_30 "Position of target vehicle in x-direction";
+CM_ SG_ 521 FR5CP_ObjDistY_30 "Position of target vehicle in y-direction";
+CM_ SG_ 521 FR5CP_ObjRelVelX_30 "Relative target object velocity in x-direction";
+CM_ SG_ 521 FR5CP_ObjRelVelY_30 "Relative target object velocity in y-direction";
+CM_ SG_ 521 FR5CP_ObjType_30 "Class of object type";
+CM_ SG_ 521 FR5CP_Group_6_MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 521 FR5CP_Group_6_CRCChecksum "CRC16";
+CM_ SG_ 522 FR5CP_ObjID_31 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 522 FR5CP_ObjExistProb_31 "The probability of an object to exist in reality";
+CM_ SG_ 522 FR5CP_ObjObstacleProb_31 "The probability of an object being an obstacle";
+CM_ SG_ 522 FR5CP_ObjDistX_31 "Position of target vehicle in x-direction";
+CM_ SG_ 522 FR5CP_ObjDistY_31 "Position of target vehicle in y-direction";
+CM_ SG_ 522 FR5CP_ObjRelVelX_31 "Relative target object velocity in x-direction";
+CM_ SG_ 522 FR5CP_ObjRelVelY_31 "Relative target object velocity in y-direction";
+CM_ SG_ 522 FR5CP_ObjType_31 "Class of object type";
+CM_ SG_ 522 FR5CP_ObjID_32 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 522 FR5CP_ObjExistProb_32 "The probability of an object to exist in reality";
+CM_ SG_ 522 FR5CP_ObjObstacleProb_32 "The probability of an object being an obstacle";
+CM_ SG_ 522 FR5CP_ObjDistX_32 "Position of target vehicle in x-direction";
+CM_ SG_ 522 FR5CP_ObjDistY_32 "Position of target vehicle in y-direction";
+CM_ SG_ 522 FR5CP_ObjRelVelX_32 "Relative target object velocity in x-direction";
+CM_ SG_ 522 FR5CP_ObjRelVelY_32 "Relative target object velocity in y-direction";
+CM_ SG_ 522 FR5CP_ObjType_32 "Class of object type";
+CM_ SG_ 522 FR5CP_Group_7_MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 522 FR5CP_Group_7_CRCChecksum "CRC16";
+CM_ SG_ 523 FR5CP_ObjDistXStd_1 "Standard deviation of distance X";
+CM_ SG_ 523 FR5CP_ObjDistYStd_1 "Standard deviation of distance Y";
+CM_ SG_ 523 FR5CP_ObjRelVelXStd_1 "Standard deviation of Relative velocity X";
+CM_ SG_ 523 FR5CP_ObjRelVelYStd_1 "Standard deviation of Relative velocity Y";
+CM_ SG_ 523 FR5CP_ObjRAccelXStd_1 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 523 FR5CP_ObjRAccelYStd_1 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 523 FR5CP_ObjFusionSig_1 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 523 FR5CP_ObjFusionCamID_1 "Camera object ID(Reserved)";
+CM_ SG_ 523 FR5CP_ObjDistXStd_2 "Standard deviation of distance X";
+CM_ SG_ 523 FR5CP_ObjDistYStd_2 "Standard deviation of distance Y";
+CM_ SG_ 523 FR5CP_ObjRelVelXStd2 "Standard deviation of Relative velocity X";
+CM_ SG_ 523 FR5CP_ObjRelVelYStd_2 "Standard deviation of Relative velocity Y";
+CM_ SG_ 523 FR5CP_ObjRAccelXStd_2 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 523 FR5CP_ObjRAccelYStd_2 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 523 FR5CP_ObjFusionSig_2 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 523 FR5CP_ObjFusionCamID_2 "Camera object ID(Reserved)";
+CM_ SG_ 523 FR5CP_ObjDistXStd_3 "Standard deviation of distance X";
+CM_ SG_ 523 FR5CP_ObjDistYStd_3 "Standard deviation of distance Y";
+CM_ SG_ 523 FR5CP_ObjRelVelXStd_3 "Standard deviation of Relative velocity X";
+CM_ SG_ 523 FR5CP_ObjRelVelYStd_3 "Standard deviation of Relative velocity Y";
+CM_ SG_ 523 FR5CP_ObjRAccelXStd_3 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 523 FR5CP_ObjRAccelYStd_3 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 523 FR5CP_ObjFusionSig_3 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 523 FR5CP_ObjFusionCamID_3 "Camera object ID(Reserved)";
+CM_ SG_ 523 FR5CP_ObjDistXStd_4 "Standard deviation of distance X";
+CM_ SG_ 523 FR5CP_ObjDistYStd_4 "Standard deviation of distance Y";
+CM_ SG_ 523 FR5CP_ObjRelVelXStd_4 "Standard deviation of Relative velocity X";
+CM_ SG_ 523 FR5CP_ObjRelVelYStd_4 "Standard deviation of Relative velocity Y";
+CM_ SG_ 523 FR5CP_ObjRAccelXStd_4 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 523 FR5CP_ObjRAccelYStd_4 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 523 FR5CP_ObjFusionSig_4 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 523 FR5CP_ObjFusionCamID_4 "Camera object ID(Reserved)";
+CM_ SG_ 523 FR5CP_ObjDistXStd_5 "Standard deviation of distance X";
+CM_ SG_ 523 FR5CP_ObjDistYStd_5 "Standard deviation of distance Y";
+CM_ SG_ 523 FR5CP_ObjRelVelXStd_5 "Standard deviation of Relative velocity X";
+CM_ SG_ 523 FR5CP_ObjRelVelYStd_5 "Standard deviation of Relative velocity Y";
+CM_ SG_ 523 FR5CP_ObjRAccelXStd_5 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 523 FR5CP_ObjRAccelYStd_5 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 523 FR5CP_ObjFusionSig_5 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 523 FR5CP_ObjFusionCamID_5 "Camera object ID(Reserved)";
+CM_ SG_ 523 FR5CP_ObjDistXStd_6 "Standard deviation of distance X";
+CM_ SG_ 523 FR5CP_ObjDistYStd_6 "Standard deviation of distance Y";
+CM_ SG_ 523 FR5CP_ObjRelVelXStd_6 "Standard deviation of Relative velocity X";
+CM_ SG_ 523 FR5CP_ObjRelVelYStd_6 "Standard deviation of Relative velocity Y";
+CM_ SG_ 523 FR5CP_ObjRAccelXStd_6 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 523 FR5CP_ObjRAccelYStd_6 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 523 FR5CP_ObjFusionSig_6 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 523 FR5CP_ObjFusionCamID_6 "Camera object ID(Reserved)";
+CM_ SG_ 523 FR5CP_ObjDistXStd_7 "Standard deviation of distance X";
+CM_ SG_ 523 FR5CP_ObjDistYStd_7 "Standard deviation of distance Y";
+CM_ SG_ 523 FR5CP_ObjRelVelXStd_7 "Standard deviation of Relative velocity X";
+CM_ SG_ 523 FR5CP_ObjRelVelYStd_7 "Standard deviation of Relative velocity Y";
+CM_ SG_ 523 FR5CP_ObjRAccelXStd_7 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 523 FR5CP_ObjRAccelYStd_7 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 523 FR5CP_ObjFusionSig_7 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 523 FR5CP_ObjFusionCamID_7 "Camera object ID(Reserved)";
+CM_ SG_ 523 FR5CP_ObjDistXStd_8 "Standard deviation of distance X";
+CM_ SG_ 523 FR5CP_ObjDistYStd_8 "Standard deviation of distance Y";
+CM_ SG_ 523 FR5CP_ObjRelVelXStd_8 "Standard deviation of Relative velocity X";
+CM_ SG_ 523 FR5CP_ObjRelVelYStd_8 "Standard deviation of Relative velocity Y";
+CM_ SG_ 523 FR5CP_ObjRAccelXStd_8 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 523 FR5CP_ObjRAccelYStd_8 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 523 FR5CP_ObjFusionSig_8 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 523 FR5CP_ObjFusionCamID_8 "Camera object ID(Reserved)";
+CM_ SG_ 523 FR5CP_ObjDistXStd_9 "Standard deviation of distance X";
+CM_ SG_ 523 FR5CP_ObjDistYStd_9 "Standard deviation of distance Y";
+CM_ SG_ 523 FR5CP_ObjRelVelXStd_9 "Standard deviation of Relative velocity X";
+CM_ SG_ 523 FR5CP_ObjRelVelYStd_9 "Standard deviation of Relative velocity Y";
+CM_ SG_ 523 FR5CP_ObjRAccelXStd_9 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 523 FR5CP_ObjRAccelYStd_9 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 523 FR5CP_ObjFusionSig_9 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 523 FR5CP_ObjFusionCamID_9 "Camera object ID(Reserved)";
+CM_ SG_ 523 FR5CP_ObjDistXStd_10 "Standard deviation of distance X";
+CM_ SG_ 523 FR5CP_ObjDistYStd_10 "Standard deviation of distance Y";
+CM_ SG_ 523 FR5CP_ObjRelVelXStd_10 "Standard deviation of Relative velocity X";
+CM_ SG_ 523 FR5CP_ObjRelVelYStd_10 "Standard deviation of Relative velocity Y";
+CM_ SG_ 523 FR5CP_ObjRAccelXStd_10 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 523 FR5CP_ObjRAccelYStd_10 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 523 FR5CP_ObjFusionSig_10 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 523 FR5CP_ObjFusionCamID_10 "Camera object ID(Reserved)";
+CM_ SG_ 523 FR5CP_Group_8_MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 523 FR5CP_Group_8_CRCChecksum "CRC16";
+CM_ SG_ 524 FR5CP_ObjDistXStd_11 "Standard deviation of distance X";
+CM_ SG_ 524 FR5CP_ObjDistYStd_11 "Standard deviation of distance Y";
+CM_ SG_ 524 FR5CP_ObjRelVelXStd_11 "Standard deviation of Relative velocity X";
+CM_ SG_ 524 FR5CP_ObjRelVelYStd_11 "Standard deviation of Relative velocity Y";
+CM_ SG_ 524 FR5CP_ObjRAccelXStd_11 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 524 FR5CP_ObjRAccelYStd_11 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 524 FR5CP_ObjFusionSig_11 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 524 FR5CP_ObjFusionCamID_11 "Camera object ID(Reserved)";
+CM_ SG_ 524 FR5CP_ObjDistXStd_12 "Standard deviation of distance X";
+CM_ SG_ 524 FR5CP_ObjDistYStd_12 "Standard deviation of distance Y";
+CM_ SG_ 524 FR5CP_ObjRelVelXStd_12 "Standard deviation of Relative velocity X";
+CM_ SG_ 524 FR5CP_ObjRelVelYStd_12 "Standard deviation of Relative velocity Y";
+CM_ SG_ 524 FR5CP_ObjRAccelXStd_12 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 524 FR5CP_ObjRAccelYStd_12 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 524 FR5CP_ObjFusionSig_12 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 524 FR5CP_ObjFusionCamID_12 "Camera object ID(Reserved)";
+CM_ SG_ 524 FR5CP_ObjDistXStd_13 "Standard deviation of distance X";
+CM_ SG_ 524 FR5CP_ObjDistYStd_13 "Standard deviation of distance Y";
+CM_ SG_ 524 FR5CP_ObjRelVelXStd_13 "Standard deviation of Relative velocity X";
+CM_ SG_ 524 FR5CP_ObjRelVelYStd_13 "Standard deviation of Relative velocity Y";
+CM_ SG_ 524 FR5CP_ObjRAccelXStd_13 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 524 FR5CP_ObjRAccelYStd_13 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 524 FR5CP_ObjFusionSig_13 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 524 FR5CP_ObjFusionCamID_13 "Camera object ID(Reserved)";
+CM_ SG_ 524 FR5CP_ObjDistXStd_14 "Standard deviation of distance X";
+CM_ SG_ 524 FR5CP_ObjDistYStd_14 "Standard deviation of distance Y";
+CM_ SG_ 524 FR5CP_ObjRelVelXStd_14 "Standard deviation of Relative velocity X";
+CM_ SG_ 524 FR5CP_ObjRelVelYStd_14 "Standard deviation of Relative velocity Y";
+CM_ SG_ 524 FR5CP_ObjRAccelXStd_14 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 524 FR5CP_ObjRAccelYStd_14 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 524 FR5CP_ObjFusionSig_14 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 524 FR5CP_ObjFusionCamID_14 "Camera object ID(Reserved)";
+CM_ SG_ 524 FR5CP_ObjDistXStd_15 "Standard deviation of distance X";
+CM_ SG_ 524 FR5CP_ObjDistYStd_15 "Standard deviation of distance Y";
+CM_ SG_ 524 FR5CP_ObjRelVelXStd_15 "Standard deviation of Relative velocity X";
+CM_ SG_ 524 FR5CP_ObjRelVelYStd_15 "Standard deviation of Relative velocity Y";
+CM_ SG_ 524 FR5CP_ObjRAccelXStd_15 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 524 FR5CP_ObjRAccelYStd_15 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 524 FR5CP_ObjFusionSig_15 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 524 FR5CP_ObjFusionCamID_15 "Camera object ID(Reserved)";
+CM_ SG_ 524 FR5CP_ObjDistXStd_16 "Standard deviation of distance X";
+CM_ SG_ 524 FR5CP_ObjDistYStd_16 "Standard deviation of distance Y";
+CM_ SG_ 524 FR5CP_ObjRelVelXStd_16 "Standard deviation of Relative velocity X";
+CM_ SG_ 524 FR5CP_ObjRelVelYStd_16 "Standard deviation of Relative velocity Y";
+CM_ SG_ 524 FR5CP_ObjRAccelXStd_16 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 524 FR5CP_ObjRAccelYStd_16 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 524 FR5CP_ObjFusionSig_16 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 524 FR5CP_ObjFusionCamID_16 "Camera object ID(Reserved)";
+CM_ SG_ 524 FR5CP_ObjDistXStd_17 "Standard deviation of distance X";
+CM_ SG_ 524 FR5CP_ObjDistYStd_17 "Standard deviation of distance Y";
+CM_ SG_ 524 FR5CP_ObjRelVelXStd_17 "Standard deviation of Relative velocity X";
+CM_ SG_ 524 FR5CP_ObjRelVelYStd_17 "Standard deviation of Relative velocity Y";
+CM_ SG_ 524 FR5CP_ObjRAccelXStd_17 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 524 FR5CP_ObjRAccelYStd_17 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 524 FR5CP_ObjFusionSig_17 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 524 FR5CP_ObjFusionCamID_17 "Camera object ID(Reserved)";
+CM_ SG_ 524 FR5CP_ObjDistXStd_18 "Standard deviation of distance X";
+CM_ SG_ 524 FR5CP_ObjDistYStd_18 "Standard deviation of distance Y";
+CM_ SG_ 524 FR5CP_ObjRelVelXStd_18 "Standard deviation of Relative velocity X";
+CM_ SG_ 524 FR5CP_ObjRelVelYStd_18 "Standard deviation of Relative velocity Y";
+CM_ SG_ 524 FR5CP_ObjRAccelXStd_18 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 524 FR5CP_ObjRAccelYStd_18 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 524 FR5CP_ObjFusionSig_18 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 524 FR5CP_ObjFusionCamID_18 "Camera object ID(Reserved)";
+CM_ SG_ 524 FR5CP_ObjDistXStd_19 "Standard deviation of distance X";
+CM_ SG_ 524 FR5CP_ObjDistYStd_19 "Standard deviation of distance Y";
+CM_ SG_ 524 FR5CP_ObjRelVelXStd_19 "Standard deviation of Relative velocity X";
+CM_ SG_ 524 FR5CP_ObjRelVelYStd_19 "Standard deviation of Relative velocity Y";
+CM_ SG_ 524 FR5CP_ObjRAccelXStd_19 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 524 FR5CP_ObjRAccelYStd_19 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 524 FR5CP_ObjFusionSig_19 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 524 FR5CP_ObjFusionCamID_19 "Camera object ID(Reserved)";
+CM_ SG_ 524 FR5CP_ObjDistXStd_20 "Standard deviation of distance X";
+CM_ SG_ 524 FR5CP_ObjDistYStd_20 "Standard deviation of distance Y";
+CM_ SG_ 524 FR5CP_ObjRelVelXStd_20 "Standard deviation of Relative velocity X";
+CM_ SG_ 524 FR5CP_ObjRelVelYStd_20 "Standard deviation of Relative velocity Y";
+CM_ SG_ 524 FR5CP_ObjRAccelXStd_20 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 524 FR5CP_ObjRAccelYStd_20 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 524 FR5CP_ObjFusionSig_20 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 524 FR5CP_ObjFusionCamID_20 "Camera object ID(Reserved)";
+CM_ SG_ 524 FR5CP_Group_9_MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 524 FR5CP_Group_9_CRCChecksum "CRC16";
+CM_ SG_ 525 FR5CP_ObjDistXStd_21 "Standard deviation of distance X";
+CM_ SG_ 525 FR5CP_ObjDistYStd_21 "Standard deviation of distance Y";
+CM_ SG_ 525 FR5CP_ObjRelVelXStd_21 "Standard deviation of Relative velocity X";
+CM_ SG_ 525 FR5CP_ObjRelVelYStd_21 "Standard deviation of Relative velocity Y";
+CM_ SG_ 525 FR5CP_ObjRAccelXStd_21 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 525 FR5CP_ObjRAccelYStd_21 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 525 FR5CP_ObjFusionSig_21 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 525 FR5CP_ObjFusionCamID_21 "Camera object ID(Reserved)";
+CM_ SG_ 525 FR5CP_ObjDistXStd_22 "Standard deviation of distance X";
+CM_ SG_ 525 FR5CP_ObjDistYStd_22 "Standard deviation of distance Y";
+CM_ SG_ 525 FR5CP_ObjRelVelXStd_22 "Standard deviation of Relative velocity X";
+CM_ SG_ 525 FR5CP_ObjRelVelYStd_22 "Standard deviation of Relative velocity Y";
+CM_ SG_ 525 FR5CP_ObjRAccelXStd_22 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 525 FR5CP_ObjRAccelYStd_22 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 525 FR5CP_ObjFusionSig_22 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 525 FR5CP_ObjFusionCamID_22 "Camera object ID(Reserved)";
+CM_ SG_ 525 FR5CP_ObjDistXStd_23 "Standard deviation of distance X";
+CM_ SG_ 525 FR5CP_ObjDistYStd_23 "Standard deviation of distance Y";
+CM_ SG_ 525 FR5CP_ObjRelVelXStd_23 "Standard deviation of Relative velocity X";
+CM_ SG_ 525 FR5CP_ObjRelVelYStd_23 "Standard deviation of Relative velocity Y";
+CM_ SG_ 525 FR5CP_ObjRAccelXStd_23 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 525 FR5CP_ObjRAccelYStd_23 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 525 FR5CP_ObjFusionSig_23 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 525 FR5CP_ObjFusionCamID_23 "Camera object ID(Reserved)";
+CM_ SG_ 525 FR5CP_ObjDistXStd_24 "Standard deviation of distance X";
+CM_ SG_ 525 FR5CP_ObjDistYStd_24 "Standard deviation of distance Y";
+CM_ SG_ 525 FR5CP_ObjRelVelXStd_24 "Standard deviation of Relative velocity X";
+CM_ SG_ 525 FR5CP_ObjRelVelYStd_24 "Standard deviation of Relative velocity Y";
+CM_ SG_ 525 FR5CP_ObjRAccelXStd_24 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 525 FR5CP_ObjRAccelYStd_24 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 525 FR5CP_ObjFusionSig_24 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 525 FR5CP_ObjFusionCamID_24 "Camera object ID(Reserved)";
+CM_ SG_ 525 FR5CP_ObjDistXStd_25 "Standard deviation of distance X";
+CM_ SG_ 525 FR5CP_ObjDistYStd_25 "Standard deviation of distance Y";
+CM_ SG_ 525 FR5CP_ObjRelVelXStd_25 "Standard deviation of Relative velocity X";
+CM_ SG_ 525 FR5CP_ObjRelVelYStd_25 "Standard deviation of Relative velocity Y";
+CM_ SG_ 525 FR5CP_ObjRAccelXStd_25 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 525 FR5CP_ObjRAccelYStd_25 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 525 FR5CP_ObjFusionSig_25 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 525 FR5CP_ObjFusionCamID_25 "Camera object ID(Reserved)";
+CM_ SG_ 525 FR5CP_ObjDistXStd_26 "Standard deviation of distance X";
+CM_ SG_ 525 FR5CP_ObjDistYStd_26 "Standard deviation of distance Y";
+CM_ SG_ 525 FR5CP_ObjRelVelXStd_26 "Standard deviation of Relative velocity X";
+CM_ SG_ 525 FR5CP_ObjRelVelYStd_26 "Standard deviation of Relative velocity Y";
+CM_ SG_ 525 FR5CP_ObjRAccelXStd_26 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 525 FR5CP_ObjRAccelYStd_26 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 525 FR5CP_ObjFusionSig_26 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 525 FR5CP_ObjFusionCamID_26 "Camera object ID(Reserved)";
+CM_ SG_ 525 FR5CP_ObjDistXStd_27 "Standard deviation of distance X";
+CM_ SG_ 525 FR5CP_ObjDistYStd_27 "Standard deviation of distance Y";
+CM_ SG_ 525 FR5CP_ObjRelVelXStd_27 "Standard deviation of Relative velocity X";
+CM_ SG_ 525 FR5CP_ObjRelVelYStd_27 "Standard deviation of Relative velocity Y";
+CM_ SG_ 525 FR5CP_ObjRAccelXStd_27 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 525 FR5CP_ObjRAccelYStd_27 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 525 FR5CP_ObjFusionSig_27 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 525 FR5CP_ObjFusionCamID_27 "Camera object ID(Reserved)";
+CM_ SG_ 525 FR5CP_ObjDistXStd_28 "Standard deviation of distance X";
+CM_ SG_ 525 FR5CP_ObjDistYStd_28 "Standard deviation of distance Y";
+CM_ SG_ 525 FR5CP_ObjRelVelXStd_28 "Standard deviation of Relative velocity X";
+CM_ SG_ 525 FR5CP_ObjRelVelYStd_28 "Standard deviation of Relative velocity Y";
+CM_ SG_ 525 FR5CP_ObjRAccelXStd_28 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 525 FR5CP_ObjRAccelYStd_28 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 525 FR5CP_ObjFusionSig_28 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 525 FR5CP_ObjFusionCamID_28 "Camera object ID(Reserved)";
+CM_ SG_ 525 FR5CP_ObjDistXStd_29 "Standard deviation of distance X";
+CM_ SG_ 525 FR5CP_ObjDistYStd_29 "Standard deviation of distance Y";
+CM_ SG_ 525 FR5CP_ObjRelVelXStd_29 "Standard deviation of Relative velocity X";
+CM_ SG_ 525 FR5CP_ObjRelVelYStd_29 "Standard deviation of Relative velocity Y";
+CM_ SG_ 525 FR5CP_ObjRAccelXStd_29 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 525 FR5CP_ObjRAccelYStd_29 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 525 FR5CP_ObjFusionSig_29 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 525 FR5CP_ObjFusionCamID_29 "Camera object ID(Reserved)";
+CM_ SG_ 525 FR5CP_ObjDistXStd_30 "Standard deviation of distance X";
+CM_ SG_ 525 FR5CP_ObjDistYStd_30 "Standard deviation of distance Y";
+CM_ SG_ 525 FR5CP_ObjRelVelXStd_30 "Standard deviation of Relative velocity X";
+CM_ SG_ 525 FR5CP_ObjRelVelYStd_30 "Standard deviation of Relative velocity Y";
+CM_ SG_ 525 FR5CP_ObjRAccelXStd_30 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 525 FR5CP_ObjRAccelYStd_30 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 525 FR5CP_ObjFusionSig_30 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 525 FR5CP_ObjFusionCamID_30 "Camera object ID(Reserved)";
+CM_ SG_ 525 FR5CP_Group_10_MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 525 FR5CP_Group_10_CRCChecksum "CRC16";
+CM_ SG_ 526 FR5CP_ObjDistXStd_31 "Standard deviation of distance X";
+CM_ SG_ 526 FR5CP_ObjDistYStd_31 "Standard deviation of distance Y";
+CM_ SG_ 526 FR5CP_ObjRelVelXStd_31 "Standard deviation of Relative velocity X";
+CM_ SG_ 526 FR5CP_ObjRelVelYStd_31 "Standard deviation of Relative velocity Y";
+CM_ SG_ 526 FR5CP_ObjRAccelXStd_31 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 526 FR5CP_ObjRAccelYStd_31 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 526 FR5CP_ObjFusionSig_31 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 526 FR5CP_ObjFusionCamID_31 "Camera object ID(Reserved)";
+CM_ SG_ 526 FR5CP_ObjDistXStd_32 "Standard deviation of distance X";
+CM_ SG_ 526 FR5CP_ObjDistYStd_32 "Standard deviation of distance Y";
+CM_ SG_ 526 FR5CP_ObjRelVelXStd_32 "Standard deviation of Relative velocity X";
+CM_ SG_ 526 FR5CP_ObjRelVelYStd_32 "Standard deviation of Relative velocity Y";
+CM_ SG_ 526 FR5CP_ObjRAccelXStd_32 "Standard deviation of Relative Acceleration X";
+CM_ SG_ 526 FR5CP_ObjRAccelYStd_32 "Standard deviation of Relative Acceleration Y";
+CM_ SG_ 526 FR5CP_ObjFusionSig_32 "Signal to indicate fusion with camera or not(Reserved)";
+CM_ SG_ 526 FR5CP_ObjFusionCamID_32 "Camera object ID(Reserved)";
+CM_ SG_ 526 FR5CP_Group_11_MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 526 FR5CP_Group_11_CRCChecksum "CRC8";
+CM_ SG_ 400 FR5CP_VBAT_HIGH "0xEF1017
+voltage>16V, duration>3s";
+CM_ SG_ 400 FR5CP_VBAT_LOW "0xEF1116
+voltage<9V, duration>3s";
+CM_ SG_ 400 FR5CP_PCAN_BUSOFF "0xEF0388
+3 consecutive Bus-off";
+CM_ SG_ 400 FR5CP_SFCAN_CANBUS "0xEF0988
+3 consecutive Bus-off";
+CM_ SG_ 400 FR5CP_FR5CP_Blind "0x590000
+Radar Blindness detected";
+CM_ SG_ 400 FR5CP_Alignment_Never_Done "0x590054
+Alignment never done";
+CM_ SG_ 400 FR5CP_Alignment_Not_OK "0x590053
+Alignment is not done ";
+CM_ SG_ 400 FR5CP_FR5CP_Misalign "0x590055
+Misalignment happened";
+CM_ SG_ 400 FR5CP_Camera_Invalid "0x52E084
+1. Any one of the messages below VFC node is detected with abnormal message counter (increment is not 1), and keep three cycles continuously£º 0x81£¬0x82£¬0x83£¬0x84£¬0x85£¬0x86£¬0x87£¬0x88£¬0x80£¬0xB0,0xB1,0xB2,0xB3,0xB4,0xB5,0xB6,0xB7,0xB8,0xB9,0xBA,0xBB,0xBC,0xBD,0xBE,0xBF,0xC0-0xCF, 0xD0,0xD1,0xD2,0xD3,0xD4,0xD5,0xD6,0xD7,0xA0, 0x50£»
+2. If any of the following messages of VFC node is detected, the message check sum value is wrong and it is kept for three consecutive cycles£º 0x81£¬0x82£¬0x83£¬0x84£¬0x85£¬0x86£¬0x87£¬0x88£¬0x80£¬0xB0,0xB1,0xB2,0xB3,0xB4,0xB5,0xB6,0xB7,0xB8,0xB9,0xBA,0xBB,0xBC,0xBD,0xBE,0xBF,0xC0-0xCF, 0xD0,0xD1,0xD2,0xD3,0xD4,0xD5,0xD6,0xD7,0xA0, 0x50£»
+3.  Any one of the following messages of VFC node is abnormal in blockcounter (increment is not 1), and keep three cycles continuously£º0x81£¬0x82£¬0x83£¬0x84£¬0x85£¬0x86£¬0x87£¬0x88£¬0x80£¬0xB0,0xB1,0xB2,0xB3,0xB4,0xB5,0xB6,0xB7,0xB8,0xB9,0xBA,0xBB,0xBC,0xBD,0xBE,0xBF,0xC0-0xCF, 0xD0,0xD1,0xD2,0xD3,0xD4,0xD5,0xD6,0xD7,0xA0";
+CM_ SG_ 400 FR5CP_HW_Fail "0x530906
+(monolithic microwave integrated circuit) internal hardware Fail";
+CM_ SG_ 400 FR5CP_SW_Fail "0x530E04
+(1) Software task run time exceeds threshold£¨10ms/20ms£©
+(2)Security management unit monitoring (SMU) is turned off";
+BA_DEF_ SG_  "InvalidHex" STRING ;
+BA_DEF_ SG_  "NWM_WakeupAllowed" ENUM  "No","Yes";
+BA_DEF_ SG_  "GenSigEnvVarType" ENUM  "int","float","undef";
+BA_DEF_ SG_  "GenSigEVName" STRING ;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ SG_  "GenSigStartValue" FLOAT 0 100000000000;
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 100000;
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType";
+BA_DEF_ BO_  "NetworkInitializationCommand" ENUM  "No","Yes";
+BA_DEF_ BO_  "NetworkWakeUp" ENUM  "No","Yes";
+BA_DEF_ BO_  "NetworkInitialization" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagRequest" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagResponse" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ BO_  "CANFD_BRS" ENUM  "0","1";
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 100000;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 100000;
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 100;
+BA_DEF_ BO_  "NmMessage" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "FixedPeriodic","Event","EnabledPeriodic","Enable","NotUsed","EventPeriodic","NotUsed","NotUsed","NoMsgSendType";
+BA_DEF_ BO_  "TpTxIndex" INT 0 10000;
+BA_DEF_ BU_  "GenNodSleepTime" INT 0 1000000;
+BA_DEF_ BU_  "NmCAN" INT 1 2;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","StandardCAN_FD","ExtendedCAN_FD";
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "NetworkInitializationUsed" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmNode" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmStationAddress" HEX 0 255;
+BA_DEF_ BU_  "ILUsed" ENUM  "No","Yes";
+BA_DEF_  "Manufacturer" STRING ;
+BA_DEF_  "Project" STRING ;
+BA_DEF_  "Version" STRING ;
+BA_DEF_  "Date" STRING ;
+BA_DEF_  "Author" STRING ;
+BA_DEF_  "NmType" STRING ;
+BA_DEF_  "NmBaseAddress" HEX 0 2047;
+BA_DEF_  "NmMessageCount" INT 0 256;
+BA_DEF_DEF_  "InvalidHex" "";
+BA_DEF_DEF_  "NWM_WakeupAllowed" "No";
+BA_DEF_DEF_  "GenSigEnvVarType" "undef";
+BA_DEF_DEF_  "GenSigEVName" "";
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "NetworkInitializationCommand" "No";
+BA_DEF_DEF_  "NetworkWakeUp" "No";
+BA_DEF_DEF_  "NetworkInitialization" "No";
+BA_DEF_DEF_  "DiagRequest" "No";
+BA_DEF_DEF_  "DiagResponse" "No";
+BA_DEF_DEF_  "GenMsgDelayTime" 10;
+BA_DEF_DEF_  "CANFD_BRS" "1";
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 3;
+BA_DEF_DEF_  "NmMessage" "No";
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgSendType" "NoMsgSendType";
+BA_DEF_DEF_  "TpTxIndex" 0;
+BA_DEF_DEF_  "GenNodSleepTime" 0;
+BA_DEF_DEF_  "NmCAN" 1;
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "VFrameFormat" "StandardCAN";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "NetworkInitializationUsed" "No";
+BA_DEF_DEF_  "NmNode" "No";
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "ILUsed" "";
+BA_DEF_DEF_  "Manufacturer" "XPeng";
+BA_DEF_DEF_  "Project" "E28";
+BA_DEF_DEF_  "Version" "N";
+BA_DEF_DEF_  "Date" "N";
+BA_DEF_DEF_  "Author" "SunWei";
+BA_DEF_DEF_  "NmType" "";
+BA_DEF_DEF_  "NmBaseAddress" 1024;
+BA_DEF_DEF_  "NmMessageCount" 256;
+BA_ "Date" "2020-10-22";
+BA_ "Version" "V10";
+BA_ "BusType" "CAN FD";
+BA_ "DBName" "CAN_FD";
+BA_ "NmStationAddress" BU_ FR5CP 48;
+BA_ "NmMessage" BO_ 512 0;
+BA_ "GenMsgCycleTime" BO_ 512 50;
+BA_ "GenMsgSendType" BO_ 512 0;
+BA_ "VFrameFormat" BO_ 512 14;
+BA_ "NmMessage" BO_ 515 0;
+BA_ "GenMsgCycleTime" BO_ 515 50;
+BA_ "GenMsgSendType" BO_ 515 0;
+BA_ "VFrameFormat" BO_ 515 14;
+BA_ "NmMessage" BO_ 516 0;
+BA_ "GenMsgCycleTime" BO_ 516 50;
+BA_ "GenMsgSendType" BO_ 516 0;
+BA_ "VFrameFormat" BO_ 516 14;
+BA_ "NmMessage" BO_ 517 0;
+BA_ "GenMsgCycleTime" BO_ 517 50;
+BA_ "GenMsgSendType" BO_ 517 0;
+BA_ "VFrameFormat" BO_ 517 14;
+BA_ "NmMessage" BO_ 518 0;
+BA_ "GenMsgCycleTime" BO_ 518 50;
+BA_ "GenMsgSendType" BO_ 518 0;
+BA_ "VFrameFormat" BO_ 518 14;
+BA_ "NmMessage" BO_ 520 0;
+BA_ "GenMsgCycleTime" BO_ 520 50;
+BA_ "GenMsgSendType" BO_ 520 0;
+BA_ "VFrameFormat" BO_ 520 14;
+BA_ "NmMessage" BO_ 521 0;
+BA_ "GenMsgCycleTime" BO_ 521 50;
+BA_ "GenMsgSendType" BO_ 521 0;
+BA_ "VFrameFormat" BO_ 521 14;
+BA_ "NmMessage" BO_ 522 0;
+BA_ "GenMsgCycleTime" BO_ 522 50;
+BA_ "GenMsgSendType" BO_ 522 0;
+BA_ "VFrameFormat" BO_ 522 14;
+BA_ "NmMessage" BO_ 523 0;
+BA_ "GenMsgCycleTime" BO_ 523 50;
+BA_ "GenMsgSendType" BO_ 523 0;
+BA_ "VFrameFormat" BO_ 523 14;
+BA_ "NmMessage" BO_ 524 0;
+BA_ "GenMsgCycleTime" BO_ 524 50;
+BA_ "GenMsgSendType" BO_ 524 0;
+BA_ "VFrameFormat" BO_ 524 14;
+BA_ "NmMessage" BO_ 525 0;
+BA_ "GenMsgCycleTime" BO_ 525 50;
+BA_ "GenMsgSendType" BO_ 525 0;
+BA_ "VFrameFormat" BO_ 525 14;
+BA_ "NmMessage" BO_ 526 0;
+BA_ "GenMsgCycleTime" BO_ 526 50;
+BA_ "GenMsgSendType" BO_ 526 0;
+BA_ "VFrameFormat" BO_ 526 14;
+BA_ "NmMessage" BO_ 400 0;
+BA_ "GenMsgCycleTime" BO_ 400 500;
+BA_ "GenMsgSendType" BO_ 400 0;
+BA_ "VFrameFormat" BO_ 400 14;
+BA_ "GenSigStartValue" SG_ 512 FR5CP_FailureStatus 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjID_1 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjExistProb_1 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjObstacleProb_1 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjDistX_1 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjDistY_1 8192;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjRelVelX_1 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjRelVelY_1 4102.5641025641;
+BA_ "InvalidHex" SG_ 515 FR5CP_ObjAccelX_1 "0x3FF";
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjAccelX_1 512;
+BA_ "InvalidHex" SG_ 515 FR5CP_ObjAccelY_1 "0x3FF";
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjAccelY_1 512;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjType_1 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjID_2 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjExistProb_2 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjObstacleProb_2 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjDistX_2 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjDistY_2 8192;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjRelVelX_2 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjRelVelY_2 4102.5641025641;
+BA_ "InvalidHex" SG_ 515 FR5CP_ObjAccelX_2 "0x3FF";
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjAccelX_2 512;
+BA_ "InvalidHex" SG_ 515 FR5CP_ObjAccelY_2 "0x3FF";
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjAccelY_2 512;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjType_2 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjID_3 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjExistProb_3 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjObstacleProb_3 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjDistX_3 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjDistY_3 8192;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjRelVelX_3 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjRelVelY_3 4102.5641025641;
+BA_ "InvalidHex" SG_ 515 FR5CP_ObjAccelX_3 "0x3FF";
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjAccelX_3 512;
+BA_ "InvalidHex" SG_ 515 FR5CP_ObjAccelY_3 "0x3FF";
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjAccelY_3 512;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjType_3 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjID_4 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjExistProb_4 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjObstacleProb_4 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjDistX_4 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjDistY_4 8192;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjRelVelX_4 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjRelVelY_4 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjAccelX_4 512;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjAccelY_4 512;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjType_4 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjID_5 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjExistProb_5 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjObstacleProb_5 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjDistX_5 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjDistY_5 8192;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjRelVelX_5 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjRelVelY_5 4102.5641025641;
+BA_ "InvalidHex" SG_ 515 FR5CP_ObjAccelX_5 "0x3FF";
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjAccelX_5 512;
+BA_ "InvalidHex" SG_ 515 FR5CP_ObjAccelY_5 "0x3FF";
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjAccelY_5 512;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_ObjType_5 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_Group_1_MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 515 FR5CP_Group_1_CRCChecksum 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjID_6 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjExistProb_6 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjObstacleProb_6 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjDistX_6 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjDistY_6 8192;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjRelVelX_6 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjRelVelY_6 4102.5641025641;
+BA_ "InvalidHex" SG_ 516 FR5CP_ObjAccelX_6 "0x3FF";
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjAccelX_6 512;
+BA_ "InvalidHex" SG_ 516 FR5CP_ObjAccelY_6 "0x3FF";
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjAccelY_6 512;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjType_6 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjID_7 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjExistProb_7 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjObstacleProb_7 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjDistX_7 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjDistY_7 8192;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjRelVelX_7 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjRelVelY_7 4102.5641025641;
+BA_ "InvalidHex" SG_ 516 FR5CP_ObjAccelX_7 "0x3FF";
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjAccelX_7 512;
+BA_ "InvalidHex" SG_ 516 FR5CP_ObjAccelY_7 "0x3FF";
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjAccelY_7 512;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjType_7 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjID_8 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjExistProb_8 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjObstacleProb_8 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjDistX_8 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjDistY_8 8192;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjRelVelX_8 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjRelVelY_8 4102.5641025641;
+BA_ "InvalidHex" SG_ 516 FR5CP_ObjAccelX_8 "0x3FF";
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjAccelX_8 512;
+BA_ "InvalidHex" SG_ 516 FR5CP_ObjAccelY_8 "0x3FF";
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjAccelY_8 512;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjType_8 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjID_9 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjExistProb_9 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjObstacleProb_9 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjDistX_9 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjDistY_9 8192;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjRelVelX_9 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjRelVelY_9 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjAccelX_9 512;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjAccelY_9 512;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjType_9 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjID_10 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjExistProb_10 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjObstacleProb_10 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjDistX_10 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjDistY_10 8192;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjRelVelX_10 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjRelVelY_10 4102.5641025641;
+BA_ "InvalidHex" SG_ 516 FR5CP_ObjAccelX_10 "0x3FF";
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjAccelX_10 512;
+BA_ "InvalidHex" SG_ 516 FR5CP_ObjAccelY_10 "0x3FF";
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjAccelY_10 512;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_ObjType_10 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_Group_2_MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 516 FR5CP_Group_2_CRCChecksum 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjID_11 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjExistProb_11 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjObstacleProb_11 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjDistX_11 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjDistY_11 8192;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjRelVelX_11 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjRelVelY_11 4102.5641025641;
+BA_ "InvalidHex" SG_ 517 FR5CP_ObjAccelX_11 "0x3FF";
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjAccelX_11 512;
+BA_ "InvalidHex" SG_ 517 FR5CP_ObjAccelY_11 "0x3FF";
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjAccelY_11 512;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjType_11 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjID_12 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjExistProb_12 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjObstacleProb_12 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjDistX_12 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjDistY_12 8192;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjRelVelX_12 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjRelVelY_12 4102.5641025641;
+BA_ "InvalidHex" SG_ 517 FR5CP_ObjAccelX_12 "0x3FF";
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjAccelX_12 512;
+BA_ "InvalidHex" SG_ 517 FR5CP_ObjAccelY_12 "0x3FF";
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjAccelY_12 512;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjType_12 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjID_13 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjExistProb_13 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjObstacleProb_13 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjDistX_13 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjDistY_13 8192;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjRelVelX_13 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjRelVelY_13 4102.5641025641;
+BA_ "InvalidHex" SG_ 517 FR5CP_ObjAccelX_13 "0x3FF";
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjAccelX_13 512;
+BA_ "InvalidHex" SG_ 517 FR5CP_ObjAccelY_13 "0x3FF";
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjAccelY_13 512;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjType_13 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjID_14 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjExistProb_14 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjObstacleProb_14 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjDistX_14 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjDistY_14 8192;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjRelVelX_14 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjRelVelY_14 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjAccelX_14 512;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjAccelY_14 512;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjType_14 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjID_15 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjExistProb_15 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjObstacleProb_15 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjDistX_15 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjDistY_15 8192;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjRelVelX_15 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjRelVelY_15 4102.5641025641;
+BA_ "InvalidHex" SG_ 517 FR5CP_ObjAccelX_15 "0x3FF";
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjAccelX_15 512;
+BA_ "InvalidHex" SG_ 517 FR5CP_ObjAccelY_15 "0x3FF";
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjAccelY_15 512;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_ObjType_15 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_Group_3_MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 517 FR5CP_Group_3_CRCChecksum 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjID_16 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjExistProb_16 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjObstacleProb_16 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjDistX_16 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjDistY_16 8192;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjRelVelX_16 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjRelVelY_16 4102.5641025641;
+BA_ "InvalidHex" SG_ 518 FR5CP_ObjAccelX_16 "0x3FF";
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjAccelX_16 512;
+BA_ "InvalidHex" SG_ 518 FR5CP_ObjAccelY_16 "0x3FF";
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjAccelY_16 512;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjType_16 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjID_17 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjExistProb_17 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjObstacleProb_17 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjDistX_17 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjDistY_17 8192;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjRelVelX_17 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjRelVelY_17 4102.5641025641;
+BA_ "InvalidHex" SG_ 518 FR5CP_ObjAccelX_17 "0x3FF";
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjAccelX_17 512;
+BA_ "InvalidHex" SG_ 518 FR5CP_ObjAccelY_17 "0x3FF";
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjAccelY_17 512;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjType_17 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjID_18 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjExistProb_18 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjObstacleProb_18 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjDistX_18 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjDistY_18 8192;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjRelVelX_18 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjRelVelY_18 4102.5641025641;
+BA_ "InvalidHex" SG_ 518 FR5CP_ObjAccelX_18 "0x3FF";
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjAccelX_18 512;
+BA_ "InvalidHex" SG_ 518 FR5CP_ObjAccelY_18 "0x3FF";
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjAccelY_18 512;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjType_18 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjID_19 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjExistProb_19 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjObstacleProb_19 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjDistX_19 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjDistY_19 8192;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjRelVelX_19 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjRelVelY_19 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjAccelX_19 512;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjAccelY_19 512;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjType_19 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjID_20 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjExistProb_20 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjObstacleProb_20 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjDistX_20 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjDistY_20 8192;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjRelVelX_20 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjRelVelY_20 4102.5641025641;
+BA_ "InvalidHex" SG_ 518 FR5CP_ObjAccelX_20 "0x3FF";
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjAccelX_20 512;
+BA_ "InvalidHex" SG_ 518 FR5CP_ObjAccelY_20 "0x3FF";
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjAccelY_20 512;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_ObjType_20 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_Group_4_MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 518 FR5CP_Group_4_CRCChecksum 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjID_21 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjExistProb_21 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjObstacleProb_21 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjDistX_21 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjDistY_21 8192;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjRelVelX_21 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjRelVelY_21 4102.5641025641;
+BA_ "InvalidHex" SG_ 520 FR5CP_ObjAccelX_21 "0x3FF";
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjAccelX_21 512;
+BA_ "InvalidHex" SG_ 520 FR5CP_ObjAccelY_21 "0x3FF";
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjAccelY_21 512;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjType_21 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjID_22 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjExistProb_22 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjObstacleProb_22 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjDistX_22 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjDistY_22 8192;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjRelVelX_22 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjRelVelY_22 4102.5641025641;
+BA_ "InvalidHex" SG_ 520 FR5CP_ObjAccelX_22 "0x3FF";
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjAccelX_22 512;
+BA_ "InvalidHex" SG_ 520 FR5CP_ObjAccelY_22 "0x3FF";
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjAccelY_22 512;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjType_22 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjID_23 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjExistProb_23 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjObstacleProb_23 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjDistX_23 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjDistY_23 8192;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjRelVelX_23 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjRelVelY_23 4102.5641025641;
+BA_ "InvalidHex" SG_ 520 FR5CP_ObjAccelX_23 "0x3FF";
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjAccelX_23 512;
+BA_ "InvalidHex" SG_ 520 FR5CP_ObjAccelY_23 "0x3FF";
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjAccelY_23 512;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjType_23 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjID_24 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjExistProb_24 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjObstacleProb_24 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjDistX_24 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjDistY_24 8192;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjRelVelX_24 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjRelVelY_24 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjAccelX_24 512;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjAccelY_24 512;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjType_24 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjID_25 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjExistProb_25 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjObstacleProb_25 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjDistX_25 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjDistY_25 8192;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjRelVelX_25 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjRelVelY_25 4102.5641025641;
+BA_ "InvalidHex" SG_ 520 FR5CP_ObjAccelX_25 "0x3FF";
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjAccelX_25 512;
+BA_ "InvalidHex" SG_ 520 FR5CP_ObjAccelY_25 "0x3FF";
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjAccelY_25 512;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_ObjType_25 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_Group_5_MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 520 FR5CP_Group_5_CRCChecksum 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjID_26 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjExistProb_26 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjObstacleProb_26 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjDistX_26 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjDistY_26 8192;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjRelVelX_26 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjRelVelY_26 4102.5641025641;
+BA_ "InvalidHex" SG_ 521 FR5CP_ObjAccelX_26 "0x3FF";
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjAccelX_26 512;
+BA_ "InvalidHex" SG_ 521 FR5CP_ObjAccelY_26 "0x3FF";
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjAccelY_26 512;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjType_26 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjID_27 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjExistProb_27 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjObstacleProb_27 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjDistX_27 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjDistY_27 8192;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjRelVelX_27 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjRelVelY_27 4102.5641025641;
+BA_ "InvalidHex" SG_ 521 FR5CP_ObjAccelX_27 "0x3FF";
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjAccelX_27 512;
+BA_ "InvalidHex" SG_ 521 FR5CP_ObjAccelY_27 "0x3FF";
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjAccelY_27 512;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjType_27 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjID_28 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjExistProb_28 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjObstacleProb_28 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjDistX_28 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjDistY_28 8192;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjRelVelX_28 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjRelVelY_28 4102.5641025641;
+BA_ "InvalidHex" SG_ 521 FR5CP_ObjAccelX_28 "0x3FF";
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjAccelX_28 512;
+BA_ "InvalidHex" SG_ 521 FR5CP_ObjAccelY_28 "0x3FF";
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjAccelY_28 512;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjType_28 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjID_29 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjExistProb_29 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjObstacleProb_29 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjDistX_29 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjDistY_29 8192;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjRelVelX_29 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjRelVelY_29 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjAccelX_29 512;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjAccelY_29 512;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjType_29 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjID_30 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjExistProb_30 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjObstacleProb_30 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjDistX_30 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjDistY_30 8192;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjRelVelX_30 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjRelVelY_30 4102.5641025641;
+BA_ "InvalidHex" SG_ 521 FR5CP_ObjAccelX_30 "0x3FF";
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjAccelX_30 512;
+BA_ "InvalidHex" SG_ 521 FR5CP_ObjAccelY_30 "0x3FF";
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjAccelY_30 512;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_ObjType_30 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_Group_6_MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 521 FR5CP_Group_6_CRCChecksum 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjID_31 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjExistProb_31 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjObstacleProb_31 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjDistX_31 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjDistY_31 8192;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjRelVelX_31 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjRelVelY_31 4102.5641025641;
+BA_ "InvalidHex" SG_ 522 FR5CP_ObjAccelX_31 "0x3FF";
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjAccelX_31 512;
+BA_ "InvalidHex" SG_ 522 FR5CP_ObjAccelY_31 "0x3FF";
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjAccelY_31 512;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjType_31 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjID_32 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjExistProb_32 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjObstacleProb_32 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjDistX_32 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjDistY_32 8192;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjRelVelX_32 4102.5641025641;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjRelVelY_32 4102.5641025641;
+BA_ "InvalidHex" SG_ 522 FR5CP_ObjAccelX_32 "0x3FF";
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjAccelX_32 512;
+BA_ "InvalidHex" SG_ 522 FR5CP_ObjAccelY_32 "0x3FF";
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjAccelY_32 512;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_ObjType_32 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_Group_7_MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 522 FR5CP_Group_7_CRCChecksum 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistXStd_1 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistYStd_1 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelXStd_1 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelYStd_1 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelXStd_1 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelYStd_1 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionSig_1 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionCamID_1 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistXStd_2 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistYStd_2 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelXStd2 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelYStd_2 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelXStd_2 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelYStd_2 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionSig_2 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionCamID_2 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistXStd_3 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistYStd_3 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelXStd_3 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelYStd_3 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelXStd_3 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelYStd_3 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionSig_3 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionCamID_3 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistXStd_4 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistYStd_4 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelXStd_4 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelYStd_4 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelXStd_4 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelYStd_4 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionSig_4 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionCamID_4 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistXStd_5 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistYStd_5 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelXStd_5 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelYStd_5 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelXStd_5 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelYStd_5 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionSig_5 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionCamID_5 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistXStd_6 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistYStd_6 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelXStd_6 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelYStd_6 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelXStd_6 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelYStd_6 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionSig_6 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionCamID_6 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistXStd_7 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistYStd_7 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelXStd_7 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelYStd_7 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelXStd_7 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelYStd_7 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionSig_7 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionCamID_7 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistXStd_8 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistYStd_8 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelXStd_8 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelYStd_8 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelXStd_8 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelYStd_8 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionSig_8 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionCamID_8 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistXStd_9 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistYStd_9 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelXStd_9 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelYStd_9 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelXStd_9 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelYStd_9 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionSig_9 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionCamID_9 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistXStd_10 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjDistYStd_10 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelXStd_10 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRelVelYStd_10 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelXStd_10 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjRAccelYStd_10 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionSig_10 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_ObjFusionCamID_10 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_Group_8_MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 523 FR5CP_Group_8_CRCChecksum 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistXStd_11 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistYStd_11 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelXStd_11 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelYStd_11 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelXStd_11 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelYStd_11 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionSig_11 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionCamID_11 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistXStd_12 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistYStd_12 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelXStd_12 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelYStd_12 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelXStd_12 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelYStd_12 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionSig_12 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionCamID_12 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistXStd_13 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistYStd_13 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelXStd_13 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelYStd_13 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelXStd_13 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelYStd_13 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionSig_13 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionCamID_13 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistXStd_14 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistYStd_14 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelXStd_14 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelYStd_14 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelXStd_14 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelYStd_14 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionSig_14 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionCamID_14 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistXStd_15 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistYStd_15 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelXStd_15 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelYStd_15 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelXStd_15 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelYStd_15 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionSig_15 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionCamID_15 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistXStd_16 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistYStd_16 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelXStd_16 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelYStd_16 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelXStd_16 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelYStd_16 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionSig_16 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionCamID_16 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistXStd_17 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistYStd_17 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelXStd_17 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelYStd_17 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelXStd_17 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelYStd_17 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionSig_17 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionCamID_17 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistXStd_18 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistYStd_18 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelXStd_18 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelYStd_18 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelXStd_18 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelYStd_18 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionSig_18 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionCamID_18 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistXStd_19 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistYStd_19 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelXStd_19 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelYStd_19 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelXStd_19 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelYStd_19 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionSig_19 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionCamID_19 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistXStd_20 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjDistYStd_20 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelXStd_20 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRelVelYStd_20 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelXStd_20 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjRAccelYStd_20 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionSig_20 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_ObjFusionCamID_20 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_Group_9_MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 524 FR5CP_Group_9_CRCChecksum 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistXStd_21 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistYStd_21 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelXStd_21 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelYStd_21 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelXStd_21 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelYStd_21 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionSig_21 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionCamID_21 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistXStd_22 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistYStd_22 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelXStd_22 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelYStd_22 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelXStd_22 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelYStd_22 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionSig_22 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionCamID_22 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistXStd_23 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistYStd_23 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelXStd_23 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelYStd_23 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelXStd_23 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelYStd_23 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionSig_23 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionCamID_23 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistXStd_24 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistYStd_24 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelXStd_24 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelYStd_24 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelXStd_24 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelYStd_24 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionSig_24 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionCamID_24 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistXStd_25 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistYStd_25 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelXStd_25 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelYStd_25 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelXStd_25 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelYStd_25 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionSig_25 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionCamID_25 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistXStd_26 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistYStd_26 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelXStd_26 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelYStd_26 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelXStd_26 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelYStd_26 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionSig_26 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionCamID_26 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistXStd_27 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistYStd_27 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelXStd_27 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelYStd_27 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelXStd_27 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelYStd_27 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionSig_27 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionCamID_27 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistXStd_28 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistYStd_28 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelXStd_28 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelYStd_28 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelXStd_28 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelYStd_28 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionSig_28 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionCamID_28 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistXStd_29 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistYStd_29 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelXStd_29 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelYStd_29 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelXStd_29 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelYStd_29 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionSig_29 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionCamID_29 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistXStd_30 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjDistYStd_30 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelXStd_30 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRelVelYStd_30 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelXStd_30 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjRAccelYStd_30 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionSig_30 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_ObjFusionCamID_30 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_Group_10_MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 525 FR5CP_Group_10_CRCChecksum 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjDistXStd_31 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjDistYStd_31 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjRelVelXStd_31 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjRelVelYStd_31 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjRAccelXStd_31 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjRAccelYStd_31 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjFusionSig_31 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjFusionCamID_31 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjDistXStd_32 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjDistYStd_32 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjRelVelXStd_32 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjRelVelYStd_32 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjRAccelXStd_32 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjRAccelYStd_32 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjFusionSig_32 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_ObjFusionCamID_32 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_Group_11_MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 526 FR5CP_Group_11_CRCChecksum 0;
+BA_ "GenSigStartValue" SG_ 400 FR5CP_VBAT_HIGH 0;
+BA_ "GenSigStartValue" SG_ 400 FR5CP_VBAT_LOW 0;
+BA_ "GenSigStartValue" SG_ 400 FR5CP_PCAN_BUSOFF 0;
+BA_ "GenSigStartValue" SG_ 400 FR5CP_SFCAN_CANBUS 0;
+BA_ "GenSigStartValue" SG_ 400 FR5CP_FR5CP_Blind 0;
+BA_ "GenSigStartValue" SG_ 400 FR5CP_Alignment_Never_Done 0;
+BA_ "GenSigStartValue" SG_ 400 FR5CP_Alignment_Not_OK 0;
+BA_ "GenSigStartValue" SG_ 400 FR5CP_FR5CP_Misalign 0;
+BA_ "GenSigStartValue" SG_ 400 FR5CP_Camera_Invalid 0;
+BA_ "GenSigStartValue" SG_ 400 FR5CP_HW_Fail 0;
+BA_ "GenSigStartValue" SG_ 400 FR5CP_SW_Fail 0;
+VAL_ 512 FR5CP_FailureStatus 0 "No failure" 1 "Failure" 2 "Blindness" 3 "Misalignmer" ;
+VAL_ 515 FR5CP_ObjType_1 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 515 FR5CP_ObjType_2 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 515 FR5CP_ObjType_3 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 515 FR5CP_ObjType_4 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 515 FR5CP_ObjType_5 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 516 FR5CP_ObjType_6 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 516 FR5CP_ObjType_7 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 516 FR5CP_ObjType_8 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 516 FR5CP_ObjType_9 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 516 FR5CP_ObjType_10 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 517 FR5CP_ObjType_11 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 517 FR5CP_ObjType_12 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 517 FR5CP_ObjType_13 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 517 FR5CP_ObjType_14 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 517 FR5CP_ObjType_15 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 518 FR5CP_ObjType_16 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 518 FR5CP_ObjType_17 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 518 FR5CP_ObjType_18 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 518 FR5CP_ObjType_19 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 518 FR5CP_ObjType_20 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 520 FR5CP_ObjType_21 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 520 FR5CP_ObjType_22 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 520 FR5CP_ObjType_23 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 520 FR5CP_ObjType_24 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 520 FR5CP_ObjType_25 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 521 FR5CP_ObjType_26 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 521 FR5CP_ObjType_27 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 521 FR5CP_ObjType_28 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 521 FR5CP_ObjType_29 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 521 FR5CP_ObjType_30 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 522 FR5CP_ObjType_31 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 522 FR5CP_ObjType_32 0 "unknown moving" 1 "unknown standing" 2 "pedestrian moving" 3 "pedestrian standing" 4 "bicycle moving" 5 "bicycle standing" 6 "vehicle moving" 7 "vehicle standing" 8 "motorbike(reserved)" 9 "van(reserved)" 10 "truck(reserved)" 11 "init(reserved)" 12 "reserved." 13 "reserved." 14 "reserved." 15 "reserved." ;
+VAL_ 523 FR5CP_ObjFusionSig_1 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 523 FR5CP_ObjFusionSig_2 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 523 FR5CP_ObjFusionSig_3 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 523 FR5CP_ObjFusionSig_4 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 523 FR5CP_ObjFusionSig_5 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 523 FR5CP_ObjFusionSig_6 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 523 FR5CP_ObjFusionSig_7 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 523 FR5CP_ObjFusionSig_8 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 523 FR5CP_ObjFusionSig_9 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 523 FR5CP_ObjFusionSig_10 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 524 FR5CP_ObjFusionSig_11 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 524 FR5CP_ObjFusionSig_12 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 524 FR5CP_ObjFusionSig_13 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 524 FR5CP_ObjFusionSig_14 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 524 FR5CP_ObjFusionSig_15 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 524 FR5CP_ObjFusionSig_16 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 524 FR5CP_ObjFusionSig_17 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 524 FR5CP_ObjFusionSig_18 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 524 FR5CP_ObjFusionSig_19 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 524 FR5CP_ObjFusionSig_20 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 525 FR5CP_ObjFusionSig_21 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 525 FR5CP_ObjFusionSig_22 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 525 FR5CP_ObjFusionSig_23 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 525 FR5CP_ObjFusionSig_24 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 525 FR5CP_ObjFusionSig_25 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 525 FR5CP_ObjFusionSig_26 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 525 FR5CP_ObjFusionSig_27 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 525 FR5CP_ObjFusionSig_28 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 525 FR5CP_ObjFusionSig_29 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 525 FR5CP_ObjFusionSig_30 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 526 FR5CP_ObjFusionSig_31 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 526 FR5CP_ObjFusionSig_32 0 "Radar only" 1 "Fusion with camera" ;
+VAL_ 400 FR5CP_VBAT_HIGH 0 "Not active" 1 "Active" ;
+VAL_ 400 FR5CP_VBAT_LOW 0 "Not active" 1 "Active" ;
+VAL_ 400 FR5CP_PCAN_BUSOFF 0 "Not active" 1 "Active" ;
+VAL_ 400 FR5CP_SFCAN_CANBUS 0 "Not active" 1 "Active" ;
+VAL_ 400 FR5CP_FR5CP_Blind 0 "Not active" 1 "Active" ;
+VAL_ 400 FR5CP_Alignment_Never_Done 0 "Not active" 1 "Active" ;
+VAL_ 400 FR5CP_Alignment_Not_OK 0 "Not active" 1 "Active" ;
+VAL_ 400 FR5CP_FR5CP_Misalign 0 "Not active" 1 "Active" ;
+VAL_ 400 FR5CP_Camera_Invalid 0 "Not active" 1 "Active" ;
+VAL_ 400 FR5CP_HW_Fail 0 "Not active" 1 "Active" ;
+VAL_ 400 FR5CP_SW_Fail 0 "Not active" 1 "Active" ;
+

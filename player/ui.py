@@ -46,6 +46,7 @@ class CVColor(object):
     purple = (0xb0, 0x27, 0x9c)
     bluegrey = (0x8b, 0x7D, 0x60)
     deeporange = (0x1a, 0xbc, 0xff)
+    Crimson = (65, 25, 237)
 
 
 class FlatColor(object):  # in BGR
@@ -66,6 +67,7 @@ class FlatColor(object):  # in BGR
     sun_flower = (0x0f, 0xc4, 0xf1)
     turquoise = (0x9c, 0xa0, 0x16)
     yellow_green = (112, 255, 202)          # 黄绿色
+    yellow = (57, 171, 242)                 # 黄色
     wet_asphalt = (0x5e, 0x49, 0x34)
 
 

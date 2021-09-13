@@ -31,7 +31,7 @@ def parse_x1j(id, data, ctx=None):
     if not ctx.get('x1j_obs'):
         ctx['x1j_obs'] = list()
     if id == 0x76f:  # start of epoch
-        ctx['x1j_obs'].clear()
+        # ctx['x1j_obs'].clear()
         cipv.clear()
         return {'type': 'vehicle_state', 'speed': r['speed']}
 
@@ -54,7 +54,6 @@ def parse_x1j(id, data, ctx=None):
             cipv['width'] = r['TargetVehicle_Width']
 
             # print('X %.1f', r['TargetVehicle_PosX'])
-            cipv['color'] = 4
             cipv['class'] = r['TargetVehicle_Type']
             # return {'type': 'obstacle','id': r['TargetID'], 'pos_lat': r['TargetVehiclePosY'], 'pos_lon': r['TargetVehiclePosX'], 'color': 3}
     elif id == 0x76e:
@@ -98,8 +97,8 @@ def parse_x1j(id, data, ctx=None):
 
         # x1_obs_list.append(x1_obs)
         # print(x1j_obs['status'])
-        if x1j_obs['status'] == 'invalid target':
-            return
+        # if x1j_obs['status'] == 'invalid target':
+        #     return
         if x1j_obs['pos_lon'] > 0.0:
             ctx['x1j_obs'].append(x1j_obs.copy())
             # return x1j_obs.copy()
@@ -117,7 +116,6 @@ def parse_x1j(id, data, ctx=None):
         cipp['vel_lon'] = r['TargetPedestrian_VelX']
         cipp['pos_lat'] = r['TargetPedestrian_PosY']
         cipp['pos_lon'] = r['TargetPedestrian_PosX']
-        cipp['color'] = 4
         cipp['class'] = 'pedestrian'
         cipp['TTC'] = r['TargetPedestrian_TTC']
         if cipp['pos_lon'] > 0.0:
@@ -139,7 +137,6 @@ def parse_x1j(id, data, ctx=None):
             x1_ped['type'] = 'obstacle'
             x1_ped['sensor'] = 'x1'
             x1_ped['class'] = 'pedestrian'
-            x1_ped['color'] = 4
             x1_ped['vel_lon'] = 0
             # x1_ped['height'] = 1.6
             if x1_ped['pos_lon'] > 0:
@@ -149,7 +146,7 @@ def parse_x1j(id, data, ctx=None):
         if id == 0x77d:
             if ctx.get('x1j_obs'):
                 ret = ctx['x1j_obs'].copy()
-                # ctx['x1j_obs'].clear()
+                ctx['x1j_obs'].clear()
                 # print(ret)
                 return ret
     elif 0x5f0 <= id <= 0x5f7:
@@ -185,7 +182,6 @@ def parse_x1j(id, data, ctx=None):
             x1_lane[index]['type'] = 'lane'
             x1_lane[index]['sensor'] = 'x1'
             x1_lane[index]['id'] = index
-            x1_lane[index]['color'] = 4
 
         if id == 0x5f7:
             res = []

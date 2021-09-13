@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package perception;
+
+message Pedestrian {   
+    
+    message Rect2f {
+        float x = 1;
+        float y = 2;
+        float w = 3;
+        float h = 4;
+    }
+                                 // 行人输出合集
+    message PedDetExport {                          // 行人信息
+        Rect2f detect_box = 1;    // CNN检测框
+        Rect2f reg_box = 2;       // CNN回归框
+        Rect2f track_box = 3;     // CNN跟踪框
+        Rect2f bike_box = 4;      // CNN自行车框
+        float confidence = 5;                       // 置信度
+        int32 detect_status = 6;                    // 检测状态, 0=new init, 1=not stable, 2=stable
+        int32 t_id = 7;                             // 行人trace id
+        int32 unique_id = 8;                        // 行人唯一id
+        int64 time_ms = 9;                          // 时戳
+        bool predicted = 10;                        // 是否跟踪预测出来的
+        float world_x = 11;                         // 纵向距离
+        float world_y = 12;                         // 横向距离
+        float pos_angle = 13;                       // 角度
+        float ttc_m = 14;                           // 瞬时碰撞时间
+        float ttc = 15;                             // 碰撞时间
+        float longitudinal_velocity = 16;           // 纵向速度
+        float lateral_velocity = 17;                // 横向速度
+        float real_H = 18;                          // 行人高度
+        float real_W = 19;                          // 行人宽度
+        bool is_longitudinal_close = 20;            // 纵向接近
+        bool is_lateral_close = 21;                 // 横向接近
+        bool is_measure_not_stable = 22;            // 测距测速非常不稳定，结果不可信
+        bool have_bike = 23;                       // 是否骑车
+        float is_key = 24;                          // 是否在危险区
+        bool is_danger = 25;                        // 符合pcw的行人
+    }
+
+    message PedWarningExport {                      // 告警信息
+        bool ped_on = 1;                            // 是否有行人在危险区
+        bool pcw_on = 2;                            // 是否有行人触发PCW告警
+    }
+
+    message PedState {
+        int32 pcw_state = 1;                        // 0:unavailable state, 1:off, 2:standby, 3:active, 7:not available
+    }
+
+	uint64 frame_id = 1;                            // 帧ID
+	uint64 timestamp = 2;                           // 时戳
+	repeated PedDetExport ped_list = 3;             // 行人信息
+    PedWarningExport ped_warning = 4;               // 告警信息
+    PedState state = 5;                             // 算法状态
+}

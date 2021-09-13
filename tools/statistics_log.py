@@ -65,6 +65,7 @@ class Statistics:
 
     def run(self):
         print("start:", self.log_path)
+        exclude_list = ["voice_note", "pinpoint"]
         with open(self.log_path) as f:
             lines = f.readlines()
 
@@ -153,7 +154,7 @@ class Statistics:
             file_name = os.path.join(self.save_path,
                                      f'{device.replace(".", "_")}_{time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(self.device_map[device][0].get("ts")))}.png')
             self.render_can([self.device_map[device]], file_name=file_name, title=f"")
-            self.device_map[device] = None
+            self.device_map[device] = []
 
     def statistics_can(self):
         """
@@ -182,7 +183,7 @@ class Statistics:
                 self.render_can(render_list, title=f"{can}", file_name=file_name)
                 # self.pool.apply(render_can, args=(render_list, f"{can}_{img_num}", self.save_path))
                 img_num += 1
-            self.can_map[can] = None
+            self.can_map[can] = []
             # pool.close()
             # pool.join()
 
@@ -286,7 +287,7 @@ def log_list_from_path(path):
         logger.error(f"{path}路径不存在")
         return
 
-    if os.path.isfile(path) and os.path.split(path)[-1] == "log.txt":
+    if os.path.isfile(path):
         return [path]
     elif os.path.isdir(path):
         log_path = os.path.join(path, "log.txt")
@@ -322,6 +323,7 @@ if __name__ == "__main__":
     log_path_list = []
     for path in args.path:
         if not os.path.exists(path):
+            logger.error("该路径不存在：{}".format(path))
             continue
         log_path_list += log_list_from_path(path)
 
