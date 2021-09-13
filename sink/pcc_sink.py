@@ -580,12 +580,14 @@ class MQTTSink(NNSink):
             self.topic_list[t['topic']]['source'] = source
 
     def _init_port(self):
-        print('mqtt connecting', self.ip)
+        # print('mqtt connecting', self.ip)
 
         self.client.connect(self.ip)
+        print('mqtt connected', self.ip)
+        # print('topic list:', self.topic_list)
         for topic in self.topic_list:
             self.client.subscribe(topic, self.topic_list[topic]['qos'])
-        self.client.on_message = self.pkg_handler
+        self.client.on_message = self.on_msg
         self.mq_last_time = time.time()
 
     def run(self):
@@ -597,7 +599,7 @@ class MQTTSink(NNSink):
     def close(self):
         self.client.loop_stop()
 
-    def pkg_handler(self, mosq, obj, msg):
+    def on_msg(self, mosq, obj, msg):
         data = msg.payload
 
         if not data:

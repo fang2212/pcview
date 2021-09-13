@@ -6,11 +6,11 @@
   "port": 1883,
   "force_ip": true,
   "transport": "mqtt",
+  "cid": "canfd_mqtt",
   "ports": {
     "can1": {
       "enable": true,
       "protocol": "canpack",
-      "cid": "canfd_mqtt",
       "dbc": "",
       "topic": "pi_node/can/0/rcv",
       "qos": 0
@@ -18,16 +18,14 @@
     "can2": {
       "enable": true,
       "protocol": "canpack",
-      "cid": "canfd_mqtt",
       "dbc": "",
-      "topic": "socket_hil/can/1/rcv",
+      "topic": "pi_node/can/1/rcv",
       "transport": "mqtt",
       "qos": 0
     },
     "can3": {
       "enable": true,
       "protocol": "canpack",
-      "cid": "canfd_mqtt",
       "dbc": "",
       "topic": "pi_node/can/2/rcv",
       "transport": "mqtt",
@@ -36,9 +34,39 @@
     "can4": {
       "enable": true,
       "protocol": "canpack",
-      "cid": "canfd_mqtt",
       "dbc": "",
       "topic": "pi_node/can/3/rcv",
+      "transport": "mqtt",
+      "qos": 0
+    },
+    "can5": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "topic": "pi_node/can/4/rcv",
+      "qos": 0
+    },
+    "can6": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "topic": "pi_node/can/5/rcv",
+      "transport": "mqtt",
+      "qos": 0
+    },
+    "can7": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "topic": "pi_node/can/6/rcv",
+      "transport": "mqtt",
+      "qos": 0
+    },
+    "can8": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "topic": "pi_node/can/7/rcv",
       "transport": "mqtt",
       "qos": 0
     }
