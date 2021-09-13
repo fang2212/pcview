@@ -60,9 +60,6 @@ def trigger_build(branch=None, local_path='.', ip=None, platform=""):
     pcc_app_local = os.path.join(local_path,
                                  'pcc_app_replay_{}_{}_{}.tar.gz'.format(platform, branch, datetime.now().strftime("%m%d")))
     sess.download(work_dir + '/dist/pcc_app.tar.gz', pcc_app_local)
-    statistics_local = os.path.join(local_path,
-                                    'pcc_statistics_{}_{}_{}.tar.gz'.format(platform, branch, datetime.now().strftime("%m%d")))
-    sess.download(work_dir + '/dist/statistics_log.tar.gz', statistics_local)
     return local_path
 
 
