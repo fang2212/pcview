@@ -233,11 +233,6 @@ class Hub(Thread):
             for iface in cfg['ports']:
                 if cfg["ports"][iface].get("transport"):
                     transport = cfg["ports"][iface].get("transport")
-                if 'rtk' in iface or 'gps' in iface:
-                    pisink = PinodeSink(ip, cfg["ports"][iface]["port"], msg_type=iface, index=idx, resname=iface,
-                                        fileHandler=self.fileHandler, mq=self.mq)
-                    self.sinks.append(pisink)
-                    self.online[ip_type]['msg_types'].append(iface + '.{}'.format(idx))
                 if "can" in iface:
                     can_list[iface] = cfg["ports"][iface]
 

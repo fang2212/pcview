@@ -1,7 +1,9 @@
 import argparse
+import json
 import logging
 import math
 import os
+import pathlib
 import time
 
 import openpyxl
@@ -27,10 +29,12 @@ col_count = 4
 
 class Statistics:
 
-    def __init__(self, log_path, save_path=None, assign_ids=None):
+    def __init__(self, log_path, save_path=None, config=None, cover=False):
 
         self.other_list = ['gsensor', "camera"]     # 不参与统计的字段
+        self.cover = cover                          # 是否覆盖已存在的数据
         self.log_path = log_path
+        self.log_config = json.load(open(os.path.join(os.path.dirname(self.log_path), "config.json")))
         self.save_path = save_path
         self.log_camera_start_ts = 0
         self.log_camera_end_ts = 0
@@ -39,9 +43,11 @@ class Statistics:
         self.log_long_ts = 0
         # self.pool = Pool(4)                         # 初始化进程池
 
-        self.assign_ids = assign_ids                # 指定渲染id
+        self.config = config                        # 指定渲染id
         self.can_map = {}                           # CAN设备数据统计映射表
+        self.topic_map = {}
         self.device_map = {}                        # 设备数据统计映射表
+        self.keyword_map = {}                       # 需要统计的关键词映射表
 
         self.wb = openpyxl.Workbook()  # Excel文件对象
         self.excel_ws = self.wb.create_sheet(title="data", index=0)  # Excel工作表对象
@@ -54,18 +60,42 @@ class Statistics:
     def init(self):
         if not (self.save_path and os.path.exists(self.save_path) and os.path.isdir(self.save_path)):
             self.save_path = os.path.join(os.path.dirname(self.log_path), "log信号接收统计图表")
-            if not os.path.exists(self.save_path):
-                os.makedirs(self.save_path)
+        else:
+            self.save_path = os.path.join(self.save_path, os.path.dirname(self.log_path), "log信号接收统计图表")
+        if not os.path.exists(self.save_path):
+            os.makedirs(self.save_path)
 
         # 初始化表头
-        excel_header = ["设备名", "设备id", '平均值', '最小值', '最大值', '标准差']
+        excel_header = ["名称", "id", "统计量", '平均间隔', '最小间隔', '最大间隔', '间隔标准差', "周期(ms)", "高于周期系数(%)", "高占比(%)", "低于周期系数(%)", "低占比(%)"]
         for i, h in enumerate(excel_header):
             self.excel_ws.cell(column=i + 1, row=self.excel_row_pos, value=h)
         self.excel_row_pos += 1
 
+        # 初始化can关键词映射表
+        if self.config:
+            for idx, cfg in enumerate(self.log_config):
+                if cfg["type"] == "can_collector":
+                    for i in cfg["ports"]:
+                        if "can" in i:
+                            msg_type = cfg['ports'][i]['topic']
+                            source = '{}.{:01d}.can.{}'.format(cfg["ports"][i].get("origin_device", "canfd"), idx, cfg['ports'][i]['topic'])
+                            if self.config.get(msg_type):
+                                self.config[source] = self.config.get(msg_type)
+                else:
+                    if 'can0' in cfg['ports']:
+                        msg_type = cfg['ports']['can0']['topic']
+                        self.topic_map['CAN' + '{:01d}'.format(idx * 2)] = msg_type
+                        if self.config.get(msg_type):
+                            self.config['CAN' + '{:01d}'.format(idx * 2)] = self.config.get(msg_type)
+                    if 'can1' in cfg['ports']:
+                        msg_type = cfg['ports']['can1']['topic']
+                        self.topic_map['CAN' + '{:01d}'.format(idx * 2 + 1)] = msg_type
+                        if self.config.get(msg_type):
+                            self.config['CAN' + '{:01d}'.format(idx * 2 + 1)] = self.config.get(msg_type)
+            print(self.config)
+
     def run(self):
         print("start:", self.log_path)
-        exclude_list = ["voice_note", "pinpoint"]
         with open(self.log_path) as f:
             lines = f.readlines()
 
@@ -83,7 +113,7 @@ class Statistics:
                 if self.log_end_ts < ts:
                     self.log_end_ts = ts
 
-                if "CAN" in cols[2]:
+                if "CAN" in cols[2] or "can" in cols[2]:
                     self.can_collect(cols, ts)
                 elif not ("voice_note" in cols[2] or "pinpoint" in cols[2]):
                     self.other_collect(cols, ts)
@@ -102,19 +132,22 @@ class Statistics:
         self.export_excel()
 
     def can_collect(self, can_data, ts):
+        # 如果指定id 并当前id不在指定范围内
+        if self.config:
+            if can_data[2] not in self.config:
+                return
+            if self.config[can_data[2]].get("ids") and can_data[3] not in self.config[can_data[2]].get("ids"):
+                return
+
         data = {
             "ts": ts,
             "name": can_data[2],
             "id": can_data[3]
         }
 
-        # 如果指定id 并当前id不在指定范围内
-        if self.assign_ids and can_data[3] not in self.assign_ids:
-            return
-
         # 更新CAN数据表
         if not self.can_map.get(can_data[2]):
-            logger.debug(f"设备：{can_data[2]}")
+            logger.debug(f"can设备：{can_data[2]}")
             self.can_map[can_data[2]] = {}
 
         # 更新CAN id表
@@ -124,15 +157,6 @@ class Statistics:
             self.can_map[can_data[2]][can_data[3]] = [data]
 
     def other_collect(self, other_data, ts):
-        if self.assign_ids:
-            return
-
-        data = {
-            "ts": ts,
-            "name": other_data[2],
-        }
-        self.log_end_ts = ts
-
         # 记录视频开始结尾时间
         if "camera" in other_data[2]:
             if self.log_camera_start_ts == 0 or self.log_camera_start_ts > ts:
@@ -140,9 +164,18 @@ class Statistics:
             if self.log_camera_end_ts < ts:
                 self.log_camera_end_ts = ts
 
+        # 如果有指定关键词范围的话进行过滤
+        if self.config and other_data[2] not in self.config:
+            return
+
+        data = {
+            "ts": ts,
+            "name": other_data[2],
+        }
+
         # 更新设备数据表
         if not self.device_map.get(other_data[2]):
-            logger.debug(f"设备：{other_data[2]}")
+            logger.debug(f"keyword设备：{other_data[2]}")
             self.device_map[other_data[2]] = []
 
         self.device_map[other_data[2]].append(data)
@@ -154,7 +187,7 @@ class Statistics:
             file_name = os.path.join(self.save_path,
                                      f'{device.replace(".", "_")}_{time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(self.device_map[device][0].get("ts")))}.png')
             self.render_can([self.device_map[device]], file_name=file_name, title=f"")
-            self.device_map[device] = []
+            self.device_map[device] = None
 
     def statistics_can(self):
         """
@@ -172,18 +205,18 @@ class Statistics:
                     over_list = render_list[:-over_count]
                     if not over_list:
                         continue
-                    file_name = os.path.join(self.save_path, f'{can}_{img_num}_{time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(over_list[0][0].get("ts")))}.png')
-                    self.render_can(over_list, title=f"{can}_{img_num}", file_name=file_name)
+                    file_name = os.path.join(self.save_path, f'{self.topic_map.get(can, can)}_{img_num}_{time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(over_list[0][0].get("ts")))}.png')
+                    self.render_can(over_list, title=f'{self.topic_map.get(can, can)}_{img_num}', file_name=file_name)
                     # self.pool.apply(render_can, args=(render_list[:-over_count], f"{can}_{img_num}", self.save_path))
                     render_list = render_list[-over_count:]
                     img_num += 1
                     if not render_list:
                         continue
-                file_name = os.path.join(self.save_path, f'{can}_{img_num}_{time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(render_list[0][0].get("ts")))}.png')
-                self.render_can(render_list, title=f"{can}", file_name=file_name)
+                file_name = os.path.join(self.save_path, f'{self.topic_map.get(can, can)}_{img_num}_{time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(render_list[0][0].get("ts")))}.png')
+                self.render_can(render_list, title=f'{self.topic_map.get(can, can)}', file_name=file_name)
                 # self.pool.apply(render_can, args=(render_list, f"{can}_{img_num}", self.save_path))
                 img_num += 1
-            self.can_map[can] = []
+            self.can_map[can] = None
             # pool.close()
             # pool.join()
 
@@ -191,7 +224,7 @@ class Statistics:
         """渲染设备的接收情况图表"""
         if not data_list:
             return
-        if os.path.exists(file_name):
+        if not self.cover and os.path.exists(file_name):
             logger.debug(f"已存在渲染数据：{file_name}")
             return
 
@@ -206,7 +239,8 @@ class Statistics:
         has_draw = False
         for can_id_data in data_list:
             data_count = len(can_id_data)
-            if data_count <= 1:
+            name = can_id_data[0].get('name', "")
+            if data_count < 2:
                 continue
 
             # logger.debug("draw point count: {}, file:{}".format(data_count, file_name))
@@ -232,12 +266,29 @@ class Statistics:
             min_interval = np.min(interval_list)
             max_interval = np.max(interval_list)
             std_interval = np.std(interval_list)
+            # 计算周期占比数据
+            np_interval = np.array(interval_list)
+            height_per = ""     # 高于周期系数
+            low_per = ""        # 低于周期系数
+            height_per_count = ""   # 高于周期系数的数据量
+            low_per_count = ""      # 低于周期系数的数据量
+            if self.config.get(name) and self.config.get(name).get("cycle"):
+                if self.config.get(name).get("height_per"):
+                    height_per = self.config.get(name).get("height_per")
+                    height_num = (self.config.get(name).get("cycle") * (1 + height_per/100)/1000)
+                    height_count = len(np.where(np_interval > height_num)[0])
+                    height_per_count = (height_count/data_count)*100
+                if self.config.get(name).get("low_per"):
+                    low_per = self.config.get(name).get("low_per")
+                    low_num = (self.config.get(name).get("cycle") * (1 - low_per/100)/1000)
+                    low_count = len(np.where(np_interval < low_num)[0])
+                    low_per_count = (low_count/data_count)*100
 
             # 将时间轴进行计算，通过减去最小值从0开始计算
             timestamp_list = [i-self.log_camera_start_ts for i in timestamp_list]
 
             # 写入到表格对象中
-            col_data = [can_id_data[0].get('name', ""), can_id_data[0].get('id', ""), avg_interval, min_interval, max_interval, std_interval]
+            col_data = [self.topic_map.get(name, name), can_id_data[0].get('id', ""), data_count, int(avg_interval*1000), int(min_interval*1000), int(max_interval*1000), int(std_interval*1000), self.config.get(name, {}).get("cycle", ""), height_per, height_per_count, low_per, low_per_count]
             for i, d in enumerate(col_data):
                 self.excel_ws.cell(column=i + 1, row=self.excel_row_pos, value=d)
             self.excel_row_pos += 1
@@ -270,11 +321,11 @@ class Statistics:
 
     def export_excel(self):
         excel_filename = os.path.join(self.save_path, "接收数据统计表.xlsx")
-        if os.path.exists(excel_filename):
+        if not self.cover and os.path.exists(excel_filename):
             logger.debug(f"{excel_filename}已存在，跳过保存")
-            self.wb.close()
         else:
             self.wb.save(excel_filename)
+        self.wb.close()
 
 
 def log_list_from_path(path):
@@ -287,7 +338,7 @@ def log_list_from_path(path):
         logger.error(f"{path}路径不存在")
         return
 
-    if os.path.isfile(path):
+    if os.path.isfile(path) and os.path.split(path)[-1] == "log.txt":
         return [path]
     elif os.path.isdir(path):
         log_path = os.path.join(path, "log.txt")
@@ -305,7 +356,8 @@ if __name__ == "__main__":
     # 解析命令行参数
     parser = argparse.ArgumentParser()
     parser.add_argument('path', nargs='+', help='包含log.txt的路径')
-    parser.add_argument('--id', "-i", nargs='*', help='包含log.txt的路径')
+    parser.add_argument('--config', "-c", help='统计配置json文件路径')
+    parser.add_argument('--cover', '-cv', action='store_true', help="是否覆盖已存在的数据")
     parser.add_argument('--debug', "-d", action='store_true', help='调试模式', default=False)
     parser.add_argument('--save', '-s', help='保存统计图表文件夹路径（默认当前目录）')
     args = parser.parse_args()
@@ -315,6 +367,16 @@ if __name__ == "__main__":
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.WARNING)
+
+    # 初始化统计配置文件
+    if args.config:
+        config = pathlib.Path(args.config)
+        if not config.exists():
+            logger.error(f"未找到统计配置json文件，请确认路径是否存在{config}")
+            exit(0)
+        config = json.load(open(config.absolute()))
+    else:
+        config = {}
 
     # 初始化保存路径
     if args.save and not os.path.exists(args.save):
@@ -329,6 +391,6 @@ if __name__ == "__main__":
 
     logger.debug(f"wait statistics count: {len(log_path_list)}")
     for path in tqdm(log_path_list):
-        task = Statistics(path, save_path=args.save, assign_ids=args.id)
+        task = Statistics(path, save_path=args.save, config=config, cover=args.cover)
         task.run()
         logger.warning("运行结束")

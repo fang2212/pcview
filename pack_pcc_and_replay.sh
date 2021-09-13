@@ -10,6 +10,8 @@ fi
 #python3 tools/build_info.py
 pyinstaller pcc_app.spec --noconfirm
 pyinstaller pcc_replay.spec --noconfirm
+pyinstaller split_recorder_data.spec --noconfirm
+pyinstaller statistics_log_plus.spec --noconfirm
 #pyinstaller -F pcc_replay_yj.spec
 #pyinstaller pcc_post.spec
 #
@@ -37,7 +39,9 @@ mv build_info.txt dist/pcc_app/
 
 cd dist
 cp pcc_replay/pcc_replay pcc_app/
+cp split_recorder_data/split_recorder_data pcc_app/
 tar -czvf pcc_app.tar.gz pcc_app
+tar -czvf statistics_log.tar.gz statistics_log
 
 #if [ ! -d "~/release " ]; then
 #  mkdir ~/release
