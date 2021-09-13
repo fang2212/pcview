@@ -92,7 +92,7 @@ class Statistics:
                         self.topic_map['CAN' + '{:01d}'.format(idx * 2 + 1)] = msg_type
                         if self.config.get(msg_type):
                             self.config['CAN' + '{:01d}'.format(idx * 2 + 1)] = self.config.get(msg_type)
-            print(self.config)
+            logger.debug(self.config)
 
     def run(self):
         print("start:", self.log_path)
@@ -356,6 +356,7 @@ if __name__ == "__main__":
     # 解析命令行参数
     parser = argparse.ArgumentParser()
     parser.add_argument('path', nargs='+', help='包含log.txt的路径')
+    parser.add_argument('--all', "-a", action='store_true', help='绘制全部数据')
     parser.add_argument('--config', "-c", help='统计配置json文件路径')
     parser.add_argument('--cover', '-cv', action='store_true', help="是否覆盖已存在的数据")
     parser.add_argument('--debug', "-d", action='store_true', help='调试模式', default=False)
@@ -369,14 +370,17 @@ if __name__ == "__main__":
         logger.setLevel(logging.WARNING)
 
     # 初始化统计配置文件
-    if args.config:
-        config = pathlib.Path(args.config)
+    if args.all:
+        config = {}
+    else:
+        if args.config:
+            config = pathlib.Path(args.config)
+        else:
+            config = pathlib.Path(pathlib.Path().absolute().joinpath(args.config))
         if not config.exists():
             logger.error(f"未找到统计配置json文件，请确认路径是否存在{config}")
             exit(0)
         config = json.load(open(config.absolute()))
-    else:
-        config = {}
 
     # 初始化保存路径
     if args.save and not os.path.exists(args.save):

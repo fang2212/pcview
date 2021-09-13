@@ -536,6 +536,7 @@ if __name__ == '__main__':
 
     if not args.voice and not args.mark:
         args.voice = True
+        args.mark = True
 
     for log in log_list:
         print(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} start:", log)
