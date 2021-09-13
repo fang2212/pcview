@@ -336,8 +336,11 @@ def load_cfg(jsonspec, local='config/local.json'):
                             if 'can' not in param:
                                 clct[param] = item['params'][param]
                             else:
-                                clct['ports'][param]['topic'] = item['params'][param]
-                                clct['ports'][param]['dbc'] = item['params'][param]
+                                if 'dbc' in clct['ports'][param]:
+                                    clct['ports'][param]['dbc'] = item['params'][param]
+                                else:
+                                    clct['ports'][param]['topic'] = item['params'][param]
+
                         if item['params'].get('is_main'):
                             main_collector = item['params']['is_main']
                 else:
