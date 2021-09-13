@@ -4,8 +4,8 @@
 block_cipher = None
 
 
-a = Analysis(['tools/statistics_log.py'],
-             pathex=['./tools'],
+a = Analysis(['statistics_log.py'],
+             pathex=[],
              binaries=[],
              datas=[],
              hiddenimports=[],
