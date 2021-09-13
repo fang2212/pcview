@@ -44,10 +44,10 @@ class SSHSession(object):
         self.tp.close()
 
 
-def trigger_build(branch=None, local_path='.'):
+def trigger_build(branch=None, local_path='.', ip=None, platform=""):
     work_dir = '/home/mini/work/pcview'
     suffix = 'cd {} && '.format(work_dir)
-    sess = SSHSession('192.168.51.162', username='mini', password='mini')
+    sess = SSHSession(ip, username='mini', password='mini')
     if branch:
         sess.exec(suffix + 'git checkout {}'.format(branch))
     sess.exec(suffix + 'git pull')
@@ -58,10 +58,10 @@ def trigger_build(branch=None, local_path='.'):
 
     # retrieve binary
     pcc_app_local = os.path.join(local_path,
-                                 'pcc_app_replay_1804_{}_{}.tar.gz'.format(branch, datetime.now().strftime("%m%d")))
+                                 'pcc_app_replay_{}_{}_{}.tar.gz'.format(platform, branch, datetime.now().strftime("%m%d")))
     sess.download(work_dir + '/dist/pcc_app.tar.gz', pcc_app_local)
     statistics_local = os.path.join(local_path,
-                                    'pcc_statistics_1804_{}_{}.tar.gz'.format(branch, datetime.now().strftime("%m%d")))
+                                    'pcc_statistics_{}_{}_{}.tar.gz'.format(platform, branch, datetime.now().strftime("%m%d")))
     sess.download(work_dir + '/dist/statistics_log.tar.gz', statistics_local)
     return local_path
 
@@ -109,23 +109,23 @@ if __name__ == "__main__":
     home = os.environ['HOME']
     parser = argparse.ArgumentParser(description="pcc remote build and retrieve.")
     parser.add_argument('-p', '--platform', default='1804')
-    parser.add_argument('-b', '--branch', default='can-getway')
+    parser.add_argument('-b', '--branch', default='cve-new')
     parser.add_argument('-t', '--target', default='pcc')  #
     parser.add_argument('-o', '--output', default=home)
 
     args = parser.parse_args()
 
     if args.platform == '1604':
-        pack = trigger_build_1604(args.branch, args.output)
+        pack = trigger_build(args.branch, args.output, ip="192.168.51.187", platform=args.platform)
         print('retrieved pcc package at', pack)
 
     elif args.platform == '1804':
-        pack = trigger_build(args.branch, args.output)
+        pack = trigger_build(args.branch, args.output, ip="192.168.51.162", platform=args.platform)
         print('retrieved 1804 pcc package at', pack)
     else:
-        pack = trigger_build_1604(args.branch, args.output)
-        print('retrieved pcc package at', pack)
-        pack = trigger_build(args.branch, args.output)
+        pack = trigger_build(args.branch, args.output, ip="192.168.51.187", platform=args.platform)
+        print('retrieved 1604 package at', pack)
+        pack = trigger_build(args.branch, args.output, ip="192.168.51.162", platform=args.platform)
         print('retrieved 1804 pcc package at', pack)
 
 
