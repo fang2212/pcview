@@ -13,6 +13,7 @@ from turbojpeg import TurboJPEG
 
 from net.ntrip_client import GGAReporter
 from player import FlowPlayer, pcc_ui, web_ui
+from player.eclient_ui import BaseDraw
 from recorder import VideoRecorder
 from recorder.convert import *
 from tools.geo import *
@@ -316,11 +317,11 @@ class PCC(object):
         # 暂停的时候保持画面窗口
         while self.replay and self.pause:
             self.handle_keyboard()
-            comb = self.draw(self.cache, frame_cnt)
-            if self.replay:
-                cv2.imshow('MINIEYE-CVE', comb)
+            if not self.eclient:
+                comb = self.draw(self.cache, frame_cnt)
+                if self.replay:
+                    cv2.imshow('MINIEYE-CVE', comb)
 
-            self.hub.pause(True)
             time.sleep(0.1)
 
         # 清除已渲染的数据
@@ -463,9 +464,9 @@ class PCC(object):
         self.ts_now = mess['ts']
         self.player.ts_now = mess['ts']
         self.player.update_column_ts('video', mess['ts'])
-        self.player.show_frame_id(img, 'video', frame_id)
+        self.player.show_frame_id('video', frame_id)
         self.player.show_frame_cost(self.frame_cost)        # 渲染画面的耗时
-        self.player.show_datetime(img, self.ts_now)
+        self.player.show_datetime(self.ts_now)
 
         if self.ts0 == 0:
             self.ts0 = self.ts_now
@@ -528,7 +529,7 @@ class PCC(object):
             self.player.show_replaying(self.ts_now - self.ts0)
 
         fps = self.player.cal_fps(frame_cnt)
-        self.player.show_fps(img, 'video', fps)
+        self.player.show_fps('video', fps)
 
         self.player.render_text_info(img)
 
@@ -802,7 +803,13 @@ class PCC(object):
         获取视频窗口的按键事件
         :return:
         """
-        key = cv2.waitKey(1) & 0xFF
+        if self.eclient:
+            key = BaseDraw.get_event()
+            if key:
+                key = ord(key)
+                print(key)
+        else:
+            key = cv2.waitKey(1) & 0xFF
         self.control(key)
 
     def control(self, key):
@@ -836,6 +843,7 @@ class PCC(object):
                 logger.debug('Pause: {}'.format(self.pause))
                 if self.pause:
                     self.pause_t = time.time()
+                    self.hub.pause(True)
                 else:
                     paused_t = time.time() - self.pause_t
                     self.hub.add_pause(paused_t)
@@ -908,7 +916,7 @@ class PCC(object):
     def left_click(self, event, x, y, flags, param):
         # print(event, x, y, flags, param)
         if cv2.EVENT_LBUTTONDOWN == event:
-            logger.debug('left btn down {} {}'.format(x , y))
+            logger.debug('left btn down {} {}'.format(x, y))
 
     def check_status(self):
         """

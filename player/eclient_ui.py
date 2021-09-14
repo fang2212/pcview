@@ -1,3 +1,5 @@
+import time
+
 import eclient
 import numpy as np
 import sharemem
@@ -7,23 +9,42 @@ from player.ui import CVColor
 
 eClient = eclient.ElectronClient()
 eClient.connect()
-view2D = eClient.getPluginByName('plugin-2DView')
-if not view2D:
-    print('Error: cannot find plugin-2DView')
-    exit(1)
+
+video_main = eClient.getPluginByTitle('video-main')
+front_ipm = eClient.getPluginByTitle('front-ipm')
+
+
+video_main_request = eClient.createPluginRequest([video_main])
+video_main_request.clearAll()
+front_ipm_request = eClient.createPluginRequest([front_ipm])
+
+plugin_dict = {
+    'video-main': video_main_request,
+    'front-ipm': front_ipm_request
+}
 
 mem_info = eClient.getSharedMemoryInfo()
 mem = sharemem.ShareMem(mem_info['name'], mem_info['size'])
 mem.open()
-
-request = eClient.createPluginRequest([view2D])
-request.clearAll()
 
 
 class BaseDraw(object):
     """
     基本的绘图函数
     """
+
+    # **************************** 事件方法 ****************************
+
+    @classmethod
+    def get_event(cls, event_type='keyword'):
+        event = eClient.recv()
+        if event is None:
+            return
+
+        if event['event'] == 'keydown':
+            return event['data']
+
+    # **************************** 颜色处理方法 ****************************
 
     @classmethod
     def covert_alpha(cls, color, alpha=None):
@@ -40,10 +61,13 @@ class BaseDraw(object):
             color = f"rgba({color[2]}, {color[1]}, {color[0]}, {alpha})"
         return color
 
+    # **************************** 布局类方法 ****************************
+
     @classmethod
-    def draw_img(cls, img):
+    def draw_img(cls, img, plugin_name='video-main'):
         """
         绘制图片画面
+        :param plugin_name: 画板插件名
         :param img:
         :return:
         """
@@ -51,13 +75,11 @@ class BaseDraw(object):
         offset = image.allocForWriting(len(img))
         mem.write_memory(offset, img)
         image.finishWriting()
-        request.drawImage(image, 'jpg')
-
-    # **************************** 状态框 ****************************
+        plugin_dict.get(plugin_name).drawImage(image, 'jpg')
 
     @classmethod
     def draw_status_indent(cls, position, radius=5, color=CVColor.White):
-        request.drawShape({
+        video_main_request.drawShape({
             'type': 'POINTS',
             'coords': position,
             'options': {
@@ -66,6 +88,38 @@ class BaseDraw(object):
                 'radius': radius,
             }
         })
+
+    @classmethod
+    def draw_ipm(cls):
+        """
+        俯视图背景
+        :return:
+        """
+        pass
+
+    # **************************** 组件类方法 ****************************
+
+    @classmethod
+    def draw_grid_3d(cls, plugin_name='front-ipm'):
+        # front_ipm_request.drawShape({
+        #     'type': 'GRID_3D',
+        #     'option': {
+        #         'rows': 15,             # 横向格子数
+        #         'cols': 15,             # 纵向格子数
+        #         'cellSize': 4,          # 格子大小
+        #         'position': [0, 0, 0],  # 中心点的坐标
+        #         'rotation': [0, 0, 0],  # 旋转角度（欧拉角）
+        #         'camera': {
+        #             'fovx': 85,   # 摄像机的X方向视角（默认根据Y方向视角fovy和画布宽高比aspect自动算出）
+        #             'position': [0, 4, 10],
+        #             'rotation': [-5, 0, 0],  # pitch: -5d
+        #         },
+        #         'stroke': 'gray',
+        #         'strokeWidth': 1,
+        #     },
+        #
+        # })
+        pass
 
     @classmethod
     def draw_circle(cls, position, radius=20, color="", border_color="", thickness=5):
@@ -77,7 +131,7 @@ class BaseDraw(object):
         :param color:
         :return:
         """
-        request.drawShape({
+        video_main_request.drawShape({
             'type': 'CIRCLE',
             'options': {
                 'center': position,             # 圆心
@@ -102,7 +156,7 @@ class BaseDraw(object):
         :param head_length: 头部长度（默认）
         :return:
         """
-        request.drawShape({
+        video_main_request.drawShape({
             'type': 'ARROW',
             'coords': [
                 end[0], end[1],  # 尾部中心点
@@ -124,7 +178,7 @@ class BaseDraw(object):
         For anti-aliased text, add argument cv2.LINE_AA.
         sample drawText(img_content, text, (20, 30), 0.6, CVColor.Blue, 2)
         """
-        request.drawShape({
+        video_main_request.drawShape({
             'type': 'TEXT',
             'text': text,
             'options': {
@@ -139,7 +193,7 @@ class BaseDraw(object):
     def draw_rect(cls, point1, point2, color=None, border=None, border_color=None):
         if isinstance(color, tuple):
             color = BaseDraw.bgr_to_str(color)
-        request.drawShape({
+        video_main_request.drawShape({
             'type': 'RECT',
             'coords': [
                 point1[0],  point1[1],  # 左上角(x, y)
@@ -176,7 +230,7 @@ class BaseDraw(object):
         height = abs(y2 - y1)
         suit_len = min(width, height)
         suit_len = int(suit_len / len_ratio)
-        request.drawShape({
+        video_main_request.drawShape({
             'type': 'RECT_CORNER',  # 角线的长度默认10像素
             "coords": [
                 x1, y1,
@@ -209,7 +263,7 @@ class BaseDraw(object):
         if isinstance(color, tuple):
             color = BaseDraw.bgr_to_str(color)
 
-        request.drawShape({
+        video_main_request.drawShape({
             'type': 'POLYNOMIAL_CURVE',
             'coeff': ratios,  # y = c0+c1*x+c2*x^2+c3*x^3
             'options': {
@@ -230,7 +284,7 @@ class BaseDraw(object):
 
         draw_list = np.array(point_list, int)
         coords = draw_list.flatten()
-        request.drawShape({
+        video_main_request.drawShape({
             'type': 'QUADRATIC_CURVE',
             'coords': coords.tolist(),
             'options': {
@@ -247,7 +301,7 @@ class BaseDraw(object):
 
         draw_list = np.array(point_list, int)
         coords = draw_list.flatten()
-        request.drawShape({
+        video_main_request.drawShape({
             'type': 'POLYLINE',
             'coords': coords.tolist(),
             'options': {
@@ -276,7 +330,7 @@ class BaseDraw(object):
     @classmethod
     def draw_alpha_rect(cls, image_content, rect, color='', border_color="", line_width=0):
         x, y, w, h = rect
-        request.drawShape({
+        video_main_request.drawShape({
             'type': 'RECT',
             'coords': [
                 x,  y,  # 左上角(x, y)
@@ -338,8 +392,8 @@ class BaseDraw(object):
 
     @classmethod
     def submit(cls):
-        eClient.submitPluginRequests([request])
+        eClient.submitPluginRequests([video_main_request])
 
     @classmethod
     def clear(cls):
-        request.clearAll()
+        video_main_request.clearAll()

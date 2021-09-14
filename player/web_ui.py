@@ -19,7 +19,7 @@ from math import *
 
 # from config.config import install
 from player.eclient_ui import BaseDraw, CVColor
-from player.ui import FlatColor
+from player.ui import FlatColor, color_dict
 from tools.geo import gps_bearing, gps_distance
 from tools.transform import Transform
 # import roadmarking_pb2
@@ -47,36 +47,6 @@ class Player(object):
 
         self.start_time = datetime.now()
         self.pxs = None
-
-        self.color_obs = {
-            "a1j": FlatColor.yellow_green,
-            "a1j_fusion": FlatColor.yellow_green,
-            "ars410": FlatColor.peach,
-            "bosch_mrr": FlatColor.yellow,
-            "d1_fusion": FlatColor.violet,
-            "gs4_debug": FlatColor.pink,
-            "j2": FlatColor.carrot,
-            "j2_fusion": FlatColor.light_green,
-            "q4_100": FlatColor.turquoise,
-            'anc': FlatColor.carrot,
-            'ars': FlatColor.emerald,
-            'ctlrr': FlatColor.alizarin,
-            'default': FlatColor.clouds,
-            'esr': FlatColor.alizarin,
-            'gps': FlatColor.clouds,
-            'ifv300': FlatColor.peter_river,
-            'lmr': FlatColor.emerald,
-            'mbq3': FlatColor.peter_river,
-            'mbq4': FlatColor.turquoise,
-            'rtk': FlatColor.sun_flower,
-            'sta77': FlatColor.wet_asphalt,
-            "wsk": FlatColor.pink,
-            'x1': FlatColor.amethyst,
-            'x1_fusion': CVColor.Red,
-            'x1_fusion_cam': FlatColor.dark_red,
-            'x1j': FlatColor.amethyst,
-            'xyd2': FlatColor.Blue,
-        }
 
         self.detection_color = {
             'Unknown': 'fail',
@@ -113,7 +83,7 @@ class Player(object):
         self.columns[source] = {
             'indent': self.next_patch_x,
             'y0': self.next_patch_y,
-            "color": self.color_obs.get(source.split('.')[0], self.color_obs["default"]),
+            "color": color_dict.get(source.split('.')[0], color_dict["default"]),
             "buffer": dict(),
             "ts": 0,
             "h": 1000
@@ -122,7 +92,7 @@ class Player(object):
         self.next_patch_x += self.param_bg_width
 
     def show_dist_mark_ipm(self, img):
-        pass
+        BaseDraw.draw_grid_3d()
 
     def show_parameters_background(self, img, rect, color=BaseDraw.bgr_to_str(CVColor.Black, 0.6), border_color=BaseDraw.bgr_to_str(CVColor.LightGray), border_width=0):
         """左上角参数背景图"""
@@ -138,7 +108,7 @@ class Player(object):
         """
         source = obs['source'].split('.')[0]
         sensor = obs.get('sensor') or source
-        color = BaseDraw.bgr_to_str(self.color_obs.get(source, self.color_obs['default']))
+        color = BaseDraw.bgr_to_str(color_dict.get(source, color_dict['default']))
 
         width = obs.get('width', 0.3)
         height = obs.get('height', width)
@@ -442,13 +412,13 @@ class Player(object):
             print('Error:', obs)
             return
 
-        color = self.color_obs['rtk']
+        color = color_dict['rtk']
         line = 100
         style = 'normal'
         expire_ts = time.time() + 0.5
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
             line = 160
-            style = self.color_obs.get('x1_fusion_cam')
+            style = color_dict.get('x1_fusion_cam')
             self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style, expire_ts=expire_ts)
         elif obs.get("sensor") == "a1j_fusion" or obs.get("sensor") == "ifv300_fusion":
             line = 180
@@ -578,7 +548,7 @@ class Player(object):
         if data['type'] != 'lane':
             return
 
-        color = BaseDraw.bgr_to_str(self.color_obs.get(data['source'].split('.')[0], self.color_obs['default']))
+        color = BaseDraw.bgr_to_str(color_dict.get(data['source'].split('.')[0], color_dict['default']))
         self.show_lane(img, data, color=color, style=data.get("style"))
 
     def draw_lane_ipm(self, img, data):

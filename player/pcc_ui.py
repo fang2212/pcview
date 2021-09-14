@@ -521,9 +521,7 @@ class Player(object):
             self.show_text_info(source, i.get("height", show_line), i.get("text", ""), i.get("style", "normal"), i.get("size"), expire_ts=i.get("expire_ts"))
             show_line = i.get("height", show_line) + 20
 
-    def show_frame_id(self, img, source, fn):
-        # indent = self.columns['video']['indent']
-        # BaseDraw.draw_text(img, 'fid: ' + str(int(fn)), (indent + 2, 40), 0.5, CVColor.White, 1)
+    def show_frame_id(self, source, fn):
         self.show_text_info(source, 40, 'frame: ' + str(int(fn)))
 
     def show_pinpoint(self, img, pp):
@@ -532,12 +530,10 @@ class Player(object):
     def show_frame_cost(self, cost):
         self.show_text_info('video', 80, 'render_cost: {}ms'.format(int(cost * 1000)))
 
-    def show_fps(self, img, source, fps):
-        # indent = self.columns['video']['indent']
-        # BaseDraw.draw_text(img, 'fps: ' + str(int(fps)), (indent + 2, 60), 0.5, CVColor.White, 1)
+    def show_fps(self, source, fps):
         self.show_text_info(source, 60, 'fps: ' + str(int(fps)))
 
-    def show_datetime(self, img, ts=None):
+    def show_datetime(self, ts=None):
         """
         视频的录制时间
         :param img:
@@ -555,25 +551,16 @@ class Player(object):
         self.show_text_info('video', 120, '{}'.format(time_))
 
     def show_ttc(self, img, ttc, source):
-        # indent = self.columns[source]['indent']
-        # BaseDraw.draw_text(img, 'TTC:' + '{:.2f} s'.format(ttc), (indent + 2, 40), 0.5, CVColor.Cyan, 1)
         self.show_text_info(source, 40, 'TTC:' + '{:.2f} s'.format(ttc))
 
     def show_veh_speed(self, img, speed, source):
-        # indent = self.get_indent(source)
-        # BaseDraw.draw_text(img, '{:.1f} km/h'.format(speed), (indent + 2, 40), 0.5, CVColor.White, 1)
         self.show_text_info(source, 40, '{:.1f} km/h'.format(speed))
 
     def show_yaw_rate(self, img, yr, source):
-        # indent = self.get_indent(source)
         yr_deg = yr * 57.3
-        # BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
         self.show_text_info(source, 60, '{:.1f}deg/s'.format(yr_deg))
 
     def show_accel(self, img, acc, source):
-        # indent = self.get_indent(source)
-        # yr_deg = yr * 57.3
-        # BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
         self.show_text_info(source, 80, '{:.1f}m/s^2'.format(acc))
 
     def show_q3_veh(self, img, speed, yr):

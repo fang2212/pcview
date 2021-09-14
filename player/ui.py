@@ -85,6 +85,43 @@ class FlatColor(object):  # in BGR
     wet_asphalt = (0x5e, 0x49, 0x34)
 
 
+color_dict = {
+    "a1j": (59, 59, 238),
+    "a1j_fusion": (59, 59, 238),
+    "a1j_vision": (193, 182, 255),
+    "ars410": FlatColor.peach,
+    "bosch_mrr": FlatColor.yellow,
+    "d1_fusion": FlatColor.violet,
+    "gs4_debug": FlatColor.pink,
+    "j2": FlatColor.carrot,
+    "j2_fusion": FlatColor.light_green,
+    "q4_100": FlatColor.turquoise,
+    "wsk": FlatColor.pink,
+    'anc': FlatColor.carrot,
+    'ars': FlatColor.emerald,
+    'ctlrr': FlatColor.alizarin,
+    'default': FlatColor.clouds,
+    'esr': FlatColor.alizarin,
+    'gps': FlatColor.clouds,
+    'ifv300': CVColor.Blue,
+    'ifv300_fusion': CVColor.Blue,
+    'ifv300_vision': (255, 144, 30),
+    'lmr': FlatColor.emerald,
+    'mbq3': CVColor.Blue,
+    'mbq3_fusion': CVColor.Blue,
+    'mbq3_vision': (255, 144, 30),
+    'mbq4': FlatColor.turquoise,
+    'q3': CVColor.Blue,
+    'rtk': FlatColor.sun_flower,
+    'sta77': FlatColor.wet_asphalt,
+    'x1': FlatColor.amethyst,
+    'x1_fusion': CVColor.Red,
+    'x1_fusion_cam': FlatColor.dark_red,
+    'x1j': FlatColor.amethyst,
+    'xyd2': FlatColor.Blue,
+}
+
+
 class FPSCnt(object):
 
     def __init__(self, period, fps):
