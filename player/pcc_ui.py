@@ -110,8 +110,10 @@ class Player(object):
             #     self.indent += 300
             # else:
             self.next_patch_x += 160
+            msg_dbc = msg_type.split('.')
+            msg_dbc = msg_dbc[3] if len(msg_dbc) > 2 else msg_dbc[0]
             for src_type in self.color_obs:
-                if msg_type.split('.')[0] == src_type:
+                if msg_dbc == src_type:
                     self.columns[msg_type]['color'] = self.color_obs[src_type]
             self.columns[msg_type]['buffer'] = dict()
             self.columns[msg_type]['ts'] = 0
@@ -158,7 +160,8 @@ class Player(object):
         except Exception as e:
             print('Error indent', obs)
             return
-        source = obs['source'].split('.')[0]
+        source = obs['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
         sensor = obs.get('sensor') or source
         color = obs.get("color") or self.color_obs.get(source) or self.color_obs['default']
 
@@ -219,11 +222,10 @@ class Player(object):
             # print(int(x1), int(y1), int(w), width)
             try:
                 cv2.circle(img, (int(x0), int(y0 - 0.5 * h)), int(w), color, 1)
+                # print(x1, y1, x, h)
+                BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
             except Exception as e:
-                logger.debug(f'雷达数据渲染失败参数：x0:{x0} y0:{y0}, h:{h}, w:{w}')
-                logger.error(f"渲染雷达数据失败，渲染参数：cve.circle(img, ({int(x0)}, {int(y0 - 0.5 * h)}), {int(w)}, color, 1))")
-            # print(x1, y1, x, h)
-            BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
+                logger.error(f'雷达数据渲染失败参数：x:{x} y:{y} x0:{x0} y0:{y0}, h:{h}, w:{w}')
         elif obs.get('class') == 'pedestrian':
             if x1 < 0 or y1 < 0 or x2 > img.shape[1] or y2 > img.shape[0]:
                 return
@@ -251,7 +253,8 @@ class Player(object):
             return
 
         id = obs['id']
-        source = obs['source'].split('.')[0]
+        source = obs['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
         if 'pos_lon' in obs:
             # x = obs['pos_lon']
             # y = obs['pos_lat']
@@ -617,7 +620,9 @@ class Player(object):
         expire_ts = time.time() + 0.5
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
             line = 160
-            style = self.color_obs.get(obs['source'])
+            source = obs['source'].split('.')
+            source = source[3] if len(source) > 2 else source[0]
+            style = self.color_obs.get(source, 'normal')
             self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style, expire_ts=expire_ts)
         elif obs.get("sensor") == "a1j_fusion" or obs.get("sensor") == "ifv300_fusion":
             line = 180
@@ -719,7 +724,9 @@ class Player(object):
         BaseDraw.draw_text(img, '{:.1f}'.format(trk_gnd), (hc - 14, h - 46), 0.4, CVColor.White, 1)
 
     def show_warning(self, img, data):
-        sensor = data.get('sensor') or data['source'].split('.')[0]
+        source = data['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
+        sensor = data.get('sensor') or source
         color = self.color_obs.get(sensor)
         if not color:
             color = self.color_obs['default']
@@ -1195,10 +1202,15 @@ class Player(object):
         #     color = self.color_seq[data['color']]
         # else:
         #     color = CVColor.Blue
-        color = data.get('color') or self.color_obs.get(data['source'].split('.')[0]) or self.color_obs['default']
+        source = data['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
+        color = data.get('color') or self.color_obs.get(source) or self.color_obs['default']
         # self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
         # lane message
-        self.show_lane(img, data, color=color, style=data.get("style"))
+        try:
+            self.show_lane(img, data, color=color, style=data.get("style"))
+        except Exception as e:
+            logger.error(f'绘制车道线失败：{e} 报错方法：self.show_lane(img, data, color=color, style=data.get("style")) data：{data}')
 
     def draw_lane_ipm(self, img, data):
         if len(data) == 0:
@@ -1210,7 +1222,9 @@ class Player(object):
         #     color = self.color_seq[data['color']]
         # else:
         #     color = CVColor.Blue
-        color = self.color_obs.get(data['source'].split('.')[0])
+        source = data['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
+        color = self.color_obs.get(source)
         if not color:
             color = self.color_obs['default']
 
