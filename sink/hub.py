@@ -144,7 +144,8 @@ class Hub(Thread):
             print('index {}'.format(ol['idx']), bcl.OKBL + ip_type + bcl.ENDC, ol.get('mac'))
             print('definition:', ol['defs_path'])
             for iface in ol['ports']:
-                print('--', iface, ol['ports'][iface]['topic'] + '.{}'.format(ol['idx']), ol['ports'][iface].get('port') or ol.get("port"),
+                topic = ol['ports'][iface].get('dbc', ol['ports'][iface].get('topic'))
+                print('--', iface, topic + '.{}'.format(ol['idx']), ol['ports'][iface].get('port') or ol.get("port"),
                       'enabled' if ol['ports'][iface]['enable'] else bcl.FAIL + 'disabled' + bcl.ENDC)
         print(bcl.OKGR + '---------------- ----------------- ---------------' + bcl.ENDC)
 
