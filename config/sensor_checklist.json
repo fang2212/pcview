@@ -73,15 +73,13 @@
         "ids": ["0x19c", "0x3a6", "0x187"],
         "cycle": 20
     },
-    "camera": {
-        "type": "keyword",
-        "cycle": 50,
-        "height_per": 10,
-        "low_per": 10
+    "bosch_r": {
+        "type": "can",
+        "ids": ["0x33b"]
     },
     "camera": {
         "type": "keyword",
-        "cycle": 30,
+        "cycle": 50,
         "height_per": 10,
         "low_per": 10
     },

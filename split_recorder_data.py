@@ -33,11 +33,12 @@ class SplitRecorder:
     """
     对log文件进行提取mark、voice标记数据
     """
-    def __init__(self, log_path, voice=True, mark=False, save=None,
+    def __init__(self, log_path, voice=True, mark=False, save=None, no_render=False,
                  start_frame=None, end_frame=None, start_time=None, end_time=None):
         self.log_path = log_path                    # log.txt路径
         self.log_dir = os.path.dirname(log_path)    # log文件夹路径
         self.save_path = save                       # 保存路径
+        self.no_render = no_render                  # 禁止渲染视频
         self.st_camera_id = -1                      # 视频开始点
         self.ed_camera_id = -1                      # 视频结束点
 
@@ -125,8 +126,9 @@ class SplitRecorder:
             self.extractor_mark_log(mark_data)
 
             # 渲染视频数据
-            print("mark in ", self.st_camera_id, self.ed_camera_id)
-            self.render_video(log_sort, cfg, self.mark_dir)
+            if not self.no_render:
+                print("mark in ", self.st_camera_id, self.ed_camera_id)
+                self.render_video(log_sort, cfg, self.mark_dir)
 
     def extractor_voice(self):
         """
@@ -163,13 +165,14 @@ class SplitRecorder:
                     # 定位提取log数据
                     self.extractor_voice_log(lines, pos, ts, data_dir)
 
-                    # 调用视频渲染
-                    self.voice_video_frame.append({
-                        "path": os.path.join(data_dir, "video", "video.avi"),
-                        "range": (self.st_camera_id, self.ed_camera_id)
-                    })
-                    print("voice in ", self.st_camera_id, self.ed_camera_id)
-                    self.render_video(log_sort, cfg, data_dir)
+                    if not self.no_render:
+                        # 调用视频渲染
+                        self.voice_video_frame.append({
+                            "path": os.path.join(data_dir, "video", "video.avi"),
+                            "range": (self.st_camera_id, self.ed_camera_id)
+                        })
+                        print("voice in ", self.st_camera_id, self.ed_camera_id)
+                        self.render_video(log_sort, cfg, data_dir)
 
     def extractor_mark(self):
         log_sort, cfg = prep_replay(self.log_path)
@@ -516,6 +519,7 @@ if __name__ == '__main__':
     parser.add_argument('--end_time', '-et', type=float, help='视频结束时间')
     parser.add_argument('--debug', '-d', action='store_true', help='debug调试模式', default=False)
     parser.add_argument('--save', '-s', help='保存统计文件夹路径（默认当前目录）')
+    parser.add_argument('--no_render', '-nr', action='store_true', help='禁止渲染视频', default=False)
     args = parser.parse_args()
 
     # 初始化日志输出等级
@@ -541,6 +545,7 @@ if __name__ == '__main__':
     for log in log_list:
         print(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} start:", log)
         split = SplitRecorder(log, voice=args.voice, mark=args.mark, save=args.save, start_frame=args.start_frame,
-                              end_frame=args.end_frame, start_time=args.start_time, end_time=args.end_time)
+                              end_frame=args.end_frame, start_time=args.start_time, end_time=args.end_time,
+                              no_render=args.no_render)
         split.run()
 

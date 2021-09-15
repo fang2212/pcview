@@ -78,7 +78,7 @@ class Statistics:
                     for i in cfg["ports"]:
                         if "can" in i:
                             msg_type = cfg['ports'][i]['topic']
-                            source = '{}.{:01d}.can.{}'.format(cfg["ports"][i].get("origin_device", "canfd"), idx, cfg['ports'][i]['topic'])
+                            source = '{}.{:01d}.{}.{}'.format(cfg["ports"][i].get("origin_device", cfg.get("origin_device", '')), idx, i, cfg['ports'][i]['topic'])
                             if self.config.get(msg_type):
                                 self.config[source] = self.config.get(msg_type)
                 else:
@@ -376,7 +376,7 @@ if __name__ == "__main__":
         if args.config:
             config = pathlib.Path(args.config)
         else:
-            config = pathlib.Path(pathlib.Path().absolute().joinpath(args.config))
+            config = pathlib.Path(pathlib.Path().absolute().joinpath('config/sensor_checklist.json'))
         if not config.exists():
             logger.error(f"未找到统计配置json文件，请确认路径是否存在{config}")
             exit(0)
