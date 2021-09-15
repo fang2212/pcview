@@ -13,6 +13,8 @@ import cantools
 # db_x1 = cantools.database.load_file('dbc/MINIEYE_CAR.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/MINIEYE_PED.dbc')
 # db_x1.add_dbc_file('dbc/MINIEYE_LANE.dbc')
+from player.ui import CVColor
+
 db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190715.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/ESR DV3_64Tgt.dbc')
 
@@ -27,8 +29,8 @@ detection_sensor = {
     3: 'vision_only',
     4: 'radar and vision',
 }
-vision_color = (193, 182, 255)
-fusion_color = (59, 59, 238)
+vision_color = CVColor.LightCoral
+fusion_color = CVColor.Crimson
 
 
 def parse_a1j(id, data, ctx=None):
