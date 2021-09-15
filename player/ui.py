@@ -28,9 +28,16 @@ class CVColor(object):
     basic color RGB define
     '''
     Red = (0, 0, 255)
+    Peru = (63, 133, 205)
+    Chocolate = (30, 105, 210)
     LightRed = (80, 80, 200)
+    MediumBlue = (205, 0, 0)
     Green = (0, 255, 0)
+    Crimson = (60, 20, 220)        # 深红色
+    LightCoral = (128, 128, 240)        # 淡珊瑚色
+    MediumTurquoise = (204, 209, 72)  # 中绿宝石色
     Grass = (0x50, 0xaf, 0x4c)
+    DeepSkyBlue = (255, 191, 0)
     Blue = (255, 0, 0)
     LightBlue = (240, 120, 120)
     Cyan = (0xd4, 0xbc, 0)
@@ -46,11 +53,17 @@ class CVColor(object):
     purple = (0xb0, 0x27, 0x9c)
     bluegrey = (0x8b, 0x7D, 0x60)
     deeporange = (0x1a, 0xbc, 0xff)
-    Crimson = (65, 25, 237)
+    SandyBrown = (96, 164, 244)
+    NavajoWhite = (173, 222, 255)
+    DarkMagenta = (139, 0, 139)
+    Linen = (230, 240, 250)
 
 
 class FlatColor(object):  # in BGR
     Blue = (200, 0, 0)
+    Beige = (220, 245, 245)                 # 米黄色
+    Green = (0, 255, 0)                     # 绿色
+    LightPink = (193, 182, 255)             # 浅粉红
     alizarin = (0x3c, 0x4c, 0xe7)
     amethyst = (0xb6, 0x59, 0x9b)
     carrot = (0x22, 0x7e, 0xe6)

@@ -53,16 +53,13 @@ def trigger_build(branch=None, local_path='.', ip=None, platform=""):
     sess.exec(suffix + 'git pull')
 
     # sess.exec(suffix + '/home/nan/.local/bin/pyinstaller pcc_app.spec --noconfirm')
-    sess.exec(suffix + './pack_pcc_and_replay.sh')
+    sess.exec(suffix + 'bash pack_pcc_and_replay.sh')
     # sess.exec(suffix + '')
 
     # retrieve binary
     pcc_app_local = os.path.join(local_path,
                                  'pcc_app_replay_{}_{}_{}.tar.gz'.format(platform, branch, datetime.now().strftime("%m%d")))
     sess.download(work_dir + '/dist/pcc_app.tar.gz', pcc_app_local)
-    statistics_local = os.path.join(local_path,
-                                    'pcc_statistics_{}_{}_{}.tar.gz'.format(platform, branch, datetime.now().strftime("%m%d")))
-    sess.download(work_dir + '/dist/statistics_log.tar.gz', statistics_local)
     return local_path
 
 

@@ -1,7 +1,7 @@
 from parsers.bosch import bosch_mrr
 from parsers.a1j import parse_a1j, parse_a1j_fusion, parse_a1j_vision
 from parsers.d1_fusion import parse_d1
-from parsers.x1 import parse_x1
+from parsers.x1 import parse_x1, parse_x1_fusion, parse_x1_vision
 from parsers.x1l import parse_x1l
 from parsers.x1j import parse_x1j
 from parsers.mobileye_q3 import parse_ifv300, parse_q3, parse_ifv300_vision, parse_ifv300_fusion
@@ -63,7 +63,8 @@ parsers_dict = {
     "vfr":      parse_vfr,
     "wsk":      parse_ars,
     "x1":       parse_x1,
-    "x1_fusion": parse_x1,
+    "x1_fusion": parse_x1_fusion,
+    "x1_vision": parse_x1_vision,
     "x1_jac":   parse_x1_jac,
     "x1d3":     parse_x1d3,
     "x1j":      parse_x1j,

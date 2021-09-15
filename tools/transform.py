@@ -180,12 +180,20 @@ class Transform:
         y = y - self.cfg.installs['video']['lat_offset']
         p_xyz = np.array([x, y, h1])
         uv_t = np.dot(self.m_R_w2i, p_xyz)
-        uv_new = uv_t / uv_t[2]
         # if uv_new[0] > 10000:
         #     uv_new[0] = 10000
         # if uv_new[1] > 10000:
         #     uv_new[1] = 10000
-        return int(uv_new[0]), int(uv_new[1])
+        try:
+            uv_new = uv_t / uv_t[2]
+            x, y = int(uv_new[0]), int(uv_new[1])
+            return x, y
+        except Exception as e:
+            print(e)
+            print(f"h:{h} self.camera_height:{self.camera_height}")
+            print(f"绘制点出错：uv_new = uv_t / uv_t[2] uv_t:{uv_t} uv_t[2]:{uv_t[2]} x:{x} y:{y}")
+            print(f"self.cfg.installs['video']:{self.cfg.installs['video']}")
+
 
     def transf_gnd2raw(self, x, y, h=None):
         if h is None:
