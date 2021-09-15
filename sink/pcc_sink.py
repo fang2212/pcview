@@ -473,7 +473,7 @@ class PinodeSink(NNSink):
 
 class CANCollectSink(NNSink):
     """
-    can-fd设备有四个can端口，需做区分处理
+    can-fd设备有4/8个can端口，需做区分处理
     """
     def __init__(self, ip, port, can_list, index, fileHandler, device='', mq=None):
         super(CANCollectSink, self).__init__(ip, port, "can", index, mq=mq)
@@ -482,10 +482,11 @@ class CANCollectSink(NNSink):
         self.can_list = can_list                  # 四个端口的信号类型列表
         self.device = device
         self.parser = {}
-        for ch in can_list:
-            t = can_list[ch]
-            self.parser[t["dbc"]] = parsers_dict.get(t["dbc"], parsers_dict["default"])
+        # for ch in can_list:
+        #     t = can_list[ch]
+        #     self.parser[t["dbc"]] = parsers_dict.get(t["dbc"], parsers_dict["default"])
         print('CANCollectSink initialized.', self.type, ip, port)
+        self.chlist = {}
 
         self.source = []
         self.context = {}
@@ -497,40 +498,59 @@ class CANCollectSink(NNSink):
 
     def init_env(self):
         # 根据传入四个端口信号进行初始化相关环境
-        for ch in self.can_list:
-            t = self.can_list[ch]
-            source = '{}.{}.{}.{}'.format(t.get("origin_device", self.device), self.index, ch, t["dbc"])
-            self.log_types[ch] = source                                                     # 写入日志的信号名
+        for port in self.can_list:
+            t = self.can_list[port]
+            source = '{}.{}.{}.{}'.format(t.get("origin_device", self.device), self.index, port, t["dbc"] if t['dbc'] else 'none')
+            channel = t['idx']
+            self.log_types[channel] = source                                                     # 写入日志的信号名
             self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}         # 解析用的变量空间
             self.source.append(source)              # 来源列表
+            self.chlist[t['idx']] = t.copy()
+            self.chlist[t['idx']]['source'] = source
+            self.chlist[t['idx']]['parser'] = parsers_dict.get(t["dbc"], parsers_dict["default"])
+            # print(self.chlist[t['idx']])
 
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
         if not msg:
             return
-        channel = msg[0]
-        can_id = struct.unpack('<i', msg[1:5])[0]
-        timestamp = struct.unpack('<d', msg[5:13])[0]
-        data = msg[13:]
+        # source = t['source']
 
-        log_type = self.log_types.get("can{}".format(channel))
-        self.fileHandler.insert_raw((timestamp, log_type, '0x%x' % can_id + ' ' + data.hex()))
+        # print(msg)
+        channel = msg[2]
+        source = self.chlist[channel]['source']
+        dlc = msg[3]
+        can_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
+        timestamp = struct.unpack('<d', msg[8:16])[0]
+        data = msg[16:]
+
+        # channel = msg[0]
+        # can_id = struct.unpack('<i', msg[1:5])[0]
+        # timestamp = struct.unpack('<d', msg[5:13])[0]
+        # data = msg[13:]
+
+        # log_type = self.log_types.get("can{}".format(channel))
+        # print('can rcv ch={} id={} dlc={} ts={} data={}'.format(channel, can_id, dlc, timestamp, data))
+        self.fileHandler.insert_raw((timestamp, source, '0x%x' % can_id + ' ' + data.hex()))
 
         if not self.parse_event.is_set():
             return
 
-        msg_type = self.can_list["can{}".format(channel)]["dbc"]
-        parser = self.parser[msg_type]
+        parser = self.chlist[channel]["parser"]
+        # parser = self.parser[msg_type]
         source = self.source[channel]
         ret = parser(can_id, data, self.context[source])
+        # print(ret)
         if ret is None:
             return None
 
         if isinstance(ret, list):
             for obs in ret:
                 obs['ts'] = timestamp
+                obs['source'] = source
         else:
             ret['ts'] = timestamp
+            ret['source'] = source
         return can_id, ret, self.context[source]["source"]
 
 
