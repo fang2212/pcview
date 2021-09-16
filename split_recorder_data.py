@@ -350,8 +350,8 @@ class SplitRecorder:
         if os.path.exists(os.path.join(save_dir, "replay-render.avi")):
             logger.warning("已存在replay-render.avi视频文件，跳过渲染流程")
             return
-        replayer = LogPlayer(log_path, cfg, ratio=0.2, start_frame=self.st_camera_id,
-                             end_frame=self.ed_camera_id, loop=None, nnsend=None, real_interval=None,
+        replayer = LogPlayer(log_path, cfg, start_frame=self.st_camera_id,
+                             end_frame=self.ed_camera_id, loop=None, real_interval=None,
                              chmain=None)
         pcc = PCC(replayer, replay=True, rlog=log_path, ipm=True, save_replay_video=save_dir, uniconf=cfg)
         replayer.start()
