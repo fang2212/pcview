@@ -51,9 +51,9 @@ def trigger_build(branch=None, local_path='.', ip=None, platform=""):
     suffix = 'cd {} && '.format(work_dir)
     print("连接ip：", ip)
     sess = SSHSession(ip, username='mini', password='mini')
-    # if branch:
-    #     sess.exec(suffix + 'git checkout {}'.format(branch))
-    # sess.exec(suffix + 'git pull')
+    if branch:
+        sess.exec(suffix + 'git checkout {}'.format(branch))
+    sess.exec(suffix + 'git pull')
 
     sess.exec(suffix + 'bash -l -c ./pack_pcc_and_replay.sh')
 
