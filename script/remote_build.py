@@ -18,7 +18,7 @@ def line_buffered(f):
 
 
 class SSHSession(object):
-    def __init__(self, hostname, port=22, username='minieye', password='minieye'):
+    def __init__(self, hostname, port=22, username='mini', password='mini'):
         self.ssh = paramiko.SSHClient()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy)
         self.ssh.connect(hostname=hostname, port=port, username=username, password=password)
@@ -29,6 +29,8 @@ class SSHSession(object):
         stdin, stdout, stderr = self.ssh.exec_command(cmd + ' 2>&1', bufsize=1)
         for line in line_buffered(stdout):
             print(line, end='')
+        for line in line_buffered(stderr):
+            print('err:', line)
         # return res
 
     def upload(self, src, dst):
@@ -47,21 +49,19 @@ class SSHSession(object):
 def trigger_build(branch=None, local_path='.', ip=None, platform=""):
     work_dir = '/home/mini/work/pcview'
     suffix = 'cd {} && '.format(work_dir)
+    print("连接ip：", ip)
     sess = SSHSession(ip, username='mini', password='mini')
-    if branch:
-        sess.exec(suffix + 'git checkout {}'.format(branch))
-    sess.exec(suffix + 'git pull')
+    # if branch:
+    #     sess.exec(suffix + 'git checkout {}'.format(branch))
+    # sess.exec(suffix + 'git pull')
 
-    # sess.exec(suffix + '/home/nan/.local/bin/pyinstaller pcc_app.spec --noconfirm')
-    sess.exec(suffix + 'bash pack_pcc_and_replay.sh')
-    # sess.exec(suffix + '')
+    sess.exec(suffix + 'bash -l -c ./pack_pcc_and_replay.sh')
 
     # retrieve binary
     pcc_app_local = os.path.join(local_path,
                                  'pcc_app_replay_{}_{}_{}.tar.gz'.format(platform, branch, datetime.now().strftime("%m%d")))
     sess.download(work_dir + '/dist/pcc_app.tar.gz', pcc_app_local)
     return local_path
-
 
 def trigger_build_1604(branch=None, local_path='.'):
     work_dir = '/home/mini/work/pcview'
@@ -105,7 +105,7 @@ if __name__ == "__main__":
 
     home = os.environ['HOME']
     parser = argparse.ArgumentParser(description="pcc remote build and retrieve.")
-    parser.add_argument('-p', '--platform', default='1804')
+    parser.add_argument('-p', '--platform')
     parser.add_argument('-b', '--branch', default='cve-new')
     parser.add_argument('-t', '--target', default='pcc')  #
     parser.add_argument('-o', '--output', default=home)
@@ -120,9 +120,9 @@ if __name__ == "__main__":
         pack = trigger_build(args.branch, args.output, ip="192.168.51.162", platform=args.platform)
         print('retrieved 1804 pcc package at', pack)
     else:
-        pack = trigger_build(args.branch, args.output, ip="192.168.51.187", platform=args.platform)
+        pack = trigger_build(args.branch, args.output, ip="192.168.51.187", platform='1604')
         print('retrieved 1604 package at', pack)
-        pack = trigger_build(args.branch, args.output, ip="192.168.51.162", platform=args.platform)
+        pack = trigger_build(args.branch, args.output, ip="192.168.51.162", platform='1804')
         print('retrieved 1804 pcc package at', pack)
 
 
