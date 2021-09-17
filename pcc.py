@@ -350,6 +350,13 @@ class PCC(object):
         t0 = time.time()
         self.player.draw_img(mess["img"])
 
+        if self.show_ipm:
+            self.m_g2i = self.transform.calc_g2i_matrix()
+
+            self.ipm = np.zeros([720, 480, 3], np.uint8)
+            self.ipm[:, :] = [40, 40, 40]
+            self.player.show_dist_mark_ipm(self.ipm)
+
         if 'img_raw' in mess and mess['img_raw'] is not None:  # reuse img
             img = mess['img_raw'].copy()
             if not self.pause and ('ts' not in mess or self.ts_sync_local() - mess['ts'] > 5.0):
@@ -383,13 +390,6 @@ class PCC(object):
         # 如果有定位标签的话，渲染定位信息
         if self.vehicles['ego'].pinpoint:
             self.player.show_pinpoint(img, self.vehicles['ego'].pinpoint)
-
-        if self.show_ipm:
-            self.m_g2i = self.transform.calc_g2i_matrix()
-
-            self.ipm = np.zeros([720, 480, 3], np.uint8)
-            self.ipm[:, :] = [40, 40, 40]
-            self.player.show_dist_mark_ipm(self.ipm)
 
         img_aux = np.zeros([0, 427, 3], np.uint8)
         for idx, source in enumerate(list(self.video_cache.keys())):
@@ -805,12 +805,12 @@ class PCC(object):
         """
         if self.eclient:
             key = BaseDraw.get_event()
-            if key:
+            if key and len(key) == 1:
                 key = ord(key)
-                print(key)
+                self.control(key)
         else:
             key = cv2.waitKey(1) & 0xFF
-        self.control(key)
+            self.control(key)
 
     def control(self, key):
         """

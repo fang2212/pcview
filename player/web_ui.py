@@ -23,6 +23,7 @@ from player.ui import FlatColor, color_dict
 from tools.geo import gps_bearing, gps_distance
 from tools.transform import Transform
 # import roadmarking_pb2
+from utils import logger
 
 
 class Player(object):
@@ -91,8 +92,37 @@ class Player(object):
 
         self.next_patch_x += self.param_bg_width
 
-    def show_dist_mark_ipm(self, img):
-        BaseDraw.draw_grid_3d()
+    def show_dist_mark_ipm(self, img, show_back=True):
+        if show_back:
+            show_range = 401
+            height = 1440
+        else:
+            show_range = 201
+            height = 720
+        BaseDraw.draw_rect((0, 0), (480, height), color=BaseDraw.bgr_to_str((40, 40, 40)), plugin_name='front-ipm')
+
+        for i in range(0, show_range, 1):
+            if i % 20 == 0:
+                if i > 200:
+                    i = -i+200
+                p1 = self.transform.trans_gnd2ipm(i, -10)
+                p2 = self.transform.trans_gnd2ipm(i, 10)
+                BaseDraw.draw_line(p1, p2, color=BaseDraw.bgr_to_str(CVColor.Midgrey), thickness=1, plugin_name='front-ipm')
+                BaseDraw.draw_text('{}m'.format(i), self.transform.trans_gnd2ipm(i - 1, 10), 14, CVColor.White, plugin_name='front-ipm')
+
+        for i in [-4 * 0.5, 4 * 0.5]:
+            p1 = self.transform.trans_gnd2ipm(-10, i)
+            start = (p1[0], 0)
+            end = (p1[0], height)
+            BaseDraw.draw_line(start, end, color=CVColor.LightRed, thickness=1, plugin_name='front-ipm')
+            BaseDraw.draw_text('{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 16, CVColor.White, plugin_name='front-ipm')
+
+        for i in [-4 * 2.5, -4 * 1.5, 4 * 1.5, 4 * 2.5]:
+            p1 = self.transform.trans_gnd2ipm(-10, i)
+            start = (p1[0], 0)
+            end = (p1[0], height)
+            BaseDraw.draw_line(start, end, color=CVColor.Midgrey, thickness=1, plugin_name='front-ipm')
+            BaseDraw.draw_text('{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 16, CVColor.White, plugin_name='front-ipm')
 
     def show_parameters_background(self, img, rect, color=BaseDraw.bgr_to_str(CVColor.Black, 0.6), border_color=BaseDraw.bgr_to_str(CVColor.LightGray), border_width=0):
         """左上角参数背景图"""
@@ -157,7 +187,7 @@ class Player(object):
             if x1 < 0 or y1 < 0 or x2 > self.img_width or y2 > self.img_height:
                 return
             alpha_color = BaseDraw.covert_alpha(color, 0.3)
-            BaseDraw.draw_rect((x1, y1), (x2, y2), alpha_color, border_color=color, border=2)
+            BaseDraw.draw_rect((x1, y1), (x2, y2), alpha_color, border_color=color, thickness=2)
             BaseDraw.draw_text('{}'.format(obs['id']), (x1 - 2, y1 - 4), size, color, 1)
         else:
             # 默认车辆框
@@ -171,7 +201,54 @@ class Player(object):
             BaseDraw.draw_arrow((x0, y0 + 3), (x0, y0 + 24), BaseDraw.bgr_to_str(CVColor.Yellow), tail_width=4, head_width=16, head_length=8)
 
     def show_ipm_obs(self, img, obs):
-        pass
+        if not obs.get('source'):
+            logger.warning('Error, no source in {}'.format(obs))
+            return
+
+        id = obs['id']
+        source = obs['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
+        if 'pos_lon' in obs:
+            x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], source)
+        elif 'range' in obs:
+            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], source)
+        else:
+            logger.warning('no distance in obs:{}'.format(obs))
+            return
+
+        # j2_fusion的bug，会在0，0坐标中出现假坐标，对其进行屏蔽
+        if x == 0 and y == 0:
+            return
+
+        u, v = self.transform.trans_gnd2ipm(x, y)
+
+        color = obs.get("color") or color_dict.get(source) or color_dict['default']
+
+        if obs.get('sensor_type') == 'radar':
+            cv2.circle(img, (u, v - 8), 8, color, 1)
+            BaseDraw.draw_circle((u, v - 8), 8, border_color=color, thickness=1, plugin_name='front-ipm')
+            BaseDraw.draw_text('{}'.format(id), (u + 10, v - 5), 14, color, 1, plugin_name='front-ipm')
+            # ESR
+            if 'TTC' in obs:
+                # for save space, only ttc<7 will be shown on the gui
+                if obs['TTC'] < 7:
+                    BaseDraw.draw_text('{:.1f}'.format(obs['TTC']), (u - 25, v + 5), 14, color, 1, plugin_name='front-ipm')
+
+            # STA 77
+            if obs.get('sensor') == 'sta77':
+                BaseDraw.draw_text('{:.1f}'.format(x), (u - 40, v + 5), 14, color, 1, plugin_name='front-ipm')
+
+            if obs.get('sensor') == 'anc':
+                BaseDraw.draw_text('{:.1f}'.format(x), (u - 30, v - 5), 14, color, 1, plugin_name='front-ipm')
+                BaseDraw.draw_text('{:.1f}'.format(y), (u - 30, v + 5), 14, color, 1, plugin_name='front-ipm')
+
+        else:
+            if obs.get('class') == 'pedestrian' or obs.get('class') == 'PEDESTRIAN':
+                BaseDraw.draw_rect((u - 4, v - 16), (u + 4, v), border_color=color, thickness=2, plugin_name='front-ipm')
+            else:
+                BaseDraw.draw_rect((u - 8, v - 16), (u + 8, v), border_color=color, thickness=2, plugin_name='front-ipm')
+            BaseDraw.draw_text('{}'.format(id), (u + 10, v - 9), 14, color, 1, plugin_name='front-ipm')
+            BaseDraw.draw_text('{:.1f}'.format(x), (u + 10, v + 3), 14, color, 1, plugin_name='front-ipm')
 
     def show_lane(self, img, data, color=CVColor.Cyan, style=""):
         """绘制车道线
@@ -478,8 +555,28 @@ class Player(object):
     def draw_corners(self, img):
         pass
 
-    def show_lane_ipm(self, img, data, color=CVColor.Cyan, style=""):
-        pass
+    def show_lane_ipm(self, data, color=CVColor.Cyan, style=""):
+        """绘制车道线
+                Args:
+                    img: 原始图片
+                    ratios:List [a0, a1, a2, a3] 车道线参数 y = a0 + a1 * y1 + a2 * y1 * y1 + a3 * y1 * y1 * y1
+                    width: float 车道线宽度
+                    color: CVColor 车道线颜色
+                """
+        # sensor = data['source'].split('.')[0]
+        max_range = data['range']
+        min_range = data.get("min_range", 0)
+        ratios = (data['a0'], data['a1'], data['a2'], data['a3'])
+        if max_range == 0:
+            return
+        p = self.transform.getp_ipm_from_poly(ratios, 1, min_range, max_range, sensor=data['source'])
+        if len(p) <= 1:
+            return
+
+        dash = ''
+        if style == "dotted":
+            dash = [3, 1]
+        BaseDraw.draw_polyline(p[1:], dash=dash, color=color, plugin_name='front-ipm')
 
     def draw_vehicle_state(self, img, data):
         if len(data) == 0:
@@ -552,7 +649,17 @@ class Player(object):
         self.show_lane(img, data, color=color, style=data.get("style"))
 
     def draw_lane_ipm(self, img, data):
-        pass
+        if len(data) == 0:
+            return
+        if data['type'] != 'lane':
+            return
+
+        source = data['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
+        color = color_dict.get(source)
+        if not color:
+            color = color_dict['default']
+        self.show_lane_ipm(data, color=color, style=data.get("style"))
 
     def show_host_path(self, img, spd, yr, yrbias=0.0017, cipv_dist=200.0):
         pass
