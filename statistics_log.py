@@ -77,8 +77,8 @@ class Statistics:
                 if cfg["type"] == "can_collector":
                     for i in cfg["ports"]:
                         if "can" in i:
-                            msg_type = cfg['ports'][i]['topic']
-                            source = '{}.{:01d}.{}.{}'.format(cfg["ports"][i].get("origin_device", cfg.get("origin_device", '')), idx, i, cfg['ports'][i]['topic'])
+                            msg_type = cfg['ports'][i].get('topic') or cfg['ports'][i].get('dbc', '')
+                            source = '{}.{:01d}.{}.{}'.format(cfg["ports"][i].get("origin_device", cfg.get("origin_device", '')), idx, i, msg_type)
                             if self.config.get(msg_type):
                                 self.config[source] = self.config.get(msg_type)
                 else:

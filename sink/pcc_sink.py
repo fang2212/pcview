@@ -177,7 +177,7 @@ class ZmqSink(Sink):
 
     def pkg_handler(self, msg):
         if self.msg_type == 'j2_zmq':
-            data = {'type': self.msg_type, 'source': self.source, 'log_name': self.source, 'buf': msg}
+            data = {'type': self.msg_type, 'source': self.source, 'log_name': self.msg_type, 'buf': msg}
             self.fileHandler.insert_general_bin_raw(data)
             return data
 
@@ -238,7 +238,7 @@ class UDPSink(Sink):
     def pkg_handler(self, msg):
         if self.msg_type == "d1_udp":
             timestamp = time.time()
-            r = {'type': self.msg_type, 'source': self.source, 'log_name': self.source, 'buf': msg}
+            r = {'type': self.msg_type, 'source': self.source, 'log_name': self.msg_type, 'buf': msg}
             self.fileHandler.insert_general_bin_raw(r)
             self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
         elif self.msg_type == 'q4_100':
@@ -247,7 +247,7 @@ class UDPSink(Sink):
             timestamp = time.time()
             msg = struct.pack("<d", timestamp) + msg
 
-            r = {'type': self.msg_type, 'source': self.source, 'log_name': self.source, 'buf': msg}
+            r = {'type': self.msg_type, 'source': self.source, 'log_name': self.msg_type, 'buf': msg}
             self.fileHandler.insert_general_bin_raw(r)
             self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
 
@@ -780,6 +780,7 @@ class FlowSink(NNSink):
         self.type = 'flow_sink'
         self.topic = topic
         self.source = name + '.{:d}'.format(index)
+        self.name = name
         self.new_a1j = False        # 做个兼容处理，新的a1j不需要进行msgpack.unpack
 
         self.client = None
@@ -935,7 +936,7 @@ class FlowSink(NNSink):
                 self.fileHandler.insert_jpg(r)
                 return frame_id, r
             elif topic in ["radar_data", "fusion_data", "vehicle_data", "lane_data", "drive_data", "fusion_inject", "LanePostImg", "LaneAccImg"]:
-                r = {"source": self.source, "log_name": self.log_name, "buf": payload}
+                r = {"source": self.source, "log_name": self.name, "buf": payload}
                 self.fileHandler.insert_general_bin_raw(r)
             elif topic == 'calib_params':
                 calib_params = msgpack.unpackb(payload)
@@ -946,7 +947,7 @@ class FlowSink(NNSink):
                     return 'calib_param', r
         elif msg_src == 'lane_profiling':
             if topic == 'lane_profiling_data':
-                r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.log_name, 'buf': payload}
+                r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.name, 'buf': payload}
                 self.fileHandler.insert_general_bin_raw(r)
                 return 'algo_debug', r
         elif msg_src == 'imu':
