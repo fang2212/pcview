@@ -210,13 +210,14 @@ class LogPlayer(Process):
                 if len(cfg['can_types']['can1']) > 0:
                     self.msg_types.append([cantypes1])
             elif 'msg_types' in cfg:
-                # print(cfg)
-                if 'can0' in cfg['ports']:
-                    msg_type = cfg['ports']['can0']['topic']
-                    self.can_types['CAN' + '{:01d}'.format(idx * 2)] = msg_type + '.{}'.format(idx)
-                if 'can1' in cfg['ports']:
-                    msg_type = cfg['ports']['can1']['topic']
-                    self.can_types['CAN' + '{:01d}'.format(idx * 2 + 1)] = msg_type + '.{}'.format(idx)
+                if cfg["type"] != "can_collector":
+                    # print(cfg)
+                    if 'can0' in cfg['ports']:
+                        msg_type = cfg['ports']['can0']['topic']
+                        self.can_types['CAN' + '{:01d}'.format(idx * 2)] = msg_type + '.{}'.format(idx)
+                    if 'can1' in cfg['ports']:
+                        msg_type = cfg['ports']['can1']['topic']
+                        self.can_types['CAN' + '{:01d}'.format(idx * 2 + 1)] = msg_type + '.{}'.format(idx)
 
         # 初始化can解析方法
         for can in self.can_types:
