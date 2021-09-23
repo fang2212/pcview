@@ -45,6 +45,7 @@ def parser_gs4(id, buf, ctx=None):
                 {"text": "LT:{}  RT:{}  BL:{}".format(spp_statue.get("lt", 0), spp_statue.get("rt", 0), spp_statue.get("bl", 0))},
                 {"text": "PO id:{}, st:{}".format(spp_statue.get("pid", 0), spp_statue.get('po_st', 0))},
                 {"text": "PO type:{}, conf:{}".format(spp_statue.get("po_type", 0), spp_statue.get('po_conf', 0))},
+                {"text": "R:{}".format(spp_statue.get("R", 0))},
                 {"text": "lat:{}".format(spp_statue.get("lat", 0))},
                 {"text": "lng:{}".format(spp_statue.get("lng", 0))}
             ]
@@ -52,6 +53,12 @@ def parser_gs4(id, buf, ctx=None):
 
     # 车中线 int:289
     elif id == 0x121:
+        spp_statue['R'] = 1/(2*r["SPP_POLY_COEFF_A2"])
+        if spp_statue['R'] > 10000:
+            spp_statue['R'] = 10000
+        elif spp_statue['R'] < -10000:
+            spp_statue['R'] = -10000
+
         return {
             "type": "lane",
             "type_class": "spp:{}".format(spp_lane.get('range', 50)),

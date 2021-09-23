@@ -374,7 +374,7 @@ class LogPlayer(Process):
                 decode_msg = {
                     "type": "can",
                     "dbc": dbc,
-                    "source": '{}.{}'.format(dbc, index),
+                    "source": '{}.{}-{}'.format(dbc, index, info_list[2].replace('can', '')),
                     "data": data,
                     "cid": int(cols[3], 16),
                     "ts": ts

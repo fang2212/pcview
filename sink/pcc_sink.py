@@ -482,6 +482,7 @@ class CANCollectSink(NNSink):
         self.can_list = can_list                  # 四个端口的信号类型列表
         self.device = device
         self.parser = {}
+        self.index = index
         # for ch in can_list:
         #     t = can_list[ch]
         #     self.parser[t["dbc"]] = parsers_dict.get(t["dbc"], parsers_dict["default"])
@@ -500,7 +501,7 @@ class CANCollectSink(NNSink):
         # 根据传入四个端口信号进行初始化相关环境
         for port in self.can_list:
             t = self.can_list[port]
-            source = '{}.{}.{}.{}'.format(t.get("origin_device", self.device), self.index, port, t["dbc"] if t['dbc'] else 'none')
+            source = '{}.{}.{}.{}'.format(t.get("origin_device", self.device), self.index, port, t["dbc"] if t.get('dbc') else 'none')
             channel = t['idx']
             self.log_types[channel] = source                                                     # 写入日志的信号名
             self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}         # 解析用的变量空间

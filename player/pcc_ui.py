@@ -438,7 +438,7 @@ class Player(object):
                     BaseDraw.draw_text(img, devno, (indent + 22, y0 + 24), 0.4, CVColor.Cyan, 1)
                 else:
                     title = col
-                    BaseDraw.draw_text(img, title, (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
+                    BaseDraw.draw_text(img, title.capitalize(), (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
             dt = self.ts_now - self.columns[col]['ts']
 
             if dt > 999:
