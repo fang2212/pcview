@@ -116,7 +116,6 @@ def read_vis_definiaton(def_src_num_ver_file):
                     }
                     offset += sz
                     key_data[fields[-1]] = item
-        print("expected bytes:", expected_bytes, "real offset:", offset)
         if not os.path.exists("./str_005_016.json"):
             wf = open("./str_005_016.json", "w")
             print(json.dumps(key_data, indent=2), file=wf)
