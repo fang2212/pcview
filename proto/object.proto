@@ -5,7 +5,7 @@ import "calib_param.proto";
 import "vehicle_signal.proto";
 import "object_warning.proto";
 // VERSION
-// 0.5
+// 0.6
 
 package perception;
 
@@ -117,10 +117,11 @@ message ObjectList {
     string version = 3;                          // 版本号
 
 	uint64 frame_id = 4;                         // 帧IDs
-    uint64 timestamp = 5;                        // 时戳
+    uint64 timestamp = 5;                        // utc时戳, us
 
     perception.object.Warning warning = 6;       // 告警
 
+    uint64 tick = 9;                             // tick时戳, us
     uint64 start_time_us = 10;                   // 算法流程开始时间
     uint64 end_time_us = 11;                     // 算法流程结束时间
     repeated uint64 profiling_time = 12;         // 模块耗时列表
