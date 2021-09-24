@@ -2,7 +2,15 @@ syntax = "proto3";
 
 package minieye;
 
-// topic : "calib_param"
+/* 
+   {
+       "topic": "calib_param",
+       "dds_mode": "shm",
+       "data_refresh_rate": 20,
+	   "buff_num": 20, 
+       "elem_max_size": 1000
+   }
+ */
 message CalibParam {
 	double camera_pitch = 1;
 	double camera_yaw = 2;
@@ -16,14 +24,5 @@ message CalibParam {
 	double right_dist_to_camera = 10;
 	double front_dist_to_camera = 11;
 	double front_wheel_camera_dist = 12;
-	uint64 camera_id = 13;                                    // 摄像头id 
-}
-
-// topic : "calib_state"
-message CalibState {
-	int32 mode = 1;        // 0 - 无意义, 1 - 自标定, 2 - 下线标定, 3 - 售后标定
-	int32 state = 2;       // 0 - 无意义, 1 - 已标定, 2 - 标定中, 3 - 暂停, 4 - 标定成功, 5 - 标定失败
-	int32 err_code = 3;    /* 0 - 无意义, 1 - 超时, 2 - 车速不满足, 3 - 场景不满足, 4 - 标定结果异常
-							  5 - 摄像头故障, 6 - 标靶参数错误, 7 - 找不到角点, 8 - 静态车道线未识别
-	                        */
+	uint32 camera_id = 13;                                    // 摄像头id 
 }

@@ -4,6 +4,16 @@ import "data_source.proto";
 
 package perception;
 
+// 统计项 
+message RoadSysProfiling {                                // 每处理一帧，就给出该帧的资源消耗信息
+	message Item {
+		string name = 1;                                  // 统计项名称
+		float val = 2;                                    // 统计项的值
+	}
+	repeated Item items = 3;                              // 所有的统计项
+}
+
+
 /*
 	{
 	    "topic": "roadmarking",
@@ -13,7 +23,7 @@ package perception;
 	    "elem_max_size": 80000
 	}
 */
-message Roadmarking {  // 路面标识 总字节数:(824 ~ 70063)
+message Roadmarking {  // 路面标识 总字节数:(828 ~ 70067)
 	enum LanelinePositionType { // 位置 类型:int 字节数:4
 		kAdjacentLeft = 0;       // lane marking on the left side next to ego lane 
 		kEgoLeft = 1;            // left lane marking of the ego lane 
@@ -174,6 +184,8 @@ message Roadmarking {  // 路面标识 总字节数:(824 ~ 70063)
 			kOthers = 13;                 // 其他
 			kDecelerationLine = 14;       // 减速标识
 			kTypeNums = 15;               // 总类型数
+            kSpeedBump = 16;              // 减速带
+            kManholeCover = 17;           // 井盖
 		}
 
 		enum Form {
@@ -230,7 +242,8 @@ message Roadmarking {  // 路面标识 总字节数:(824 ~ 70063)
 		bool ldw_state_changed = 7;                                           // 第一次触发告警 类型:bool 字节数:1 取值范围:(0~1)
 		LdwWorkState ldw_work_state = 8;                                      // LDW 工作状态 类型: int 字节数:4 取值范围:(0~5)
 		float turn_radius = 9;                                                // 转弯半径 单位: m 
-		uint64 nearest_line_id = 10;                                          // 距离最近的车道线id 
+		uint64 nearest_line_id = 10;                                          // 距离最近的车道线id
+		uint32 ldw_level = 11;                                                // ldw_level (1: low, 2: mid, 3: high)
 	}
 
 	message MotionEst { // 运动估计 总字节数:12 
@@ -239,13 +252,14 @@ message Roadmarking {  // 路面标识 总字节数:(824 ~ 70063)
 		float confidence = 3;                                                 // 置信度 类型:float　字节数:4 取值范围:[0 - 1] 
 	} 
 
-	message PoseEst { // 姿态估计 总字节数:29
+	message PoseEst { // 姿态估计 总字节数:34
 		float pitch_est = 1;                                             // 估计pitch(单位: radian) 类型:float 字节数:4 取值范围:[-0.175, 0.175]
 		perception.common.Point2f vanish_pt = 2;                         // 灭点 字节数：8
 		perception.common.Point2f vanish_cov = 3;                        // 灭点协方差 字节数：8
 		bool is_valid = 4;												 // 灭点有效标志 字节数：1
 		uint32 camera_id = 5;                                            // 摄像头id
 		float dpitch = 6;                                                // delta pitch (unit: radian)
+		float confidence = 7;                                            // 置信度
 	}
 
 	message HppInfo { // 预测行驶线 总字节数 (414-14794)
@@ -308,4 +322,7 @@ message Roadmarking {  // 路面标识 总字节数:(824 ~ 70063)
 	CurveCoeff slope_equation = 15;                       // 坡度方程 字节数 40
 	uint64 finish_time = 16;                              // 处理结束时间 字节数 8
 	JunctionList junc_list = 17;                          // 交叉点信息 字节数 256 (最多4个交叉点) 
+	RoadSysProfiling profiling_items = 18;                // 统计项
+	uint64 recv_time = 19;                               // 图像接收时间戳ms
 }
+

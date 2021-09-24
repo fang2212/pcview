@@ -3,31 +3,54 @@ syntax = "proto3";
 package minieye;
 
 message OdometryPose {
-	uint64 timestamp = 1;                       // 时戳, milliseconds
-	float pitch = 2;							// 单位 rad
-	float pitch_var = 3;
-	bool is_pitch_valid = 4;					// pitch 是否可用
+	uint64 timestamp = 1;                           			// 时戳, milliseconds
+	uint64 tick = 2;                           			// 时戳, milliseconds
+	float pitch = 3;							// 单位 rad
+	float pitch_var = 4;
+	bool is_pitch_valid = 5;						// pitch 是否可用
 
-	repeated float rot = 5;						// 姿态 惯性系 轴角对 x3
-	repeated float pos = 6;						// 位置 惯性系 x3
-	repeated float vel = 7;						// 速度 惯性系 x3
+	repeated float rot = 6;							// 姿态 惯性系 轴角对 x3
+	repeated float pos = 7;							// 位置 惯性系 x3
+	repeated float vel = 8;							// 速度 惯性系 x3
 
-	repeated float imu_acc = 8;					// imu acc x 3
-	repeated float imu_gyr = 9;					// imu gyr x 3
-	repeated float ba = 10;						// imu ba x 3
-	repeated float bg = 11;						// imu bg x 3
-	uint64 tick = 12;                           // 时戳, milliseconds
+	repeated float imu_acc = 9;						// imu acc x 3
+	repeated float imu_gyr = 10;						// imu gyr x 3
+	repeated float ba = 11;							// imu ba x 3
+	repeated float bg = 12;							// imu bg x 3
+
+	float vx = 13;							// 单位 m/s
+	float vx_var = 14;
+	bool is_vx_valid = 15;						// vx 是否可用
+
+	float ax = 16;							// 单位 m/s^2
+	float ax_var = 17;
+	bool is_ax_valid = 18;						// ax 是否可用
+
+	float yaw_rate = 19;						// 单位 rad/s
+	float yaw_rate_var = 20;
+	bool is_yaw_rate_valid = 21;					// yaw_rate 是否可用
+
+	float pitch_rate = 22;						// 单位 rad/s
+	float pitch_rate_var = 23;
+	bool is_pitch_rate_valid = 24;					// pitch_rate 是否可用
+
+	float can_ax = 25;							// 单位 m/s^2
+	float can_ax_var = 26;
+	bool is_can_ax_valid = 27;						// ax 是否可用
 }
 
-/*
-   {
-   "topic": "odometry",
-   "dds_mode": "shm",
-   "data_refresh_rate": 20,
-   "elem_max_size": 1000
-   }
-*/
-message Odometry {
-	OdometryPose filter_pose = 1;
-	OdometryPose predict_pose = 2;
+message Odometry
+{
+	repeated OdometryPose predict_pose = 1;
 }
+
+message EgoMotion {
+	float speed_mps = 1;            // m/s
+	bool is_imu_valid = 2;          // 是否去除bias
+	float dyaw = 3;                 // delta yaw, unit: radian
+	bool is_dyaw_valid = 4;         // dyaw 标志位
+	float dpitch = 5;               // delta pitch, unit : radian
+	bool is_dpitch_valid = 6;       // dpitch 标志位
+	int32 dt_ms = 7;                // time lag between two images
+}
+

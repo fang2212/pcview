@@ -1,0 +1,46 @@
+syntax = "proto3";
+package perception.common;
+
+enum WeatherType {
+  WEATHER_NORMAL = 0;
+  WEATHER_NORMAL2 = 1;
+  WEATHER_RAINY = 2;
+  WEATHER_SNOWY = 3;
+  WEATHER_HEAVYRAIN = 4;
+  WEATHER_OTHER = 5;
+}
+
+enum SceneType {
+  SCENE_HIGHWAY = 0;
+  SCENE_URBAN = 1;
+  SCENE_RURAL = 2;
+  SCENE_TUNNEL = 3;
+  SCENE_OTHER = 5;
+  SCENE_CHARGESTATION = 4;
+}
+
+enum TimeType {
+  TIME_DAY = 0;
+  TIME_NIGHT = 1;
+  TIME_OTHER = 2;
+}
+
+enum LightType {
+  LIGHT_NATRUALLIGHT = 0;
+  LIGHT_LAMPLIGHT = 1;
+  LIGHT_HARDLIGHT = 2;
+  LIGHT_LOWSUN = 3;
+  LIGHT_DARK = 4;
+  LIGHT_OTHER = 5;
+};
+
+enum WorkConditionType {
+  WORK_CONDITION_WEATHER = 0;
+  WORK_CONDITION_LIGHT = 1;
+  WORK_CONDITION_SCENE = 2;
+  WORK_CONDITION_TIME = 3;
+}
+
+message Scene {
+	// TBD
+}

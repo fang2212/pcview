@@ -3,9 +3,9 @@ import "geometry.proto";
 import "data_source.proto";
 import "calib_param.proto";
 import "vehicle_signal.proto";
-
+import "object_warning.proto";
 // VERSION
-// 0.4
+// 0.5
 
 package perception;
 
@@ -76,23 +76,24 @@ message Object {
     }
     
     message WorldInfo {
-        perception.common.Point3D vel = 1;       // 速度
-        perception.common.Point3D rel_vel = 2;   // 相对速度
-        perception.common.Point3D acc = 3;       // 加速度
-        perception.common.Point3D pos = 4;       // 位置
-        perception.common.Size3D  size = 5;      // 长宽高
-        perception.common.Angle3f angle = 6;     // 与自车的中心夹角 左边缘夹角 右边缘夹角
+        perception.common.Point3D vel = 1;              // 速度
+        perception.common.Point3D rel_vel = 2;          // 相对速度
+        perception.common.Point3D acc = 3;              // 加速度
+        perception.common.Point3D pos = 4;              // 位置
+        perception.common.Size3D  size = 5;             // 长宽高
+        perception.common.Angle3f angle = 6;            // 与自车的中心夹角 左边缘夹角 右边缘夹角
     
-        perception.common.Box3D box = 10;        // 3dbox
+        perception.common.Box3D box = 10;               // 3dbox
     
-        int32 id = 11;                           // 目标id
-        int32 cls = 12;                          // 类型分类, Negative=0, Car=1, MiniBus=2, Bus=3, Truck=4, Special=5, Unknown=6
-        float val = 13;                          // 分类值, 小标牌限高/限重限速/值
-        int32 pose = 14;                         // 姿态分类, Invalid=0, Tail=1, Head=2, Side=3, CutIn=4
-        float ttc = 15;                          // 碰撞时间
-        float headway = 16;                      // 时距=距离/自车速度
-        int32 cipv = 17;                         // 前方目标是否为关键车(CIPV)，关键车为1，非关键车为0
-        int32 cipp = 18;                         // 前方目标是否为关键人(CIPP)，关键人为1，非关键人为0
+        int32 id = 11;                                   // 目标id
+        int32 cls = 12;                                  // 类型分类, Negative=0, Car=1, MiniBus=2, Bus=3, Truck=4, Special=5, Unknown=6
+        float val = 13;                                  // 分类值, 小标牌限高/限重限速/值
+        int32 pose = 14;                                 // 姿态分类, Invalid=0, Tail=1, Head=2, Side=3, CutIn=4
+        float ttc = 15;                                  // 碰撞时间
+        float headway = 16;                              // 时距=距离/自车速度
+        int32 cipv = 17;                                 // 前方目标是否为关键车(CIPV)，关键车为1，非关键车为0
+        int32 cipp = 18;                                 // 前方目标是否为关键人(CIPP)，关键人为1，非关键人为0
+        perception.common.PoseAngle pose_angle = 19;     // 姿态角，单位：度， 上正，下负，右正，左负
     }
 
     int32 hit_id = 1;                            // 目标检测ID
@@ -107,25 +108,24 @@ message Object {
 
     int32 track_status = 10;                     // track状态
     int32 trace_status = 11;                     // trace状态
+    int32 select_level = 12;                     // 选择等级
 }
 
 message ObjectList {
-
-    message SourceInfo {                         // 描述当真帧数据源的文件
-        string file_path = 1;                    // 数据地址
-        int32 frame_num = 2;                     // 帧序号
-        int32 frame_id = 3;                      // 算法计算时用到的frame_id
-    }
-
     repeated Object list = 1;                    // object list
-    SourceInfo source_info = 2;                  // frame source
 
     string version = 3;                          // 版本号
 
-	uint64 frame_id = 4;                         // 帧ID
+	uint64 frame_id = 4;                         // 帧IDs
     uint64 timestamp = 5;                        // 时戳
 
+    perception.object.Warning warning = 6;       // 告警
+
+    uint64 start_time_us = 10;                   // 算法流程开始时间
+    uint64 end_time_us = 11;                     // 算法流程结束时间
+    repeated uint64 profiling_time = 12;         // 模块耗时列表
+
 	minieye.DataSource data_source = 15;         // 描述数据源 字节数: 4
-    minieye.CalibParam calib_param = 16;          // 标定参数
+    minieye.CalibParam calib_param = 16;         // 标定参数
     minieye.VehicleSignal vehicle_signal = 17;   // 车身信号
 }

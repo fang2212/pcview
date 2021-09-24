@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package perception;
+
+// VERSION
+// 0.1
+
+// topic : "camera_occlusion"
+// brief : 摄像头遮挡
+message CameraOcclusion {
+    uint64 frame_id = 1;                          // 帧ID
+    uint64 timestamp = 2;                         // 时戳
+    int32 camera_id = 3;                          // 摄像头id
+    int32 camera_occlusion = 4;                   // 0:正常, 1:半遮挡, 2:全遮挡
+}

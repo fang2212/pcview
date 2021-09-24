@@ -32,7 +32,15 @@ message VehicleSignal {
 	uint64 tick = 3;                                // 异构设备上的时钟
 }
 
-// topic : "command_signal"
+
+/*
+	{
+	  "topic": "command_signal",
+	  "dds_mode": "shm",
+	  "buff_num": 20,
+	  "elem_max_size": 256
+	 }
+*/
 // brief : 触发式信号
 message CommandSignal {
 	enum SignalType {
@@ -41,6 +49,18 @@ message CommandSignal {
 		kStartOfflineCalibrate = 2;               // 开启下线标定
 		kModLdwSensitivity = 3;                   // 修改LDW灵敏度
 		kModFcwSensitivity = 4;                   // 修改FCW灵敏度
+		kModTsrSensitivity = 5;                   // 修改TSR灵敏度
+		kModPCWSensitivity = 6;                   // 修改PCW灵敏度 
+		kFCWSwitch = 7;                  	  // FCW开关:0-关,1-开
+		kFVSASwitch = 8;                 	  // FVSA开关:0-关,1-开
+		kHMWSwitch = 9;                  	  // HMW开关:0-关,1-开
+		kIHCSwitch = 10;                  	  // IHC开关:0-关,1-开
+		kLDWSwitch = 11;                  	  // LDW开关:0-关,1-开
+		kSroverspdwarnSwitch = 12;       	  // TSROverSpdWarn开关:0-关,1-开
+		kTSRSwitch = 13;                  	  // TSR开关:0-关,1-开
+		kPCWSwitch = 14;                  	  // PCW开关:0-关,1-开
+		kLKASwitch = 15;                  	  // LKA开关:0-关,1-开
+		kESCSwitch = 16;                	  // ESC开关:0-关,1-开
 	}
 	SignalType signal = 1;                        // 信号类别 
 	google.protobuf.Any details = 2;              // 信号详细信息
@@ -93,7 +113,12 @@ message AutoCalibRsp {
     double process = 8;
 }
 
-// 修改LDW告警级别命令输入参数 
-message LDWSensitivitySigDetail {
+// 修改告警级别命令输入参数 
+message SensitivitySigDetail {
 	int32 warning_level = 1;                      // 告警级别
+}
+
+// 开关命令输入参数
+message SwitchSigDetail {
+	int32 switch_value = 1;                      // 开关, 0-关,1-开
 }

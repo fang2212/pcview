@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package minieye;
+
+/*
+   {
+     "topic": "camera",
+     "dds_mode": "shm",
+     "data_refresh_rate": 20,
+	 "buff_num": 10,
+     "elem_max_size": 2000
+   } 
+*/
+message CameraFrame {
+	uint32 camera_id = 1;                       // camera id (CameraID) 
+	uint64 timestamp = 2;                       // 时戳, microseconds
+	uint64 tick = 3;                            // 异构设备上的时钟
+	uint64 frame_id = 4;                        // 帧号
+	repeated uint64 image_plane_addr = 5;       // 图像物理地址        
+	uint32 image_width = 6;                     // 图像宽度 
+	uint32 image_height = 7;                    // 图像高度
+	uint32 stride = 8;                          // 单行步长 
+	uint32 image_type = 9;                      // bgr = 0 / rgb = 1 / yuvnv21 = 2
+	bytes image_supplement = 10;                // 图像附加描述信息, e.g image_pyramids 跟平台相关, 可强转对应的结构体 
+}
+
+// 图像格式 
+enum ImageFormat {
+  FORMAT_UNKNOWN = 0;
+  GRAY = 1;
+  YV12 = 2;
+  JPEG = 3;
+  PNG = 4;
+  CR12 = 5;
+  BAD = 6;
+  NV12 = 7;
+  NV21 = 8;
+  BYPASS_ONLY = 9;
+}
+
+// 安装方位 (可以组合)
+enum CamDirect {
+	DIRECT_UNKNOWN = 0;
+	FRONT = 1;
+	REAR  = 2;
+	LEFT  = 4;
+	RIGHT = 8;
+}
+
+enum ProjectionModel {
+	PRJ_MODEL_UNKNOWN = 0;
+	FISHEYE = 1;
+	MEI = 2;
+	PIN_HOLE = 3;
+	ATAN = 4;
+	DAVIDE_SCARAMUZZA = 5;
+}
+
+// 变换矩阵
+message TransMatrix {
+	repeated float vcsgnd2img   = 1;             // 车身转图像 3x3
+	repeated float img2vcsgnd   = 2;             // 图像转车身 3x3
+	repeated float local2img    = 3;             // 局部世界坐标系转图像 3x3
+	repeated float img2local    = 4;             // 图像转局部世界坐标系 3x3
+}
+
+// front : x, left : y, up: z 
+message CameraParam {
+	float focal_u                      = 1;                        // 归一化焦距
+	float focal_v                      = 2;                        // 归一化焦距
+	float cu                           = 3;                        // 光心
+	float cv                           = 4;                        // 光心
+	repeated float pos                 = 5;                        // 车身坐标系下坐标(vcs) (x, y, z)
+	float pitch                        = 6;                        // 俯仰角 (vcs) 
+	float yaw                          = 7;                        // 偏航角 (vcs)
+	float roll                         = 8;                        // 横滚角 (vcs)
+	float fov                          = 9;                        // 视场角
+	int32 image_format                 = 10;                       // 图像格式 [ImageFormat]
+	string isp_ver                     = 11;                       // isp version 
+	int32 install_direction            = 12;                       // 安装方位 (CamDirect的组合) 
+	TransMatrix trans_mtx              = 13;                       // 变换矩阵
+	ProjectionModel prj_model          = 14;                       // 投影模型 
+	uint32 image_width                 = 15;                       // 像素宽度
+	uint32 image_height                = 16;                       // 像素高度
+	repeated double distort_coeffs     = 17;                       // 畸变系数 (k1, k2, k3, p1, p2) 
+	uint32 camera_id                   = 18;                       // camera id
+}

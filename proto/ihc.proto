@@ -1,0 +1,39 @@
+syntax = "proto3";
+import "geometry.proto";
+import "data_source.proto";
+
+package perception;
+
+/*
+	{
+	    "topic": "ihc",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 20,
+	    "buff_num": 5,
+	    "elem_max_size": 4096
+	} 
+*/
+message Ihc {
+    message IhcDetectObject {
+        perception.common.Rect2f det_rect = 1;   // CNN检测框
+        float confidence = 2;                    // 置信度
+        int32 hit_type = 3;                      // 检测分类， 0.车头灯, 1.车尾灯, 2.路灯
+    }
+
+    enum IhcSignalType { 
+		kLightInvalid = 0;                       // IHC功能待机
+		kLightOff = 1;                           // 关闭灯光
+		kHighBeamOn = 2;                         // 开启远光灯
+		kDippedBeamOn = 3;                       // 开启近光灯
+	}
+
+    message IhcSignal {
+        IhcSignalType control_signal = 1;        // 控制信号
+    }
+
+	uint64 frame_id = 1;                         // 帧ID
+	uint64 timestamp = 2;                        // 时戳
+	repeated IhcDetectObject light_list = 3;     // 灯光信息
+	IhcSignal ihc_signal = 4;                    // 控制信号
+	minieye.DataSource data_source = 5;             // 描述数据源 字节数: 4
+}
