@@ -124,6 +124,7 @@ def parse_a1j(id, data, ctx=None):
         cipp['pos_lat'] = r['TargetPedestrian_PosY']
         cipp['pos_lon'] = r['TargetPedestrian_PosX']
         cipp['class'] = 'pedestrian'
+        cipp['color'] = vision_color
         cipp['TTC'] = r['TargetPedestrian_TTC']
         if cipp['pos_lon'] > 0.0:
             ctx['x1_obs'].append(cipp.copy())
@@ -144,6 +145,7 @@ def parse_a1j(id, data, ctx=None):
             x1_ped['type'] = 'obstacle'
             x1_ped['sensor'] = 'x1'
             x1_ped['class'] = 'pedestrian'
+            x1_ped['color'] = vision_color
             x1_ped['vel_lon'] = 0
             # x1_ped['height'] = 1.6
             if x1_ped['pos_lon'] > 0:
