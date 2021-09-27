@@ -91,5 +91,12 @@
       "protocol": "msgpack",
       "topic": "imuinfo"
     }
+    "can0": {
+      "enable": true,
+      "port": 5555,
+      "protocol": null,
+      "transport": "nanomsg",
+      "topic": "a1j"
+    },
   }
 }
