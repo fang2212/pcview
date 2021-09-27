@@ -210,7 +210,8 @@ class Hub(Thread):
 
                 if transport == "libflow":
                     sink = FlowSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
-                                    name=cfg.get("type"), log_name=item, topic=topic, is_main=is_main, mq=self.mq)
+                                    name=cfg.get("type"), log_name=item, topic=topic, is_main=is_main, mq=self.mq,
+                                    save_type=cfg['ports'][item].get("save"))
                 elif transport == "protoflow":
                     sink = ProtoSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
                                      name=cfg.get("type"), topic=topic, log_name=item, mq=self.mq)

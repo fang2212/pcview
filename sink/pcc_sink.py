@@ -770,7 +770,7 @@ class CameraSink(NNSink):
 
 class FlowSink(NNSink):
     def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo',
-                 log_name='pcv_log', topic='pcview', is_main=False, mq=None):
+                 log_name='pcv_log', topic='pcview', is_main=False, mq=None, save_type=None):
         super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
         self.last_fid = 0
         self.fileHandler = fileHandler
@@ -783,6 +783,7 @@ class FlowSink(NNSink):
         self.source = name + '.{:d}'.format(index)
         self.name = name
         self.new_a1j = False        # 做个兼容处理，新的a1j不需要进行msgpack.unpack
+        self.save_type = save_type
 
         self.client = None
 
@@ -876,7 +877,11 @@ class FlowSink(NNSink):
         else:
             return
 
-        if msg_src == 'pcview':
+        if self.save_type == 'bin':
+            r = {"source": self.source, "log_name": topic, "buf": payload}
+            self.fileHandler.insert_general_bin_raw(r)
+            return
+        elif msg_src == 'pcview':
             if topic == 'finish':
                 buf = payload
                 if b'rc_fusion' in buf:
@@ -936,7 +941,7 @@ class FlowSink(NNSink):
                      'is_main': self.is_main, 'transport': 'libflow'}
                 self.fileHandler.insert_jpg(r)
                 return frame_id, r
-            elif topic in ["radar_data", "fusion_data", "vehicle_data", "lane_data", "drive_data", "fusion_inject", "LanePostImg", "LaneAccImg"]:
+            elif topic in ["radar_data", "fusion_data", "vehicle_data", "lane_data", "drive_data", "fusion_inject", "LanePostImg", "LaneAccImg", "files"]:
                 r = {"source": self.source, "log_name": topic, "buf": payload}
                 self.fileHandler.insert_general_bin_raw(r)
             elif topic == 'calib_params':

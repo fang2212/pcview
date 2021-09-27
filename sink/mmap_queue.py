@@ -39,9 +39,11 @@ class MMAPQueue:
                 return
 
         before_head = self.head.value
-        head_info = self.remove(4)      # 获取数据长度
+        self.lock.acquire()
+        head_info = self.remove(4, locking=True)      # 获取数据长度
         data_len = int.from_bytes(head_info, byteorder='big')
-        msg = self.remove(data_len)
+        msg = self.remove(data_len, locking=True)
+        self.lock.release()
         try:
             data = pickle.loads(msg)
             return data
@@ -77,12 +79,13 @@ class MMAPQueue:
             # print(self.mmap[:])
             return True
 
-    def remove(self, num):
+    def remove(self, num, locking=False):
         if self.count.value <= 0:
             # print("mmap queue empty")
             return False
         else:
-            self.lock.acquire()
+            if not locking:
+                self.lock.acquire()
             if num > self.count.value:
                 print("lost data, num:{}, count:{}".format(num, self.count.value))
                 num = self.count.value
@@ -107,7 +110,8 @@ class MMAPQueue:
                 # print(content)
             self.count.value -= num
             self.queue_size.value -= 1
-            self.lock.release()
+            if not locking:
+                self.lock.release()
             # print("get head:{} count:{} len:{}".format(self.head.value, self.count.value, num))
             # print(self.mmap[:])
             return content

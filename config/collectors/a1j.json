@@ -81,7 +81,8 @@
       "port": 24032,
       "transport": "protoflow",
       "protocol": "msgpack",
-      "topic": "roadmarking,vehicle,tsr,obs,vehicle_signal,ped"
+      "topic": "roadmarking,vehicle,tsr,obs,vehicle_signal,ped",
+      "save": "bin"
     },
     "gsensor": {
       "enable": true,
