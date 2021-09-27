@@ -7,11 +7,25 @@
   "repeater": false,
   "ports": {
     "video": {
-      "enable": false,
+      "enable": true,
       "port": 24011,
       "transport": "libflow",
       "protocol": "msgpack",
-      "topic": "pcview"
+      "topic": "*"
+    },
+    "video1": {
+      "enable": true,
+      "port": 24012,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "mdc_ts": {
+      "enable": true,
+      "port": 26011,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "MdcTime"
     },
     "proto": {
       "enable": true,

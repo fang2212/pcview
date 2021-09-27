@@ -173,6 +173,9 @@ class FileHandler(Process):
         name = msg['log_name'] + '.bin'
         self.write_other_log(source, name, msg['buf'], bin=True)
 
+    def record_mdc_video(self, msg):
+        pass
+
     def record_jpg_log(self, msg):
         if self.save_path:
             res = msg
