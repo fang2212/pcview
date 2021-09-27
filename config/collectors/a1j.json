@@ -60,7 +60,8 @@
       "port": 24015,
       "transport": "libflow",
       "protocol": "msgpack",
-      "topic": "calib_params"
+      "topic": "calib_params,files",
+      "save": "bin"
     },
     "fusion_LaneAccimg": {
       "enable": true,
@@ -81,8 +82,7 @@
       "port": 24032,
       "transport": "protoflow",
       "protocol": "msgpack",
-      "topic": "roadmarking,vehicle,tsr,obs,vehicle_signal,ped",
-      "save": "bin"
+      "topic": "roadmarking,vehicle,tsr,obs,vehicle_signal,ped"
     },
     "gsensor": {
       "enable": true,
