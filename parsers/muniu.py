@@ -32,9 +32,9 @@ def parser_mu_r(cid, data, ctx=None):
     if not ctx.get('mn_r_obs'):
         ctx['mn_r_obs'] = list()
     if cid == 0x4b3:
-        return {'type': 'status', "status_show": [{"text": "FL_speed:{}km/h".format(r["RadarSubVehicle_Speed"]), "height": 40}]}
+        return {'type': 'status', "status_show": [{"text": "RL_speed:{}km/h".format(r["RadarSubVehicle_Speed"]), "height": 40}]}
     elif cid == 0x4b4:
-        return {'type': 'status', "status_show": [{"text": "FR_speed:{}km/h".format(r["RadarSubVehicle_Speed"]), "height": 60}]}
+        return {'type': 'status', "status_show": [{"text": "RR_speed:{}km/h".format(r["RadarSubVehicle_Speed"]), "height": 60}]}
 
 
 
