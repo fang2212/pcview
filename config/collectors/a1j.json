@@ -90,13 +90,13 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "imuinfo"
-    }
-    "can0": {
+    },
+    "can1": {
       "enable": true,
       "port": 5555,
       "protocol": null,
       "transport": "nanomsg",
       "topic": "a1j"
-    },
+    }
   }
 }

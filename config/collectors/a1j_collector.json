@@ -1,0 +1,37 @@
+{
+  "type": "x1_collector",
+  "mac": "00:0c:18:ef:ff:d0",
+  "ip": "192.168.98.218",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": false,
+      "port": 1200,
+      "protocol": null,
+      "transport": "nanomsg",
+      "topic": "video"
+    },
+    "can0": {
+      "enable": true,
+      "port": 5555,
+      "protocol": null,
+      "transport": "nanomsg",
+      "topic": "mbq4"
+    },
+    "can1": {
+      "enable": false,
+      "port": 1208,
+      "protocol": null,
+      "transport": "nanomsg",
+      "topic": "ars"
+    },
+    "gsensor": {
+      "enable": false,
+      "port": 1209,
+      "protocol": null,
+      "transport": "nanomsg",
+      "topic": "gsensor"
+    }
+  }
+}

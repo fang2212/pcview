@@ -16,7 +16,8 @@
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "ars410", "can1": "gs4"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "a1j_fusion", "can1": "ars140"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "ars140", "can1": "ars140"}},
-                {"model":  "a1j", "params": {"mac": "6a:92:53:e7:97:00","is_main": true}},
+                {"model":  "a1j_collector", "params": {"mac": "6a:92:53:e7:97:00", "can0": "a1j", "can1": "blank"}},
+		{"model":  "a1j", "params": {"mac": "6a:92:53:e7:97:00","is_main": true}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
                 {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}}
             ],
@@ -64,7 +65,7 @@
                     "fv": 1296.2201,
                     "cu": 967.7107,
                     "cv": 533.2411
-                },                
+                },
                 "a1j": {
                     "yaw": 0,
                     "pitch": 0,
