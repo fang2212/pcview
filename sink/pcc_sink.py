@@ -864,7 +864,9 @@ class FlowSink(Sink):
         gnss_sec = int.from_bytes(data[16:24], byteorder='little', signed=False),
         gnss_nsec = int.from_bytes(data[24:32], byteorder='little', signed=False),
         timestamp = time.time()
-        self.fileHandler.insert_raw((timestamp, self.source, "{} {} {} {}".format(ads_sec, ads_nsec, gnss_sec, gnss_nsec)))
+        # print(ads_sec, ads_nsec, gnss_sec, gnss_nsec)
+        # print("mdc_ts", "{} {} {} {}".format(ads_sec, ads_nsec, gnss_sec, gnss_nsec))
+        self.fileHandler.insert_raw((timestamp, "mdc_ts", "{} {} {} {}".format(ads_sec[0], ads_nsec[0], gnss_sec[0], gnss_nsec[0])))
 
     def mdc_video(self, msg):
         data = self.decode_data(msg)
@@ -880,7 +882,12 @@ class FlowSink(Sink):
             "nsec": int.from_bytes(data[32:36], byteorder='little', signed=False)
         }
         img = data[36:]
-        print(self.port, head_data, len(img))
+        timestamp = time.time()
+        r = {"source": self.source, "log_name": "mdc_video{}".format(self.port - 24010), "buf": img}
+        self.fileHandler.insert_general_bin_raw(r)
+        self.fileHandler.insert_raw(
+            (timestamp, "mdc_video{}".format(self.port - 24010), "{:d} {:d} {} {} {} {} {} {} {}".format(head_data["height"], head_data["width"], head_data["send_time_high"],
+                                                                                                         head_data["send_time_low"], head_data["frame_type"], head_data["data_size"], head_data["seq"], head_data["sec"], head_data["nsec"])))
 
     def mdc_data(self, msg):
         # Q3华为mdc算法数据
