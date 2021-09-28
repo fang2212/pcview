@@ -518,7 +518,7 @@ class Player(object):
         """
         show_line = 40          # 显示的行位置，每20像素的高度为一行
         for i in status_list:
-            self.show_text_info(source, i.get("height", show_line), i.get("text", ""), i.get("style", "normal"), i.get("size"))
+            self.show_text_info(source, i.get("height", show_line), i.get("text", ""), i.get("style", "normal"), i.get("size"), expire_ts=i.get("expire_ts"))
             show_line = i.get("height", show_line) + 20
 
     def show_frame_id(self, img, source, fn):
