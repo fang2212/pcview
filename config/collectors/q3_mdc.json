@@ -55,12 +55,12 @@
       "protocol": "msgpack",
       "topic": "*"
     },
-    "mdc_ts": {
+    "imu_infos": {
       "enable": true,
-      "port": 26011,
+      "port": 24020,
       "transport": "libflow",
       "protocol": "msgpack",
-      "topic": "MdcTime"
+      "topic": "*"
     },
     "proto": {
       "enable": true,
@@ -103,6 +103,13 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "*"
+    },
+    "mdc_ts": {
+      "enable": true,
+      "port": 26011,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "MdcTime"
     }
   }
 }
