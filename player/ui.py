@@ -27,6 +27,7 @@ class CVColor(object):
     '''
     basic color RGB define
     '''
+    Aqua = (255, 255, 0)
     Red = (0, 0, 255)
     Peru = (63, 133, 205)
     Chocolate = (30, 105, 210)
