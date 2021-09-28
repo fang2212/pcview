@@ -7,11 +7,60 @@
   "repeater": false,
   "ports": {
     "video": {
-      "enable": false,
+      "enable": true,
       "port": 24011,
       "transport": "libflow",
       "protocol": "msgpack",
-      "topic": "pcview"
+      "topic": "*"
+    },
+    "video1": {
+      "enable": true,
+      "port": 24012,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "video2": {
+      "enable": true,
+      "port": 24013,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "video3": {
+      "enable": true,
+      "port": 24014,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "video4": {
+      "enable": true,
+      "port": 24015,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "video5": {
+      "enable": true,
+      "port": 24016,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "video6": {
+      "enable": true,
+      "port": 24017,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "imu_infos": {
+      "enable": true,
+      "port": 24020,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
     },
     "proto": {
       "enable": true,
@@ -54,6 +103,13 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "*"
+    },
+    "mdc_ts": {
+      "enable": true,
+      "port": 26011,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "MdcTime"
     }
   }
 }

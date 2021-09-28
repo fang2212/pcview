@@ -768,7 +768,7 @@ class CameraSink(NNSink):
         return frame_id, r, self.source
 
 
-class FlowSink(NNSink):
+class FlowSink(Sink):
     def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo',
                  log_name='pcv_log', topic='pcview', is_main=False, mq=None, save_type=None):
         super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
@@ -781,11 +781,25 @@ class FlowSink(NNSink):
         self.type = 'flow_sink'
         self.topic = topic
         self.source = name + '.{:d}'.format(index)
+        self.index = index
         self.name = name
         self.new_a1j = False        # 做个兼容处理，新的a1j不需要进行msgpack.unpack
         self.save_type = save_type
 
         self.client = None
+
+        # 初始化解析流程
+        if self.topic == '*':   # Q3华为mdc数据
+            if 24011 <= self.port <= 24017:     # mdc视频数据
+                self.pkg_handler = self.mdc_video
+            elif self.port == 26011:
+                self.pkg_handler = self.mdc_ts
+            else:
+                self.pkg_handler = self.mdc_data
+        elif self.topic == 'MdcTime':
+            self.pkg_handler = self.mdc_ts
+        elif self.save_type == 'bin':
+            self.pkg_handler = self.bin_data
 
     async def _run(self):
         logger.warning(f"FlowSink Initialized {self.ip}:{self.port} topic:{self.topic}")
@@ -815,7 +829,7 @@ class FlowSink(NNSink):
                 else:
                     time.sleep(0.001)
 
-    def run(self):
+    def task(self):
         import asyncio
         import platform
 
@@ -830,7 +844,7 @@ class FlowSink(NNSink):
         except Exception as e:
             logger.error(f'error when initiating flow sink on {self.ip}:{self.port}, {e}')
 
-    def pkg_handler(self, msg):
+    def decode_data(self, msg):
         # 判断是否新的a1j设备，如果是新a1j设备的话不需要进行解码处理
         if not self.new_a1j:
             try:
@@ -840,6 +854,73 @@ class FlowSink(NNSink):
                 data = msg.data
         else:
             data = msg.data
+        return data
+
+    def mdc_ts(self, msg):
+        data = self.decode_data(msg)
+        data = data['data']
+        ads_sec = int.from_bytes(data[:8], byteorder='little', signed=False),
+        ads_nsec = int.from_bytes(data[8:16], byteorder='little', signed=False),
+        gnss_sec = int.from_bytes(data[16:24], byteorder='little', signed=False),
+        gnss_nsec = int.from_bytes(data[24:32], byteorder='little', signed=False),
+        timestamp = time.time()
+        # print(ads_sec, ads_nsec, gnss_sec, gnss_nsec)
+        # print("mdc_ts", "{} {} {} {}".format(ads_sec, ads_nsec, gnss_sec, gnss_nsec))
+        self.fileHandler.insert_raw((timestamp, "mdc_ts", "{} {} {} {}".format(ads_sec[0], ads_nsec[0], gnss_sec[0], gnss_nsec[0])))
+
+    def mdc_video(self, msg):
+        data = self.decode_data(msg)
+        head_data = {
+            "height": int.from_bytes(data[:4], byteorder='little', signed=False),
+            "width": int.from_bytes(data[4:8], byteorder='little', signed=False),
+            "send_time_high": int.from_bytes(data[8:12], byteorder='little', signed=False),
+            "send_time_low": int.from_bytes(data[12:16], byteorder='little', signed=False),
+            "frame_type": int.from_bytes(data[16:20], byteorder='little', signed=False),
+            "data_size": int.from_bytes(data[20:24], byteorder='little', signed=False),
+            "seq": int.from_bytes(data[24:28], byteorder='little', signed=False),
+            "sec": int.from_bytes(data[28:32], byteorder='little', signed=False),
+            "nsec": int.from_bytes(data[32:36], byteorder='little', signed=False)
+        }
+        img = data[36:]
+        timestamp = time.time()
+        r = {"source": self.source, "log_name": "mdc_video{}".format(self.port - 24010), "buf": img}
+        self.fileHandler.insert_general_bin_raw(r)
+        self.fileHandler.insert_raw(
+            (timestamp, "mdc_video{}".format(self.port - 24010), "{:d} {:d} {} {} {} {} {} {} {}".format(head_data["height"], head_data["width"], head_data["send_time_high"],
+                                                                                                         head_data["send_time_low"], head_data["frame_type"], head_data["data_size"], head_data["seq"], head_data["sec"], head_data["nsec"])))
+
+    def mdc_data(self, msg):
+        # Q3华为mdc算法数据
+        data = self.decode_data(msg)
+
+        data["origin-source"] = data["source"]
+        data["source"] = self.source
+        data["data"] = base64.b64encode(data["data"]).decode('utf-8')
+        self.fileHandler.insert_pcv_raw(data)
+        return
+
+    def bin_data(self, msg):
+        """
+        数据保存为bin文件
+        :param msg:
+        :return:
+        """
+        data = self.decode_data(msg)
+        if b'data' in data:
+            payload = data[b'data']
+            topic = data[b'topic'].decode()
+        elif 'data' in data:
+            payload = data['data']
+            topic = data['topic']
+        else:
+            return
+
+        r = {"source": self.source, "log_name": topic, "buf": payload}
+        self.fileHandler.insert_general_bin_raw(r)
+        return
+
+    def pkg_handler(self, msg):
+        data = self.decode_data(msg)
 
         # 新a1j设备图片数据
         if isinstance(data, bytes) and data.startswith(b'\xff\x03'):  # jpeg pack header
@@ -857,14 +938,6 @@ class FlowSink(NNSink):
             self.fileHandler.insert_jpg(r)
             return frame_id, r
 
-        if self.topic == "*":
-            # Q3华为mdc特殊处理数据
-            data["origin-source"] = data["source"]
-            data["source"] = self.source
-            data["data"] = base64.b64encode(data["data"]).decode('utf-8')
-            self.fileHandler.insert_pcv_raw(data)
-            return
-
         ts = time.time()
         if b'data' in data:
             msg_src = data[b'source'].decode()
@@ -877,11 +950,7 @@ class FlowSink(NNSink):
         else:
             return
 
-        if self.save_type == 'bin':
-            r = {"source": self.source, "log_name": topic, "buf": payload}
-            self.fileHandler.insert_general_bin_raw(r)
-            return
-        elif msg_src == 'pcview':
+        if msg_src == 'pcview':
             if topic == 'finish':
                 buf = payload
                 if b'rc_fusion' in buf:
