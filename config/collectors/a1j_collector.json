@@ -17,7 +17,7 @@
       "port": 5555,
       "protocol": null,
       "transport": "nanomsg",
-      "topic": "mbq4"
+      "topic": "a1j"
     },
     "can1": {
       "enable": false,
