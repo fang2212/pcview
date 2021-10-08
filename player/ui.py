@@ -111,6 +111,8 @@ color_dict = {
     'mbq3_fusion': CVColor.Blue,
     'mbq3_vision': (255, 144, 30),
     'mbq4': FlatColor.turquoise,
+    "mu_f": CVColor.Aqua,
+    "mu_r": CVColor.Aqua,
     'q3': CVColor.Blue,
     'rtk': FlatColor.sun_flower,
     'sta77': FlatColor.wet_asphalt,
