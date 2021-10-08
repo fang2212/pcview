@@ -368,6 +368,8 @@ class Player(object):
         if style is None:
             style = 'warning'
         self.get_indent(source)
+        if not expire_ts:
+            expire_ts = time.time() + 0.5
         self.columns[source]['buffer'][height] = {'text': text, 'style': style, 'size': size, 'expire_ts': expire_ts}
         # print(source, height, text)
 
