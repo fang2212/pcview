@@ -79,6 +79,7 @@ class Player(object):
             'mbq3_fusion': CVColor.MediumBlue,
             'mbq3_vision': (255, 144, 30),
             'mbq4': CVColor.MediumTurquoise,
+            'q4_52': CVColor.MediumTurquoise,
             "mu_f": CVColor.Aqua,
             "mu_r": CVColor.Aqua,
             'q3': CVColor.Blue,

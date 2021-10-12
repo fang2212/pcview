@@ -2,6 +2,7 @@ from parsers.bosch import bosch_mrr
 from parsers.a1j import parse_a1j, parse_a1j_fusion, parse_a1j_vision
 from parsers.d1_fusion import parse_d1
 from parsers.muniu import parser_mu_f, parser_mu_r
+from parsers.q4_52 import parser_q4_52
 from parsers.x1 import parse_x1, parse_x1_fusion, parse_x1_vision
 from parsers.x1l import parse_x1l
 from parsers.x1j import parse_x1j
@@ -59,6 +60,7 @@ parsers_dict = {
     "novatel":  parse_novatel,
     "pim222":   parse_pim222,
     "q4_100":   parser_q4_100,
+    "q4_52": parser_q4_52,
     "q3": parse_q3,
     "rt_range": parser_rt,
     "sta77":    parse_sta77,
