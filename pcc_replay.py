@@ -8,6 +8,7 @@
 # @Desc    : log replayer for collected data
 import argparse
 import logging
+import os.path
 from multiprocessing import Process, Manager, freeze_support, Event
 from turbojpeg import TurboJPEG
 
@@ -217,6 +218,20 @@ class LogPlayer(Process):
                             for i, t in enumerate(topics):
                                 self.can_types['{}.{}.{}.{}'.format(cfg.get('origin_device', cfg['ports'][keyword].get('origin_device')), idx, keyword, t)] = {
                                     "parsers": parsers, "index": idx}
+
+            if cfg.get("ports", {}).get("video", {}).get("enable"):
+                # 检查是否有视频数据
+                dir_name = "video" if cfg.get("is_main") else "{}.{:d}".format(cfg["type"], idx)
+                log_keyword = "camera" if dir_name == 'video' else dir_name
+                video_path = os.path.dirname(self.log_path) + '/' + dir_name
+                # 初始化视频图片生成器
+                if os.path.exists(video_path):
+                    self.jpeg_extractor[log_keyword] = jpeg_extractor(video_path)
+
+                x1_log = os.path.dirname(self.log_path) + "/" + video_path + '/pcv_log.txt'
+                if os.path.exists(x1_log):
+                    self.x1_parser[log_keyword] = PcvParser(open(x1_log))
+
         for i in self.can_types:
             logger.warning("{} | {}".format(i.ljust(20), self.can_types[i]['parsers']))
 
