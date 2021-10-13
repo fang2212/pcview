@@ -5,17 +5,17 @@ import math
 import cantools
 import time
 
-db_q4 = cantools.db.load_file('dbc/new_q4/Hazards.dbc', strict=False)
-db_q4.add_dbc_file('dbc/new_q4/LanesHost.dbc')
-db_q4.add_dbc_file('dbc/new_q4/LanesAdjacent.dbc')
-db_q4.add_dbc_file('dbc/new_q4/Objects.dbc')
-db_q4.add_dbc_file('dbc/new_q4/opTSR.dbc')
+db_q4 = cantools.db.load_file('dbc/q4_52/Hazards.dbc', strict=False)
+db_q4.add_dbc_file('dbc/q4_52/LanesHost.dbc')
+db_q4.add_dbc_file('dbc/q4_52/LanesAdjacent.dbc')
+db_q4.add_dbc_file('dbc/q4_52/Objects.dbc')
+db_q4.add_dbc_file('dbc/q4_52/opTSR.dbc')
 
-db_car = cantools.db.load_file('dbc/new_q4/Hazards.dbc', strict=False)
-db_lane = cantools.db.load_file('dbc/new_q4/LanesHost.dbc', strict=False)
-db_lane.add_dbc_file('dbc/new_q4/LanesAdjacent.dbc')
-db_obj = cantools.db.load_file('dbc/new_q4/Objects.dbc', strict=False)
-db_tsr = cantools.db.load_file('dbc/new_q4/opTSR.dbc', strict=False)
+db_car = cantools.db.load_file('dbc/q4_52/Hazards.dbc', strict=False)
+db_lane = cantools.db.load_file('dbc/q4_52/LanesHost.dbc', strict=False)
+db_lane.add_dbc_file('dbc/q4_52/LanesAdjacent.dbc')
+db_obj = cantools.db.load_file('dbc/q4_52/Objects.dbc', strict=False)
+db_tsr = cantools.db.load_file('dbc/q4_52/opTSR.dbc', strict=False)
 
 obs = dict()
 ids = [m.frame_id for m in db_q4.messages]
