@@ -25,6 +25,11 @@
     },
     "a1j": {
         "type": "can",
+        "ids": ["0x5f0", "0x400", "0x401"],
+        "cycle": 50
+    },
+    "bm.0.can1.a1j": {
+        "type": "can",
         "ids": ["0x76d", "0x77a", "0x5f0"],
         "cycle": 50
     },
@@ -36,12 +41,21 @@
     "j2": {
         "type": "can",
         "ids": ["0x402", "0x501", "0x502"],
-        "cycle": 33
+        "cycle": 30
     },
     "mbq4": {
         "type": "can",
         "ids": ["0x130", "0x12c", "0x120"],
-        "cycle": 33
+        "cycle": 30
+    },
+    "q4_52": {
+        "type": "can",
+        "cycle": 30
+    },
+    "mbq3": {
+        "type": "can",
+        "ids": ["0x6a8", "0x6a7", "0x6a9"],
+        "cycle": 30
     },
     "ifv300": {
         "type": "can",
@@ -53,11 +67,36 @@
         "ids": ["0x60a", "0x300", "0x301"],
         "cycle": 50
     },
+    "mu_f": {
+        "type": "can",
+        "ids": ["0x4b1", "0x4b2"],
+        "cycle": 50
+    },
+    "mu_r": {
+        "type": "can",
+        "ids": ["0x4b3", "0x4b4"],
+        "cycle": 50
+    },
     "ars410": {
         "type": "can",
         "ids": ["0x20", "0x80", "0x3d"],
         "cycle": 50
     },
+    "bm-x4.8.can0.bosch_mrr": {
+        "type": "can",
+        "ids": ["0x203","0x205","0x20a"],
+        "cycle": 50
+    },
+    "bm-x4.8.can1.bosch_r": {
+        "type": "can",
+        "ids": ["0x343","0x339","0x33a","0x344"],
+        "cycle": 100
+    },
+    "bm-x4.8.can2.bosch_f": {
+        "type": "can",
+        "ids": ["0x341","0x342","0x32c","0x33d"],
+        "cycle": 100
+    },        
     "gs4": {
         "type": "can",
         "ids": ["0x26a", "0x3b6", "0x186"],
@@ -73,20 +112,59 @@
         "ids": ["0x19c", "0x3a6", "0x187"],
         "cycle": 20
     },
-    "bosch_r": {
-        "type": "can",
-        "ids": ["0x33b"]
-    },
     "camera": {
         "type": "keyword",
         "cycle": 50,
         "height_per": 10,
         "low_per": 10
     },
-    "cv22_algo.9.gsensor": {
+    "x1_collector.7": {
+        "type": "keyword",
+        "cycle": 30,
+        "height_per": 20,
+        "low_per": 20
+    },
+    "cv22_algo.12.gsensor": {
+        "type": "keyword",
+        "cycle": 10,
+        "height_per": 10,
+        "low_per": 10
+    }, 
+    "cv22_algo.12": {
+        "type": "keyword",
+        "cycle": 10,
+        "height_per": 10,
+        "low_per": 10
+    }, 
+    "a1j_algo.10.gsensor": {
+        "type": "keyword",
+        "cycle": 10,
+        "height_per": 10,
+        "low_per": 10
+    },
+    "a1j_algo.8.gsensor": {
+        "type": "keyword",
+        "cycle": 10,
+        "height_per": 10,
+        "low_per": 10
+    },  
+    "q4_100": {
+        "type": "keyword",
+        "cycle": 10,
+        "height_per": 10,
+        "low_per": 10
+    },  
+    "Gsensor.7": {
+        "type": "keyword",
+        "cycle": 10,
+        "height_per": 10,
+        "low_per": 10
+    },  
+    "a1j_algo.1.gsensor": {
         "type": "keyword",
         "cycle": 10,
         "height_per": 10,
         "low_per": 10
     }
+    
 }
