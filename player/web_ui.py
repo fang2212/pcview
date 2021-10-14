@@ -59,21 +59,24 @@ class Player(object):
 
         self.param_bg_width = 160
 
-    def draw_img(self, img):
+    def draw_img(self, img, plugin_name="video-main"):
         """
         绘制图像
+        :param plugin_name:
         :param img:
         :return:
         """
-        BaseDraw.draw_img(img)
+        BaseDraw.clear(plugin=plugin_name)
+        BaseDraw.draw_img(img, plugin_name)
 
-    def clear(self):
+    def clear(self, plugin='video-main'):
         """
         绘制图像
         :param img:
         :return:
         """
-        BaseDraw.clear()
+        return
+        # BaseDraw.clear(plugin=plugin)
 
     def get_indent(self, source):
         if not self.columns.get(source):
@@ -124,9 +127,9 @@ class Player(object):
             BaseDraw.draw_line(start, end, color=CVColor.Midgrey, thickness=1, plugin_name='front-ipm')
             BaseDraw.draw_text('{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 16, CVColor.White, plugin_name='front-ipm')
 
-    def show_parameters_background(self, img, rect, color=BaseDraw.bgr_to_str(CVColor.Black, 0.6), border_color=BaseDraw.bgr_to_str(CVColor.LightGray), border_width=0):
+    def show_parameters_background(self, img, rect, color=BaseDraw.bgr_to_str(CVColor.Black, 0.6), border_color=BaseDraw.bgr_to_str(CVColor.LightGray), border_width=0, plugin='video-main'):
         """左上角参数背景图"""
-        BaseDraw.draw_alpha_rect(img, rect, color, border_color, border_width)
+        BaseDraw.draw_alpha_rect(img, rect, color, border_color, border_width, plugin_name=plugin)
 
     def show_obs(self, img, obs, thickness=2):
         """
@@ -372,18 +375,18 @@ class Player(object):
                     color = BaseDraw.bgr_to_str(style)
                 BaseDraw.draw_text(entry['buffer'][height]['text'], (entry['indent'] + 2, height + y0), 16, color, 1)
 
-    def show_video_info(self, img, data):
+    def show_video_info(self, data, plugin="video-sub1"):
         tnow = data['ts']
         if data['source'] not in self.video_streams:
             self.video_streams[data['source']] = {'frame_cnt': data['frame_id'] - 1, 'last_ts': 0, 'ts0': time.time(),
                                                   'fps': 20}
         if tnow == self.video_streams[data['source']]['last_ts']:
             return
-        self.show_parameters_background(img, (0, 0, 160, 80))
-        BaseDraw.draw_text(data['source'], (2, 20), 0.5, BaseDraw.bgr_to_str(CVColor.Cyan), 1)
+        self.show_parameters_background(None, (0, 0, 160, 80), plugin=plugin)
+        BaseDraw.draw_text(data['source'], (2, 15), 14, BaseDraw.bgr_to_str(CVColor.Cyan), 1, plugin_name=plugin)
         dt = self.ts_now - data['ts']
-        BaseDraw.draw_text('{:>+4d}ms'.format(int(dt * 1000)), (92, 20), 0.5, BaseDraw.bgr_to_str(CVColor.White), 1)
-        BaseDraw.draw_text('frame: {}'.format(data['frame_id']), (2, 40), 0.5, BaseDraw.bgr_to_str(CVColor.White), 1)
+        BaseDraw.draw_text('{:>+4d}ms'.format(int(dt * 1000)), (92, 15), 14, BaseDraw.bgr_to_str(CVColor.White), 1, plugin_name=plugin)
+        BaseDraw.draw_text('frame: {}'.format(data['frame_id']), (2, 30), 14, BaseDraw.bgr_to_str(CVColor.White), 1, plugin_name=plugin)
 
         self.video_streams[data['source']]['frame_cnt'] += 1
         # duration = time.time() - self.video_streams[data['source']]['ts0']
@@ -391,11 +394,11 @@ class Player(object):
         self.video_streams[data['source']]['last_ts'] = tnow
         fps = 1 / dt
         self.video_streams[data['source']]['fps'] = 0.9 * self.video_streams[data['source']]['fps'] + 0.1 * fps
-        BaseDraw.draw_text('fps: {:.1f}'.format(self.video_streams[data['source']]['fps']), (2, 60), 0.5,
-                           BaseDraw.bgr_to_str(CVColor.White), 1)
+        BaseDraw.draw_text('fps: {:.1f}'.format(self.video_streams[data['source']]['fps']), (2, 45), 14,
+                           BaseDraw.bgr_to_str(CVColor.White), 1, plugin_name=plugin)
         BaseDraw.draw_text('lost frames: {}'.format(data['frame_id'] - self.video_streams[data['source']]['frame_cnt']),
-                           (2, 80), 0.5, BaseDraw.bgr_to_str(CVColor.White), 1)
-        BaseDraw.draw_text('dev: {}'.format(data['device']), (2, 100), 0.5, BaseDraw.bgr_to_str(CVColor.White), 1)
+                           (2, 60), 14, BaseDraw.bgr_to_str(CVColor.White), 1, plugin_name=plugin)
+        BaseDraw.draw_text('dev: {}'.format(data['device']), (2, 75), 14, BaseDraw.bgr_to_str(CVColor.White), 1, plugin_name=plugin)
 
     def show_status_info(self, source, status_list):
         """

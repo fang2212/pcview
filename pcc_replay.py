@@ -339,7 +339,8 @@ class LogPlayer(Process):
                                 if jpg is None:
                                     self.now_frame_id = frame_id
 
-                r = {'ts': ts, 'img': jpg, 'is_main': True, 'source': 'video', 'type': 'video'}
+                source = "video" if cols[2] == self.main_video else cols[2]
+                r = {'ts': ts, 'img': jpg, 'is_main': cols[2] == self.main_video, 'source': source, 'type': 'video', 'frame_id': frame_id}
                 sink_source = 'camera' if cols[2] == self.main_video else cols[2]
                 self.put_sink((frame_id, r, sink_source))
 

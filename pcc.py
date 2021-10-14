@@ -198,6 +198,9 @@ class PCC(object):
                 self.cache['info'][source]['integrity'] = 'framed'
         elif isinstance(data, dict):
             if 'video' in data['type']:
+                # d = data.copy()
+                # d['img'] = ''
+                # print(d)
                 is_main = data.get('is_main')
                 if not is_main:
                     if data['source'] not in self.video_cache:
@@ -210,7 +213,6 @@ class PCC(object):
 
                     self.recv_first_img = True
 
-                    self.cache['frame_id'] = fid
                     self.cache['ts'] = data['ts']
                     self.cache['updated'] = True
 
@@ -344,9 +346,6 @@ class PCC(object):
                 cv2.putText(img, key, (10, i*60 + 300), cv2.FONT_HERSHEY_COMPLEX, 3, (0, 0, 255), 2)
 
     def web_draw(self, mess, frame_cnt):
-        # 清除画布，防止叠加层一直叠加
-        self.player.clear()
-
         t0 = time.time()
         self.player.draw_img(mess["img"])
 
@@ -391,17 +390,14 @@ class PCC(object):
         if self.vehicles['ego'].pinpoint:
             self.player.show_pinpoint(img, self.vehicles['ego'].pinpoint)
 
-        img_aux = np.zeros([0, 427, 3], np.uint8)
         for idx, source in enumerate(list(self.video_cache.keys())):
             if idx > 2:
                 continue
             video = self.video_cache[source]
             self.video_cache[source]['updated'] = False
-            img_small = cv2.resize(jpeg.decode(np.fromstring(video['img'], np.uint8)), (427, 240))
-            # img_small = cv2.resize(self.jpeg_dec.decode(video['img']), (427, 240))
             video['device'] = source
-            self.player.show_video_info(img_small, video)
-            img_aux = np.vstack((img_aux, img_small))
+            self.player.draw_img(video['img'], plugin_name='video-sub{}'.format(idx+1))
+            self.player.show_video_info(video, plugin='video-sub{}'.format(idx+1))
 
         if not self.replay:
             self.player.show_version(img, self.cfg)
