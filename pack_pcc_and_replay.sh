@@ -40,7 +40,7 @@ mv build_info.txt dist/pcc_app/
 cd dist
 cp pcc_replay/pcc_replay pcc_app/
 cp split_recorder_data/split_recorder_data pcc_app/
-cp statistics_log -r pcc_app/
+cp statistics_log/statistics_log -r pcc_app/
 tar -czvf pcc_app.tar.gz pcc_app
 
 #if [ ! -d "~/release " ]; then
