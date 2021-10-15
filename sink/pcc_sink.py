@@ -680,10 +680,9 @@ class MQTTSink(NNSink):
 
 
 class CANSink(NNSink):
-    def __init__(self, ip, port, msg_type, type, index, fileHandler, mq=None):
+    def __init__(self, ip, port, msg_type, topics, index, fileHandler, mq=None):
         super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
         self.fileHandler = fileHandler                          # 日志对象
-        self.source = '{}.{:d}'.format(type[0], index)
         self.type = 'can_sink'
         self.log_types = {'can0': 'CAN' + '{:01d}'.format(self.index * 2),
                           'can1': 'CAN' + '{:01d}'.format(self.index * 2 + 1)}
@@ -692,12 +691,10 @@ class CANSink(NNSink):
         self.parse_event.set()
 
         # 解析方法初始化
-        self.parser = []
-        for parser in parsers_dict:
-            if parser in type:
-                self.parser.append(parsers_dict[parser])
-        if len(self.parser) == 0:
-            self.parser = [parsers_dict["default"]]
+        if isinstance(topics, list):
+            self.parsers = topics
+        else:
+            self.parsers = [topics]
 
         print('CANSink initialized.', self.type, ip, port, self.parser[0].__name__)
 
@@ -719,9 +716,9 @@ class CANSink(NNSink):
         # 添加到解析队列
         decode_msg = {
             "type": "can",
-            "source": self.source,
+            "index": self.index,
             "data": data,
-            "parsers": self.parser,
+            "parsers": self.parsers,
             "cid": can_id,
             "ts": timestamp
         }

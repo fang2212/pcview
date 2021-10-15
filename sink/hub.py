@@ -255,12 +255,16 @@ class Hub(Thread):
                     continue
                 if 'can' in iface:
                     chn = cfg['ports'][iface]
-                    cansink = CANSink(ip=ip, port=chn['port'], msg_type=iface, type=[chn['topic']],
+                    cansink = CANSink(ip=ip, port=chn['port'], msg_type=iface, topics=chn['topic'],
                                       fileHandler=self.fileHandler,
                                       index=idx, mq=self.mq)
 
                     self.sinks.append(cansink)
-                    self.online[ip_type]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
+                    if isinstance(chn['topic'], list):
+                        for t in chn['topic']:
+                            self.online[ip_type]['msg_types'].append(t + '.{}'.format(idx))
+                    else:
+                        self.online[ip_type]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'gsensor' in iface:
                     chn = cfg['ports'][iface]
                     gsink = GsensorSink(ip=ip, port=chn['port'], msg_type=iface, index=idx,
@@ -281,10 +285,14 @@ class Hub(Thread):
                 port = cfg['ports'][iface]['port']
                 if 'can' in iface:
                     chn = cfg['ports'][iface]
-                    cansink = CANSink(ip=ip, port=port, msg_type=iface, type=[chn['topic']],
+                    cansink = CANSink(ip=ip, port=port, msg_type=iface, topics=chn['topic'],
                                       index=idx, fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(cansink)
-                    self.online[ip_type]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
+                    if isinstance(chn['topic'], list):
+                        for t in chn['topic']:
+                            self.online[ip_type]['msg_types'].append(t + '.{}'.format(idx))
+                    else:
+                        self.online[ip_type]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'gsensor' in iface:
                     chn = cfg['ports'][iface]
                     gsink = GsensorSink(ip=ip, port=port, msg_type=iface, index=idx,

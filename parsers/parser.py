@@ -1,7 +1,7 @@
 from parsers.bosch import bosch_mrr
 from parsers.a1j import parse_a1j, parse_a1j_fusion, parse_a1j_vision
 from parsers.d1_fusion import parse_d1
-from parsers.muniu import parser_mu_f, parser_mu_r
+from parsers.muniu import parser_mu_f, parser_mu_r, parser_mu_fl, parser_mu_fr, parser_mu_rl, parser_mu_rr
 from parsers.q4_52 import parser_q4_52
 from parsers.x1 import parse_x1, parse_x1_fusion, parse_x1_vision
 from parsers.x1l import parse_x1l
@@ -57,6 +57,10 @@ parsers_dict = {
     "mrr_fusion": parse_fusion_mrr,
     "mu_f": parser_mu_f,
     "mu_r": parser_mu_r,
+    "mu_fl": parser_mu_fl,
+    "mu_fr": parser_mu_fr,
+    "mu_rl": parser_mu_rl,
+    "mu_rr": parser_mu_rr,
     "novatel":  parse_novatel,
     "pim222":   parse_pim222,
     "q4_100":   parser_q4_100,

@@ -14,41 +14,32 @@ def can_decode(msg):
     :param msg: 原数据
     :return:
     """
-    source = msg.get("source")
+    index = msg.get("index")
     data = msg.get("data")
     parsers = msg.get("parsers")
     dbc = msg.get('dbc')
     can_id = msg.get("cid")
     timestamp = msg.get("ts")
 
-    if not context.get(source):
-        context[source] = {"source": source}
-
-    ret = None
-    if parsers:
-        for parser in parsers:
-            ret = parser(can_id, data, context[source])
-            if ret is not None:
-                break
-    else:
-        ret = parsers_dict.get(dbc, parsers_dict['default'])(can_id, data, context[source])
-
-    if ret is None:
+    if not parsers:
         return
 
-    if isinstance(ret, list):
-        for idx, obs in enumerate(ret):
-            ret[idx]['ts'] = timestamp
-            ret[idx]['source'] = source
-            # if ret[idx].get("sensor") and ret[idx]["sensor"] == "ifv300":
-            #     print(ret[idx])
-    elif isinstance(ret, dict):
-        ret['ts'] = timestamp
-        ret['source'] = source
-    else:
-        return
-
-    return can_id, ret.copy(), source
+    for parser in parsers:
+        source = '{}.{:d}'.format(parser, index)
+        if not context.get(source):
+            context[source] = {"source": source}
+        ret = parsers_dict.get(parser, parsers_dict['default'])(can_id, data, context[source])
+        if ret is not None:
+            if isinstance(ret, list):
+                for idx, obs in enumerate(ret):
+                    ret[idx]['ts'] = timestamp
+                    ret[idx]['source'] = source
+                    # if ret[idx].get("sensor") and ret[idx]["sensor"] == "ifv300":
+                    #     print(ret[idx])
+            elif isinstance(ret, dict):
+                ret['ts'] = timestamp
+                ret['source'] = source
+            return can_id, ret, source
 
 
 def pim222_decode(msg):
@@ -72,7 +63,7 @@ def q4_decode(msg):
     if not context.get(source):
         context[source] = {"source": source}
 
-    ret = parsers_dict.get(protocol, "default")(0, data, context)
+    ret = parsers_dict.get(protocol, parsers_dict['default'])(0, data, context)
     if ret is None:
         return
 

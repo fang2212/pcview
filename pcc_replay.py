@@ -213,21 +213,18 @@ class LogPlayer(Process):
                 if cfg["type"] != "can_collector":
                     # print(cfg)
                     if 'can0' in cfg['ports']:
-                        msg_type = cfg['ports']['can0']['topic']
-                        self.can_types['CAN' + '{:01d}'.format(idx * 2)] = msg_type + '.{}'.format(idx)
+                        if isinstance(cfg['ports']['can0']['topic'], list):
+                            topic = cfg['ports']['can0']['topic']
+                        else:
+                            topic = [cfg['ports']['can0']['topic']]
+                        self.can_types['CAN' + '{:01d}'.format(idx * 2)] = {'topic': topic, 'index': idx}
                     if 'can1' in cfg['ports']:
-                        msg_type = cfg['ports']['can1']['topic']
-                        self.can_types['CAN' + '{:01d}'.format(idx * 2 + 1)] = msg_type + '.{}'.format(idx)
+                        if isinstance(cfg['ports']['can1']['topic'], list):
+                            topic = cfg['ports']['can1']['topic']
+                        else:
+                            topic = [cfg['ports']['can1']['topic']]
+                        self.can_types['CAN' + '{:01d}'.format(idx * 2 + 1)] = {'topic': topic, 'index': idx}
 
-        # 初始化can解析方法
-        for can in self.can_types:
-            self.parser[can] = []
-            for type in parsers_dict:
-                if type == self.can_types[can].split('.')[0]:
-                    print('----', can, type, parsers_dict[type])
-                    self.parser[can].append(parsers_dict[type])
-            if len(self.parser[can]) == 0:
-                self.parser[can] = [parsers_dict['default']]
         self.shared['ready'] = True
 
     def get_veh_role(self, source):
@@ -356,9 +353,9 @@ class LogPlayer(Process):
 
                 decode_msg = {
                     "type": "can",
-                    "source": self.can_types[msg_type],
+                    "index": self.can_types[msg_type]['index'],
                     "data": data,
-                    "parsers": self.parser[cols[2]],
+                    "parsers": self.can_types[msg_type]['topic'],
                     "cid": int(cols[3], 16),
                     "ts": ts
                 }
