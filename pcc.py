@@ -125,6 +125,7 @@ class PCC(object):
                 self.o_img_q = video_server.img_q
                 logger.warning('{} pid:{}'.format("PCC: web".ljust(20), os.getpid()))
         else:
+            BaseDraw.init()
             logger.warning('{} pid:{}'.format("PCC: eclient".ljust(20), os.getpid()))
 
         self.wav_cnt = 0
@@ -256,6 +257,8 @@ class PCC(object):
                 # 回放视频保存对象
                 if self.vw is not None:
                     self.vw.release()
+                if self.eclient:
+                    BaseDraw.close()
                 return
 
             # 从信号进程取出数据

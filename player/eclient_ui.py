@@ -10,14 +10,20 @@ send_queue = MMAPQueue(1024*1024*3)
 
 # eclient_server = Server(recv_queue=recv_queue)
 # eclient_server.start()
-eclient_server = EClientApi(plugin_title_list=['video-main', 'front-ipm', 'video-sub1', 'video-sub2', 'video-sub3'], msg_queue=send_queue)
-eclient_server.start()
+eclient_server = None
 
 
 class BaseDraw(object):
     """
     基本的绘图函数
     """
+
+    @classmethod
+    def init(cls):
+        global eclient_server
+        eclient_server = EClientApi(plugin_title_list=['video-main', 'front-ipm', 'video-sub1', 'video-sub2', 'video-sub3'],
+                   msg_queue=send_queue)
+        eclient_server.start()
 
     # **************************** 事件方法 ****************************
 
@@ -418,3 +424,7 @@ class BaseDraw(object):
     @classmethod
     def clear(cls, plugin):
         eclient_server.send_data({'type': 'clear', "plugin": plugin})
+
+    @classmethod
+    def close(cls):
+        eclient_server.close()
