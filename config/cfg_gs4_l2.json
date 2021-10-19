@@ -20,7 +20,7 @@
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d5", "can0": "d1_fusion", "can1": "mu_f"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d6", "can0": "a1j", "can1": "mu_r"}},
                 {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d7", "can0": "blank", "can1": "gs4"}},
-                {"model":  "can_gw_mqtt", "params": {"can1": "bosch_mrr", "can2": "bosch_r", "can2": "bosch_f", "can4": "blank"}},
+                {"model":  "can_gw_nn", "params": {"can1": "bosch_mrr", "can2": "bosch_r", "can3": "bosch_f", "can4": "blank"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
                 {"model":  "a1j", "params": {"mac":  "6a:92:53:df:97:00", "is_main":  true}},
                 {"model":  "cv22_novid", "params": {"mac":  "6a:92:52:69:87:00"}},

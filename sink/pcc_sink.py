@@ -508,8 +508,10 @@ class CANCollectSink(NNSink):
             self.source.append(source)              # 来源列表
             self.chlist[t['idx']] = t.copy()
             self.chlist[t['idx']]['source'] = source
-            self.chlist[t['idx']]['parser'] = parsers_dict.get(t["dbc"], parsers_dict["default"])
-            # print(self.chlist[t['idx']])
+            if isinstance(t["dbc"], list):
+                self.chlist[t['idx']]['parsers'] = t["dbc"]
+            else:
+                self.chlist[t['idx']]['parsers'] = [t["dbc"]]
 
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
@@ -537,22 +539,17 @@ class CANCollectSink(NNSink):
         if not self.parse_event.is_set():
             return
 
-        parser = self.chlist[channel]["parser"]
-        # parser = self.parser[msg_type]
-        source = self.source[channel]
-        ret = parser(can_id, data, self.context[source])
-        # print(ret)
-        if ret is None:
-            return None
-
-        if isinstance(ret, list):
-            for obs in ret:
-                obs['ts'] = timestamp
-                obs['source'] = source
-        else:
-            ret['ts'] = timestamp
-            ret['source'] = source
-        return can_id, ret, self.context[source]["source"]
+        # 添加到解析队列
+        decode_msg = {
+            "type": "can",
+            "index": self.index,
+            "data": data,
+            "source":  '{}.{}-{}'.format(self.chlist[channel]["parsers"], self.index, channel),
+            "parsers": self.chlist[channel]["parsers"],
+            "cid": can_id,
+            "ts": timestamp
+        }
+        return can_decode(decode_msg)
 
 
 class MQTTSink(NNSink):
@@ -566,15 +563,12 @@ class MQTTSink(NNSink):
         self.fileHandler = fileHandler
         self.can_list = can_list  # 四个端口的信号类型列表
         self.parser = {}
-        for ch in can_list:
-            t = can_list[ch]
-            self.parser[t["dbc"]] = parsers_dict.get(t["dbc"], parsers_dict["default"])
 
-        self.source = []
+        self.parser_list = []
         self.context = {}
         self.log_types = {}
         self.parse_event = Event()
-        self.parse_event.set()
+        # self.parse_event.set()
 
         self.client = mqtt.Client(cid)
 
@@ -588,17 +582,17 @@ class MQTTSink(NNSink):
 
     def init_env(self):
         # 根据传入四个端口信号进行初始化相关环境
-
         for ch in self.can_list:
             t = self.can_list[ch]
-            source = '{}.{}.{}.{}'.format(t.get('origin_device', self.device), self.index, ch, t['dbc'])
-            self.source.append(source)
-            # self.log_types["can{}".format(i)] = source  # 写入日志的信号名
-            self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}  # 解析用的变量空间
-            # self.source.append(source)  # 来源列表
-            self.topic_list[t['topic']] = self.can_list[ch]
-            self.topic_list[t['topic']]['name'] = ch
-            self.topic_list[t['topic']]['source'] = source
+            if isinstance(t["dbc"], list):
+                for d in t["dbc"]:
+                    source = '{}.{}.{}.{}'.format(t.get('origin_device', self.device), self.index, ch, d)
+                    self.parser[d] = source
+                    self.parser_list.append(d)
+            else:
+                source = '{}.{}.{}.{}'.format(t.get('origin_device', self.device), self.index, ch, t["dbc"])
+                self.parser[t["dbc"]] = source
+                self.parser_list.append(t["dbc"])
 
     def _init_port(self):
         # print('mqtt connecting', self.ip)
@@ -613,7 +607,7 @@ class MQTTSink(NNSink):
 
     def run(self):
         pid = os.getpid()
-        print('mqtt sink {} pid:'.format(self.source), pid)
+        print('mqtt sink {} pid:'.format(self.parser_list), pid)
         self._init_port()
         self.client.loop_forever()
 
@@ -646,37 +640,17 @@ class MQTTSink(NNSink):
         if not self.parse_event.is_set():
             return
 
-        parser = self.parser[t["dbc"]]
-        ret = parser(can_id, can_data, self.context[source])
-        # now = time.time()
-        # self.mq_time += now - self.mq_last_time
-        # self.mq_last_time = now
-        # self.mq_count += 1
-        # print("avg time:", self.mq_time/self.mq_count)
-        # print(timestamp, '0x%x' % can_id,  can_data.hex(), ret)
-
-        if ret is None:
-            return None
-
-        if isinstance(ret, list):
-            for obs in ret:
-                obs['ts'] = timestamp
-        else:
-            ret['ts'] = timestamp
-        # print(ret)
-        if isinstance(ret, list):
-            # print('r is list')
-            for obs in ret:
-                obs['ts'] = timestamp
-                obs['source'] = source
-                # print(obs)
-        else:
-            # print('r is not list')
-            ret['ts'] = timestamp
-            ret['source'] = source
-
-        self.mq.put((can_id, ret, source))
-        # return can_id, ret, source
+        # 添加到解析队列
+        decode_msg = {
+            "type": "can",
+            "index": self.index,
+            "data": data,
+            "source": '{}.{}-{}'.format(topic, self.index, channel),
+            "parsers": topic,
+            "cid": can_id,
+            "ts": timestamp
+        }
+        return can_decode(decode_msg)
 
 
 class CANSink(NNSink):
@@ -696,7 +670,7 @@ class CANSink(NNSink):
         else:
             self.parsers = [topics]
 
-        print('CANSink initialized.', self.type, ip, port, self.parser[0].__name__)
+        print('CANSink initialized.', self.type, ip, port, self.parsers)
 
     def pkg_handler(self, msg):
         # can信号基本信息解析
