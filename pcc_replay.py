@@ -8,7 +8,6 @@
 # @Desc    : log replayer for collected data
 import argparse
 import logging
-import os.path
 from multiprocessing import Process, Manager, freeze_support, Event
 from turbojpeg import TurboJPEG
 
@@ -129,14 +128,15 @@ class LogPlayer(Process):
         self.daemon = True
         self.exit = Event()
         self.bin_rf = {}  # bin文件对象集合
-        self.x1_parser = None
         self.start_frame = int(start_frame) if start_frame else 0
         self.end_frame = int(end_frame) if end_frame else 9999999999999
         self.start_time = int(start_time) if start_time else 0
         self.end_time = int(end_time) if end_time else 9999999999999
         self.time_aligned = True
         self.log_path = log_path
-        self.jpeg_extractor = None          # 视频图片提取生成器
+        self.jpeg_extractor = {}          # 视频图片提取生成器集合
+        self.x1_parser = {}                 # pcv数据字典
+        self.log_keyword = {}               #
 
         self.shared = Manager().dict()
         self.shared["ready"] = False  # 播放前的数据是否加载完成
@@ -159,13 +159,7 @@ class LogPlayer(Process):
         self.paused_t = 0
         self.nosort = nosort
 
-        self.chmain = chmain
-        if chmain:
-            self.video_dir = chmain
-            self.video_log_key = chmain
-        else:
-            self.video_dir = "video"
-            self.video_log_key = "camera"
+        self.main_video = chmain if chmain else 'camera'
 
     def init_env(self):
         self.shared['init_time'] = time.time()
@@ -183,23 +177,7 @@ class LogPlayer(Process):
                     continue
                 done = True
 
-        # 初始化视频图片生成器
-        self.jpeg_extractor = jpeg_extractor(os.path.dirname(self.log_path) + '/' + self.video_dir)
-
-        # 初始化主设备
-        main_dev = get_main_dev(self.log_path)
-        if self.chmain:
-            idx = int(self.chmain.split(".")[-1])
-            for f in self.cfg.configs:
-                if f.get("idx") == idx:
-                    main_dev = f
-                    break
-        x1_log = os.path.dirname(self.log_path) + "/" + main_dev['type'] + "." + str(main_dev['idx']) + '/pcv_log.txt'
-        logger.debug("main dev:{} dev type:{}".format(main_dev, main_dev['type']))
-        if main_dev and "algo" in main_dev['type'] and os.path.exists(x1_log):
-            self.x1_parser = PcvParser(open(x1_log))
-
-        # 统计can设备类型
+        # 处理配置文件对应的log关键词
         for idx, cfg in enumerate(self.cfg.configs):
             if 'can_types' in cfg:
                 cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
@@ -316,40 +294,42 @@ class LogPlayer(Process):
                 continue
 
             # 视频数据处理
-            if cols[2] == self.video_log_key:
+            if self.jpeg_extractor.get(cols[2]):
                 frame_id = int(cols[3])
-                self.now_frame_id = frame_id
 
                 # 取出视频画面图片
                 try:
-                    fid, jpg = next(self.jpeg_extractor)
+                    fid, jpg = next(self.jpeg_extractor[cols[2]])
                 except StopIteration as e:
                     logger.warning('images run out.')
                     return
                 if fid and fid != frame_id:
                     print(bcl.FAIL + 'raw fid differs from log:' + bcl.ENDC, fid, frame_id)
 
-                # 如果当前帧数跟开始帧数不对，进行快进同步处理
-                if self.now_frame_id < self.start_frame:
-                    logger.warning('fid from log drop backward {} {}'.format(self.now_frame_id, self.start_frame))
-                    while self.now_frame_id < self.start_frame:
-                        line = rf.readline().strip()
-                        if line == "":
-                            continue
-
-                        cols = line.split(' ')
-                        if cols[2] == self.video_log_key:
-                            self.now_frame_id = int(cols[3])
-                            _, jpg = next(self.jpeg_extractor)
-                if jpg is None:
+                if cols[2] == self.main_video:
+                    # 更新主视频的帧数
                     self.now_frame_id = frame_id
-                    continue
+                    # 如果当前帧数跟开始帧数不对，进行跳过同步处理
+                    if self.now_frame_id < self.start_frame:
+                        logger.warning('fid from log drop backward {} {}'.format(self.now_frame_id, self.start_frame))
+                        while self.now_frame_id < self.start_frame:
+                            line = rf.readline().strip()
+                            if line == "":
+                                continue
+
+                            cols = line.split(' ')
+                            if cols[2] == self.main_video:
+                                frame_id = int(cols[3])
+                                _, jpg = next(self.jpeg_extractor)
+                                if jpg is None:
+                                    self.now_frame_id = frame_id
 
                 r = {'ts': ts, 'img': jpg, 'is_main': True, 'source': 'video', 'type': 'video'}
-                self.put_sink((frame_id, r, 'camera'))
+                sink_source = 'camera' if cols[2] == self.main_video else cols[2]
+                self.put_sink((frame_id, r, sink_source))
 
-                if self.x1_parser:
-                    res = self.x1_parser.get_frame(frame_id)
+                if self.x1_parser.get(cols[2]):
+                    res = self.x1_parser[cols[2]].get_frame(frame_id)
                     if res:
                         res['ts'] = ts
                         res['source'] = 'x1_data'
