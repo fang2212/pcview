@@ -5,7 +5,7 @@ db_spp = cantools.database.load_file('dbc/SPP_CAN_v96.dbc', strict=False)
 
 spp_lane = {}
 spp_statue = {}
-spp_type = ["Invalid", "LLM_Only", "RLM_Only", "BLM_Only", "PO_Only", "PO_and_LLM", "PO_and_RLM", "PO_and_BLM", "Reserved"]
+spp_type = ["Invalid", "LLM_Only", "RLM_Only", "BLM_Only", "PO_Only", "PO_and_LLM", "PO_and_RLM", "PO_and_BLM", "Reserved", "Unknown"]
 
 
 def parser_gs4(id, buf, ctx=None):
@@ -40,7 +40,7 @@ def parser_gs4(id, buf, ctx=None):
             "type": "status",
             "source": ctx.get("source"),
             "status_show": [
-                {"text": "Spp Type:{}".format(spp_type[r["SP_type"]])},
+                {"text": "Spp Type:{}".format(spp_type[9 if r["SP_type"] >= 9 else r["SP_type"]])},
                 {"text": "Spp st:{}, conf:{}".format(r["SP_status"], r["SP_conf"])},
                 {"text": "LT:{}  RT:{}  BL:{}".format(spp_statue.get("lt", 0), spp_statue.get("rt", 0), spp_statue.get("bl", 0))},
                 {"text": "PO id:{}, st:{}".format(spp_statue.get("pid", 0), spp_statue.get('po_st', 0))},

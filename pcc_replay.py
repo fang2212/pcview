@@ -210,20 +210,29 @@ class LogPlayer(Process):
                 if len(cfg['can_types']['can1']) > 0:
                     self.msg_types.append([cantypes1])
             elif 'msg_types' in cfg:
-                if cfg["type"] != "can_collector":
-                    # print(cfg)
-                    if 'can0' in cfg['ports']:
-                        if isinstance(cfg['ports']['can0']['topic'], list):
-                            topic = cfg['ports']['can0']['topic']
+                for keyword in cfg['ports']:
+                    if 'can' in keyword and cfg['ports'][keyword].get("enable"):
+                        # dbc解析字段是后面加的 如果没有的话说明是老版本字段topic
+                        parser_name = cfg['ports'][keyword].get('dbc') or cfg['ports'][keyword].get('topic')
+                        if not parser_name:
+                            continue
+
+                        if isinstance(parser_name, list):
+                            topic = parser_name
                         else:
-                            topic = [cfg['ports']['can0']['topic']]
-                        self.can_types['CAN' + '{:01d}'.format(idx * 2)] = {'topic': topic, 'index': idx}
-                    if 'can1' in cfg['ports']:
-                        if isinstance(cfg['ports']['can1']['topic'], list):
-                            topic = cfg['ports']['can1']['topic']
+                            topic = [parser_name]
+
+                        if cfg["type"] != "can_collector":
+                            # 旧版本字段需要进行字段映射来寻找解析方法
+                            can_key = 'CAN' + '{:01d}'.format(idx * 2) if keyword == 'can0' else 'CAN' + '{:01d}'.format(idx * 2+1)
+                            self.can_types[can_key] = {'parsers': topic, 'index': idx}
                         else:
-                            topic = [cfg['ports']['can1']['topic']]
-                        self.can_types['CAN' + '{:01d}'.format(idx * 2 + 1)] = {'topic': topic, 'index': idx}
+                            # 新版本字段仅用来判断是否需要解析
+                            for t in topic:
+                                self.can_types['{}.{}.{}.{}'.format(cfg.get('origin_device', cfg['ports'][keyword].get('origin_device')), idx, keyword, t)] = {
+                                    "parsers": topic, "index": idx}
+        for i in self.can_types:
+            logger.warning("{} | {}".format(i.ljust(20), self.can_types[i]['parsers']))
 
         self.shared['ready'] = True
 
@@ -350,12 +359,11 @@ class LogPlayer(Process):
                     data = bytes().fromhex(cols[4])
                 else:
                     data = b''.join([int(x, 16).to_bytes(1, 'little') for x in cols[4:]])
-
                 decode_msg = {
                     "type": "can",
                     "index": self.can_types[msg_type]['index'],
                     "data": data,
-                    "parsers": self.can_types[msg_type]['topic'],
+                    "parsers": self.can_types[msg_type]['parsers'],
                     "cid": int(cols[3], 16),
                     "ts": ts
                 }
@@ -363,6 +371,9 @@ class LogPlayer(Process):
                 if data:
                     self.put_sink(data)
             elif 'can' in cols[2]:      # 新can source数据格式
+                if not self.can_types.get(cols[2]):     # 判断是否需要解析
+                    continue
+
                 info_list = cols[2].split('.')
                 index = info_list[1]
                 dbc = info_list[3]
