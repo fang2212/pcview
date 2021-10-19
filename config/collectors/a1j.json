@@ -63,6 +63,38 @@
       "topic": "calib_params,files",
       "save": "bin"
     },
+    "rf_data": {
+      "enable": true,
+      "port": 24015,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "rf_data",
+      "save": "bin"
+    },
+    "corner_radar_data": {
+      "enable": true,
+      "port": 24015,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "corner_radar_data",
+      "save": "bin"
+    },
+    "files": {
+      "enable": true,
+      "port": 24015,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "files",
+      "save": "bin"
+    },
+    "tsl_data": {
+      "enable": true,
+      "port": 24015,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "tsl_data",
+      "save": "bin"
+    },
     "fusion_LaneAccimg": {
       "enable": true,
       "port": 10222,
