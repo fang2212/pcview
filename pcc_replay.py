@@ -8,6 +8,7 @@
 # @Desc    : log replayer for collected data
 import argparse
 import logging
+import os.path
 from multiprocessing import Process, Manager, freeze_support, Event
 from turbojpeg import TurboJPEG
 
@@ -441,8 +442,14 @@ class LogPlayer(Process):
 
             elif 'q4_100' in cols[2]:
                 if cols[2] not in self.bin_rf:
-                    self.bin_rf[cols[2]] = open(os.path.join(os.path.dirname(self.log_path), cols[2], cols[2] + ".bin"),
-                                                "rb")
+                    dir_path = os.path.join(os.path.dirname(self.log_path), cols[2])
+                    if os.path.exists(os.path.join(dir_path, cols[2] + ".bin")):
+                        self.bin_rf[cols[2]] = open(os.path.join(dir_path, cols[2] + ".bin"), "rb")
+                    elif os.path.exists(os.path.join(dir_path, cols[2].split(".")[0] + ".bin")):
+                        self.bin_rf[cols[2]] = open(os.path.join(dir_path, cols[2].split(".")[0] + ".bin"), "rb")
+                    else:
+                        continue
+
                 sz = int(cols[3])
                 buf_string = self.bin_rf[cols[2]].read(sz)
 
