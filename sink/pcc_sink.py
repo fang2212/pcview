@@ -502,16 +502,14 @@ class CANCollectSink(NNSink):
         for port in self.can_list:
             t = self.can_list[port]
             source = '{}.{}.{}.{}'.format(t.get("origin_device", self.device), self.index, port, t["dbc"] if t.get('dbc') else 'none')
-            channel = t['idx']
-            self.log_types[channel] = source                                                     # 写入日志的信号名
             self.context[source] = {"source": "{}.{}".format(t["dbc"], self.index)}         # 解析用的变量空间
             self.source.append(source)              # 来源列表
-            self.chlist[t['idx']] = t.copy()
-            self.chlist[t['idx']]['source'] = source
+            self.chlist[port] = t.copy()
+            self.chlist[port]['source'] = source
             if isinstance(t["dbc"], list):
-                self.chlist[t['idx']]['parsers'] = t["dbc"]
+                self.chlist[port]['parsers'] = t["dbc"]
             else:
-                self.chlist[t['idx']]['parsers'] = [t["dbc"]]
+                self.chlist[port]['parsers'] = [t["dbc"]]
 
     def pkg_handler(self, msg):
         msg = memoryview(msg).tobytes()
@@ -521,7 +519,7 @@ class CANCollectSink(NNSink):
 
         # print(msg)
         channel = msg[2]
-        source = self.chlist[channel]['source']
+        source = self.chlist["can{}".format(channel+1)]['source']
         dlc = msg[3]
         can_id = int.from_bytes(msg[4:8], byteorder="little", signed=False)
         timestamp = struct.unpack('<d', msg[8:16])[0]
@@ -544,8 +542,8 @@ class CANCollectSink(NNSink):
             "type": "can",
             "index": self.index,
             "data": data,
-            "source":  '{}.{}-{}'.format(self.chlist[channel]["parsers"], self.index, channel),
-            "parsers": self.chlist[channel]["parsers"],
+            "num": channel,
+            "parsers": self.chlist["can{}".format(channel+1)]["parsers"],
             "cid": can_id,
             "ts": timestamp
         }
@@ -645,7 +643,7 @@ class MQTTSink(NNSink):
             "type": "can",
             "index": self.index,
             "data": data,
-            "source": '{}.{}-{}'.format(topic, self.index, channel),
+            "num": channel,
             "parsers": topic,
             "cid": can_id,
             "ts": timestamp

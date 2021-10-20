@@ -235,6 +235,8 @@ class Hub(Thread):
             can_list = {}
             transport = cfg.get('transport')
             for iface in cfg['ports']:
+                if not cfg['ports'][iface].get('enable'):
+                    continue
                 if cfg["ports"][iface].get("transport"):
                     transport = cfg["ports"][iface].get("transport")
                 if "can" in iface:
@@ -253,7 +255,7 @@ class Hub(Thread):
                 self.online[ip_type]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
         elif "collector" in cfg.get('type'):
             for iface in cfg['ports']:
-                if not cfg['ports'][iface].get('enable') and not is_main:
+                if not cfg['ports'][iface].get('enable'):
                     continue
                 if 'can' in iface:
                     chn = cfg['ports'][iface]

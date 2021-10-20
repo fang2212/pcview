@@ -20,13 +20,16 @@ def can_decode(msg):
     source = msg.get("source")
     dbc = msg.get('dbc')
     can_id = msg.get("cid")
+    num = msg.get("num")
     timestamp = msg.get("ts")
 
     if not parsers:
         return
 
     for parser in parsers:
-        source = source or '{}.{:d}'.format(parser, index)
+        source = '{}.{:d}'.format(parser, index)
+        if num is not None:
+            source = "{}-{}".format(source, num)
         if not context.get(source):
             context[source] = {"source": source}
         ret = parsers_dict.get(parser, parsers_dict['default'])(can_id, data, context[source])

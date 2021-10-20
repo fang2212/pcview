@@ -64,7 +64,7 @@ class FileHandler(Process):
         self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')           # 视频编码
         self.recording_state = Value('i', 0)                    # 录制状态
         self.__start_time = Value("d", 0)                       # 开始录制时间
-        self.__fid = Value("L", 0)                              # 视频帧数
+        self.__fid = Value("L", 0)                              # 视频帧id
 
         self.redirect = redirect
 
@@ -193,7 +193,9 @@ class FileHandler(Process):
 
                 self.video_streams[source] = {
                     'video_path': video_path,
+                    'video_name': "",
                     'frame_cnt': 0,
+                    "frame_num": 0,         # 视频帧数
                     'frame_reset': True,
                     'video_writer': None
                 }
@@ -201,8 +203,8 @@ class FileHandler(Process):
             if self.video_streams[source]['frame_cnt'] % self._max_cnt == 0 or self.video_streams[source]['frame_reset']:
                 self.video_streams[source]['frame_reset'] = False
                 self.video_streams[source]['frame_cnt'] = 0
-                video_path = os.path.join(self.video_streams[source]['video_path'],
-                                          'camera_{:08d}.avi'.format(frame_id))
+                self.video_streams[source]['video_name'] = 'camera_{:08d}.avi'.format(frame_id)
+                video_path = os.path.join(self.video_streams[source]['video_path'], self.video_streams[source]['video_name'])
                 img = jpeg.decode(np.fromstring(data, np.uint8))
                 h, w, c = img.shape
                 now_fps = 20
@@ -215,6 +217,7 @@ class FileHandler(Process):
 
             self.video_streams[source]['video_writer'].write_frame(data)
             self.video_streams[source]['frame_cnt'] += 1
+            self.video_streams[source]['frame_num'] += 1
             self.write_video_log(msg)
 
     def record_video_log(self, msg):
@@ -229,7 +232,9 @@ class FileHandler(Process):
                     os.mkdir(video_path)
                 self.video_streams[source] = {
                     'video_path': video_path,
+                    'video_name': "",
                     'frame_cnt': 0,
+                    "frame_num": 0,         # 视频帧数
                     'frame_reset': True,
                     'video_writer': None
                 }
@@ -238,7 +243,9 @@ class FileHandler(Process):
             if self.video_streams[source]['frame_cnt'] % self._max_cnt == 0 or self.video_streams[source]['frame_reset']:
                 self.video_streams[source]['frame_reset'] = False
                 self.video_streams[source]['frame_cnt'] = 0
-                vpath = os.path.join(self.video_streams[source]['video_path'], 'camera_{:08d}.avi'.format(frame_id))
+                self.video_streams[source]['video_name'] = 'camera_{:08d}.avi'.format(frame_id)
+                video_path = os.path.join(self.video_streams[source]['video_path'],
+                                          self.video_streams[source]['video_name'])
                 print("video start over.", self.video_streams[source]['frame_cnt'], vpath)
                 if self.video_streams[source]['video_writer']:
                     if not self.isheadless:
@@ -248,12 +255,13 @@ class FileHandler(Process):
                         self.video_streams[source]['video_writer'].close()
 
                 if not self.isheadless:
-                    self.video_streams[source]['video_writer'] = cv2.VideoWriter(vpath, self.fourcc, 20.0, (w, h), True)
+                    self.video_streams[source]['video_writer'] = cv2.VideoWriter(video_path, self.fourcc, 20.0, (w, h), True)
                 else:
-                    self.video_streams[source]['video_writer'] = open(vpath, 'wb')
+                    self.video_streams[source]['video_writer'] = open(video_path, 'wb')
 
             self.video_streams[source]['video_writer'].write(data)
             self.video_streams[source]['frame_cnt'] += 1
+            self.video_streams[source]['frame_num'] += 1
             self.write_video_log(msg)
 
     def write_other_log(self, source, name, msg, bin=False):
@@ -279,7 +287,7 @@ class FileHandler(Process):
         tv_s = int(ts)
         tv_us = (ts - tv_s) * 1000000
         kw = 'camera' if msg['is_main'] else source
-        log_line = "%.10d %.6d " % (tv_s, tv_us) + kw + ' ' + '{}'.format(frame_id) + "\n"
+        log_line = "%.10d %.6d " % (tv_s, tv_us) + kw + ' ' + '{} {} {}'.format(frame_id, self.video_streams[source]['video_name'], self.video_streams[source]['frame_num']) + "\n"
         self.fid = frame_id
         # print(self.video_streams[source]['frame_cnt'])
         if self.log_fp:
