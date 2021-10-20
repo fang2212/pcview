@@ -145,6 +145,8 @@ class Hub(Thread):
             print('definition:', ol['defs_path'])
             for iface in ol['ports']:
                 topic = ol['ports'][iface].get('dbc', ol['ports'][iface].get('topic'))
+                if isinstance(topic, list):
+                    topic = ','.join(topic)
                 print('--', iface, topic + '.{}'.format(ol['idx']), ol['ports'][iface].get('port') or ol.get("port"),
                       'enabled' if ol['ports'][iface]['enable'] else bcl.FAIL + 'disabled' + bcl.ENDC)
         print(bcl.OKGR + '---------------- ----------------- ---------------' + bcl.ENDC)
