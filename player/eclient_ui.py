@@ -4,6 +4,7 @@ from player.eclient_websock_api import EClientApi
 from player.ui import CVColor
 from sink.eclient_websockets import Server
 from sink.mmap_queue import MMAPQueue
+from utils import logger
 
 recv_queue = MMAPQueue(1024*1024*3)
 send_queue = MMAPQueue(1024*1024*3)
@@ -21,9 +22,12 @@ class BaseDraw(object):
     @classmethod
     def init(cls):
         global eclient_server
-        eclient_server = EClientApi(plugin_title_list=['video-main', 'front-ipm', 'video-sub1', 'video-sub2', 'video-sub3'],
-                   msg_queue=send_queue)
-        eclient_server.start()
+        try:
+            eclient_server = EClientApi(plugin_title_list=['video-main', 'front-ipm', 'video-sub1', 'video-sub2', 'video-sub3'],
+                       msg_queue=send_queue)
+            eclient_server.start()
+        except Exception as e:
+            logger.exception(e)
 
     # **************************** 事件方法 ****************************
 

@@ -13,6 +13,7 @@ import websockets
 from colorlog import ColoredFormatter
 
 from sink.mmap_queue import MMAPQueue
+from utils import logger
 
 
 class WebsocketClient(Process):
@@ -78,29 +79,24 @@ class EClientApi(Process):
 
     def run(self):
         print("call SDK pid:", os.getpid())
-        while not self.exit.is_set():
-            msg = self.msg_queue.get(time_out=0.01)
-            if msg:
-                # print(msg)
-                # print(msg)
-                self.draw_msg(msg)
-        self.eClient.close()
-        # self.eClient.loop.run_until_complete(self.connet())
+        try:
+            while not self.exit.is_set():
+                msg = self.msg_queue.get(time_out=0.01)
+                if msg:
+                    self.draw_msg(msg)
+            self.eClient.close()
+        except Exception as e:
+            logger.exception(e)
 
     def send_data(self, msg):
         self.msg_queue.put(msg)
-        # self.draw_msg(msg)
 
     def draw_msg(self, msg):
         msg_type = msg.get('type')
         data = msg.get('data')
         plugin = msg.get("plugin")
-        #if msg_type != 'img':
-        #    print(msg)
-        #return
 
         if msg_type == 'img':
-            #print("img")
             image = self.eClient.createAttachment('shared-memory')
             offset = image.allocForWriting(len(data))
             image.finishWriting()
@@ -130,14 +126,6 @@ if __name__ == "__main__":
     parser.add_argument('--debug', "-d", action='store_true', help='调试模式', default=False)
     args = parser.parse_args()
 
-    logger = logging.getLogger(__name__)
-
-    LOGFORMAT = "%(log_color)s%(asctime)s  %(levelname)-8s%(reset)s | %(log_color)s%(message)s%(reset)s"
-    formatter = ColoredFormatter(LOGFORMAT, datefmt='%H:%M:%S')
-
-    fh = logging.StreamHandler()
-    # fh_formatter = logging.Formatter('%(asctime)s - %(levelname)s： %(message)s', datefmt='%H:%M:%S')
-    fh.setFormatter(formatter)
     # 初始化日志输出等级
     if args.debug:
         logger.setLevel(logging.DEBUG)

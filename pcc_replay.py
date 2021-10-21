@@ -275,15 +275,18 @@ class LogPlayer(Process):
         self.exit.set()
 
     def run(self):
-        logger.warning("log player starting, pid: {}".format(os.getpid()))
-        self._do_replay()
+        try:
+            logger.warning("log player starting, pid: {}".format(os.getpid()))
+            self._do_replay()
 
-        # 是否循环播放
-        if self.loop:
-            while True:
-                self._do_replay()
-                time.sleep(0.5)
-        logger.warning('log player exit replaying.')
+            # 是否循环播放
+            if self.loop:
+                while True:
+                    self._do_replay()
+                    time.sleep(0.5)
+            logger.warning('log player exit replaying.')
+        except Exception as e:
+            logger.exception(e)
 
     def _do_replay(self):
         self.init_env()
@@ -558,28 +561,24 @@ def start_replay(source_path, args):
 
 if __name__ == "__main__":
     # 初始化命令行方法
-    try:
-        parser = argparse.ArgumentParser(description="Replay CVE log.")
-        parser.add_argument('path', nargs='+', help="包含log.txt的路径，支持多个路径")
-        parser.add_argument('-o', '--output', default=False)
-        parser.add_argument('-r', '--render', action='store_true', help="是否保存回放渲染视频")
-        parser.add_argument('-ns', '--nosort', action="store_true")
-        parser.add_argument('-l', '--loop', action="store_true")
-        parser.add_argument('-w', '--web', action="store_true")
-        parser.add_argument('-s', '--send', action="store_true")
-        parser.add_argument('-sib', "--show_ipm_bg", action="store_true")
-        parser.add_argument('-sf', '--start_frame', default=0)
-        parser.add_argument('-ef', '--end_frame', default=None)
-        parser.add_argument('-st', '--start_time', default=0)
-        parser.add_argument('-et', '--end_time', default=None)
-        parser.add_argument('-ri', '--real_interval', action="store_true")
-        parser.add_argument('-e', '--eclient', action="store_true")
-        parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
-        parser.add_argument('-chmain', default=None, help="change main video")
-        args = parser.parse_args()
-    except Exception as e:
-        logger.error(e)
-        exit(1)
+    parser = argparse.ArgumentParser(description="Replay CVE log.")
+    parser.add_argument('path', nargs='+', help="包含log.txt的路径，支持多个路径")
+    parser.add_argument('-o', '--output', default=False)
+    parser.add_argument('-r', '--render', action='store_true', help="是否保存回放渲染视频")
+    parser.add_argument('-ns', '--nosort', action="store_true")
+    parser.add_argument('-l', '--loop', action="store_true")
+    parser.add_argument('-w', '--web', action="store_true")
+    parser.add_argument('-s', '--send', action="store_true")
+    parser.add_argument('-sib', "--show_ipm_bg", action="store_true")
+    parser.add_argument('-sf', '--start_frame', default=0)
+    parser.add_argument('-ef', '--end_frame', default=None)
+    parser.add_argument('-st', '--start_time', default=0)
+    parser.add_argument('-et', '--end_time', default=None)
+    parser.add_argument('-ri', '--real_interval', action="store_true")
+    parser.add_argument('-e', '--eclient', action="store_true")
+    parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
+    parser.add_argument('-chmain', default=None, help="change main video")
+    args = parser.parse_args()
 
     # 提供冻结以产生 Windows 可执行文件的支持
     freeze_support()
@@ -599,5 +598,8 @@ if __name__ == "__main__":
         logger.error("未识别到log路径")
 
     logger.debug("待回放的log路径：{}".format(log_path_list))
-    for path in log_path_list:
-        start_replay(path, args)
+    try:
+        for path in log_path_list:
+            start_replay(path, args)
+    except Exception as e:
+        logger.exception(e)
