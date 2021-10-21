@@ -74,25 +74,44 @@ class Statistics:
         # 初始化can关键词映射表
         if self.config:
             for idx, cfg in enumerate(self.log_config):
-                if cfg["type"] == "can_collector":
-                    for i in cfg["ports"]:
-                        if "can" in i:
-                            msg_type = cfg['ports'][i].get('topic') or cfg['ports'][i].get('dbc', '')
-                            source = '{}.{:01d}.{}.{}'.format(cfg["ports"][i].get("origin_device", cfg.get("origin_device", '')), idx, i, msg_type)
-                            if self.config.get(msg_type):
-                                self.config[source] = self.config.get(msg_type)
-                else:
-                    if 'can0' in cfg['ports']:
-                        msg_type = cfg['ports']['can0']['topic']
-                        self.topic_map['CAN' + '{:01d}'.format(idx * 2)] = msg_type
-                        if self.config.get(msg_type):
-                            self.config['CAN' + '{:01d}'.format(idx * 2)] = self.config.get(msg_type)
-                    if 'can1' in cfg['ports']:
-                        msg_type = cfg['ports']['can1']['topic']
-                        self.topic_map['CAN' + '{:01d}'.format(idx * 2 + 1)] = msg_type
-                        if self.config.get(msg_type):
-                            self.config['CAN' + '{:01d}'.format(idx * 2 + 1)] = self.config.get(msg_type)
+                for i in cfg["ports"]:
+                    if "can" in i:
+                        msg_type = cfg['ports'][i].get('dbc') or cfg['ports'][i].get('topic')
+                        if not msg_type:
+                            continue
+
+                        if cfg["type"] != "can_collector":
+                            # 旧版本字段需要进行字段映射来寻找解析方法
+                            can_key = 'CAN' + '{:01d}'.format(idx * 2) if i == 'can0' else 'CAN' + '{:01d}'.format(idx * 2+1)
+                            if isinstance(msg_type, list):
+                                # 单个CAN字段对应多个topic
+                                self.config[can_key] = {"multiple": True, 'topics': {}}
+                                self.topic_map[can_key] = '&'.join(msg_type)
+                                ids = []
+                                for t in msg_type:
+                                    if self.config.get(t):
+                                        if self.config[t].get("ids"):
+                                            ids += self.config[t].get("ids")
+                                        self.config[can_key]["topics"][t] = self.config.get(t)
+                                if ids:
+                                    self.config[can_key]['ids'] = ids
+                            else:
+                                if self.config.get(msg_type):
+                                    self.topic_map[can_key] = msg_type
+                                    self.config[can_key] = self.config.get(msg_type)
+                        else:
+                            # 新版本字段仅用来判断是否需要解析
+                            if isinstance(msg_type, list):
+                                topic = msg_type
+                            else:
+                                topic = [msg_type]
+                            for t in topic:
+                                can_key = '{}.{}.{}.{}'.format(
+                                    cfg.get('origin_device', cfg['ports'][i].get('origin_device')), idx, i, t)
+                                if self.config.get(t):
+                                    self.config[can_key] = self.config.get(t)
             logger.debug(self.config)
+            logger.debug(self.topic_map)
 
     def run(self):
         print("start:", self.log_path)
@@ -238,8 +257,10 @@ class Statistics:
         count = 0
         has_draw = False
         for can_id_data in data_list:
+            topic = None
             data_count = len(can_id_data)
             name = can_id_data[0].get('name', "")
+            cid = can_id_data[0].get('id', "")
             if data_count < 2:
                 continue
 
@@ -272,23 +293,37 @@ class Statistics:
             low_per = ""        # 低于周期系数
             height_per_count = ""   # 高于周期系数的数据量
             low_per_count = ""      # 低于周期系数的数据量
-            if self.config.get(name) and self.config.get(name).get("cycle"):
-                if self.config.get(name).get("height_per"):
-                    height_per = self.config.get(name).get("height_per")
-                    height_num = (self.config.get(name).get("cycle") * (1 + height_per/100)/1000)
-                    height_count = len(np.where(np_interval > height_num)[0])
-                    height_per_count = (height_count/data_count)*100
-                if self.config.get(name).get("low_per"):
-                    low_per = self.config.get(name).get("low_per")
-                    low_num = (self.config.get(name).get("cycle") * (1 - low_per/100)/1000)
-                    low_count = len(np.where(np_interval < low_num)[0])
-                    low_per_count = (low_count/data_count)*100
+
+            if self.config.get(name):
+                topic_config = None
+                if self.config[name].get("multiple") and cid:
+                    for t in self.config[name]['topics']:
+                        # 判断canid归属哪个topic配置
+                        if self.config[name]['topics'][t].get("ids") and cid in self.config[name]['topics'][t]['ids']:
+                            topic_config = self.config[name]['topics'][t]
+                            topic = t
+                            break
+                else:
+                    topic_config = self.config.get(name)
+
+                if topic_config and topic_config.get("cycle"):
+                    cycle_num = topic_config.get("cycle")
+                    if topic_config.get("height_per"):
+                        height_per = topic_config.get("height_per")
+                        height_num = (topic_config.get("cycle") * (1 + height_per/100)/1000)
+                        height_count = len(np.where(np_interval > height_num)[0])
+                        height_per_count = (height_count/data_count)*100
+                    if topic_config.get("low_per"):
+                        low_per = topic_config.get("low_per")
+                        low_num = (topic_config.get("cycle") * (1 - low_per/100)/1000)
+                        low_count = len(np.where(np_interval < low_num)[0])
+                        low_per_count = (low_count/data_count)*100
 
             # 将时间轴进行计算，通过减去最小值从0开始计算
             timestamp_list = [i-self.log_camera_start_ts for i in timestamp_list]
 
             # 写入到表格对象中
-            col_data = [self.topic_map.get(name, name), can_id_data[0].get('id', ""), data_count, int(avg_interval*1000), int(min_interval*1000), int(max_interval*1000), int(std_interval*1000), self.config.get(name, {}).get("cycle", ""), height_per, height_per_count, low_per, low_per_count]
+            col_data = [topic or self.topic_map.get(name, name), can_id_data[0].get('id', ""), data_count, int(avg_interval*1000), int(min_interval*1000), int(max_interval*1000), int(std_interval*1000), cycle_num, height_per, height_per_count, low_per, low_per_count]
             for i, d in enumerate(col_data):
                 self.excel_ws.cell(column=i + 1, row=self.excel_row_pos, value=d)
             self.excel_row_pos += 1

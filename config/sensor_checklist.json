@@ -72,6 +72,26 @@
         "ids": ["0x4b1", "0x4b2"],
         "cycle": 50
     },
+    "mu_fl": {
+        "type": "can",
+        "ids": ["0x4b1"],
+        "cycle": 50
+    },
+    "mu_fr": {
+        "type": "can",
+        "ids": ["0x4b2"],
+        "cycle": 50
+    },
+    "mu_rl": {
+        "type": "can",
+        "ids": ["0x4b3"],
+        "cycle": 50
+    },
+    "mu_rr": {
+        "type": "can",
+        "ids": ["0x4b4"],
+        "cycle": 50
+    },
     "mu_r": {
         "type": "can",
         "ids": ["0x4b3", "0x4b4"],
