@@ -27,7 +27,7 @@ def can_decode(msg):
         return
 
     for parser in parsers:
-        source = '{}.{:d}'.format(parser, index)
+        source = '{}.{}'.format(parser, index)
         if num is not None:
             source = "{}-{}".format(source, num)
         if not context.get(source):
