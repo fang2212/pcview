@@ -28,7 +28,7 @@ class FileHandler(Process):
         self.mq = MMAPQueue(1024*1024*1024)              # 记录数据队列
         self.running = True                         # 是否运行
 
-        self._max_cnt = 1200
+        self._max_cnt = 200
         self.__path = Array('c', b'0'*100)
 
         self.save_path = None                       # 日志保存路径
@@ -195,7 +195,6 @@ class FileHandler(Process):
                     'video_path': video_path,
                     'video_name': "",
                     'frame_cnt': 0,
-                    "frame_num": 0,         # 视频帧数
                     'frame_reset': True,
                     'video_writer': None
                 }
@@ -216,9 +215,8 @@ class FileHandler(Process):
                 print("video start over.", self.video_streams[source]['frame_cnt'], video_path)
 
             self.video_streams[source]['video_writer'].write_frame(data)
-            self.video_streams[source]['frame_cnt'] += 1
-            self.video_streams[source]['frame_num'] += 1
             self.write_video_log(msg)
+            self.video_streams[source]['frame_cnt'] += 1
 
     def record_video_log(self, msg):
         if self.save_path:
@@ -234,7 +232,6 @@ class FileHandler(Process):
                     'video_path': video_path,
                     'video_name': "",
                     'frame_cnt': 0,
-                    "frame_num": 0,         # 视频帧数
                     'frame_reset': True,
                     'video_writer': None
                 }
@@ -246,7 +243,7 @@ class FileHandler(Process):
                 self.video_streams[source]['video_name'] = 'camera_{:08d}.avi'.format(frame_id)
                 video_path = os.path.join(self.video_streams[source]['video_path'],
                                           self.video_streams[source]['video_name'])
-                print("video start over.", self.video_streams[source]['frame_cnt'], vpath)
+                print("video start over.", self.video_streams[source]['frame_cnt'], video_path)
                 if self.video_streams[source]['video_writer']:
                     if not self.isheadless:
                         self.video_streams[source]['video_writer'].release()
@@ -260,9 +257,8 @@ class FileHandler(Process):
                     self.video_streams[source]['video_writer'] = open(video_path, 'wb')
 
             self.video_streams[source]['video_writer'].write(data)
-            self.video_streams[source]['frame_cnt'] += 1
-            self.video_streams[source]['frame_num'] += 1
             self.write_video_log(msg)
+            self.video_streams[source]['frame_cnt'] += 1
 
     def write_other_log(self, source, name, msg, bin=False):
         """记录其他类型的消息日志"""
@@ -287,7 +283,7 @@ class FileHandler(Process):
         tv_s = int(ts)
         tv_us = (ts - tv_s) * 1000000
         kw = 'camera' if msg['is_main'] else source
-        log_line = "%.10d %.6d " % (tv_s, tv_us) + kw + ' ' + '{} {} {}'.format(frame_id, self.video_streams[source]['video_name'], self.video_streams[source]['frame_num']) + "\n"
+        log_line = "%.10d %.6d " % (tv_s, tv_us) + kw + ' ' + '{} {} {}'.format(frame_id, self.video_streams[source]['video_name'], self.video_streams[source]['frame_cnt']) + "\n"
         self.fid = frame_id
         # print(self.video_streams[source]['frame_cnt'])
         if self.log_fp:
