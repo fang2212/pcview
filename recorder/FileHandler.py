@@ -28,7 +28,7 @@ class FileHandler(Process):
         self.mq = MMAPQueue(1024*1024*1024)              # 记录数据队列
         self.running = True                         # 是否运行
 
-        self._max_cnt = 200
+        self._max_cnt = 1200
         self.__path = Array('c', b'0'*100)
 
         self.save_path = None                       # 日志保存路径
