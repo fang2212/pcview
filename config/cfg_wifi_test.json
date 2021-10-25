@@ -13,7 +13,7 @@
         "ego": {
             "enable": true,
             "collectors": [
-                {"model":  "q3_mdc", "params":  {"force_ip": true}}
+                {"model":  "tda4", "params":  {"force_ip": true}}
             ],
             "installation": {
                 "esr": {

@@ -759,7 +759,7 @@ class FlowSink(Sink):
 
         # 初始化解析流程
         if self.topic == '*':   # Q3华为mdc数据
-            if 24011 <= self.port <= 24017:     # mdc视频数据
+            if 24011 <= self.port <= 24017:     # h264视频数据
                 self.pkg_handler = self.mdc_video
             elif self.port == 26011:
                 self.pkg_handler = self.mdc_ts

@@ -1,0 +1,17 @@
+{
+  "type": "q3_algo",
+  "mac": "5a:31:d3:59:12:06",
+  "force_ip": false,
+  "ip": "192.168.1.233",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": true,
+      "port": 24014,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    }
+  }
+}
