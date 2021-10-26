@@ -28,6 +28,7 @@ detection_sensor = {
 }
 
 mrr_status = {}
+bosch_status = {}
 
 
 def bosch_mrr(cid, data, ctx=None):
@@ -103,40 +104,21 @@ def bosch_rl(cid, data, ctx=None):
 
         r = bosch_rl_db.decode_message(cid, data)
         if cid == 0x277:
-            mrr_status["status"] = r["FR5CP_FailureStatus"]
             if r["CR5CP_FLFailureSt"] != 'No failure':
-                print('CR5CP_FLFailureSt: '+r["CR5CP_FLFailureSt"])
-            if r['CR5CP_FRFailureSt'] != 'No failure':
-                print('CR5CP_FRFailureSt: '+ r["CR5CP_FRFailureSt"])
-            if r['CR5CP_RRFailureSt'] != 'No failure':
-                print('CR5CP_RRFailureSt: ' + r["CR5CP_RRFailureSt"])
+                bosch_status['fl_status'] = r["CR5CP_FLFailureSt"]
+            elif r['CR5CP_FRFailureSt'] != 'No failure':
+                bosch_status['fr_status'] = r["CR5CP_FRFailureSt"]
+            elif r['CR5CP_RRFailureSt'] != 'No failure':
+                bosch_status['rr_status'] = r["CR5CP_RRFailureSt"]
             if r['CR5CP_RLFailureSt'] != 'No failure':
-                print('CR5CP_RLFailureSt: ' + r["CR5CP_RLFailureSt"])
-        if cid == 0x27A:
-            print('CR5CP_RL_Obj_timestamp: {}'.format(r['CR5CP_RL_Obj_timestamp']))
-            if r['CR5CP_RL_Sensor_Dirty']:
-                print('CR5CP_RL_Sensor_Dirty: {}'.format(r['CR5CP_RL_Sensor_Dirty']))
-            if r['CR5CP_RL_SGU_Failure'] !='No failure':
-                print('CR5CP_RL_SGU_Failure : '+ r['CR5CP_RL_SGU_Failure'])
-        if cid == 0x268:
-            if r['CR5CP_RL_BLIND'] == 'Active':
-                print('CR5CP_RL_BLIND: '+ r['CR5CP_RL_BLIND'])
-            # if r['CR5CP_RL_Alig_Never_DONE'] == 'Active':
-            #     print('CR5CP_RL_Alig_Never_DONE: '+ r['CR5CP_RL_Alig_Never_DONE'])
-            # if r['CR5CP_RL_Alig_NOT_OK'] == 'Active':
-            #     print('CR5CP_RL_Alig_NOT_OK: '+ r['CR5CP_RL_Alig_NOT_OK'])
-            if r['CR5CP_RL_MisAlig'] == 'Active':
-                print('CR5CP_RL_MisAlig: '+ r['CR5CP_RL_MisAlig'])
-        if 0x337 <= cid <= 0x339 or cid == 0x343:
+                bosch_status['rl_status'] = r["CR5CP_RLFailureSt"]
+        elif 0x337 <= cid <= 0x339 or cid == 0x343:
             index = cid - 0x337
             index = 3 if index > 3 else index
             start_num = index * 4 + 1
             end_num = start_num + 4
-            # print('CR5CP_RLObj{}Locat:'.format(index+1)+' {}'.format(r['CR5CP_RLObj{}Locat_x'.format(index+1)])
-            #       +' {}'.format(r['CR5CP_RLObj{}Locat_y'.format(index+1)]) +' {}'.format(r['CR5CP_RLObj{}Locat_theta'.format(index+1)]))
             for i in range(start_num, end_num):
                 if r["CR5CP_RL_ObjExistProb_{}".format(i)] > 0:
-                    # print('CR5CP_RL_ObjExistProbr: {}'.format(r["CR5CP_RL_ObjExistProb_{}".format(i)]))
                     data = {
                         'type': 'obstacle',
                         'sensor': 'bosch',
@@ -146,8 +128,7 @@ def bosch_rl(cid, data, ctx=None):
                         'vel_lon': r["CR5CP_RL_ObjRelVelX_{}".format(i)],
                         'vel_lat': -r["CR5CP_RL_ObjRelVelY_{}".format(i)],
                         'accel_x':r["CR5CP_RL_ObjAccelX_{}".format(i)],
-                        'dyn_prop':0,
-                        'color': 1
+                        'dyn_prop': 0,
                     }
                     prob_exit = r["CR5CP_RL_ObjExistProb_{}".format(i)]
                     prob_obs= r["CR5CP_RL_ObjObstacleProb_{}".format(i)]
@@ -156,8 +137,38 @@ def bosch_rl(cid, data, ctx=None):
                     ret = {'type': 'obstacle', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
                            'angle': angle,
                            'range_rate': data['vel_lon'], 'v_lon': data['vel_lon'], 'v_lat': data['vel_lat'], 'power': data['accel_x'], 'dyn_prop':'dyn_prop_%03d' % data['dyn_prop'],
-                           'tgt_status': 'State_%07f' %(int(prob_exit*100)+prob_obs), 'color': 1}
-                    bosch_cr5cp_rl_obs.append(ret)
+                           'tgt_status': 'State_%07f' %(int(prob_exit*100)+prob_obs)}
+                    ctx['bosch_rl_obs'].append(ret)
+        elif 0x345 <= cid <= 0x348:
+            index = cid - 0x345
+            start_num = index * 4 + 1
+            end_num = start_num + 4
+            for i in range(start_num, end_num):
+                if r["CR5CP_RL_ObjNewExistProb_{}".format(i)] > 0:
+                    data = {
+                        'type': 'obstacle',
+                        'sensor': 'bosch',
+                        'id': r["CR5CP_RL_ObjNewID_{}".format(i)],
+                        'pos_lon': r["CR5CP_RL_ObjNewDistX_{}".format(i)],
+                        'pos_lat': -r["CR5CP_RL_ObjNewDistY_{}".format(i)],#需取反
+                        'vel_lon': r["CR5CP_RL_ObjNewRelVelX_{}".format(i)],
+                        'vel_lat': -r["CR5CP_RL_ObjNewRelVelY_{}".format(i)],#需取反
+                        'accel_x': r["CR5CP_RL_ObjNewAccelX_{}".format(i)],
+                        'dyn_prop': 1,
+                    }
+                    prob_exit = r["CR5CP_RL_ObjNewExistProb_{}".format(i)]
+                    prob_obs= r["CR5CP_RL_ObjNewObstacleProb_{}".format(i)]
+                    rr = sqrt(data['pos_lon']**2 + data['pos_lat']**2)
+                    angle = atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
+                    ret = {'type': 'obstacle', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
+                           'angle': angle,
+                           'range_rate': data['vel_lon'], 'v_lon': data['vel_lon'], 'v_lat': data['vel_lat'], 'power': data['accel_x'], 'dyn_prop':'dyn_prop_%03d' % data['dyn_prop'],
+                           'tgt_status': 'State_%07f' %(int(prob_exit*100)+prob_obs)}
+                    ctx['bosch_rl_obs'].append(ret)
+            if cid == 0x348:
+                r = ctx['bosch_rl_obs'].copy()
+                ctx['bosch_rl_obs'].clear()
+                return r
 
 if __name__ == "__main__":
     bosch_mrr(0x20a, bytes().fromhex("00000002004010068032000000000002004010068032000000000000000794e4"), {})
