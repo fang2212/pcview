@@ -213,25 +213,32 @@ class LogPlayer(Process):
             elif 'msg_types' in cfg:
                 for keyword in cfg['ports']:
                     if 'can' in keyword and cfg['ports'][keyword].get("enable"):
+                        # log.txt里面映射的字段，优先用topic，这样的话可以在回放的时候自由选择解析方式
+                        topics = cfg['ports'][keyword].get('topic') or cfg['ports'][keyword].get('dbc')
                         # dbc解析字段是后面加的 如果没有的话说明是老版本字段topic
                         parser_name = cfg['ports'][keyword].get('dbc') or cfg['ports'][keyword].get('topic')
                         if not parser_name:
                             continue
 
-                        if isinstance(parser_name, list):
-                            topic = parser_name
+                        if isinstance(topics, list):
+                            topics = topics
                         else:
-                            topic = [parser_name]
+                            topics = [topics]
+
+                        if isinstance(parser_name, list):
+                            parsers = parser_name
+                        else:
+                            parsers = [parser_name]
 
                         if cfg["type"] != "can_collector":
                             # 旧版本字段需要进行字段映射来寻找解析方法
                             can_key = 'CAN' + '{:01d}'.format(idx * 2) if keyword == 'can0' else 'CAN' + '{:01d}'.format(idx * 2+1)
-                            self.can_types[can_key] = {'parsers': topic, 'index': idx}
+                            self.can_types[can_key] = {'parsers': parsers, 'index': idx}
                         else:
                             # 新版本字段仅用来判断是否需要解析
-                            for t in topic:
+                            for i, t in enumerate(topics):
                                 self.can_types['{}.{}.{}.{}'.format(cfg.get('origin_device', cfg['ports'][keyword].get('origin_device')), idx, keyword, t)] = {
-                                    "parsers": topic, "index": idx}
+                                    "parsers": parsers, "index": idx}
         for i in self.can_types:
             logger.warning("{} | {}".format(i.ljust(20), self.can_types[i]['parsers']))
 
@@ -383,7 +390,7 @@ class LogPlayer(Process):
                 decode_msg = {
                     "type": "can",
                     "index": index,
-                    "parsers": [dbc],
+                    "parsers": self.can_types[cols[2]]['parsers'],
                     "source": '{}.{}-{}'.format(dbc, index, info_list[2].replace('can', '')),
                     "data": data,
                     "cid": int(cols[3], 16),
