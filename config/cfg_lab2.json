@@ -12,8 +12,8 @@
         "ego": {
             "enable": true,
             "collectors": [
-                {"model":  "can_gw_mqtt", "params": {"can1": "a1j", "can2": "gs4","can3": "ars","can4": "x1j","can5": "x1j","can6": "x1j","can7": "x1j","can8": "x1j"}},
-                {"model":  "x1_fusion", "params": {"mac":  "6a:92:53:e7:97:00","is_main" : true}},
+                {"model":  "can_gw_nn", "params": {"can1": "a1j", "can2": "a1j","can3": "a1j","can4": "a1j","can5": "ars410","can6": "ars410","can7": "ars410","can8": "ars410"}},
+                {"model":  "a1j", "params": {"mac":  "6a:92:53:e7:97:00","is_main" : true}},
                 {"model": "pim222"}
             ],
             "installation": {
@@ -58,7 +58,7 @@
                     "lat_offset": 0,
                     "roll": 0.0,
                     "height": 1.3,
-                    "lon_offset":0,
+                    "lon_offset":-1.6,
                     "cv": 560.1496
                 },
                 "x1": {

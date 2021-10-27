@@ -182,11 +182,13 @@ def parse_novatel(msg_type, msg, ctx):
     rsv = hfields[8]
     if not msg_type:
         msg_type = msg_name.lower()
+
     # except Exception as e:
     #     print('error when parsing novatel:', msg)
     #     raise e
 
     r = {}
+    r['type'] = msg_type
     r['ts'] = week * 604800 + sec + 315964800.0 - bds_offset
     # print(time.localtime(r['ts']))
 
