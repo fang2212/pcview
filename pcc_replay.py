@@ -9,6 +9,7 @@
 import argparse
 import logging
 import os.path
+import signal
 from multiprocessing import Process, Manager, freeze_support, Event
 from turbojpeg import TurboJPEG
 
@@ -26,6 +27,21 @@ from utils import logger, log_list_from_path
 
 
 jpeg = TurboJPEG()
+sub_processes = []
+
+
+def term(sig_num, addtion):
+    logger.warning('terminate process %d' % os.getpid())
+    try:
+        logger.warning('the processes is %s' % sub_processes)
+        for p in sub_processes:
+            if p:
+                logger.warning('process %d terminate' % p.pid)
+                p.terminate()
+            # os.kill(p.pid, signal.SIGKILL)
+    except Exception as e:
+        logger.exception(e)
+
 
 def jpeg_extractor(video_dir):
     """
@@ -541,6 +557,8 @@ def start_replay(source_path, args):
                          start_time=args.start_time, end_time=args.end_time, loop=args.loop,
                          real_interval=args.real_interval, chmain=chmain)
 
+    replay_hub.daemon = True
+
     if args.web:
         from video_server import PccServer
         server = PccServer()
@@ -553,10 +571,17 @@ def start_replay(source_path, args):
     else:
         pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, eclient=args.eclient)
         replay_hub.start()
+
+        # 控制子进程的退出
+        global sub_processes
+        sub_processes.append(replay_hub)
+        signal.signal(signal.SIGTERM, term)
+        
         pcc.start()
         replay_hub.join()
         print("replay_hub end join")
         pcc.control(ord('q'))
+    sub_processes = []
 
 
 if __name__ == "__main__":

@@ -25,6 +25,7 @@ class BaseDraw(object):
         try:
             eclient_server = EClientApi(plugin_title_list=['video-main', 'front-ipm', 'video-sub1', 'video-sub2', 'video-sub3'],
                        msg_queue=send_queue)
+            eclient_server.daemon = True
             eclient_server.start()
         except Exception as e:
             logger.exception(e)

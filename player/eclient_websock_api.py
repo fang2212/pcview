@@ -54,6 +54,7 @@ class EClientApi(Process):
 
     def __init__(self, plugin_title_list=None, msg_queue=None):
         super().__init__()
+        self.daemon = True
         self.msg_queue = msg_queue
         self.plugin_title_list = plugin_title_list or ['plugin-2DView-1']
         self.plugin_list = []
@@ -78,7 +79,7 @@ class EClientApi(Process):
                 self.plugin_request_list.append(self.plugin_request_dict[t])
 
     def run(self):
-        print("call SDK pid:", os.getpid())
+        logger.warning('{} pid:{}'.format("eclient".ljust(20), os.getpid()))
         try:
             while not self.exit.is_set():
                 msg = self.msg_queue.get(time_out=0.01)
@@ -97,6 +98,7 @@ class EClientApi(Process):
         plugin = msg.get("plugin")
 
         if msg_type == 'img':
+            # try:
             image = self.eClient.createAttachment('shared-memory')
             offset = image.allocForWriting(len(data))
             image.finishWriting()
@@ -104,6 +106,9 @@ class EClientApi(Process):
             if self.plugin_request_dict.get(plugin):
                 # print('img', plugin, msg)
                 self.plugin_request_dict.get(plugin).drawImage(image, 'jpg')
+            # except Exception as e:
+            #     # self.draw_msg(msg)
+            #     logger.exception(e)
         elif msg_type == 'submit':
             self.eClient.submitPluginRequests(self.plugin_request_list)
         elif msg_type == 'clear':

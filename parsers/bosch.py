@@ -15,6 +15,9 @@ bosch_fl_db = cantools.database.load_file('dbc/CR5CP_FL_SFCAN_Matrix_V1_20201202
 # can id列表
 ids = [m.frame_id for m in bosch_db.messages]
 ids_rl = [m.frame_id for m in bosch_rl_db.messages]
+ids_rr = [m.frame_id for m in bosch_rr_db.messages]
+ids_fl = [m.frame_id for m in bosch_fl_db.messages]
+ids_fr = [m.frame_id for m in bosch_fr_db.messages]
 
 cipv = {}
 cipp = {}
@@ -92,7 +95,7 @@ def bosch_mrr(cid, data, ctx=None):
 
 def bosch_rl(cid, data, ctx=None):
     """
-    前左角雷达
+    后左角雷达
     :param cid:
     :param data:
     :param ctx:
@@ -122,6 +125,7 @@ def bosch_rl(cid, data, ctx=None):
                     data = {
                         'type': 'obstacle',
                         'sensor': 'bosch',
+                        'sensor_type': 'radar',
                         'id': r["CR5CP_RL_ObjID_{}".format(i)],
                         'pos_lon': r["CR5CP_RL_ObjDistX_{}".format(i)],
                         'pos_lat': -r["CR5CP_RL_ObjDistY_{}".format(i)],
@@ -134,7 +138,7 @@ def bosch_rl(cid, data, ctx=None):
                     prob_obs= r["CR5CP_RL_ObjObstacleProb_{}".format(i)]
                     rr = sqrt(data['pos_lon']**2 + data['pos_lat']**2)
                     angle = atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
-                    ret = {'type': 'obstacle', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
+                    ret = {'type': 'radar', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
                            'angle': angle,
                            'range_rate': data['vel_lon'], 'v_lon': data['vel_lon'], 'v_lat': data['vel_lat'], 'power': data['accel_x'], 'dyn_prop':'dyn_prop_%03d' % data['dyn_prop'],
                            'tgt_status': 'State_%07f' %(int(prob_exit*100)+prob_obs)}
@@ -148,6 +152,7 @@ def bosch_rl(cid, data, ctx=None):
                     data = {
                         'type': 'obstacle',
                         'sensor': 'bosch',
+                        'sensor_type': 'radar',
                         'id': r["CR5CP_RL_ObjNewID_{}".format(i)],
                         'pos_lon': r["CR5CP_RL_ObjNewDistX_{}".format(i)],
                         'pos_lat': -r["CR5CP_RL_ObjNewDistY_{}".format(i)],#需取反
@@ -160,7 +165,7 @@ def bosch_rl(cid, data, ctx=None):
                     prob_obs= r["CR5CP_RL_ObjNewObstacleProb_{}".format(i)]
                     rr = sqrt(data['pos_lon']**2 + data['pos_lat']**2)
                     angle = atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
-                    ret = {'type': 'obstacle', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
+                    ret = {'type': 'obstacle', 'sensor': 'bosch', 'sensor_type': 'radar', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
                            'angle': angle,
                            'range_rate': data['vel_lon'], 'v_lon': data['vel_lon'], 'v_lat': data['vel_lat'], 'power': data['accel_x'], 'dyn_prop':'dyn_prop_%03d' % data['dyn_prop'],
                            'tgt_status': 'State_%07f' %(int(prob_exit*100)+prob_obs)}
@@ -169,6 +174,233 @@ def bosch_rl(cid, data, ctx=None):
                 r = ctx['bosch_rl_obs'].copy()
                 ctx['bosch_rl_obs'].clear()
                 return r
+
+
+def bosch_rr(cid, data, ctx=None):
+    """
+    后右角雷达
+    :param cid:
+    :param data:
+    :param ctx:
+    :return:
+    """
+    if cid in ids_rr:
+        if not ctx.get('bosch_rr_obs'):
+            ctx['bosch_rr_obs'] = list()
+
+        r = bosch_rr_db.decode_message(cid, data)
+        if 0x33A <= cid <= 0x33C or cid == 0x344:
+            index = cid - 0x33A
+            index = 3 if index > 3 else index
+            start_num = index * 4 + 1
+            end_num = start_num + 4
+            for i in range(start_num, end_num):
+                if r["CR5CP_RR_ObjExistProb_{}".format(i)] > 0:
+                    # print('CR5CP_RR_ObjExistProb {}: '.format(r["CR5CP_RR_ObjExistProb_{}".format(i)]))
+                    data = {
+                        'type': 'obstacle',
+                        'sensor': 'bosch',
+                        'sensor_type': 'radar',
+                        'id': r["CR5CP_RR_ObjID_{}".format(i)]+100,
+                        'pos_lon': r["CR5CP_RR_ObjDistX_{}".format(i)],
+                        'pos_lat': -r["CR5CP_RR_ObjDistY_{}".format(i)],#需取反
+                        'vel_lon': r["CR5CP_RR_ObjRelVelX_{}".format(i)],
+                        'vel_lat': -r["CR5CP_RR_ObjRelVelY_{}".format(i)],#需取反
+                        'accel_x':r["CR5CP_RR_ObjAccelX_{}".format(i)],
+                        'dyn_prop':10,
+                    }
+                    prob_exit = r["CR5CP_RR_ObjExistProb_{}".format(i)]
+                    prob_obs= r["CR5CP_RR_ObjObstacleProb_{}".format(i)]
+                    rr = sqrt(data['pos_lon']**2 + data['pos_lat']**2)
+                    angle = atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
+                    ret = {'type': 'obstacle', 'sensor': 'bosch', 'sensor_type': 'radar', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
+                           'angle': angle,
+                           'range_rate': data['vel_lon'], 'v_lon': data['vel_lon'], 'v_lat': data['vel_lat'], 'power': data['accel_x'], 'dyn_prop':'dyn_prop_%03d' % data['dyn_prop'],
+                           'tgt_status': 'State_%07f' %(int(prob_exit*100)+prob_obs)}
+                    ctx['bosch_rr_obs'].append(ret)
+        if 0x349 <= cid <= 0x34B or cid == 0x34D:
+            index = cid - 0x349
+            index = 3 if index > 3 else index
+            start_num = index * 4 + 1
+            end_num = start_num + 4
+            for i in range(start_num, end_num):
+                if r["CR5CP_RR_ObjNewExistProb_{}".format(i)] > 0:
+                    data = {
+                        'type': 'obstacle',
+                        'sensor': 'bosch',
+                        'sensor_type': 'radar',
+                        'id': r["CR5CP_RR_ObjNewID_{}".format(i)] + 100,
+                        'pos_lon': r["CR5CP_RR_ObjNewDistX_{}".format(i)],
+                        'pos_lat': -r["CR5CP_RR_ObjNewDistY_{}".format(i)],#需取反
+                        'vel_lon': r["CR5CP_RR_ObjNewRelVelX_{}".format(i)],
+                        'vel_lat': -r["CR5CP_RR_ObjNewRelVelY_{}".format(i)],#需取反
+                        'accel_x':r["CR5CP_RR_ObjNewAccelX_{}".format(i)],
+                        'dyn_prop':11,
+                    }
+                    prob_exit = r["CR5CP_RR_ObjNewExistProb_{}".format(i)]
+                    prob_obs= r["CR5CP_RR_ObjNewObstacleProb_{}".format(i)]
+                    rr = sqrt(data['pos_lon']**2 + data['pos_lat']**2)
+                    angle = atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
+                    ret = {'type': 'obstacle', 'sensor': 'bosch', 'sensor_type': 'radar', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
+                           'angle': angle,
+                           'range_rate': data['vel_lon'], 'v_lon': data['vel_lon'], 'v_lat': data['vel_lat'], 'power': data['accel_x'], 'dyn_prop':'dyn_prop_%03d' % data['dyn_prop'],
+                           'tgt_status': 'State_%07f' %(int(prob_exit*100)+prob_obs)}
+                    ctx['bosch_rr_obs'].append(ret)
+        if cid == 0x34D:
+            r = ctx['bosch_rr_obs'].copy()
+            ctx['bosch_rr_obs'].clear()
+            return r
+
+
+def bosch_fl(cid, data, ctx=None):
+    """
+    前左角雷达
+    :param cid:
+    :param data:
+    :param ctx:
+    :return:
+    """
+    if cid in ids_fl:
+        if not ctx.get('bosch_fl_obs'):
+            ctx['bosch_fl_obs'] = list()
+
+        r = bosch_fl_db.decode_message(cid, data)
+        if 0x331 <= cid <= 0x333 or cid == 0x341:
+            index = cid - 0x331
+            index = 3 if index > 3 else index
+            start_num = index * 4 + 1
+            end_num = start_num + 4
+
+            for i in range(start_num, end_num):
+                if r["CR5CP_FL_ObjExistProb_{}".format(i)] > 0:
+                    data = {
+                        'type': 'obstacle',
+                        'sensor': 'bosch',
+                        'sensor_type': 'radar',
+                        'id': r["CR5CP_FL_ObjID_{}".format(i)],
+                        'pos_lon': r["CR5CP_FL_ObjDistX_{}".format(i)],
+                        'pos_lat': -r["CR5CP_FL_ObjDistY_{}".format(i)],
+                        'vel_lon': r["CR5CP_FL_ObjRelVelX_{}".format(i)],
+                        'vel_lat': -r["CR5CP_FL_ObjRelVelY_{}".format(i)],
+                        'accel_x':r["CR5CP_FL_ObjAccelX_{}".format(i)],
+                        'dyn_prop':0,
+                    }
+                    prob_exit = r["CR5CP_FL_ObjExistProb_{}".format(i)]
+                    prob_obs= r["CR5CP_FL_ObjObstacleProb_{}".format(i)]
+                    rr = sqrt(data['pos_lon']**2 + data['pos_lat']**2)
+                    angle = atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
+                    ret = {'type': 'obstacle', 'sensor': 'bosch', 'sensor_type': 'radar', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
+                           'angle': angle,
+                           'range_rate': data['vel_lon'], 'v_lon': data['vel_lon'], 'v_lat': data['vel_lat'], 'power': data['accel_x'], 'dyn_prop':'dyn_prop_%03d' % data['dyn_prop'],
+                           'tgt_status': 'State_%07f' %(int(prob_exit*100)+prob_obs)}
+                    ctx['bosch_fl_obs'].append(ret)
+        if 0x32C <= cid <= 0x32F:
+            index = cid - 0x32C
+            start_num = index * 4 + 1
+            end_num = start_num + 4
+            for i in range(start_num, end_num):
+                if r["CR5CP_FL_ObjNewExistProb_{}".format(i)] > 0:
+                    data = {
+                        'type': 'obstacle',
+                        'sensor': 'bosch',
+                        'sensor_type': 'radar',
+                        'id': r["CR5CP_FL_ObjNewID_{}".format(i)],
+                        'pos_lon': r["CR5CP_FL_ObjNewDistX_{}".format(i)],
+                        'pos_lat': -r["CR5CP_FL_ObjNewDistY_{}".format(i)],#需取反
+                        'vel_lon': r["CR5CP_FL_ObjNewRelVelX_{}".format(i)],
+                        'vel_lat': -r["CR5CP_FL_ObjNewRelVelY_{}".format(i)],#需取反
+                        'accel_x':r["CR5CP_FL_ObjNewAccelX_{}".format(i)],
+                        'dyn_prop':1,
+                    }
+                    prob_exit = r["CR5CP_FL_ObjNewExistProb_{}".format(i)]
+                    prob_obs= r["CR5CP_FL_ObjNewObstacleProb_{}".format(i)]
+                    rr = sqrt(data['pos_lon']**2 + data['pos_lat']**2)
+                    angle = atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
+                    ret = {'type': 'obstacle', 'sensor': 'bosch', 'sensor_type': 'radar', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
+                           'angle': angle,
+                           'range_rate': data['vel_lon'], 'v_lon': data['vel_lon'], 'v_lat': data['vel_lat'], 'power': data['accel_x'], 'dyn_prop':'dyn_prop_%03d' % data['dyn_prop'],
+                           'tgt_status': 'State_%07f' %(int(prob_exit*100)+prob_obs)}
+                    ctx['bosch_fl_obs'].append(ret)
+        if cid == 0x32F:
+            r = ctx['bosch_fl_obs'].copy()
+            ctx['bosch_fl_obs'].clear()
+            return r
+
+
+def bosch_fr(cid, data, ctx=None):
+    """
+    前右角雷达
+    :param cid:
+    :param data:
+    :param ctx:
+    :return:
+    """
+    if cid in ids_fr:
+        if not ctx.get('bosch_fr_obs'):
+            ctx['bosch_fr_obs'] = list()
+
+        r = bosch_fr_db.decode_message(cid, data)
+        if 0x334 <= cid <= 0x336 or cid == 0x342:
+            index = cid - 0x334
+            index = 3 if index > 3 else index
+            start_num = index * 4 + 1
+            end_num = start_num + 4
+            for i in range(start_num, end_num):
+                if r["CR5CP_FR_ObjExistProb_{}".format(i)] > 0:
+                    data = {
+                        'type': 'obstacle',
+                        'sensor': 'bosch',
+                        'sensor_type': 'radar',
+                        'id': r["CR5CP_FR_ObjID_{}".format(i)]+100,
+                        'pos_lon': r["CR5CP_FR_ObjDistX_{}".format(i)],
+                        'pos_lat': -r["CR5CP_FR_ObjDistY_{}".format(i)],#需取反
+                        'vel_lon': r["CR5CP_FR_ObjRelVelX_{}".format(i)],
+                        'vel_lat': -r["CR5CP_FR_ObjRelVelY_{}".format(i)],#需取反
+                        'accel_x':r["CR5CP_FR_ObjAccelX_{}".format(i)],
+                        'dyn_prop':10
+                    }
+                    prob_exit = r["CR5CP_FR_ObjExistProb_{}".format(i)]
+                    prob_obs= r["CR5CP_FR_ObjObstacleProb_{}".format(i)]
+                    rr = sqrt(data['pos_lon']**2 + data['pos_lat']**2)
+                    angle = atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
+                    ret = {'type': 'radar', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
+                           'angle': angle,
+                           'range_rate': data['vel_lon'], 'v_lon': data['vel_lon'], 'v_lat': data['vel_lat'], 'power': data['accel_x'], 'dyn_prop':'dyn_prop_%03d' % data['dyn_prop'],
+                           'tgt_status': 'State_%07f' %(int(prob_exit*100)+prob_obs)}
+                    ctx['bosch_fr_obs'].append(ret)
+        if 0x33D <= cid <= 0x340:
+            index = cid - 0x33D
+            index = 3 if index > 3 else index
+            start_num = index * 4 + 1
+            end_num = start_num + 4
+            for i in range(start_num, end_num):
+                if r["CR5CP_FR_ObjNewExistProb_{}".format(i)] > 0:
+                    data = {
+                        'type': 'obstacle',
+                        'sensor': 'bosch',
+                        'sensor_type': 'radar',
+                        'id': r["CR5CP_FR_ObjNewID_{}".format(i)] + 100,
+                        'pos_lon': r["CR5CP_FR_ObjNewDistX_{}".format(i)],
+                        'pos_lat': -r["CR5CP_FR_ObjNewDistY_{}".format(i)],#需取反
+                        'vel_lon': r["CR5CP_FR_ObjNewRelVelX_{}".format(i)],
+                        'vel_lat': -r["CR5CP_FR_ObjNewRelVelY_{}".format(i)],#需取反
+                        'accel_x':r["CR5CP_FR_ObjNewAccelX_{}".format(i)],
+                        'dyn_prop':11,
+                    }
+                    prob_exit = r["CR5CP_FR_ObjNewExistProb_{}".format(i)]
+                    prob_obs= r["CR5CP_FR_ObjNewObstacleProb_{}".format(i)]
+                    rr = sqrt(data['pos_lon']**2 + data['pos_lat']**2)
+                    angle = atan2(data['pos_lat'], data['pos_lon']) * 180 / pi
+                    ret = {'type': 'obstacle', 'sensor': 'bosch', 'sensor_type': 'radar', 'id': data['id'], 'pos_lon': data['pos_lon'], 'pos_lat': data['pos_lat'], 'range': rr,
+                           'angle': angle,
+                           'range_rate': data['vel_lon'], 'v_lon': data['vel_lon'], 'v_lat': data['vel_lat'], 'power': data['accel_x'], 'dyn_prop':'dyn_prop_%03d' % data['dyn_prop'],
+                           'tgt_status': 'State_%07f' %(int(prob_exit*100)+prob_obs)}
+                    ctx['bosch_fr_obs'].append(ret)
+        if cid == 0x340:
+            r = ctx['bosch_fr_obs'].copy()
+            ctx['bosch_fr_obs'].clear()
+            return r
+
 
 if __name__ == "__main__":
     bosch_mrr(0x20a, bytes().fromhex("00000002004010068032000000000002004010068032000000000000000794e4"), {})
