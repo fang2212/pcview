@@ -762,8 +762,8 @@ class FlowSink(Sink):
 
         # 初始化解析流程
         if self.topic == '*':   # Q3华为mdc数据
-            if 24011 <= self.port <= 24017 or self.dbc == "mdc":     # h264视频数据
-                self.pkg_handler = self.mdc_video
+            if 24011 <= self.port <= 24017 or self.dbc == "video_h265":     # h264视频数据
+                self.pkg_handler = self.h265_video
             elif self.port == 26011:
                 self.pkg_handler = self.mdc_ts
             else:
@@ -840,7 +840,7 @@ class FlowSink(Sink):
         # print("mdc_ts", "{} {} {} {}".format(ads_sec, ads_nsec, gnss_sec, gnss_nsec))
         self.fileHandler.insert_raw((timestamp, "mdc_ts", "{} {} {} {}".format(ads_sec[0], ads_nsec[0], gnss_sec[0], gnss_nsec[0])))
 
-    def mdc_video(self, msg):
+    def h265_video(self, msg):
         data = self.decode_data(msg)
         head_data = {
             "height": int.from_bytes(data[:4], byteorder='little', signed=False),
