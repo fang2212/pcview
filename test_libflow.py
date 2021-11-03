@@ -1,25 +1,35 @@
 import argparse
+import time
 
 import aiohttp
 import asyncio
 import msgpack
+
+from utils import logger
 
 
 async def main(ip, port, topic="*"):
     session = aiohttp.ClientSession()
     URL = 'ws://' + str(ip) + ':' + str(port)
     print("准备连接：", URL)
-    async with session.ws_connect(URL) as ws:
-        print("连接端口成功！")
-        msg = {
-            'source': 'pcview',
-            'topic': 'subscribe',
-            'data': topic,
-        }
-        data = msgpack.packb(msg)
-        await ws.send_bytes(data)
-        async for msg in ws:
-            print(msg)
+    msg_count = 0
+    start_ts = time.time()
+    try:
+        async with session.ws_connect(URL) as ws:
+            print("连接端口成功！")
+            msg = {
+                'source': 'pcview',
+                'topic': 'subscribe',
+                'data': topic,
+            }
+            data = msgpack.packb(msg)
+            await ws.send_bytes(data)
+            async for msg in ws:
+                msg_count += 1
+                long_time = time.time() - start_ts
+                logger.warning("fps: {:.2f} recv count:{}/long time:{:.2f}".format(msg_count/long_time, msg_count, long_time))
+    except Exception as e:
+        logger.error("连接失败：{}".format(e))
 
 if __name__ == "__main__":
     # 初始化命令行方法

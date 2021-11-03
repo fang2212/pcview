@@ -199,7 +199,9 @@ class LogPlayer(Process):
         if main_dev and "algo" in main_dev['type'] and os.path.exists(x1_log):
             self.x1_parser = PcvParser(open(x1_log))
 
-        # 统计can设备类型
+        # 初始化mdc视频bin文件
+
+        # 初始化设备数据
         for idx, cfg in enumerate(self.cfg.configs):
             if 'can_types' in cfg:
                 cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
@@ -239,6 +241,27 @@ class LogPlayer(Process):
                             for i, t in enumerate(topics):
                                 self.can_types['{}.{}.{}.{}'.format(cfg.get('origin_device', cfg['ports'][keyword].get('origin_device')), idx, keyword, t)] = {
                                     "parsers": parsers, "index": idx}
+            elif cfg["ip"] == "192.168.30.42":
+                device = cfg['origin_device']
+                # 华为mdc数据采集
+                for keyword in cfg['ports']:
+                    if "video" in keyword and cfg['ports'][keyword].get("enable"):
+                        dbc = cfg['ports'][keyword].get('dbc')
+                        dir_name = "{}.{}".format(cfg['type'], idx)
+                        dir_path = os.path.join(os.path.dirname(self.log_path), dir_name)
+                        if cfg['origin_device'] == 'mdc':   # 新版本格式
+                            log_key = "{}.{}.{}.{}".format(device, idx, keyword, self.dbc)
+                            filename = "{}.bin".format(keyword)
+                        else:
+                            log_key = "mdc_video{}".format(cfg['ports'][keyword]['port'] - 24010)
+                            filename = "{}.bin".format(log_key)
+                        if log_key not in self.bin_rf:
+                            if os.path.exists(os.path.join(dir_path, filename)):
+                                self.bin_rf[log_key] = open(os.path.join(dir_path, filename), "rb")
+                            else:
+                                continue
+
+        # 打印can信号列表
         for i in self.can_types:
             logger.warning("{} | {}".format(i.ljust(20), self.can_types[i]['parsers']))
 
@@ -471,6 +494,10 @@ class LogPlayer(Process):
                 data = q4_decode(decode_msg)
                 if data:
                     self.put_sink(data)
+            elif "mdc_video" in cols[2]:
+                continue
+                # if cols[2] in self.bin_rf:
+                #     dir
 
         logger.debug(bcl.OKBL + 'log.txt reached the end.' + bcl.ENDC)
         logger.info("take time: {}".format(time.time() - start_time))

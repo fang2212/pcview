@@ -203,15 +203,19 @@ class Hub(Thread):
             return
 
         if "algo" in cfg.get('type'):
+            device = cfg.get('origin_device', "")
             for item in cfg['ports']:
                 if not cfg['ports'][item].get('enable') and not is_main:
                     continue
                 port = cfg['ports'][item]['port']
+                dbc = cfg['ports'][item].get('dbc', '')
                 topic = cfg['ports'][item].get('topic')
+                port_name = item
                 transport = cfg['ports'][item].get('transport')
 
                 if transport == "libflow":
                     sink = FlowSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
+                                    device=device, dbc=dbc, port_name=port_name,
                                     name=cfg.get("type"), log_name=item, topic=topic, is_main=is_main, mq=self.mq,
                                     save_type=cfg['ports'][item].get("save"))
                 elif transport == "protoflow":

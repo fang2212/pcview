@@ -738,7 +738,7 @@ class CameraSink(NNSink):
 
 
 class FlowSink(Sink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo',
+    def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo', device="", dbc=None, port_name="",
                  log_name='pcv_log', topic='pcview', is_main=False, mq=None, save_type=None):
         super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
         self.last_fid = 0
@@ -749,6 +749,9 @@ class FlowSink(Sink):
         self.is_main = is_main
         self.type = 'flow_sink'
         self.topic = topic
+        self.dbc = dbc
+        self.device = device
+        self.port_name = port_name
         self.source = name + '.{:d}'.format(index)
         self.index = index
         self.name = name
@@ -759,7 +762,7 @@ class FlowSink(Sink):
 
         # 初始化解析流程
         if self.topic == '*':   # Q3华为mdc数据
-            if 24011 <= self.port <= 24017:     # h264视频数据
+            if 24011 <= self.port <= 24017 or self.dbc == "mdc":     # h264视频数据
                 self.pkg_handler = self.mdc_video
             elif self.port == 26011:
                 self.pkg_handler = self.mdc_ts
@@ -852,10 +855,11 @@ class FlowSink(Sink):
         }
         img = data[36:]
         timestamp = time.time()
-        r = {"source": self.source, "log_name": "mdc_video{}".format(self.port - 24010), "buf": img}
+
+        r = {"source": self.source, "log_name": self.port_name, "buf": img}
         self.fileHandler.insert_general_bin_raw(r)
         self.fileHandler.insert_raw(
-            (timestamp, "mdc_video{}".format(self.port - 24010), "{:d} {:d} {} {} {} {} {} {} {}".format(head_data["height"], head_data["width"], head_data["send_time_high"],
+            (timestamp, "{}.{}.{}.{}".format(self.device, self.index, self.port_name, self.dbc), "{:d} {:d} {} {} {} {} {} {} {}".format(head_data["height"], head_data["width"], head_data["send_time_high"],
                                                                                                          head_data["send_time_low"], head_data["frame_type"], head_data["data_size"], head_data["seq"], head_data["sec"], head_data["nsec"])))
 
     def mdc_data(self, msg):
