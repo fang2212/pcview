@@ -7,7 +7,7 @@
   "origin_device": "mdc",
   "repeater": false,
   "ports": {
-    "video0": {
+    "video1": {
       "enable": true,
       "port": 24011,
       "transport": "libflow",
@@ -16,7 +16,7 @@
       "topic": "*",
       "idx": 1
     },
-    "video1": {
+    "video2": {
       "enable": true,
       "port": 24012,
       "transport": "libflow",
@@ -25,7 +25,7 @@
       "topic": "*",
       "idx": 2
     },
-    "video2": {
+    "video3": {
       "enable": true,
       "port": 24013,
       "transport": "libflow",
@@ -34,7 +34,7 @@
       "topic": "*",
       "idx": 3
     },
-    "video3": {
+    "video4": {
       "enable": true,
       "port": 24014,
       "transport": "libflow",
@@ -43,7 +43,7 @@
       "topic": "*",
       "idx": 4
     },
-    "video4": {
+    "video5": {
       "enable": true,
       "port": 24015,
       "transport": "libflow",
@@ -52,7 +52,7 @@
       "topic": "*",
       "idx": 5
     },
-    "video5": {
+    "video6": {
       "enable": true,
       "port": 24016,
       "transport": "libflow",
@@ -61,7 +61,7 @@
       "topic": "*",
       "idx": 6
     },
-    "video6": {
+    "video7": {
       "enable": true,
       "port": 24017,
       "transport": "libflow",
