@@ -1,4 +1,4 @@
-from parsers.bosch import bosch_mrr
+from parsers.bosch import bosch_mrr, bosch_rl, bosch_rr, bosch_fl, bosch_fr
 from parsers.a1j import parse_a1j, parse_a1j_fusion, parse_a1j_vision
 from parsers.d1_fusion import parse_d1
 from parsers.muniu import parser_mu_f, parser_mu_r, parser_mu_fl, parser_mu_fr, parser_mu_rl, parser_mu_rr
@@ -35,6 +35,10 @@ parsers_dict = {
     "ars":      parse_ars,
     "ars410":   parse_ars410,
     "bosch_mrr": bosch_mrr,
+    "bosch_rl": bosch_rl,
+    "bosch_rr": bosch_rr,
+    "bosch_fl": bosch_fl,
+    "bosch_fr": bosch_fr,
     "ctlrr":    parse_ctlrr,
     "d1_fusion": parse_d1,
     "d530":     parse_dfd530,

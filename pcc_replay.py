@@ -9,6 +9,7 @@
 import argparse
 import logging
 import os.path
+import signal
 from multiprocessing import Process, Manager, freeze_support, Event
 from turbojpeg import TurboJPEG
 
@@ -26,6 +27,21 @@ from utils import logger, log_list_from_path
 
 
 jpeg = TurboJPEG()
+sub_processes = []
+
+
+def term(sig_num, addtion):
+    logger.warning('terminate process %d' % os.getpid())
+    try:
+        logger.warning('the processes is %s' % sub_processes)
+        for p in sub_processes:
+            if p:
+                logger.warning('process %d terminate' % p.pid)
+                p.terminate()
+            # os.kill(p.pid, signal.SIGKILL)
+    except Exception as e:
+        logger.exception(e)
+
 
 def jpeg_extractor(video_dir):
     """
@@ -62,7 +78,7 @@ def jpeg_extractor(video_dir):
                 buf = buf[b + 2:]
                 fcnt += 1
                 if not jpg:
-                    print('extracted empty frame:', fid)
+                    logger.warning(f'extracted empty frame:{fid}')
 
                 yield fid, jpg
                 if fid is not None:
@@ -129,14 +145,15 @@ class LogPlayer(Process):
         self.daemon = True
         self.exit = Event()
         self.bin_rf = {}  # bin文件对象集合
-        self.x1_parser = None
         self.start_frame = int(start_frame) if start_frame else 0
         self.end_frame = int(end_frame) if end_frame else 9999999999999
         self.start_time = int(start_time) if start_time else 0
         self.end_time = int(end_time) if end_time else 9999999999999
         self.time_aligned = True
         self.log_path = log_path
-        self.jpeg_extractor = None          # 视频图片提取生成器
+        self.jpeg_extractor = {}          # 视频图片提取生成器集合
+        self.x1_parser = {}                 # pcv数据字典
+        self.log_keyword = {}               #
 
         self.shared = Manager().dict()
         self.shared["ready"] = False  # 播放前的数据是否加载完成
@@ -159,13 +176,7 @@ class LogPlayer(Process):
         self.paused_t = 0
         self.nosort = nosort
 
-        self.chmain = chmain
-        if chmain:
-            self.video_dir = chmain
-            self.video_log_key = chmain
-        else:
-            self.video_dir = "video"
-            self.video_log_key = "camera"
+        self.main_video = chmain if chmain else 'camera'
 
     def init_env(self):
         self.shared['init_time'] = time.time()
@@ -183,25 +194,7 @@ class LogPlayer(Process):
                     continue
                 done = True
 
-        # 初始化视频图片生成器
-        self.jpeg_extractor = jpeg_extractor(os.path.dirname(self.log_path) + '/' + self.video_dir)
-
-        # 初始化主设备
-        main_dev = get_main_dev(self.log_path)
-        if self.chmain:
-            idx = int(self.chmain.split(".")[-1])
-            for f in self.cfg.configs:
-                if f.get("idx") == idx:
-                    main_dev = f
-                    break
-        x1_log = os.path.dirname(self.log_path) + "/" + main_dev['type'] + "." + str(main_dev['idx']) + '/pcv_log.txt'
-        logger.debug("main dev:{} dev type:{}".format(main_dev, main_dev['type']))
-        if main_dev and "algo" in main_dev['type'] and os.path.exists(x1_log):
-            self.x1_parser = PcvParser(open(x1_log))
-
-        # 初始化mdc视频bin文件
-
-        # 初始化设备数据
+        # 处理配置文件对应的log关键词
         for idx, cfg in enumerate(self.cfg.configs):
             if 'can_types' in cfg:
                 cantypes0 = ' '.join(cfg['can_types']['can0']) + '.{:01}'.format(idx)
@@ -249,7 +242,7 @@ class LogPlayer(Process):
                         dbc = cfg['ports'][keyword].get('dbc')
                         dir_name = "{}.{}".format(cfg['type'], idx)
                         dir_path = os.path.join(os.path.dirname(self.log_path), dir_name)
-                        if cfg['origin_device'] == 'mdc':   # 新版本格式
+                        if cfg['origin_device'] == 'mdc':  # 新版本格式
                             log_key = "{}.{}.{}.{}".format(device, idx, keyword, self.dbc)
                             filename = "{}.bin".format(keyword)
                         else:
@@ -260,6 +253,19 @@ class LogPlayer(Process):
                                 self.bin_rf[log_key] = open(os.path.join(dir_path, filename), "rb")
                             else:
                                 continue
+
+            if cfg.get("ports", {}).get("video", {}).get("enable"):
+                # 检查是否有视频数据
+                dir_name = "video" if cfg.get("is_main") else "{}.{:d}".format(cfg["type"], idx)
+                log_keyword = "camera" if dir_name == 'video' else dir_name
+                video_path = os.path.dirname(self.log_path) + '/' + dir_name
+                # 初始化视频图片生成器
+                if os.path.exists(video_path):
+                    self.jpeg_extractor[log_keyword] = jpeg_extractor(video_path)
+
+                x1_log = os.path.dirname(self.log_path) + "/" + video_path + '/pcv_log.txt'
+                if os.path.exists(x1_log):
+                    self.x1_parser[log_keyword] = PcvParser(open(x1_log))
 
         # 打印can信号列表
         for i in self.can_types:
@@ -305,15 +311,18 @@ class LogPlayer(Process):
         self.exit.set()
 
     def run(self):
-        logger.warning("log player starting, pid: {}".format(os.getpid()))
-        self._do_replay()
+        try:
+            logger.warning("log player starting, pid: {}".format(os.getpid()))
+            self._do_replay()
 
-        # 是否循环播放
-        if self.loop:
-            while True:
-                self._do_replay()
-                time.sleep(0.5)
-        logger.warning('log player exit replaying.')
+            # 是否循环播放
+            if self.loop:
+                while True:
+                    self._do_replay()
+                    time.sleep(0.5)
+            logger.warning('log player exit replaying.')
+        except Exception as e:
+            logger.exception(e)
 
     def _do_replay(self):
         self.init_env()
@@ -339,40 +348,43 @@ class LogPlayer(Process):
                 continue
 
             # 视频数据处理
-            if cols[2] == self.video_log_key:
+            if self.jpeg_extractor.get(cols[2]):
                 frame_id = int(cols[3])
-                self.now_frame_id = frame_id
 
                 # 取出视频画面图片
                 try:
-                    fid, jpg = next(self.jpeg_extractor)
+                    fid, jpg = next(self.jpeg_extractor[cols[2]])
                 except StopIteration as e:
                     logger.warning('images run out.')
                     return
                 if fid and fid != frame_id:
                     print(bcl.FAIL + 'raw fid differs from log:' + bcl.ENDC, fid, frame_id)
 
-                # 如果当前帧数跟开始帧数不对，进行快进同步处理
-                if self.now_frame_id < self.start_frame:
-                    logger.warning('fid from log drop backward {} {}'.format(self.now_frame_id, self.start_frame))
-                    while self.now_frame_id < self.start_frame:
-                        line = rf.readline().strip()
-                        if line == "":
-                            continue
-
-                        cols = line.split(' ')
-                        if cols[2] == self.video_log_key:
-                            self.now_frame_id = int(cols[3])
-                            _, jpg = next(self.jpeg_extractor)
-                if jpg is None:
+                if cols[2] == self.main_video:
+                    # 更新主视频的帧数
                     self.now_frame_id = frame_id
-                    continue
+                    # 如果当前帧数跟开始帧数不对，进行跳过同步处理
+                    if self.now_frame_id < self.start_frame:
+                        logger.warning('fid from log drop backward {} {}'.format(self.now_frame_id, self.start_frame))
+                        while self.now_frame_id < self.start_frame:
+                            line = rf.readline().strip()
+                            if line == "":
+                                continue
 
-                r = {'ts': ts, 'img': jpg, 'is_main': True, 'source': 'video', 'type': 'video'}
-                self.put_sink((frame_id, r, 'camera'))
+                            cols = line.split(' ')
+                            if cols[2] == self.main_video:
+                                frame_id = int(cols[3])
+                                _, jpg = next(self.jpeg_extractor)
+                                if jpg is None:
+                                    self.now_frame_id = frame_id
 
-                if self.x1_parser:
-                    res = self.x1_parser.get_frame(frame_id)
+                source = "video" if cols[2] == self.main_video else cols[2]
+                r = {'ts': ts, 'img': jpg, 'is_main': cols[2] == self.main_video, 'source': source, 'type': 'video', 'frame_id': frame_id}
+                sink_source = 'camera' if cols[2] == self.main_video else cols[2]
+                self.put_sink((frame_id, r, sink_source))
+
+                if self.x1_parser.get(cols[2]):
+                    res = self.x1_parser[cols[2]].get_frame(frame_id)
                     if res:
                         res['ts'] = ts
                         res['source'] = 'x1_data'
@@ -494,10 +506,6 @@ class LogPlayer(Process):
                 data = q4_decode(decode_msg)
                 if data:
                     self.put_sink(data)
-            elif "mdc_video" in cols[2]:
-                continue
-                # if cols[2] in self.bin_rf:
-                #     dir
 
         logger.debug(bcl.OKBL + 'log.txt reached the end.' + bcl.ENDC)
         logger.info("take time: {}".format(time.time() - start_time))
@@ -569,6 +577,8 @@ def start_replay(source_path, args):
                          start_time=args.start_time, end_time=args.end_time, loop=args.loop,
                          real_interval=args.real_interval, chmain=chmain)
 
+    replay_hub.daemon = True
+
     if args.web:
         from video_server import PccServer
         server = PccServer()
@@ -579,12 +589,19 @@ def start_replay(source_path, args):
         while True:
             time.sleep(1)
     else:
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, eclient=args.eclient)
         replay_hub.start()
+
+        # 控制子进程的退出
+        global sub_processes
+        sub_processes.append(replay_hub)
+        signal.signal(signal.SIGTERM, term)
+
         pcc.start()
         replay_hub.join()
         print("replay_hub end join")
         pcc.control(ord('q'))
+    sub_processes = []
 
 
 if __name__ == "__main__":
@@ -602,7 +619,8 @@ if __name__ == "__main__":
     parser.add_argument('-ef', '--end_frame', default=None)
     parser.add_argument('-st', '--start_time', default=0)
     parser.add_argument('-et', '--end_time', default=None)
-    parser.add_argument('-ri', '--real_interval', action="store_true", help="是否以真实速度进行回放")
+    parser.add_argument('-ri', '--real_interval', action="store_true")
+    parser.add_argument('-e', '--eclient', action="store_true")
     parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
     parser.add_argument('-chmain', default=None, help="change main video")
     args = parser.parse_args()
@@ -625,5 +643,8 @@ if __name__ == "__main__":
         logger.error("未识别到log路径")
 
     logger.debug("待回放的log路径：{}".format(log_path_list))
-    for path in log_path_list:
-        start_replay(path, args)
+    try:
+        for path in log_path_list:
+            start_replay(path, args)
+    except Exception as e:
+        logger.exception(e)

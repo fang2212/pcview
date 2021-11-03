@@ -12,8 +12,8 @@ import cv2
 from turbojpeg import TurboJPEG
 
 from net.ntrip_client import GGAReporter
-from player import FlowPlayer
-from player.pcc_ui import Player
+from player import FlowPlayer, pcc_ui, web_ui
+from player.eclient_ui import BaseDraw
 from recorder import VideoRecorder
 from recorder.convert import *
 from tools.geo import *
@@ -24,6 +24,7 @@ from models.road import Road
 from tools.cpu_mem_info import *
 import numpy as np
 import copy
+import traceback
 
 from utils import logger
 
@@ -39,21 +40,21 @@ def loop_traverse(items):
 
 class PCC(object):
     def __init__(self, hub, replay=False, rlog=None, ipm=None, ipm_bg=False, save_replay_video=None, uniconf=None, to_web=None,
-                 auto_rec=False, draw_algo=False, show_video=True):
+                 auto_rec=False, draw_algo=False, show_video=True, eclient=False):
         super(PCC, self).__init__()
         self.draw_algo = draw_algo
         self.hub = hub
         self.cfg = uniconf
-        self.player = Player(uniconf)
+        self.player = web_ui.Player(uniconf) if eclient else pcc_ui.Player(uniconf)
         self.exit = False
         self.pause = False
-
         self.replay = replay
         self.rlog = rlog
         self.frame_idx = 0
         self.ts0 = 0
         self.show_video = show_video        # 是否输出显示界面（包括网页、本地渲染界面）
         self.to_web = False
+        self.eclient = eclient
 
         self.now_fid = 0
         self.ts_now = 0
@@ -106,7 +107,7 @@ class PCC(object):
 
         self.save_replay_video = save_replay_video
         self.vw = None
-        if self.show_video:
+        if not eclient:
             if not to_web:
                 self.to_web = False
                 cv2.namedWindow('MINIEYE-CVE')
@@ -115,12 +116,17 @@ class PCC(object):
                 cv2.createTrackbar('Yaw  ', 'adj', 500, 1000, self.ot.update_yaw)
                 cv2.createTrackbar('Pitch', 'adj', 500, 1000, self.ot.update_pitch)
                 cv2.createTrackbar('Roll  ', 'adj', 500, 1000, self.ot.update_roll)
+                logger.warning('{} pid:{}'.format("PCC: normal".ljust(20), os.getpid()))
             else:
                 import video_server
 
                 self.to_web = True
                 self.o_msg_q = video_server.msg_q
                 self.o_img_q = video_server.img_q
+                logger.warning('{} pid:{}'.format("PCC: web".ljust(20), os.getpid()))
+        else:
+            BaseDraw.init()
+            logger.warning('{} pid:{}'.format("PCC: eclient".ljust(20), os.getpid()))
 
         self.wav_cnt = 0
         self.audio = None
@@ -178,6 +184,7 @@ class PCC(object):
             fid, data, source = d
         except Exception as e:
             print(e, d)
+            return
 
         if source not in self.cache['misc']:
             self.cache['misc'][source] = {}
@@ -192,6 +199,9 @@ class PCC(object):
                 self.cache['info'][source]['integrity'] = 'framed'
         elif isinstance(data, dict):
             if 'video' in data['type']:
+                # d = data.copy()
+                # d['img'] = ''
+                # print(d)
                 is_main = data.get('is_main')
                 if not is_main:
                     if data['source'] not in self.video_cache:
@@ -204,7 +214,6 @@ class PCC(object):
 
                     self.recv_first_img = True
 
-                    self.cache['frame_id'] = fid
                     self.cache['ts'] = data['ts']
                     self.cache['updated'] = True
 
@@ -248,6 +257,8 @@ class PCC(object):
                 # 回放视频保存对象
                 if self.vw is not None:
                     self.vw.release()
+                if self.eclient:
+                    BaseDraw.close()
                 return
 
             # 从信号进程取出数据
@@ -292,27 +303,30 @@ class PCC(object):
 
     def render(self, frame_cnt, show=True):
         if show:
-            img_rendered = self.draw(self.cache, frame_cnt)  # 处理图片，渲染数据信息
-            if img_rendered is None:
-                return
-            # ts_render = time.time()
-            if self.to_web:
-                self.statistics['frame_total_cost'] = '{:.2f}ms'.format(self.frame_cost * 1000)
-                self.o_img_q.put(img_rendered)
+            if self.eclient:
+                self.web_draw(self.cache, frame_cnt)
             else:
-                cv2.imshow('MINIEYE-CVE', img_rendered)
+                img_rendered = self.draw(self.cache, frame_cnt)  # 处理图片，渲染数据信息
+                if img_rendered is None:
+                    return
+                # ts_render = time.time()
+                if self.to_web:
+                    self.statistics['frame_total_cost'] = '{:.2f}ms'.format(self.frame_cost * 1000)
+                    self.o_img_q.put(img_rendered)
+                else:
+                    cv2.imshow('MINIEYE-CVE', img_rendered)
 
-            if self.recv_first_img:
-                self.save_rendered(img_rendered)
+                if self.recv_first_img:
+                    self.save_rendered(img_rendered)
 
         # 暂停的时候保持画面窗口
         while self.replay and self.pause:
             self.handle_keyboard()
-            comb = self.draw(self.cache, frame_cnt)
-            if self.replay:
-                cv2.imshow('MINIEYE-CVE', comb)
+            if not self.eclient:
+                comb = self.draw(self.cache, frame_cnt)
+                if self.replay:
+                    cv2.imshow('MINIEYE-CVE', comb)
 
-            self.hub.pause(True)
             time.sleep(0.1)
 
         # 清除已渲染的数据
@@ -333,6 +347,93 @@ class PCC(object):
         for i, key in enumerate(self.alarm_info):
             if self.alarm_info[key] > now:
                 cv2.putText(img, key, (10, i*60 + 300), cv2.FONT_HERSHEY_COMPLEX, 3, (0, 0, 255), 2)
+
+    def web_draw(self, mess, frame_cnt):
+        t0 = time.time()
+        self.player.draw_img(mess["img"])
+
+        if self.show_ipm:
+            self.m_g2i = self.transform.calc_g2i_matrix()
+
+            self.ipm = np.zeros([720, 480, 3], np.uint8)
+            self.ipm[:, :] = [40, 40, 40]
+            self.player.show_dist_mark_ipm(self.ipm)
+
+        if 'img_raw' in mess and mess['img_raw'] is not None:  # reuse img
+            img = mess['img_raw'].copy()
+            if not self.pause and ('ts' not in mess or self.ts_sync_local() - mess['ts'] > 5.0):
+                self.player.show_failure(img, 'feed lost, check connection.')
+        else:
+            try:
+                mess['img_raw'] = jpeg.decode(np.fromstring(mess['img'], np.uint8))
+            except Exception as e:
+                logger.error('img decode error:{}'.format(e))
+                return
+            img = mess['img_raw'].copy()
+
+        misc_data = mess.get('misc')
+        if misc_data:
+            for source in list(mess['misc']):
+                for entity in list(mess['misc'][source]):
+                    self.draw_misc_data(img, mess['misc'][source][entity])
+
+        frame_id = mess['frame_id']
+        self.now_id = frame_id
+        self.ts_now = mess['ts']
+        self.player.ts_now = mess['ts']
+        self.player.update_column_ts('video', mess['ts'])
+        self.player.show_frame_id('video', frame_id)
+        self.player.show_frame_cost(self.frame_cost)
+        self.player.show_datetime(self.ts_now)
+
+        if self.ts0 == 0:
+            self.ts0 = self.ts_now
+
+        # 如果有定位标签的话，渲染定位信息
+        if self.vehicles['ego'].pinpoint:
+            self.player.show_pinpoint(img, self.vehicles['ego'].pinpoint)
+
+        for idx, source in enumerate(list(self.video_cache.keys())):
+            if idx > 2:
+                continue
+            video = self.video_cache[source]
+            self.video_cache[source]['updated'] = False
+            video['device'] = source
+            self.player.draw_img(video['img'], plugin_name='video-sub{}'.format(idx+1))
+            self.player.show_video_info(video, plugin='video-sub{}'.format(idx+1))
+
+        if not self.replay:
+            self.player.show_version(img, self.cfg)
+            if self.hub.fileHandler.is_recording:
+                self.player.show_recording(img, self.hub.fileHandler.start_time)
+                if self.hub.fileHandler.is_marking:
+                    self.player.show_marking(img, self.hub.fileHandler.start_marking_time)
+            else:
+                self.player.show_recording(img, 0)
+
+        else:
+            self.player.show_replaying(self.ts_now - self.ts0)
+
+        fps = self.player.cal_fps(frame_cnt)
+        self.player.show_fps('video', fps)
+
+        self.player.render_text_info(img)
+
+        if img.shape[1] > 1280:
+            fx = 1280 / img.shape[1]
+            img = cv2.resize(img, None, fx=fx, fy=fx)
+        if img.shape[0] > 960:
+            fx = 960 / img.shape[0]
+            img = cv2.resize(img, None, fx=fx, fy=fx)
+
+        self.player.show_alarm_info(self.alarm_info)
+
+        self.frame_cost = (time.time() - t0) * 0.1 + self.frame_cost * 0.9
+        self.frame_drawn_cnt += 1
+        self.frame_cost_total += self.frame_cost
+
+        self.player.submit()
+        return img
 
     def draw(self, mess, frame_cnt):
         ts_ana = []
@@ -362,9 +463,9 @@ class PCC(object):
         self.ts_now = mess['ts']
         self.player.ts_now = mess['ts']
         self.player.update_column_ts('video', mess['ts'])
-        self.player.show_frame_id(img, 'video', frame_id)
+        self.player.show_frame_id('video', frame_id)
         self.player.show_frame_cost(self.frame_cost)        # 渲染画面的耗时
-        self.player.show_datetime(img, self.ts_now)
+        self.player.show_datetime(self.ts_now)
 
         if self.ts0 == 0:
             self.ts0 = self.ts_now
@@ -410,12 +511,7 @@ class PCC(object):
         if misc_data:
             for source in list(mess['misc']):
                 for entity in list(mess['misc'][source]):
-                    if source == 'x1j.0' and entity == 'obstacle.3':
-                        # print(mess['misc'][source][entity])
-                        pass
-                    if not self.draw_misc_data(img, mess['misc'][source][entity]):
-                        # print('draw misc data exited, source:', source)
-                        pass
+                    self.draw_misc_data(img, mess['misc'][source][entity])
 
         # t3 = time.time()
         ts_ana.append(('misc_data', time.time()))
@@ -429,14 +525,10 @@ class PCC(object):
                 self.player.show_recording(img, 0)
 
         else:
-            self.player.show_replaying(img, self.ts_now - self.ts0)
+            self.player.show_replaying(self.ts_now - self.ts0)
 
         fps = self.player.cal_fps(frame_cnt)
-        self.player.show_fps(img, 'video', fps)
-
-        # if not self.replay:
-        #     self.player.show_warning_ifc(img, self.supervisor.check())
-        # self.player.show_intrinsic_para(img)
+        self.player.show_fps('video', fps)
 
         self.player.render_text_info(img)
 
@@ -508,9 +600,7 @@ class PCC(object):
     def draw_rtk_ub482(self, img, data):
         self.player.show_ub482_common(img, data)
         source = data.get('source')
-        # print(source)
         role = self.hub.get_veh_role(source)
-        # self.vehicles[role].dynamics[data['type']] = data
 
         if data['type'] == 'inspva' or data['type'] == 'pinpoint':
             if self.set_pinpoint or data['type'] == 'pinpoint':
@@ -522,14 +612,9 @@ class PCC(object):
                     self.hub.fileHandler.pinpoint = pp
             data['hor_speed'] = (data.get("vel_n")**2 + data.get("vel_e")**2)**0.5
             data['trk_gnd'] = atan2(data.get("vel_e"), data.get("vel_n"))
-            # old_pinpoint = self.vehicles['ego'].pinpoint
-            # self.player.show_target(img, data, old_pinpoint)
-            # if self.show_ipm:
-            #     self.player.show_ipm_target(self.ipm, data, old_pinpoint)
         self.vehicles[role].update_dynamics(data)
 
         if role in ('ego', 'default'):
-            host = self.vehicles['ego'].get_pos()
             if 'lat' in data:
                 if self.set_pinpoint:
                     self.set_pinpoint = False
@@ -538,10 +623,6 @@ class PCC(object):
                     self.update_pinpoint(pp)
                     if not self.replay:
                         self.hub.fileHandler.pinpoint = pp
-                    # self.vehicles['ego'].dynamics['pinpoint'] = data
-                    # self.hub.fileHandler.insert_raw(
-                    #     (data['ts'], source + '.pinpoint', compose_from_def(ub482_defs, data)))
-                    # print('set pinpoint:', data)
                 if self.gga is None and self.en_gga and not self.replay:
                     server = self.cfg.runtime['modules']['GGA_reporter']['ntrip_address']
                     port = self.cfg.runtime['modules']['GGA_reporter']['port']
@@ -555,7 +636,6 @@ class PCC(object):
             elif 'yaw' in data:
                 self.player.show_heading_horizen(img, data)
         else:  # other vehicle
-            # print('other role:', role)
             if self.vehicles['ego']:
                 target = get_rover_target(self.vehicles['ego'], self.vehicles[role])
                 # print(target)
@@ -563,15 +643,6 @@ class PCC(object):
                     self.player.show_rtk_target(img, target)
                     if self.show_ipm:
                         self.player.show_rtk_target_ipm(self.ipm, target)
-            # else:
-            #     print('no ego vehicle')
-            # elif 'trk_gnd' in data:
-            #     self.player.show_track_gnd(img, data)
-            # ppq = self.vehicles['ego'].dynamics.get('pinpoint')
-            # pp = {'source': 'rtk.3', 'lat': 22.546303, 'lon': 113.942000, 'hgt': 35.0}
-            # if ppq and host and data['ts'] - host['ts'] < 0.1:
-            #     pp1 = ppq[0]
-            #     self.player.show_target(img, pp1, host)
 
         pp_target = self.vehicles['ego'].get_pp_target(data)
         # print("target:", pp_target)
@@ -581,55 +652,6 @@ class PCC(object):
             self.player.show_rtk_target(img, pp_target)
             if self.show_ipm:
                 self.player.show_rtk_target_ipm(self.ipm, pp_target)
-            # dt = time.time() - t0
-            # print('rtk target cost:{}'.format(dt * 1000))
-            # print(pp_target['ts'])
-
-        # else:  # other vehicle
-        #     host = self.vehicles['ego'].get_pos()
-        # if 'lat' in data and host:
-        #     self.player.show_target(img, data, host)
-        # pass
-
-        # if 'lat' in data and not self.replay:
-        #     if self.gga is None and self.en_gga:
-        #         self.gga = GGAReporter('ntrip.weaty.cn', 5001)
-        #         self.gga.start()
-        #     if self.gga is not None:
-        #         self.gga.set_pos(data['lat'], data['lon']) if data['pos_type'] != 'NONE' else None
-        #     # print('role:', self.hub.get_veh_role(data['source']))
-        #     if self.hub.get_veh_role(data['source']) == 'ego':
-        #         self.vehicles['ego'].dynamics['rtkpos'] = data
-        #         if self.set_pinpoint:
-        #             self.set_pinpoint = False
-        #             self.vehicles['ego'].dynamics['pinpoint'] = data
-        #             self.hub.fileHandler.insert_raw(
-        #                 (data['ts'], data['source'] + '.pinpoint', compose_from_def(ub482_defs, data)))
-        #             print('set pinpoint:', data)
-        #         pp = self.vehicles['ego'].dynamics.get('pinpoint')
-        #         if pp:
-        #             self.player.show_target(img, pp, data)
-        #     else:  # not ego car
-        #         self.player.show_target(img, data, self.vehicles['ego'].dynamics.get('rtkpos'))
-        #
-        # if data['source'] == 'rtk.5':
-        #     if 'lat' in data:
-        #         self.rtk_pair[0] = data
-        #         # if not self.replay:
-        #         #     self.gga.set_pos(data['lat'], data['lon'])
-        #     if 'yaw' in data:
-        #         self.rtk_pair[0]['yaw'] = data['yaw']
-        # if 'rtk' in data['source'] and data['source'] != 'rtk.5':
-        #     if 'lat' in data:
-        #         self.rtk_pair[1] = data
-        #     if 'yaw' in data:
-        #         self.rtk_pair[1]['yaw'] = data['yaw']
-        #
-        # if 'lat' in self.rtk_pair[0] and 'lat' in self.rtk_pair[1] and 'yaw' in self.rtk_pair[0] and 'yaw' in \
-        #         self.rtk_pair[1]:
-        #     self.player.show_target(img, self.rtk_pair[1], self.rtk_pair[0])
-        #     if self.show_ipm:
-        #         self.player.show_ipm_target(self.ipm, self.rtk_pair[1], self.rtk_pair[0])
 
     def viz_rtcm(self, img, data):
         # if data['type'] == 'rtcm':
@@ -712,7 +734,7 @@ class PCC(object):
             self.vehicles[role] = Vehicle(role)
 
         if data.get("status_show"):
-            self.player.show_status_info(img, data.get("source"), data["status_show"])
+            self.player.show_status_info(data.get("source"), data["status_show"])
 
         if data['type'] == 'pcv_data':
             if self.replay or (not self.replay and self.draw_algo):
@@ -720,7 +742,6 @@ class PCC(object):
                     self.flow_player.draw(t, img)
         elif data["type"] == "status":
             self.player.update_column_ts(data.get('source'), data.get('ts'))
-
         elif data['type'] == 'obstacle':
             self.player.show_obs(img, data)
             self.player.update_column_ts(data.get('source'), data.get('ts'))
@@ -728,16 +749,17 @@ class PCC(object):
                 self.player.show_ipm_obs(self.ipm, data)
             if data.get('cipo'):
                 self.cipv = data
-        # lane
+        # lane 车道线
         elif data['type'] == 'lane':
-            self.player.draw_lane_r(img, data, )
+            self.player.draw_lane_r(img, data)
             if self.show_ipm:
                 self.player.draw_lane_ipm(self.ipm, data)
-        # vehicle
+        # vehicle 车辆信息
         elif data['type'] == 'vehicle_state':
             self.player.draw_vehicle_state(img, data)
-            # print(data)
             self.player.update_column_ts(data['source'], data['ts'])
+            if 'yaw_rate' in data and self.show_ipm and not self.cfg.runtime.get('low_profile'):
+                self.player.show_host_path_ipm(self.ipm, data['speed'], data['yaw_rate'])
 
         elif data['type'] == 'CIPV':
             self.cipv = data
@@ -747,10 +769,7 @@ class PCC(object):
             self.draw_rtk(img, data)
             # print('------------', data['type'], data)
 
-        elif data['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint']:
-            pass
-            # print('------------', data['type'])
-            # print('ub482 ts:', data['ts'])
+        elif data['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint', 'inspva']:
             self.draw_rtk_ub482(img, data)
             self.player.update_column_ts(data['source'], data['ts'])
         elif data['type'] == 'rtcm':
@@ -783,8 +802,14 @@ class PCC(object):
         获取视频窗口的按键事件
         :return:
         """
-        key = cv2.waitKey(1) & 0xFF
-        self.control(key)
+        if self.eclient:
+            key = BaseDraw.get_event()
+            if key and len(key) == 1:
+                key = ord(key)
+                self.control(key)
+        else:
+            key = cv2.waitKey(1) & 0xFF
+            self.control(key)
 
     def control(self, key):
         """
@@ -817,6 +842,7 @@ class PCC(object):
                 logger.debug('Pause: {}'.format(self.pause))
                 if self.pause:
                     self.pause_t = time.time()
+                    self.hub.pause(True)
                 else:
                     paused_t = time.time() - self.pause_t
                     self.hub.add_pause(paused_t)
@@ -889,7 +915,7 @@ class PCC(object):
     def left_click(self, event, x, y, flags, param):
         # print(event, x, y, flags, param)
         if cv2.EVENT_LBUTTONDOWN == event:
-            logger.debug('left btn down {} {}'.format(x , y))
+            logger.debug('left btn down {} {}'.format(x, y))
 
     def check_status(self):
         """
