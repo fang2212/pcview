@@ -176,10 +176,10 @@ def parse_novatel(msg_type, msg, ctx):
     time_status = hfields[4]
     week = int(hfields[5])
     sec = float(hfields[6])
-    rcv_status = int(hfields[7], 16)
-    bd_offset = int(hfields[9])
+    # rcv_status = int(hfields[7], 16)
+    # bd_offset = int(hfields[9])
     # print(bd_offset)
-    rsv = hfields[8]
+    # rsv = hfields[8]
     if not msg_type:
         msg_type = msg_name.lower()
 
