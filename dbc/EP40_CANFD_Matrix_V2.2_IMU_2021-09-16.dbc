@@ -1,0 +1,908 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: EPS1 IMU PDCS1 IDB1 TBOX GW_FD5 DLC GW_FD6 GW_FDD ADCSPriCAN
+
+
+BO_ 177 EPS_Fr01_0B1: 8 EPS1
+ SG_ EPS1_SteeringAngleValid : 8|1@0+ (1,0) [0|1] "NoUnit" IMU
+ SG_ EPS1_SteerAnglSpdValid : 9|1@0+ (1,0) [0|1] "NoUnit" IMU
+ SG_ EPS1_SteeringAngle : 23|16@0+ (0.0345,-780) [-780|780.021] "degree" IMU
+ SG_ EPS1_SteerAngleSpd : 39|14@0+ (0.125,-1024) [-1024|1023.75] "deg/s" IMU
+
+BO_ 227 VCU_Fr05_0E3: 8 PDCS1
+ SG_ VCU5_ActGear : 2|3@0+ (1,0) [0|7] "NoUnit" IMU
+ SG_ VCU5_ActGearValid : 3|1@0+ (1,0) [0|1] "NoUnit" IMU
+
+BO_ 293 IDB_Fr03_125: 8 IDB1
+ SG_ IDB3_VehicleSpdValid : 6|1@0+ (1,0) [0|1] "NoUnit" IMU
+ SG_ IDB3_VehicleSpd : 5|14@0+ (0.03125,0) [0|511.9375] "km/h" IMU
+
+BO_ 295 IDB_Fr04_127: 32 IDB1
+ SG_ IDB4_FLWhlVelocityValid : 9|1@0+ (1,0) [0|1] "NoUnit" IMU
+ SG_ IDB4_FLWhlVelocity : 7|14@0+ (0.03125,0) [0|511.9375] "km/h" IMU
+ SG_ IDB4_FRWhlVelocityValid : 25|1@0+ (1,0) [0|1] "NoUnit" IMU
+ SG_ IDB4_FRWhlVelocity : 23|14@0+ (0.03125,0) [0|511.9375] "km/h" IMU
+ SG_ IDB4_RRWhlVelocityValid : 72|1@0+ (1,0) [0|1] "NoUnit" IMU
+ SG_ IDB4_RLWhlVelocityValid : 73|1@0+ (1,0) [0|1] "NoUnit" IMU
+ SG_ IDB4_RLWhlVelocity : 71|14@0+ (0.03125,0) [0|511.9375] "km/h" IMU
+ SG_ IDB4_RRWhlVelocity : 87|14@0+ (0.03125,0) [0|511.9375] "km/h" IMU
+
+BO_ 325 TBOX_RTCM_Fr01_145: 64 TBOX
+ SG_ RTCM_size : 7|8@0+ (1,0) [0|60] "NoUnit" IMU
+ SG_ RTCM_num_total : 15|8@0+ (1,0) [0|255] "NoUnit" IMU
+ SG_ RTCM_num : 23|8@0+ (1,0) [0|255] "NoUnit" IMU
+ SG_ RTCM_Reserved : 31|8@0+ (1,0) [0|255] "NoUnit" IMU
+ SG_ RTCM_data : 39|64@0+ (1,0) [0|0] "" Vector_XXX
+
+BO_ 772 IMU_GGA_Fr01_304: 64 IMU
+ SG_ GPGGA_size : 7|8@0+ (1,0) [0|60] "NoUnit" TBOX,GW_FD5
+ SG_ GPGGA_num_total : 15|8@0+ (1,0) [0|255] "NoUnit" TBOX,GW_FD5
+ SG_ GPGGA_num : 23|8@0+ (1,0) [0|255] "NoUnit" TBOX,GW_FD5
+ SG_ GPGGA_Reserved : 31|8@0+ (1,0) [0|255] "NoUnit" TBOX,GW_FD5
+ SG_ GPGGA_data : 39|64@0+ (1,0) [0|0] "" Vector_XXX
+
+BO_ 1959 DIAG_PhysReq_IMU: 8 DLC
+ SG_ DiagnosticReqIMU : 7|64@0+ (1,0) [0|0] "NoUnit" IMU
+
+BO_ 1975 DIAG_PhysResp_IMU: 8 IMU
+ SG_ DiagnosticRespIMU : 7|64@0+ (1,0) [0|0] "NoUnit" GW_FD6,GW_FDD,DLC
+
+BO_ 2015 DIAG_FuncReq_7DF: 8 DLC
+ SG_ DiagnosticReqFunc : 7|64@0+ (1,0) [0|0] "NoUnit" IMU
+
+BO_ 901 HCFDRAWGNSSPVATB: 64 IMU
+ SG_ RawGnss_GpsWeek : 7|16@0+ (1,0) [0|65535] "week" TBOX,ADCSPriCAN
+ SG_ RawGnss_GpsTime : 23|32@0+ (0.001,0) [0|604800] "s" TBOX,ADCSPriCAN
+ SG_ RawGnss_PosLat : 55|36@0+ (0.00000001,-90) [-90|90] "deg" TBOX,ADCSPriCAN
+ SG_ RawGnss_PosLon : 83|36@0+ (0.00000001,-180) [-180|180] "deg" TBOX,ADCSPriCAN
+ SG_ RawGnss_PosAlt : 127|24@0+ (0.001,-5000) [-5000|10000] "m" TBOX,ADCSPriCAN
+ SG_ RawGnss_Undulation : 151|16@0- (0.01,0) [-300|300] "m" TBOX,ADCSPriCAN
+ SG_ RawGnss_VelE : 167|16@0- (0.005,0) [-150|150] "m/s" TBOX,ADCSPriCAN
+ SG_ RawGnss_VelN : 183|16@0- (0.005,0) [-150|150] "m/s" TBOX,ADCSPriCAN
+ SG_ RawGnss_VelU : 199|16@0- (0.005,0) [-150|150] "m/s" TBOX,ADCSPriCAN
+ SG_ RawGnss_StdLat : 215|16@0+ (0.001,0) [0|65] "m" TBOX,ADCSPriCAN
+ SG_ RawGnss_StdLon : 231|16@0+ (0.001,0) [0|65] "m" TBOX,ADCSPriCAN
+ SG_ RawGnss_StdAlt : 247|16@0+ (0.001,0) [0|65] "m" TBOX,ADCSPriCAN
+ SG_ RawGnss_StdVelE : 263|12@0+ (0.01,0) [0|40] "m/s" TBOX,ADCSPriCAN
+ SG_ RawGnss_StdVelN : 267|12@0+ (0.01,0) [0|40] "m/s" TBOX,ADCSPriCAN
+ SG_ RawGnss_StdVelU : 287|12@0+ (0.01,0) [0|40] "m/s" TBOX,ADCSPriCAN
+ SG_ RawGnss_Age : 291|12@0+ (0.1,0) [0|400] "s" TBOX,ADCSPriCAN
+ SG_ RawGnss_PosType : 311|8@0+ (1,0) [0|255] "" TBOX,ADCSPriCAN
+ SG_ RawGnss_NumSats : 319|8@0+ (1,0) [0|255] "" TBOX,ADCSPriCAN
+ SG_ RawGnss_Leaps : 327|8@0+ (1,0) [0|255] "s" TBOX,ADCSPriCAN
+ SG_ RawGnss_Hdop : 335|12@0+ (0.1,0) [0|100] "" TBOX,ADCSPriCAN
+ SG_ RawGnss_Pdop : 339|12@0+ (0.1,0) [0|100] "" TBOX,ADCSPriCAN
+ SG_ RawGnss_Vdop : 359|12@0+ (0.1,0) [0|100] "" TBOX,ADCSPriCAN
+ SG_ RawGnss_Tdop : 363|12@0+ (0.1,0) [0|100] "" TBOX,ADCSPriCAN
+ SG_ RawGnss_Gdop : 383|12@0+ (0.1,0) [0|100] "" TBOX,ADCSPriCAN
+ SG_ RawGnss_BaseLine : 387|12@0+ (0.01,0) [0|40] "m" TBOX,ADCSPriCAN
+ SG_ RawGnss_Speed : 407|16@0+ (0.01,0) [0|300] "m/s" TBOX,ADCSPriCAN
+ SG_ RawGnss_Heading : 423|16@0+ (0.01,0) [0|360] "deg" TBOX,ADCSPriCAN
+ SG_ RawGnss_PosType2 : 439|8@0+ (1,0) [0|255] "" TBOX,ADCSPriCAN
+ SG_ RawGnss_NumSats2 : 447|8@0+ (1,0) [0|255] "" TBOX,ADCSPriCAN
+ SG_ RawGnss_Heading2 : 455|16@0+ (0.01,0) [0|360] "deg" TBOX,ADCSPriCAN
+ SG_ RawGnss_Pitch2 : 471|16@0- (0.01,0) [-90|90] "deg" TBOX,ADCSPriCAN
+ SG_ RawGnss_StdHeading2 : 487|16@0+ (0.01,0) [0|360] "deg" TBOX,ADCSPriCAN
+ SG_ RawGnss_StdPitch2 : 503|16@0+ (0.01,0) [0|360] "deg" TBOX,ADCSPriCAN
+
+BO_ 902 HCFDRAWIMUB: 24 IMU
+ SG_ RawIMU_GpsWeek : 7|16@0+ (1,0) [0|65535] "week" ADCSPriCAN
+ SG_ RawIMU_GpsTime : 23|32@0+ (0.001,0) [0|604800] "s" ADCSPriCAN
+ SG_ RawIMU_GyroX : 55|20@0+ (0.001,-500) [-500|500] "deg/s" ADCSPriCAN
+ SG_ RawIMU_GyroY : 67|20@0+ (0.001,-500) [-500|500] "deg/s" ADCSPriCAN
+ SG_ RawIMU_GyroZ : 95|20@0+ (0.001,-500) [-500|500] "deg/s" ADCSPriCAN
+ SG_ RawIMU_AccelX : 107|20@0+ (0.00002,-10) [-10|10] "g" ADCSPriCAN
+ SG_ RawIMU_AccelY : 135|20@0+ (0.00002,-10) [-10|10] "g" ADCSPriCAN
+ SG_ RawIMU_AccelZ : 147|20@0+ (0.00002,-10) [-10|10] "g" ADCSPriCAN
+ SG_ RawIMU_Temp : 175|16@0- (0.01,0) [-50|150] "℃" ADCSPriCAN
+ SG_ RawIMU_cnt : 191|8@0+ (1,0) [0|99] "" ADCSPriCAN
+
+BO_ 903 HCFDRAWIMUVB: 24 IMU
+ SG_ RawIMU_GpsWeek : 7|16@0+ (1,0) [0|65535] "week" ADCSPriCAN
+ SG_ RawIMU_GpsTime : 23|32@0+ (0.001,0) [0|604800] "s" ADCSPriCAN
+ SG_ RawIMU_VehicleGyroX : 55|20@0+ (0.001,-500) [-500|500] "deg/s" ADCSPriCAN
+ SG_ RawIMU_VehicleGyroY : 67|20@0+ (0.001,-500) [-500|500] "deg/s" ADCSPriCAN
+ SG_ RawIMU_VehicleGyroZ : 95|20@0+ (0.001,-500) [-500|500] "deg/s" ADCSPriCAN
+ SG_ RawIMU_VehicleAccelX : 107|20@0+ (0.00002,-10) [-10|10] "g" ADCSPriCAN
+ SG_ RawIMU_VehicleAccelY : 135|20@0+ (0.00002,-10) [-10|10] "g" ADCSPriCAN
+ SG_ RawIMU_VehicleAccelZ : 147|20@0+ (0.00002,-10) [-10|10] "g" ADCSPriCAN
+ SG_ RawIMU_Temp : 175|16@0- (0.01,0) [-50|150] "℃" ADCSPriCAN
+ SG_ RawIMU_cnt : 191|8@0+ (1,0) [0|99] "" ADCSPriCAN
+
+BO_ 904 HCFDINSPVATB: 64 IMU
+ SG_ INS_GpsWeek : 7|16@0+ (1,0) [0|65535] "week" ADCSPriCAN
+ SG_ INS_GpsTime : 23|32@0+ (0.001,0) [0|604800] "s" ADCSPriCAN
+ SG_ INS_VehicleGyroX : 55|20@0+ (0.001,-500) [-500|500] "deg/s" ADCSPriCAN
+ SG_ INS_VehicleGyroY : 67|20@0+ (0.001,-500) [-500|500] "deg/s" ADCSPriCAN
+ SG_ INS_VehicleGyroZ : 95|20@0+ (0.001,-500) [-500|500] "deg/s" ADCSPriCAN
+ SG_ INS_VehicleAccelX : 107|20@0+ (0.00002,-10) [-10|10] "g" ADCSPriCAN
+ SG_ INS_VehicleAccelY : 135|20@0+ (0.00002,-10) [-10|10] "g" ADCSPriCAN
+ SG_ INS_VehicleAccelZ : 147|20@0+ (0.00002,-10) [-10|10] "g" ADCSPriCAN
+ SG_ INS_PosLat : 175|36@0+ (0.00000001,-90) [-90|90] "deg" ADCSPriCAN
+ SG_ INS_PosLon : 203|36@0+ (0.00000001,-180) [-180|180] "deg" ADCSPriCAN
+ SG_ INS_PosAlt : 247|24@0+ (0.001,-5000) [-5000|10000] "m" ADCSPriCAN
+ SG_ INS_VelE : 271|16@0- (0.005,0) [-150|150] "m/s" ADCSPriCAN
+ SG_ INS_VelN : 287|16@0- (0.005,0) [-150|150] "m/s" ADCSPriCAN
+ SG_ INS_VelU : 303|16@0- (0.005,0) [-150|150] "m/s" ADCSPriCAN
+ SG_ INS_Pitch : 319|16@0- (0.01,0) [-90|90] "deg" ADCSPriCAN
+ SG_ INS_Roll : 335|16@0- (0.01,0) [-180|180] "deg" ADCSPriCAN
+ SG_ INS_Yaw : 351|16@0- (0.01,0) [-180|180] "deg" ADCSPriCAN
+ SG_ INS_StdLat : 367|12@0+ (0.01,0) [0|40] "m" ADCSPriCAN
+ SG_ INS_StdLon : 371|12@0+ (0.01,0) [0|40] "m" ADCSPriCAN
+ SG_ INS_StdAlt : 391|12@0+ (0.01,0) [0|40] "m" ADCSPriCAN
+ SG_ INS_StdVelE : 395|12@0+ (0.01,0) [0|40] "m/s" ADCSPriCAN
+ SG_ INS_StdVelN : 415|12@0+ (0.01,0) [0|40] "m/s" ADCSPriCAN
+ SG_ INS_StdVelU : 419|12@0+ (0.01,0) [0|40] "m/s" ADCSPriCAN
+ SG_ INS_StdPitch : 439|12@0+ (0.01,0) [0|40] "deg" ADCSPriCAN
+ SG_ INS_StdRoll : 443|12@0+ (0.01,0) [0|40] "deg" ADCSPriCAN
+ SG_ INS_StdYaw : 463|12@0+ (0.01,0) [0|40] "deg" ADCSPriCAN
+ SG_ INS_Heading : 467|16@0+ (0.01,0) [0|360] "deg" ADCSPriCAN
+ SG_ INS_StatPos : 499|4@0+ (1,0) [0|15] "" ADCSPriCAN
+ SG_ INS_StatIns : 501|2@0+ (1,0) [0|3] "" ADCSPriCAN
+ SG_ INS_Speed : 483|14@0+ (0.01,0) [0|150] "m/s" ADCSPriCAN
+ SG_ INS_SensorUsed : 511|8@0+ (1,0) [0|255] "" ADCSPriCAN
+
+BO_ 906 HCFDTIMEB: 16 IMU
+ SG_ TIME_GPS_week : 7|16@0+ (1,0) [0|65535] "week" ADCSPriCAN
+ SG_ TIME_GPS_second : 23|32@0+ (0.001,0) [0|604800] "s" ADCSPriCAN
+ SG_ TIME_UTC_mon : 59|4@0+ (1,0) [0|12] "mon" ADCSPriCAN
+ SG_ TIME_UTC_year : 55|12@0+ (1,0) [0|4095] "year" ADCSPriCAN
+ SG_ TIME_UTC_date : 71|5@0+ (1,0) [0|31] "date" ADCSPriCAN
+ SG_ TIME_UTC_min : 77|6@0+ (1,0) [0|60] "min" ADCSPriCAN
+ SG_ TIME_UTC_hr : 66|5@0+ (1,0) [0|24] "hour" ADCSPriCAN
+ SG_ TIME_UTC_sec : 87|16@0+ (0.001,0) [0|60] "s" ADCSPriCAN
+ SG_ TIME_Second_ms : 103|20@0+ (0.000001,0) [0|1] "ms" ADCSPriCAN
+
+
+CM_ SG_ 177 EPS1_SteeringAngleValid "方向盘转角有效位";
+CM_ SG_ 177 EPS1_SteerAnglSpdValid "方向盘角速度有效位";
+CM_ SG_ 177 EPS1_SteeringAngle "方向盘转角（左正右负）";
+CM_ SG_ 177 EPS1_SteerAngleSpd "方向盘角速度（左正右负）";
+CM_ SG_ 227 VCU5_ActGear "Actual gear (VCU)";
+CM_ SG_ 227 VCU5_ActGearValid "Actual gear validity(VCU)";
+CM_ SG_ 293 IDB3_VehicleSpdValid "Vehicle Speed Status 车速有效位";
+CM_ SG_ 293 IDB3_VehicleSpd "Vehicle Speed 车速";
+CM_ SG_ 295 IDB4_FLWhlVelocityValid "Wheel Ground Velocity FL Valid";
+CM_ SG_ 295 IDB4_FLWhlVelocity "Wheel Ground Velocity FL";
+CM_ SG_ 295 IDB4_FRWhlVelocityValid "Wheel Ground Velocity FR Valid";
+CM_ SG_ 295 IDB4_FRWhlVelocity "Wheel Ground Velocity FR";
+CM_ SG_ 295 IDB4_RRWhlVelocityValid "Wheel Ground Velocity RR Valid";
+CM_ SG_ 295 IDB4_RLWhlVelocityValid "Wheel Ground Velocity RL Valid";
+CM_ SG_ 295 IDB4_RLWhlVelocity "Wheel Ground Velocity RL";
+CM_ SG_ 295 IDB4_RRWhlVelocity "Wheel Ground Velocity RR";
+
+BA_DEF_ SG_ "GenSigSendType" ENUM "Cycle","OnChange","OnWrite","IfActive","OnChangeWithRepetition","OnWriteWithRepetition","IfActiveWithRepetition","NoSigSendType","OnChangeAndIfActive","OnChangeAndIfActiveWithRepetition","CA","CE","Event","Cyclic";
+BA_DEF_ SG_ "SPN" INT 0 0;
+BA_DEF_ SG_ "E2EProfile" STRING ;
+BA_DEF_ SG_ "GenSigInactiveValue" HEX 0 0;
+BA_DEF_ SG_ "GenSigRoutingTimeoutValue" HEX 0 0;
+BA_DEF_ SG_ "GenSigStartValue" HEX 0 0;
+BA_DEF_ SG_ "GenSigInvalidValue" HEX 0 0;
+BA_DEF_ SG_ "GenSigDataID" STRING ;
+BA_DEF_ BU_ "NmCAN" INT 1 2;
+BA_DEF_ BU_ "CAN_LIN_Gateway" ENUM "Yes","No";
+BA_DEF_ BU_ "NodeLayerModules" STRING ;
+BA_DEF_ BU_ "CANoeStartDelay" INT 0 10;
+BA_DEF_ BU_ "BootloaderNode" ENUM "No","Yes";
+BA_DEF_ BU_ "CANoeDrift" INT 0 0;
+BA_DEF_ BU_ "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_ "NmStationAddress" HEX 0 241;
+BA_DEF_ BU_ "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_ "NmNode" ENUM "Yes","No";
+BA_DEF_ BU_ "ECUDisplayName" STRING ;
+BA_DEF_ BU_ "ILUsed" ENUM "No","Yes";
+BA_DEF_ BU_ "CAN_CAN_Gateway" ENUM "Yes","No";
+BA_DEF_ BU_ "TerminalNode" ENUM "No","Yes";
+BA_DEF_ "VersionMonth" INT 0 12;
+BA_DEF_ "Manufacturer" STRING ;
+BA_DEF_ "VersionDay" INT 0 31;
+BA_DEF_ "Baudrate" INT 0 10000000;
+BA_DEF_ "NmMessageCount" INT 0 255;
+BA_DEF_ "ILTxTimeout" INT 0 100;
+BA_DEF_ "NmBaseAddress" HEX 0 2047;
+BA_DEF_ "BusType" STRING ;
+BA_DEF_ "VersionYear" INT 2010 2999;
+BA_DEF_ "VersionNumber" INT 0 99;
+BA_DEF_ "ProtocolType" STRING ;
+BA_DEF_ "DBName" STRING ;
+BA_DEF_ "NmType" STRING ;
+BA_DEF_ BO_ "DiagResponse" ENUM "No","Yes";
+BA_DEF_ BO_ "DiagState" ENUM "No","Yes";
+BA_DEF_ BO_ "CANFD_BRS" ENUM "0","1";
+BA_DEF_ BO_ "GenMsgCycleTimeFast" INT 0 0;
+BA_DEF_ BO_ "GenMsgSendType" ENUM "Cycle","NoMsgSendType","IfActive","Event","CA","CE","Cyclic";
+BA_DEF_ BO_ "GenMsgNrOfRepetition" INT 0 0;
+BA_DEF_ BO_ "GenMsgStartDelayTime" INT 0 0;
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 0;
+BA_DEF_ BO_ "GenMsgDelayTime" INT 0 0;
+BA_DEF_ BO_ "DiagRequest" ENUM "No","Yes";
+BA_DEF_ BO_ "StartDelay" INT 0 0;
+BA_DEF_ BO_ "NmMessage" ENUM "No","Yes";
+BA_DEF_ BO_ "GenMsgILSupport" ENUM "No","Yes";
+BA_DEF_ BO_ "VFrameFormat" ENUM "StandardCAN","ExtendedCAN","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","StandardCAN_FD","ExtendedCAN_FD";
+BA_DEF_DEF_ "GenSigSendType" "Cycle";
+BA_DEF_DEF_ "SPN" 0;
+BA_DEF_DEF_ "E2EProfile" "";
+BA_DEF_DEF_ "GenSigInactiveValue" 0;
+BA_DEF_DEF_ "GenSigRoutingTimeoutValue" 0;
+BA_DEF_DEF_ "GenSigStartValue" 0;
+BA_DEF_DEF_ "GenSigInvalidValue" 0;
+BA_DEF_DEF_ "GenSigDataID" "";
+BA_DEF_DEF_ "NmCAN" 2;
+BA_DEF_DEF_ "CAN_LIN_Gateway" "No";
+BA_DEF_DEF_ "NodeLayerModules" "OSEKNM01.dll,CANoeILNLVector.dll";
+BA_DEF_DEF_ "CANoeStartDelay" 0;
+BA_DEF_DEF_ "BootloaderNode" "No";
+BA_DEF_DEF_ "CANoeDrift" 0;
+BA_DEF_DEF_ "CANoeJitterMin" 0;
+BA_DEF_DEF_ "NmStationAddress" 0;
+BA_DEF_DEF_ "CANoeJitterMax" 0;
+BA_DEF_DEF_ "NmNode" "No";
+BA_DEF_DEF_ "ECUDisplayName" "";
+BA_DEF_DEF_ "ILUsed" "Yes";
+BA_DEF_DEF_ "CAN_CAN_Gateway" "No";
+BA_DEF_DEF_ "TerminalNode" "No";
+BA_DEF_DEF_ "VersionMonth" 0;
+BA_DEF_DEF_ "Manufacturer" "";
+BA_DEF_DEF_ "VersionDay" 0;
+BA_DEF_DEF_ "Baudrate" 2000000;
+BA_DEF_DEF_ "NmMessageCount" 128;
+BA_DEF_DEF_ "ILTxTimeout" 0;
+BA_DEF_DEF_ "NmBaseAddress" 1536;
+BA_DEF_DEF_ "BusType" "CAN";
+BA_DEF_DEF_ "VersionYear" 2019;
+BA_DEF_DEF_ "VersionNumber" 0;
+BA_DEF_DEF_ "ProtocolType" "";
+BA_DEF_DEF_ "DBName" "";
+BA_DEF_DEF_ "NmType" "NmAsr";
+BA_DEF_DEF_ "DiagResponse" "No";
+BA_DEF_DEF_ "DiagState" "No";
+BA_DEF_DEF_ "CANFD_BRS" "1";
+BA_DEF_DEF_ "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_ "GenMsgSendType" "Cycle";
+BA_DEF_DEF_ "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_ "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_ "GenMsgCycleTime" 100;
+BA_DEF_DEF_ "GenMsgDelayTime" 0;
+BA_DEF_DEF_ "DiagRequest" "No";
+BA_DEF_DEF_ "StartDelay" 0;
+BA_DEF_DEF_ "NmMessage" "No";
+BA_DEF_DEF_ "GenMsgILSupport" "Yes";
+BA_DEF_DEF_ "VFrameFormat" "StandardCAN";
+BA_ "BusType" "CAN FD";
+BA_ "DBName" "IMU";
+BA_ "GenMsgNrOfRepetition" BO_ 177 0;
+BA_ "GenMsgCycleTime" BO_ 177 10;
+BA_ "GenMsgDelayTime" BO_ 177 0;
+BA_ "GenMsgCycleTimeFast" BO_ 177 0;
+BA_ "GenMsgSendType" BO_ 177 0;
+BA_ "GenMsgStartDelayTime" BO_ 177 0;
+BA_ "VFrameFormat" BO_ 177 14;
+BA_ "GenMsgNrOfRepetition" BO_ 227 0;
+BA_ "GenMsgCycleTime" BO_ 227 20;
+BA_ "GenMsgDelayTime" BO_ 227 0;
+BA_ "GenMsgCycleTimeFast" BO_ 227 0;
+BA_ "GenMsgSendType" BO_ 227 0;
+BA_ "GenMsgStartDelayTime" BO_ 227 0;
+BA_ "VFrameFormat" BO_ 227 14;
+BA_ "GenMsgNrOfRepetition" BO_ 293 0;
+BA_ "GenMsgCycleTime" BO_ 293 20;
+BA_ "GenMsgDelayTime" BO_ 293 0;
+BA_ "GenMsgCycleTimeFast" BO_ 293 0;
+BA_ "GenMsgSendType" BO_ 293 0;
+BA_ "GenMsgStartDelayTime" BO_ 293 0;
+BA_ "VFrameFormat" BO_ 293 14;
+BA_ "GenMsgNrOfRepetition" BO_ 295 0;
+BA_ "GenMsgCycleTime" BO_ 295 20;
+BA_ "GenMsgDelayTime" BO_ 295 0;
+BA_ "GenMsgCycleTimeFast" BO_ 295 0;
+BA_ "GenMsgSendType" BO_ 295 0;
+BA_ "GenMsgStartDelayTime" BO_ 295 0;
+BA_ "VFrameFormat" BO_ 295 14;
+BA_ "GenMsgNrOfRepetition" BO_ 325 0;
+BA_ "GenMsgCycleTime" BO_ 325 20;
+BA_ "GenMsgDelayTime" BO_ 325 0;
+BA_ "GenMsgCycleTimeFast" BO_ 325 0;
+BA_ "GenMsgSendType" BO_ 325 0;
+BA_ "GenMsgStartDelayTime" BO_ 325 0;
+BA_ "VFrameFormat" BO_ 325 14;
+BA_ "GenMsgNrOfRepetition" BO_ 772 0;
+BA_ "GenMsgCycleTime" BO_ 772 200;
+BA_ "GenMsgDelayTime" BO_ 772 0;
+BA_ "GenMsgCycleTimeFast" BO_ 772 0;
+BA_ "GenMsgSendType" BO_ 772 0;
+BA_ "GenMsgStartDelayTime" BO_ 772 0;
+BA_ "VFrameFormat" BO_ 772 14;
+BA_ "GenMsgNrOfRepetition" BO_ 1959 0;
+BA_ "GenMsgCycleTime" BO_ 1959 0;
+BA_ "GenMsgDelayTime" BO_ 1959 0;
+BA_ "GenMsgCycleTimeFast" BO_ 1959 0;
+BA_ "DiagRequest" BO_ 1959 1;
+BA_ "GenMsgSendType" BO_ 1959 2;
+BA_ "GenMsgStartDelayTime" BO_ 1959 0;
+BA_ "VFrameFormat" BO_ 1959 14;
+BA_ "GenMsgNrOfRepetition" BO_ 1975 0;
+BA_ "GenMsgCycleTime" BO_ 1975 0;
+BA_ "GenMsgDelayTime" BO_ 1975 0;
+BA_ "GenMsgCycleTimeFast" BO_ 1975 0;
+BA_ "DiagRequest" BO_ 1975 1;
+BA_ "GenMsgSendType" BO_ 1975 2;
+BA_ "GenMsgStartDelayTime" BO_ 1975 0;
+BA_ "VFrameFormat" BO_ 1975 14;
+BA_ "GenMsgNrOfRepetition" BO_ 2015 0;
+BA_ "GenMsgCycleTime" BO_ 2015 0;
+BA_ "GenMsgDelayTime" BO_ 2015 0;
+BA_ "GenMsgCycleTimeFast" BO_ 2015 0;
+BA_ "DiagRequest" BO_ 2015 1;
+BA_ "GenMsgSendType" BO_ 2015 2;
+BA_ "GenMsgStartDelayTime" BO_ 2015 0;
+BA_ "VFrameFormat" BO_ 2015 14;
+BA_ "GenMsgNrOfRepetition" BO_ 901 0;
+BA_ "GenMsgCycleTime" BO_ 901 200;
+BA_ "GenMsgDelayTime" BO_ 901 0;
+BA_ "GenMsgCycleTimeFast" BO_ 901 0;
+BA_ "GenMsgSendType" BO_ 901 6;
+BA_ "GenMsgStartDelayTime" BO_ 901 0;
+BA_ "VFrameFormat" BO_ 901 14;
+BA_ "GenMsgNrOfRepetition" BO_ 902 0;
+BA_ "GenMsgCycleTime" BO_ 902 10;
+BA_ "GenMsgDelayTime" BO_ 902 0;
+BA_ "GenMsgCycleTimeFast" BO_ 902 0;
+BA_ "GenMsgSendType" BO_ 902 6;
+BA_ "GenMsgStartDelayTime" BO_ 902 0;
+BA_ "VFrameFormat" BO_ 902 14;
+BA_ "GenMsgNrOfRepetition" BO_ 903 0;
+BA_ "GenMsgCycleTime" BO_ 903 10;
+BA_ "GenMsgDelayTime" BO_ 903 0;
+BA_ "GenMsgCycleTimeFast" BO_ 903 0;
+BA_ "GenMsgSendType" BO_ 903 6;
+BA_ "GenMsgStartDelayTime" BO_ 903 0;
+BA_ "VFrameFormat" BO_ 903 14;
+BA_ "GenMsgNrOfRepetition" BO_ 904 0;
+BA_ "GenMsgCycleTime" BO_ 904 10;
+BA_ "GenMsgDelayTime" BO_ 904 0;
+BA_ "GenMsgCycleTimeFast" BO_ 904 0;
+BA_ "GenMsgSendType" BO_ 904 6;
+BA_ "GenMsgStartDelayTime" BO_ 904 0;
+BA_ "VFrameFormat" BO_ 904 14;
+BA_ "GenMsgNrOfRepetition" BO_ 906 0;
+BA_ "GenMsgCycleTime" BO_ 906 1000;
+BA_ "GenMsgDelayTime" BO_ 906 0;
+BA_ "GenMsgCycleTimeFast" BO_ 906 0;
+BA_ "GenMsgSendType" BO_ 906 6;
+BA_ "GenMsgStartDelayTime" BO_ 906 0;
+BA_ "VFrameFormat" BO_ 906 14;
+BA_ "GenSigInvalidValue" SG_ 177 EPS1_SteeringAngleValid 0;
+BA_ "GenSigStartValue" SG_ 177 EPS1_SteeringAngleValid 0;
+BA_ "GenSigInactiveValue" SG_ 177 EPS1_SteeringAngleValid 0;
+BA_ "GenSigSendType" SG_ 177 EPS1_SteeringAngleValid 0;
+BA_ "GenSigInvalidValue" SG_ 177 EPS1_SteerAnglSpdValid 0;
+BA_ "GenSigStartValue" SG_ 177 EPS1_SteerAnglSpdValid 0;
+BA_ "GenSigInactiveValue" SG_ 177 EPS1_SteerAnglSpdValid 0;
+BA_ "GenSigSendType" SG_ 177 EPS1_SteerAnglSpdValid 0;
+BA_ "GenSigInvalidValue" SG_ 177 EPS1_SteeringAngle 0;
+BA_ "GenSigStartValue" SG_ 177 EPS1_SteeringAngle 0;
+BA_ "GenSigInactiveValue" SG_ 177 EPS1_SteeringAngle 0;
+BA_ "GenSigSendType" SG_ 177 EPS1_SteeringAngle 0;
+BA_ "GenSigInvalidValue" SG_ 177 EPS1_SteerAngleSpd 0;
+BA_ "GenSigStartValue" SG_ 177 EPS1_SteerAngleSpd 0;
+BA_ "GenSigInactiveValue" SG_ 177 EPS1_SteerAngleSpd 0;
+BA_ "GenSigSendType" SG_ 177 EPS1_SteerAngleSpd 0;
+BA_ "GenSigInvalidValue" SG_ 227 VCU5_ActGear 0;
+BA_ "GenSigStartValue" SG_ 227 VCU5_ActGear 0;
+BA_ "GenSigInactiveValue" SG_ 227 VCU5_ActGear 0;
+BA_ "GenSigSendType" SG_ 227 VCU5_ActGear 0;
+BA_ "GenSigInvalidValue" SG_ 227 VCU5_ActGearValid 0;
+BA_ "GenSigStartValue" SG_ 227 VCU5_ActGearValid 0;
+BA_ "GenSigInactiveValue" SG_ 227 VCU5_ActGearValid 0;
+BA_ "GenSigSendType" SG_ 227 VCU5_ActGearValid 0;
+BA_ "GenSigInvalidValue" SG_ 293 IDB3_VehicleSpdValid 0;
+BA_ "GenSigStartValue" SG_ 293 IDB3_VehicleSpdValid 0;
+BA_ "GenSigInactiveValue" SG_ 293 IDB3_VehicleSpdValid 0;
+BA_ "GenSigSendType" SG_ 293 IDB3_VehicleSpdValid 0;
+BA_ "GenSigInvalidValue" SG_ 293 IDB3_VehicleSpd 0;
+BA_ "GenSigStartValue" SG_ 293 IDB3_VehicleSpd 0;
+BA_ "GenSigInactiveValue" SG_ 293 IDB3_VehicleSpd 0;
+BA_ "GenSigSendType" SG_ 293 IDB3_VehicleSpd 0;
+BA_ "GenSigInvalidValue" SG_ 295 IDB4_FLWhlVelocityValid 0;
+BA_ "GenSigStartValue" SG_ 295 IDB4_FLWhlVelocityValid 0;
+BA_ "GenSigInactiveValue" SG_ 295 IDB4_FLWhlVelocityValid 0;
+BA_ "GenSigSendType" SG_ 295 IDB4_FLWhlVelocityValid 0;
+BA_ "GenSigInvalidValue" SG_ 295 IDB4_FLWhlVelocity 0;
+BA_ "GenSigStartValue" SG_ 295 IDB4_FLWhlVelocity 0;
+BA_ "GenSigInactiveValue" SG_ 295 IDB4_FLWhlVelocity 0;
+BA_ "GenSigSendType" SG_ 295 IDB4_FLWhlVelocity 0;
+BA_ "GenSigInvalidValue" SG_ 295 IDB4_FRWhlVelocityValid 0;
+BA_ "GenSigStartValue" SG_ 295 IDB4_FRWhlVelocityValid 0;
+BA_ "GenSigInactiveValue" SG_ 295 IDB4_FRWhlVelocityValid 0;
+BA_ "GenSigSendType" SG_ 295 IDB4_FRWhlVelocityValid 0;
+BA_ "GenSigInvalidValue" SG_ 295 IDB4_FRWhlVelocity 0;
+BA_ "GenSigStartValue" SG_ 295 IDB4_FRWhlVelocity 0;
+BA_ "GenSigInactiveValue" SG_ 295 IDB4_FRWhlVelocity 0;
+BA_ "GenSigSendType" SG_ 295 IDB4_FRWhlVelocity 0;
+BA_ "GenSigInvalidValue" SG_ 295 IDB4_RRWhlVelocityValid 0;
+BA_ "GenSigStartValue" SG_ 295 IDB4_RRWhlVelocityValid 0;
+BA_ "GenSigInactiveValue" SG_ 295 IDB4_RRWhlVelocityValid 0;
+BA_ "GenSigSendType" SG_ 295 IDB4_RRWhlVelocityValid 0;
+BA_ "GenSigInvalidValue" SG_ 295 IDB4_RLWhlVelocityValid 0;
+BA_ "GenSigStartValue" SG_ 295 IDB4_RLWhlVelocityValid 0;
+BA_ "GenSigInactiveValue" SG_ 295 IDB4_RLWhlVelocityValid 0;
+BA_ "GenSigSendType" SG_ 295 IDB4_RLWhlVelocityValid 0;
+BA_ "GenSigInvalidValue" SG_ 295 IDB4_RLWhlVelocity 0;
+BA_ "GenSigStartValue" SG_ 295 IDB4_RLWhlVelocity 0;
+BA_ "GenSigInactiveValue" SG_ 295 IDB4_RLWhlVelocity 0;
+BA_ "GenSigSendType" SG_ 295 IDB4_RLWhlVelocity 0;
+BA_ "GenSigInvalidValue" SG_ 295 IDB4_RRWhlVelocity 0;
+BA_ "GenSigStartValue" SG_ 295 IDB4_RRWhlVelocity 0;
+BA_ "GenSigInactiveValue" SG_ 295 IDB4_RRWhlVelocity 0;
+BA_ "GenSigSendType" SG_ 295 IDB4_RRWhlVelocity 0;
+BA_ "GenSigInvalidValue" SG_ 325 RTCM_size 0;
+BA_ "GenSigStartValue" SG_ 325 RTCM_size 0;
+BA_ "GenSigInactiveValue" SG_ 325 RTCM_size 0;
+BA_ "GenSigSendType" SG_ 325 RTCM_size 13;
+BA_ "GenSigInvalidValue" SG_ 325 RTCM_num_total 0;
+BA_ "GenSigStartValue" SG_ 325 RTCM_num_total 0;
+BA_ "GenSigInactiveValue" SG_ 325 RTCM_num_total 0;
+BA_ "GenSigSendType" SG_ 325 RTCM_num_total 13;
+BA_ "GenSigInvalidValue" SG_ 325 RTCM_num 0;
+BA_ "GenSigStartValue" SG_ 325 RTCM_num 0;
+BA_ "GenSigInactiveValue" SG_ 325 RTCM_num 0;
+BA_ "GenSigSendType" SG_ 325 RTCM_num 13;
+BA_ "GenSigInvalidValue" SG_ 325 RTCM_Reserved 0;
+BA_ "GenSigStartValue" SG_ 325 RTCM_Reserved 0;
+BA_ "GenSigInactiveValue" SG_ 325 RTCM_Reserved 0;
+BA_ "GenSigSendType" SG_ 325 RTCM_Reserved 13;
+BA_ "GenSigInvalidValue" SG_ 325 RTCM_data 0;
+BA_ "GenSigStartValue" SG_ 325 RTCM_data 0;
+BA_ "GenSigInactiveValue" SG_ 325 RTCM_data 0;
+BA_ "GenSigSendType" SG_ 325 RTCM_data 13;
+BA_ "GenSigInvalidValue" SG_ 772 GPGGA_size 0;
+BA_ "GenSigStartValue" SG_ 772 GPGGA_size 0;
+BA_ "GenSigInactiveValue" SG_ 772 GPGGA_size 0;
+BA_ "GenSigSendType" SG_ 772 GPGGA_size 13;
+BA_ "GenSigInvalidValue" SG_ 772 GPGGA_num_total 0;
+BA_ "GenSigStartValue" SG_ 772 GPGGA_num_total 0;
+BA_ "GenSigInactiveValue" SG_ 772 GPGGA_num_total 0;
+BA_ "GenSigSendType" SG_ 772 GPGGA_num_total 13;
+BA_ "GenSigInvalidValue" SG_ 772 GPGGA_num 0;
+BA_ "GenSigStartValue" SG_ 772 GPGGA_num 0;
+BA_ "GenSigInactiveValue" SG_ 772 GPGGA_num 0;
+BA_ "GenSigSendType" SG_ 772 GPGGA_num 13;
+BA_ "GenSigInvalidValue" SG_ 772 GPGGA_Reserved 0;
+BA_ "GenSigStartValue" SG_ 772 GPGGA_Reserved 0;
+BA_ "GenSigInactiveValue" SG_ 772 GPGGA_Reserved 0;
+BA_ "GenSigSendType" SG_ 772 GPGGA_Reserved 13;
+BA_ "GenSigInvalidValue" SG_ 772 GPGGA_data 0;
+BA_ "GenSigStartValue" SG_ 772 GPGGA_data 0;
+BA_ "GenSigInactiveValue" SG_ 772 GPGGA_data 0;
+BA_ "GenSigSendType" SG_ 772 GPGGA_data 13;
+BA_ "GenSigInvalidValue" SG_ 1959 DiagnosticReqIMU 0;
+BA_ "GenSigStartValue" SG_ 1959 DiagnosticReqIMU 0;
+BA_ "GenSigInactiveValue" SG_ 1959 DiagnosticReqIMU 0;
+BA_ "GenSigSendType" SG_ 1959 DiagnosticReqIMU 3;
+BA_ "GenSigInvalidValue" SG_ 1975 DiagnosticRespIMU 0;
+BA_ "GenSigStartValue" SG_ 1975 DiagnosticRespIMU 0;
+BA_ "GenSigInactiveValue" SG_ 1975 DiagnosticRespIMU 0;
+BA_ "GenSigSendType" SG_ 1975 DiagnosticRespIMU 3;
+BA_ "GenSigInvalidValue" SG_ 2015 DiagnosticReqFunc 0;
+BA_ "GenSigStartValue" SG_ 2015 DiagnosticReqFunc 0;
+BA_ "GenSigInactiveValue" SG_ 2015 DiagnosticReqFunc 0;
+BA_ "GenSigSendType" SG_ 2015 DiagnosticReqFunc 3;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_GpsWeek 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_GpsWeek 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_GpsWeek 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_GpsWeek 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_GpsTime 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_GpsTime 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_GpsTime 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_GpsTime 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_PosLat 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_PosLat 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_PosLat 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_PosLat 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_PosLon 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_PosLon 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_PosLon 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_PosLon 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_PosAlt 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_PosAlt 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_PosAlt 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_PosAlt 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Undulation 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Undulation 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Undulation 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Undulation 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_VelE 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_VelE 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_VelE 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_VelE 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_VelN 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_VelN 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_VelN 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_VelN 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_VelU 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_VelU 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_VelU 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_VelU 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_StdLat 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_StdLat 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_StdLat 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_StdLat 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_StdLon 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_StdLon 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_StdLon 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_StdLon 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_StdAlt 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_StdAlt 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_StdAlt 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_StdAlt 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_StdVelE 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_StdVelE 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_StdVelE 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_StdVelE 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_StdVelN 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_StdVelN 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_StdVelN 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_StdVelN 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_StdVelU 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_StdVelU 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_StdVelU 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_StdVelU 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Age 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Age 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Age 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Age 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_PosType 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_PosType 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_PosType 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_PosType 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_NumSats 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_NumSats 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_NumSats 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_NumSats 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Leaps 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Leaps 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Leaps 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Leaps 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Hdop 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Hdop 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Hdop 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Hdop 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Pdop 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Pdop 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Pdop 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Pdop 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Vdop 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Vdop 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Vdop 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Vdop 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Tdop 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Tdop 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Tdop 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Tdop 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Gdop 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Gdop 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Gdop 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Gdop 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_BaseLine 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_BaseLine 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_BaseLine 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_BaseLine 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Speed 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Speed 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Speed 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Speed 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Heading 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Heading 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Heading 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Heading 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_PosType2 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_PosType2 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_PosType2 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_PosType2 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_NumSats2 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_NumSats2 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_NumSats2 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_NumSats2 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Heading2 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Heading2 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Heading2 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Heading2 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_Pitch2 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_Pitch2 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_Pitch2 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_Pitch2 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_StdHeading2 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_StdHeading2 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_StdHeading2 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_StdHeading2 13;
+BA_ "GenSigInvalidValue" SG_ 901 RawGnss_StdPitch2 0;
+BA_ "GenSigStartValue" SG_ 901 RawGnss_StdPitch2 0;
+BA_ "GenSigInactiveValue" SG_ 901 RawGnss_StdPitch2 0;
+BA_ "GenSigSendType" SG_ 901 RawGnss_StdPitch2 13;
+BA_ "GenSigInvalidValue" SG_ 902 RawIMU_GpsWeek 0;
+BA_ "GenSigStartValue" SG_ 902 RawIMU_GpsWeek 0;
+BA_ "GenSigInactiveValue" SG_ 902 RawIMU_GpsWeek 0;
+BA_ "GenSigSendType" SG_ 902 RawIMU_GpsWeek 13;
+BA_ "GenSigInvalidValue" SG_ 902 RawIMU_GpsTime 0;
+BA_ "GenSigStartValue" SG_ 902 RawIMU_GpsTime 0;
+BA_ "GenSigInactiveValue" SG_ 902 RawIMU_GpsTime 0;
+BA_ "GenSigSendType" SG_ 902 RawIMU_GpsTime 13;
+BA_ "GenSigInvalidValue" SG_ 902 RawIMU_GyroX 0;
+BA_ "GenSigStartValue" SG_ 902 RawIMU_GyroX 0;
+BA_ "GenSigInactiveValue" SG_ 902 RawIMU_GyroX 0;
+BA_ "GenSigSendType" SG_ 902 RawIMU_GyroX 13;
+BA_ "GenSigInvalidValue" SG_ 902 RawIMU_GyroY 0;
+BA_ "GenSigStartValue" SG_ 902 RawIMU_GyroY 0;
+BA_ "GenSigInactiveValue" SG_ 902 RawIMU_GyroY 0;
+BA_ "GenSigSendType" SG_ 902 RawIMU_GyroY 13;
+BA_ "GenSigInvalidValue" SG_ 902 RawIMU_GyroZ 0;
+BA_ "GenSigStartValue" SG_ 902 RawIMU_GyroZ 0;
+BA_ "GenSigInactiveValue" SG_ 902 RawIMU_GyroZ 0;
+BA_ "GenSigSendType" SG_ 902 RawIMU_GyroZ 13;
+BA_ "GenSigInvalidValue" SG_ 902 RawIMU_AccelX 0;
+BA_ "GenSigStartValue" SG_ 902 RawIMU_AccelX 0;
+BA_ "GenSigInactiveValue" SG_ 902 RawIMU_AccelX 0;
+BA_ "GenSigSendType" SG_ 902 RawIMU_AccelX 13;
+BA_ "GenSigInvalidValue" SG_ 902 RawIMU_AccelY 0;
+BA_ "GenSigStartValue" SG_ 902 RawIMU_AccelY 0;
+BA_ "GenSigInactiveValue" SG_ 902 RawIMU_AccelY 0;
+BA_ "GenSigSendType" SG_ 902 RawIMU_AccelY 13;
+BA_ "GenSigInvalidValue" SG_ 902 RawIMU_AccelZ 0;
+BA_ "GenSigStartValue" SG_ 902 RawIMU_AccelZ 0;
+BA_ "GenSigInactiveValue" SG_ 902 RawIMU_AccelZ 0;
+BA_ "GenSigSendType" SG_ 902 RawIMU_AccelZ 13;
+BA_ "GenSigInvalidValue" SG_ 902 RawIMU_Temp 0;
+BA_ "GenSigStartValue" SG_ 902 RawIMU_Temp 0;
+BA_ "GenSigInactiveValue" SG_ 902 RawIMU_Temp 0;
+BA_ "GenSigSendType" SG_ 902 RawIMU_Temp 13;
+BA_ "GenSigInvalidValue" SG_ 902 RawIMU_cnt 0;
+BA_ "GenSigStartValue" SG_ 902 RawIMU_cnt 0;
+BA_ "GenSigInactiveValue" SG_ 902 RawIMU_cnt 0;
+BA_ "GenSigSendType" SG_ 902 RawIMU_cnt 13;
+BA_ "GenSigInvalidValue" SG_ 903 RawIMU_GpsWeek 0;
+BA_ "GenSigStartValue" SG_ 903 RawIMU_GpsWeek 0;
+BA_ "GenSigInactiveValue" SG_ 903 RawIMU_GpsWeek 0;
+BA_ "GenSigSendType" SG_ 903 RawIMU_GpsWeek 13;
+BA_ "GenSigInvalidValue" SG_ 903 RawIMU_GpsTime 0;
+BA_ "GenSigStartValue" SG_ 903 RawIMU_GpsTime 0;
+BA_ "GenSigInactiveValue" SG_ 903 RawIMU_GpsTime 0;
+BA_ "GenSigSendType" SG_ 903 RawIMU_GpsTime 13;
+BA_ "GenSigInvalidValue" SG_ 903 RawIMU_VehicleGyroX 0;
+BA_ "GenSigStartValue" SG_ 903 RawIMU_VehicleGyroX 0;
+BA_ "GenSigInactiveValue" SG_ 903 RawIMU_VehicleGyroX 0;
+BA_ "GenSigSendType" SG_ 903 RawIMU_VehicleGyroX 13;
+BA_ "GenSigInvalidValue" SG_ 903 RawIMU_VehicleGyroY 0;
+BA_ "GenSigStartValue" SG_ 903 RawIMU_VehicleGyroY 0;
+BA_ "GenSigInactiveValue" SG_ 903 RawIMU_VehicleGyroY 0;
+BA_ "GenSigSendType" SG_ 903 RawIMU_VehicleGyroY 13;
+BA_ "GenSigInvalidValue" SG_ 903 RawIMU_VehicleGyroZ 0;
+BA_ "GenSigStartValue" SG_ 903 RawIMU_VehicleGyroZ 0;
+BA_ "GenSigInactiveValue" SG_ 903 RawIMU_VehicleGyroZ 0;
+BA_ "GenSigSendType" SG_ 903 RawIMU_VehicleGyroZ 13;
+BA_ "GenSigInvalidValue" SG_ 903 RawIMU_VehicleAccelX 0;
+BA_ "GenSigStartValue" SG_ 903 RawIMU_VehicleAccelX 0;
+BA_ "GenSigInactiveValue" SG_ 903 RawIMU_VehicleAccelX 0;
+BA_ "GenSigSendType" SG_ 903 RawIMU_VehicleAccelX 13;
+BA_ "GenSigInvalidValue" SG_ 903 RawIMU_VehicleAccelY 0;
+BA_ "GenSigStartValue" SG_ 903 RawIMU_VehicleAccelY 0;
+BA_ "GenSigInactiveValue" SG_ 903 RawIMU_VehicleAccelY 0;
+BA_ "GenSigSendType" SG_ 903 RawIMU_VehicleAccelY 13;
+BA_ "GenSigInvalidValue" SG_ 903 RawIMU_VehicleAccelZ 0;
+BA_ "GenSigStartValue" SG_ 903 RawIMU_VehicleAccelZ 0;
+BA_ "GenSigInactiveValue" SG_ 903 RawIMU_VehicleAccelZ 0;
+BA_ "GenSigSendType" SG_ 903 RawIMU_VehicleAccelZ 13;
+BA_ "GenSigInvalidValue" SG_ 903 RawIMU_Temp 0;
+BA_ "GenSigStartValue" SG_ 903 RawIMU_Temp 0;
+BA_ "GenSigInactiveValue" SG_ 903 RawIMU_Temp 0;
+BA_ "GenSigSendType" SG_ 903 RawIMU_Temp 13;
+BA_ "GenSigInvalidValue" SG_ 903 RawIMU_cnt 0;
+BA_ "GenSigStartValue" SG_ 903 RawIMU_cnt 0;
+BA_ "GenSigInactiveValue" SG_ 903 RawIMU_cnt 0;
+BA_ "GenSigSendType" SG_ 903 RawIMU_cnt 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_GpsWeek 0;
+BA_ "GenSigStartValue" SG_ 904 INS_GpsWeek 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_GpsWeek 0;
+BA_ "GenSigSendType" SG_ 904 INS_GpsWeek 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_GpsTime 0;
+BA_ "GenSigStartValue" SG_ 904 INS_GpsTime 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_GpsTime 0;
+BA_ "GenSigSendType" SG_ 904 INS_GpsTime 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_VehicleGyroX 0;
+BA_ "GenSigStartValue" SG_ 904 INS_VehicleGyroX 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_VehicleGyroX 0;
+BA_ "GenSigSendType" SG_ 904 INS_VehicleGyroX 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_VehicleGyroY 0;
+BA_ "GenSigStartValue" SG_ 904 INS_VehicleGyroY 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_VehicleGyroY 0;
+BA_ "GenSigSendType" SG_ 904 INS_VehicleGyroY 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_VehicleGyroZ 0;
+BA_ "GenSigStartValue" SG_ 904 INS_VehicleGyroZ 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_VehicleGyroZ 0;
+BA_ "GenSigSendType" SG_ 904 INS_VehicleGyroZ 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_VehicleAccelX 0;
+BA_ "GenSigStartValue" SG_ 904 INS_VehicleAccelX 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_VehicleAccelX 0;
+BA_ "GenSigSendType" SG_ 904 INS_VehicleAccelX 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_VehicleAccelY 0;
+BA_ "GenSigStartValue" SG_ 904 INS_VehicleAccelY 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_VehicleAccelY 0;
+BA_ "GenSigSendType" SG_ 904 INS_VehicleAccelY 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_VehicleAccelZ 0;
+BA_ "GenSigStartValue" SG_ 904 INS_VehicleAccelZ 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_VehicleAccelZ 0;
+BA_ "GenSigSendType" SG_ 904 INS_VehicleAccelZ 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_PosLat 0;
+BA_ "GenSigStartValue" SG_ 904 INS_PosLat 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_PosLat 0;
+BA_ "GenSigSendType" SG_ 904 INS_PosLat 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_PosLon 0;
+BA_ "GenSigStartValue" SG_ 904 INS_PosLon 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_PosLon 0;
+BA_ "GenSigSendType" SG_ 904 INS_PosLon 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_PosAlt 0;
+BA_ "GenSigStartValue" SG_ 904 INS_PosAlt 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_PosAlt 0;
+BA_ "GenSigSendType" SG_ 904 INS_PosAlt 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_VelE 0;
+BA_ "GenSigStartValue" SG_ 904 INS_VelE 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_VelE 0;
+BA_ "GenSigSendType" SG_ 904 INS_VelE 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_VelN 0;
+BA_ "GenSigStartValue" SG_ 904 INS_VelN 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_VelN 0;
+BA_ "GenSigSendType" SG_ 904 INS_VelN 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_VelU 0;
+BA_ "GenSigStartValue" SG_ 904 INS_VelU 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_VelU 0;
+BA_ "GenSigSendType" SG_ 904 INS_VelU 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_Pitch 0;
+BA_ "GenSigStartValue" SG_ 904 INS_Pitch 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_Pitch 0;
+BA_ "GenSigSendType" SG_ 904 INS_Pitch 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_Roll 0;
+BA_ "GenSigStartValue" SG_ 904 INS_Roll 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_Roll 0;
+BA_ "GenSigSendType" SG_ 904 INS_Roll 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_Yaw 0;
+BA_ "GenSigStartValue" SG_ 904 INS_Yaw 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_Yaw 0;
+BA_ "GenSigSendType" SG_ 904 INS_Yaw 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_StdLat 0;
+BA_ "GenSigStartValue" SG_ 904 INS_StdLat 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_StdLat 0;
+BA_ "GenSigSendType" SG_ 904 INS_StdLat 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_StdLon 0;
+BA_ "GenSigStartValue" SG_ 904 INS_StdLon 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_StdLon 0;
+BA_ "GenSigSendType" SG_ 904 INS_StdLon 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_StdAlt 0;
+BA_ "GenSigStartValue" SG_ 904 INS_StdAlt 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_StdAlt 0;
+BA_ "GenSigSendType" SG_ 904 INS_StdAlt 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_StdVelE 0;
+BA_ "GenSigStartValue" SG_ 904 INS_StdVelE 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_StdVelE 0;
+BA_ "GenSigSendType" SG_ 904 INS_StdVelE 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_StdVelN 0;
+BA_ "GenSigStartValue" SG_ 904 INS_StdVelN 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_StdVelN 0;
+BA_ "GenSigSendType" SG_ 904 INS_StdVelN 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_StdVelU 0;
+BA_ "GenSigStartValue" SG_ 904 INS_StdVelU 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_StdVelU 0;
+BA_ "GenSigSendType" SG_ 904 INS_StdVelU 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_StdPitch 0;
+BA_ "GenSigStartValue" SG_ 904 INS_StdPitch 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_StdPitch 0;
+BA_ "GenSigSendType" SG_ 904 INS_StdPitch 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_StdRoll 0;
+BA_ "GenSigStartValue" SG_ 904 INS_StdRoll 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_StdRoll 0;
+BA_ "GenSigSendType" SG_ 904 INS_StdRoll 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_StdYaw 0;
+BA_ "GenSigStartValue" SG_ 904 INS_StdYaw 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_StdYaw 0;
+BA_ "GenSigSendType" SG_ 904 INS_StdYaw 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_Heading 0;
+BA_ "GenSigStartValue" SG_ 904 INS_Heading 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_Heading 0;
+BA_ "GenSigSendType" SG_ 904 INS_Heading 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_StatPos 0;
+BA_ "GenSigStartValue" SG_ 904 INS_StatPos 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_StatPos 0;
+BA_ "GenSigSendType" SG_ 904 INS_StatPos 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_StatIns 0;
+BA_ "GenSigStartValue" SG_ 904 INS_StatIns 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_StatIns 0;
+BA_ "GenSigSendType" SG_ 904 INS_StatIns 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_Speed 0;
+BA_ "GenSigStartValue" SG_ 904 INS_Speed 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_Speed 0;
+BA_ "GenSigSendType" SG_ 904 INS_Speed 13;
+BA_ "GenSigInvalidValue" SG_ 904 INS_SensorUsed 0;
+BA_ "GenSigStartValue" SG_ 904 INS_SensorUsed 0;
+BA_ "GenSigInactiveValue" SG_ 904 INS_SensorUsed 0;
+BA_ "GenSigSendType" SG_ 904 INS_SensorUsed 13;
+BA_ "GenSigInvalidValue" SG_ 906 TIME_GPS_week 0;
+BA_ "GenSigStartValue" SG_ 906 TIME_GPS_week 0;
+BA_ "GenSigInactiveValue" SG_ 906 TIME_GPS_week 0;
+BA_ "GenSigSendType" SG_ 906 TIME_GPS_week 13;
+BA_ "GenSigInvalidValue" SG_ 906 TIME_GPS_second 0;
+BA_ "GenSigStartValue" SG_ 906 TIME_GPS_second 0;
+BA_ "GenSigInactiveValue" SG_ 906 TIME_GPS_second 0;
+BA_ "GenSigSendType" SG_ 906 TIME_GPS_second 13;
+BA_ "GenSigInvalidValue" SG_ 906 TIME_UTC_mon 0;
+BA_ "GenSigStartValue" SG_ 906 TIME_UTC_mon 0;
+BA_ "GenSigInactiveValue" SG_ 906 TIME_UTC_mon 0;
+BA_ "GenSigSendType" SG_ 906 TIME_UTC_mon 13;
+BA_ "GenSigInvalidValue" SG_ 906 TIME_UTC_year 0;
+BA_ "GenSigStartValue" SG_ 906 TIME_UTC_year 0;
+BA_ "GenSigInactiveValue" SG_ 906 TIME_UTC_year 0;
+BA_ "GenSigSendType" SG_ 906 TIME_UTC_year 13;
+BA_ "GenSigInvalidValue" SG_ 906 TIME_UTC_date 0;
+BA_ "GenSigStartValue" SG_ 906 TIME_UTC_date 0;
+BA_ "GenSigInactiveValue" SG_ 906 TIME_UTC_date 0;
+BA_ "GenSigSendType" SG_ 906 TIME_UTC_date 13;
+BA_ "GenSigInvalidValue" SG_ 906 TIME_UTC_min 0;
+BA_ "GenSigStartValue" SG_ 906 TIME_UTC_min 0;
+BA_ "GenSigInactiveValue" SG_ 906 TIME_UTC_min 0;
+BA_ "GenSigSendType" SG_ 906 TIME_UTC_min 13;
+BA_ "GenSigInvalidValue" SG_ 906 TIME_UTC_hr 0;
+BA_ "GenSigStartValue" SG_ 906 TIME_UTC_hr 0;
+BA_ "GenSigInactiveValue" SG_ 906 TIME_UTC_hr 0;
+BA_ "GenSigSendType" SG_ 906 TIME_UTC_hr 13;
+BA_ "GenSigInvalidValue" SG_ 906 TIME_UTC_sec 0;
+BA_ "GenSigStartValue" SG_ 906 TIME_UTC_sec 0;
+BA_ "GenSigInactiveValue" SG_ 906 TIME_UTC_sec 0;
+BA_ "GenSigSendType" SG_ 906 TIME_UTC_sec 13;
+BA_ "GenSigInvalidValue" SG_ 906 TIME_Second_ms 0;
+BA_ "GenSigStartValue" SG_ 906 TIME_Second_ms 0;
+BA_ "GenSigInactiveValue" SG_ 906 TIME_Second_ms 0;
+BA_ "GenSigSendType" SG_ 906 TIME_Second_ms 13;
+VAL_ 177 EPS1_SteeringAngleValid 1 "Valid" 0 "Invalid";
+VAL_ 177 EPS1_SteerAnglSpdValid 1 "Valid" 0 "Invalid";
+VAL_ 227 VCU5_ActGear 7 "Error" 4 "S" 3 "Drive" 2 "Neutral" 1 "Reverse" 0 "Park";
+VAL_ 227 VCU5_ActGearValid 1 "Valid" 0 "Invalid";
+VAL_ 293 IDB3_VehicleSpdValid 1 "Valid(有效)" 0 "Invalid(无效)";
+VAL_ 295 IDB4_FLWhlVelocityValid 1 "Valid(有效)" 0 "Invalid(无效)";
+VAL_ 295 IDB4_FRWhlVelocityValid 1 "Valid(有效)" 0 "Invalid(无效)";
+VAL_ 295 IDB4_RRWhlVelocityValid 1 "Valid(有效)" 0 "Invalid(无效)";
+VAL_ 295 IDB4_RLWhlVelocityValid 1 "Valid(有效)" 0 "Invalid(无效)";
+VAL_ 901 RawGnss_PosType 19 "滤波器推算" 50 "窄巷固定" 18 "SBAS定位" 34 "窄巷浮点" 17 "伪距差分定位" 49 "宽巷固定" 33 "消电离层浮点" 32 "L1浮点" 16 "单点定位" 48 "L1固定" 0 "无解";
+VAL_ 901 RawGnss_PosType2 19 "滤波器推算" 50 "窄巷固定" 18 "SBAS定位" 34 "窄巷浮点" 17 "伪距差分定位" 49 "宽巷固定" 33 "消电离层浮点" 32 "L1浮点" 16 "单点定位" 48 "L1固定" 0 "无解";
+VAL_ 904 INS_StatPos 9 "RTK浮点解定位不定向" 8 "RTK稳定解定位不定向" 7 "伪距差分定位不定向" 6 "单点定位不定向" 5 "RTK浮点解定位定向" 4 "RTK 稳定解定位定向" 3 "组合推算" 2 "伪距差分定位定向" 1 "单点定位定向" 0 "不定位不定向";
+VAL_ 904 INS_StatIns 3 "纯惯导" 2 "组合导航" 1 "卫导" 0 "初始化";
