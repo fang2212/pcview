@@ -12,7 +12,7 @@ import cv2
 from turbojpeg import TurboJPEG
 
 from net.ntrip_client import GGAReporter
-from player import FlowPlayer, pcc_ui, web_ui
+from player import FlowPlayer, pcc_ui
 from player.eclient_ui import BaseDraw
 from recorder import VideoRecorder
 from recorder.convert import *
@@ -36,6 +36,8 @@ def loop_traverse(items):
     while True:
         for item in items:
             yield item
+
+web_ui = pcc_ui
 
 
 class PCC(object):
