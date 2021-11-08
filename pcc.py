@@ -13,7 +13,8 @@ from turbojpeg import TurboJPEG
 
 from net.ntrip_client import GGAReporter
 from player import FlowPlayer, pcc_ui
-from player.eclient_ui import BaseDraw
+# from player import web_ui
+# from player.eclient_ui import BaseDraw
 from recorder import VideoRecorder
 from recorder.convert import *
 from tools.geo import *
@@ -126,9 +127,9 @@ class PCC(object):
                 self.o_msg_q = video_server.msg_q
                 self.o_img_q = video_server.img_q
                 logger.warning('{} pid:{}'.format("PCC: web".ljust(20), os.getpid()))
-        else:
-            BaseDraw.init()
-            logger.warning('{} pid:{}'.format("PCC: eclient".ljust(20), os.getpid()))
+        # else:
+        #     BaseDraw.init()
+        #     logger.warning('{} pid:{}'.format("PCC: eclient".ljust(20), os.getpid()))
 
         self.wav_cnt = 0
         self.audio = None
@@ -259,8 +260,8 @@ class PCC(object):
                 # 回放视频保存对象
                 if self.vw is not None:
                     self.vw.release()
-                if self.eclient:
-                    BaseDraw.close()
+                # if self.eclient:
+                #     BaseDraw.close()
                 return
 
             # 从信号进程取出数据
@@ -806,10 +807,11 @@ class PCC(object):
         :return:
         """
         if self.eclient:
-            key = BaseDraw.get_event()
-            if key and len(key) == 1:
-                key = ord(key)
-                self.control(key)
+            pass
+            # key = BaseDraw.get_event()
+            # if key and len(key) == 1:
+            #     key = ord(key)
+            #     self.control(key)
         else:
             key = cv2.waitKey(1) & 0xFF
             self.control(key)
