@@ -19,7 +19,7 @@
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d4", "can0": "j2_fusion", "can1": "ars410"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d5", "can0": "d1_fusion", "can1": ["mu_fl","mu_fr"]}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d6", "can0": "a1j", "can1": ["mu_rl","mu_rr"]}},
-                {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d7", "can0": "blank", "can1": "gs4"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d7", "can0": "blank", "can1": "gs4"}},
                 {"model":  "can_gw_nn", "params": {"can1": "bosch_mrr", "can2": "bosch_f", "can3": "bosch_r", "can4": "ars"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
                 {"model":  "a1j", "params": {"mac":  "6a:92:52:75:97:00", "is_main":  true}},
@@ -52,7 +52,7 @@
                     "lat_offset": 0.35,
                     "pitch": 0,
                     "height": 0.45,
-                    "lon_offset": 0.0,
+                    "lon_offset": -3.6,
                     "yaw": 0
                 },
                 "lmr": {
