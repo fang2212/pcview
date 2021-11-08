@@ -695,6 +695,7 @@ class PCC(object):
                               'lat_offset': 0.5 * (data['left_vehicle_edge_dist'] - data['right_vehicle_edge_dist'])}}
         self.cfg.installs.update(r)
         self.hub.fileHandler.d['installs'] = self.cfg.installs
+        self.hub.fileHandler.save_param()
 
     def specific_handle(self, img, data):
         src = data.get('source')

@@ -888,9 +888,17 @@ class FlowSink(Sink):
         else:
             return
 
-        r = {"source": self.source, "log_name": topic, "buf": payload}
-        self.fileHandler.insert_general_bin_raw(r)
-        return
+        if topic == 'calib_params':
+            calib_params = msgpack.unpackb(payload)
+            calib_params = mytools.convert(calib_params)
+            if calib_params:
+                r = {'type': 'calib_params', 'source': self.source, 'ts': time.time()}
+                r.update(calib_params)
+                return 'calib_param', r
+        else:
+            r = {"source": self.source, "log_name": topic, "buf": payload}
+            self.fileHandler.insert_general_bin_raw(r)
+            return
 
     def pkg_handler(self, msg):
         data = self.decode_data(msg)
