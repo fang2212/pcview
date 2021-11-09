@@ -397,7 +397,8 @@ class FileHandler(Process):
 
     def save_param(self):
         self.uniconf.installs = self.d['installs']
-        json.dump(self.uniconf.installs, open(os.path.join(self.path, 'installation.json'), 'w+'), indent=True)
+        if self.is_recording:
+            json.dump(self.uniconf.installs, open(os.path.join(self.path, 'installation.json'), 'w+'), indent=True)
 
     def check_file(self):
         if not self.is_recording:
