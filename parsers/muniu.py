@@ -96,9 +96,9 @@ def parser_mu_f(cid, data, ctx=None):
     if not ctx.get('mn_f_obs'):
         ctx['mn_f_obs'] = list()
     if cid == 0x4b1:
-        return {'type': 'status', "status_show": [{"text": "FL_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3), "height": 40}]}
+        return {'type': 'status', "status_show": [{"text": "FL_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3.6), "height": 40}]}
     elif cid == 0x4b2:
-        return {'type': 'status', "status_show": [{"text": "FR_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3), "height": 60}]}
+        return {'type': 'status', "status_show": [{"text": "FR_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3.6), "height": 60}]}
     else:
         return parser_mu(cid, r)
 
@@ -127,7 +127,7 @@ def parser_mu_fl(cid, data, ctx=None):
     if not ctx.get('mn_f_obs'):
         ctx['mn_f_obs'] = list()
     if cid == 0x4b1:
-        return {'type': 'status', "status_show": [{"text": "FL_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3)}]}
+        return {'type': 'status', "status_show": [{"text": "FL_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3.6)}]}
 
 def parser_mu_fr(cid, data, ctx=None):
     if cid not in mn_ids:
@@ -138,7 +138,7 @@ def parser_mu_fr(cid, data, ctx=None):
     if not ctx.get('mn_f_obs'):
         ctx['mn_f_obs'] = list()
     if cid == 0x4b2:
-        return {'type': 'status', "status_show": [{"text": "FR_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3)}]}
+        return {'type': 'status', "status_show": [{"text": "FR_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3.6)}]}
 
 def parser_mu_rl(cid, data, ctx=None):
     if cid not in mn_ids:
@@ -149,7 +149,7 @@ def parser_mu_rl(cid, data, ctx=None):
     if not ctx.get('mn_r_obs'):
         ctx['mn_r_obs'] = list()
     if cid == 0x4b3:
-        return {'type': 'status', "status_show": [{"text": "RL_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3)}]}
+        return {'type': 'status', "status_show": [{"text": "RL_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3.6)}]}
 
 def parser_mu_rr(cid, data, ctx=None):
     if cid not in mn_ids:
@@ -160,7 +160,7 @@ def parser_mu_rr(cid, data, ctx=None):
     if not ctx.get('mn_r_obs'):
         ctx['mn_r_obs'] = list()
     if cid == 0x4b4:
-        return {'type': 'status', "status_show": [{"text": "RR_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3)}]}
+        return {'type': 'status', "status_show": [{"text": "RR_speed:{:.2f}km/h".format(r["RadarSubVehicle_Speed"]*3.6)}]}
 
 if __name__ == "__main__":
     parser_mu_r(0x20a, bytes().fromhex("a601ee81fb7fa080"), {})
