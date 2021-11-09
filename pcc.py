@@ -212,6 +212,7 @@ class PCC(object):
                     self.video_cache[data['source']] = data
                     self.video_cache[data['source']]['updated'] = True
                 else:
+                    self.cache['frame_id'] = fid
                     self.cache['img'] = data['img']
                     self.cache['img_raw'] = None
 
