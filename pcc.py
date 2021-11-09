@@ -774,7 +774,7 @@ class PCC(object):
             self.draw_rtk(img, data)
             # print('------------', data['type'], data)
 
-        elif data['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint', 'inspva']:
+        elif data['type'] in ['bestpos', 'heading', 'bestvel', 'pinpoint']:
             self.draw_rtk_ub482(img, data)
             self.player.update_column_ts(data['source'], data['ts'])
         elif data['type'] == 'rtcm':
