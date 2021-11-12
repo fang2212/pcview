@@ -991,9 +991,6 @@ class FlowSink(Sink):
                      'is_main': self.is_main, 'transport': 'libflow'}
                 self.fileHandler.insert_jpg(r)
                 return frame_id, r
-            elif topic in ["radar_data", "fusion_data", "vehicle_data", "lane_data", "drive_data", "fusion_inject", "LanePostImg", "LaneAccImg", "files"]:
-                r = {"source": self.source, "log_name": topic, "buf": payload}
-                self.fileHandler.insert_general_bin_raw(r)
             elif topic == 'calib_params':
                 calib_params = msgpack.unpackb(payload)
                 calib_params = mytools.convert(calib_params)
