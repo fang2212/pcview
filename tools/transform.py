@@ -78,10 +78,10 @@ class Transform:
         cu = installs['video']['cu']
         cv = installs['video']['cv']
 
-        self.x_limits = [-5, 200]
+        self.x_limits = [-200, 200]
         self.y_limits = [-15, 15]
         self.ipm_width = 480
-        self.ipm_height = 720
+        self.ipm_height = 1440
         self.intrinsic_para = np.array(((fu, 0, cu), (0, fv, cv), (0, 0, 1)))
         self.r_cam2img = np.array(((0, 1, 0), (0, 0, 1), (1, 0, 0)))
         self.yaw = installs['video']['yaw']
@@ -174,16 +174,10 @@ class Transform:
         if h is None:
             h = 0
         h1 = self.camera_height - h
-        # x = x - self.cfg.installs['video']['lon_offset'] + self.cfg.installs[dev]['lon_offset']
-        # y = y - self.cfg.installs['video']['lat_offset'] + self.cfg.installs[dev]['lat_offset']
         x = x - self.cfg.installs['video']['lon_offset']
         y = y - self.cfg.installs['video']['lat_offset']
         p_xyz = np.array([x, y, h1])
         uv_t = np.dot(self.m_R_w2i, p_xyz)
-        # if uv_new[0] > 10000:
-        #     uv_new[0] = 10000
-        # if uv_new[1] > 10000:
-        #     uv_new[1] = 10000
         try:
             uv_new = uv_t / uv_t[2]
             x, y = int(uv_new[0]), int(uv_new[1])
@@ -194,12 +188,9 @@ class Transform:
             print(f"绘制点出错：uv_new = uv_t / uv_t[2] uv_t:{uv_t} uv_t[2]:{uv_t[2]} x:{x} y:{y}")
             print(f"self.cfg.installs['video']:{self.cfg.installs['video']}")
 
-
     def transf_gnd2raw(self, x, y, h=None):
         if h is None:
             h = 0
-        # x = x - self.cfg.installs['video']['lon_offset'] + self.cfg.installs[dev]['lon_offset']
-        # y = y - self.cfg.installs['video']['lat_offset'] + self.cfg.installs[dev]['lat_offset']
         x = x - self.cfg.installs['video']['lon_offset']
         y = y - self.cfg.installs['video']['lat_offset']
         p_xyz = np.array([x, y, self.camera_height - h])
@@ -216,26 +207,13 @@ class Transform:
         ipm_x = (y - self.y_limits[0]) * y_scale
         return int(ipm_x), int(ipm_y)
 
-    def transf_gnd2ipm(self, x, y, dev='ifv300'):
-        x_scale = self.ipm_height / (self.x_limits[1] - self.x_limits[0])
-        y_scale = self.ipm_width / (self.y_limits[1] - self.y_limits[0])
-        x += self.cfg.installs[dev]['lon_offset']
-        y += self.cfg.installs[dev]['lat_offset']
-        ipm_y = (-x + self.x_limits[1]) * x_scale
-        ipm_x = (y - self.y_limits[0]) * y_scale
-        return ipm_x, ipm_y
-
     def trans_polar2rcs(self, angle, range, sensor):
         param = self.cfg.installs.get(sensor)
         if not param:
             param = self.cfg.installs.get(sensor.split('.')[0])
-            if not param:
-                x = cos(angle * pi / 180.0) * range
-                y = sin(angle * pi / 180.0) * range
-            else:
-                angle = angle - param['yaw']
-                x = cos(angle * pi / 180.0) * range + param['lon_offset']
-                y = sin(angle * pi / 180.0) * range + param['lat_offset']
+        if not param:
+            x = cos(angle * pi / 180.0) * range
+            y = sin(angle * pi / 180.0) * range
         else:
             angle = angle - param['yaw']
             x = cos(angle * pi / 180.0) * range + param['lon_offset']
@@ -247,6 +225,12 @@ class Transform:
         return self.trans_polar2rcs(angle, range, sensor)
 
     def trans_rcs2polar(self, x, y):
+        """
+        通过x跟y的坐标计算基于（0.0）的角度跟长度
+        :param x:
+        :param y:
+        :return:
+        """
         range = sqrt(x ** 2 + y ** 2)
         angle = atan2(y, x) * 180 / pi
         return range, angle

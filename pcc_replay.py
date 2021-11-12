@@ -177,6 +177,7 @@ class LogPlayer(Process):
         self.nosort = nosort
 
         self.main_video = chmain if chmain else 'camera'
+        self.back_video = None
 
     def init_env(self):
         self.shared['init_time'] = time.time()
@@ -257,6 +258,8 @@ class LogPlayer(Process):
             if cfg.get("ports", {}).get("video", {}).get("enable"):
                 # 检查是否有视频数据
                 dir_name = "video" if cfg.get("is_main") else "{}.{:d}".format(cfg["type"], idx)
+                if cfg.get("is_back"):
+                    self.back_video = dir_name
                 log_keyword = "camera" if dir_name == 'video' else dir_name
                 video_path = os.path.dirname(self.log_path) + '/' + dir_name
                 # 初始化视频图片生成器
@@ -275,7 +278,7 @@ class LogPlayer(Process):
 
     def get_veh_role(self, source):
         if not source:
-            return
+            return 'default'
         for cfg in self.cfg.configs:
             msg_types = cfg.get('msg_types')
             if not msg_types:
@@ -345,6 +348,7 @@ class LogPlayer(Process):
             try:
                 ts = float(cols[0]) + float(cols[1]) / 1000000
             except Exception as e:
+                logger.error("can't parser ts:{} {}".format(cols[0], cols[1]))
                 continue
 
             # 视频数据处理
@@ -379,7 +383,7 @@ class LogPlayer(Process):
                                     self.now_frame_id = frame_id
 
                 source = "video" if cols[2] == self.main_video else cols[2]
-                r = {'ts': ts, 'img': jpg, 'is_main': cols[2] == self.main_video, 'source': source, 'type': 'video', 'frame_id': frame_id}
+                r = {'ts': ts, 'img': jpg, 'is_main': cols[2] == self.main_video, "is_back": self.back_video == cols[2], 'source': source, 'type': 'video', 'frame_id': frame_id}
                 sink_source = 'camera' if cols[2] == self.main_video else cols[2]
                 self.put_sink((frame_id, r, sink_source))
 
@@ -583,13 +587,13 @@ def start_replay(source_path, args):
         from video_server import PccServer
         server = PccServer()
         server.start()
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, to_web=server)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, to_web=server, show_back=args.back)
         replay_hub.start()
         pcc.start()
         while True:
             time.sleep(1)
     else:
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, eclient=args.eclient)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, eclient=args.eclient, show_back=args.back)
         replay_hub.start()
 
         # 控制子进程的退出
@@ -622,6 +626,7 @@ if __name__ == "__main__":
     parser.add_argument('-ri', '--real_interval', action="store_true")
     parser.add_argument('-e', '--eclient', action="store_true")
     parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
+    parser.add_argument('--back', default=False, action="store_true", help="是否显示后视图像")
     parser.add_argument('-chmain', default=None, help="change main video")
     args = parser.parse_args()
 
