@@ -761,7 +761,7 @@ class FlowSink(Sink):
         self.client = None
 
         # 初始化解析流程
-        if self.topic == '*':   # Q3华为mdc数据
+        if self.topic == '*' or self.dbc == "video_h265":   # Q3华为mdc数据
             if 24011 <= self.port <= 24017 or self.dbc == "video_h265":     # h264视频数据
                 self.pkg_handler = self.h265_video
             elif self.port == 26011:
@@ -856,7 +856,11 @@ class FlowSink(Sink):
         img = data[36:]
         timestamp = time.time()
 
-        r = {"source": self.source, "log_name": self.port_name, "buf": img}
+        if self.topic != "*":
+            log_name = self.topic
+        else:
+            log_name = self.port_name
+        r = {"source": self.source, "log_name": log_name, "buf": img}
         self.fileHandler.insert_general_bin_raw(r)
         self.fileHandler.insert_raw(
             (timestamp, "{}.{}.{}.{}".format(self.device, self.index, self.port_name, self.dbc), "{:d} {:d} {} {} {} {} {} {} {}".format(head_data["height"], head_data["width"], head_data["send_time_high"],
