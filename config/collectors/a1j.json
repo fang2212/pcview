@@ -18,81 +18,7 @@
       "port": 24015,
       "transport": "libflow",
       "protocol": "msgpack",
-      "topic": "fusion_data"
-    },
-    "radar_data": {
-      "enable": true,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "radar_data"
-    },
-    "lane": {
-      "enable": true,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "lane_data"
-    },
-    "vehicle": {
-      "enable": true,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "vehicle_data"
-    },
-    "drive_data": {
-      "enable": true,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "drive_data"
-    },
-    "fusion_inject": {
-      "enable": true,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "fusion_inject"
-    },
-    "calib": {
-      "enable": true,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "calib_params,files",
-      "save": "bin"
-    },
-    "rf_data": {
-      "enable": true,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "rf_data",
-      "save": "bin"
-    },
-    "corner_radar_data": {
-      "enable": true,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "corner_radar_data",
-      "save": "bin"
-    },
-    "files": {
-      "enable": true,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "files",
-      "save": "bin"
-    },
-    "tsl_data": {
-      "enable": true,
-      "port": 24015,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "tsl_data",
+      "topic": "fusion_data,radar_data,lane_data,vehicle_data,drive_data,fusion_inject,calib_params,files,rf_data,corner_radar_data,tsl_data,af_data,7v5r_tsl_data",
       "save": "bin"
     },
     "fusion_LaneAccimg": {
@@ -100,14 +26,16 @@
       "port": 10222,
       "transport": "libflow",
       "protocol": "msgpack",
-      "topic": "LaneAccImg"
+      "topic": "LaneAccImg",
+      "save": "bin"
     },
     "fusion_LanePostimg": {
       "enable": true,
       "port": 10224,
       "transport": "libflow",
       "protocol": "msgpack",
-      "topic": "LanePostImg"
+      "topic": "LanePostImg",
+      "save": "bin"
     },
     "proto": {
       "enable": true,
