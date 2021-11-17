@@ -2246,6 +2246,7 @@ def viz_2d_trj(r0, source=None, vis=True):
     from tools.geo import gps_bearing, gps_distance
     from parsers.novatel import parse_novatel
     from parsers.pim222 import parse_pim222
+    from parsers.cgi220_can import parse_cgi220pro
     import simplekml
     import folium
     from folium import plugins
@@ -2304,6 +2305,18 @@ def viz_2d_trj(r0, source=None, vis=True):
                 # print(r)
                 if r:
                     r['source'] = src
+                else:
+                    continue
+            elif 'huace' in cols[2]:
+                r = parse_cgi220pro(int(cols[3], 16), bytes().fromhex(cols[4]), None)
+                if r:
+                    r['source'] = src
+                    ts_can = float(cols[0]) + float(cols[1]) / 1000000.0
+                    ts_sample = r['ts']
+                    dt = ts_can - ts_sample
+                    print('huace {} dt: {:.3f}'.format(r['type'], dt))
+                    # print(r)
+
                 else:
                     continue
             else:
@@ -2898,7 +2911,6 @@ def change_main_video(dir_name, main_video_name):
 if __name__ == "__main__":
     from tools import visual
     import argparse
-
 
     local_path = os.path.split(os.path.realpath(__file__))[0]
     os.chdir(local_path)

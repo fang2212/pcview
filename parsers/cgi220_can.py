@@ -28,8 +28,11 @@ def parse_cgi220pro(id, buf, ctx=None):
         imu['temp'] = r['RawIMU_Temp']
 
         # print(imu)
-
+        # del imu
+        imu['type'] = 'raw_imu'
+        return imu
     elif id == 0x388:  # inspva
+        # print('inspva')
         ins = {'type': 'inspva'}
         week = r['INS_GpsWeek']
         tow = r['INS_GpsTime']
@@ -84,6 +87,9 @@ def parse_cgi220pro(id, buf, ctx=None):
                 ins['pos_type'] = 'INS_RTKFLOAT'
             else:
                 ins['pos_type'] = 'NONE'
+        else:
+            # print('invalid cgi220 postype: i_s', i_s, 'p_s', p_s)
+            ins['pos_type'] = 'INS'
 
         # print(ins)
         return ins
