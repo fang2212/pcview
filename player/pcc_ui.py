@@ -6,7 +6,7 @@ import numpy as np
 from math import *
 
 # from config.config import install
-from player.ui import BaseDraw, pack, logodir, CVColor, FlatColor
+from player.ui import BaseDraw, pack, logodir, CVColor, FlatColor, color_dict
 from tools.geo import gps_bearing, gps_distance
 from tools.transform import Transform
 from utils import logger
@@ -53,45 +53,6 @@ class Player(object):
         self.color_seq = [CVColor.White, CVColor.Red, CVColor.Green, CVColor.deeporange, CVColor.purple,
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
-        self.color_obs = {
-            "a1j": CVColor.Crimson,
-            "a1j_fusion": CVColor.Crimson,
-            "a1j_vision": CVColor.LightCoral,
-            "ars410": FlatColor.LightPink,
-            "bosch_mrr": FlatColor.yellow,
-            "d1_fusion": CVColor.DarkMagenta,
-            "gs4_debug": CVColor.Linen,
-            "j2": CVColor.NavajoWhite,
-            "j2_fusion": CVColor.SandyBrown,
-            "q4_100": CVColor.MediumTurquoise,
-            "wsk": FlatColor.pink,
-            'anc': FlatColor.carrot,
-            'ars': CVColor.Green,
-            'ctlrr': FlatColor.alizarin,
-            'default': FlatColor.clouds,
-            'esr': FlatColor.alizarin,
-            'gps': FlatColor.clouds,
-            'ifv300': CVColor.Blue,
-            'ifv300_fusion': CVColor.Blue,
-            'ifv300_vision': CVColor.DeepSkyBlue,
-            'lmr': FlatColor.emerald,
-            'mbq3': CVColor.Blue,
-            'mbq3_fusion': CVColor.MediumBlue,
-            'mbq3_vision': (255, 144, 30),
-            'mbq4': CVColor.MediumTurquoise,
-            'q4_52': CVColor.MediumTurquoise,
-            "mu_f": CVColor.Aqua,
-            "mu_r": CVColor.Aqua,
-            'q3': CVColor.Blue,
-            'rtk': FlatColor.sun_flower,
-            'sta77': FlatColor.wet_asphalt,
-            'x1': CVColor.Peru,
-            'x1_fusion': CVColor.Chocolate,
-            'x1_fusion_cam': FlatColor.dark_red,
-            'x1j': CVColor.Peru,
-            'xyd2': FlatColor.Blue,
-        }
-
         self.detection_color = {
             'Unknown': 'fail',
             'SingleTrack': 'pass',
@@ -115,9 +76,9 @@ class Player(object):
             self.next_patch_x += 160
             msg_dbc = msg_type.split('.')
             msg_dbc = msg_dbc[3] if len(msg_dbc) > 2 else msg_dbc[0]
-            for src_type in self.color_obs:
+            for src_type in color_dict:
                 if msg_dbc == src_type:
-                    self.columns[msg_type]['color'] = self.color_obs[src_type]
+                    self.columns[msg_type]['color'] = color_dict[src_type]
             self.columns[msg_type]['buffer'] = dict()
             self.columns[msg_type]['ts'] = 0
             self.columns[msg_type]['h'] = 1000
@@ -134,7 +95,7 @@ class Player(object):
 
     def show_dist_mark_ipm(self, img):
         show_range = 201
-        for i in range(0, show_range, 1):
+        for i in range(-show_range, show_range, 1):
             if i % 20 == 0:
                 p1 = self.transform.trans_gnd2ipm(i, -10)
                 p2 = self.transform.trans_gnd2ipm(i, 10)
@@ -142,13 +103,13 @@ class Player(object):
                 BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(i - 1, 10), 0.3, CVColor.White, 1)
 
         for i in [-4 * 0.5, 4 * 0.5]:
-            p1 = self.transform.trans_gnd2ipm(-10, i)
+            p1 = self.transform.trans_gnd2ipm(-show_range, i)
             p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.LightRed, thickness=1)
             BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 0.3, CVColor.White, 1)
 
         for i in [-4 * 2.5, -4 * 1.5, 4 * 1.5, 4 * 2.5]:
-            p1 = self.transform.trans_gnd2ipm(-10, i)
+            p1 = self.transform.trans_gnd2ipm(-show_range, i)
             p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
             BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 0.3, CVColor.White, 1)
@@ -166,7 +127,7 @@ class Player(object):
         source = obs['source'].split('.')
         source = source[3] if len(source) > 2 else source[0]
         sensor = obs.get('sensor') or source
-        color = obs.get("color") or self.color_obs.get(source) or self.color_obs['default']
+        color = obs.get("color") or color_dict.get(source) or color_dict['default']
 
         width = obs.get('width')
         width = width or 0.3
@@ -274,10 +235,10 @@ class Player(object):
 
         u, v = self.transform.trans_gnd2ipm(x, y)
 
-        color = obs.get("color") or self.color_obs.get(source) or self.color_obs['default']
+        color = obs.get("color") or color_dict.get(source) or color_dict['default']
 
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
-            color = self.color_obs.get('x1_fusion_cam')
+            color = color_dict.get('x1_fusion_cam')
             # print(obs)
 
         if obs.get('sensor_type') == 'radar':
@@ -360,7 +321,7 @@ class Player(object):
         y = data.get('pos_lat')
         h = data.get('pos_hgt')
         u, v = self.transform.trans_gnd2raw(x, y, h)
-        color = self.color_obs.get(data['sensor']) or self.color_obs['default']
+        color = color_dict.get(data['sensor']) or color_dict['default']
         cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
 
     def show_text_info(self, source, height, text, style='normal', size=None, expire_ts=None):
@@ -378,49 +339,22 @@ class Player(object):
         self.columns[source]['ts'] = ts
 
     def render_text_info(self, img):
-        # self.show_columns(img)
-        # print(len(self.columns))
         self.img_height, self.img_width, _ = img.shape
         w = 160
         slots = {}
         for i in range(0, self.img_width, w):
             slots[i] = 0
-        # smallest_h = 1000
-        # print(self.columns)
-        # shortest_col = sorted(self.columns, key=lambda x: self.columns[x]['y0'] + self.columns[x]['h'])[0]
 
-        # print('shortest col:', shortest_col)
-        # shortest_col = None
-        next_patch_x = 0
-        next_patch_y = 0
         for idx, col in enumerate(self.columns):
             indent = sorted(slots, key=lambda x: slots[x])[0]
             y0 = slots[indent]
             entry = self.columns[col]
-            # indent = next_patch_x
-            # y0 = next_patch_y
             h = max(self.columns[col]['buffer']) + 4 if self.columns[col]['buffer'] else 24
             h = 24 if h == 0 else h
             self.columns[col]['indent'] = indent
             self.columns[col]['y0'] = y0
             self.columns[col]['h'] = h
             slots[indent] = y0 + h + 2
-            # if idx+2 <= int(self.img_width/w):
-            #     next_patch_x += w
-            #     next_patch_y = 0
-            # else:
-            #     next_patch_y = shortest_y
-            #     next_patch_x = shortest_x
-                # print('replace patch', idx, col, indent, y0, w, h)
-            # if h + y0 < smallest_h:
-            #     smallest_h = h + y0
-            #     shortest_col = col
-
-            # if col is not 'video':
-            #     color_lg = self.columns[col].get('color')
-            #     if color_lg is not None:
-            #         cv2.rectangle(img, (indent + 1, 1), (indent + 159, 24), self.columns[col]['color'], -1)
-            # print(idx, col, indent, y0, w, h)
             self.show_parameters_background(img, (indent, y0, w if w <= self.img_width else self.img_width, h))
 
             if col != 'video':
@@ -452,8 +386,6 @@ class Player(object):
             else:
                 delay_ms = '{:>+4d}ms'.format(int(dt * 1000))
             BaseDraw.draw_text(img, delay_ms, (indent + 92, y0 + 20), 0.5, CVColor.White, 1)
-            # if col is not 'video':
-            #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:
                 if not entry['buffer'][height]:
                     continue
@@ -492,14 +424,13 @@ class Player(object):
                                                   'fps': 20}
         if tnow == self.video_streams[data['source']]['last_ts']:
             return
-        self.show_parameters_background(img, (0, 0, 160, 80))
+        self.show_parameters_background(img, (0, 0, 160, 90))
         BaseDraw.draw_text(img, data['source'], (2, 20), 0.5, CVColor.Cyan, 1)
         dt = self.ts_now - data['ts']
         BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt * 1000)), (92, 20), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'frame: {}'.format(data['frame_id']), (2, 40), 0.5, CVColor.White, 1)
 
         self.video_streams[data['source']]['frame_cnt'] += 1
-        # duration = time.time() - self.video_streams[data['source']]['ts0']
         dt = tnow - self.video_streams[data['source']]['last_ts']
         self.video_streams[data['source']]['last_ts'] = tnow
         fps = 1 / dt
@@ -509,7 +440,6 @@ class Player(object):
         BaseDraw.draw_text(img,
                            'lost frames: {}'.format(data['frame_id'] - self.video_streams[data['source']]['frame_cnt']),
                            (2, 80), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'dev: {}'.format(data['device']), (2, 100), 0.5, CVColor.White, 1)
 
     def show_status_info(self, source, status_list):
         """
@@ -576,8 +506,6 @@ class Player(object):
         time_passed = time.time() - info
         self.show_text_info('video', 140, '***[REC]***', CVColor.Red)
         self.show_text_info('video', 160, 'Rec time: {:.2f}s'.format(time_passed))
-        # BaseDraw.draw_text(img, 'Recording... ', (2, 700), 0.5, CVColor.White, 1)
-        # BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
 
     def show_marking(self, img, start_time):
         time_passed = time.time() - start_time
@@ -601,7 +529,7 @@ class Player(object):
             print('Error:', obs)
             return
 
-        color = self.color_obs['rtk']
+        color = color_dict['rtk']
         line = 100
         style = 'normal'
         expire_ts = time.time() + 0.5
@@ -614,7 +542,7 @@ class Player(object):
         elif obs.get('class') == 'object':
             self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']), expire_ts=expire_ts)
         else:
-            color = obs.get("color") or self.color_obs['rtk']
+            color = obs.get("color") or color_dict['rtk']
             self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']), expire_ts=expire_ts)
 
         if "detection_sensor" in obs:
@@ -708,9 +636,9 @@ class Player(object):
         source = data['source'].split('.')
         source = source[3] if len(source) > 2 else source[0]
         sensor = data.get('sensor') or source
-        color = self.color_obs.get(sensor)
+        color = color_dict.get(sensor)
         if not color:
-            color = self.color_obs['default']
+            color = color_dict['default']
 
         # width = 3.5
         # height = 1.6
@@ -851,7 +779,7 @@ class Player(object):
         # cv2.line(img, (ux, uy), p5, color, 1)
         # cv2.line(img, p5, p6, color, 1)
 
-        color = self.color_obs['rtk']
+        color = color_dict['rtk']
         p1 = int(ux - 0.5 * w), int(uy)
         p2 = int(ux + 0.5 * w), int(uy)
         p3 = int(ux), int(uy - 0.5 * h)
@@ -900,7 +828,7 @@ class Player(object):
         range = target.get('range')
         x, y = self.transform.trans_polar2rcs(angle, range, 'rtk')
         ux, uy = self.transform.trans_gnd2ipm(x, y)
-        color = self.color_obs['rtk']
+        color = color_dict['rtk']
 
         w = h = 20
 
@@ -1185,7 +1113,7 @@ class Player(object):
         #     color = CVColor.Blue
         source = data['source'].split('.')
         source = source[3] if len(source) > 2 else source[0]
-        color = data.get('color') or self.color_obs.get(source) or self.color_obs['default']
+        color = data.get('color') or color_dict.get(source) or color_dict['default']
         # self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
         # lane message
         try:
@@ -1205,9 +1133,9 @@ class Player(object):
         #     color = CVColor.Blue
         source = data['source'].split('.')
         source = source[3] if len(source) > 2 else source[0]
-        color = self.color_obs.get(source)
+        color = color_dict.get(source)
         if not color:
-            color = self.color_obs['default']
+            color = color_dict['default']
 
         self.show_lane_ipm(img, data, color, style=data.get("style"))
 
