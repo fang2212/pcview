@@ -359,13 +359,16 @@ class Statistics:
             plt.xlabel("timestamp")
             plt.ylabel("interval(s)")
             plt.xlim([self.log_start_ts - self.log_camera_start_ts, self.log_end_ts - self.log_camera_start_ts])
+
+            plt.plot(timestamp_list[1:], interval_chart_list, marker='.', linewidth=1)  # s表示面积，marker表示图形
+
             avg_line = plt.axhline(y=avg_interval, color="r", linestyle="--", linewidth=1)
             min_line = plt.axhline(y=min_interval, color="g", linestyle="--", linewidth=1)
             max_line = plt.axhline(y=max_interval, color="y", linestyle="--", linewidth=1)
             plt.legend([avg_line, min_line, max_line], [f'avg:{"%.8f" % avg_interval}', f'min:{"%.8f" % min_interval}',
-                                                        f'max:{"%.8f" % max_interval}'], bbox_to_anchor=(0, -0.23, 1, 2),
-                       loc="lower left", mode="expand", borderaxespad=0, ncol=3)
-            plt.plot(timestamp_list[1:], interval_chart_list, marker='.', linewidth=1)  # s表示面积，marker表示图形
+                                                        f'max:{"%.8f" % max_interval}'],
+                       bbox_to_anchor=(0, -0.23, 1, 2), oc="lower left", mode="expand", borderaxespad=0, ncol=3)
+
             has_draw = True
 
         if not has_draw:
