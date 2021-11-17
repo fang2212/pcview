@@ -202,7 +202,7 @@ class Hub(Thread):
         if 'type' not in cfg:
             return
 
-        if "algo" in cfg.get('type'):
+        if "algo" in cfg.get('type') or cfg.get("type") in ['tda4', 'mdc']:
             device = cfg.get('origin_device', "")
             for item in cfg['ports']:
                 if not cfg['ports'][item].get('enable') and not is_main:

@@ -1,5 +1,5 @@
 {
-  "type": "tda4_algo",
+  "type": "tda4",
   "mac": "5a:31:d3:59:12:06",
   "force_ip": true,
   "ip": "192.168.1.233",
@@ -9,11 +9,11 @@
   "ports": {
     "video1": {
       "enable": true,
-      "port": 24014,
+      "port": 26011,
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_front",
       "idx": 1
     }
   }

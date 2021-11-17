@@ -173,7 +173,7 @@ class Player(object):
         height = obs.get('height')
         # print(obs['source'], obs['class'])
         height = height or width
-        if obs.get('class') == 'pedestrian' or obs.get('class') == 'PEDESTRIAN':
+        if obs.get('class') == 'pedestrian':
             height = 1.6
         # install_para = install[obs['source'].split('.')[0]]
 
@@ -324,11 +324,9 @@ class Player(object):
 
         if 'j2' in source:
             source = ""
-
         p = self.transform.getp_ifc_from_poly(ratios, 1, min_range, max_range, sensor=source)
         if not p:
             return
-
         if style == "dotted":
             for i in range(2, len(p) - 1, 1):
                 if i % 3 == 0:
@@ -383,7 +381,6 @@ class Player(object):
         # self.show_columns(img)
         # print(len(self.columns))
         self.img_height, self.img_width, _ = img.shape
-        # print(self.img_width, self.img_height)
         w = 160
         slots = {}
         for i in range(0, self.img_width, w):
@@ -514,7 +511,7 @@ class Player(object):
                            (2, 80), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'dev: {}'.format(data['device']), (2, 100), 0.5, CVColor.White, 1)
 
-    def show_status_info(self, img, source, status_list):
+    def show_status_info(self, source, status_list):
         """
         显示状态栏信息
         style: normal, warning, fail, pass
@@ -524,9 +521,7 @@ class Player(object):
             self.show_text_info(source, i.get("height", show_line), i.get("text", ""), i.get("style", "normal"), i.get("size"), expire_ts=i.get("expire_ts"))
             show_line = i.get("height", show_line) + 20
 
-    def show_frame_id(self, img, source, fn):
-        # indent = self.columns['video']['indent']
-        # BaseDraw.draw_text(img, 'fid: ' + str(int(fn)), (indent + 2, 40), 0.5, CVColor.White, 1)
+    def show_frame_id(self, source, fn):
         self.show_text_info(source, 40, 'frame: ' + str(int(fn)))
 
     def show_pinpoint(self, img, pp):
@@ -535,12 +530,10 @@ class Player(object):
     def show_frame_cost(self, cost):
         self.show_text_info('video', 80, 'render_cost: {}ms'.format(int(cost * 1000)))
 
-    def show_fps(self, img, source, fps):
-        # indent = self.columns['video']['indent']
-        # BaseDraw.draw_text(img, 'fps: ' + str(int(fps)), (indent + 2, 60), 0.5, CVColor.White, 1)
+    def show_fps(self, source, fps):
         self.show_text_info(source, 60, 'fps: ' + str(int(fps)))
 
-    def show_datetime(self, img, ts=None):
+    def show_datetime(self, ts=None):
         """
         视频的录制时间
         :param img:
@@ -558,25 +551,16 @@ class Player(object):
         self.show_text_info('video', 120, '{}'.format(time_))
 
     def show_ttc(self, img, ttc, source):
-        # indent = self.columns[source]['indent']
-        # BaseDraw.draw_text(img, 'TTC:' + '{:.2f} s'.format(ttc), (indent + 2, 40), 0.5, CVColor.Cyan, 1)
         self.show_text_info(source, 40, 'TTC:' + '{:.2f} s'.format(ttc))
 
     def show_veh_speed(self, img, speed, source):
-        # indent = self.get_indent(source)
-        # BaseDraw.draw_text(img, '{:.1f} km/h'.format(speed), (indent + 2, 40), 0.5, CVColor.White, 1)
         self.show_text_info(source, 40, '{:.1f} km/h'.format(speed))
 
     def show_yaw_rate(self, img, yr, source):
-        # indent = self.get_indent(source)
         yr_deg = yr * 57.3
-        # BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
         self.show_text_info(source, 60, '{:.1f}deg/s'.format(yr_deg))
 
     def show_accel(self, img, acc, source):
-        # indent = self.get_indent(source)
-        # yr_deg = yr * 57.3
-        # BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
         self.show_text_info(source, 80, '{:.1f}m/s^2'.format(acc))
 
     def show_q3_veh(self, img, speed, yr):
@@ -599,12 +583,10 @@ class Player(object):
         time_passed = time.time() - start_time
         BaseDraw.draw_text(img, 'Marking time: {:.2f}s'.format(time_passed), (100, 680), 3, CVColor.Green, 3)
 
-    def show_replaying(self, img, dts):
+    def show_replaying(self, dts):
         time_passed = dts
         self.show_text_info('video', 140, 'Replaying... ', CVColor.Red)
         self.show_text_info('video', 160, 'replay time: {:.2f}s'.format(time_passed))
-        # BaseDraw.draw_text(img, 'Replaying... ', (2, 700), 0.5, CVColor.White, 1)
-        # BaseDraw.draw_text(img, 'replay time: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
 
     def show_version(self, img, cfg):
         if cfg.runtime.get('build_time'):
@@ -792,7 +774,7 @@ class Player(object):
             BaseDraw.draw_text(img, '#rtk:{}/{} #ori:{}/{}'.format(rtk['sat'][1], rtk['sat'][0], rtk['sat'][5],
                                                                    rtk['sat'][4]), (indent + 50, 20), 0.5, color, 1)
 
-    def show_target(self, img, target, host):
+    def show_target                                                                            (self, img, target, host):
         if not target or not host:
             return
         indent = self.get_indent(target['source'])

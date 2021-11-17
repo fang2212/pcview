@@ -115,7 +115,7 @@ class Statistics:
 
     def run(self):
         print("start:", self.log_path)
-        with open(self.log_path) as f:
+        with open(self.log_path, encoding='unicode_escape') as f:
             lines = f.readlines()
 
             for line in lines:

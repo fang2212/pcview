@@ -76,7 +76,7 @@ def sort_big_file(filename, file_splits=4, my_cmp=None):
     buf_file = []
     buf_path = []
     path = os.path.dirname(filename)
-    with open(filename, 'r') as rf:
+    with open(filename, 'r', encoding='unicode_escape') as rf:
         for line in rf:
             line = line.strip()
             if line == '':

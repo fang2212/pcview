@@ -1,0 +1,1275 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: CR5CP_FL CR5CP_FR CR5CP_RL CR5CP_RR Vector_XXX
+
+
+BO_ 817 CR5CP_FL_SGUObjGroup_1: 64 CR5CP_FL
+ SG_ CR5CP_FL_ObjID_1 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_1 : 15|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_1 : 23|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_1 : 31|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_1 : 55|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_1 : 35|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_1 : 71|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_1 : 75|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_1 : 95|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_2 : 111|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_2 : 119|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_2 : 127|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_2 : 135|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_2 : 159|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_2 : 139|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_2 : 175|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_2 : 179|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_2 : 199|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_3 : 215|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_3 : 223|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_3 : 231|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_3 : 239|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_3 : 263|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_3 : 243|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_3 : 279|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_3 : 283|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_3 : 303|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_4 : 319|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_4 : 327|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_4 : 335|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_4 : 343|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_4 : 367|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_4 : 347|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_4 : 383|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_4 : 387|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_4 : 407|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FLObj1Locat_x : 423|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObj1Locat_y : 447|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObj1Locat_theta : 471|13@0+ (0.001,-4) [-4|4] "rad"  Vector_XXX
+ SG_ CR5CP_FLObj1MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ CR5CP_FLObj1CRC16Checksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 818 CR5CP_FL_SGUObjGroup_2: 64 CR5CP_FL
+ SG_ CR5CP_FL_ObjID_5 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_5 : 15|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_5 : 23|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_5 : 31|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_5 : 55|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_5 : 35|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_5 : 71|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_5 : 75|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_5 : 95|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_6 : 111|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_6 : 119|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_6 : 127|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_6 : 135|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_6 : 159|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_6 : 139|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_6 : 175|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_6 : 179|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_6 : 199|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_7 : 215|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_7 : 223|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_7 : 231|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_7 : 239|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_7 : 263|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_7 : 243|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_7 : 279|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_7 : 283|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_7 : 303|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_8 : 319|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_8 : 327|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_8 : 335|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_8 : 343|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_8 : 367|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_8 : 347|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_8 : 383|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_8 : 387|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_8 : 407|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FLObj2Locat_x : 423|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObj2Locat_y : 447|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObj2Locat_theta : 471|13@0+ (0.001,-4) [-4|4] "rad"  Vector_XXX
+ SG_ CR5CP_FLObj2MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ CR5CP_FLObj2CRC16Checksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 819 CR5CP_FL_SGUObjGroup_3: 64 CR5CP_FL
+ SG_ CR5CP_FL_ObjID_9 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_9 : 15|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_9 : 23|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_9 : 31|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_9 : 55|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_9 : 35|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_9 : 71|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_9 : 75|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_9 : 95|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_10 : 111|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_10 : 119|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_10 : 127|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_10 : 135|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_10 : 159|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_10 : 139|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_10 : 175|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_10 : 179|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_10 : 199|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_11 : 215|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_11 : 223|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_11 : 231|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_11 : 239|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_11 : 263|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_11 : 243|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_11 : 279|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_11 : 283|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_11 : 303|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_12 : 319|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_12 : 327|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_12 : 335|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_12 : 343|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_12 : 367|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_12 : 347|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_12 : 383|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_12 : 387|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_12 : 407|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FLObj3Locat_x : 423|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObj3Locat_y : 447|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObj3Locat_theta : 471|13@0+ (0.001,-4) [-4|4] "rad"  Vector_XXX
+ SG_ CR5CP_FLObj3MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ CR5CP_FLObj3CRC16Checksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 833 CR5CP_FL_SGUObjGroup_4: 64 CR5CP_FL
+ SG_ CR5CP_FL_ObjID_13 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_13 : 15|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_13 : 23|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_13 : 31|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_13 : 55|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_13 : 35|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_13 : 71|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_13 : 75|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_13 : 95|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_14 : 111|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_14 : 119|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_14 : 127|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_14 : 135|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_14 : 159|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_14 : 139|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_14 : 175|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_14 : 179|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_14 : 199|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_15 : 215|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_15 : 223|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_15 : 231|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_15 : 239|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_15 : 263|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_15 : 243|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_15 : 279|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_15 : 283|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_15 : 303|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjID_16 : 319|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjExistProb_16 : 327|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjObstacleProb_16 : 335|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjDistX_16 : 343|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjDistY_16 : 367|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelX_16 : 347|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjRelVelY_16 : 383|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelX_16 : 387|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjAccelY_16 : 407|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FLObj4Locat_x : 423|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObj4Locat_y : 447|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObj4Locat_theta : 471|13@0+ (0.001,-4) [-4|4] "rad"  Vector_XXX
+ SG_ CR5CP_FLObj4MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ CR5CP_FLObj4CRC16Checksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 632 CR5CP_FL_DTC1: 8 CR5CP_FL
+ SG_ CR5CP_FL_Obj_timestamp : 7|27@0+ (0.00097,0) [0|65536] ""  Vector_XXX
+ SG_ CR5CP_FL_Sensor_Dirty : 28|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_SGU_Failure : 26|3@0+ (1,0) [0|7] ""  Vector_XXX
+ SG_ CR5CP_FLFailure : 39|2@0+ (1,0) [0|3] ""  Vector_XXX
+ SG_ CR5CP_FL_Sleep : 27|1@0+ (1,0) [0|1] ""  Vector_XXX
+
+BO_ 812 CR5CP_FL_SGUObjGroup_5: 64 CR5CP_FL
+ SG_ CR5CP_FL_ObjNewID_1 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_1 : 15|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_1 : 23|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_1 : 31|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_1 : 55|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_1 : 35|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_1 : 71|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_1 : 75|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_1 : 95|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_2 : 111|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_2 : 119|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_2 : 127|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_2 : 135|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_2 : 159|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_2 : 139|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_2 : 175|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_2 : 179|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_2 : 199|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_3 : 215|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_3 : 223|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_3 : 231|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_3 : 239|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_3 : 263|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_3 : 243|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_3 : 279|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_3 : 283|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_3 : 303|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_4 : 319|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_4 : 327|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_4 : 335|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_4 : 343|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_4 : 367|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_4 : 347|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_4 : 383|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_4 : 387|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_4 : 407|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FLObjNew1Locat_x : 423|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObjNew1Locat_y : 447|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObjNew1Locat_theta : 471|13@0+ (0.001,-4) [-4|4] "rad"  Vector_XXX
+ SG_ CR5CP_FLObjNew1MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ CR5CP_FLObjNew1CRC16Checksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 813 CR5CP_FL_SGUObjGroup_6: 64 CR5CP_FL
+ SG_ CR5CP_FL_ObjNewID_5 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_5 : 15|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_5 : 23|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_5 : 31|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_5 : 55|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_5 : 35|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_5 : 71|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_5 : 75|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_5 : 95|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_6 : 111|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_6 : 119|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_6 : 127|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_6 : 135|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_6 : 159|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_6 : 139|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_6 : 175|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_6 : 179|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_6 : 199|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_7 : 215|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_7 : 223|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_7 : 231|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_7 : 239|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_7 : 263|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_7 : 243|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_7 : 279|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_7 : 283|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_7 : 303|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_8 : 319|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_8 : 327|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_8 : 335|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_8 : 343|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_8 : 367|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_8 : 347|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_8 : 383|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_8 : 387|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_8 : 407|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FLObjNew2Locat_x : 423|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObjNew2Locat_y : 447|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObjNew2Locat_theta : 471|13@0+ (0.001,-4) [-4|4] "rad"  Vector_XXX
+ SG_ CR5CP_FLObjNew2MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ CR5CP_FLObjNew2CRC16Checksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 814 CR5CP_FL_SGUObjGroup_7: 64 CR5CP_FL
+ SG_ CR5CP_FL_ObjNewID_9 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_9 : 15|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_9 : 23|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_9 : 31|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_9 : 55|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_9 : 35|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_9 : 71|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_9 : 75|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_9 : 95|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_10 : 111|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_10 : 119|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_10 : 127|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_10 : 135|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_10 : 159|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_10 : 139|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_10 : 175|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_10 : 179|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_10 : 199|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_11 : 215|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_11 : 223|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_11 : 231|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_11 : 239|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_11 : 263|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_11 : 243|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_11 : 279|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_11 : 283|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_11 : 303|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_12 : 319|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_12 : 327|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_12 : 335|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_12 : 343|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_12 : 367|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_12 : 347|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_12 : 383|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_12 : 387|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_12 : 407|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FLObjNew3Locat_x : 423|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObjNew3Locat_y : 447|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObjNew3Locat_theta : 471|13@0+ (0.001,-4) [-4|4] "rad"  Vector_XXX
+ SG_ CR5CP_FLObjNew3MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ CR5CP_FLObjNew3CRC16Checksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 815 CR5CP_FL_SGUObjGroup_8: 64 CR5CP_FL
+ SG_ CR5CP_FL_ObjNewID_13 : 7|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_13 : 15|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_13 : 23|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_13 : 31|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_13 : 55|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_13 : 35|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_13 : 71|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_13 : 75|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_13 : 95|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_14 : 111|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_14 : 119|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_14 : 127|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_14 : 135|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_14 : 159|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_14 : 139|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_14 : 175|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_14 : 179|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_14 : 199|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_15 : 215|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_15 : 223|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_15 : 231|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_15 : 239|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_15 : 263|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_15 : 243|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_15 : 279|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_15 : 283|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_15 : 303|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewID_16 : 319|8@0+ (1,0) [0|255] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewExistProb_16 : 327|6@0+ (0.015625,0) [0|0.984375] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewObstacleProb_16 : 335|5@0+ (0.03125,0) [0|0.96875] ""  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistX_16 : 343|12@0+ (0.0625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewDistY_16 : 367|14@0+ (0.015625,-128) [-128|127] "m"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelX_16 : 347|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewRelVelY_16 : 383|12@0+ (0.0625,-128) [-128|127] "mps"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelX_16 : 387|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FL_ObjNewAccelY_16 : 407|12@0+ (0.03125,-16) [-16|15] "mps2"  Vector_XXX
+ SG_ CR5CP_FLObjNew4Locat_x : 423|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObjNew4Locat_y : 447|24@0+ (0.01,-80000) [-80000|80000] "m"  Vector_XXX
+ SG_ CR5CP_FLObjNew4Locat_theta : 471|13@0+ (0.001,-4) [-4|4] "rad"  Vector_XXX
+ SG_ CR5CP_FLObjNew4MsgCounter : 491|4@0+ (1,0) [0|15] ""  Vector_XXX
+ SG_ CR5CP_FLObjNew4CRC16Checksum : 503|16@0+ (1,0) [0|65535] ""  Vector_XXX
+
+BO_ 625 CR5CP_FL_DTC2: 16 CR5CP_FL
+ SG_ CR5CP_FL_VBAT_High : 0|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_VBAT_LOW : 1|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_BUS_OFF_PCAN : 2|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_BUS_OFF_SFCAN : 3|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_CR5CP_FR_TIMEOUT : 8|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_CR5CP_FL_TIMEOUT : 9|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_CR5CP_RR_TIMEOUT : 10|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_RL_CR5CP_RR_TIMEOUT : 11|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_BLIND : 21|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_Alig_Never_DONE : 23|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_Alig_NOT_OK : 24|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_MisAlig : 37|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_HW_Fail : 45|1@0+ (1,0) [0|1] ""  Vector_XXX
+ SG_ CR5CP_FL_SW_Fail : 52|1@0+ (1,0) [0|1] ""  Vector_XXX
+
+
+
+CM_ SG_ 817 CR5CP_FL_ObjID_1 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 817 CR5CP_FL_ObjExistProb_1 "The probability of an object to exist in reality";
+CM_ SG_ 817 CR5CP_FL_ObjObstacleProb_1 "The probability of an object being an obstacle";
+CM_ SG_ 817 CR5CP_FL_ObjDistX_1 "Groupition of target vehicle in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjDistY_1 "Groupition of target vehicle in y-direction";
+CM_ SG_ 817 CR5CP_FL_ObjRelVelX_1 "Relative target object velocity in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjRelVelY_1 "Relative target object velocity in y-direction";
+CM_ SG_ 817 CR5CP_FL_ObjAccelX_1 "Relative target acceleration  in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjAccelY_1 "Relative target acceleration  in y-direction";
+CM_ SG_ 817 CR5CP_FL_ObjID_2 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 817 CR5CP_FL_ObjExistProb_2 "The probability of an object to exist in reality";
+CM_ SG_ 817 CR5CP_FL_ObjObstacleProb_2 "The probability of an object being an obstacle";
+CM_ SG_ 817 CR5CP_FL_ObjDistX_2 "Groupition of target vehicle in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjDistY_2 "Groupition of target vehicle in y-direction";
+CM_ SG_ 817 CR5CP_FL_ObjRelVelX_2 "Relative target object velocity in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjRelVelY_2 "Relative target object velocity in y-direction";
+CM_ SG_ 817 CR5CP_FL_ObjAccelX_2 "Relative target acceleration  in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjAccelY_2 "Relative target acceleration  in y-direction";
+CM_ SG_ 817 CR5CP_FL_ObjID_3 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 817 CR5CP_FL_ObjExistProb_3 "The probability of an object to exist in reality";
+CM_ SG_ 817 CR5CP_FL_ObjObstacleProb_3 "The probability of an object being an obstacle";
+CM_ SG_ 817 CR5CP_FL_ObjDistX_3 "Groupition of target vehicle in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjDistY_3 "Groupition of target vehicle in y-direction";
+CM_ SG_ 817 CR5CP_FL_ObjRelVelX_3 "Relative target object velocity in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjRelVelY_3 "Relative target object velocity in y-direction";
+CM_ SG_ 817 CR5CP_FL_ObjAccelX_3 "Relative target acceleration  in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjAccelY_3 "Relative target acceleration  in y-direction";
+CM_ SG_ 817 CR5CP_FL_ObjID_4 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 817 CR5CP_FL_ObjExistProb_4 "The probability of an object to exist in reality";
+CM_ SG_ 817 CR5CP_FL_ObjObstacleProb_4 "The probability of an object being an obstacle";
+CM_ SG_ 817 CR5CP_FL_ObjDistX_4 "Groupition of target vehicle in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjDistY_4 "Groupition of target vehicle in y-direction";
+CM_ SG_ 817 CR5CP_FL_ObjRelVelX_4 "Relative target object velocity in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjRelVelY_4 "Relative target object velocity in y-direction";
+CM_ SG_ 817 CR5CP_FL_ObjAccelX_4 "Relative target acceleration  in x-direction";
+CM_ SG_ 817 CR5CP_FL_ObjAccelY_4 "Relative target acceleration  in y-direction";
+CM_ SG_ 817 CR5CP_FLObj1Locat_x "IMU sends vehicle coordinates";
+CM_ SG_ 817 CR5CP_FLObj1Locat_y "IMU sends vehicle coordinates";
+CM_ SG_ 817 CR5CP_FLObj1Locat_theta "IMU sends vehicle azimuth";
+CM_ SG_ 817 CR5CP_FLObj1MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 817 CR5CP_FLObj1CRC16Checksum "CRC16";
+CM_ SG_ 818 CR5CP_FL_ObjID_5 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 818 CR5CP_FL_ObjExistProb_5 "The probability of an object to exist in reality";
+CM_ SG_ 818 CR5CP_FL_ObjObstacleProb_5 "The probability of an object being an obstacle";
+CM_ SG_ 818 CR5CP_FL_ObjDistX_5 "Groupition of target vehicle in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjDistY_5 "Groupition of target vehicle in y-direction";
+CM_ SG_ 818 CR5CP_FL_ObjRelVelX_5 "Relative target object velocity in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjRelVelY_5 "Relative target object velocity in y-direction";
+CM_ SG_ 818 CR5CP_FL_ObjAccelX_5 "Relative target acceleration  in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjAccelY_5 "Relative target acceleration  in y-direction";
+CM_ SG_ 818 CR5CP_FL_ObjID_6 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 818 CR5CP_FL_ObjExistProb_6 "The probability of an object to exist in reality";
+CM_ SG_ 818 CR5CP_FL_ObjObstacleProb_6 "The probability of an object being an obstacle";
+CM_ SG_ 818 CR5CP_FL_ObjDistX_6 "Groupition of target vehicle in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjDistY_6 "Groupition of target vehicle in y-direction";
+CM_ SG_ 818 CR5CP_FL_ObjRelVelX_6 "Relative target object velocity in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjRelVelY_6 "Relative target object velocity in y-direction";
+CM_ SG_ 818 CR5CP_FL_ObjAccelX_6 "Relative target acceleration  in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjAccelY_6 "Relative target acceleration  in y-direction";
+CM_ SG_ 818 CR5CP_FL_ObjID_7 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 818 CR5CP_FL_ObjExistProb_7 "The probability of an object to exist in reality";
+CM_ SG_ 818 CR5CP_FL_ObjObstacleProb_7 "The probability of an object being an obstacle";
+CM_ SG_ 818 CR5CP_FL_ObjDistX_7 "Groupition of target vehicle in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjDistY_7 "Groupition of target vehicle in y-direction";
+CM_ SG_ 818 CR5CP_FL_ObjRelVelX_7 "Relative target object velocity in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjRelVelY_7 "Relative target object velocity in y-direction";
+CM_ SG_ 818 CR5CP_FL_ObjAccelX_7 "Relative target acceleration  in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjAccelY_7 "Relative target acceleration  in y-direction";
+CM_ SG_ 818 CR5CP_FL_ObjID_8 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 818 CR5CP_FL_ObjExistProb_8 "The probability of an object to exist in reality";
+CM_ SG_ 818 CR5CP_FL_ObjObstacleProb_8 "The probability of an object being an obstacle";
+CM_ SG_ 818 CR5CP_FL_ObjDistX_8 "Groupition of target vehicle in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjDistY_8 "Groupition of target vehicle in y-direction";
+CM_ SG_ 818 CR5CP_FL_ObjRelVelX_8 "Relative target object velocity in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjRelVelY_8 "Relative target object velocity in y-direction";
+CM_ SG_ 818 CR5CP_FL_ObjAccelX_8 "Relative target acceleration  in x-direction";
+CM_ SG_ 818 CR5CP_FL_ObjAccelY_8 "Relative target acceleration  in y-direction";
+CM_ SG_ 818 CR5CP_FLObj2Locat_x "IMU sends vehicle coordinates";
+CM_ SG_ 818 CR5CP_FLObj2Locat_y "IMU sends vehicle coordinates";
+CM_ SG_ 818 CR5CP_FLObj2Locat_theta "IMU sends vehicle azimuth";
+CM_ SG_ 818 CR5CP_FLObj2MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 818 CR5CP_FLObj2CRC16Checksum "CRC16";
+CM_ SG_ 819 CR5CP_FL_ObjID_9 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 819 CR5CP_FL_ObjExistProb_9 "The probability of an object to exist in reality";
+CM_ SG_ 819 CR5CP_FL_ObjObstacleProb_9 "The probability of an object being an obstacle";
+CM_ SG_ 819 CR5CP_FL_ObjDistX_9 "Groupition of target vehicle in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjDistY_9 "Groupition of target vehicle in y-direction";
+CM_ SG_ 819 CR5CP_FL_ObjRelVelX_9 "Relative target object velocity in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjRelVelY_9 "Relative target object velocity in y-direction";
+CM_ SG_ 819 CR5CP_FL_ObjAccelX_9 "Relative target acceleration  in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjAccelY_9 "Relative target acceleration  in y-direction";
+CM_ SG_ 819 CR5CP_FL_ObjID_10 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 819 CR5CP_FL_ObjExistProb_10 "The probability of an object to exist in reality";
+CM_ SG_ 819 CR5CP_FL_ObjObstacleProb_10 "The probability of an object being an obstacle";
+CM_ SG_ 819 CR5CP_FL_ObjDistX_10 "Groupition of target vehicle in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjDistY_10 "Groupition of target vehicle in y-direction";
+CM_ SG_ 819 CR5CP_FL_ObjRelVelX_10 "Relative target object velocity in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjRelVelY_10 "Relative target object velocity in y-direction";
+CM_ SG_ 819 CR5CP_FL_ObjAccelX_10 "Relative target acceleration  in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjAccelY_10 "Relative target acceleration  in y-direction";
+CM_ SG_ 819 CR5CP_FL_ObjID_11 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 819 CR5CP_FL_ObjExistProb_11 "The probability of an object to exist in reality";
+CM_ SG_ 819 CR5CP_FL_ObjObstacleProb_11 "The probability of an object being an obstacle";
+CM_ SG_ 819 CR5CP_FL_ObjDistX_11 "Groupition of target vehicle in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjDistY_11 "Groupition of target vehicle in y-direction";
+CM_ SG_ 819 CR5CP_FL_ObjRelVelX_11 "Relative target object velocity in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjRelVelY_11 "Relative target object velocity in y-direction";
+CM_ SG_ 819 CR5CP_FL_ObjAccelX_11 "Relative target acceleration  in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjAccelY_11 "Relative target acceleration  in y-direction";
+CM_ SG_ 819 CR5CP_FL_ObjID_12 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 819 CR5CP_FL_ObjExistProb_12 "The probability of an object to exist in reality";
+CM_ SG_ 819 CR5CP_FL_ObjObstacleProb_12 "The probability of an object being an obstacle";
+CM_ SG_ 819 CR5CP_FL_ObjDistX_12 "Groupition of target vehicle in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjDistY_12 "Groupition of target vehicle in y-direction";
+CM_ SG_ 819 CR5CP_FL_ObjRelVelX_12 "Relative target object velocity in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjRelVelY_12 "Relative target object velocity in y-direction";
+CM_ SG_ 819 CR5CP_FL_ObjAccelX_12 "Relative target acceleration  in x-direction";
+CM_ SG_ 819 CR5CP_FL_ObjAccelY_12 "Relative target acceleration  in y-direction";
+CM_ SG_ 819 CR5CP_FLObj3Locat_x "IMU sends vehicle coordinates";
+CM_ SG_ 819 CR5CP_FLObj3Locat_y "IMU sends vehicle coordinates";
+CM_ SG_ 819 CR5CP_FLObj3Locat_theta "IMU sends vehicle azimuth";
+CM_ SG_ 819 CR5CP_FLObj3MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 819 CR5CP_FLObj3CRC16Checksum "CRC16";
+CM_ SG_ 833 CR5CP_FL_ObjID_13 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 833 CR5CP_FL_ObjExistProb_13 "The probability of an object to exist in reality";
+CM_ SG_ 833 CR5CP_FL_ObjObstacleProb_13 "The probability of an object being an obstacle";
+CM_ SG_ 833 CR5CP_FL_ObjDistX_13 "Groupition of target vehicle in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjDistY_13 "Groupition of target vehicle in y-direction";
+CM_ SG_ 833 CR5CP_FL_ObjRelVelX_13 "Relative target object velocity in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjRelVelY_13 "Relative target object velocity in y-direction";
+CM_ SG_ 833 CR5CP_FL_ObjAccelX_13 "Relative target acceleration  in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjAccelY_13 "Relative target acceleration  in y-direction";
+CM_ SG_ 833 CR5CP_FL_ObjID_14 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 833 CR5CP_FL_ObjExistProb_14 "The probability of an object to exist in reality";
+CM_ SG_ 833 CR5CP_FL_ObjObstacleProb_14 "The probability of an object being an obstacle";
+CM_ SG_ 833 CR5CP_FL_ObjDistX_14 "Groupition of target vehicle in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjDistY_14 "Groupition of target vehicle in y-direction";
+CM_ SG_ 833 CR5CP_FL_ObjRelVelX_14 "Relative target object velocity in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjRelVelY_14 "Relative target object velocity in y-direction";
+CM_ SG_ 833 CR5CP_FL_ObjAccelX_14 "Relative target acceleration  in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjAccelY_14 "Relative target acceleration  in y-direction";
+CM_ SG_ 833 CR5CP_FL_ObjID_15 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 833 CR5CP_FL_ObjExistProb_15 "The probability of an object to exist in reality";
+CM_ SG_ 833 CR5CP_FL_ObjObstacleProb_15 "The probability of an object being an obstacle";
+CM_ SG_ 833 CR5CP_FL_ObjDistX_15 "Groupition of target vehicle in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjDistY_15 "Groupition of target vehicle in y-direction";
+CM_ SG_ 833 CR5CP_FL_ObjRelVelX_15 "Relative target object velocity in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjRelVelY_15 "Relative target object velocity in y-direction";
+CM_ SG_ 833 CR5CP_FL_ObjAccelX_15 "Relative target acceleration  in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjAccelY_15 "Relative target acceleration  in y-direction";
+CM_ SG_ 833 CR5CP_FL_ObjID_16 "ID is an identifier number that allows for tracking of persistent objects over time";
+CM_ SG_ 833 CR5CP_FL_ObjExistProb_16 "The probability of an object to exist in reality";
+CM_ SG_ 833 CR5CP_FL_ObjObstacleProb_16 "The probability of an object being an obstacle";
+CM_ SG_ 833 CR5CP_FL_ObjDistX_16 "Groupition of target vehicle in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjDistY_16 "Groupition of target vehicle in y-direction";
+CM_ SG_ 833 CR5CP_FL_ObjRelVelX_16 "Relative target object velocity in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjRelVelY_16 "Relative target object velocity in y-direction";
+CM_ SG_ 833 CR5CP_FL_ObjAccelX_16 "Relative target acceleration  in x-direction";
+CM_ SG_ 833 CR5CP_FL_ObjAccelY_16 "Relative target acceleration  in y-direction";
+CM_ SG_ 833 CR5CP_FLObj4Locat_x "IMU sends vehicle coordinates";
+CM_ SG_ 833 CR5CP_FLObj4Locat_y "IMU sends vehicle coordinates";
+CM_ SG_ 833 CR5CP_FLObj4Locat_theta "IMU sends vehicle azimuth";
+CM_ SG_ 833 CR5CP_FLObj4MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 833 CR5CP_FLObj4CRC16Checksum "CRC16";
+CM_ SG_ 632 CR5CP_FLFailure "Front MRR_FL failure status";
+CM_ SG_ 812 CR5CP_FL_ObjNewID_1 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 812 CR5CP_FL_ObjNewExistProb_1 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 812 CR5CP_FL_ObjNewObstacleProb_1 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 812 CR5CP_FL_ObjNewDistX_1 "Groupition of target vehicle in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewDistY_1 "Groupition of target vehicle in y-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewRelVelX_1 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewRelVelY_1 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewAccelX_1 "Relative target acceleration  in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewAccelY_1 "Relative target acceleration  in y-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewID_2 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 812 CR5CP_FL_ObjNewExistProb_2 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 812 CR5CP_FL_ObjNewObstacleProb_2 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 812 CR5CP_FL_ObjNewDistX_2 "Groupition of target vehicle in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewDistY_2 "Groupition of target vehicle in y-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewRelVelX_2 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewRelVelY_2 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewAccelX_2 "Relative target acceleration  in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewAccelY_2 "Relative target acceleration  in y-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewID_3 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 812 CR5CP_FL_ObjNewExistProb_3 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 812 CR5CP_FL_ObjNewObstacleProb_3 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 812 CR5CP_FL_ObjNewDistX_3 "Groupition of target vehicle in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewDistY_3 "Groupition of target vehicle in y-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewRelVelX_3 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewRelVelY_3 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewAccelX_3 "Relative target acceleration  in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewAccelY_3 "Relative target acceleration  in y-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewID_4 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 812 CR5CP_FL_ObjNewExistProb_4 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 812 CR5CP_FL_ObjNewObstacleProb_4 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 812 CR5CP_FL_ObjNewDistX_4 "Groupition of target vehicle in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewDistY_4 "Groupition of target vehicle in y-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewRelVelX_4 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewRelVelY_4 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewAccelX_4 "Relative target acceleration  in x-direction";
+CM_ SG_ 812 CR5CP_FL_ObjNewAccelY_4 "Relative target acceleration  in y-direction";
+CM_ SG_ 812 CR5CP_FLObjNew1Locat_x "IMU sends vehicle coordinates";
+CM_ SG_ 812 CR5CP_FLObjNew1Locat_y "IMU sends vehicle coordinates";
+CM_ SG_ 812 CR5CP_FLObjNew1Locat_theta "IMU sends vehicle azimuth";
+CM_ SG_ 812 CR5CP_FLObjNew1MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 812 CR5CP_FLObjNew1CRC16Checksum "CRC16";
+CM_ SG_ 813 CR5CP_FL_ObjNewID_5 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 813 CR5CP_FL_ObjNewExistProb_5 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 813 CR5CP_FL_ObjNewObstacleProb_5 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 813 CR5CP_FL_ObjNewDistX_5 "Groupition of target vehicle in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewDistY_5 "Groupition of target vehicle in y-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewRelVelX_5 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewRelVelY_5 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewAccelX_5 "Relative target acceleration  in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewAccelY_5 "Relative target acceleration  in y-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewID_6 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 813 CR5CP_FL_ObjNewExistProb_6 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 813 CR5CP_FL_ObjNewObstacleProb_6 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 813 CR5CP_FL_ObjNewDistX_6 "Groupition of target vehicle in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewDistY_6 "Groupition of target vehicle in y-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewRelVelX_6 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewRelVelY_6 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewAccelX_6 "Relative target acceleration  in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewAccelY_6 "Relative target acceleration  in y-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewID_7 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 813 CR5CP_FL_ObjNewExistProb_7 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 813 CR5CP_FL_ObjNewObstacleProb_7 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 813 CR5CP_FL_ObjNewDistX_7 "Groupition of target vehicle in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewDistY_7 "Groupition of target vehicle in y-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewRelVelX_7 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewRelVelY_7 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewAccelX_7 "Relative target acceleration  in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewAccelY_7 "Relative target acceleration  in y-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewID_8 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 813 CR5CP_FL_ObjNewExistProb_8 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 813 CR5CP_FL_ObjNewObstacleProb_8 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 813 CR5CP_FL_ObjNewDistX_8 "Groupition of target vehicle in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewDistY_8 "Groupition of target vehicle in y-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewRelVelX_8 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewRelVelY_8 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewAccelX_8 "Relative target acceleration  in x-direction";
+CM_ SG_ 813 CR5CP_FL_ObjNewAccelY_8 "Relative target acceleration  in y-direction";
+CM_ SG_ 813 CR5CP_FLObjNew2Locat_x "IMU sends vehicle coordinates";
+CM_ SG_ 813 CR5CP_FLObjNew2Locat_y "IMU sends vehicle coordinates";
+CM_ SG_ 813 CR5CP_FLObjNew2Locat_theta "IMU sends vehicle azimuth";
+CM_ SG_ 813 CR5CP_FLObjNew2MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 813 CR5CP_FLObjNew2CRC16Checksum "CRC16";
+CM_ SG_ 814 CR5CP_FL_ObjNewID_9 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 814 CR5CP_FL_ObjNewExistProb_9 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 814 CR5CP_FL_ObjNewObstacleProb_9 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 814 CR5CP_FL_ObjNewDistX_9 "Groupition of target vehicle in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewDistY_9 "Groupition of target vehicle in y-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewRelVelX_9 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewRelVelY_9 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewAccelX_9 "Relative target acceleration  in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewAccelY_9 "Relative target acceleration  in y-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewID_10 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 814 CR5CP_FL_ObjNewExistProb_10 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 814 CR5CP_FL_ObjNewObstacleProb_10 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 814 CR5CP_FL_ObjNewDistX_10 "Groupition of target vehicle in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewDistY_10 "Groupition of target vehicle in y-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewRelVelX_10 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewRelVelY_10 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewAccelX_10 "Relative target acceleration  in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewAccelY_10 "Relative target acceleration  in y-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewID_11 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 814 CR5CP_FL_ObjNewExistProb_11 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 814 CR5CP_FL_ObjNewObstacleProb_11 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 814 CR5CP_FL_ObjNewDistX_11 "Groupition of target vehicle in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewDistY_11 "Groupition of target vehicle in y-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewRelVelX_11 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewRelVelY_11 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewAccelX_11 "Relative target acceleration  in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewAccelY_11 "Relative target acceleration  in y-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewID_12 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 814 CR5CP_FL_ObjNewExistProb_12 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 814 CR5CP_FL_ObjNewObstacleProb_12 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 814 CR5CP_FL_ObjNewDistX_12 "Groupition of target vehicle in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewDistY_12 "Groupition of target vehicle in y-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewRelVelX_12 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewRelVelY_12 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewAccelX_12 "Relative target acceleration  in x-direction";
+CM_ SG_ 814 CR5CP_FL_ObjNewAccelY_12 "Relative target acceleration  in y-direction";
+CM_ SG_ 814 CR5CP_FLObjNew3Locat_x "IMU sends vehicle coordinates";
+CM_ SG_ 814 CR5CP_FLObjNew3Locat_y "IMU sends vehicle coordinates";
+CM_ SG_ 814 CR5CP_FLObjNew3Locat_theta "IMU sends vehicle azimuth";
+CM_ SG_ 814 CR5CP_FLObjNew3MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 814 CR5CP_FLObjNew3CRC16Checksum "CRC16";
+CM_ SG_ 815 CR5CP_FL_ObjNewID_13 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 815 CR5CP_FL_ObjNewExistProb_13 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 815 CR5CP_FL_ObjNewObstacleProb_13 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 815 CR5CP_FL_ObjNewDistX_13 "Groupition of target vehicle in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewDistY_13 "Groupition of target vehicle in y-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewRelVelX_13 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewRelVelY_13 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewAccelX_13 "Relative target acceleration  in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewAccelY_13 "Relative target acceleration  in y-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewID_14 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 815 CR5CP_FL_ObjNewExistProb_14 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 815 CR5CP_FL_ObjNewObstacleProb_14 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 815 CR5CP_FL_ObjNewDistX_14 "Groupition of target vehicle in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewDistY_14 "Groupition of target vehicle in y-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewRelVelX_14 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewRelVelY_14 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewAccelX_14 "Relative target acceleration  in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewAccelY_14 "Relative target acceleration  in y-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewID_15 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 815 CR5CP_FL_ObjNewExistProb_15 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 815 CR5CP_FL_ObjNewObstacleProb_15 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 815 CR5CP_FL_ObjNewDistX_15 "Groupition of target vehicle in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewDistY_15 "Groupition of target vehicle in y-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewRelVelX_15 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewRelVelY_15 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewAccelX_15 "Relative target acceleration  in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewAccelY_15 "Relative target acceleration  in y-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewID_16 "ID is an identifier number that allows for tracking of persistent ObjNewects over time";
+CM_ SG_ 815 CR5CP_FL_ObjNewExistProb_16 "The probability of an ObjNewect to exist in reality";
+CM_ SG_ 815 CR5CP_FL_ObjNewObstacleProb_16 "The probability of an ObjNewect being an obstacle";
+CM_ SG_ 815 CR5CP_FL_ObjNewDistX_16 "Groupition of target vehicle in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewDistY_16 "Groupition of target vehicle in y-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewRelVelX_16 "Relative target ObjNewect velocity in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewRelVelY_16 "Relative target ObjNewect velocity in y-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewAccelX_16 "Relative target acceleration  in x-direction";
+CM_ SG_ 815 CR5CP_FL_ObjNewAccelY_16 "Relative target acceleration  in y-direction";
+CM_ SG_ 815 CR5CP_FLObjNew4Locat_x "IMU sends vehicle coordinates";
+CM_ SG_ 815 CR5CP_FLObjNew4Locat_y "IMU sends vehicle coordinates";
+CM_ SG_ 815 CR5CP_FLObjNew4Locat_theta "IMU sends vehicle azimuth";
+CM_ SG_ 815 CR5CP_FLObjNew4MsgCounter "The MessageCounter is a 0 ~ 15 counter, increased of one unit on every message transmission";
+CM_ SG_ 815 CR5CP_FLObjNew4CRC16Checksum "CRC16";
+CM_ SG_ 625 CR5CP_FL_VBAT_High "0xEF1017
+voltage>16V, duration>3s";
+CM_ SG_ 625 CR5CP_FL_VBAT_LOW "0xEF1116
+voltage<9V, duration>3s";
+CM_ SG_ 625 CR5CP_FL_BUS_OFF_PCAN "0xEF0388
+3 consecutive Bus-off";
+CM_ SG_ 625 CR5CP_FL_BUS_OFF_SFCAN "0xEF0A88
+3 consecutive Bus-off";
+CM_ SG_ 625 CR5CP_FL_CR5CP_FR_TIMEOUT "0xEF4A87
+Any monitored message is missing for 10 times continuously
+(monitored messages: choose at least one message every cycle as monitored messages)
+CR5CP_FR_AssistSysSt 0x279
+Only RL radar support fault set, other radars not supported";
+CM_ SG_ 625 CR5CP_FL_CR5CP_FL_TIMEOUT "0xEF4B87
+Any monitored message is missing for 10 times continuously
+(monitored messages: choose at least one message every cycle as monitored messages)
+CR5CP_FL_AssistSysSt 0x278
+Only RL radar support fault set, other radars not supported";
+CM_ SG_ 625 CR5CP_FL_CR5CP_RR_TIMEOUT "0xEF4C87
+Any monitored message is missing for 10 times continuously
+(monitored messages: choose at least one message every cycle as monitored messages)
+CR5CP_RR_AssistSysSt 0x27B
+Only RL radar support fault set, other radars not supported";
+CM_ SG_ 625 CR5CP_FL_RL_CR5CP_RR_TIMEOUT "0xEF4D87
+Any monitored message is missing for 10 times continuously
+(monitored messages: choose at least one message every cycle as monitored messages)
+CR5CP_AssistSysSt 0x277";
+CM_ SG_ 625 CR5CP_FL_BLIND "0x5A8B04
+Radar Blindness detected";
+CM_ SG_ 625 CR5CP_FL_Alig_Never_DONE "0x5A8E78
+Alig never done";
+CM_ SG_ 625 CR5CP_FL_Alig_NOT_OK "0x5A8F78
+Alig is not done ";
+CM_ SG_ 625 CR5CP_FL_MisAlig "0X590055
+MisAlig happened";
+CM_ SG_ 625 CR5CP_FL_HW_Fail "0x530906
+(monolithic microwave integrated circuit) internal hardware failure";
+CM_ SG_ 625 CR5CP_FL_SW_Fail "0x530E04
+(1) Software task run time exceeds threshold£¨10ms/20ms£©
+(2)Security management unit monitoring (SMU) is turned off";
+BA_DEF_ SG_  "InvalidHex" STRING ;
+BA_DEF_ SG_  "NWM_WakeupAllowed" ENUM  "No","Yes";
+BA_DEF_ SG_  "GenSigEnvVarType" ENUM  "int","float","undef";
+BA_DEF_ SG_  "GenSigEVName" STRING ;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ SG_  "GenSigStartValue" FLOAT 0 100000000000;
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 100000;
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType";
+BA_DEF_ BO_  "NetworkInitializationCommand" ENUM  "No","Yes";
+BA_DEF_ BO_  "NetworkWakeUp" ENUM  "No","Yes";
+BA_DEF_ BO_  "NetworkInitialization" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagRequest" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagResponse" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ BO_  "CANFD_BRS" ENUM  "0","1";
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 100000;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 100000;
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 100;
+BA_DEF_ BO_  "NmMessage" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "FixedPeriodic","Event","EnabledPeriodic","Enable","NotUsed","EventPeriodic","NotUsed","NotUsed","NoMsgSendType";
+BA_DEF_ BO_  "TpTxIndex" INT 0 10000;
+BA_DEF_ BU_  "GenNodSleepTime" INT 0 1000000;
+BA_DEF_ BU_  "NmCAN" INT 1 2;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","StandardCAN_FD","ExtendedCAN_FD";
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "NetworkInitializationUsed" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmNode" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmStationAddress" HEX 0 255;
+BA_DEF_ BU_  "ILUsed" ENUM  "No","Yes";
+BA_DEF_  "Manufacturer" STRING ;
+BA_DEF_  "Project" STRING ;
+BA_DEF_  "Version" STRING ;
+BA_DEF_  "Date" STRING ;
+BA_DEF_  "Author" STRING ;
+BA_DEF_  "NmType" STRING ;
+BA_DEF_  "NmBaseAddress" HEX 0 2047;
+BA_DEF_  "NmMessageCount" INT 0 256;
+BA_DEF_DEF_  "InvalidHex" "";
+BA_DEF_DEF_  "NWM_WakeupAllowed" "No";
+BA_DEF_DEF_  "GenSigEnvVarType" "undef";
+BA_DEF_DEF_  "GenSigEVName" "";
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "NetworkInitializationCommand" "No";
+BA_DEF_DEF_  "NetworkWakeUp" "No";
+BA_DEF_DEF_  "NetworkInitialization" "No";
+BA_DEF_DEF_  "DiagRequest" "No";
+BA_DEF_DEF_  "DiagResponse" "No";
+BA_DEF_DEF_  "GenMsgDelayTime" 10;
+BA_DEF_DEF_  "CANFD_BRS" "1";
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 3;
+BA_DEF_DEF_  "NmMessage" "No";
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgSendType" "NoMsgSendType";
+BA_DEF_DEF_  "TpTxIndex" 0;
+BA_DEF_DEF_  "GenNodSleepTime" 0;
+BA_DEF_DEF_  "NmCAN" 1;
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "VFrameFormat" "StandardCAN";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "NetworkInitializationUsed" "No";
+BA_DEF_DEF_  "NmNode" "No";
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "ILUsed" "";
+BA_DEF_DEF_  "Manufacturer" "XPeng";
+BA_DEF_DEF_  "Project" "E28";
+BA_DEF_DEF_  "Version" "N";
+BA_DEF_DEF_  "Date" "N";
+BA_DEF_DEF_  "Author" "SunWei";
+BA_DEF_DEF_  "NmType" "";
+BA_DEF_DEF_  "NmBaseAddress" 1024;
+BA_DEF_DEF_  "NmMessageCount" 256;
+BA_ "BusType" "CAN FD";
+BA_ "Version" "V10";
+BA_ "Date" "2020-10-20";
+BA_ "DBName" "CAN_FD";
+BA_ "NmStationAddress" BU_ CR5CP_FL 58;
+BA_ "NmStationAddress" BU_ CR5CP_FR 59;
+BA_ "NmStationAddress" BU_ CR5CP_RL 50;
+BA_ "NmStationAddress" BU_ CR5CP_RR 51;
+BA_ "GenMsgSendType" BO_ 817 0;
+BA_ "GenMsgCycleTime" BO_ 817 100;
+BA_ "NmMessage" BO_ 817 0;
+BA_ "VFrameFormat" BO_ 817 14;
+BA_ "GenMsgSendType" BO_ 818 0;
+BA_ "GenMsgCycleTime" BO_ 818 100;
+BA_ "NmMessage" BO_ 818 0;
+BA_ "VFrameFormat" BO_ 818 14;
+BA_ "GenMsgSendType" BO_ 819 0;
+BA_ "GenMsgCycleTime" BO_ 819 100;
+BA_ "NmMessage" BO_ 819 0;
+BA_ "VFrameFormat" BO_ 819 14;
+BA_ "GenMsgSendType" BO_ 833 0;
+BA_ "GenMsgCycleTime" BO_ 833 100;
+BA_ "NmMessage" BO_ 833 0;
+BA_ "VFrameFormat" BO_ 833 14;
+BA_ "GenMsgSendType" BO_ 632 0;
+BA_ "GenMsgCycleTime" BO_ 632 50;
+BA_ "NmMessage" BO_ 632 0;
+BA_ "VFrameFormat" BO_ 632 14;
+BA_ "GenMsgSendType" BO_ 812 0;
+BA_ "GenMsgCycleTime" BO_ 812 100;
+BA_ "NmMessage" BO_ 812 0;
+BA_ "VFrameFormat" BO_ 812 14;
+BA_ "GenMsgSendType" BO_ 813 0;
+BA_ "GenMsgCycleTime" BO_ 813 100;
+BA_ "NmMessage" BO_ 813 0;
+BA_ "VFrameFormat" BO_ 813 14;
+BA_ "GenMsgSendType" BO_ 814 0;
+BA_ "GenMsgCycleTime" BO_ 814 100;
+BA_ "NmMessage" BO_ 814 0;
+BA_ "VFrameFormat" BO_ 814 14;
+BA_ "GenMsgSendType" BO_ 815 0;
+BA_ "GenMsgCycleTime" BO_ 815 100;
+BA_ "NmMessage" BO_ 815 0;
+BA_ "VFrameFormat" BO_ 815 14;
+BA_ "GenMsgSendType" BO_ 625 0;
+BA_ "GenMsgCycleTime" BO_ 625 500;
+BA_ "NmMessage" BO_ 625 0;
+BA_ "VFrameFormat" BO_ 625 14;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjID_1 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjExistProb_1 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjObstacleProb_1 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjDistX_1 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjDistY_1 8192;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjRelVelX_1 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjRelVelY_1 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjAccelX_1 512;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjAccelY_1 512;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjID_2 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjExistProb_2 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjObstacleProb_2 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjDistX_2 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjDistY_2 8192;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjRelVelX_2 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjRelVelY_2 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjAccelX_2 512;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjAccelY_2 512;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjID_3 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjExistProb_3 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjObstacleProb_3 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjDistX_3 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjDistY_3 8192;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjRelVelX_3 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjRelVelY_3 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjAccelX_3 512;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjAccelY_3 512;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjID_4 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjExistProb_4 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjObstacleProb_4 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjDistX_4 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjDistY_4 8192;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjRelVelX_4 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjRelVelY_4 2048;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjAccelX_4 512;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FL_ObjAccelY_4 512;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FLObj1Locat_x 8000000;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FLObj1Locat_y 8000000;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FLObj1Locat_theta 4000;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FLObj1MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 817 CR5CP_FLObj1CRC16Checksum 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjID_5 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjExistProb_5 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjObstacleProb_5 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjDistX_5 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjDistY_5 8192;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjRelVelX_5 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjRelVelY_5 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjAccelX_5 512;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjAccelY_5 512;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjID_6 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjExistProb_6 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjObstacleProb_6 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjDistX_6 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjDistY_6 8192;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjRelVelX_6 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjRelVelY_6 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjAccelX_6 512;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjAccelY_6 512;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjID_7 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjExistProb_7 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjObstacleProb_7 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjDistX_7 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjDistY_7 8192;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjRelVelX_7 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjRelVelY_7 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjAccelX_7 512;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjAccelY_7 512;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjID_8 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjExistProb_8 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjObstacleProb_8 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjDistX_8 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjDistY_8 8192;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjRelVelX_8 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjRelVelY_8 2048;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjAccelX_8 512;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FL_ObjAccelY_8 512;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FLObj2Locat_x 8000000;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FLObj2Locat_y 8000000;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FLObj2Locat_theta 4000;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FLObj2MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 818 CR5CP_FLObj2CRC16Checksum 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjID_9 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjExistProb_9 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjObstacleProb_9 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjDistX_9 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjDistY_9 8192;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjRelVelX_9 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjRelVelY_9 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjAccelX_9 512;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjAccelY_9 512;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjID_10 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjExistProb_10 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjObstacleProb_10 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjDistX_10 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjDistY_10 8192;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjRelVelX_10 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjRelVelY_10 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjAccelX_10 512;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjAccelY_10 512;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjID_11 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjExistProb_11 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjObstacleProb_11 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjDistX_11 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjDistY_11 8192;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjRelVelX_11 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjRelVelY_11 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjAccelX_11 512;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjAccelY_11 512;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjID_12 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjExistProb_12 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjObstacleProb_12 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjDistX_12 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjDistY_12 8192;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjRelVelX_12 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjRelVelY_12 2048;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjAccelX_12 512;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FL_ObjAccelY_12 512;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FLObj3Locat_x 8000000;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FLObj3Locat_y 8000000;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FLObj3Locat_theta 4000;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FLObj3MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 819 CR5CP_FLObj3CRC16Checksum 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjID_13 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjExistProb_13 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjObstacleProb_13 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjDistX_13 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjDistY_13 8192;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjRelVelX_13 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjRelVelY_13 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjAccelX_13 512;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjAccelY_13 512;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjID_14 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjExistProb_14 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjObstacleProb_14 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjDistX_14 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjDistY_14 8192;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjRelVelX_14 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjRelVelY_14 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjAccelX_14 512;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjAccelY_14 512;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjID_15 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjExistProb_15 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjObstacleProb_15 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjDistX_15 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjDistY_15 8192;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjRelVelX_15 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjRelVelY_15 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjAccelX_15 512;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjAccelY_15 512;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjID_16 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjExistProb_16 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjObstacleProb_16 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjDistX_16 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjDistY_16 8192;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjRelVelX_16 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjRelVelY_16 2048;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjAccelX_16 512;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FL_ObjAccelY_16 512;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FLObj4Locat_x 8000000;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FLObj4Locat_y 8000000;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FLObj4Locat_theta 4000;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FLObj4MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 833 CR5CP_FLObj4CRC16Checksum 0;
+BA_ "GenSigStartValue" SG_ 632 CR5CP_FL_Obj_timestamp 0;
+BA_ "GenSigStartValue" SG_ 632 CR5CP_FL_Sensor_Dirty 0;
+BA_ "GenSigStartValue" SG_ 632 CR5CP_FL_SGU_Failure 0;
+BA_ "GenSigStartValue" SG_ 632 CR5CP_FLFailure 0;
+BA_ "GenSigStartValue" SG_ 632 CR5CP_FL_Sleep 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewID_1 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewExistProb_1 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewObstacleProb_1 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewDistX_1 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewDistY_1 8192;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewRelVelX_1 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewRelVelY_1 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewAccelX_1 512;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewAccelY_1 512;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewID_2 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewExistProb_2 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewObstacleProb_2 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewDistX_2 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewDistY_2 8192;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewRelVelX_2 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewRelVelY_2 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewAccelX_2 512;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewAccelY_2 512;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewID_3 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewExistProb_3 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewObstacleProb_3 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewDistX_3 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewDistY_3 8192;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewRelVelX_3 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewRelVelY_3 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewAccelX_3 512;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewAccelY_3 512;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewID_4 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewExistProb_4 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewObstacleProb_4 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewDistX_4 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewDistY_4 8192;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewRelVelX_4 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewRelVelY_4 2048;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewAccelX_4 512;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FL_ObjNewAccelY_4 512;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FLObjNew1Locat_x 8000000;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FLObjNew1Locat_y 8000000;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FLObjNew1Locat_theta 4000;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FLObjNew1MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 812 CR5CP_FLObjNew1CRC16Checksum 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewID_5 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewExistProb_5 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewObstacleProb_5 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewDistX_5 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewDistY_5 8192;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewRelVelX_5 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewRelVelY_5 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewAccelX_5 512;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewAccelY_5 512;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewID_6 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewExistProb_6 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewObstacleProb_6 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewDistX_6 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewDistY_6 8192;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewRelVelX_6 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewRelVelY_6 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewAccelX_6 512;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewAccelY_6 512;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewID_7 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewExistProb_7 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewObstacleProb_7 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewDistX_7 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewDistY_7 8192;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewRelVelX_7 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewRelVelY_7 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewAccelX_7 512;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewAccelY_7 512;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewID_8 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewExistProb_8 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewObstacleProb_8 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewDistX_8 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewDistY_8 8192;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewRelVelX_8 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewRelVelY_8 2048;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewAccelX_8 512;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FL_ObjNewAccelY_8 512;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FLObjNew2Locat_x 8000000;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FLObjNew2Locat_y 8000000;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FLObjNew2Locat_theta 4000;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FLObjNew2MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 813 CR5CP_FLObjNew2CRC16Checksum 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewID_9 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewExistProb_9 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewObstacleProb_9 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewDistX_9 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewDistY_9 8192;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewRelVelX_9 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewRelVelY_9 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewAccelX_9 512;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewAccelY_9 512;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewID_10 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewExistProb_10 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewObstacleProb_10 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewDistX_10 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewDistY_10 8192;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewRelVelX_10 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewRelVelY_10 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewAccelX_10 512;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewAccelY_10 512;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewID_11 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewExistProb_11 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewObstacleProb_11 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewDistX_11 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewDistY_11 8192;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewRelVelX_11 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewRelVelY_11 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewAccelX_11 512;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewAccelY_11 512;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewID_12 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewExistProb_12 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewObstacleProb_12 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewDistX_12 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewDistY_12 8192;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewRelVelX_12 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewRelVelY_12 2048;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewAccelX_12 512;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FL_ObjNewAccelY_12 512;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FLObjNew3Locat_x 8000000;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FLObjNew3Locat_y 8000000;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FLObjNew3Locat_theta 4000;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FLObjNew3MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 814 CR5CP_FLObjNew3CRC16Checksum 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewID_13 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewExistProb_13 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewObstacleProb_13 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewDistX_13 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewDistY_13 8192;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewRelVelX_13 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewRelVelY_13 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewAccelX_13 512;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewAccelY_13 512;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewID_14 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewExistProb_14 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewObstacleProb_14 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewDistX_14 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewDistY_14 8192;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewRelVelX_14 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewRelVelY_14 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewAccelX_14 512;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewAccelY_14 512;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewID_15 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewExistProb_15 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewObstacleProb_15 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewDistX_15 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewDistY_15 8192;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewRelVelX_15 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewRelVelY_15 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewAccelX_15 512;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewAccelY_15 512;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewID_16 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewExistProb_16 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewObstacleProb_16 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewDistX_16 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewDistY_16 8192;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewRelVelX_16 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewRelVelY_16 2048;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewAccelX_16 512;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FL_ObjNewAccelY_16 512;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FLObjNew4Locat_x 8000000;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FLObjNew4Locat_y 8000000;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FLObjNew4Locat_theta 4000;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FLObjNew4MsgCounter 0;
+BA_ "GenSigStartValue" SG_ 815 CR5CP_FLObjNew4CRC16Checksum 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_VBAT_High 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_VBAT_LOW 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_BUS_OFF_PCAN 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_BUS_OFF_SFCAN 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_CR5CP_FR_TIMEOUT 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_CR5CP_FL_TIMEOUT 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_CR5CP_RR_TIMEOUT 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_RL_CR5CP_RR_TIMEOUT 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_BLIND 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_Alig_Never_DONE 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_Alig_NOT_OK 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_MisAlig 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_HW_Fail 0;
+BA_ "GenSigStartValue" SG_ 625 CR5CP_FL_SW_Fail 0;
+VAL_ 632 CR5CP_FL_SGU_Failure 0 "No failure" 1 "Failure" 2 "Blindness" 3 "Misalignmen" 4 "Reserved" 5 "Reserved" 6 "Reserved" 7 "Reserved" ;
+VAL_ 632 CR5CP_FLFailure 0 "No failure" 1 "Reserved" 2 "Failure" 3 "Dynamic Calibration running" ;
+VAL_ 632 CR5CP_FL_Sleep 0 "network active" 1 "Sleep aready " ;
+VAL_ 625 CR5CP_FL_VBAT_High 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_VBAT_LOW 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_BUS_OFF_PCAN 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_BUS_OFF_SFCAN 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_CR5CP_FR_TIMEOUT 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_CR5CP_FL_TIMEOUT 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_CR5CP_RR_TIMEOUT 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_RL_CR5CP_RR_TIMEOUT 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_BLIND 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_Alig_Never_DONE 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_Alig_NOT_OK 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_MisAlig 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_HW_Fail 0 "Not active" 1 "Active" ;
+VAL_ 625 CR5CP_FL_SW_Fail 0 "Not active" 1 "Active" ;
+

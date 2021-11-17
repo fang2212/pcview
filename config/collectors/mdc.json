@@ -1,5 +1,5 @@
 {
-  "type": "mdc_algo",
+  "type": "mdc",
   "mac": "5a:31:d3:59:12:06",
   "force_ip": true,
   "ip": "192.168.30.42",
