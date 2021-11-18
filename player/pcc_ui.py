@@ -702,7 +702,7 @@ class Player(object):
             BaseDraw.draw_text(img, '#rtk:{}/{} #ori:{}/{}'.format(rtk['sat'][1], rtk['sat'][0], rtk['sat'][5],
                                                                    rtk['sat'][4]), (indent + 50, 20), 0.5, color, 1)
 
-    def show_target                                                                            (self, img, target, host):
+    def show_target(self, img, target, host):
         if not target or not host:
             return
         indent = self.get_indent(target['source'])
