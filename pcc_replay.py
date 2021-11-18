@@ -576,6 +576,10 @@ def start_replay(source_path, args):
     ns = args.nosort
     chmain = args.chmain
     r_sort, cfg = prep_replay(source_path, ns=ns, chmain=chmain)
+    has_back = args.back
+    for c in cfg.get("is_back"):
+        if c.get("is_back"):
+            has_back = True
 
     replay_hub = LogPlayer(r_sort, cfg, start_frame=args.start_frame, end_frame=args.end_frame,
                          start_time=args.start_time, end_time=args.end_time, loop=args.loop,
@@ -587,13 +591,13 @@ def start_replay(source_path, args):
         from video_server import PccServer
         server = PccServer()
         server.start()
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, to_web=server, show_back=args.back)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, to_web=server, show_back=has_back)
         replay_hub.start()
         pcc.start()
         while True:
             time.sleep(1)
     else:
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, eclient=args.eclient, show_back=args.back)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, eclient=args.eclient, show_back=has_back)
         replay_hub.start()
 
         # 控制子进程的退出
