@@ -426,7 +426,7 @@ class Player(object):
             return
         self.show_parameters_background(img, (0, 0, 160, 90))
         BaseDraw.draw_text(img, data['source'], (2, 20), 0.5, CVColor.Cyan, 1)
-        dt = self.ts_now - data['ts']
+        dt = 0 if self.ts_now == 0 else self.ts_now - data['ts']
         BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt * 1000)), (92, 20), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'frame: {}'.format(data['frame_id']), (2, 40), 0.5, CVColor.White, 1)
 

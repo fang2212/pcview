@@ -194,6 +194,7 @@ class Hub(Thread):
         ip = cfg['ip']
         idx = cfg['idx']
         is_main = cfg.get('is_main')
+        is_back = cfg.get("is_back")
         ip_type = "{}@{}".format(ip, cfg['type'])
         if self.online.get(ip_type) is None:
             self.online[ip_type] = {}
@@ -216,8 +217,8 @@ class Hub(Thread):
                 if transport == "libflow":
                     sink = FlowSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
                                     device=device, dbc=dbc, port_name=port_name,
-                                    name=cfg.get("type"), log_name=item, topic=topic, is_main=is_main, mq=self.mq,
-                                    save_type=cfg['ports'][item].get("save"))
+                                    name=cfg.get("type"), log_name=item, topic=topic, is_main=is_main, is_back=is_back,
+                                    mq=self.mq, save_type=cfg['ports'][item].get("save"))
                 elif transport == "protoflow":
                     sink = ProtoSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
                                      name=cfg.get("type"), topic=topic, log_name=item, mq=self.mq)
