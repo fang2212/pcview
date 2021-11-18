@@ -23,8 +23,8 @@ logger.addHandler(fh)
 
 other_list = ['gsensor', "camera"]     # 参与统计的其他字段
 
-row_count = 3
-col_count = 4
+row_count = 2
+col_count = 2
 
 
 class Statistics:
@@ -53,7 +53,7 @@ class Statistics:
         self.excel_ws = self.wb.create_sheet(title="data", index=0)  # Excel工作表对象
         self.excel_row_pos = 1
 
-        self.img_contain = 12
+        self.img_contain = 4
 
         self.init()
 
@@ -110,6 +110,7 @@ class Statistics:
                                     cfg.get('origin_device', cfg['ports'][i].get('origin_device')), idx, i, t)
                                 if self.config.get(t):
                                     self.config[can_key] = self.config.get(t)
+
             logger.debug(self.config)
             logger.debug(self.topic_map)
 
@@ -161,7 +162,8 @@ class Statistics:
         data = {
             "ts": ts,
             "name": can_data[2],
-            "id": can_data[3]
+            "id": can_data[3],
+            "interval": self.config[can_data[2]].get("interval")
         }
 
         # 更新CAN数据表
@@ -190,6 +192,7 @@ class Statistics:
         data = {
             "ts": ts,
             "name": other_data[2],
+            "interval": self.config[other_data[2]].get("interval")
         }
 
         # 更新设备数据表
@@ -210,8 +213,8 @@ class Statistics:
 
     def statistics_can(self):
         """
-            统计CAN数据接收情况
-            """
+        统计CAN数据接收情况
+        """
         for can in self.can_map:
             id_list = sorted(list(self.can_map[can].keys()))
             img_num = 1
@@ -270,6 +273,7 @@ class Statistics:
             plt.subplot(render_row_count, render_col_count, count)
             interval_list = []
             timestamp_list = []
+
             prev_timestamp = 0
             for data in can_id_data:
                 timestamp_list.append(data.get("ts"))
@@ -287,6 +291,28 @@ class Statistics:
             min_interval = np.min(interval_list)
             max_interval = np.max(interval_list)
             std_interval = np.std(interval_list)
+
+            interval_chart_list = []
+            timestamp_list = []
+            prev_timestamp = 0
+            for data in can_id_data:
+                timestamp_list.append(data.get("ts"))
+                interval = data.get("interval")
+                if not prev_timestamp:
+                    prev_timestamp = data.get("ts")
+                    continue
+
+                # 计算接收间隔
+                time_interval = data.get("ts") - prev_timestamp
+                prev_timestamp = data.get("ts")
+
+                if interval:
+                    interval = 1 / interval
+                    if time_interval <= interval:
+                        time_interval = avg_interval
+
+                interval_chart_list.append(time_interval)
+
             # 计算周期占比数据
             np_interval = np.array(interval_list)
             height_per = ""     # 高于周期系数
@@ -333,13 +359,16 @@ class Statistics:
             plt.xlabel("timestamp")
             plt.ylabel("interval(s)")
             plt.xlim([self.log_start_ts - self.log_camera_start_ts, self.log_end_ts - self.log_camera_start_ts])
+
+            plt.plot(timestamp_list[1:], interval_chart_list, marker='.', linewidth=1)  # s表示面积，marker表示图形
+
             avg_line = plt.axhline(y=avg_interval, color="r", linestyle="--", linewidth=1)
             min_line = plt.axhline(y=min_interval, color="g", linestyle="--", linewidth=1)
             max_line = plt.axhline(y=max_interval, color="y", linestyle="--", linewidth=1)
             plt.legend([avg_line, min_line, max_line], [f'avg:{"%.8f" % avg_interval}', f'min:{"%.8f" % min_interval}',
-                                                        f'max:{"%.8f" % max_interval}'], bbox_to_anchor=(0, -0.23, 1, 2),
-                       loc="lower left", mode="expand", borderaxespad=0, ncol=3)
-            plt.plot(timestamp_list[1:], interval_list, marker='.', linewidth=1)  # s表示面积，marker表示图形
+                                                        f'max:{"%.8f" % max_interval}'],
+                       bbox_to_anchor=(0, -0.23, 1, 2), oc="lower left", mode="expand", borderaxespad=0, ncol=3)
+
             has_draw = True
 
         if not has_draw:
