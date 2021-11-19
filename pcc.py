@@ -220,6 +220,7 @@ class PCC(object):
                 is_main = data.get('is_main')
                 if not is_main:
                     if data.get("is_back"):
+                        self.recv_first_img = True
                         self.player_cache['back']['source'] = source
                         self.player_cache['back']['frame_id'] = fid
                         self.player_cache['back']['img'] = data['img']
@@ -235,6 +236,7 @@ class PCC(object):
                         self.player_cache['videos'][data['source']]['updated'] = True
                 else:
                     # todo：需进行优化，确认是否有必要分开处理这么多字段
+                    self.recv_first_img = True
                     self.player_cache['main']['frame_id'] = fid
                     self.player_cache['main']['img'] = data['img']
                     self.player_cache['main']['img_raw'] = None
@@ -342,6 +344,7 @@ class PCC(object):
                     cv2.imshow('MINIEYE-CVE', img_rendered)
 
                 if self.recv_first_img:
+                    print("save img")
                     self.save_rendered(img_rendered)
 
         # 暂停的时候保持画面窗口
