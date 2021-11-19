@@ -344,7 +344,6 @@ class PCC(object):
                     cv2.imshow('MINIEYE-CVE', img_rendered)
 
                 if self.recv_first_img:
-                    print("save img")
                     self.save_rendered(img_rendered)
 
         # 暂停的时候保持画面窗口

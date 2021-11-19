@@ -402,6 +402,9 @@ class LogPlayer(Process):
                     logger.error('log player reached the end frame:'.format(self.end_frame))
                     break
             elif 'CAN' in cols[2]:      # 旧can source数据格式
+                if not self.can_types.get(cols[2]):     # 判断是否需要解析
+                    continue
+
                 msg_type = cols[2]
                 if int(cols[3], 16) == 0xc7 and rtk_dec:
                     continue
