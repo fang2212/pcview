@@ -154,6 +154,7 @@ class LogPlayer(Process):
         self.jpeg_extractor = {}          # 视频图片提取生成器集合
         self.x1_parser = {}                 # pcv数据字典
         self.log_keyword = {}               #
+        self.focus_install = {}
 
         self.shared = Manager().dict()
         self.shared["ready"] = False  # 播放前的数据是否加载完成
@@ -261,6 +262,7 @@ class LogPlayer(Process):
                 if cfg.get("is_back"):
                     self.back_video = dir_name
                 log_keyword = "camera" if dir_name == 'video' else dir_name
+                self.focus_install[log_keyword] = cfg.get("focus_install") or 'video'
                 video_path = os.path.dirname(self.log_path) + '/' + dir_name
                 # 初始化视频图片生成器
                 if os.path.exists(video_path):
@@ -383,7 +385,8 @@ class LogPlayer(Process):
                                     self.now_frame_id = frame_id
 
                 source = "video" if cols[2] == self.main_video else cols[2]
-                r = {'ts': ts, 'img': jpg, 'is_main': cols[2] == self.main_video, "is_back": self.back_video == cols[2], 'source': source, 'type': 'video', 'frame_id': frame_id}
+                r = {'ts': ts, 'img': jpg, 'is_main': cols[2] == self.main_video, "is_back": self.back_video == cols[2],
+                     'source': source, 'type': 'video', 'frame_id': frame_id, 'install': self.focus_install[cols[2]]}
                 sink_source = 'camera' if cols[2] == self.main_video else cols[2]
                 self.put_sink((frame_id, r, sink_source))
 
@@ -577,7 +580,7 @@ def start_replay(source_path, args):
     chmain = args.chmain
     r_sort, cfg = prep_replay(source_path, ns=ns, chmain=chmain)
     has_back = args.back
-    for c in cfg.get("is_back"):
+    for c in cfg.configs:
         if c.get("is_back"):
             has_back = True
 

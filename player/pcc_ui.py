@@ -118,37 +118,32 @@ class Player(object):
         """左上角参数背景图"""
         BaseDraw.draw_alpha_rect(img, rect, 0.6, CVColor.Black)
 
-    def show_obs(self, img, obs, thickness=2):
+    def show_obs(self, img, obs, thickness=2, install_key="video"):
         try:
             indent = self.get_indent(obs['source'])
         except Exception as e:
             print('Error indent', obs)
             return
+
         source = obs['source'].split('.')
         source = source[3] if len(source) > 2 else source[0]
-        sensor = obs.get('sensor') or source
+        sensor = obs.get('sensor') or obs['source']
         color = obs.get("color") or color_dict.get(source) or color_dict['default']
 
         width = obs.get('width')
         width = width or 0.3
         height = obs.get('height')
-        # print(obs['source'], obs['class'])
         height = height or width
         if obs.get('class') == 'pedestrian':
             height = 1.6
-        # install_para = install[obs['source'].split('.')[0]]
 
         if 'pos_lon' in obs:
-            # x = obs['pos_lon']
-            # y = obs['pos_lat']
             if 'pos_lat' not in obs:
                 print('no pos_lat', obs)
             x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], sensor)
             dist = (x ** 2 + y ** 2) ** 0.5
 
         elif 'range' in obs:
-            # print(obs['source'].split('.')[0])
-            # x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
             dist = obs['range']
             x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], sensor)
         else:
@@ -158,18 +153,11 @@ class Player(object):
         if dist <= 0 or x <= 0:
             return
 
-        w = self.cfg.installs['video']['fu'] * width / dist
+        w = self.cfg.installs[install_key]['fu'] * width / dist
         w = min(600, w)
-        # dev = obs.get('source')
-        # if dev:
-        #     dev = dev.split('.')[0]
-        #     print(dev)
-        # else:
-        #     dev = 'default'
-        # print(x, y)
-        x0, y0 = self.transform.trans_gnd2raw(x, y)
+        x0, y0 = self.transform.trans_gnd2raw(x, y, install_key=install_key)
 
-        h = self.cfg.installs['video']['fv'] * height / dist
+        h = self.cfg.installs[install_key]['fv'] * height / dist
         x1 = x0 - 0.5 * w
         y1 = y0 - h
         x2 = x1 + w
@@ -200,13 +188,10 @@ class Player(object):
             BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), size, color, 1)
 
-        if 'cipo' in obs and obs['cipo']:
+        if install_key == 'video' and 'cipo' in obs and obs['cipo']:
             # color = CVColor.Yellow
             self.show_cipo_info(img, obs)
             BaseDraw.draw_up_arrow(img, x0, y0 + 3, color)
-
-        # if 'TTC' in obs:
-        #     self.show_ttc(img, obs['TTC'], obs['source'])
 
     def show_ipm_obs(self, img, obs):
         # print(obs)

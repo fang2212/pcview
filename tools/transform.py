@@ -40,12 +40,12 @@ class OrientTuner(object):
         self.cfg.installs[sensor]['roll'] = self.init_value[sensor]['roll'] - 0.01 * (x - 500)
         self.update_r2i()
 
-    def update_r2i(self):
-        self.transform.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'],
-                                    self.cfg.installs['video']['roll'])
-        print('current yaw:{} pitch:{} roll:{}'.format(self.cfg.installs['video']['yaw'],
-                                                       self.cfg.installs['video']['pitch'],
-                                                       self.cfg.installs['video']['roll']))
+    def update_r2i(self, install_key="video"):
+        self.transform.update_m_r2i(self.cfg.installs[install_key]['yaw'], self.cfg.installs[install_key]['pitch'],
+                                    self.cfg.installs[install_key]['roll'])
+        print('current yaw:{} pitch:{} roll:{}'.format(self.cfg.installs[install_key]['yaw'],
+                                                       self.cfg.installs[install_key]['pitch'],
+                                                       self.cfg.installs[install_key]['roll']))
 
     # def update_esr_yaw(self, x):
     #     self.esr_yaw = self.installs['esr']['yaw'] - 0.01 * (x - 500)
@@ -73,49 +73,55 @@ class Transform:
         # print(installs['video'])
         installs = uniconf.installs
         self.camera_height = installs['video']['height']
-        fu = installs['video']['fu']
-        fv = installs['video']['fv']
-        cu = installs['video']['cu']
-        cv = installs['video']['cv']
 
         self.x_limits = [-200, 200]
         self.y_limits = [-15, 15]
         self.ipm_width = 480
         self.ipm_height = 1440
-        self.intrinsic_para = np.array(((fu, 0, cu), (0, fv, cv), (0, 0, 1)))
+        self.intrinsic_para = {"video": np.array(((installs['video']['fu'], 0, installs['video']['cu']), (0, installs['video']['fv'], installs['video']['cv']), (0, 0, 1)))}
         self.r_cam2img = np.array(((0, 1, 0), (0, 0, 1), (1, 0, 0)))
         self.yaw = installs['video']['yaw']
         self.pitch = installs['video']['pitch']
         self.roll = installs['video']['roll']
-        self.m_R_w2i = self.calc_m_w2i(installs['video']['yaw'], installs['video']['pitch'], installs['video']['roll'])
+        self.m_R_w2i = {"video": self.calc_m_w2i(installs['video']['yaw'], installs['video']['pitch'], installs['video']['roll'])}
         self.cfg = uniconf
         self.cfg.installs['default'] = {'lat_offset': 0.0, 'lon_offset': 0.0, 'pitch': 0.0, 'roll': 0.0, 'yaw': 0.0}
 
-    def calc_m_w2i(self, y, p, r):
+    def calc_m_w2i(self, y, p, r, install_key="video"):
         # self.yaw = y
         # self.pitch = p
         # self.roll = r
-        yaw = y * pi / 180
-        pitch = p * pi / 180
-        roll = r * pi / 180
+        if self.intrinsic_para.get(install_key) is None:
+            installs = self.cfg.installs
+            self.intrinsic_para[install_key] = np.array(((installs[install_key]['fu'], 0, installs[install_key]['cu']), (0, installs[install_key]['fv'], installs[install_key]['cv']), (0, 0, 1)))
+        yaw = y * pi / 180      # Y轴翻转
+        pitch = p * pi / 180    # X轴翻转
+        roll = r * pi / 180     # Z轴翻转
+
+        c_roll = cos(roll)
+        s_roll = sin(roll)
         r_roll = np.array(((1, 0, 0),
-                           (0, cos(roll), sin(roll)),
-                           (0, -sin(roll), cos(roll))))
+                           (0, c_roll, s_roll),
+                           (0, -s_roll, c_roll)))
 
-        r_pitch = np.array(((cos(pitch), 0, -sin(pitch)),
+        c_pitch = cos(pitch)
+        s_pitch = sin(pitch)
+        r_pitch = np.array(((c_pitch, 0, -s_pitch),
                             (0, 1, 0),
-                            (sin(pitch), 0, cos(pitch))))
+                            (s_pitch, 0, c_pitch)))
 
-        r_yaw = np.array(((cos(yaw), sin(yaw), 0),
-                          (-sin(yaw), cos(yaw), 0),
+        c_yaw = cos(yaw)
+        s_yaw = sin(yaw)
+        r_yaw = np.array(((c_yaw, s_yaw, 0),
+                          (-s_yaw, c_yaw, 0),
                           (0, 0, 1)))
 
         r_att = np.dot(r_roll, np.dot(r_pitch, r_yaw))
 
-        return np.dot(self.intrinsic_para, np.dot(self.r_cam2img, r_att))
+        return np.dot(self.intrinsic_para[install_key], np.dot(self.r_cam2img, r_att))
 
-    def update_m_r2i(self, y, p, r):
-        self.m_R_w2i = self.calc_m_w2i(self.yaw+y, self.pitch+p, self.roll+r)
+    def update_m_r2i(self, y, p, r, install_key="video"):
+        self.m_R_w2i[install_key] = self.calc_m_w2i(self.yaw+y, self.pitch+p, self.roll+r)
 
     def getp_ifc_from_poly(self, coefs, step=0.1, start=0, end=60, sensor=None):
         a0, a1, a2, a3 = coefs
@@ -170,14 +176,18 @@ class Transform:
             p.append((xg, yg))
         return p
 
-    def trans_gnd2raw(self, x, y, h=None):
+    def trans_gnd2raw(self, x, y, h=None, install_key="video"):
         if h is None:
             h = 0
-        h1 = self.camera_height - h
-        x = x - self.cfg.installs['video']['lon_offset']
-        y = y - self.cfg.installs['video']['lat_offset']
+
+        if self.m_R_w2i.get(install_key) is None and self.cfg.installs.get(install_key):
+            self.m_R_w2i[install_key] = self.calc_m_w2i(self.cfg.installs[install_key]['yaw'], self.cfg.installs[install_key]['pitch'], self.cfg.installs[install_key]['roll'], install_key=install_key)
+
+        h1 = self.cfg.installs[install_key]['height'] - h
+        x = x - self.cfg.installs[install_key]['lon_offset']
+        y = y - self.cfg.installs[install_key]['lat_offset']
         p_xyz = np.array([x, y, h1])
-        uv_t = np.dot(self.m_R_w2i, p_xyz)
+        uv_t = np.dot(self.m_R_w2i[install_key], p_xyz)
         try:
             uv_new = uv_t / uv_t[2]
             x, y = int(uv_new[0]), int(uv_new[1])
@@ -187,16 +197,6 @@ class Transform:
             print(f"h:{h} self.camera_height:{self.camera_height}")
             print(f"绘制点出错：uv_new = uv_t / uv_t[2] uv_t:{uv_t} uv_t[2]:{uv_t[2]} x:{x} y:{y}")
             print(f"self.cfg.installs['video']:{self.cfg.installs['video']}")
-
-    def transf_gnd2raw(self, x, y, h=None):
-        if h is None:
-            h = 0
-        x = x - self.cfg.installs['video']['lon_offset']
-        y = y - self.cfg.installs['video']['lat_offset']
-        p_xyz = np.array([x, y, self.camera_height - h])
-        uv_t = np.dot(self.m_R_w2i, p_xyz)
-        uv_new = uv_t / uv_t[2]
-        return uv_new[0], uv_new[1]
 
     def trans_gnd2ipm(self, x, y, dev='ifv300'):
         x_scale = self.ipm_height / (self.x_limits[1] - self.x_limits[0])
@@ -210,7 +210,9 @@ class Transform:
     def trans_polar2rcs(self, angle, range, sensor):
         param = self.cfg.installs.get(sensor)
         if not param:
-            param = self.cfg.installs.get(sensor.split('.')[0])
+            source = sensor.split('.')
+            source = source[3] if len(source) > 2 else source[0]
+            param = self.cfg.installs.get(source)
         if not param:
             x = cos(angle * pi / 180.0) * range
             y = sin(angle * pi / 180.0) * range
@@ -257,31 +259,17 @@ class Transform:
             t = targets
         return np.sqrt(((p - t) ** 2).mean())
 
-    def iter_yaw(self, x, y, h, vx, vy, step=0.01, dataroot='etc/'):
-        max_iter = 10
-        thres_dx = 2
-        dx = 9999
-        while max_iter > 0:
-            vx1, vy1 = self.transf_gnd2raw(x, y, h)
-            dx = vx1 - vx
-            if dx < thres_dx:
-                break
-            d_yaw = step * dx
-            self.cfg.installs['video']['yaw'] = self.cfg.installs['video']['yaw'] + d_yaw
-            self.update_m_r2i(self.cfg.installs['video']['yaw'], self.cfg.installs['video']['pitch'],
-                              self.cfg.installs['video']['roll'])
-            max_iter -= 1
-
-        if dx < thres_dx:
-            print('yaw calibration succeeded.', dx)
-            print('yaw:', self.cfg.installs['video']['yaw'])
-            json.dump(self.cfg.installs, open(os.path.join(dataroot, 'instl_cal.json')), indent=True)
-        else:
-            print('yaw calibration failed.', dx)
-
 
 if __name__ == '__main__':
     pass
+    from pcc_replay import prep_replay
+
+    log, uiconfig = prep_replay("/home/mini/work/20211025170115/log.txt")
+    t = Transform(uniconf=uiconfig)
+    x1, y1 = t.trans_gnd2raw(-10.6000000000000223, -0.800000000000011)
+    print("x1", x1, "y1", y1)
+    x2, y2 = t.trans_gnd2raw(-10.6000000000000223, 0.800000000000011, install_key='cv22_algo.12')
+    print("x2", x2, "y2", y2)
     # import os
     # os.chdir(os.path.join('../', os.path.dirname(os.path.dirname(__file__))))
     # print(os.getcwd())

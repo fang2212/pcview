@@ -226,6 +226,7 @@ class PCC(object):
                         self.player_cache['back']['img_raw'] = None
                         self.player_cache['back']['ts'] = data['ts']
                         self.player_cache['back']['recv_first_img'] = True
+                        self.player_cache['back']['install'] = data.get("install", "video")
                         self.player_cache['back']['updated'] = True
                     else:
                         if data['source'] not in self.player_cache:
@@ -239,6 +240,7 @@ class PCC(object):
                     self.player_cache['main']['img_raw'] = None
                     self.player_cache['main']['recv_first_img'] = True
                     self.player_cache['main']['ts'] = data['ts']
+                    self.player_cache['main']['install'] = data.get("install", "video")
                     self.player_cache['main']['updated'] = True
 
                     if self.replay:
@@ -781,7 +783,7 @@ class PCC(object):
         if self.to_web:
             self.o_msg_q.put(('profiling', data))
 
-    def draw_misc_data(self, img, data):
+    def draw_misc_data(self, img, data, install_key="video"):
         if 'type' not in data:
             return
 
@@ -800,7 +802,7 @@ class PCC(object):
         elif data["type"] == "status":
             self.player.update_column_ts(data.get('source'), data.get('ts'))
         elif data['type'] == 'obstacle':
-            self.player.show_obs(img, data)
+            self.player.show_obs(img, data, install_key=install_key)
             self.player.update_column_ts(data.get('source'), data.get('ts'))
             if self.show_ipm:
                 self.player.show_ipm_obs(self.ipm, data)

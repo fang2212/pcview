@@ -51,9 +51,9 @@ def parser_mu(cid, r):
                'v_lon': float(r['TargetsAK_CartesianCSYS_Vx']),
                'v_lat': -float(r['TargetsAK_CartesianCSYS_Vy']),
                'z': float(r['TargetsAK_CartesianCSYS_Z']),
-               'accel_x':0,
+               'accel_x': 0,
                'type': 'obstacle',
-               'sensor': 'T79',
+               'sensor': 'muniu',
                'sensor_type': 'radar'
                }
         # if index > 1:
