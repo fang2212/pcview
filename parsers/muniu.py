@@ -16,6 +16,8 @@ radar_pos_data = {
     3: dict()   # RR
 }
 
+mn_sensor_index = ["mu_fl", "mu_fr", "mu_rl", "mu_rr"]
+
 
 def parser_mu(cid, r):
     """
@@ -45,22 +47,22 @@ def parser_mu(cid, r):
 
     if 0x499 <= cid <= 0x49C:
         index = cid - 0x499
-        obj = {'id': int(r['TargetsAK_CartesianCSYS_ID'])+ index * 32,
-               'pos_lon': float(r['TargetsAK_CartesianCSYS_X']),
-               'pos_lat': -float(r['TargetsAK_CartesianCSYS_Y']),
-               'v_lon': float(r['TargetsAK_CartesianCSYS_Vx']),
-               'v_lat': -float(r['TargetsAK_CartesianCSYS_Vy']),
-               'z': float(r['TargetsAK_CartesianCSYS_Z']),
-               'accel_x': 0,
-               'type': 'obstacle',
-               'sensor': 'muniu',
-               'sensor_type': 'radar'
-               }
-        # if index > 1:
-        #     obj['v_lat'] = -obj['v_lat']
-        obj ['range'] = sqrt(obj['pos_lon'] ** 2 + obj['pos_lat'] ** 2)
-        obj ['angle'] = atan2(obj['pos_lat'], obj['pos_lon']) * 180 / pi
-        obj['range_rate'] = obj['v_lon']
+        obj = {
+            'id': int(r['TargetsAK_CartesianCSYS_ID'])+ index * 32,
+            'pos_lon': float(r['TargetsAK_CartesianCSYS_X']),
+            'pos_lat': -float(r['TargetsAK_CartesianCSYS_Y']),
+            'v_lon': float(r['TargetsAK_CartesianCSYS_Vx']),
+            'v_lat': -float(r['TargetsAK_CartesianCSYS_Vy']),
+            'z': float(r['TargetsAK_CartesianCSYS_Z']),
+            'accel_x': 0,
+            'type': 'obstacle',
+            'sensor': mn_sensor_index[index],
+            'sensor_type': 'radar'
+        }
+
+        # obj ['range'] = sqrt(obj['pos_lon'] ** 2 + obj['pos_lat'] ** 2)
+        # obj ['angle'] = atan2(obj['pos_lat'], obj['pos_lon']) * 180 / pi
+        # obj['range_rate'] = obj['v_lon']
 
         if radar_pos_data[index] and 'data' in radar_pos_data[index]:
             radar_pos_data[index]['data'].append(obj)
