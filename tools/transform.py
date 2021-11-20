@@ -16,6 +16,7 @@ import numpy as np
 
 
 # from config.config import install
+from config.config import CVECfg
 
 
 class OrientTuner(object):
@@ -83,7 +84,9 @@ class Transform:
         self.yaw = installs['video']['yaw']
         self.pitch = installs['video']['pitch']
         self.roll = installs['video']['roll']
-        self.m_R_w2i = {"video": self.calc_m_w2i(installs['video']['yaw'], installs['video']['pitch'], installs['video']['roll'])}
+        self.m_R_w2i = {
+            "video": self.calc_m_w2i(installs['video'].get('ref_yaw', installs['video'].get("yaw", 0)), installs['video'].get('ref_pitch', installs['video'].get("pitch", 0)), installs['video'].get('ref_roll', installs['video'].get("roll", 0)))
+        }
         self.cfg = uniconf
         self.cfg.installs['default'] = {'lat_offset': 0.0, 'lon_offset': 0.0, 'pitch': 0.0, 'roll': 0.0, 'yaw': 0.0}
 
@@ -94,9 +97,9 @@ class Transform:
         if self.intrinsic_para.get(install_key) is None:
             installs = self.cfg.installs
             self.intrinsic_para[install_key] = np.array(((installs[install_key]['fu'], 0, installs[install_key]['cu']), (0, installs[install_key]['fv'], installs[install_key]['cv']), (0, 0, 1)))
-        yaw = y * pi / 180      # Y轴翻转
-        pitch = p * pi / 180    # X轴翻转
-        roll = r * pi / 180     # Z轴翻转
+        yaw = y * pi / 180      # Z轴翻转
+        pitch = p * pi / 180    # Y轴翻转
+        roll = r * pi / 180     # X轴翻转
 
         c_roll = cos(roll)
         s_roll = sin(roll)
@@ -118,7 +121,8 @@ class Transform:
 
         r_att = np.dot(r_roll, np.dot(r_pitch, r_yaw))
 
-        return np.dot(self.intrinsic_para[install_key], np.dot(self.r_cam2img, r_att))
+        vector = np.dot(self.r_cam2img, r_att)     # 向量乘积
+        return np.dot(self.intrinsic_para[install_key], vector)     # 内参跟向量乘积
 
     def update_m_r2i(self, y, p, r, install_key="video"):
         self.m_R_w2i[install_key] = self.calc_m_w2i(self.yaw+y, self.pitch+p, self.roll+r)
@@ -176,18 +180,30 @@ class Transform:
             p.append((xg, yg))
         return p
 
-    def trans_gnd2raw(self, x, y, h=None, install_key="video"):
+    def trans_gnd2raw(self, x, y, h=None, install_key="video", filter_back=True):
         if h is None:
             h = 0
 
         if self.m_R_w2i.get(install_key) is None and self.cfg.installs.get(install_key):
-            self.m_R_w2i[install_key] = self.calc_m_w2i(self.cfg.installs[install_key]['yaw'], self.cfg.installs[install_key]['pitch'], self.cfg.installs[install_key]['roll'], install_key=install_key)
+            self.m_R_w2i[install_key] = self.calc_m_w2i(self.cfg.installs[install_key].get('ref_yaw', 0), self.cfg.installs[install_key].get('ref_pitch', 0), self.cfg.installs[install_key].get('ref_roll', 0), install_key=install_key)
 
+        # 位移操作
         h1 = self.cfg.installs[install_key]['height'] - h
         x = x - self.cfg.installs[install_key]['lon_offset']
         y = y - self.cfg.installs[install_key]['lat_offset']
+
+        # 计算偏航角
+        r = self.cfg.installs[install_key]['yaw'] * pi / 180
+        x = x*cos(r) + y*sin(r)
+        y = y*cos(r) - x*sin(r)
+
+        if filter_back and x < 0:
+            return
+
         p_xyz = np.array([x, y, h1])
-        uv_t = np.dot(self.m_R_w2i[install_key], p_xyz)
+
+        vector = self.m_R_w2i[install_key]
+        uv_t = np.dot(vector, p_xyz)
         try:
             uv_new = uv_t / uv_t[2]
             x, y = int(uv_new[0]), int(uv_new[1])
@@ -196,7 +212,7 @@ class Transform:
             print(e)
             print(f"h:{h} self.camera_height:{self.camera_height}")
             print(f"绘制点出错：uv_new = uv_t / uv_t[2] uv_t:{uv_t} uv_t[2]:{uv_t[2]} x:{x} y:{y}")
-            print(f"self.cfg.installs['video']:{self.cfg.installs['video']}")
+            print(f"self.cfg.installs['video']:{self.cfg.installs[install_key]}")
 
     def trans_gnd2ipm(self, x, y, dev='ifv300'):
         x_scale = self.ipm_height / (self.x_limits[1] - self.x_limits[0])
@@ -238,10 +254,10 @@ class Transform:
         return range, angle
 
     def calc_g2i_matrix(self):
-        p0 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[0])
-        p1 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[1])
-        p2 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[1])
-        p3 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[0])
+        p0 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[0], filter_back=False)
+        p1 = self.trans_gnd2raw(self.x_limits[1], self.y_limits[1], filter_back=False)
+        p2 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[1], filter_back=False)
+        p3 = self.trans_gnd2raw(self.x_limits[0], self.y_limits[0], filter_back=False)
         src = np.array([p0, p1, p2, p3], np.float32)
         dst = np.array([[0, 0], [self.ipm_width - 1, 0], [self.ipm_width - 1, self.ipm_height - 1],
                         [0, self.ipm_height - 1]], np.float32)
@@ -260,20 +276,43 @@ class Transform:
         return np.sqrt(((p - t) ** 2).mean())
 
 
+def prep_replay(source):
+    """
+    回放预处理，加载、修改配置文件
+    :param source:
+    :param ns:
+    :param chmain:
+    :return:
+    """
+    # 加载配置文件
+    config_path = os.path.join(os.path.dirname(source), 'config.json')
+    install_path = os.path.join(os.path.dirname(source), 'installation.json')
+    uniconf = CVECfg()
+    if os.path.exists(config_path):
+        print("use config:", config_path)
+        uniconf.configs = json.load(open(config_path))
+    if os.path.exists(install_path):
+        print("install:", install_path)
+        uniconf.installs = json.load(open(install_path))
+
+    return uniconf
+
+
 if __name__ == '__main__':
     pass
-    from pcc_replay import prep_replay
-
-    log, uiconfig = prep_replay("/home/mini/work/20211025170115/log.txt")
+    uiconfig = prep_replay("/home/mini/work/20211111154044/log.txt")
     t = Transform(uniconf=uiconfig)
-    x1, y1 = t.trans_gnd2raw(-10.6000000000000223, -0.800000000000011)
+    x1, y1 = t.trans_gnd2raw(-28.21, 0.13, install_key="a1j_algo.12")
     print("x1", x1, "y1", y1)
-    x2, y2 = t.trans_gnd2raw(-10.6000000000000223, 0.800000000000011, install_key='cv22_algo.12')
-    print("x2", x2, "y2", y2)
-    # import os
-    # os.chdir(os.path.join('../', os.path.dirname(os.path.dirname(__file__))))
-    # print(os.getcwd())
-    # from config.config import install
-    # a = Transform()
-    # b = Transform()
-    # print(id(a), id(b))
+    # x2, y2 = t.trans_gnd2raw(80.6000000000000223, 13.800000000000011, install_key='cv22_algo.12')
+    # print("x2", x2, "y2", y2)
+
+# a1j_algo.12 id:16   x:-28.21   y:0.13     x0:954.00   y0:428.00   height:1080 width:1920
+# a1j_algo.12 id:13   x:-24.84   y:-4.13    x0:1216.00  y0:416.00   height:1080 width:1920
+# a1j_algo.12 id:8    x:-40.90   y:-3.38    x0:1080.00  y0:455.00   height:1080 width:1920
+# a1j_algo.12 id:9    x:-41.71   y:-3.43    x0:1079.00  y0:456.00   height:1080 width:1920
+# a1j_algo.12 id:17   x:-4.84    y:-3.94    x0:6588.00  y0:-1563.00 height:1080 width:1920
+# a1j_algo.12 id:6    x:-33.71   y:-3.62    x0:1118.00  y0:443.00   height:1080 width:1920
+# a1j_algo.12 id:18   x:-52.84   y:-2.88    x0:1038.00  y0:467.00   height:1080 width:1920
+# a1j_algo.12 id:15   x:-61.09   y:-4.60    x0:1065.00  y0:473.00   height:1080 width:1920
+# a1j_algo.12 id:1    x:-55.09   y:-13.07   x0:1290.00  y0:469.00   height:1080 width:1920

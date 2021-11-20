@@ -522,7 +522,6 @@ class PCC(object):
 
         ts_ana.append(('pcv_data', time.time()))
 
-
         if not self.replay:
             self.player.show_version(main_img, self.cfg)
             if self.hub.fileHandler.is_recording:
@@ -555,6 +554,11 @@ class PCC(object):
             back_img = self.draw_img(self.player_cache['back'])
             if self.player_cache['back']['recv_first_img']:
                 back_img = cv2.flip(back_img, 1)
+                if misc_data:
+                    for source in list(misc_data):
+                        for entity in list(misc_data[source]):
+                            if misc_data[source][entity]['type'] == 'obstacle' and misc_data[source][entity].get('sensor') in ['mu_rr', 'mu_rl', 'bosch_rl', 'bosch_rr']:
+                                self.player.show_obs(back_img, misc_data[source][entity], install_key=self.player_cache['back']['install'], y_mirror=True)
                 self.player.show_video_info(back_img, self.player_cache['back'])
 
             back_img = self.resize_img(back_img)
