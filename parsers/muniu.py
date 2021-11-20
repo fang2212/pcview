@@ -17,6 +17,7 @@ radar_pos_data = {
 }
 
 mn_sensor_index = ["mu_fl", "mu_fr", "mu_rl", "mu_rr"]
+mn_num_index = [1000, 2000, 3000, 4000]
 
 
 def parser_mu(cid, r):
@@ -48,7 +49,7 @@ def parser_mu(cid, r):
     if 0x499 <= cid <= 0x49C:
         index = cid - 0x499
         obj = {
-            'id': int(r['TargetsAK_CartesianCSYS_ID'])+ index * 32,
+            'id': int(r['TargetsAK_CartesianCSYS_ID']) + mn_num_index[index],
             'pos_lon': float(r['TargetsAK_CartesianCSYS_X']),
             'pos_lat': -float(r['TargetsAK_CartesianCSYS_Y']),
             'v_lon': float(r['TargetsAK_CartesianCSYS_Vx']),
@@ -71,7 +72,7 @@ def parser_mu(cid, r):
         index = cid - 0x471
         if radar_pos_data[index] and 'data' in radar_pos_data[index]:
             for idx, obj in enumerate(radar_pos_data[index]['data']):
-                if obj['id'] == r['TargetsAK_ExtraAttrib_ID'] + index * 32:
+                if obj['id'] == r['TargetsAK_ExtraAttrib_ID'] + mn_num_index[index]:
                     obj.update({'length': float(r['TargetsAK_ExtraAttrib_Length']),
                                 'confdlevel': int(r['TargetsAK_ExtraAttrib_ConfdLevel']),
                                 'colldetrgn': int(r['TargetsAK_ExtraAttrib_CollDetRgn']),
