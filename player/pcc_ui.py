@@ -204,12 +204,13 @@ class Player(object):
         id = obs['id']
         source = obs['source'].split('.')
         source = source[3] if len(source) > 2 else source[0]
+        sensor = obs.get('sensor') or obs['source']
         if 'pos_lon' in obs:
             # x = obs['pos_lon']
             # y = obs['pos_lat']
-            x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], source)
+            x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], sensor)
         elif 'range' in obs:
-            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], source)
+            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], sensor)
         else:
             print('no distance in obs', obs)
             return
