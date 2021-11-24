@@ -367,7 +367,7 @@ class Statistics:
             max_line = plt.axhline(y=max_interval, color="y", linestyle="--", linewidth=1)
             plt.legend([avg_line, min_line, max_line], [f'avg:{"%.8f" % avg_interval}', f'min:{"%.8f" % min_interval}',
                                                         f'max:{"%.8f" % max_interval}'],
-                       bbox_to_anchor=(0, -0.23, 1, 2), oc="lower left", mode="expand", borderaxespad=0, ncol=3)
+                       bbox_to_anchor=(0, -0.23, 1, 2), loc="lower left", mode="expand", borderaxespad=0, ncol=3)
 
             has_draw = True
 
