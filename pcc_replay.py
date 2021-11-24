@@ -245,7 +245,7 @@ class LogPlayer(Process):
                         dir_name = "{}.{}".format(cfg['type'], idx)
                         dir_path = os.path.join(os.path.dirname(self.log_path), dir_name)
                         if cfg['origin_device'] == 'mdc':  # 新版本格式
-                            log_key = "{}.{}.{}.{}".format(device, idx, keyword, self.dbc)
+                            log_key = "{}.{}.{}.{}".format(device, idx, keyword, dbc)
                             filename = "{}.bin".format(keyword)
                         else:
                             log_key = "mdc_video{}".format(cfg['ports'][keyword]['port'] - 24010)
@@ -379,10 +379,13 @@ class LogPlayer(Process):
 
                             cols = line.split(' ')
                             if cols[2] == self.main_video:
-                                frame_id = int(cols[3])
-                                _, jpg = next(self.jpeg_extractor)
-                                if jpg is None:
-                                    self.now_frame_id = frame_id
+                                self.now_frame_id = int(cols[3])
+                                _, jpg = next(self.jpeg_extractor[cols[2]])
+                            elif self.jpeg_extractor.get(cols[2]):
+                                next(self.jpeg_extractor[cols[2]])
+                if jpg is None:
+                    self.now_frame_id = frame_id
+                    continue
 
                 source = "video" if cols[2] == self.main_video else cols[2]
                 r = {'ts': ts, 'img': jpg, 'is_main': cols[2] == self.main_video, "is_back": self.back_video == cols[2],
