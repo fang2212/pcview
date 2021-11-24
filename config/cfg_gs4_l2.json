@@ -24,13 +24,26 @@
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
                 {"model":  "a1j", "params": {"mac":  "6a:92:52:75:97:00", "is_main":  true}},
                 {"model":  "cv22_novid", "params": {"mac":  "6a:92:52:69:87:00"}},
-                {"model":  "a1j", "params": {"mac":  "6a:92:53:0f:97:00", "is_main":  false}},
+                {"model":  "a1j", "params": {"mac":  "6a:92:53:0f:97:00", "is_main":  false, "focus_install": "a1j_back"}},
                 {"model":  "x1j_1v1r", "params": {"mac": "5a:31:44:3d:e9:14"}},
                 {"model":  "bynav"},
                 {"model":  "d1_udp"},
                 {"model":  "a1j_collector", "params": {"mac": "6a:92:52:75:97:00", "can0": "a1j"}}
             ],
              "installation": {
+               "a1j_back": {
+                    "ref_yaw": 0,
+                    "yaw": 180,
+                    "pitch": 1,
+                    "roll": 0.9164,
+                    "lat_offset": 0.28,
+                    "lon_offset": -1.58,
+                    "height": 1.42,
+                    "fu": 1295.9175,
+                    "fv": 1296.2201,
+                    "cu": 967.7107,
+                    "cv": 533.2411
+                },
                 "esr": {
                     "yaw": 0.0,
                     "pitch": 0.0,

@@ -185,7 +185,11 @@ class Transform:
             h = 0
 
         if self.m_R_w2i.get(install_key) is None and self.cfg.installs.get(install_key):
-            self.m_R_w2i[install_key] = self.calc_m_w2i(self.cfg.installs[install_key].get('ref_yaw', 0), self.cfg.installs[install_key].get('ref_pitch', 0), self.cfg.installs[install_key].get('ref_roll', 0), install_key=install_key)
+            self.m_R_w2i[install_key] = self.calc_m_w2i(
+                self.cfg.installs[install_key].get('ref_yaw', self.cfg.installs[install_key].get('yaw', 0)),
+                self.cfg.installs[install_key].get('ref_pitch', self.cfg.installs[install_key].get('pitch', 0)),
+                self.cfg.installs[install_key].get('ref_roll', self.cfg.installs[install_key].get('roll', 0)),
+                install_key=install_key)
 
         # 位移操作
         h1 = self.cfg.installs[install_key]['height'] - h
