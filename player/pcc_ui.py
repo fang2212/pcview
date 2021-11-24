@@ -3,7 +3,7 @@ from datetime import datetime
 
 import cv2
 import numpy as np
-from math import *
+from math import atan2, pi
 
 # from config.config import install
 from player.ui import BaseDraw, pack, logodir, CVColor, FlatColor, color_dict
@@ -118,7 +118,20 @@ class Player(object):
         """左上角参数背景图"""
         BaseDraw.draw_alpha_rect(img, rect, 0.6, CVColor.Black)
 
-    def show_obs(self, img, obs, thickness=2, install_key="video"):
+    def show_obs(self, img, obs, thickness=2, install_key="video", x_mirror=False, y_mirror=False):
+        """
+        渲染目标
+        Args:
+            img:叠加图像
+            obs: 目标数据
+            thickness: 框的粗细
+            install_key: 摄像头安装key
+            x_mirror: x轴镜像(1 or -1)
+            y_mirror: y轴镜像(1 or -1)
+
+        Returns:
+
+        """
         try:
             indent = self.get_indent(obs['source'])
         except Exception as e:
@@ -150,12 +163,25 @@ class Player(object):
             print('no x dis in obs:', obs)
             return
         dist = max(0.1, dist)
-        if dist <= 0 or x <= 0:
+
+        if dist <= 0:
             return
 
         w = self.cfg.installs[install_key]['fu'] * width / dist
         w = min(600, w)
-        x0, y0 = self.transform.trans_gnd2raw(x, y, install_key=install_key)
+        pos = self.transform.trans_gnd2raw(x, y, install_key=install_key)
+        if pos is None:
+            return
+
+        x0, y0 = pos
+
+        # 镜像处理
+        if y_mirror:
+            x_mid = img.shape[1]/2
+            x0 = x0 - (x0 - x_mid)*2 if x0 > x_mid else x0 + (x_mid - x0) * 2
+        if x_mirror:
+            y_mid = img.shape[0]/2
+            y0 = y0 - (y0 - y_mid)*2 if y0 > y_mid else y0 + (y_mid - y0) * 2
 
         h = self.cfg.installs[install_key]['fv'] * height / dist
         x1 = x0 - 0.5 * w
@@ -171,10 +197,8 @@ class Player(object):
         if obs.get('sensor_type') == 'radar':
             w = max(5, min(50, w))
             h = max(5, min(50, h))
-            # print(int(x1), int(y1), int(w), width)
             try:
                 cv2.circle(img, (int(x0), int(y0 - 0.5 * h)), int(w), color, 1)
-                # print(x1, y1, x, h)
                 BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
             except Exception as e:
                 logger.error(f'雷达数据渲染失败参数：x:{x} y:{y} x0:{x0} y0:{y0}, h:{h}, w:{w}')
@@ -188,8 +212,8 @@ class Player(object):
             BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), size, color, 1)
 
+        # 主视频渲染状态框信息
         if install_key == 'video' and 'cipo' in obs and obs['cipo']:
-            # color = CVColor.Yellow
             self.show_cipo_info(img, obs)
             BaseDraw.draw_up_arrow(img, x0, y0 + 3, color)
 
