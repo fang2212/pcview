@@ -557,7 +557,7 @@ class PCC(object):
                 if misc_data:
                     for source in list(misc_data):
                         for entity in list(misc_data[source]):
-                            if misc_data[source][entity]['type'] == 'obstacle' and misc_data[source][entity].get('sensor') in ['mu_rr', 'mu_rl', 'bosch_rl', 'bosch_rr']:
+                            if misc_data[source][entity].get('type') == 'obstacle' and misc_data[source][entity].get('sensor') in ['mu_rr', 'mu_rl', 'bosch_rl', 'bosch_rr']:
                                 self.player.show_obs(back_img, misc_data[source][entity], install_key=self.player_cache['back']['install'], y_mirror=True)
                 self.player.show_video_info(back_img, self.player_cache['back'])
 

@@ -195,6 +195,7 @@ class Hub(Thread):
         idx = cfg['idx']
         is_main = cfg.get('is_main')
         is_back = cfg.get("is_back")
+        install_key = cfg.get("focus_install", "video")
         ip_type = "{}@{}".format(ip, cfg['type'])
         if self.online.get(ip_type) is None:
             self.online[ip_type] = {}
@@ -218,7 +219,7 @@ class Hub(Thread):
                     sink = FlowSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
                                     device=device, dbc=dbc, port_name=port_name,
                                     name=cfg.get("type"), log_name=item, topic=topic, is_main=is_main, is_back=is_back,
-                                    mq=self.mq, save_type=cfg['ports'][item].get("save"))
+                                    mq=self.mq, save_type=cfg['ports'][item].get("save"), install_key=install_key)
                 elif transport == "protoflow":
                     sink = ProtoSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
                                      name=cfg.get("type"), topic=topic, log_name=item, mq=self.mq)

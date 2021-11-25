@@ -739,7 +739,7 @@ class CameraSink(NNSink):
 
 class FlowSink(Sink):
     def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo', device="", dbc=None, port_name="",
-                 log_name='pcv_log', topic='pcview', is_main=False, is_back=False, mq=None, save_type=None):
+                 log_name='pcv_log', topic='pcview', is_main=False, is_back=False, mq=None, save_type=None, install_key="video"):
         super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
         self.last_fid = 0
         self.fileHandler = fileHandler
@@ -748,6 +748,7 @@ class FlowSink(Sink):
         self.log_name = log_name
         self.is_main = is_main
         self.is_back = is_back
+        self.install_key = install_key
         self.type = 'flow_sink'
         self.topic = topic
         self.dbc = dbc
@@ -920,7 +921,7 @@ class FlowSink(Sink):
                 return None
 
             r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
-                 'is_main': self.is_main, 'is_back': self.is_back, 'transport': 'libflow'}
+                 'is_main': self.is_main, 'is_back': self.is_back, 'transport': 'libflow', "install": self.install_key}
             self.fileHandler.insert_jpg(r)
             return frame_id, r
 
@@ -977,7 +978,7 @@ class FlowSink(Sink):
                         return None
 
                     r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
-                         'is_main': self.is_main, "is_back": self.is_back, 'transport': 'libflow'}
+                         'is_main': self.is_main, "is_back": self.is_back, 'transport': 'libflow', 'install': self.install_key}
                     self.fileHandler.insert_jpg(r)
                     return frame_id, r
                 else:
@@ -993,7 +994,7 @@ class FlowSink(Sink):
                     return None
 
                 r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
-                     'is_main': self.is_main, "is_back": self.is_back, 'transport': 'libflow'}
+                     'is_main': self.is_main, "is_back": self.is_back, 'transport': 'libflow', 'install': self.install_key}
                 self.fileHandler.insert_jpg(r)
                 return frame_id, r
             elif topic == 'calib_params':
