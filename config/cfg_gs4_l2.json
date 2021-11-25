@@ -31,7 +31,7 @@
                 {"model":  "a1j_collector", "params": {"mac": "6a:92:52:75:97:00", "can0": "a1j"}}
             ],
              "installation": {
-                 "esr": {
+                "esr": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
@@ -39,7 +39,7 @@
                      "lon_offset": 0.0,
                      "height": 0.0
                 },
-                 "ars": {
+                "ars": {
                      "roll": 0.0,
                      "lat_offset": 0.35,
                      "pitch": 0,
@@ -48,7 +48,7 @@
                      "ref_yaw": 0,
                      "yaw": 0
                 },
-                 "ars_back": {
+                "ars_back": {
                      "roll": 0.0,
                      "lat_offset": 0.35,
                      "pitch": 0,
@@ -57,7 +57,7 @@
                      "ref_yaw": 0,
                      "yaw": 180
                 },
-                 "mu_fl": {
+                "mu_fl": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
@@ -65,7 +65,7 @@
                      "lon_offset": -0.3,
                      "height": 0.405
                 },
-                 "mu_fr": {
+                "mu_fr": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
@@ -73,7 +73,7 @@
                      "lon_offset": 0.3,
                      "height": 0.405
                 },
-                 "mu_rl": {
+                "mu_rl": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
@@ -81,7 +81,7 @@
                      "lon_offset": -4.4,
                      "height": 0.645
                 },
-                 "mu_rr": {
+                "mu_rr": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
@@ -89,7 +89,7 @@
                      "lon_offset": -4.4,
                      "height": 0.645
                 },
-                 "bosch_fl": {
+                "bosch_fl": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
@@ -97,7 +97,7 @@
                      "lon_offset": -3.5,
                      "height": 0.405
                 },
-                 "bosch_fr": {
+                "bosch_fr": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
@@ -105,7 +105,7 @@
                      "lon_offset": -3.5,
                      "height": 0.405
                 },
-                 "bosch_rl": {
+                "bosch_rl": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
@@ -113,7 +113,7 @@
                      "lon_offset": -3.5,
                      "height": 0.645
                 },
-                 "bosch_rr": {
+                "bosch_rr": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
@@ -121,7 +121,7 @@
                      "lon_offset": -3.5,
                      "height": 0.645
                 },
-                 "ars410": {
+                "ars410": {
                      "roll": 0.0,
                      "lat_offset": 0.35,
                      "pitch": 0,
@@ -129,7 +129,7 @@
                      "lon_offset": -3.6,
                      "yaw": 0
                 },
-                 "lmr": {
+                "lmr": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
@@ -137,7 +137,7 @@
                      "lon_offset": 0.0,
                      "height": 0.0
                 },
-                 "ifv300": {
+                "ifv300": {
                      "roll": 0.0,
                      "lat_offset": 0.0,
                      "pitch": 0.0,
@@ -145,7 +145,7 @@
                      "lon_offset": -1.6,
                      "yaw": 0.0
                  },
-                 "mbq3": {
+                "mbq3": {
                     "roll": 0.0,
                       "lat_offset": 0,
                       "pitch": 0.0,
@@ -153,7 +153,7 @@
                       "lon_offset": 0,
                       "yaw": 0.0
                  },
-                 "q4_100": {
+                "q4_100": {
                       "roll": 0.0,
                       "lat_offset": -0.08,
                       "pitch": 0.0,
@@ -161,7 +161,7 @@
                       "lon_offset": -1.58,
                       "yaw": 0
                 },
-                 "mbq4": {
+                "mbq4": {
                       "roll": 0.0,
                       "lat_offset": -0.06,
                       "pitch": 0.0,
@@ -169,7 +169,7 @@
                       "lon_offset": -1.58,
                       "yaw": 0.0
                 },
-                 "d1_fusion": {
+                "d1_fusion": {
                       "roll": 0.0,
                       "lat_offset": 0.08,
                       "pitch": 0.0,
@@ -177,7 +177,7 @@
                       "lon_offset": 0,
                       "yaw": 0
                 },
-                 "x1_fusion": {
+                "x1_fusion": {
                       "roll": 0.0,
                       "lat_offset": 0.08,
                       "pitch": 0.0,
@@ -185,7 +185,7 @@
                       "lon_offset": 0,
                       "yaw": 0
                 },
-                 "j2_fusion": {
+                "j2_fusion": {
                       "roll": 0.0,
                       "lat_offset": 0,
                       "pitch": 0.0,
@@ -193,7 +193,7 @@
                       "lon_offset": 0,
                       "yaw": 0
                 },
-                 "rtk": {
+                "rtk": {
                      "yaw": 0.0,
                      "pitch": -2.0,
                      "roll": 0.0,
@@ -201,7 +201,7 @@
                      "lon_offset": -0.21,
                      "height": 1.2
                 },
-                 "video": {
+                "video": {
                      "yaw": 5.2,
                      "pitch": 1,
                      "roll": 0.9164,
@@ -213,7 +213,7 @@
                      "cu": 967.7107,
                      "cv": 533.2411
                 },
-                 "a1j_back": {
+                "a1j_back": {
                      "pitch": -1.691,
                      "roll": 0.0,
                      "ref_yaw": 180,
@@ -226,7 +226,7 @@
                      "lon_offset": 1.7,
                      "lat_offset": 0.0
                 },
-                 "x1": {
+                "x1": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
@@ -234,7 +234,7 @@
                      "lon_offset": 0,
                      "height": 1.4
                 },
-		         "a1j": {
+		        "a1j": {
                      "yaw": 0.0,
                      "pitch": 0.0,
                      "roll": 0.0,
