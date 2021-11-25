@@ -31,121 +31,121 @@
                 {"model":  "a1j_collector", "params": {"mac": "6a:92:52:75:97:00", "can0": "a1j"}}
             ],
              "installation": {
-                "esr": {
-                    "yaw": 0.0,
-                    "pitch": 0.0,
-                    "roll": 0.0,
-                    "lat_offset": 0.0,
-                    "lon_offset": 0.0,
-                    "height": 0.0
+                 "esr": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0.0,
+                     "lon_offset": 0.0,
+                     "height": 0.0
                 },
-                "ars": {
-                    "roll": 0.0,
-                    "lat_offset": 0.35,
-                    "pitch": 0,
-                    "height": 0.53,
-                    "lon_offset": 0.0,
-                    "ref_yaw": 0,
-                    "yaw": 0
+                 "ars": {
+                     "roll": 0.0,
+                     "lat_offset": 0.35,
+                     "pitch": 0,
+                     "height": 0.53,
+                     "lon_offset": 0.0,
+                     "ref_yaw": 0,
+                     "yaw": 0
                 },
-                    "ars_back": {
-                    "roll": 0.0,
-                    "lat_offset": 0.35,
-                    "pitch": 0,
-                    "height": 0.53,
-                    "lon_offset": 0.0,
-                    "ref_yaw": 0,
-                    "yaw": 180
+                 "ars_back": {
+                     "roll": 0.0,
+                     "lat_offset": 0.35,
+                     "pitch": 0,
+                     "height": 0.53,
+                     "lon_offset": 0.0,
+                     "ref_yaw": 0,
+                     "yaw": 180
                 },
-                "mu_fl": {
-                "yaw": 0.0,
-                "pitch": 0.0,
-                "roll": 0.0,
-                "lat_offset": -0.9,
-                "lon_offset": -0.3,
-                "height": 0.405
+                 "mu_fl": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": -0.9,
+                     "lon_offset": -0.3,
+                     "height": 0.405
                 },
-                "mu_fr": {
-                "yaw": 0.0,
-                "pitch": 0.0,
-                "roll": 0.0,
-                "lat_offset": 0.9,
-                "lon_offset": 0.3,
-                "height": 0.405
+                 "mu_fr": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0.9,
+                     "lon_offset": 0.3,
+                     "height": 0.405
                 },
-                "mu_rl": {
-                "yaw": 0.0,
-                "pitch": 0.0,
-                "roll": 0.0,
-                "lat_offset": -8.35,
-                "lon_offset": -4.4,
-                "height": 0.645
+                 "mu_rl": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": -8.35,
+                     "lon_offset": -4.4,
+                     "height": 0.645
                 },
-                "mu_rr": {
-                "yaw": 0.0,
-                "pitch": 0.0,
-                "roll": 0.0,
-                "lat_offset": 0,
-                "lon_offset": -4.4,
-                "height": 0.645
+                 "mu_rr": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": -4.4,
+                     "height": 0.645
                 },
-                "bosch_fl": {
-                "yaw": 0.0,
-                "pitch": 0.0,
-                "roll": 0.0,
-                "lat_offset": 0,
-                "lon_offset": -3.5,
-                "height": 0.405
+                 "bosch_fl": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": -3.5,
+                     "height": 0.405
                 },
-                "bosch_fr": {
-                "yaw": 0.0,
-                "pitch": 0.0,
-                "roll": 0.0,
-                "lat_offset": 0.9,
-                "lon_offset": -3.5,
-                "height": 0.405
+                 "bosch_fr": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0.9,
+                     "lon_offset": -3.5,
+                     "height": 0.405
                 },
-                "bosch_rl": {
-                "yaw": 0.0,
-                "pitch": 0.0,
-                "roll": 0.0,
-                "lat_offset": 0,
-                "lon_offset": -3.5,
-                "height": 0.645
+                 "bosch_rl": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": -3.5,
+                     "height": 0.645
                 },
-                "bosch_rr": {
-                "yaw": 0.0,
-                "pitch": 0.0,
-                "roll": 0.0,
-                "lat_offset": 0,
-                "lon_offset": -3.5,
-                "height": 0.645
+                 "bosch_rr": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": -3.5,
+                     "height": 0.645
                 },
-                "ars410": {
-                    "roll": 0.0,
-                    "lat_offset": 0.35,
-                    "pitch": 0,
-                    "height": 0.45,
-                    "lon_offset": -3.6,
-                    "yaw": 0
+                 "ars410": {
+                     "roll": 0.0,
+                     "lat_offset": 0.35,
+                     "pitch": 0,
+                     "height": 0.45,
+                     "lon_offset": -3.6,
+                     "yaw": 0
                 },
-                "lmr": {
-                    "yaw": 0.0,
-                    "pitch": 0.0,
-                    "roll": 0.0,
-                    "lat_offset": 0.0,
-                    "lon_offset": 0.0,
-                    "height": 0.0
+                 "lmr": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0.0,
+                     "lon_offset": 0.0,
+                     "height": 0.0
                 },
-                "ifv300": {
-                    "roll": 0.0,
-                      "lat_offset": 0.0,
-                      "pitch": 0.0,
-                      "height": 1.50,
-                      "lon_offset": -1.6,
-                      "yaw": 0.0
+                 "ifv300": {
+                     "roll": 0.0,
+                     "lat_offset": 0.0,
+                     "pitch": 0.0,
+                     "height": 1.50,
+                     "lon_offset": -1.6,
+                     "yaw": 0.0
                  },
-                "mbq3": {
+                 "mbq3": {
                     "roll": 0.0,
                       "lat_offset": 0,
                       "pitch": 0.0,
@@ -177,7 +177,7 @@
                       "lon_offset": 0,
                       "yaw": 0
                 },
-                "x1_fusion": {
+                 "x1_fusion": {
                       "roll": 0.0,
                       "lat_offset": 0.08,
                       "pitch": 0.0,
@@ -193,54 +193,54 @@
                       "lon_offset": 0,
                       "yaw": 0
                 },
-                "rtk": {
-                    "yaw": 0.0,
-                    "pitch": -2.0,
-                    "roll": 0.0,
-                    "lat_offset": 0.15,
-                    "lon_offset": -0.21,
-                    "height": 1.2
+                 "rtk": {
+                     "yaw": 0.0,
+                     "pitch": -2.0,
+                     "roll": 0.0,
+                     "lat_offset": 0.15,
+                     "lon_offset": -0.21,
+                     "height": 1.2
                 },
-                "video": {
-                    "yaw": 5.2,
-                    "pitch": 1,
-                    "roll": 0.9164,
-                    "lat_offset": 0.28,
-                    "lon_offset": -1.58,
-                    "height": 1.42,
-                    "fu": 1295.9175,
-                    "fv": 1296.2201,
-                    "cu": 967.7107,
-                    "cv": 533.2411
+                 "video": {
+                     "yaw": 5.2,
+                     "pitch": 1,
+                     "roll": 0.9164,
+                     "lat_offset": 0.28,
+                     "lon_offset": -1.58,
+                     "height": 1.42,
+                     "fu": 1295.9175,
+                     "fv": 1296.2201,
+                     "cu": 967.7107,
+                     "cv": 533.2411
                 },
                  "a1j_back": {
-                    "pitch": -1.691,
-                    "roll": 0.0,
-                    "ref_yaw": 180,
-                    "yaw" : 0.798,
-                    "fu": 1290.0,
-                    "fv": 1290.0,
-                    "cu": 962,
-                    "cv": 544,
-                    "height": 1.45,
-                    "lon_offset": 1.7,
-                    "lat_offset": 0.0
-                    },
-                "x1": {
-                    "yaw": 0.0,
-                    "pitch": 0.0,
-                    "roll": 0.0,
-                    "lat_offset": 0,
-                    "lon_offset": 0,
-                    "height": 1.4
+                     "pitch": -1.691,
+                     "roll": 0.0,
+                     "ref_yaw": 180,
+                     "yaw" : 0.798,
+                     "fu": 1290.0,
+                     "fv": 1290.0,
+                     "cu": 962,
+                     "cv": 544,
+                     "height": 1.45,
+                     "lon_offset": 1.7,
+                     "lat_offset": 0.0
                 },
-		 "a1j": {
-                    "yaw": 0.0,
-                    "pitch": 0.0,
-                    "roll": 0.0,
-                    "lat_offset": 0,
-                    "lon_offset": 0,
-                    "height": 1.42
+                 "x1": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": 0,
+                     "height": 1.4
+                },
+		         "a1j": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": 0,
+                     "height": 1.42
                 }
 
             }
