@@ -82,6 +82,7 @@ class FlatColor(object):  # in BGR
     turquoise = (0x9c, 0xa0, 0x16)
     yellow_green = (112, 255, 202)          # 黄绿色
     yellow = (57, 171, 242)                 # 黄色
+    moccasin = (191, 236, 212)
     wet_asphalt = (0x5e, 0x49, 0x34)
 
 
@@ -91,10 +92,12 @@ color_dict = {
     "a1j_vision": (193, 182, 255),
     "ars410": FlatColor.peach,
     "bosch_mrr": FlatColor.yellow,
-    "bosch_fr": FlatColor.yellow,
-    "bosch_fl": FlatColor.yellow,
-    "bosch_rr": FlatColor.yellow,
-    "bosch_rl": FlatColor.yellow,
+    "bosch_f": FlatColor.moccasin,
+    "bosch_r": FlatColor.moccasin,
+    "bosch_fr": FlatColor.moccasin,
+    "bosch_fl": FlatColor.moccasin,
+    "bosch_rr": FlatColor.moccasin,
+    "bosch_rl": FlatColor.moccasin,
     "d1_fusion": FlatColor.violet,
     "gs4_debug": FlatColor.pink,
     "j2": FlatColor.carrot,
@@ -103,6 +106,7 @@ color_dict = {
     "wsk": FlatColor.pink,
     'anc': FlatColor.carrot,
     'ars': FlatColor.emerald,
+    'ars_back': FlatColor.emerald,
     'ctlrr': FlatColor.alizarin,
     'default': FlatColor.clouds,
     'esr': FlatColor.alizarin,
