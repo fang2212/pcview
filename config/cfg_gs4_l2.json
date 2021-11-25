@@ -32,8 +32,8 @@
             ],
              "installation": {
                "a1j_back": {
-                    "ref_yaw": 0,
-                    "yaw": 180,
+                    "ref_yaw": 180,
+                    "yaw": 0,
                     "pitch": 1,
                     "roll": 0.9164,
                     "lat_offset": 0.28,

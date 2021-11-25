@@ -85,7 +85,7 @@ class Transform:
         self.pitch = installs['video']['pitch']
         self.roll = installs['video']['roll']
         self.m_R_w2i = {
-            "video": self.calc_m_w2i(installs['video'].get('ref_yaw', installs['video'].get("yaw", 0)), installs['video'].get('ref_pitch', installs['video'].get("pitch", 0)), installs['video'].get('ref_roll', installs['video'].get("roll", 0)))
+            "video": self.calc_m_w2i(installs['video'].get('yaw', 0), installs['video'].get("pitch", 0), installs['video'].get("roll", 0))
         }
         self.cfg = uniconf
         self.cfg.installs['default'] = {'lat_offset': 0.0, 'lon_offset': 0.0, 'pitch': 0.0, 'roll': 0.0, 'yaw': 0.0}
@@ -186,9 +186,9 @@ class Transform:
 
         if self.m_R_w2i.get(install_key) is None and self.cfg.installs.get(install_key):
             self.m_R_w2i[install_key] = self.calc_m_w2i(
-                self.cfg.installs[install_key].get('ref_yaw', self.cfg.installs[install_key].get('yaw', 0)),
-                self.cfg.installs[install_key].get('ref_pitch', self.cfg.installs[install_key].get('pitch', 0)),
-                self.cfg.installs[install_key].get('ref_roll', self.cfg.installs[install_key].get('roll', 0)),
+                self.cfg.installs[install_key].get('yaw', 0),
+                self.cfg.installs[install_key].get('pitch', 0),
+                self.cfg.installs[install_key].get('roll', 0),
                 install_key=install_key)
 
         # 位移操作
@@ -197,7 +197,7 @@ class Transform:
         y = y - self.cfg.installs[install_key]['lat_offset']
 
         # 计算偏航角
-        r = self.cfg.installs[install_key]['yaw'] * pi / 180
+        r = self.cfg.installs[install_key].get('ref_yaw', 0) * pi / 180
         x = x*cos(r) + y*sin(r)
         y = y*cos(r) - x*sin(r)
 
