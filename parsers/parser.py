@@ -34,6 +34,7 @@ parsers_dict = {
     "a1j_vision": parse_a1j_vision,
     "anc":      parse_anc,
     "ars":      parse_ars,
+    "ars_back":      parse_ars_back,
     "ars410":   parse_ars410,
     "bosch_mrr": bosch_mrr,
     "bosch_f":  bosch_f,

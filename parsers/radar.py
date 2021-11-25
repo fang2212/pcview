@@ -76,7 +76,6 @@ def parse_ars410(id, buf, ctx=None):
     if 0x50 <= id <= 0x77:
         obj_idx = id - 0x50
         if "obs" in ctx and obj_idx in ctx['obs']:
-
             if r['FRS_Obj_ValidFlag']:
                 ctx['obs'][obj_idx]['id'] = r['Obj_ID']
                 ctx['obs'][obj_idx]['prob'] = r['FRS_Obj_ExstProb']
@@ -101,27 +100,24 @@ def parse_ars410(id, buf, ctx=None):
         return {'type': 'vehicle_state', 'yaw_rate': -yaw_rate_ars / 180 * pi, 'speed': speed}
 
 
-def parse_ars(id, buf, ctx=None):
+def parse_ars_back(id, buf, ctx=None):
+    return parse_ars(id, buf, ctx=ctx, sensor="ars_back")
+
+
+def parse_ars(id, buf, ctx=None, sensor="ars"):
     ids = [m.frame_id for m in db_ars.messages]
     if id not in ids:
         return None
     r = db_ars.decode_message(id, buf)
     if ctx and ctx.get('parser_mode') == 'direct':
         return r
-    # print('0x%x' % id, r)
     if id == 0x300:  # end of scan
-        # if ctx.get('ars_obj'):
-        #     ret = ars_filter.add_cipo(ctx['ars_obj'])
-        #     print(ret)
-        #     return ret
-        # speed
         if 'RadarDevice_Speed' in r:
             speed_ars = r['RadarDevice_Speed'] * 3.6
             ctx['speed'] = speed_ars
         if ctx.get('radar_status') is None:
             pass
     elif id == 0x301:
-        # yawrate
         if 'RadarDevice_YawRate' in r:
             yaw_rate_ars = r['RadarDevice_YawRate'] / 57.3 *(-1) # 跟车身坐标系相反
             ctx['yaw_rate'] = yaw_rate_ars
@@ -130,15 +126,10 @@ def parse_ars(id, buf, ctx=None):
                 ctx['speed'] = []
                 return {'type': 'vehicle_state', 'yaw_rate': yaw_rate_ars, 'speed': speed}
 
-        # pass
-
     elif id == 0x60a:  # new start of scan
-        # print('start of scan')
         ret = None
         if ctx.get('ars_obj'):
             ret = ars_filter.add_cipo(ctx['ars_obj'].copy())
-            # print(ret)
-            # return ret
         ctx['ars_obj'] = []
 
         if ret:
@@ -160,17 +151,10 @@ def parse_ars(id, buf, ctx=None):
             ttc = 7
         range = sqrt(x_raw ** 2 + y_raw ** 2)
         angle = atan2(y_raw, x_raw) * 180.0 / pi
-        # x, y = trans_polar2rcs(angle, range, install['ars'])
-        ret = {'type': 'obstacle', 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle, 'pos_lat': y_raw,
+        ret = {'type': 'obstacle', "sensor": sensor, 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle, 'pos_lat': y_raw,
                'pos_lon': x_raw, 'vel_lat': vy, 'vel_lon': vx, 'RCS': rcs, 'TTC': ttc}
         if ctx.get('ars_obj') is not None:
             ctx['ars_obj'].append(ret.copy())
-        # return ret
-
-    elif id == 0x600:
-        cluster_near_num = r['Cluster_NofClustersNear']
-        cluster_far_num = r['Cluster_NofClustersFar']
-        pass
 
     elif id == 0x701:
         tid = r['Cluster_ID']
@@ -178,8 +162,7 @@ def parse_ars(id, buf, ctx=None):
         y_raw = -1 * r['Cluster_DistLat']  # clster模式和object模式坐标系横轴是反的？
         range = sqrt(x_raw ** 2 + y_raw ** 2)
         angle = atan2(y_raw, x_raw) * 180.0 / pi
-        # x, y = trans_polar2rcs(angle, range, install['ars'])
-        ret = {'type': 'obstacle', 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle}
+        ret = {'type': 'obstacle', "sensor": sensor, 'sensor_type': 'radar', 'id': tid, 'range': range, 'angle': angle}
         return ret
 
 
