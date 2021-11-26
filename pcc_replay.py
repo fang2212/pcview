@@ -262,7 +262,7 @@ class LogPlayer(Process):
                 if cfg.get("is_back"):
                     self.back_video = dir_name
                 log_keyword = "camera" if dir_name == 'video' else dir_name
-                self.focus_install[log_keyword] = cfg['ports']['video'].get("focus_install") or 'video'
+                self.focus_install[log_keyword] = cfg['ports']['video'].get("focus_install", cfg.get("focus_install")) or 'video'
                 video_path = os.path.dirname(self.log_path) + '/' + dir_name
                 # 初始化视频图片生成器
                 if os.path.exists(video_path):
