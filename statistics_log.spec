@@ -2,12 +2,14 @@
 
 
 block_cipher = None
-
+added_files =[
+    ('config/', 'config'),
+    ]
 
 a = Analysis(['statistics_log.py'],
              pathex=[],
              binaries=[],
-             datas=[],
+             datas=added_files,
              hiddenimports=[],
              hookspath=[],
              hooksconfig={},
