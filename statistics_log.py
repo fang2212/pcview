@@ -1,9 +1,11 @@
 import argparse
+import functools
 import json
 import logging
 import math
 import os
 import pathlib
+import threading
 import time
 
 import openpyxl
@@ -25,6 +27,84 @@ other_list = ['gsensor', "camera"]     # 参与统计的其他字段
 
 row_count = 2
 col_count = 2
+
+
+def sort_big_file(filename, file_splits=4, my_cmp=None):
+    """
+    排序文件
+    @param filename:
+    @param file_splits:
+    @param my_cmp:
+    @return:
+    """
+    idx = 0
+    buf_file = []
+    buf_path = []
+    path = os.path.dirname(filename)
+    with open(filename, 'r') as rf:
+        for line in rf:
+            line = line.strip()
+            if line == '':
+                continue
+            if idx < file_splits:
+                bak_path = os.path.join(path, str(idx)+'.tmp.bak')
+                buf_file.append(open(bak_path, 'w'))
+                buf_path.append(bak_path)
+            print(line, file=buf_file[idx % file_splits])
+            idx += 1
+        for f in buf_file:
+            f.flush()
+            f.close()
+    if my_cmp is None:
+        my_cmp = lambda x, y: -1 if x < y else 1
+
+    def sort_one_file(p):
+        with open(p, 'r') as rrf:
+            lns = rrf.readlines()
+            lns.sort(key=functools.cmp_to_key(my_cmp))
+        with open(p, 'w') as wf:
+            wf.writelines(lns)
+    ths = []
+    for p in buf_path:
+        t = threading.Thread(target=sort_one_file, args=(p,))
+        t.start()
+        ths.append(t)
+    for t in ths:
+        t.join()
+    merge_times = 0
+    while len(buf_path) > 1:
+        now_path = os.path.join(path, 'merge-times-' +
+                                str(merge_times) + '.tmp.bak')
+        now_file = open(now_path, 'w')
+        path_one = buf_path.pop(0)
+        path_two = buf_path.pop(0)
+        file_one = open(path_one, 'r')
+        file_two = open(path_two, 'r')
+        line_one = next(file_one, None)
+        line_two = next(file_two, None)
+        while not line_one is None and not line_two is None:
+            if my_cmp(line_one, line_two) < 0:
+                print(line_one.strip(), file=now_file)
+                line_one = next(file_one, None)
+            else:
+                print(line_two.strip(), file=now_file)
+                line_two = next(file_two, None)
+        while not line_one is None:
+            print(line_one.strip(), file=now_file)
+            line_one = next(file_one, None)
+        while not line_two is None:
+            print(line_two.strip(), file=now_file)
+            line_two = next(file_two, None)
+        file_one.close()
+        file_two.close()
+        now_file.close()
+        buf_path.append(now_path)
+        os.remove(path_one)
+        os.remove(path_two)
+        merge_times += 1
+    new_path = os.path.dirname(buf_path[0]) + '/log_sort.txt'
+    os.rename(buf_path[0], new_path)
+    return new_path
 
 
 class Statistics:
@@ -114,8 +194,16 @@ class Statistics:
             logger.debug(self.config)
             logger.debug(self.topic_map)
 
+    def sort_log(self, source):
+        r_sort = os.path.join(os.path.dirname(source), 'log_sort.txt')
+
+        if not os.path.exists(r_sort):
+            r_sort = sort_big_file(source)
+        return r_sort
+
     def run(self):
         print("start:", self.log_path)
+        self.log_path = self.sort_log(self.log_path)
         with open(self.log_path, encoding='unicode_escape') as f:
             lines = f.readlines()
 
@@ -128,10 +216,7 @@ class Statistics:
 
                 # 记录log开始结束的时间点
                 ts = float(cols[0]) + float(cols[1]) / 1000000
-                if self.log_start_ts == 0 or self.log_start_ts > ts:
-                    self.log_start_ts = ts
-                if self.log_end_ts < ts:
-                    self.log_end_ts = ts
+
 
                 if "CAN" in cols[2] or "can" in cols[2]:
                     self.can_collect(cols, ts)
@@ -139,8 +224,16 @@ class Statistics:
                     self.other_collect(cols, ts)
 
         self.log_long_ts = self.log_end_ts - self.log_start_ts
-        logger.debug("视频开始时间：{} {}".format(self.log_camera_start_ts, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.log_camera_start_ts))))
-        logger.debug("视频结束时间：{} {}".format(self.log_camera_end_ts, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.log_camera_end_ts))))
+        if self.log_camera_start_ts != 0 and self.log_camera_end_ts != 0:
+            logger.debug("视频开始时间：{} {}".format(self.log_camera_start_ts, time.strftime("%Y-%m-%d %H:%M:%S",
+                                                                                       time.localtime(
+                                                                                           self.log_camera_start_ts))))
+            logger.debug("视频结束时间：{} {}".format(self.log_camera_end_ts,
+                                           time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.log_camera_end_ts))))
+        else:
+            self.log_camera_start_ts = self.log_start_ts
+            self.log_camera_end_ts = self.log_end_ts
+
         logger.debug("log.txt开始时间：{} {}".format(self.log_start_ts, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(
             self.log_start_ts))))
         logger.debug("log.txt结束时间：{} {}".format(self.log_end_ts,
@@ -158,6 +251,11 @@ class Statistics:
                 return
             if self.config[can_data[2]].get("ids") and can_data[3] not in self.config[can_data[2]].get("ids"):
                 return
+
+        if self.log_start_ts == 0 or self.log_start_ts > ts:
+            self.log_start_ts = ts
+        if self.log_end_ts < ts:
+            self.log_end_ts = ts
 
         data = {
             "ts": ts,
@@ -178,16 +276,22 @@ class Statistics:
             self.can_map[can_data[2]][can_data[3]] = [data]
 
     def other_collect(self, other_data, ts):
+
+        # 如果有指定关键词范围的话进行过滤
+        if self.config and other_data[2] not in self.config:
+            return
+
+        if self.log_start_ts == 0 or self.log_start_ts > ts:
+            self.log_start_ts = ts
+        if self.log_end_ts < ts:
+            self.log_end_ts = ts
+
         # 记录视频开始结尾时间
         if "camera" in other_data[2]:
             if self.log_camera_start_ts == 0 or self.log_camera_start_ts > ts:
                 self.log_camera_start_ts = ts
             if self.log_camera_end_ts < ts:
                 self.log_camera_end_ts = ts
-
-        # 如果有指定关键词范围的话进行过滤
-        if self.config and other_data[2] not in self.config:
-            return
 
         data = {
             "ts": ts,
@@ -319,6 +423,7 @@ class Statistics:
             low_per = ""        # 低于周期系数
             height_per_count = ""   # 高于周期系数的数据量
             low_per_count = ""      # 低于周期系数的数据量
+            cycle_num = ""
 
             if self.config.get(name):
                 topic_config = None
