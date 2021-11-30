@@ -10,7 +10,6 @@ added_files =[
 
 a = Analysis(['pcc_app.py'],
              pathex=['/usr/local/lib/python3.6'],
-             binaries=[("/home/li/.local/lib/python3.8/site-packages/sharemem/libsharemem.so", "sharemem")],
              datas=added_files,
              hiddenimports=['_nanomsg_cpy', 'pkg_resources.py2_warn', 'engineio.async_drivers.eventlet', 'jinja2.ext', 'nnpy', 'aionn', 'websockets.client', 'websockets.server', 'websockets.legacy.auth'],
              hookspath=[],

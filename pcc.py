@@ -5,6 +5,7 @@ __author__ = 'pengquanhua <pengquanhua@minieye.cc>'
 __version__ = '0.1.0'
 __progname__ = 'run'
 
+import time
 from datetime import datetime
 from math import fabs
 from multiprocessing import Manager
@@ -102,6 +103,7 @@ class PCC(object):
         self.statistics = {}
         self.enable_auto_interval_adjust = True
         self.parse_state = True
+        self.record_time_not_sync = 0         # 上一次记录时间不同步的时间，防止频繁写入日志
 
         self.sideview_state = loop_traverse(['back', 'front'])
         self.sv_state = 'back' if show_back else 'front'
@@ -998,26 +1000,34 @@ class PCC(object):
         main_cache = self.player_cache['main'].copy()
         videos_cache = self.player_cache['videos'].copy()
         # main video ts
-        all_ts = [main_cache['ts']]
+        # all_ts = [main_cache['ts']]
+        source_list = [{"source": "main", 'ts': main_cache['ts']}]
         # other video ts
         for source in videos_cache:
             d = videos_cache[source]
             if type(d) == dict and 'ts' in d:
-                all_ts.append(d['ts'])
+                # all_ts.append(d['ts'])
+                source_list.append({"source": d['source'], 'ts': d['ts']})
 
         # 收集其他信号的接收时间
         for source in self.player_cache['misc']:
             for key in self.player_cache['misc'][source]:
                 d = self.player_cache['misc'][source][key]
                 if type(d) == dict and 'ts' in d:
-                    all_ts.append(d['ts'])
+                    # all_ts.append(d['ts'])
+                    source_list.append({"source": d['source'], 'ts': d['ts']})
 
-        all_ts = np.array(all_ts)
-        dt = np.ptp(all_ts)
+        source_list = sorted(source_list, key=lambda x: x["ts"])
+        dt = source_list[-1]['ts'] - source_list[0]['ts']
+        # dt = np.ptp(all_ts)
 
         # 出现超时信号进行处理
         if dt > 5:
-            self.alarm_info["time_not_sync"] = time.time() + 3
+            now = time.time()
+            if now - self.record_time_not_sync > 60:
+                self.record_time_not_sync = now
+                logger.warning("time_not_sync:{} max:{} min:{}".format(dt, source_list[-1], source_list[0]))
+            self.alarm_info["time_not_sync"] = now + 3
 
             return {'status': 'fail', 'info': 'collectors\' time not aligned!'}
         return {'status': 'ok', 'info': 'oj8k'}
