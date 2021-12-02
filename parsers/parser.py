@@ -3,6 +3,7 @@ from parsers.a1j import parse_a1j, parse_a1j_fusion, parse_a1j_vision
 from parsers.d1_fusion import parse_d1
 from parsers.muniu import parser_mu_f, parser_mu_r, parser_mu_fl, parser_mu_fr, parser_mu_rl, parser_mu_rr
 from parsers.q4_52 import parser_q4_52
+from parsers.wsk_parser import parse_wsk_mrr, parse_unop_mrr
 from parsers.x1 import parse_x1, parse_x1_fusion, parse_x1_vision
 from parsers.x1l import parse_x1l
 from parsers.x1j import parse_x1j
@@ -78,7 +79,9 @@ parsers_dict = {
     "sta77":    parse_sta77,
     "sta77_3":  parse_sta77_3,
     "vfr":      parse_vfr,
-    "wsk":      parse_ars,
+    "wsk_old":      parse_ars,
+    "wsk":      parse_wsk_mrr,
+    "unop":     parse_unop_mrr,
     "x1":       parse_x1,
     "x1_fusion": parse_x1_fusion,
     "x1_vision": parse_x1_vision,

@@ -1,0 +1,170 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Debug Config Object Cluster
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ Object_WarnLevel : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 1587 Object_3_Extended: 8 Object
+ SG_ Radar_Type : 0|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ FarNearFlag : 36|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Object_WarnFlag : 13|3@0+ (1,0) [0|7] ""  Config
+ SG_ Object_Index : 7|7@0+ (1,0) [0|127] ""  Config
+ SG_ Object_Hight : 63|8@0+ (0.1,0) [0|25.5] "m"  Config
+ SG_ Object_Wide : 55|8@0+ (0.1,0) [0|25.5] "m"  Config
+ SG_ Object_Length : 47|8@0+ (0.1,0) [0|25.5] "m"  Config
+ SG_ Object_Class : 35|4@0+ (1,0) [0|7] ""  Config
+ SG_ Object_ay : 31|11@0+ (0.01,-10.24) [-10.24|10.23] "m/s2"  Config
+ SG_ Object_ax : 10|11@0+ (0.01,-10.24) [-10.24|10.23] "m/s2"  Config
+
+BO_ 1586 Object_2_Quality: 8 Object
+ SG_ Radar_Type : 27|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ Object_Dynamic : 35|4@0+ (1,0) [0|15] "" Vector__XXX
+ SG_ Object_Index : 7|7@0+ (1,0) [0|127] ""  Config
+ SG_ Object_RCS : 63|8@0+ (0.5,-64) [-64|63.5] "dBm2"  Config
+ SG_ Object_ExitProb : 50|3@0+ (1,0) [0|7] ""  Config
+ SG_ Object_TrackStatus : 42|3@0+ (1,0) [0|7] ""  Config
+ SG_ Object_STD_yAcc : 55|5@0+ (1,0) [0|31] ""  Config
+ SG_ Object_STD_xAcc : 47|5@0+ (1,0) [0|31] ""  Config
+ SG_ Object_STD_ySpeed : 24|5@0+ (1,0) [0|31] ""  Config
+ SG_ Object_STD_xSpeed : 16|5@0+ (1,0) [0|31] ""  Config
+ SG_ Object_STD_zSite : 21|5@0+ (1,0) [0|31] ""  Config
+ SG_ Object_STD_ySite : 10|5@0+ (1,0) [0|31] ""  Config
+ SG_ Object_STD_xSite : 15|5@0+ (1,0) [0|31] ""  Config
+
+BO_ 1585 Object_1_General: 8 Object
+ SG_ Radar_Type : 32|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ Object_vy : 51|12@0+ (0.1,-204.8) [-204.8|204.7] "m/s"  Config
+ SG_ Object_vx : 45|10@0+ (0.1,-51.2) [-51.2|51.1] "m/s"  Config
+ SG_ Object_z : 25|9@0+ (0.1,-25.6) [-25.6|25.5] "m"  Config
+ SG_ Object_y : 21|12@0+ (0.1,-10) [-10|399.5] "m"  Config
+ SG_ Object_x : 15|10@0+ (0.1,-51.2) [-51.2|51.1] "m"  Config
+ SG_ Object_Index : 7|7@0+ (1,0) [0|127] ""  Config
+
+BO_ 1584 Object_0_Status: 8 Object
+ SG_ Radar_Type : 24|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ Vehicle_YawRate : 37|14@0+ (0.01,-81.42) [-81.42|82.41] ""  Config
+ SG_ Vehicle_SteeringDir : 55|1@0+ (1,0) [0|1] ""  Config
+ SG_ Vehicle_SteeringAngle : 54|15@0+ (0.0437,0) [0|1431.9179] "°"  Config
+ SG_ Vehicle_TurnLamp : 29|2@0+ (1,0) [0|3] ""  Config
+ SG_ Vehicle_RR_Door : 27|1@0+ (1,0) [0|1] ""  Config
+ SG_ Vehicle_LR_Door : 26|1@0+ (1,0) [0|1] ""  Config
+ SG_ Vehicle_RF_Door : 25|1@0+ (1,0) [0|1] ""  Config
+ SG_ Vehicle_Driver_Door : 16|1@0+ (1,0) [0|1] ""  Config
+ SG_ Vehicle_Gear : 31|2@0+ (1,0) [0|3] ""  Config
+ SG_ Vehicle_Speed : 15|15@0+ (0.01,0) [0|327.67] "km/h"  Config
+ SG_ Object_Num : 7|7@0+ (1,0) [0|127] ""  Config
+
+
+
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+CM_ SG_ 3221225472 Object_WarnLevel "报警等级";
+CM_ SG_ 1587 Object_WarnFlag "报警标志";
+CM_ SG_ 1587 Object_Index "ID";
+CM_ SG_ 1587 Object_Hight "高";
+CM_ SG_ 1587 Object_Wide "宽";
+CM_ SG_ 1587 Object_Length "长";
+CM_ SG_ 1587 Object_Class "类别";
+CM_ SG_ 1587 Object_ay "y方向的加速度";
+CM_ SG_ 1587 Object_ax "x方向的加速度";
+CM_ SG_ 1586 Object_Dynamic "动态属性";
+CM_ SG_ 1586 Object_Index "ID";
+CM_ SG_ 1586 Object_RCS "RCS";
+CM_ SG_ 1586 Object_ExitProb "存在的概率";
+CM_ SG_ 1586 Object_TrackStatus "航迹测量状态";
+CM_ SG_ 1586 Object_STD_yAcc "y加速度的标准差";
+CM_ SG_ 1586 Object_STD_xAcc "x加速度的标准差";
+CM_ SG_ 1586 Object_STD_ySpeed "y速度标准差";
+CM_ SG_ 1586 Object_STD_xSpeed "x速度标准差";
+CM_ SG_ 1586 Object_STD_zSite "z位置标准差";
+CM_ SG_ 1586 Object_STD_ySite "y位置标准差";
+CM_ SG_ 1586 Object_STD_xSite "x位置标准差";
+CM_ SG_ 1585 Object_vy "y方向的速度";
+CM_ SG_ 1585 Object_vx "x方向的速度";
+CM_ SG_ 1585 Object_z "z";
+CM_ SG_ 1585 Object_y "y";
+CM_ SG_ 1585 Object_x "x";
+CM_ SG_ 1585 Object_Index "ID";
+CM_ SG_ 1584 Vehicle_YawRate "偏航角速率";
+CM_ SG_ 1584 Vehicle_SteeringDir "方向盘转角方向";
+CM_ SG_ 1584 Vehicle_SteeringAngle "方向盘转角";
+CM_ SG_ 1584 Vehicle_TurnLamp "转向灯";
+CM_ SG_ 1584 Vehicle_RR_Door "右后门";
+CM_ SG_ 1584 Vehicle_LR_Door "左后门";
+CM_ SG_ 1584 Vehicle_RF_Door "右前门";
+CM_ SG_ 1584 Vehicle_Driver_Door "主驾门";
+CM_ SG_ 1584 Vehicle_Gear "档位";
+CM_ SG_ 1584 Vehicle_Speed "车速";
+CM_ SG_ 1584 Object_Num "目标个数";
+BA_DEF_ SG_  "GenSigStartValue" HEX 0 65535;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 50000;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","IfActive","NoMsgSendType","NotUsed";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgSendType" "Cyclic";
+BA_ "GenMsgSendType" BO_ 1587 1;
+BA_ "GenMsgSendType" BO_ 1586 1;
+BA_ "GenMsgSendType" BO_ 1585 1;
+BA_ "GenMsgCycleTime" BO_ 1584 50;
+BA_ "GenSigStartValue" SG_ 1584 Vehicle_YawRate 0;
+VAL_ 3221225472 Object_WarnLevel 2 "level 2" 1 "level 1" 0 "no warn" ;
+VAL_ 1587 Radar_Type 1 "后向从雷达" 0 "前向雷达/后向主雷达" ;
+VAL_ 1587 Object_WarnFlag 4 "后方两个雷达同时报警" 3 "右后雷达报警" 2 "左后雷达报警" 1 "前向雷达报警" 0 "无报警" ;
+VAL_ 1587 Object_Class 7 "预留" 6 "宽目标" 5 "自行车" 4 "摩托车" 3 "未使用" 2 "卡车" 1 "车" 0 "点" ;
+VAL_ 1586 Radar_Type 1 "后向从雷达" 0 "前向雷达/后向主雷达" ;
+VAL_ 1586 Object_Dynamic 9 "低处静止" 8 "高处静止" 7 "停止" 6 "横穿" 5 "横穿静止" 4 "可能静止" 3 "reserved" 2 "迎面而来" 1 "静止" 0 "移动" ;
+VAL_ 1586 Object_ExitProb 7 "<=100%" 6 "<99.9%" 5 "<99%" 4 "<90%" 3 "<75%" 2 "<50%" 1 "<25%" 0 "invalid" ;
+VAL_ 1586 Object_TrackStatus 3 "预测的(无关联点)" 2 "测量的(有关联点)" 1 "新起批的" 0 "删除的" ;
+VAL_ 1586 Object_STD_yAcc 31 "invalid" 30 "<10.000" 29 "<7.762" 28 "<6.025" 27 "<4.676" 26 "<3.630" 25 "<2.817" 24 "<2.187" 23 "<1.697" 22 "<1.317" 21 "<1.023" 20 "<0.794" 19 "<0.616" 18 "<0.478" 17 "<0.371" 16 "<0.288" 15 "<0.224" 14 "<0.174" 13 "<0.135" 12 "<0.105" 11 "<0.081" 10 "<0.063" 9 "<0.049" 8 "<0.038" 7 "<0.029" 6 "<0.023" 5 "<0.018" 4 "<0.014" 3 "<0.011" 2 "<0.008" 1 "<0.006" 0 "<0.005" ;
+VAL_ 1586 Object_STD_xAcc 31 "invalid" 30 "<10.000" 29 "<7.762" 28 "<6.025" 27 "<4.676" 26 "<3.630" 25 "<2.817" 24 "<2.187" 23 "<1.697" 22 "<1.317" 21 "<1.023" 20 "<0.794" 19 "<0.616" 18 "<0.478" 17 "<0.371" 16 "<0.288" 15 "<0.224" 14 "<0.174" 13 "<0.135" 12 "<0.105" 11 "<0.081" 10 "<0.063" 9 "<0.049" 8 "<0.038" 7 "<0.029" 6 "<0.023" 5 "<0.018" 4 "<0.014" 3 "<0.011" 2 "<0.008" 1 "<0.006" 0 "<0.005" ;
+VAL_ 1586 Object_STD_ySpeed 31 "invalid" 30 "<10.000" 29 "<7.762" 28 "<6.025" 27 "<4.676" 26 "<3.630" 25 "<2.817" 24 "<2.187" 23 "<1.697" 22 "<1.317" 21 "<1.023" 20 "<0.794" 19 "<0.616" 18 "<0.478" 17 "<0.371" 16 "<0.288" 15 "<0.224" 14 "<0.174" 13 "<0.135" 12 "<0.105" 11 "<0.081" 10 "<0.063" 9 "<0.049" 8 "<0.038" 7 "<0.029" 6 "<0.023" 5 "<0.018" 4 "<0.014" 3 "<0.011" 2 "<0.008" 1 "<0.006" 0 "<0.005" ;
+VAL_ 1586 Object_STD_xSpeed 31 "invalid" 30 "<10.000" 29 "<7.762" 28 "<6.025" 27 "<4.676" 26 "<3.630" 25 "<2.817" 24 "<2.187" 23 "<1.697" 22 "<1.317" 21 "<1.023" 20 "<0.794" 19 "<0.616" 18 "<0.478" 17 "<0.371" 16 "<0.288" 15 "<0.224" 14 "<0.174" 13 "<0.135" 12 "<0.105" 11 "<0.081" 10 "<0.063" 9 "<0.049" 8 "<0.038" 7 "<0.029" 6 "<0.023" 5 "<0.018" 4 "<0.014" 3 "<0.011" 2 "<0.008" 1 "<0.006" 0 "<0.005" ;
+VAL_ 1586 Object_STD_zSite 31 "invalid" 30 "<10.000" 29 "<7.762" 28 "<6.025" 27 "<4.676" 26 "<3.630" 25 "<2.817" 24 "<2.187" 23 "<1.697" 22 "<1.317" 21 "<1.023" 20 "<0.794" 19 "<0.616" 18 "<0.478" 17 "<0.371" 16 "<0.288" 15 "<0.224" 14 "<0.174" 13 "<0.135" 12 "<0.105" 11 "<0.081" 10 "<0.063" 9 "<0.049" 8 "<0.038" 7 "<0.029" 6 "<0.023" 5 "<0.018" 4 "<0.014" 3 "<0.011" 2 "<0.008" 1 "<0.006" 0 "<0.005" ;
+VAL_ 1586 Object_STD_ySite 31 "invalid" 30 "<10.000" 29 "<7.762" 28 "<6.025" 27 "<4.676" 26 "<3.630" 25 "<2.817" 24 "<2.187" 23 "<1.697" 22 "<1.317" 21 "<1.023" 20 "<0.794" 19 "<0.616" 18 "<0.478" 17 "<0.371" 16 "<0.288" 15 "<0.224" 14 "<0.174" 13 "<0.135" 12 "<0.105" 11 "<0.081" 10 "<0.063" 9 "<0.049" 8 "<0.038" 7 "<0.029" 6 "<0.023" 5 "<0.018" 4 "<0.014" 3 "<0.011" 2 "<0.008" 1 "<0.006" 0 "<0.005" ;
+VAL_ 1586 Object_STD_xSite 31 "invalid" 30 "<10.000" 29 "<7.762" 28 "<6.025" 27 "<4.676" 26 "<3.630" 25 "<2.817" 24 "<2.187" 23 "<1.697" 22 "<1.317" 21 "<1.023" 20 "<0.794" 19 "<0.616" 18 "<0.478" 17 "<0.371" 16 "<0.288" 15 "<0.224" 14 "<0.174" 13 "<0.135" 12 "<0.105" 11 "<0.081" 10 "<0.063" 9 "<0.049" 8 "<0.038" 7 "<0.029" 6 "<0.023" 5 "<0.018" 4 "<0.014" 3 "<0.011" 2 "<0.008" 1 "<0.006" 0 "<0.005" ;
+VAL_ 1585 Radar_Type 1 "后向从雷达" 0 "前向雷达/后向主雷达" ;
+VAL_ 1584 Radar_Type 1 "后向从雷达" 0 "前向雷达/后向主雷达" ;
+VAL_ 1584 Vehicle_SteeringDir 1 "右转" 0 "左转" ;
+VAL_ 1584 Vehicle_TurnLamp 3 "故障" 2 "右转向灯" 1 "左转向灯" 0 "未打转向灯" ;
+VAL_ 1584 Vehicle_RR_Door 1 "ON" 0 "OFF" ;
+VAL_ 1584 Vehicle_LR_Door 1 "ON" 0 "OFF" ;
+VAL_ 1584 Vehicle_RF_Door 1 "ON" 0 "OFF" ;
+VAL_ 1584 Vehicle_Driver_Door 1 "ON" 0 "OFF" ;
+VAL_ 1584 Vehicle_Gear 3 "D/S" 2 "N" 1 "R" 0 "P" ;
+
