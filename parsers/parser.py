@@ -81,7 +81,7 @@ parsers_dict = {
     "vfr":      parse_vfr,
     "wsk_old":      parse_ars,
     "wsk":      parse_wsk_mrr,
-    "unop":     parse_unop_mrr,
+    "lhgd":     parse_unop_mrr,
     "x1":       parse_x1,
     "x1_fusion": parse_x1_fusion,
     "x1_vision": parse_x1_vision,
