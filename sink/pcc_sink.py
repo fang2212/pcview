@@ -765,11 +765,13 @@ class FlowSink(Sink):
         # 初始化解析流程
         if self.topic == '*' or self.dbc == "video_h265":   # Q3华为mdc数据
             if 24011 <= self.port <= 24017 or self.dbc == "video_h265":     # h264视频数据
-                self.pkg_handler = self.h265_video
+                self.pkg_handler = self.video_h265
             elif self.port == 26011:
                 self.pkg_handler = self.mdc_ts
             else:
                 self.pkg_handler = self.mdc_data
+        elif self.dbc == "video_jpeg":
+            self.pkg_handler = self.video_jpeg
         elif self.topic == 'MdcTime':
             self.pkg_handler = self.mdc_ts
         elif self.save_type == 'bin':
@@ -830,20 +832,14 @@ class FlowSink(Sink):
             data = msg.data
         return data
 
-    def mdc_ts(self, msg):
-        data = self.decode_data(msg)
-        data = data['data']
-        ads_sec = int.from_bytes(data[:8], byteorder='little', signed=False),
-        ads_nsec = int.from_bytes(data[8:16], byteorder='little', signed=False),
-        gnss_sec = int.from_bytes(data[16:24], byteorder='little', signed=False),
-        gnss_nsec = int.from_bytes(data[24:32], byteorder='little', signed=False),
-        timestamp = time.time()
-        # print(ads_sec, ads_nsec, gnss_sec, gnss_nsec)
-        # print("mdc_ts", "{} {} {} {}".format(ads_sec, ads_nsec, gnss_sec, gnss_nsec))
-        self.fileHandler.insert_raw((timestamp, "mdc_ts", "{} {} {} {}".format(ads_sec[0], ads_nsec[0], gnss_sec[0], gnss_nsec[0])))
+    def decode_video(self, data):
+        """
+        解析视频数据，对图像数据跟视频头格式进行解析处理
+        Args:
+            msg:
 
-    def h265_video(self, msg):
-        data = self.decode_data(msg)
+        Returns:
+        """
         head_data = {
             "height": int.from_bytes(data[:4], byteorder='little', signed=False),
             "width": int.from_bytes(data[4:8], byteorder='little', signed=False),
@@ -856,6 +852,23 @@ class FlowSink(Sink):
             "nsec": int.from_bytes(data[32:36], byteorder='little', signed=False)
         }
         img = data[36:]
+        return img, head_data
+
+    def mdc_ts(self, msg):
+        data = self.decode_data(msg)
+        data = data['data']
+        ads_sec = int.from_bytes(data[:8], byteorder='little', signed=False),
+        ads_nsec = int.from_bytes(data[8:16], byteorder='little', signed=False),
+        gnss_sec = int.from_bytes(data[16:24], byteorder='little', signed=False),
+        gnss_nsec = int.from_bytes(data[24:32], byteorder='little', signed=False),
+        timestamp = time.time()
+        # print(ads_sec, ads_nsec, gnss_sec, gnss_nsec)
+        # print("mdc_ts", "{} {} {} {}".format(ads_sec, ads_nsec, gnss_sec, gnss_nsec))
+        self.fileHandler.insert_raw((timestamp, "mdc_ts", "{} {} {} {}".format(ads_sec[0], ads_nsec[0], gnss_sec[0], gnss_nsec[0])))
+
+    def video_h265(self, msg):
+        data = self.decode_data(msg)
+        img, head_data = self.decode_video(data)
         timestamp = time.time()
 
         if self.topic != "*":
@@ -867,6 +880,14 @@ class FlowSink(Sink):
         self.fileHandler.insert_raw(
             (timestamp, "{}.{}.{}.{}".format(self.device, self.index, self.port_name, self.dbc), "{:d} {:d} {} {} {} {} {} {} {}".format(head_data["height"], head_data["width"], head_data["send_time_high"],
                                                                                                          head_data["send_time_low"], head_data["frame_type"], head_data["data_size"], head_data["seq"], head_data["sec"], head_data["nsec"])))
+
+    def video_jpeg(self, msg):
+        data = self.decode_data(msg)
+        img, head_data = self.decode_video(data)
+        r = {'ts': head_data['sec']+head_data['nsec']/1000000000, 'img': img, 'frame_id': head_data['seq'], 'type': 'video', 'source': self.source,
+             'is_main': self.is_main, "is_back": self.is_back, 'transport': 'libflow', 'install': self.install_key}
+        self.fileHandler.insert_jpg(r)
+        return head_data['seq'], r
 
     def mdc_data(self, msg):
         # Q3华为mdc算法数据

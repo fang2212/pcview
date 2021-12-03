@@ -281,12 +281,23 @@ class Hub(Thread):
                                         fileHandler=self.fileHandler, mq=self.mq)
                     self.sinks.append(gsink)
                     self.online[ip_type]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
-                elif 'video' in iface:
-                    port = cfg['ports']['video']['port']
-                    vsink = CameraSink(ip=ip, port=port, msg_type='camera', index=idx,
-                                       fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
-                                       devname=cfg.get('type'), mq=self.mq)
-                    self.sinks.append(vsink)
+                elif 'video' in iface or 'camera' in iface:
+                    port = cfg['ports'][iface]['port']
+                    dbc = cfg['ports'][iface].get("dbc")
+                    device = cfg.get('origin_device', "")
+                    transport = cfg['ports'][iface].get('transport')
+                    topic = cfg['ports'][iface].get('topic')
+                    if transport == "libflow":
+                        sink = FlowSink(ip=ip, port=port, msg_type=iface, index=idx, fileHandler=self.fileHandler,
+                                        device=device, dbc=dbc, port_name=iface,
+                                        name=cfg.get("type"), log_name=iface, topic=topic, is_main=is_main,
+                                        is_back=is_back,
+                                        mq=self.mq, save_type=cfg['ports'][iface].get("save"), install_key=install_key)
+                    else:
+                        sink = CameraSink(ip=ip, port=port, msg_type='camera', index=idx,
+                                           fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
+                                           devname=cfg.get('type'), mq=self.mq)
+                    self.sinks.append(sink)
 
         elif cfg.get('type') == 'general':
             for iface in cfg['ports']:

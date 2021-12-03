@@ -14,7 +14,8 @@
             "enable": true,
             "collectors": [
                 {"model":  "tda4", "params":  {"ip": "192.168.11.23", "force_ip": true}},
-                {"model":  "mdc"}
+                {"model":  "mdc"},
+                {"model":  "g1l_collector"}
             ],
             "installation": {
                 "esr": {
