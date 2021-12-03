@@ -79,6 +79,7 @@ class Transform:
         self.y_limits = [-15, 15]
         self.ipm_width = 480
         self.ipm_height = 1440
+        self.ipm_front_height = int(self.ipm_height/2)
         self.intrinsic_para = {"video": np.array(((installs['video']['fu'], 0, installs['video']['cu']), (0, installs['video']['fv'], installs['video']['cv']), (0, 0, 1)))}
         self.r_cam2img = np.array(((0, 1, 0), (0, 0, 1), (1, 0, 0)))
         self.yaw = installs['video']['yaw']

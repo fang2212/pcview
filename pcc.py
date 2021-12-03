@@ -569,8 +569,7 @@ class PCC(object):
             comb = main_img
             # 对俯视图进行裁剪
             if self.show_ipm:
-                split_index = int(self.transform.ipm_height/6)
-                self.ipm = self.ipm[split_index:-split_index*2]
+                self.ipm = self.ipm[:self.transform.ipm_front_height]
 
         # 是否显示俯视图
         if self.show_ipm:

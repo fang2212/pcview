@@ -23,6 +23,7 @@ def parse_wsk_mrr(id, buf, ctx=None):
         return {
             'type': 'obstacle',
             "sensor": "wsk",
+            'sensor_type': 'radar',
             'steer_angle': r.get('Str_Angle'),
             'speed': r.get('VehSpeed')/3.6,
             'yaw_rate': -r.get('YawRate'),
@@ -39,6 +40,7 @@ def parse_wsk_mrr(id, buf, ctx=None):
             ret = {
                 'type': 'obstacle',
                 "sensor": "wsk",
+                'sensor_type': 'radar',
                 'id': r['RadarObj%d_ID_A' % (obj_idx)],
                 'pos_lon': r['RadarObj%d_Pos_X' % (obj_idx)],
                 'pos_lat': -r['RadarObj%d_Pos_Y' % (obj_idx)],
@@ -76,9 +78,11 @@ def parse_unop_mrr(id, buf, ctx=None):
             return ret
 
         return {
+            'type': 'obstacle',
+            "sensor": "lhgd",
+            'sensor_type': 'radar',
             'speed':r.get('Vehicle_Speed'),
             'yaw_rate':r.get('Vehicle_YawRate'),
-            'type': 'obstacle',
             'id': 0,
             'pos_lon': 0,
             'pos_lat': 0,
@@ -99,6 +103,8 @@ def parse_unop_mrr(id, buf, ctx=None):
         # range,angle = trans_rcs2polar(range_lon, range_lat)#方位角
         ret = {
             'type': 'obstacle',
+            "sensor": "lhgd",
+            'sensor_type': 'radar',
             'id': tid,
             'pos_lon': range_lon,
             'pos_lat': range_lat,
