@@ -1032,10 +1032,59 @@ class PCC(object):
             return {'status': 'fail', 'info': 'collectors\' time not aligned!'}
         return {'status': 'ok', 'info': 'oj8k'}
 
+    def check_signal(self, msg, signal_list):
+        # 初始化msg信息
+        for device in msg:
+            for node in msg[device]['ports']:
+                if msg[device]['ports'][node]['enable'] is not False:
+                    msg[device]['ports'][node]['enable'] = True
+
+        """
+        通过信号有无检测设备状态
+        """
+        for device in msg:
+            # can signal
+            if msg[device]['type'] == 'can_collector':
+                for i in signal_list:
+                    ip, port, idx, source = i[0], i[1], i[2], i[3]
+                    if ip == msg[device]['ip'] and port == msg[device]['port'] and idx == msg[device]['idx'] \
+                            and isinstance(source, list):
+                        for s in source:
+                            can = s.split('.')[2]
+                            if can in msg[device]['ports']:
+                                msg[device]['ports'][can]['enable'] = 'running'
+
+            # other signal
+            else:
+                for i in signal_list:
+                    ip, port, idx, source = i[0], i[1], i[2], i[3]
+                    if ip == msg[device]['ip'] and idx == msg[device]['idx']:
+                        for node in msg[device]['ports']:
+                            if port == msg[device]['ports'][node]['port']:
+                                print(node)
+                                msg[device]['ports'][node]['enable'] = 'running'
+
+        return msg
+
     def send_online_devices(self):
         if not self.to_web:
             return
+
         msg = self.hub.online
+
+        if self.hub.sq.full():
+            self.stuck_cnt += 1
+        else:
+            self.stuck_cnt = 0
+
+        signal_list = []
+        while not self.hub.sq.empty():
+            sq = self.hub.sq.get()
+            if sq not in signal_list:
+                signal_list.append(sq)
+
+        msg = self.check_signal(msg, signal_list)
+
         # self.vs.ws_send('devices', msg)
         if self.o_msg_q and not self.o_msg_q.full():
             self.o_msg_q.put(('devices', msg))

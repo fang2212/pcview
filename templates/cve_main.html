@@ -207,8 +207,19 @@
                         '</div>\n';
                     let ports = '<div>\n'
                     for (let port in dev['ports']) {
-                        ports +=
-                            '<li>' + port + ': ' + '<b>' + dev['ports'][port]['topic'] + '</b>' + ' on ' + dev['ports'][port]['port'] + '</li>\n';
+                        if(dev['ports'][port]['enable'] == 'running') {var colorControl = ' style="color:#157347;"'}
+                        else if(dev['ports'][port]['enable'] == true) {var colorControl = ' style="color:#ffca2c;"'}
+                        else {var colorControl = ' style="color:#bb2d3b;"'}
+                        
+                        if('topic' in dev['ports'][port]){
+                            ports +=
+                            '<li' + colorControl + '>' + port + ': ' + '<b>' + dev['ports'][port]['topic'] + '</b>' + ' on ' + dev['ports'][port]['port'] + '</li>\n';
+                        }
+                        else{
+                            if(dev['ports'][port]['dbc'] == ''){ports += '<li' + colorControl + '>' + port + ': there is no dbc' + '</li>\n'}
+                            else{ports += '<li' + colorControl + '>' + port + ': ' + '<b>' + dev['ports'][port]['dbc'] + '</b>' + ' on ' + dev['port'] + '</li>\n'}
+                        }
+                        
                     }
                     ports += '</div>\n';
                     newCard.innerHTML =
