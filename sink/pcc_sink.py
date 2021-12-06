@@ -55,7 +55,7 @@ class Sink(Thread):
     """
     信号解析基本类
     """
-    def __init__(self, ip, port, msg_type, index=0, mq=None):
+    def __init__(self, ip, port, msg_type, index=0, mq=None, sq=None):
         super().__init__()
         self.daemon = True  # 设置为守护线程
         self.ip = ip
@@ -66,6 +66,7 @@ class Sink(Thread):
         self.exit = False
 
         self.mq = mq  # mmap内存对象
+        self.sq = sq
 
         self.pid = None  # 进程id
 
@@ -109,8 +110,8 @@ class NNSink(Sink):
     """
     nnpy类型信号处理基类
     """
-    def __init__(self, ip, port, msg_type, index=0, decode_queue=None, result_queue=None, mq=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, mq=mq)
+    def __init__(self, ip, port, msg_type, index=0, decode_queue=None, result_queue=None, mq=None, sq=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, mq=mq, sq=sq)
         self.ip = ip
         self.port = port
         self.type = msg_type
@@ -137,6 +138,9 @@ class NNSink(Sink):
             if not buf:
                 time.sleep(0.001)
                 continue
+
+            self.sq.put([self.ip, self.port, self.index, self.source])
+
             t0 = time.time()
             r = self.pkg_handler(buf)
             if r is not None:
@@ -151,8 +155,8 @@ class NNSink(Sink):
 
 
 class ZmqSink(Sink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, mq=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, mq=mq)
+    def __init__(self, ip, port, msg_type, index, fileHandler, mq=None, sq=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, mq=mq, sq=sq)
         self.ip = ip
         self.port = port
         self.msg_type = msg_type
@@ -189,6 +193,9 @@ class ZmqSink(Sink):
             if not buf:
                 time.sleep(0.001)
                 continue
+
+            self.sq.put([self.ip, self.port, self.index, self.source])
+
             t0 = time.time()
             msg_cnt += 1
             r = self.pkg_handler(buf)
@@ -207,8 +214,8 @@ class ZmqSink(Sink):
 
 
 class UDPSink(Sink):
-    def __init__(self, ip, port, topic, protocol, index, file_andler, mq=None):
-        super(UDPSink, self).__init__(ip=ip, port=port, msg_type=topic, mq=mq)
+    def __init__(self, ip, port, topic, protocol, index, file_andler, mq=None, sq=None):
+        super(UDPSink, self).__init__(ip=ip, port=port, msg_type=topic, mq=mq, sq=sq)
         self.ip = ip
         self.port = port
         self.msg_type = topic
@@ -270,6 +277,9 @@ class UDPSink(Sink):
             if not buf:
                 time.sleep(0.001)
                 continue
+
+            self.sq.put([self.ip, self.port, self.index, self.source])
+
             t0 = time.time()
             r = self.pkg_handler(buf)
             if r is not None:
@@ -286,8 +296,8 @@ class UDPSink(Sink):
 
 
 class TCPSink(Sink):
-    def __init__(self, ip, port, msg_type, protocol, index, fileHandler, mq=None):
-        super(TCPSink, self).__init__(ip=ip, port=port, msg_type=msg_type, mq=mq)
+    def __init__(self, ip, port, msg_type, protocol, index, fileHandler, mq=None, sq=None):
+        super(TCPSink, self).__init__(ip=ip, port=port, msg_type=msg_type, mq=mq, sq=sq)
         self.ip = ip
         self.port = port
         self.msg_type = msg_type
@@ -347,6 +357,9 @@ class TCPSink(Sink):
             if not buf:
                 time.sleep(0.001)
                 continue
+
+            self.sq.put([self.ip, self.port, self.index, self.source])
+
             t0 = time.time()
             r = self.pkg_handler(buf)
             if r is not None:
@@ -363,8 +376,8 @@ class TCPSink(Sink):
 
 
 class PinodeSink(NNSink):
-    def __init__(self, ip, port, msg_type, index, resname, fileHandler, mq=None):
-        super().__init__(ip=ip, port=port, index=index, msg_type=msg_type, mq=mq)
+    def __init__(self, ip, port, msg_type, index, resname, fileHandler, mq=None, sq=None):
+        super().__init__(ip=ip, port=port, index=index, msg_type=msg_type, mq=mq, sq=sq)
         self.source = '{}.{:d}'.format(msg_type, index)
         self.msg_type = msg_type
         self.index = index
@@ -475,8 +488,8 @@ class CANCollectSink(NNSink):
     """
     can-fd设备有4/8个can端口，需做区分处理
     """
-    def __init__(self, ip, port, can_list, index, fileHandler, device='', mq=None):
-        super(CANCollectSink, self).__init__(ip, port, "can", index, mq=mq)
+    def __init__(self, ip, port, can_list, index, fileHandler, device='', mq=None, sq=None):
+        super(CANCollectSink, self).__init__(ip, port, "can", index, mq=mq, sq=sq)
         self.type = 'can_sink'
         self.fileHandler = fileHandler
         self.can_list = can_list                  # 四个端口的信号类型列表
@@ -552,8 +565,8 @@ class CANCollectSink(NNSink):
 
 class MQTTSink(NNSink):
 
-    def __init__(self, ip, can_list, index, fileHandler, device="", cid="", mq=None):
-        super(MQTTSink, self).__init__(ip, "*", can_list, mq=mq)
+    def __init__(self, ip, can_list, index, fileHandler, device="", cid="", mq=None, sq=None):
+        super(MQTTSink, self).__init__(ip, "*", can_list, mq=mq, sq=sq)
         self.type = 'mqtt_sink'
         self.ip = ip
         self.device = device
@@ -652,8 +665,8 @@ class MQTTSink(NNSink):
 
 
 class CANSink(NNSink):
-    def __init__(self, ip, port, msg_type, topics, index, fileHandler, mq=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
+    def __init__(self, ip, port, msg_type, topics, index, fileHandler, mq=None, sq=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq, sq=sq)
         self.fileHandler = fileHandler                          # 日志对象
         self.type = 'can_sink'
         self.log_types = {'can0': 'CAN' + '{:01d}'.format(self.index * 2),
@@ -698,8 +711,8 @@ class CANSink(NNSink):
 
 
 class GsensorSink(NNSink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, mq=None):
-        super(GsensorSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
+    def __init__(self, ip, port, msg_type, index, fileHandler, mq=None, sq=None):
+        super(GsensorSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq, sq=sq)
         self.fileHandler = fileHandler
         self.type = 'gsensor_sink'
 
@@ -716,8 +729,8 @@ class GsensorSink(NNSink):
 
 
 class CameraSink(NNSink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, is_main=False, devname=None, mq=None):
-        super(CameraSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
+    def __init__(self, ip, port, msg_type, index, fileHandler, is_main=False, devname=None, mq=None, sq=None):
+        super(CameraSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq, sq=sq)
         self.fileHandler = fileHandler
         self.source = '{:s}.{:d}'.format(devname, index)
         self.is_main = is_main
@@ -1085,8 +1098,8 @@ class FlowSink(Sink):
 
 class ProtoSink(NNSink):
     def __init__(self, ip, port, msg_type, index, fileHandler, name='proto',
-                 log_name='proto_log', topic='pcview', mq=None):
-        super().__init__(ip, port, msg_type, index, mq=mq)
+                 log_name='proto_log', topic='pcview', mq=None, sq=None):
+        super().__init__(ip, port, msg_type, index, mq=mq, sq=sq)
         self.fileHandler = fileHandler
         self.ip = ip
         self.port = port
