@@ -9,8 +9,7 @@ added_files =[
     ]
 
 a = Analysis(['pcc_replay.py'],
-             pathex=['/home/li/code/pcview_new'],
-             binaries=[("/home/li/.local/lib/python3.8/site-packages/sharemem/libsharemem.so", "sharemem")],
+             pathex=['/home/li/code/pcview'],
              datas=added_files,
              hiddenimports=['pkg_resources.py2_warn', 'engineio.async_drivers.eventlet', 'jinja2.ext', 'nnpy', 'aionn', 'websockets.client', 'websockets.server', 'websockets.legacy.auth'],
              hookspath=[],

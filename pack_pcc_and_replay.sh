@@ -41,7 +41,8 @@ cd dist
 cp pcc_replay/pcc_replay pcc_app/
 cp split_recorder_data/split_recorder_data pcc_app/
 cp statistics_log/statistics_log -r pcc_app/
-tar -czvf pcc_app.tar.gz pcc_app
+#mv pcc_app "pcc_app_"`date +%Y_%m_%d`
+tar -czvf "pcc_app_"`date +%Y_%m_%d`.tar.gz "pcc_app_"`date +%Y_%m_%d`
 
 #if [ ! -d "~/release " ]; then
 #  mkdir ~/release
