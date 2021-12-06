@@ -206,8 +206,9 @@ class Statistics:
         self.log_path = self.sort_log(self.log_path)
         with open(self.log_path, encoding='unicode_escape') as f:
             lines = f.readlines()
-
+            read_index = 0
             for line in lines:
+                read_index += 1
                 if line == '':
                     continue
 
@@ -215,7 +216,11 @@ class Statistics:
                 cols = line.strip().split(" ")
 
                 # 记录log开始结束的时间点
-                ts = float(cols[0]) + float(cols[1]) / 1000000
+                try:
+                    ts = float(cols[0]) + float(cols[1]) / 1000000
+                except Exception as e:
+                    logger.error("第{}行 时间戳解析失败：{}".format(read_index, line))
+                    continue
 
 
                 if "CAN" in cols[2] or "can" in cols[2]:
