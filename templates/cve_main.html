@@ -208,8 +208,8 @@
                     let ports = '<div>\n'
                     for (let port in dev['ports']) {
                         if(dev['ports'][port]['enable'] == 'running') {var colorControl = ' style="color:#157347;"'}
-                        else if(dev['ports'][port]['enable'] == true) {var colorControl = ' style="color:#ffca2c;"'}
-                        else {var colorControl = ' style="color:#bb2d3b;"'}
+                        else if(dev['ports'][port]['enable'] == true) {var colorControl = ' style="color:#bb2d3b;"'}
+                        else {var colorControl = ' style="color:#ffca2c;"'}
                         
                         if('topic' in dev['ports'][port]){
                             ports +=
