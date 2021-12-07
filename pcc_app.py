@@ -24,7 +24,7 @@ parser.add_argument('-c', '--config', default=None)
 parser.add_argument('-a', '--auto', help='auto recording', action="store_true")
 parser.add_argument('-w', '--web', help='web ui', action="store_true")
 parser.add_argument('-da', '--draw_algo', help='show algo data', action="store_true")
-parser.add_argument('--back', default=False, action="store_true", help="是否显示后视图像")
+parser.add_argument('--show_back', default="auto", help="是否显示后视图像，可选参数：auto、yes、no，默认：auto")
 
 args = parser.parse_args()
 
@@ -65,12 +65,17 @@ else:
 cve_conf.local_cfg = local_cfg
 logger.warning("log path:{}".format(cve_conf.local_cfg.log_root))
 
-has_back = args.back
-for cfg in cve_conf.configs:
-    if cfg.get("is_back"):
-        has_back = True
-        logger.info("has back camera:{}".format(json.dumps(cfg)))
-        break
+if args.show_back == "yes":
+    show_back = True
+elif args.show_back == "no":
+    show_back = False
+else:
+    show_back = False
+    for c in cve_conf.configs:
+        if c.get("is_back"):
+            show_back = True
+            logger.info("has back camera:{}".format(json.dumps(cfg)))
+            break
 
 _startup_cwd = os.getcwd()
 
@@ -115,7 +120,7 @@ if args.web:  # 网页版启动方式
 
     # 初始化信号加载进程
     hub = Hub(uniconf=cve_conf)
-    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo, show_back=has_back)
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo, show_back=show_back)
     pcc_thread = Thread(target=pcc.start, name='pcc_thread')
     hub.start()
 
@@ -197,7 +202,7 @@ else:  # normal standalone PCC
         auto_rec = False
 
     hub = Hub(uniconf=cve_conf)
-    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=auto_rec, draw_algo=args.draw_algo, show_back=has_back)
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=auto_rec, draw_algo=args.draw_algo, show_back=show_back)
     hub.start()
     sup = init_checkers(pcc)
     pcc.start()

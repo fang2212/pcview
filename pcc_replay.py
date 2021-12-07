@@ -585,10 +585,16 @@ def start_replay(source_path, args):
     ns = args.nosort
     chmain = args.chmain
     r_sort, cfg = prep_replay(source_path, ns=ns, chmain=chmain)
-    has_back = args.back
-    for c in cfg.configs:
-        if c.get("is_back"):
-            has_back = True
+
+    if args.show_back == "yes":
+        show_back = True
+    elif args.show_back == "no":
+        show_back = False
+    else:
+        show_back = False
+        for c in cfg.configs:
+            if c.get("is_back"):
+                show_back = True
 
     replay_hub = LogPlayer(r_sort, cfg, start_frame=args.start_frame, end_frame=args.end_frame,
                          start_time=args.start_time, end_time=args.end_time, loop=args.loop,
@@ -600,13 +606,13 @@ def start_replay(source_path, args):
         from video_server import PccServer
         server = PccServer()
         server.start()
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, to_web=server, show_back=has_back)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, to_web=server, show_back=show_back)
         replay_hub.start()
         pcc.start()
         while True:
             time.sleep(1)
     else:
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, eclient=args.eclient, show_back=has_back)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, eclient=args.eclient, show_back=show_back)
         replay_hub.start()
 
         # 控制子进程的退出
@@ -639,7 +645,7 @@ if __name__ == "__main__":
     parser.add_argument('-ri', '--real_interval', action="store_true")
     parser.add_argument('-e', '--eclient', action="store_true")
     parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
-    parser.add_argument('--back', default=False, action="store_true", help="是否显示后视图像")
+    parser.add_argument('--show_back', default="auto", help="是否显示后视图像，可选参数：auto、yes、no，默认：auto")
     parser.add_argument('-chmain', default=None, help="change main video")
     args = parser.parse_args()
 
