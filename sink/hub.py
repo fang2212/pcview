@@ -145,6 +145,7 @@ class Hub(Thread):
             print('index {}'.format(ol['idx']), bcl.OKBL + ip_type + bcl.ENDC, ol.get('mac'))
             print('definition:', ol['defs_path'])
             for iface in ol['ports']:
+                ol['ports'][iface]['display'] = True
                 topic = ol['ports'][iface].get('dbc', ol['ports'][iface].get('topic'))
                 if isinstance(topic, list):
                     topic = ','.join(topic)

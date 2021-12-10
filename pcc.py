@@ -24,6 +24,7 @@ from models.road import Road
 from tools.cpu_mem_info import *
 import numpy as np
 import copy
+import queue
 import traceback
 
 from utils import logger
@@ -111,6 +112,7 @@ class PCC(object):
         self.back_img = None                # 后视图像
 
         self.alarm_info = {}                # 提示信息
+        self.filter = []
         if replay:
             self.hub.d = Manager().dict()
 
@@ -126,6 +128,7 @@ class PCC(object):
         if not eclient:
             if not to_web:
                 self.to_web = False
+                self.o_filter_q = queue.Queue(maxsize=20)
                 cv2.namedWindow('MINIEYE-CVE')
                 cv2.setMouseCallback('MINIEYE-CVE', self.left_click, '1234')
                 cv2.namedWindow('adj')
@@ -139,6 +142,7 @@ class PCC(object):
                 self.to_web = True
                 self.o_msg_q = video_server.msg_q
                 self.o_img_q = video_server.img_q
+                self.o_filter_q = video_server.filter_q
                 logger.warning('{} pid:{}'.format("PCC: web".ljust(20), os.getpid()))
         else:
             # from player import web_ui
@@ -537,13 +541,41 @@ class PCC(object):
 
         fps = self.player.cal_fps(frame_cnt)
         self.player.show_fps('video', fps)
+
+        if not self.o_filter_q.empty():
+            data = self.o_filter_q.get()
+
+            for i in data:
+                signal, idx = i.split(".")
+                if data[i] == 'filter':
+                    is_display = False
+                    if i not in self.filter:
+                        self.filter.append(i)
+                else:
+                    is_display = True
+                    if i in self.filter:
+                        self.filter.remove(i)
+
+                for ip in self.hub.online:
+                    if int(idx) == self.hub.online[ip]['idx']:
+                        for node in self.hub.online[ip]['ports']:
+                            if self.hub.online[ip]['ports'][node].get('topic') == signal:
+                                self.hub.online[ip]['ports'][node]['display'] = is_display
+                            if self.hub.online[ip]['ports'][node].get('dbc') == signal:
+                                self.hub.online[ip]['ports'][node]['display'] = is_display
+
         # 渲染状态框信息
-        self.player.render_text_info(main_img)
+        self.player.render_text_info(main_img, self.filter)
         # 渲染提示信息
         self.show_alarm_info(main_img)
-
+        
         # 渲染传感器数据
         misc_data = self.player_cache['misc']
+
+        for i in self.filter:
+            if misc_data.get(i):
+                del(misc_data[i])
+
         if misc_data:
             for source in list(misc_data):
                 for entity in list(misc_data[source]):
@@ -1061,7 +1093,6 @@ class PCC(object):
                     if ip == msg[device]['ip'] and idx == msg[device]['idx']:
                         for node in msg[device]['ports']:
                             if port == msg[device]['ports'][node]['port']:
-                                print(node)
                                 msg[device]['ports'][node]['enable'] = 'running'
 
         return msg
@@ -1085,6 +1116,7 @@ class PCC(object):
 
         msg = self.check_signal(msg, signal_list)
 
+        time.sleep(2)
         # self.vs.ws_send('devices', msg)
         if self.o_msg_q and not self.o_msg_q.full():
             self.o_msg_q.put(('devices', msg))

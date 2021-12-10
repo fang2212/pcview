@@ -169,6 +169,8 @@
                 // }
                 content.innerHTML = "";
 
+                var signal = document.getElementById("signal");
+                signal_content = '';
                 for (let ip in data) {
                     // for (let i=0; i<5; i++) {
                     let dev = data[ip];
@@ -207,9 +209,30 @@
                         '</div>\n';
                     let ports = '<div>\n'
                     for (let port in dev['ports']) {
-                        if(dev['ports'][port]['enable'] == 'running') {var colorControl = ' style="color:#157347;"'}
-                        else if(dev['ports'][port]['enable'] == true) {var colorControl = ' style="color:#bb2d3b;"'}
-                        else {var colorControl = ' style="color:#ffca2c;"'}
+                        if(dev['ports'][port]['enable'] == 'running') {
+                            var colorControl = ' style="color:#157347;"';
+
+                            if('topic' in dev['ports'][port]){
+                                var signal_name = dev['ports'][port]['topic'] + '.' + dev['idx'];
+                                if(dev['ports'][port]['display'] == true){var is_checked = "";}
+                                else{var is_checked = "checked";}
+                                signal_content += '<input type="checkbox" id="' + signal_name + '" ' + is_checked + ' onclick=\'signal_filter(\"' + signal_name + '\")\'><label for="' + signal_name + '">&nbsp;过滤' + signal_name + '</label>&nbsp;&nbsp;&nbsp;'
+                            }
+                            else{
+                                if(dev['ports'][port]['dbc'] != ""){
+                                    var signal_name = dev['ports'][port]['dbc'] + '.' + dev['idx'];
+                                    if(dev['ports'][port]['display'] == true){var is_checked = "";}
+                                    else{var is_checked = "checked";}
+                                    signal_content += '<input type="checkbox" id="' + signal_name + '" ' + is_checked + ' onclick=\'signal_filter(\"' + signal_name + '\")\'><label for="' + signal_name + '">&nbsp;过滤' + signal_name + '</label>&nbsp;&nbsp;&nbsp;'
+                                }
+                            }
+                        }
+                        else if(dev['ports'][port]['enable'] == true) {
+                            var colorControl = ' style="color:#bb2d3b;"';
+                        }
+                        else {
+                            var colorControl = ' style="color:#ffca2c;"';
+                        }
                         
                         if('topic' in dev['ports'][port]){
                             ports +=
@@ -233,6 +256,7 @@
 
                     content.appendChild(newCard)
                 }
+                signal.innerHTML = signal_content;
                 logtxt.scrollTop = logtxt.scrollHeight;
             });
 
@@ -317,6 +341,16 @@
 
         }
 
+        function signal_filter(signal_name){
+            checkbox = document.getElementById(signal_name);
+            if(checkbox.checked){
+                $.post("/filter", signal_name);
+            }
+            else{
+                $.post("/display", signal_name);
+            }
+        }
+
         $(document).keyup(function (event) {
             //判断回车键的code
             // alert(event.keyCode)
@@ -376,6 +410,8 @@
                 <img src="{{ url_for('video_feed') }}">
             </div>
 
+            <div id=signal></div>
+            
             <div id="control" , style="position:fixed; bottom:0; opacity: 0.5">
                 <view>
                     <input type="button" id="refresh" value="refresh" onclick="refresh()"
