@@ -1995,6 +1995,16 @@ def batch_process_3(dir_name, sensors, process, parsers=None, odir=None):
                 process(log, sensors, parsers, False, analysis_dir=odir)
 
 
+def batch_process_common(dir_name, process):
+    for root, dirs, files in os.walk(dir_name):
+        for f in files:
+            if f == 'log.txt':
+                # odir = os.path.join(odir, os.path.basename(root)) if odir else None
+                log = os.path.join(root, f)
+                print('[green bold]' + '\nEntering dir: ' + root + '[/green bold]')
+                process(log)
+
+
 def collect_result(dir_name):
     dirs = os.listdir(dir_name)
     analysis_dir = os.path.join(dir_name, 'analysis')
@@ -2986,7 +2996,10 @@ if __name__ == "__main__":
     elif args.changemain:
         change_main_video(r, args.changemain)
     elif args.trj:
-        viz_2d_trj(r)
+        if r.endswith('log.txt'):
+            viz_2d_trj(r)
+        else:
+            batch_process_common(r, viz_2d_trj)
     else:
         sensors = ['x1']
         if args.q3:
