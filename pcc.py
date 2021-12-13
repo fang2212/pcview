@@ -464,7 +464,7 @@ class PCC(object):
         fps = self.player.cal_fps(frame_cnt)
         self.player.show_fps('video', fps)
 
-        self.player.render_text_info(img)
+        self.player.render_text_info(img, self.filter)
 
         if img.shape[1] > 1280:
             fx = 1280 / img.shape[1]
