@@ -159,10 +159,10 @@ pos_type_colors = {
     'INS_RTKFIXED': RdYlGn5[0]
 }
 
-from bokeh.plotting import figure, show
+from bokeh.plotting import figure, show, save, output_file
 from bokeh.io import output_notebook
 from bokeh.models import LabelSet
-def trj_2d_bk(trjs):
+def trj_2d_bk(trjs, output):
     p = figure(plot_width=1920, plot_height=1000, title='RTK trajectory')
     # output_notebook()
     colormap = [Reds9, Blues9, Greens9, Purples9]
@@ -181,10 +181,12 @@ def trj_2d_bk(trjs):
 
     # p.legend(legends)
     p.legend.click_policy = "hide"
-    show(p)
+    # show(p)
+    output_file(output)
+    save(p)
 
 
-def compare_1d_data(data):
+def compare_1d_data(data, output):
     from bokeh.layouts import gridplot
     import pandas as pd
     from bokeh.models import ColumnDataSource, HoverTool
@@ -212,7 +214,9 @@ def compare_1d_data(data):
         plist.append([p])
     s = gridplot(plist)
     # print(plist)
-    show(s)
+    # show(s)
+    output_file(output)
+    save(s)
 
 
 def calc_rmse(predictions, targets):
