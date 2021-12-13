@@ -1,0 +1,42 @@
+syntax = "proto3";
+import "geometry.proto";
+import "data_source.proto";
+
+package perception;
+
+/*
+	{
+	    "topic": "tsr",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 20,
+	    "buff_num": 5,
+	    "elem_max_size": 10240
+	} 
+*/
+message Tsr {
+    message TsrTraceRes {
+        perception.common.Rect2f det_rect = 1;    // CNN检测框
+        float confidence = 2;                     // 置信度
+        int32 hit_type = 3;                       // 检测分类
+        int32 tsr_class = 4;                      // 类别
+        int32 tsr_value = 5;                      // 数值
+        int32 tsr_id = 6;                         // ID
+        int32 track_cnt = 7;                      // 目标车被跟踪的次数
+        float longitudinal_dist = 8;              // 标牌垂直距离
+        float lateral_dist = 9;                   // 标牌横向距离
+        float height = 10;                        // 标牌高度
+    }
+
+    message TsrWarning {
+        float height_limit = 1;                   // 限高值
+        float weight_limit = 2;                   // 限重值
+        int32 speed_limit = 3;                    // 限速值
+        int32 tsr_warning_level = 4;              // 告警级别
+    }
+
+	uint64 frame_id = 1;                          // 帧ID
+	uint64 timestamp = 2;                         // 时戳
+	repeated TsrTraceRes tsr_list = 3;            // Tsr详细信息
+    TsrWarning tsr_warning = 4;                   // 告警信息
+	minieye.DataSource data_source = 5;           // 描述数据源 字节数: 4
+}

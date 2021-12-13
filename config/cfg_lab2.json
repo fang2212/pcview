@@ -12,13 +12,8 @@
         "ego": {
             "enable": true,
             "collectors": [
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "ars", "can1": "x1j"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "mbq3", "can1": "mqb", "is_main": true}},
-                {"model":  "x1_collector", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mqb", "can1": "mqb"}},
-                {"model":  "x1_fusion", "params": {"mac": "5a:31:9d:8a:3a:ef"}},
-                {"model":  "x1_fusion", "params": {"mac":  "5a:31:d3:59:12:06"}},
-                {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
-                {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}},
+                {"model":  "can_gw_nn", "params": {"can1": "a1j", "can2": "a1j","can3": "a1j","can4": "a1j","can5": "ars410","can6": "ars410","can7": "ars410","can8": "ars410"}},
+                {"model":  "a1j", "params": {"mac":  "6a:92:53:e7:97:00","is_main" : true}},
                 {"model": "pim222"}
             ],
             "installation": {
@@ -55,16 +50,16 @@
                     "yaw": 0.0
                 },
                 "video": {
-                    "fu": 1458.0,
+                    "fu": 1287.7667,
                     "yaw": 0.0,
-                    "fv": 1458.0,
-                    "pitch": -0.0,
-                    "cu": 640.0,
-                    "lat_offset": 0.15,
+                    "fv": 1287.6,
+                    "pitch": 0.0,
+                    "cu": 965.2547,
+                    "lat_offset": 0,
                     "roll": 0.0,
-                    "height": 1.18,
-                    "lon_offset": -1.67,
-                    "cv": 360.0
+                    "height": 1.3,
+                    "lon_offset":-1.6,
+                    "cv": 560.1496
                 },
                 "x1": {
                     "roll": 0.0,

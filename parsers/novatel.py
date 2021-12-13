@@ -103,7 +103,7 @@ def parse_inspva(fields):
     r['yaw_sgm'] = float(fields[21])
 
     # r['time_since_update'] = float(fields[22])
-    # print(r)
+    # print(r)?
     return r
 
 
@@ -176,19 +176,19 @@ def parse_novatel(msg_type, msg, ctx):
     time_status = hfields[4]
     week = int(hfields[5])
     sec = float(hfields[6])
-    rcv_status = int(hfields[7], 16)
-    bd_offset = int(hfields[9])
+    # rcv_status = int(hfields[7], 16)
+    # bd_offset = int(hfields[9])
     # print(bd_offset)
-    rsv = hfields[8]
+    # rsv = hfields[8]
     if not msg_type:
         msg_type = msg_name.lower()
+
     # except Exception as e:
     #     print('error when parsing novatel:', msg)
     #     raise e
 
-
-
     r = {}
+    r['type'] = msg_type
     r['ts'] = week * 604800 + sec + 315964800.0 - bds_offset
     # print(time.localtime(r['ts']))
 

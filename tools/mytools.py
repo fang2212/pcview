@@ -7,16 +7,17 @@ import psutil
 
 
 class Supervisor(Thread):
-    def __init__(self, checkers=[]):
+    def __init__(self):
         super(Supervisor, self).__init__()
         # self.checkers = checkers
         self.checkers = []
         self.result = []
+        self.exit = False
 
     def run(self):
         print('supervisor inited with {} tasks.'.format(len(self.checkers)))
 
-        while True:
+        while not self.exit:
             self.result.clear()
             ts_now = time.time()
             wait_until = 1.0
@@ -39,6 +40,10 @@ class Supervisor(Thread):
 
     def check(self):
         return self.result
+
+    def close(self):
+        print("supervisor exit")
+        self.exit = True
 
 
 def convert(data):
@@ -71,7 +76,7 @@ def sort_big_file(filename, file_splits=4, my_cmp=None):
     buf_file = []
     buf_path = []
     path = os.path.dirname(filename)
-    with open(filename, 'r') as rf:
+    with open(filename, 'r', encoding='unicode_escape') as rf:
         for line in rf:
             line = line.strip()
             if line == '':

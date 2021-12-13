@@ -91,3 +91,9 @@ message Box3D {
 message Polygon {
 	repeated Point3D pts = 1;
 }
+
+message PoseAngle {
+	float pitch = 1;
+	float yaw = 2;
+	float roll = 3;
+}

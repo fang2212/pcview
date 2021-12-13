@@ -9,11 +9,11 @@ added_files =[
     ]
 
 a = Analysis(['pcc_replay.py'],
-             pathex=['/usr/local/lib/python3.5/dist-packages/cv2/python-3.5'],
-             binaries=[],
+             pathex=['/home/li/code/pcview'],
              datas=added_files,
-             hiddenimports=['pkg_resources.py2_warn', 'engineio.async_drivers.eventlet', 'jinja2.ext'],
+             hiddenimports=['pkg_resources.py2_warn', 'engineio.async_drivers.eventlet', 'jinja2.ext', 'nnpy', 'aionn', 'websockets.client', 'websockets.server', 'websockets.legacy.auth'],
              hookspath=[],
+             hooksconfig={},
              runtime_hooks=[],
              excludes=[],
              win_no_prefer_redirects=False,
@@ -22,8 +22,9 @@ a = Analysis(['pcc_replay.py'],
              noarchive=False)
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
+
 exe = EXE(pyz,
-          a.scripts,
+          a.scripts, 
           [],
           exclude_binaries=True,
           name='pcc_replay',
@@ -31,11 +32,15 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=True )
+          console=True,
+          disable_windowed_traceback=False,
+          target_arch=None,
+          codesign_identity=None,
+          entitlements_file=None )
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
-               a.datas,
+               a.datas, 
                strip=False,
                upx=True,
                upx_exclude=[],

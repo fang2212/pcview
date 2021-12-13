@@ -1,14 +1,16 @@
+# -*- coding: future_fstrings -*-
 import time
 from datetime import datetime
 
 import cv2
 import numpy as np
-from math import *
+from math import atan2, pi
 
 # from config.config import install
-from player.ui import BaseDraw, pack, logodir, CVColor, FlatColor
+from player.ui import BaseDraw, pack, logodir, CVColor, FlatColor, color_dict
 from tools.geo import gps_bearing, gps_distance
 from tools.transform import Transform
+from utils import logger
 
 
 class InfoCard(object):
@@ -52,41 +54,6 @@ class Player(object):
         self.color_seq = [CVColor.White, CVColor.Red, CVColor.Green, CVColor.deeporange, CVColor.purple,
                           CVColor.Blue, CVColor.LightBlue, CVColor.Black, CVColor.Grass]
 
-        self.color_obs = {
-            "a1j": (59, 59, 238),
-            "a1j_fusion": (59, 59, 238),
-            "a1j_vision": (193, 182, 255),
-            "ars410": FlatColor.peach,
-            "bosch_mrr": FlatColor.yellow,
-            "d1_fusion": FlatColor.violet,
-            "gs4_debug": FlatColor.pink,
-            "j2": FlatColor.carrot,
-            "j2_fusion": FlatColor.light_green,
-            "q4_100": FlatColor.turquoise,
-            'anc': FlatColor.carrot,
-            'ars': FlatColor.emerald,
-            'ctlrr': FlatColor.alizarin,
-            'default': FlatColor.clouds,
-            'esr': FlatColor.alizarin,
-            'gps': FlatColor.clouds,
-            'ifv300': CVColor.Blue,
-            'ifv300_vision': (255, 144, 30),
-            'ifv300_fusion': CVColor.Blue,
-            'lmr': FlatColor.emerald,
-            'mbq3': CVColor.Blue,
-            'mbq3_vision': (255, 144, 30),
-            'mbq3_fusion': CVColor.Blue,
-            'mbq4': FlatColor.turquoise,
-            'rtk': FlatColor.sun_flower,
-            'sta77': FlatColor.wet_asphalt,
-            "wsk": FlatColor.pink,
-            'x1': FlatColor.amethyst,
-            'x1_fusion': CVColor.Red,
-            'x1_fusion_cam': FlatColor.dark_red,
-            'x1j': FlatColor.amethyst,
-            'xyd2': FlatColor.Blue,
-        }
-
         self.detection_color = {
             'Unknown': 'fail',
             'SingleTrack': 'pass',
@@ -96,11 +63,6 @@ class Player(object):
         }
 
         self.param_bg_width = 160
-
-        # for col in self.columns:
-        #     if len(col) == 0:
-        #         del self.columns[col]
-        # print(self.columns)
 
     def add_info_column(self, msg_type):
         if len(msg_type) == 0:
@@ -113,9 +75,11 @@ class Player(object):
             #     self.indent += 300
             # else:
             self.next_patch_x += 160
-            for src_type in self.color_obs:
-                if msg_type.split('.')[0] == src_type:
-                    self.columns[msg_type]['color'] = self.color_obs[src_type]
+            msg_dbc = msg_type.split('.')
+            msg_dbc = msg_dbc[3] if len(msg_dbc) > 2 else msg_dbc[0]
+            for src_type in color_dict:
+                if msg_dbc == src_type:
+                    self.columns[msg_type]['color'] = color_dict[src_type]
             self.columns[msg_type]['buffer'] = dict()
             self.columns[msg_type]['ts'] = 0
             self.columns[msg_type]['h'] = 1000
@@ -132,7 +96,7 @@ class Player(object):
 
     def show_dist_mark_ipm(self, img):
         show_range = 201
-        for i in range(0, show_range, 1):
+        for i in range(-show_range, show_range, 1):
             if i % 20 == 0:
                 p1 = self.transform.trans_gnd2ipm(i, -10)
                 p2 = self.transform.trans_gnd2ipm(i, 10)
@@ -140,13 +104,13 @@ class Player(object):
                 BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(i - 1, 10), 0.3, CVColor.White, 1)
 
         for i in [-4 * 0.5, 4 * 0.5]:
-            p1 = self.transform.trans_gnd2ipm(-10, i)
+            p1 = self.transform.trans_gnd2ipm(-show_range, i)
             p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.LightRed, thickness=1)
             BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 0.3, CVColor.White, 1)
 
         for i in [-4 * 2.5, -4 * 1.5, 4 * 1.5, 4 * 2.5]:
-            p1 = self.transform.trans_gnd2ipm(-10, i)
+            p1 = self.transform.trans_gnd2ipm(-show_range, i)
             p2 = self.transform.trans_gnd2ipm(show_range, i)
             BaseDraw.draw_line(img, p1, p2, color_type=CVColor.Midgrey, thickness=1)
             BaseDraw.draw_text(img, '{}m'.format(i), self.transform.trans_gnd2ipm(2, i - 1), 0.3, CVColor.White, 1)
@@ -155,57 +119,72 @@ class Player(object):
         """左上角参数背景图"""
         BaseDraw.draw_alpha_rect(img, rect, 0.6, CVColor.Black)
 
-    def show_obs(self, img, obs, thickness=2):
+    def show_obs(self, img, obs, thickness=2, install_key="video", x_mirror=False, y_mirror=False):
+        """
+        渲染目标
+        Args:
+            img:叠加图像
+            obs: 目标数据
+            thickness: 框的粗细
+            install_key: 摄像头安装key
+            x_mirror: x轴镜像(1 or -1)
+            y_mirror: y轴镜像(1 or -1)
+
+        Returns:
+
+        """
         try:
             indent = self.get_indent(obs['source'])
         except Exception as e:
             print('Error indent', obs)
             return
-        source = obs['source'].split('.')[0]
-        sensor = obs.get('sensor') or source
-        color = obs.get("color") or self.color_obs.get(source) or self.color_obs['default']
+
+        source = obs['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
+        sensor = obs.get('sensor') or obs['source']
+        color = obs.get("color") or color_dict.get(source) or color_dict['default']
 
         width = obs.get('width')
         width = width or 0.3
         height = obs.get('height')
-        # print(obs['source'], obs['class'])
         height = height or width
-        if obs.get('class') == 'pedestrian' or obs.get('class') == 'PEDESTRIAN':
+        if obs.get('class') == 'pedestrian':
             height = 1.6
-        # install_para = install[obs['source'].split('.')[0]]
 
         if 'pos_lon' in obs:
-            # x = obs['pos_lon']
-            # y = obs['pos_lat']
             if 'pos_lat' not in obs:
                 print('no pos_lat', obs)
             x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], sensor)
             dist = (x ** 2 + y ** 2) ** 0.5
 
         elif 'range' in obs:
-            # print(obs['source'].split('.')[0])
-            # x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], install[obs['source'].split('.')[0]])
             dist = obs['range']
             x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], sensor)
         else:
             print('no x dis in obs:', obs)
             return
         dist = max(0.1, dist)
-        if dist <= 0 or x <= 0:
+
+        if dist <= 0:
             return
 
-        w = self.cfg.installs['video']['fu'] * width / dist
+        w = self.cfg.installs[install_key]['fu'] * width / dist
         w = min(600, w)
-        # dev = obs.get('source')
-        # if dev:
-        #     dev = dev.split('.')[0]
-        #     print(dev)
-        # else:
-        #     dev = 'default'
-        # print(x, y)
-        x0, y0 = self.transform.trans_gnd2raw(x, y)
+        pos = self.transform.trans_gnd2raw(x, y, install_key=install_key)
+        if pos is None:
+            return
 
-        h = self.cfg.installs['video']['fv'] * height / dist
+        x0, y0 = pos
+
+        # 镜像处理
+        if y_mirror:
+            x_mid = img.shape[1]/2
+            x0 = x0 - (x0 - x_mid)*2 if x0 > x_mid else x0 + (x_mid - x0) * 2
+        if x_mirror:
+            y_mid = img.shape[0]/2
+            y0 = y0 - (y0 - y_mid)*2 if y0 > y_mid else y0 + (y_mid - y0) * 2
+
+        h = self.cfg.installs[install_key]['fv'] * height / dist
         x1 = x0 - 0.5 * w
         y1 = y0 - h
         x2 = x1 + w
@@ -219,10 +198,11 @@ class Player(object):
         if obs.get('sensor_type') == 'radar':
             w = max(5, min(50, w))
             h = max(5, min(50, h))
-            # print(int(x1), int(y1), int(w), width)
-            cv2.circle(img, (int(x0), int(y0 - 0.5 * h)), int(w), color, 1)
-            # print(x1, y1, x, h)
-            BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
+            try:
+                cv2.circle(img, (int(x0), int(y0 - 0.5 * h)), int(w), color, 1)
+                BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 + int(1.4 * w), y1 + int(1.4 * w)), size, color, 1)
+            except Exception as e:
+                logger.error(f'雷达数据渲染失败参数：x:{x} y:{y} x0:{x0} y0:{y0}, h:{h}, w:{w}')
         elif obs.get('class') == 'pedestrian':
             if x1 < 0 or y1 < 0 or x2 > img.shape[1] or y2 > img.shape[0]:
                 return
@@ -233,13 +213,10 @@ class Player(object):
             BaseDraw.draw_rect_corn(img, (x1, y1), (x2, y2), color, thickness)
             BaseDraw.draw_text(img, '{}'.format(obs['id']), (x1 - 2, y1 - 4), size, color, 1)
 
-        if 'cipo' in obs and obs['cipo']:
-            # color = CVColor.Yellow
+        # 主视频渲染状态框信息
+        if install_key == 'video' and 'cipo' in obs and obs['cipo']:
             self.show_cipo_info(img, obs)
             BaseDraw.draw_up_arrow(img, x0, y0 + 3, color)
-
-        # if 'TTC' in obs:
-        #     self.show_ttc(img, obs['TTC'], obs['source'])
 
     def show_ipm_obs(self, img, obs):
         # print(obs)
@@ -250,13 +227,15 @@ class Player(object):
             return
 
         id = obs['id']
-        source = obs['source'].split('.')[0]
+        source = obs['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
+        sensor = obs.get('sensor') or obs['source']
         if 'pos_lon' in obs:
             # x = obs['pos_lon']
             # y = obs['pos_lat']
-            x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], source)
+            x, y = self.transform.compensate_param_rcs(obs['pos_lon'], obs['pos_lat'], sensor)
         elif 'range' in obs:
-            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], source)
+            x, y = self.transform.trans_polar2rcs(obs['angle'], obs['range'], sensor)
         else:
             print('no distance in obs', obs)
             return
@@ -267,10 +246,10 @@ class Player(object):
 
         u, v = self.transform.trans_gnd2ipm(x, y)
 
-        color = obs.get("color") or self.color_obs.get(source) or self.color_obs['default']
+        color = obs.get("color") or color_dict.get(source) or color_dict['default']
 
         if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
-            color = self.color_obs.get('x1_fusion_cam')
+            color = color_dict.get('x1_fusion_cam')
             # print(obs)
 
         if obs.get('sensor_type') == 'radar':
@@ -317,11 +296,9 @@ class Player(object):
 
         if 'j2' in source:
             source = ""
-
         p = self.transform.getp_ifc_from_poly(ratios, 1, min_range, max_range, sensor=source)
         if not p:
             return
-
         if style == "dotted":
             for i in range(2, len(p) - 1, 1):
                 if i % 3 == 0:
@@ -355,14 +332,16 @@ class Player(object):
         y = data.get('pos_lat')
         h = data.get('pos_hgt')
         u, v = self.transform.trans_gnd2raw(x, y, h)
-        color = self.color_obs.get(data['sensor']) or self.color_obs['default']
+        color = color_dict.get(data['sensor']) or color_dict['default']
         cv2.rectangle(img, (u - 8, v - 16), (u + 8, v), color, 2)
 
-    def show_text_info(self, source, height, text, style='normal', size=None):
+    def show_text_info(self, source, height, text, style='normal', size=None, expire_ts=None):
         if style is None:
             style = 'warning'
         self.get_indent(source)
-        self.columns[source]['buffer'][height] = {'text': text, 'style': style, 'size': size}
+        if not expire_ts:
+            expire_ts = time.time() + 0.5
+        self.columns[source]['buffer'][height] = {'text': text, 'style': style, 'size': size, 'expire_ts': expire_ts}
         # print(source, height, text)
 
     def update_column_ts(self, source, ts):
@@ -370,51 +349,25 @@ class Player(object):
             return
         self.columns[source]['ts'] = ts
 
-    def render_text_info(self, img):
-        # self.show_columns(img)
-        # print(len(self.columns))
+    def render_text_info(self, img, filter):
         self.img_height, self.img_width, _ = img.shape
-        # print(self.img_width, self.img_height)
         w = 160
         slots = {}
         for i in range(0, self.img_width, w):
             slots[i] = 0
-        # smallest_h = 1000
-        # print(self.columns)
-        # shortest_col = sorted(self.columns, key=lambda x: self.columns[x]['y0'] + self.columns[x]['h'])[0]
 
-        # print('shortest col:', shortest_col)
-        # shortest_col = None
-        next_patch_x = 0
-        next_patch_y = 0
         for idx, col in enumerate(self.columns):
+            if col in filter:
+                continue
             indent = sorted(slots, key=lambda x: slots[x])[0]
             y0 = slots[indent]
             entry = self.columns[col]
-            # indent = next_patch_x
-            # y0 = next_patch_y
             h = max(self.columns[col]['buffer']) + 4 if self.columns[col]['buffer'] else 24
             h = 24 if h == 0 else h
             self.columns[col]['indent'] = indent
             self.columns[col]['y0'] = y0
             self.columns[col]['h'] = h
             slots[indent] = y0 + h + 2
-            # if idx+2 <= int(self.img_width/w):
-            #     next_patch_x += w
-            #     next_patch_y = 0
-            # else:
-            #     next_patch_y = shortest_y
-            #     next_patch_x = shortest_x
-                # print('replace patch', idx, col, indent, y0, w, h)
-            # if h + y0 < smallest_h:
-            #     smallest_h = h + y0
-            #     shortest_col = col
-
-            # if col is not 'video':
-            #     color_lg = self.columns[col].get('color')
-            #     if color_lg is not None:
-            #         cv2.rectangle(img, (indent + 1, 1), (indent + 159, 24), self.columns[col]['color'], -1)
-            # print(idx, col, indent, y0, w, h)
             self.show_parameters_background(img, (indent, y0, w if w <= self.img_width else self.img_width, h))
 
             if col != 'video':
@@ -434,7 +387,7 @@ class Player(object):
                     BaseDraw.draw_text(img, devno, (indent + 22, y0 + 24), 0.4, CVColor.Cyan, 1)
                 else:
                     title = col
-                    BaseDraw.draw_text(img, title, (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
+                    BaseDraw.draw_text(img, title.capitalize(), (indent + 22, y0 + 20), 0.5, CVColor.Cyan, 1)
             dt = self.ts_now - self.columns[col]['ts']
 
             if dt > 999:
@@ -446,9 +399,12 @@ class Player(object):
             else:
                 delay_ms = '{:>+4d}ms'.format(int(dt * 1000))
             BaseDraw.draw_text(img, delay_ms, (indent + 92, y0 + 20), 0.5, CVColor.White, 1)
-            # if col is not 'video':
-            #     cv2.rectangle(img, (indent, 0), (indent + 160, 20), self.columns[col]['color'], -1)
             for height in entry['buffer']:
+                if not entry['buffer'][height]:
+                    continue
+                if entry['buffer'][height].get('expire_ts') and entry['buffer'][height].get('expire_ts') < time.time():
+                    entry['buffer'][height].clear()
+                    continue
                 # print(col, height, entry['buffer'])
                 # 字体颜色
                 style = entry['buffer'][height]['style']
@@ -471,7 +427,6 @@ class Player(object):
                     line_len = len(entry['buffer'][height]['text'])
                     size = min(0.5 * 16 / line_len, 0.5)
                     size = max(0.24, size)
-
                 BaseDraw.draw_text(img, entry['buffer'][height]['text'], (entry['indent'] + 2, height + y0), size,
                                    color, 1)
 
@@ -482,14 +437,13 @@ class Player(object):
                                                   'fps': 20}
         if tnow == self.video_streams[data['source']]['last_ts']:
             return
-        self.show_parameters_background(img, (0, 0, 160, 80))
+        self.show_parameters_background(img, (0, 0, 160, 90))
         BaseDraw.draw_text(img, data['source'], (2, 20), 0.5, CVColor.Cyan, 1)
-        dt = self.ts_now - data['ts']
+        dt = 0 if self.ts_now == 0 else self.ts_now - data['ts']
         BaseDraw.draw_text(img, '{:>+4d}ms'.format(int(dt * 1000)), (92, 20), 0.5, CVColor.White, 1)
         BaseDraw.draw_text(img, 'frame: {}'.format(data['frame_id']), (2, 40), 0.5, CVColor.White, 1)
 
         self.video_streams[data['source']]['frame_cnt'] += 1
-        # duration = time.time() - self.video_streams[data['source']]['ts0']
         dt = tnow - self.video_streams[data['source']]['last_ts']
         self.video_streams[data['source']]['last_ts'] = tnow
         fps = 1 / dt
@@ -499,21 +453,18 @@ class Player(object):
         BaseDraw.draw_text(img,
                            'lost frames: {}'.format(data['frame_id'] - self.video_streams[data['source']]['frame_cnt']),
                            (2, 80), 0.5, CVColor.White, 1)
-        BaseDraw.draw_text(img, 'dev: {}'.format(data['device']), (2, 100), 0.5, CVColor.White, 1)
 
-    def show_status_info(self, img, source, status_list):
+    def show_status_info(self, source, status_list):
         """
         显示状态栏信息
         style: normal, warning, fail, pass
         """
         show_line = 40          # 显示的行位置，每20像素的高度为一行
         for i in status_list:
-            self.show_text_info(source, i.get("height", show_line), i.get("text", ""), i.get("style", "normal"), i.get("size"))
+            self.show_text_info(source, i.get("height", show_line), i.get("text", ""), i.get("style", "normal"), i.get("size"), expire_ts=i.get("expire_ts"))
             show_line = i.get("height", show_line) + 20
 
-    def show_frame_id(self, img, source, fn):
-        # indent = self.columns['video']['indent']
-        # BaseDraw.draw_text(img, 'fid: ' + str(int(fn)), (indent + 2, 40), 0.5, CVColor.White, 1)
+    def show_frame_id(self, source, fn):
         self.show_text_info(source, 40, 'frame: ' + str(int(fn)))
 
     def show_pinpoint(self, img, pp):
@@ -522,47 +473,37 @@ class Player(object):
     def show_frame_cost(self, cost):
         self.show_text_info('video', 80, 'render_cost: {}ms'.format(int(cost * 1000)))
 
-    def show_fps(self, img, source, fps):
-        # indent = self.columns['video']['indent']
-        # BaseDraw.draw_text(img, 'fps: ' + str(int(fps)), (indent + 2, 60), 0.5, CVColor.White, 1)
+    def show_fps(self, source, fps):
         self.show_text_info(source, 60, 'fps: ' + str(int(fps)))
 
-    def show_datetime(self, img, ts=None):
-        # indent = self.columns['video']['indent']
+    def show_datetime(self, ts=None):
+        """
+        视频的录制时间
+        :param img:
+        :param ts:
+        :return:
+        """
         if ts is None:
             ta = datetime.now()
         else:
             ta = time.localtime(ts)
 
-        FORMAT = '%Y/%m/%d'
-        date = time.strftime(FORMAT, ta)
-        FORMAT = '%H:%M:%S'
-        time_ = time.strftime(FORMAT, ta)
-        # BaseDraw.draw_text(img, '{}'.format(date), (indent + 2, 100), 0.5, CVColor.White, 1)
-        # BaseDraw.draw_text(img, '{}'.format(time_), (indent + 2, 120), 0.5, CVColor.White, 1)
+        date = time.strftime('%Y/%m/%d', ta)
+        time_ = time.strftime('%H:%M:%S', ta)
         self.show_text_info('video', 100, '{}'.format(date))
         self.show_text_info('video', 120, '{}'.format(time_))
 
     def show_ttc(self, img, ttc, source):
-        # indent = self.columns[source]['indent']
-        # BaseDraw.draw_text(img, 'TTC:' + '{:.2f} s'.format(ttc), (indent + 2, 40), 0.5, CVColor.Cyan, 1)
         self.show_text_info(source, 40, 'TTC:' + '{:.2f} s'.format(ttc))
 
     def show_veh_speed(self, img, speed, source):
-        # indent = self.get_indent(source)
-        # BaseDraw.draw_text(img, '{:.1f} km/h'.format(speed), (indent + 2, 40), 0.5, CVColor.White, 1)
         self.show_text_info(source, 40, '{:.1f} km/h'.format(speed))
 
     def show_yaw_rate(self, img, yr, source):
-        # indent = self.get_indent(source)
         yr_deg = yr * 57.3
-        # BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
         self.show_text_info(source, 60, '{:.1f}deg/s'.format(yr_deg))
 
     def show_accel(self, img, acc, source):
-        # indent = self.get_indent(source)
-        # yr_deg = yr * 57.3
-        # BaseDraw.draw_text(img, '%.1f' % yr_deg + ' deg/s', (indent + 2, 60), 0.5, CVColor.White, 1)
         self.show_text_info(source, 80, '{:.1f}m/s^2'.format(acc))
 
     def show_q3_veh(self, img, speed, yr):
@@ -578,19 +519,15 @@ class Player(object):
         time_passed = time.time() - info
         self.show_text_info('video', 140, '***[REC]***', CVColor.Red)
         self.show_text_info('video', 160, 'Rec time: {:.2f}s'.format(time_passed))
-        # BaseDraw.draw_text(img, 'Recording... ', (2, 700), 0.5, CVColor.White, 1)
-        # BaseDraw.draw_text(img, 'time elapsed: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
 
     def show_marking(self, img, start_time):
         time_passed = time.time() - start_time
         BaseDraw.draw_text(img, 'Marking time: {:.2f}s'.format(time_passed), (100, 680), 3, CVColor.Green, 3)
 
-    def show_replaying(self, img, dts):
+    def show_replaying(self, dts):
         time_passed = dts
         self.show_text_info('video', 140, 'Replaying... ', CVColor.Red)
         self.show_text_info('video', 160, 'replay time: {:.2f}s'.format(time_passed))
-        # BaseDraw.draw_text(img, 'Replaying... ', (2, 700), 0.5, CVColor.White, 1)
-        # BaseDraw.draw_text(img, 'replay time: {:.2f}s'.format(time_passed), (2, 712), 0.5, CVColor.White, 1)
 
     def show_version(self, img, cfg):
         if cfg.runtime.get('build_time'):
@@ -605,33 +542,30 @@ class Player(object):
             print('Error:', obs)
             return
 
-        color = self.color_obs['rtk']
+        color = color_dict['rtk']
         line = 100
         style = 'normal'
-        if 'x1_fusion' in obs['source'] and obs['sensor'] == 'x1':
-            line = 160
-            style = self.color_obs.get(obs['source'])
-            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
-        elif obs.get("sensor") == "a1j_fusion" or obs.get("sensor") == "ifv300_fusion":
+        expire_ts = time.time() + 0.5
+        if obs.get("sensor") in ["a1j_fusion", "ifv300_fusion", "x1_fusion"]:
             line = 180
-            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style)
+            self.show_text_info(obs['source'], line, 'CIPV_cam: {}'.format(obs['id']), style, expire_ts=expire_ts)
         elif obs.get('class') == 'pedestrian':
             line = 40
-            self.show_text_info(obs['source'], line, 'CIPPed: {}'.format(obs['id']))
+            self.show_text_info(obs['source'], line, 'CIPPed: {}'.format(obs['id']), expire_ts=expire_ts)
         elif obs.get('class') == 'object':
-            self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']))
+            self.show_text_info(obs['source'], line, 'CIPO: {}'.format(obs['id']), expire_ts=expire_ts)
         else:
-            color = obs.get("color") or self.color_obs['rtk']
-            self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']))
+            color = obs.get("color") or color_dict['rtk']
+            self.show_text_info(obs['source'], line, 'CIPVeh: {}'.format(obs['id']), expire_ts=expire_ts)
 
         if "detection_sensor" in obs:
             self.show_text_info(obs['source'], 60, '{}'.format(obs['detection_sensor']), self.detection_color.get(obs.get("detection_sensor")))
         if 'TTC' in obs:
-            self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), style)
+            self.show_text_info(obs['source'], line + 20, 'TTC: ' + '{:.2f}s'.format(obs['TTC']), style, expire_ts=expire_ts)
         dist = obs.get('pos_lon') if 'pos_lon' in obs else obs['range']
         angle = obs.get('angle') if 'angle' in obs else atan2(obs['pos_lat'], obs['pos_lon']) * 180 / pi
         # BaseDraw.draw_text(img, 'range: {:.2f}'.format(dist), (indent + 2, line + 40), 0.5, CVColor.White, 1)
-        self.show_text_info(obs['source'], line + 40, 'R/A: {:.2f} / {:.2f}'.format(dist, angle), style)
+        self.show_text_info(obs['source'], line + 40, 'R/A: {:.2f} / {:.2f}'.format(dist, angle), style, expire_ts=expire_ts)
         BaseDraw.draw_up_arrow(img, indent + 100, line - 12, color, 6)
 
     def show_heading_horizen(self, img, rtk):
@@ -712,10 +646,12 @@ class Player(object):
         BaseDraw.draw_text(img, '{:.1f}'.format(trk_gnd), (hc - 14, h - 46), 0.4, CVColor.White, 1)
 
     def show_warning(self, img, data):
-        sensor = data.get('sensor') or data['source'].split('.')[0]
-        color = self.color_obs.get(sensor)
+        source = data['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
+        sensor = data.get('sensor') or source
+        color = color_dict.get(sensor)
         if not color:
-            color = self.color_obs['default']
+            color = color_dict['default']
 
         # width = 3.5
         # height = 1.6
@@ -856,7 +792,7 @@ class Player(object):
         # cv2.line(img, (ux, uy), p5, color, 1)
         # cv2.line(img, p5, p6, color, 1)
 
-        color = self.color_obs['rtk']
+        color = color_dict['rtk']
         p1 = int(ux - 0.5 * w), int(uy)
         p2 = int(ux + 0.5 * w), int(uy)
         p3 = int(ux), int(uy - 0.5 * h)
@@ -905,7 +841,7 @@ class Player(object):
         range = target.get('range')
         x, y = self.transform.trans_polar2rcs(angle, range, 'rtk')
         ux, uy = self.transform.trans_gnd2ipm(x, y)
-        color = self.color_obs['rtk']
+        color = color_dict['rtk']
 
         w = h = 20
 
@@ -1188,12 +1124,15 @@ class Player(object):
         #     color = self.color_seq[data['color']]
         # else:
         #     color = CVColor.Blue
-        color = self.color_obs.get(data['source'].split('.')[0])
-        if not color:
-            color = self.color_obs['default']
+        source = data['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
+        color = data.get('color') or color_dict.get(source) or color_dict['default']
         # self.show_lane(img, (data['a0'], data['a1'], data['a2'], data['a3']), data['range'], color=color)
         # lane message
-        self.show_lane(img, data, color=color, style=data.get("style"))
+        try:
+            self.show_lane(img, data, color=color, style=data.get("style"))
+        except Exception as e:
+            logger.error(f'绘制车道线失败：{e} 报错方法：self.show_lane(img, data, color=color, style=data.get("style")) data：{data}')
 
     def draw_lane_ipm(self, img, data):
         if len(data) == 0:
@@ -1205,9 +1144,11 @@ class Player(object):
         #     color = self.color_seq[data['color']]
         # else:
         #     color = CVColor.Blue
-        color = self.color_obs.get(data['source'].split('.')[0])
+        source = data['source'].split('.')
+        source = source[3] if len(source) > 2 else source[0]
+        color = color_dict.get(source)
         if not color:
-            color = self.color_obs['default']
+            color = color_dict['default']
 
         self.show_lane_ipm(img, data, color, style=data.get("style"))
 

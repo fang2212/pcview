@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+// VERSION
+// 0.1
+
+package perception.object;
+
+message VehicleWarning {                      // 告警信息
+    int32 vehicle_id = 1;                     // 目标车id
+    float headway = 2;                        // 两车时距=距离/自车速度
+    int32 warning_level = 3;                  // 告警级别， -1-NoCar, 0-alert none, 1-hmw level 1, 2-hmw level
+    int32 fcw = 4;                            // FCW前向碰撞告警，第0位代表状态，第1位代表状态change
+    int32 ufcw = 5;                           // UFCW前向碰撞告警，第0位代表状态，第1位代表状态change
+    int32 headway_warning = 6;                // HWD时距告警，第0位代表状态，第1位代表状态change
+    int32 vb_warning = 7;                     // VB虚拟保险杠告警,第0位代表状态，第1位代表状态change
+    int32 sag_warning = 8;                    // SAG前车后启告警,第0位代表状态，第1位代表状态change
+}
+
+message VehicleState {
+    int32 fcw_state = 1;                      // 0:unavailable state, 1:off, 2:standby, 3:active, 7:not available
+    int32 hmw_state = 2;                      // 0:unavailable state, 1:off, 2:standby, 3:active, 7:not available
+
+    int32 fcw_level = 10;                     // 告警灵敏度，1:low, 2:mid, 3:high
+    int32 ufcw_level = 11;
+    int32 hmw_level = 12;
+    int32 vb_level = 13;
+    int32 sag_level = 14;
+}
+
+message PedWarning {                          // 告警信息
+    bool ped_on = 1;                          // 是否有行人在危险区
+    bool pcw_on = 2;                          // 是否有行人触发PCW告警
+    int32 pcw_warning_level = 3;              // 告警等级
+}
+
+message PedState {
+    int32 pcw_state = 1;                      // 0:unavailable state, 1:off, 2:standby, 3:active, 7:not available
+
+    int32 pcw_level = 10;                     // 告警灵敏度，1:low, 2:mid, 3:high
+}
+
+message TsrWarning {
+    float height_limit = 1;                   // 限高值
+    float weight_limit = 2;                   // 限重值
+    int32 speed_limit = 3;                    // 限速值
+    int32 tsr_warning_level = 4;              // 告警级别
+}
+
+message TsrState {
+    int32 tsr_state = 1;                      // 0:unavailable state, 1:off, 2:standby, 3:active, 7:not available
+
+    int32 tsr_level = 10;                     // 告警灵敏度，1:low, 2:mid, 3:high
+}
+
+message IhcSignal {
+    enum IhcSignalType {
+		kLightInvalid = 0;                    // IHC功能待机
+		kLightOff = 1;                        // 关闭灯光
+		kDippedBeamOn = 2;                    // 开启近光灯
+		kHighBeamOn = 3;                      // 开启远光灯
+	}
+
+    IhcSignalType control_signal = 1;         // 控制信号
+}
+
+message IhcState {
+    int32 ihc_state = 1;                      // 0:unavailable state, 1:off, 2:standby, 3:active, 7:not available
+}
+
+message BsdWarning {                          // BSD告警信息
+    int32 left_warning = 1;                   // 左侧告警等级, 0:不告警, 1:一级告警, 2:二级告警
+    int32 right_warning = 2;                  // 右侧告警等级, 0:不告警, 1:一级告警, 2:二级告警
+    int32 front_warning = 3;                  // 前视告警等级, 0:不告警, 1:一级告警, 2:二级告警
+}
+
+message BsdState {
+    int32 bsd_state = 1;                      // 0:unavailable state, 1:off, 2:standby, 3:active
+}
+
+message LcaWarning {                          // LCA告警信息
+    int32 left_warning = 1;                   // 左侧告警等级, 0:不告警, 1:一级告警, 2:二级告警
+    int32 right_warning = 2;                  // 右侧告警等级, 0:不告警, 1:一级告警, 2:二级告警
+}
+
+message LcaState {
+    int32 lca_state = 1;                      // 0:unavailable state, 1:off, 2:standby, 3:active
+}
+
+message Warning {
+    VehicleWarning vehicle_warning = 1;       // 告警
+    PedWarning ped_warning = 2;
+    TsrWarning tsr_warning =3;
+    IhcSignal ihc_signal = 4;
+    BsdWarning bsd_warning = 5;
+    LcaWarning lca_warning = 6;
+
+    VehicleState vehicle_state = 10;          // 状态
+    PedState ped_state = 11;
+    TsrState tsr_state = 12;
+    IhcState ihc_state = 13;
+    BsdState bsd_state = 14;
+    LcaState lca_state = 15;
+
+    int32 object_valid = 20;                  // 0:NoObject 1:Car 2:Pedestrian 3:Reserved
+}

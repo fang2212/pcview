@@ -1,0 +1,39 @@
+syntax = "proto3";
+import "geometry.proto";
+
+package minieye;
+
+// Image Failsafe
+message ImageFailStatus {
+  // Image Failure types
+  enum ImgFailTypes {
+    IMG_NORMAL = 0;
+    IMG_BLUR = 1;    // Image Blur (Rain drop/Loss of focus)
+    IMG_SHELTER = 2; // Image Blockage
+    IMG_FREEZE = 4;  // Image Freeze
+    IMG_GLARE = 8;   // Image Glare
+  };
+
+  // Image Fail Level
+  enum ImgFailLevel {
+    FAIL_NONE = 0;
+    FAIL_MILD = 1;
+    FAIL_MODERATE = 2;
+    FAIL_SEVERE = 3;
+  };
+
+  int32 fail_type = 1;
+  // Blur, Blockage, Freeze will output score and Glare will not
+  float score = 2;
+  // Fail level on whole image. currently, only glare output
+  int32 level = 3;
+
+  // Fail sub regions. currently, only glare output
+  repeated perception.common.Polygon regions = 4;
+}
+
+message ImageFail {
+  int32 cam_id = 1;
+  int32 frame_id = 2;
+  repeated ImageFailStatus fail_status = 3;
+}

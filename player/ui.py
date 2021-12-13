@@ -27,10 +27,18 @@ class CVColor(object):
     '''
     basic color RGB define
     '''
+    Aqua = (255, 255, 0)
     Red = (0, 0, 255)
+    Peru = (63, 133, 205)
+    Chocolate = (30, 105, 210)
     LightRed = (80, 80, 200)
+    MediumBlue = (205, 0, 0)
     Green = (0, 255, 0)
+    Crimson = (60, 20, 220)        # 深红色
+    LightCoral = (128, 128, 240)        # 淡珊瑚色
+    MediumTurquoise = (204, 209, 72)  # 中绿宝石色
     Grass = (0x50, 0xaf, 0x4c)
+    DeepSkyBlue = (255, 191, 0)
     Blue = (255, 0, 0)
     LightBlue = (240, 120, 120)
     Cyan = (0xd4, 0xbc, 0)
@@ -46,11 +54,17 @@ class CVColor(object):
     purple = (0xb0, 0x27, 0x9c)
     bluegrey = (0x8b, 0x7D, 0x60)
     deeporange = (0x1a, 0xbc, 0xff)
-    Crimson = (65, 25, 237)
+    SandyBrown = (96, 164, 244)
+    NavajoWhite = (173, 222, 255)
+    DarkMagenta = (139, 0, 139)
+    Linen = (230, 240, 250)
 
 
 class FlatColor(object):  # in BGR
     Blue = (200, 0, 0)
+    Beige = (220, 245, 245)                 # 米黄色
+    Green = (0, 255, 0)                     # 绿色
+    LightPink = (193, 182, 255)             # 浅粉红
     alizarin = (0x3c, 0x4c, 0xe7)
     amethyst = (0xb6, 0x59, 0x9b)
     carrot = (0x22, 0x7e, 0xe6)
@@ -68,7 +82,62 @@ class FlatColor(object):  # in BGR
     turquoise = (0x9c, 0xa0, 0x16)
     yellow_green = (112, 255, 202)          # 黄绿色
     yellow = (57, 171, 242)                 # 黄色
+    moccasin = (191, 236, 212)
+    lightcoral = (152, 151, 255)
+    mediumpurple = (189, 134, 158)
     wet_asphalt = (0x5e, 0x49, 0x34)
+
+
+color_dict = {
+    "a1j": (59, 59, 238),
+    "a1j_fusion": (59, 59, 238),
+    "a1j_vision": (193, 182, 255),
+    "ars410": FlatColor.peach,
+    "bosch_mrr": FlatColor.yellow,
+    "bosch_f": FlatColor.mediumpurple,
+    "bosch_r": FlatColor.mediumpurple,
+    "bosch_fr": FlatColor.mediumpurple,
+    "bosch_fl": FlatColor.mediumpurple,
+    "bosch_rr": FlatColor.mediumpurple,
+    "bosch_rl": FlatColor.mediumpurple,
+    "d1_fusion": FlatColor.violet,
+    "gs4_debug": FlatColor.pink,
+    "j2": FlatColor.carrot,
+    "j2_fusion": FlatColor.light_green,
+    "q4_100": FlatColor.turquoise,
+    "wsk": FlatColor.Green,
+    "wsk_old": FlatColor.pink,
+    'anc': FlatColor.carrot,
+    'ars': FlatColor.emerald,
+    'ars_back': FlatColor.emerald,
+    'ctlrr': FlatColor.alizarin,
+    'default': FlatColor.clouds,
+    'esr': FlatColor.alizarin,
+    'gps': FlatColor.clouds,
+    'ifv300': CVColor.Blue,
+    'ifv300_fusion': CVColor.Blue,
+    'ifv300_vision': (255, 144, 30),
+    'lmr': FlatColor.emerald,
+    'lhgd': FlatColor.yellow,
+    'mbq3': CVColor.Blue,
+    'mbq3_fusion': CVColor.Blue,
+    'mbq3_vision': (255, 144, 30),
+    'mbq4': FlatColor.turquoise,
+    "mu_f": CVColor.Aqua,
+    "mu_fr": CVColor.Aqua,
+    "mu_fl": CVColor.Aqua,
+    "mu_r": CVColor.Aqua,
+    "mu_rr": CVColor.Aqua,
+    "mu_rl": CVColor.Aqua,
+    'q3': CVColor.Blue,
+    'rtk': FlatColor.sun_flower,
+    'sta77': FlatColor.wet_asphalt,
+    'x1': FlatColor.amethyst,
+    'x1_fusion': CVColor.Red,
+    'x1_fusion_cam': FlatColor.dark_red,
+    'x1j': FlatColor.amethyst,
+    'xyd2': FlatColor.Blue,
+}
 
 
 class FPSCnt(object):

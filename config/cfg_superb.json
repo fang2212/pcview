@@ -20,7 +20,8 @@
                 {"model": "bynav"},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:d5:9d:e8"}},
                 {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}},
-                {"model": "pim222", "params": {"ip": "192.168.98.222", "force_ip":  true}}
+                {"model": "pim222", "params": {"ip": "192.168.98.222", "force_ip":  true}},
+                {"model": "cgi220", "params":  {"ip":  "192.168.98.230", "force_ip":  true}}
             ],
             "installation": {
                 "esr": {

@@ -1,187 +1,126 @@
-import sys
-import os
-local_path = os.path.split(os.path.realpath(__file__))[0]
-os.chdir(local_path)
-
-from config.config import dic2obj, bcl, load_cfg
 import argparse
 import json
-import cv2
-from pcc import *
-from tools.mytools import Supervisor
-import shutil
+import logging
+import os
 import platform
-from sink.hub import Hub
+import shutil
+import sys
+import time
 from threading import Thread
+
+from config.config import dic2obj, bcl, load_cfg
+from pcc import PCC
+from sink.hub import Hub
+from tools.mytools import Supervisor
+from utils import logger
 
 machine_arch = platform.machine()
 
-
-cfgfile = 'config/cfg_lab.json'
-
 parser = argparse.ArgumentParser(description="process CVE log.")
-parser.add_argument('cfg_path', nargs='?', default=cfgfile)
-parser.add_argument('-o', '--output', default=None)
-parser.add_argument('-d', '--direct', default=None)
+parser.add_argument('cfg_path', nargs='?', default='config/cfg_lab.json')
+parser.add_argument('-o', '--output', default=None, help="保存路径")
+parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
 parser.add_argument('-c', '--config', default=None)
-parser.add_argument('-hl', '--headless', help='headless mode', action="store_true")
 parser.add_argument('-a', '--auto', help='auto recording', action="store_true")
 parser.add_argument('-w', '--web', help='web ui', action="store_true")
 parser.add_argument('-da', '--draw_algo', help='show algo data', action="store_true")
-# load_cfg(sys.argv[1])
+parser.add_argument('--show_back', default="auto", help="是否显示后视图像，可选参数：auto、yes、no，默认：auto")
 
 args = parser.parse_args()
-mount_root = '/mnt/'
-# if len(sys.argv) == 1:
-#     sys.argv.append(cfgfile)
-local_cfg = dic2obj(json.load(open('config/local.json')))
-# if machine_arch != 'x86_64':
-try:
-    udevs = os.listdir(mount_root)
-    if not udevs:
-        raise FileNotFoundError
-    dir_found = False
-    for udev in udevs:
-        lpath = os.path.join(mount_root, udev, 'cve_data')
-        if os.path.exists(lpath):
-            print('found cve dir', lpath)
-            local_cfg.log_root = lpath
-            dir_found = True
-            break
-    if not dir_found:
-        lpath = os.path.join(mount_root, udevs[0], 'cve_data')
-        print('creating cve dir')
-        os.mkdir(lpath)
-        local_cfg.log_root = lpath
-except FileNotFoundError:
-    print('no media folder found. using home dir as default.')
-# else:
-#     print('x86_64 architect found, using high profile.')
-# opath = args.output or local_cfg.log_root
-# local_cfg.log_root = opath
-if args.output:
-    local_cfg.log_root = args.output
+
+# 初始化信息输出等级
+if args.debug:
+    logger.setLevel(level=logging.DEBUG)
 
 if args.config:
     cve_conf = load_cfg(args.config)
 else:
     cve_conf = load_cfg(args.cfg_path)
+
+local_cfg = dic2obj(json.load(open('config/local.json')))
+if args.output:
+    local_cfg.log_root = args.output
+else:
+    try:
+        mount_root = '/mnt/'
+        udevs = os.listdir(mount_root)
+        if not udevs:
+            raise FileNotFoundError
+        dir_found = False
+        for udev in udevs:
+            save_path = os.path.join(mount_root, udev, 'cve_data')
+            if os.path.exists(save_path):
+                logger.warning('found cve dir {}'.format(save_path))
+                local_cfg.log_root = save_path
+                dir_found = True
+                break
+        if not dir_found:
+            logger.warning('creating cve dir')
+            save_path = os.path.join(mount_root, udevs[0], 'cve_data')
+            os.mkdir(save_path)
+            local_cfg.log_root = save_path
+    except FileNotFoundError:
+        logger.error('no media folder found.')
+
 cve_conf.local_cfg = local_cfg
-print("log path:", cve_conf.local_cfg.log_root)
+logger.warning("log path:{}".format(cve_conf.local_cfg.log_root))
+
+if args.show_back == "yes":
+    show_back = True
+elif args.show_back == "no":
+    show_back = False
+else:
+    show_back = False
+    for c in cve_conf.configs:
+        if c.get("is_back"):
+            show_back = True
+            logger.info("has back camera:{}".format(json.dumps(cfg)))
+            break
 
 _startup_cwd = os.getcwd()
 
 
-def respawn(self=None):
-    """Re-execute the current process.
-
-    This must be called from the main thread, because certain platforms
-    (OS X) don't allow execv to be called in a child thread very well.
-    """
-    args = sys.argv[:]
-    # self.log('Re-spawning %s' % ' '.join(args))
-    args.insert(0, sys.executable)
-    if sys.platform == 'win32':
-        args = ['"%s"' % arg for arg in args]
-
-    os.chdir(_startup_cwd)
-    os.execv(sys.executable, args)
-
-
 def init_checkers(pcc):
+    """
+    任务执行检查，定时执行任务并获取任务状态
+    :param pcc:
+    :return:
+    """
     supervisor = Supervisor()
-    supervisor.add_check_task(pcc.check_status)
     supervisor.add_check_task(pcc.hub.fileHandler.check_file)
     supervisor.add_check_task(pcc.send_online_devices, interval=0.5)
-    supervisor.add_check_task(pcc.adjust_interval)
     supervisor.add_check_task(pcc.send_statistics, interval=0.5)
     supervisor.start()
     return supervisor
 
 
-if args.direct:
-    print('PCC starts in direct-mode.')
-
-    # cve_conf.local_cfg = get_local_cfg()
-    hub = Hub(uniconf=cve_conf, direct_cfg=sys.argv[2])
-    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf)
-    # hub.start()
-    pcc.start()
-
-elif args.headless:
-    print('PCC starts in headless-mode.')
-
-    hub = Hub(headless=True)
-    hub.start()
-    pcc = HeadlessPCC(hub)
-
-    t = Thread(target=pcc.start)
-    t.start()
-    # hub.fileHandler.start_rec()
-    # pcc.start()
-
-    from tornado.web import Application, RequestHandler, StaticFileHandler
-    from tornado.ioloop import IOLoop
-
-    class IndexHandler(RequestHandler):
-        def post(self):
-            action = self.get_body_argument('action')
-            if action:
-                if 'start' in action:
-                    if not hub.fileHandler.recording:
-                        hub.fileHandler.start_rec()
-                        print(hub.fileHandler.recording)
-                        self.write({'status': 'ok', 'action': action, 'message': 'start recording'})
-                    else:
-                        self.write({'status': 'ok', 'message': 'already recording', 'action': action})
-                elif 'stop' in action:
-                    if not hub.fileHandler.recording:
-                        self.write({'status': 'ok', 'message': 'not recording', 'action': action})
-                    else:
-                        hub.fileHandler.stop_rec()
-                        print(hub.fileHandler.recording)
-                        self.write({'status': 'ok', 'action': action, 'message': 'stop recording'})
-                elif 'check' in action:
-                    mess = 'recording' if hub.fileHandler.recording else 'not recording'
-                    self.write({'status': 'ok', 'action': action, 'message': mess})
-                elif 'image' in action:
-                    img = hub.fileHandler.get_last_image()
-                    img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
-                    if img is None:
-                        # print('pcc', img)
-                        # img = cv2.imdecode(np.fromstring(img, np.uint8), cv2.IMREAD_COLOR)
-                        img = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
-
-                    base64_str = cv2.imencode('.jpg', img)[1].tostring()
-                    base64_str = base64.b64encode(base64_str).decode()
-                    self.write({'status': 'ok', 'action': action, 'message': 'get image', 'data': base64_str})
-                else:
-                    self.write({'status': 'ok', 'message': 'unrecognized action', 'action': action})
-            else:
-                # self.hub.fileHandler.stop_rec()
-                self.write({'status': 'error', 'message': 'not action', 'action': None})
-
-        def get(self):
-            self.render("web/index.html")
-
-
-    app = Application([
-        (r'/', IndexHandler),
-        (r"/static/(.*)", StaticFileHandler, {"path": "web/statics"}),
-    ], debug=False)
-    app.listen(9999)
-    IOLoop.instance().start()
-
-elif args.web:  # start webui PCC
-    # from video_server import PccServer, ctrl_q
+if args.web:  # 网页版启动方式
     import video_server
+
+
+    def respawn(self=None):
+        """Re-execute the current process.
+
+        This must be called from the main thread, because certain platforms
+        (OS X) don't allow execv to be called in a child thread very well.
+        """
+        args = sys.argv[:]
+        args.insert(0, sys.executable)
+        if sys.platform == 'win32':
+            args = ['"%s"' % arg for arg in args]
+
+        os.chdir(_startup_cwd)
+        os.execv(sys.executable, args)
+
+
     video_server.set_local_path(local_cfg.log_root)
-    print('PCC starts in webui mode. architect:', machine_arch)
+    logger.warning('{} pid:{}'.format("PCC: webui".ljust(20), os.getpid()))
     server = video_server.PccServer()
     server.start()
-    hub = Hub(uniconf=cve_conf)
 
-    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo)
+    # 初始化信号加载进程
+    hub = Hub(uniconf=cve_conf)
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo, show_back=show_back)
     pcc_thread = Thread(target=pcc.start, name='pcc_thread')
     hub.start()
 
@@ -189,7 +128,7 @@ elif args.web:  # start webui PCC
     sup = init_checkers(pcc)
     # sup.add_check_task(list_recorded_data)
     pcc_thread.start()
-    while True:
+    while hub.is_alive():
         if pcc.stuck_cnt > 10:
             print('pcc stuck count:', pcc.stuck_cnt)
             print('PCC stuck. restarting now.')
@@ -217,7 +156,7 @@ elif args.web:  # start webui PCC
                     server.terminate()
                     server.join()
                     # time.sleep(5)
-                    print(bcl.WARN+'CVE processes terminated, now respawn.'+bcl.ENDC)
+                    print(bcl.WARN + 'CVE processes terminated, now respawn.' + bcl.ENDC)
                     respawn()
                 else:
                     key = ord(ctrl['cmd'].lower())
@@ -231,8 +170,9 @@ elif args.web:  # start webui PCC
                       '----------------------------------------------------------')
                 rlog = os.path.join(local_cfg.log_root, ctrl['obj'], 'log.txt')
                 from pcc_replay import LogPlayer, prep_replay
+
                 r_sort, cve_conf = prep_replay(rlog, ns=True)
-                replayer = LogPlayer(r_sort, cve_conf, ratio=0.2, start_frame=0, loop=True)
+                replayer = LogPlayer(r_sort, cve_conf, start_frame=0, loop=True)
                 pcc = PCC(replayer, replay=True, rlog=r_sort, ipm=True, uniconf=cve_conf, to_web=server)
                 replayer.start()
                 pcc_thread = Thread(target=pcc.start, name='pcc_thread')
@@ -251,17 +191,20 @@ elif args.web:  # start webui PCC
         else:
             time.sleep(0.1)
 
+    server.close()
+    logger.warning("main exit")
+
 else:  # normal standalone PCC
-    print(f'PCC starts in normal mode. pid:{os.getpid()}')
-    # cve_conf = load_cfg(args.cfg_path)
-    # local_cfg = get_local_cfg()
+    logger.warning('{} pid:{}'.format("PCC: normal".ljust(20), os.getpid()))
     if args.auto:
         auto_rec = True
     else:
         auto_rec = False
+
     hub = Hub(uniconf=cve_conf)
-    pcc = PCC(hub, ipm=False, replay=False, uniconf=cve_conf, auto_rec=auto_rec, draw_algo=args.draw_algo)
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=auto_rec, draw_algo=args.draw_algo, show_back=show_back)
     hub.start()
     sup = init_checkers(pcc)
     pcc.start()
+    logger.warning('{} pid:{}'.format("PCC: normal exit".ljust(20), os.getpid()))
     # pcc.join()

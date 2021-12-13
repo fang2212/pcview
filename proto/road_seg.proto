@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+import "camera.proto";
+import "calib_param.proto";
+
+package minieye.lane;
+
+// input (subscribe)
+message LaneSegReq {
+	minieye.CameraFrame camera_frame = 1;                      // 图像信息
+	minieye.CalibParam calib_param = 2;                        // 内外参数
+}
+
+// ---------------------------------------------------------------------
+message ScaleWindow {
+	float scale_x = 1;                                         // x - 缩放系数
+	float scale_y = 2;                                         // y - 缩放系数
+	float offset_x = 3;                                        // x - 偏移量
+	float offset_y = 4;                                        // y - 偏移量
+	int32 width = 5;                                           // 宽度
+	int32 height = 6;                                          // 高度
+} 
+
+message SegMask {
+	uint64 mask = 1;                                           // mask 地址(物理地址)
+	ScaleWindow seg_info = 2;                                  // roi 
+	bytes seg_supplement = 3;                                  // 分割结果补充信息 
+	string label = 4;                                          // "lane", "roadmark", ""
+	uint64 offset = 5;                                         // 偏移量
+	int32 data_type = 6;                                       // 数据属性: CV_8UC1, 
+    uint64 buff_size = 7;                                      // 物理地址起点开始分配长度
+}
+
+/*
+   {
+     "topic": "lane_mask_meta",
+     "dds_mode": "shm",
+     "data_refresh_rate": 20, 
+	 "buff_num" : 10,  
+     "elem_max_size": 1000000
+   }   
+*/
+message LaneSegResMeta { 
+	repeated SegMask seg_mask = 1;                             // 其他结果 
+	// 0 - lane_instance_cluster 聚类信息
+	// 1 - road_block 路面障碍
+	LaneSegReq seg_context = 2;                                // seg输入的上下文信息
+	uint64 start_time = 3;                                     // 任务开始时间(ms)
+	uint64 finish_time = 4;                                    // 任务结束时间(ms)
+	uint64 shm_index = 5;                                      // 数组下标 
+}
+
+/*
+   {
+   "topic": "lane_mask",
+   "dds_mode": "shm",
+   "data_refresh_rate": 20,
+   "buff_num" : 10,  
+   "elem_max_size": 4000000
+   }
+   inner struct : PhyAddr
+*/
+

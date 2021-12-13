@@ -1,0 +1,413 @@
+VERSION "1"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: ExternalUnit MN_T79
+VAL_TABLE_ RadarDirectionType 4 "T79RR" 3 "T79RL" 2 "T79FR" 1 "T79FL" 0 "Reserved" ;
+VAL_TABLE_ FaultState 1 "Yes" 0 "No" ;
+VAL_TABLE_ RadarSubVehicle_Gear 3 "Park" 2 "Reverse" 1 "Drive" 0 "Neutral" ;
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ Targets_EOF_CSYSTypeAK : 0|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ Targets_EOF_NumBK : 0|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ Targets_EOF_CSYSTypeAK : 0|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ Targets_EOF_NumBK : 0|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ Targets_EOF_CSYSTypeAK : 0|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ Targets_EOF_NumBK : 0|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ Targets_EOF_CSYSTypeAK : 0|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ Targets_EOF_NumBK : 0|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 804 RadarDirectionIdent_T79RR: 8 Vector__XXX
+ SG_ RadarDirectionType : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 803 RadarDirectionIdent_T79RL: 8 Vector__XXX
+ SG_ RadarDirectionType : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 802 RadarDirectionIdent_T79FR: 8 Vector__XXX
+ SG_ RadarDirectionType : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 801 RadarDirectionIdent_T79FL: 8 Vector__XXX
+ SG_ RadarDirectionType : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1316 DTCFaultWarning_T79RR: 8 Vector__XXX
+ SG_ DTCNumber : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ FaultCode9 : 17|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode8 : 16|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode7 : 15|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode6 : 14|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode5 : 13|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode4 : 12|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode31 : 39|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode30 : 38|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode3 : 11|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode29 : 37|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode28 : 36|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode27 : 35|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode26 : 34|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode25 : 33|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode24 : 32|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode23 : 31|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode22 : 30|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode21 : 29|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode20 : 28|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode2 : 10|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode19 : 27|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode18 : 26|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode17 : 25|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode16 : 24|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode15 : 23|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode14 : 22|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode13 : 21|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode12 : 20|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode11 : 19|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode10 : 18|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode1 : 9|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode0 : 8|1@0+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1315 DTCFaultWarning_T79RL: 8 Vector__XXX
+ SG_ DTCNumber : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ FaultCode9 : 17|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode8 : 16|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode7 : 15|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode6 : 14|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode5 : 13|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode4 : 12|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode31 : 39|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode30 : 38|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode3 : 11|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode29 : 37|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode28 : 36|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode27 : 35|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode26 : 34|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode25 : 33|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode24 : 32|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode23 : 31|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode22 : 30|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode21 : 29|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode20 : 28|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode2 : 10|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode19 : 27|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode18 : 26|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode17 : 25|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode16 : 24|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode15 : 23|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode14 : 22|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode13 : 21|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode12 : 20|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode11 : 19|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode10 : 18|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode1 : 9|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode0 : 8|1@0+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1314 DTCFaultWarning_T79FR: 8 Vector__XXX
+ SG_ DTCNumber : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ FaultCode9 : 17|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode8 : 16|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode7 : 15|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode6 : 14|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode5 : 13|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode4 : 12|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode31 : 39|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode30 : 38|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode3 : 11|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode29 : 37|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode28 : 36|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode27 : 35|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode26 : 34|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode25 : 33|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode24 : 32|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode23 : 31|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode22 : 30|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode21 : 29|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode20 : 28|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode2 : 10|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode19 : 27|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode18 : 26|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode17 : 25|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode16 : 24|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode15 : 23|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode14 : 22|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode13 : 21|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode12 : 20|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode11 : 19|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode10 : 18|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode1 : 9|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode0 : 8|1@0+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1313 DTCFaultWarning_T79FL: 8 Vector__XXX
+ SG_ DTCNumber : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ FaultCode9 : 17|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode8 : 16|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode7 : 15|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode6 : 14|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode5 : 13|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode4 : 12|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode31 : 39|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode30 : 38|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode3 : 11|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode29 : 37|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode28 : 36|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode27 : 35|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode26 : 34|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode25 : 33|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode24 : 32|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode23 : 31|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode22 : 30|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode21 : 29|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode20 : 28|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode2 : 10|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode19 : 27|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode18 : 26|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode17 : 25|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode16 : 24|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode15 : 23|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode14 : 22|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode13 : 21|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode12 : 20|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode11 : 19|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode10 : 18|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode1 : 9|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ FaultCode0 : 8|1@0+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1124 TargetsAK_ExtraInfo_T79RR: 8 MN_T79
+ SG_ TargetsAK_ExtraInfo_GuardrailDis : 7|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+
+BO_ 1123 TargetsAK_ExtraInfo_T79RL: 8 MN_T79
+ SG_ TargetsAK_ExtraInfo_GuardrailDis : 7|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+
+BO_ 1140 TargetsAK_ExtraAttribute_T79RR: 8 MN_T79
+ SG_ TargetsAK_ExtraAttrib_MeasState : 57|2@0+ (1,0) [0|3] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_MovStatus : 63|3@0+ (1,0) [0|7] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_CollDetRgn : 55|8@0+ (1,0) [0|255] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_SNR : 46|7@0+ (1,0) [0|127] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ConfdLevel : 31|8@0+ (1,0) [0|127] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_Length : 15|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_Width : 23|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_OrientAgl : 39|9@0+ (0.7032,-180) [-180|180.03] "deg"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ObjClass : 60|3@0+ (1,0) [0|7] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ID : 7|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+BO_ 1139 TargetsAK_ExtraAttribute_T79RL: 8 MN_T79
+ SG_ TargetsAK_ExtraAttrib_MeasState : 57|2@0+ (1,0) [0|3] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_MovStatus : 63|3@0+ (1,0) [0|7] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_CollDetRgn : 55|8@0+ (1,0) [0|255] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_SNR : 46|7@0+ (1,0) [0|127] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ConfdLevel : 31|8@0+ (1,0) [0|127] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_Length : 15|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_Width : 23|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_OrientAgl : 39|9@0+ (0.7032,-180) [-180|180.03] "deg"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ObjClass : 60|3@0+ (1,0) [0|7] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ID : 7|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+BO_ 1180 TargetsAK_CartesianCSYS_T79RR: 8 MN_T79
+ SG_ TargetsAK_CartesianCSYS_Z : 38|9@0+ (0.2,-50) [-50|52.2] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Vy : 50|11@0+ (0.1,-102.3) [-102.3|102.4] "m/s"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Vx : 45|11@0+ (0.1,-102.3) [-102.3|102.4] "m/s"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Y : 18|12@0+ (0.1,-204.7) [-204.7|204.8] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_X : 15|13@0+ (0.1,-409.6) [-409.6|409.5] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_ID : 7|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+BO_ 1179 TargetsAK_CartesianCSYS_T79RL: 8 MN_T79
+ SG_ TargetsAK_CartesianCSYS_Z : 38|9@0+ (0.2,-50) [-50|52.2] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Vy : 50|11@0+ (0.1,-102.3) [-102.3|102.4] "m/s"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Vx : 45|11@0+ (0.1,-102.3) [-102.3|102.4] "m/s"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Y : 18|12@0+ (0.1,-204.7) [-204.7|204.8] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_X : 15|13@0+ (0.1,-409.6) [-409.6|409.5] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_ID : 7|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+BO_ 1060 Targets_SOF_T79RR: 8 MN_T79
+ SG_ Targets_SOF_SysFloorNoise : 39|16@0+ (0.01,0) [0|655.35] "dB "  ExternalUnit
+ SG_ Targets_SOF_TrackCnt : 7|32@0+ (1,0) [0|4294967295] ""  ExternalUnit
+
+BO_ 1059 Targets_SOF_T79RL: 8 MN_T79
+ SG_ Targets_SOF_SysFloorNoise : 39|16@0+ (0.01,0) [0|655.35] "dB "  ExternalUnit
+ SG_ Targets_SOF_TrackCnt : 7|32@0+ (1,0) [0|4294967295] ""  ExternalUnit
+
+BO_ 1156 Targets_EOF_T79RR: 8 MN_T79
+ SG_ Targets_EOF_TrackCnt : 7|32@0+ (1,0) [0|4294967295] ""  ExternalUnit
+ SG_ Targets_EOF_NumAK : 39|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+BO_ 1155 Targets_EOF_T79RL: 8 MN_T79
+ SG_ Targets_EOF_TrackCnt : 7|32@0+ (1,0) [0|4294967295] ""  ExternalUnit
+ SG_ Targets_EOF_NumAK : 39|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+BO_ 1220 SubVehicleInfoAnalysis2_T79RR: 8 MN_T79
+ SG_ RadarSubVehicle_Timestamp : 7|32@0+ (1,0) [0|4294967295] "ms"  ExternalUnit
+ SG_ RadarSubVehicle_AcceleratedVelo : 39|16@0- (0.01,0) [-20.48|20.47] "m/s2"  ExternalUnit
+
+BO_ 1219 SubVehicleInfoAnalysis2_T79RL: 8 MN_T79
+ SG_ RadarSubVehicle_Timestamp : 7|32@0+ (1,0) [0|4294967295] "ms"  ExternalUnit
+ SG_ RadarSubVehicle_AcceleratedVelo : 39|16@0- (0.01,0) [-20.48|20.47] "m/s2"  ExternalUnit
+
+BO_ 1204 SubVehicleInfoAnalysis1_T79RR: 8 MN_T79
+ SG_ RadarSubVehicle_Yawrate : 47|16@0- (0.1,0) [-127|127.9375] "deg/sec"  ExternalUnit
+ SG_ RadarSubVehicle_VehilceType : 63|8@0+ (1,0) [0|15] ""  ExternalUnit
+ SG_ RadarSubVehicle_TurnSwitch : 39|4@0+ (1,0) [0|15] ""  ExternalUnit
+ SG_ RadarSubVehicle_StrWheelAngle : 23|16@0- (1,0) [-2048|2047.9375] "deg"  ExternalUnit
+ SG_ RadarSubVehicle_Speed : 7|16@0+ (0.01,0) [0|142.21] "m/s"  ExternalUnit
+ SG_ RadarSubVehicle_Gear : 35|4@0+ (1,0) [0|15] ""  ExternalUnit
+
+BO_ 1203 SubVehicleInfoAnalysis1_T79RL: 8 MN_T79
+ SG_ RadarSubVehicle_Yawrate : 47|16@0- (0.1,0) [-127|127.9375] "deg/sec"  ExternalUnit
+ SG_ RadarSubVehicle_VehilceType : 63|8@0+ (1,0) [0|15] ""  ExternalUnit
+ SG_ RadarSubVehicle_TurnSwitch : 39|4@0+ (1,0) [0|15] ""  ExternalUnit
+ SG_ RadarSubVehicle_StrWheelAngle : 23|16@0- (1,0) [-2048|2047.9375] "deg"  ExternalUnit
+ SG_ RadarSubVehicle_Speed : 7|16@0+ (0.01,0) [0|142.21] "m/s"  ExternalUnit
+ SG_ RadarSubVehicle_Gear : 35|4@0+ (1,0) [0|15] ""  ExternalUnit
+
+BO_ 1132 RadarCalibration_T79RR: 8 MN_T79
+ SG_ RadarCal_WriteFlashTimes : 63|8@0- (0.01,0) [-327.68|327.67] ""  ExternalUnit
+ SG_ RadarCal_WriteFlashInstallAngle : 39|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+ SG_ RadarCal_ResultInstallAngle : 7|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+ SG_ RadarCal_AngleEstCur : 23|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+
+BO_ 1131 RadarCalibration_T79RL: 8 MN_T79
+ SG_ RadarCal_WriteFlashTimes : 63|8@0- (0.01,0) [-327.68|327.67] ""  ExternalUnit
+ SG_ RadarCal_WriteFlashInstallAngle : 39|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+ SG_ RadarCal_ResultInstallAngle : 7|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+ SG_ RadarCal_AngleEstCur : 23|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+
+BO_ 481 EPS_Fr03_1E1: 8 ExternalUnit
+ SG_ EPS_SteeringAngleValid : 6|1@0+ (1,0) [0|1] ""  MN_T79
+ SG_ EPS_SteeringAngle : 23|16@0+ (0.1,-720) [-720|720] "dgree"  MN_T79
+
+BO_ 547 VCU_Fr05_223: 8 ExternalUnit
+ SG_ VCU5_GearboxPositionDisplay : 3|4@0+ (1,0) [0|15] ""  MN_T79
+
+BO_ 657 ESC_Fr07_291: 8 ExternalUnit
+ SG_ VehicleSpdValid : 57|1@0+ (1,0) [0|1] ""  MN_T79
+ SG_ VehicleSpd : 55|14@0+ (0.03125,0) [0|511.96875] "km/h"  MN_T79
+ SG_ VehicleDynYawRateV : 24|1@0+ (1,0) [0|1] ""  MN_T79
+ SG_ VehicleDynYawRate : 39|16@0+ (0.01,-180) [-180|180] "deg/sec"  MN_T79
+
+BO_ 1218 SubVehicleInfoAnalysis2_T79FR: 8 MN_T79
+ SG_ RadarSubVehicle_Timestamp : 7|32@0+ (1,0) [0|4294967295] "ms"  ExternalUnit
+ SG_ RadarSubVehicle_AcceleratedVelo : 39|16@0- (0.01,0) [-20.48|20.47] "m/s2"  ExternalUnit
+
+BO_ 1217 SubVehicleInfoAnalysis2_T79FL: 8 MN_T79
+ SG_ RadarSubVehicle_Timestamp : 7|32@0+ (1,0) [0|4294967295] "ms"  ExternalUnit
+ SG_ RadarSubVehicle_AcceleratedVelo : 39|16@0- (0.01,0) [-20.48|20.47] "m/s2"  ExternalUnit
+
+BO_ 1202 SubVehicleInfoAnalysis1_T79FR: 8 MN_T79
+ SG_ RadarSubVehicle_Yawrate : 47|16@0- (0.1,0) [-127|127.9375] "deg/sec"  ExternalUnit
+ SG_ RadarSubVehicle_VehilceType : 63|8@0+ (1,0) [0|15] ""  ExternalUnit
+ SG_ RadarSubVehicle_TurnSwitch : 39|4@0+ (1,0) [0|15] ""  ExternalUnit
+ SG_ RadarSubVehicle_StrWheelAngle : 23|16@0- (1,0) [-2048|2047.9375] "deg"  ExternalUnit
+ SG_ RadarSubVehicle_Speed : 7|16@0+ (0.01,0) [0|142.21] "m/s"  ExternalUnit
+ SG_ RadarSubVehicle_Gear : 35|4@0+ (1,0) [0|15] ""  ExternalUnit
+
+BO_ 1201 SubVehicleInfoAnalysis1_T79FL: 8 MN_T79
+ SG_ RadarSubVehicle_Yawrate : 47|16@0- (0.1,0) [-127|127.9375] "deg/sec"  ExternalUnit
+ SG_ RadarSubVehicle_VehilceType : 63|8@0+ (1,0) [0|15] ""  ExternalUnit
+ SG_ RadarSubVehicle_TurnSwitch : 39|4@0+ (1,0) [0|15] ""  ExternalUnit
+ SG_ RadarSubVehicle_StrWheelAngle : 23|16@0- (1,0) [-2048|2047.9375] "deg"  ExternalUnit
+ SG_ RadarSubVehicle_Speed : 7|16@0+ (0.01,0) [0|142.21] "m/s"  ExternalUnit
+ SG_ RadarSubVehicle_Gear : 35|4@0+ (1,0) [0|15] ""  ExternalUnit
+
+BO_ 1130 RadarCalibration_T79FR: 8 MN_T79
+ SG_ RadarCal_WriteFlashTimes : 63|8@0- (0.01,0) [-327.68|327.67] ""  ExternalUnit
+ SG_ RadarCal_WriteFlashInstallAngle : 39|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+ SG_ RadarCal_ResultInstallAngle : 7|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+ SG_ RadarCal_AngleEstCur : 23|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+
+BO_ 1129 RadarCalibration_T79FL: 8 MN_T79
+ SG_ RadarCal_WriteFlashTimes : 63|8@0- (0.01,0) [-327.68|327.67] ""  ExternalUnit
+ SG_ RadarCal_WriteFlashInstallAngle : 39|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+ SG_ RadarCal_ResultInstallAngle : 7|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+ SG_ RadarCal_AngleEstCur : 23|16@0- (0.01,0) [-327.68|327.67] "deg"  ExternalUnit
+
+BO_ 1122 TargetsAK_ExtraInfo_T79FR: 8 MN_T79
+ SG_ TargetsAK_ExtraInfo_GuardrailDis : 7|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+
+BO_ 1121 TargetsAK_ExtraInfo_T79FL: 8 MN_T79
+ SG_ TargetsAK_ExtraInfo_GuardrailDis : 7|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+
+BO_ 1058 Targets_SOF_T79FR: 8 MN_T79
+ SG_ Targets_SOF_SysFloorNoise : 39|16@0+ (0.01,0) [0|655.35] "dB "  ExternalUnit
+ SG_ Targets_SOF_TrackCnt : 7|32@0+ (1,0) [0|4294967295] ""  ExternalUnit
+
+BO_ 1057 Targets_SOF_T79FL: 8 MN_T79
+ SG_ Targets_SOF_SysFloorNoise : 39|16@0+ (0.01,0) [0|655.35] "dB "  ExternalUnit
+ SG_ Targets_SOF_TrackCnt : 7|32@0+ (1,0) [0|4294967295] ""  ExternalUnit
+
+BO_ 1154 Targets_EOF_T79FR: 8 MN_T79
+ SG_ Targets_EOF_TrackCnt : 7|32@0+ (1,0) [0|4294967295] ""  ExternalUnit
+ SG_ Targets_EOF_NumAK : 39|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+BO_ 1153 Targets_EOF_T79FL: 8 MN_T79
+ SG_ Targets_EOF_TrackCnt : 7|32@0+ (1,0) [0|4294967295] ""  ExternalUnit
+ SG_ Targets_EOF_NumAK : 39|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+BO_ 1178 TargetsAK_CartesianCSYS_T79FR: 8 MN_T79
+ SG_ TargetsAK_CartesianCSYS_Z : 38|9@0+ (0.2,-50) [-50|52.2] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Vy : 50|11@0+ (0.1,-102.3) [-102.3|102.4] "m/s"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Vx : 45|11@0+ (0.1,-102.3) [-102.3|102.4] "m/s"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Y : 18|12@0+ (0.1,-204.7) [-204.7|204.8] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_X : 15|13@0+ (0.1,-409.6) [-409.6|409.5] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_ID : 7|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+BO_ 1177 TargetsAK_CartesianCSYS_T79FL: 8 MN_T79
+ SG_ TargetsAK_CartesianCSYS_Z : 38|9@0+ (0.2,-50) [-50|52.2] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Vy : 50|11@0+ (0.1,-102.3) [-102.3|102.4] "m/s"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Vx : 45|11@0+ (0.1,-102.3) [-102.3|102.4] "m/s"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_Y : 18|12@0+ (0.1,-204.7) [-204.7|204.8] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_X : 15|13@0+ (0.1,-409.6) [-409.6|409.5] "m"  ExternalUnit
+ SG_ TargetsAK_CartesianCSYS_ID : 7|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+BO_ 1138 TargetsAK_ExtraAttribute_T79FR: 8 MN_T79
+ SG_ TargetsAK_ExtraAttrib_MeasState : 57|2@0+ (1,0) [0|3] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_MovStatus : 63|3@0+ (1,0) [0|7] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_CollDetRgn : 55|8@0+ (1,0) [0|255] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_SNR : 46|7@0+ (1,0) [0|127] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ConfdLevel : 31|8@0+ (1,0) [0|127] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_Length : 15|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_Width : 23|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_OrientAgl : 39|9@0+ (0.7032,-180) [-180|180.03] "deg"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ObjClass : 60|3@0+ (1,0) [0|7] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ID : 7|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+BO_ 1137 TargetsAK_ExtraAttribute_T79FL: 8 MN_T79
+ SG_ TargetsAK_ExtraAttrib_MeasState : 57|2@0+ (1,0) [0|3] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_MovStatus : 63|3@0+ (1,0) [0|7] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_CollDetRgn : 55|8@0+ (1,0) [0|255] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_SNR : 46|7@0+ (1,0) [0|127] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ConfdLevel : 31|8@0+ (1,0) [0|127] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_Length : 15|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_Width : 23|8@0+ (0.1,0) [0|25.5] "m"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_OrientAgl : 39|9@0+ (0.7032,-180) [-180|180.03] "deg"  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ObjClass : 60|3@0+ (1,0) [0|7] ""  ExternalUnit
+ SG_ TargetsAK_ExtraAttrib_ID : 7|8@0+ (1,0) [0|255] ""  ExternalUnit
+
+

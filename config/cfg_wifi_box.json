@@ -1,0 +1,91 @@
+{
+    "version": 1.0,
+    "name": "cfg_lab",
+    "modules": {
+        "GGA_reporter": {
+            "enable": false,
+            "ntrip_address": "ntrip.weaty.cn",
+            "port": 5001
+        }
+    },
+    "vehicles": {
+        "ego": {
+            "enable": true,
+            "collectors": [
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "a1j", "can1": "blank"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "a1j", "can1": "gs4"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "a1j_fusion", "can1": "ars140"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "ars140", "can1": "ars140"}},
+                {"model":  "a1j", "params": {"mac": "5a:31:6e:f3:dd:83","is_main": true}},
+                {"model":  "can_gw_nn", "params": {"can1": "bosch_mrr", "can2": "bosch_r", "can3": "bosch_f", "can4": "blank"}},
+                {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}}
+            ],
+            "installation": {
+                "esr": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "lon_offset": 0.0,
+                    "height": 0.0
+                },
+                "lmr": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "lon_offset": 0.0,
+                    "height": 0.0
+                },
+                "ifv300": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.0,
+                    "lon_offset": -1.67,
+                    "height": 1.2
+                },
+                "rtk": {
+                    "yaw": 0.0,
+                    "pitch": -2.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.15,
+                    "lon_offset": -0.21,
+                    "height": 1.2
+                },
+                "video": {
+                    "yaw": 0,
+                    "pitch":0.5,
+                    "roll": 0,
+                    "lat_offset": 0,
+                    "lon_offset": 0,
+                    "height": 1.42,
+                    "fu": 1295.9175,
+                    "fv": 1296.2201,
+                    "cu": 967.7107,
+                    "cv": 533.2411
+                },
+                "a1j": {
+                    "yaw": 0,
+                    "pitch": 0,
+                    "roll": 0.0,
+                    "lat_offset": 0,
+                    "lon_offset": 0,
+                    "height": 1.4
+                },
+                "x1": {
+                    "yaw": 0.0,
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "lat_offset": 0.15,
+                    "lon_offset": -1.67,
+                    "height": 1.2
+                }
+            }
+        },
+        "other": {
+            "enable": false,
+            "collectors": []
+        }
+    }
+}

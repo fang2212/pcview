@@ -13,6 +13,8 @@ import cantools
 # db_x1 = cantools.database.load_file('dbc/MINIEYE_CAR.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/MINIEYE_PED.dbc')
 # db_x1.add_dbc_file('dbc/MINIEYE_LANE.dbc')
+from player.ui import CVColor
+
 db_x1 = cantools.database.load_file('dbc/MINIEYE_fusion_CAN_V0.3_20190715.dbc', strict=False)
 # db_x1.add_dbc_file('dbc/ESR DV3_64Tgt.dbc')
 
@@ -27,8 +29,8 @@ detection_sensor = {
     3: 'vision_only',
     4: 'radar and vision',
 }
-vision_color = (193, 182, 255)
-fusion_color = (59, 59, 238)
+vision_color = CVColor.LightCoral
+fusion_color = CVColor.Crimson
 
 
 def parse_a1j(id, data, ctx=None):
@@ -122,6 +124,7 @@ def parse_a1j(id, data, ctx=None):
         cipp['pos_lat'] = r['TargetPedestrian_PosY']
         cipp['pos_lon'] = r['TargetPedestrian_PosX']
         cipp['class'] = 'pedestrian'
+        cipp['color'] = vision_color
         cipp['TTC'] = r['TargetPedestrian_TTC']
         if cipp['pos_lon'] > 0.0:
             ctx['x1_obs'].append(cipp.copy())
@@ -142,6 +145,7 @@ def parse_a1j(id, data, ctx=None):
             x1_ped['type'] = 'obstacle'
             x1_ped['sensor'] = 'x1'
             x1_ped['class'] = 'pedestrian'
+            x1_ped['color'] = vision_color
             x1_ped['vel_lon'] = 0
             # x1_ped['height'] = 1.6
             if x1_ped['pos_lon'] > 0:
@@ -164,6 +168,7 @@ def parse_a1j(id, data, ctx=None):
         tmp1 = 'Lane' + '%01d' % (index + 1) + '_Type'
         if tmp1 in r:
             x1_lane[index] = dict()
+            x1_lane[index]['color'] = fusion_color
             x1_lane[index]['Lane_Type'] = r['Lane' + '%01d' % (index + 1) + '_Type']
             x1_lane[index]['Quality'] = r['Lane' + '%01d' % (index + 1) + '_Quality']
             x1_lane[index]['a0'] = r['Lane' + '%01d' % (index + 1) + '_Position']
@@ -249,8 +254,7 @@ def parse_a1j(id, data, ctx=None):
             ctx['fusion'][index]['vis_track_id'] = r['Vis_Track_ID_' + '%02d' % (index + 1)]
             # ctx['fusion'][index]['confidence'] = r['Confidence_'+'%02d' % (index+1)]
 
-            if index >= 16:
-                print("fusion:", len(ctx["fusion"]))
+            if index >= 15:
                 ret = []
                 for key in ctx['fusion']:
                     if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in \
@@ -312,7 +316,7 @@ def parse_a1j_fusion(id, data, ctx=None):
             ctx['fusion'][index]['vis_track_id'] = r['Vis_Track_ID_' + '%02d' % (index + 1)]
             # ctx['fusion'][index]['confidence'] = r['Confidence_'+'%02d' % (index+1)]
 
-            if index >= 16:
+            if index >= 15:
                 ret = []
                 for key in ctx['fusion']:
                     if key == 255 or isinstance(key, type('')) or 'id' not in ctx['fusion'][key] or 'type' not in \
@@ -513,6 +517,7 @@ def parse_a1j_vision(id, data, ctx=None):
         tmp1 = 'Lane' + '%01d' % (index + 1) + '_Type'
         if tmp1 in r:
             x1_lane[index] = dict()
+            x1_lane[index]['color'] = fusion_color
             x1_lane[index]['Lane_Type'] = r['Lane' + '%01d' % (index + 1) + '_Type']
             x1_lane[index]['Quality'] = r['Lane' + '%01d' % (index + 1) + '_Quality']
             x1_lane[index]['a0'] = r['Lane' + '%01d' % (index + 1) + '_Position']

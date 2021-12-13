@@ -1,0 +1,59 @@
+{
+  "type": "can_collector",
+  "alias": "can_rcv",
+  "origin_device": "bm",
+  "ip": "192.168.98.180",
+  "port": 2080,
+  "force_ip": true,
+  "transport": "nanomsg",
+  "ports": {
+    "can1": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "idx": 0
+    },
+    "can2": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "idx": 1
+    },
+    "can3": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "idx": 2
+    },
+    "can4": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "idx": 3
+    },
+    "can5": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "idx": 4
+    },
+    "can6": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "idx": 5
+    },
+    "can7": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "idx": 6
+    },
+    "can8": {
+      "enable": true,
+      "protocol": "canpack",
+      "dbc": "",
+      "idx": 7
+    }
+  }
+}

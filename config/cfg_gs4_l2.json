@@ -1,4 +1,3 @@
-
 {
     "version": 1.0,
     "name": "cfg_lab",
@@ -14,66 +13,147 @@
             "enable": true,
             "collectors": [
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "j2", "can1": "gs4"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "q3control", "can1": "ifv300"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "q3control", "can1": "mbq3"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "mbq4", "can1": "gs4_debug"}},
-                {"model":  "can_collector", "params": {"port": 2021, "can0": "j2_fusion", "can1": "ars", "can2": "d1_fusion", "can3": "ars410"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "ars", "can1": "blank"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d4", "can0": "j2_fusion", "can1": "ars410"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d5", "can0": "d1_fusion", "can1": ["mu_fl","mu_fr"]}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d6", "can0": "a1j", "can1": ["mu_rl","mu_rr"]}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d7", "can0": "blank", "can1": "gs4"}},
+                {"model":  "can_gw_nn", "params": {"can1": "bosch_mrr", "can2": "bosch_f", "can3": "bosch_r", "can4": "ars_back"}},
                 {"model":  "pi_node", "params": {"mac": "b8:27:eb:f0:55:dd"}},
-                {"model":  "cv22", "params": {"mac":  "6a:92:53:e1:97:00", "is_main":  true}},
-                {"model":  "cv22_novid", "params": {"mac":  "6a:92:52:69:87:00", "is_main":  false}},
+                {"model":  "a1j", "params": {"mac":  "6a:92:52:75:97:00", "is_main":  true}},
+                {"model":  "cv22_novid", "params": {"mac":  "6a:92:52:69:87:00","is_back":false}},
+                {"model":  "a1j", "params": {"mac":  "6a:92:53:0f:97:00", "focus_install":"a1j_back", "is_back":  true}},
+                {"model":  "x1j_1v1r", "params": {"mac": "5a:31:44:3d:e9:14"}},
                 {"model":  "bynav"},
                 {"model":  "d1_udp"},
-                {"model":  "a1j"}
+                {"model":  "a1j_collector", "params": {"mac": "6a:92:52:75:97:00", "can0": "a1j"}}
             ],
-            "installation": {
+             "installation": {
                 "esr": {
-                    "yaw": 0.0,
-                    "pitch": 0.0,
-                    "roll": 0.0,
-                    "lat_offset": 0.0,
-                    "lon_offset": 0.0,
-                    "height": 0.0
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0.0,
+                     "lon_offset": 0.0,
+                     "height": 0.0
                 },
                 "ars": {
-                    "roll": 0.0,
-                    "lat_offset": 0.35,
-                    "pitch": 0,
-                    "height": 0.53,
-                    "lon_offset": 0.0,
-                    "yaw": 0.5
+                     "roll": 0.0,
+                     "lat_offset": 0.35,
+                     "pitch": 0,
+                     "height": 0.53,
+                     "lon_offset": 0.0,
+                     "ref_yaw": 0,
+                     "yaw": 0
+                },
+                "ars_back": {
+                     "roll": 0.0,
+                     "lat_offset": 0.35,
+                     "pitch": 0,
+                     "height": 0.53,
+                     "lon_offset": 0.0,
+                     "ref_yaw": 0,
+                     "yaw": 180
+                },
+                "mu_fl": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": -0.9,
+                     "lon_offset": -0.3,
+                     "height": 0.405
+                },
+                "mu_fr": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0.9,
+                     "lon_offset": 0.3,
+                     "height": 0.405
+                },
+                "mu_rl": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": -8.35,
+                     "lon_offset": -4.4,
+                     "height": 0.645
+                },
+                "mu_rr": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": -4.4,
+                     "height": 0.645
+                },
+                "bosch_fl": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": -3.5,
+                     "height": 0.405
+                },
+                "bosch_fr": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0.9,
+                     "lon_offset": -3.5,
+                     "height": 0.405
+                },
+                "bosch_rl": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": -3.5,
+                     "height": 0.645
+                },
+                "bosch_rr": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": -3.5,
+                     "height": 0.645
                 },
                 "ars410": {
-                    "roll": 0.0,
-                    "lat_offset": 0.35,
-                    "pitch": 0,
-                    "height": 0.45,
-                    "lon_offset": 0.0,
-                    "yaw": 0
+                     "roll": 0.0,
+                     "lat_offset": 0.35,
+                     "pitch": 0,
+                     "height": 0.45,
+                     "lon_offset": -3.6,
+                     "yaw": 0
                 },
                 "lmr": {
-                    "yaw": 0.0,
-                    "pitch": 0.0,
-                    "roll": 0.0,
-                    "lat_offset": 0.0,
-                    "lon_offset": 0.0,
-                    "height": 0.0
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0.0,
+                     "lon_offset": 0.0,
+                     "height": 0.0
                 },
                 "ifv300": {
-                    "roll": 0.0,
-                      "lat_offset": 0.0,
-                      "pitch": 0.0,
-                      "height": 1.50,
-                      "lon_offset": -1.6,
-                      "yaw": 0.0
+                     "roll": 0.0,
+                     "lat_offset": 0.0,
+                     "pitch": 0.0,
+                     "height": 1.50,
+                     "lon_offset": -1.6,
+                     "yaw": 0.0
                  },
                 "mbq3": {
                     "roll": 0.0,
-                      "lat_offset": 0.25,
+                      "lat_offset": 0,
                       "pitch": 0.0,
-                      "height": 1.46,
-                      "lon_offset": -1.65,
+                      "height": 1.5,
+                      "lon_offset": 0,
                       "yaw": 0.0
                  },
-                 "q4_100": {
+                "q4_100": {
                       "roll": 0.0,
                       "lat_offset": -0.08,
                       "pitch": 0.0,
@@ -81,7 +161,7 @@
                       "lon_offset": -1.58,
                       "yaw": 0
                 },
-                 "mbq4": {
+                "mbq4": {
                       "roll": 0.0,
                       "lat_offset": -0.06,
                       "pitch": 0.0,
@@ -89,23 +169,23 @@
                       "lon_offset": -1.58,
                       "yaw": 0.0
                 },
-                 "j2": {
+                "d1_fusion": {
                       "roll": 0.0,
-                      "lat_offset": -0.03,
+                      "lat_offset": 0.08,
                       "pitch": 0.0,
-                      "height": 1.39,
-                      "lon_offset": -3.53,
-                      "yaw": 0
-                },
-                 "d1_fusion": {
-                      "roll": 0.0,
-                      "lat_offset": 0,
-                      "pitch": 0.0,
-                      "height": 1.49,
+                      "height": 1.42,
                       "lon_offset": 0,
                       "yaw": 0
                 },
-                 "j2_fusion": {
+                "x1_fusion": {
+                      "roll": 0.0,
+                      "lat_offset": 0.08,
+                      "pitch": 0.0,
+                      "height": 1.42,
+                      "lon_offset": 0,
+                      "yaw": 0
+                },
+                "j2_fusion": {
                       "roll": 0.0,
                       "lat_offset": 0,
                       "pitch": 0.0,
@@ -114,33 +194,55 @@
                       "yaw": 0
                 },
                 "rtk": {
-                    "yaw": 0.0,
-                    "pitch": -2.0,
-                    "roll": 0.0,
-                    "lat_offset": 0.15,
-                    "lon_offset": -0.21,
-                    "height": 1.2
+                     "yaw": 0.0,
+                     "pitch": -2.0,
+                     "roll": 0.0,
+                     "lat_offset": 0.15,
+                     "lon_offset": -0.21,
+                     "height": 1.2
                 },
                 "video": {
-                    "yaw": 1.3,
-                    "pitch": 0.5,
-                    "roll": 1.2,
-                    "lat_offset": 0.12,
-                    "lon_offset": -1.58,
-                    "height": 1.48,
-                    "fu": 1295.9175,
-                    "fv": 1296.2201,
-                    "cu": 967.7107,
-                    "cv": 533.2411
+                     "yaw": 5.2,
+                     "pitch": 1,
+                     "roll": 0.9164,
+                     "lat_offset": 0.28,
+                     "lon_offset": -1.58,
+                     "height": 1.42,
+                     "fu": 1295.9175,
+                     "fv": 1296.2201,
+                     "cu": 967.7107,
+                     "cv": 533.2411
+                },
+                "a1j_back": {
+                     "pitch": -1.691,
+                     "roll": 0.0,
+                     "ref_yaw": 180,
+                     "yaw" : 0.798,
+                     "fu": 1290.0,
+                     "fv": 1290.0,
+                     "cu": 962,
+                     "cv": 544,
+                     "height": 1.45,
+                     "lon_offset": 1.7,
+                     "lat_offset": 0.0
                 },
                 "x1": {
-                    "yaw": 0.0,
-                    "pitch": 0.0,
-                    "roll": 0.0,
-                    "lat_offset": 0,
-                    "lon_offset": 0,
-                    "height": 1.4
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": 0,
+                     "height": 1.4
+                },
+		      "a1j": {
+                     "yaw": 0.0,
+                     "pitch": 0.0,
+                     "roll": 0.0,
+                     "lat_offset": 0,
+                     "lon_offset": 0,
+                     "height": 1.42
                 }
+
             }
         },
         "other": {

@@ -1,0 +1,183 @@
+syntax = "proto3";
+package minieye;
+
+// label = 0
+enum RoadConditionTag {
+	StraightRoad       = 0;  // 直道 
+	SmallCurveRoad     = 1;  // 小弯道(R >= 400m)
+	MiddleCurveRoad    = 2;  // 中弯道(R >= 150m)
+	BigCurveRoad       = 3;  // 大弯道(R < 250m)
+	SCurveRoad         = 4;  // S 弯道
+	Junction           = 5;  // 岔道口
+	QuarterTurn        = 6;  // 直角转弯
+	Abrasion           = 7;  // 磨损
+	AbandonedLaneline  = 8;  // 废弃车道线
+	SuspectedLaneline  = 9; // 疑似车道线
+	Characters         = 10; // 文字
+	ManHoleCover       = 11; // 井盖
+	SpeedBump          = 12; // 减速带 
+}
+
+// label = 1
+enum ColorTag {
+	White   = 0;
+	Yellow  = 1;
+	Blue    = 2;
+	Red     = 3;
+	Green   = 4;
+}
+
+// label = 2
+enum LanelineTypeTag {
+	Dashed           = 0;   // 虚线
+	Solid            = 1;   // 实线
+	DashedSolid      = 2;   // 虚实线
+	DoubleSolid      = 3;   // 双实线
+	DoubleDashed     = 4;   // 双虚线
+	DoubleDecLine    = 5;   // 双边减速线
+	SingleDecLine    = 6;   // 单边减速线
+	Bold             = 7;   // 粗线
+	SolidDashed      = 8;   // 实虚线
+}
+
+// label = 3
+enum SlopeTag {
+	Flat       = 0;  // 平坦
+	Bump       = 1;  // 颠簸
+	UpSlope    = 2;  // 上坡
+	DownSlope  = 3;  // 下坡
+}
+
+// label = 4
+enum WeatherCondTag {
+	Shine      = 0;  // 晴天
+	Cloudy     = 1;  // 阴天
+	HeavyRain  = 2;  // 大雨
+	LightRain  = 3;  // 小雨
+	SnowCover  = 4;  // 积雪
+	WaterCover = 5;  // 积水
+	HeavyFog   = 6;  // 大雾
+	LightFog   = 7;  // 小雾
+}
+
+// label = 5
+enum IlluminationTag {
+	Day        = 0;  // 白天
+	Night      = 1;  // 黑夜
+	LowSun     = 2;  // 逆光(反光)
+	Shadow     = 3;  // 阴影
+	Tunnel     = 4;  // 隧道
+}
+
+// label = 6
+enum ObjTypeTag { // front / side
+	Car            = 0;   // 小轿车 
+	SUV            = 1;   // suv
+	Bus            = 2;   // bus
+	MiniBus        = 3;   // 面包车
+	MPV            = 4;   // MPV
+	TipTruck       = 5;   // 斗卡
+	PickUp         = 6;   // 皮卡
+	BoxTruck       = 7;   // 箱卡
+	Tricycle       = 8;   // 三轮车
+	OilTank        = 9;   // 油罐车
+	CementTanker   = 10;  // 水泥罐车
+	SlagCar        = 11;  // 渣土车
+	Iveco          = 12;  // 依维柯
+	StrangeVeh     = 13;  // 异型车
+	MunicipalVeh   = 14;  // 市政车
+	MotorBike      = 15;  // 摩托车
+	Bicycle        = 16;  // 自行车
+	ElectroCar     = 17;  // 电动车
+	Adult          = 18;  // 成人
+	Child          = 19;  // 小孩
+	PoliceCar      = 20;  // 警车
+	Ambulance      = 21;  // 救护车
+	FireTruck      = 22;  // 消防车
+        kSpecial       = 23;  // 未知
+}
+
+// label = 7
+enum AreaTag {
+	City       = 0;  // 城市
+	Highway    = 1;  // 高速
+	Village    = 2;  // 乡村
+	Town       = 3;  // 城镇
+	InDoor     = 4;  // 室内
+}
+
+// label = 8
+enum WorkConditionTag {
+	Far2Near                 = 0;   // 由远及近
+	Near2Far                 = 1;   // 由近及远
+	CruisingByFollowing      = 2;   // 跟车巡航
+	CruisingInCurve          = 3;   // 弯道巡航
+	Jam                      = 4;   // 拥塞
+	InOutJunction            = 5;   // 进出岔道口
+	TunnelEscape             = 6;   // 出隧道
+	IntoTunnel               = 7;   // 进隧道
+	TurnRound                = 8;   // 掉头
+}
+
+// label = 9 
+enum ObjDistTag {
+	Near    = 0;   // 近距离
+	Middle  = 1;   // 中距离 
+	Far     = 2;   // 远距离
+}
+
+// label = 10
+enum DensityTag { 
+	Dense   = 0;    // 稠密
+	Sparse  = 1;    // 稀疏
+}
+
+// label = 11
+enum PositionTag {
+	Front  = 0;  // 正前方
+	Side   = 1;  // 侧方
+}
+
+// label = 12
+enum StandardTag {
+	S_33577 = 0;
+	S_883 = 1;
+	S_Cncap = 2;
+	S_Eucap = 3;
+}
+
+message DataTag {
+	enum TagLabel {
+		RoadConditionTag = 0;
+		ColorTag = 1;
+		LanelineTypeTag = 2;
+		SlopeTag = 3;
+		WeatherCondTag = 4;
+		IlluminationTag = 5;
+		ObjTypeTag = 6;
+		AreaTag = 7;
+		WorkConditionTag = 8;
+		ObjDistTag = 9;
+		DensityTag = 10;
+		PositionTag = 11;
+		StandardTag = 12;
+	}
+
+	TagLabel label = 1;    // tag对应的label
+	int32 val = 2;      // 对应的tag值
+}
+
+message Range {     // 区间标记
+    uint64 start_time_ms = 1;    // 区间起始时间（毫秒），取相对于本数据集（非单个视频）首帧的时间
+    uint64 duration_ms = 2;      // 区间时长（毫秒），要求不短于2秒，即2000毫秒
+	uint64 start_frame_id = 3;   // 区间起始帧号 
+	uint64 end_frame_id = 4;     // 区间终止帧号
+	repeated DataTag tags = 5;   // 数据标签集合
+    string note = 6;             // 备注，可以省略
+    string camera_name = 7;      // 标签对应的摄像头名称
+}
+
+message Tags {
+	repeated DataTag tags = 1;   // 数据集的整体标签，不按区间划分的
+    repeated Range ranges = 2;   // 区间标记
+}

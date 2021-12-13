@@ -1,3 +1,5 @@
+import sys
+
 from flask import Flask, render_template, Response, session, jsonify, request, redirect, send_file, url_for
 from werkzeug.utils import secure_filename
 import socketio
@@ -16,6 +18,7 @@ from engineio.async_drivers import eventlet
 from eventlet.hubs import epolls, kqueue, selects
 from dns import dnssec, e164, hash, namedict, tsigkeyring, update, version, zone
 #
+from utils import logger
 
 socketio_ver = socketio.__version__
 # print('socketio version:', socketio_ver)
@@ -37,8 +40,9 @@ socketio = SocketIO(app, async_mode=async_mode)
 # server_dict['now_image'] = cv2.imread("./web/statics/jpg/160158-1541059318e139.jpg", cv2.IMREAD_COLOR)
 
 ctrl_q = Queue(maxsize=20)
-msg_q = Queue(maxsize=200)
-img_q = Queue(maxsize=5)
+msg_q = Queue(maxsize=2000)
+img_q = Queue(maxsize=5000)
+filter_q = Queue(maxsize=20)
 local_path = json.load(open('config/local.json'))['log_root']
 
 no_frame = open('static/img/no_video.jpg', 'rb').read()
@@ -333,6 +337,24 @@ def upgrade():
     return 'ok', 200
 
 
+@app.route('/filter', methods=['POST', 'GET'])
+def filter():
+    signal = request.get_data(as_text=True)
+    data = {signal: "filter"}
+    filter_q.put(data)
+
+    return redirect("/")
+
+
+@app.route('/display', methods=['POST', 'GET'])
+def display():
+    signal = request.get_data(as_text=True)
+    data = {signal: "display"}
+    filter_q.put(data)
+
+    return redirect("/")
+
+
 @socketio.on('connect', namespace='/test')
 def test_connect():
     socketio.start_background_task(msg_send_task)
@@ -366,6 +388,7 @@ class PccServer(Process):
 
     def run(self):
         # app.logger.setLevel(logging.ERROR)
+        logger.warning('{} pid:{}'.format("web server:".ljust(20), os.getpid()))
         socketio.run(app, host='0.0.0.0', port=self.port)
 
     def ws_send(self, topic, msg, cb=None):
@@ -384,6 +407,7 @@ class PccServer(Process):
         func = request.environ.get('werkzeug.server.shutdown')
         if func:
             func()
+        sys.exit(0)
 
 
 if __name__ == "__main__":
