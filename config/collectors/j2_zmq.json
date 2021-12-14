@@ -9,7 +9,8 @@
       "port": 5560,
       "protocol": "j2_zmq",
       "transport": "zmq",
-      "topic": "j2_zmq"
+      "topic": "j2_zmq",
+      "save": "bin"
     }
   }
 }

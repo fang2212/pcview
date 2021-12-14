@@ -181,7 +181,17 @@ class ZmqSink(Sink):
 
     def pkg_handler(self, msg):
         if self.msg_type == 'j2_zmq':
-            data = {'type': self.msg_type, 'source': self.source, 'log_name': self.msg_type, 'buf': msg}
+            data = {
+                'type': self.msg_type,
+                'source': self.source,
+                'log_name': self.msg_type,
+                'buf': msg,
+                "meta": {
+                    "source": self.source,
+                    "type": "bin",
+                    "parsers": ["j2_zmq"]
+                }
+            }
             self.fileHandler.insert_general_bin_raw(data)
             return data
 
@@ -245,7 +255,17 @@ class UDPSink(Sink):
     def pkg_handler(self, msg):
         if self.msg_type == "d1_udp":
             timestamp = time.time()
-            r = {'type': self.msg_type, 'source': self.source, 'log_name': self.msg_type, 'buf': msg}
+            r = {
+                'type': self.msg_type,
+                'source': self.source,
+                'log_name': self.msg_type,
+                'buf': msg,
+                'meta': {
+                    "source": self.source,
+                    "type": self.msg_type,
+                    "parsers": [self.msg_type]
+                }
+            }
             self.fileHandler.insert_general_bin_raw(r)
             self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
         elif self.msg_type == 'q4_100':
@@ -254,7 +274,17 @@ class UDPSink(Sink):
             timestamp = time.time()
             msg = struct.pack("<d", timestamp) + msg
 
-            r = {'type': self.msg_type, 'source': self.source, 'log_name': self.msg_type, 'buf': msg}
+            r = {
+                'type': self.msg_type,
+                'source': self.source,
+                'log_name': self.msg_type,
+                'buf': msg,
+                'meta': {
+                    'type': self.msg_type,
+                    'source': self.source,
+                    'parsers': [self.msg_type]
+                }
+            }
             self.fileHandler.insert_general_bin_raw(r)
             self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
 
@@ -751,9 +781,9 @@ class CameraSink(NNSink):
 
 
 class FlowSink(Sink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo', device="", dbc=None, port_name="",
+    def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo', device="", dbc=None, port_name="", sq=None,
                  log_name='pcv_log', topic='pcview', is_main=False, is_back=False, mq=None, save_type=None, install_key="video"):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
+        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq, sq=sq)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.ip = ip
@@ -779,7 +809,7 @@ class FlowSink(Sink):
         if self.topic == '*' or self.dbc == "video_h265":   # Q3华为mdc数据
             if 24011 <= self.port <= 24017 or self.dbc == "video_h265":     # h264视频数据
                 self.pkg_handler = self.video_h265
-            elif self.port == 26011:
+            elif self.port == 28011:
                 self.pkg_handler = self.mdc_ts
             else:
                 self.pkg_handler = self.mdc_data
@@ -805,6 +835,8 @@ class FlowSink(Sink):
             async for msg in ws:
                 if self.exit:
                     break
+
+                self.sq.put([self.ip, self.port, self.index, self.source])
 
                 r = self.pkg_handler(msg)
                 if r is not None:
@@ -888,7 +920,16 @@ class FlowSink(Sink):
             log_name = self.topic
         else:
             log_name = self.port_name
-        r = {"source": self.source, "log_name": log_name, "buf": img}
+        r = {
+            "source": self.source,
+            "log_name": log_name,
+            "buf": img,
+            "meta": {
+                "source": self.source,
+                "type": "video",
+                "parser": [self.dbc]
+            }
+        }
         self.fileHandler.insert_general_bin_raw(r)
         self.fileHandler.insert_raw(
             (timestamp, "{}.{}.{}.{}".format(self.device, self.index, self.port_name, self.dbc), "{:d} {:d} {} {} {} {} {} {} {}".format(head_data["height"], head_data["width"], head_data["send_time_high"],
@@ -936,7 +977,16 @@ class FlowSink(Sink):
                 r.update(calib_params)
                 return 'calib_param', r
         else:
-            r = {"source": self.source, "log_name": topic, "buf": payload}
+            r = {
+                "source": self.source,
+                "log_name": topic,
+                "buf": payload,
+                "meta": {
+                    "source": self.source,
+                    "type": self.msg_type,
+                    "parsers": [self.topic]
+                }
+            }
             self.fileHandler.insert_general_bin_raw(r)
             return
 
@@ -1040,7 +1090,17 @@ class FlowSink(Sink):
                     return 'calib_param', r
         elif msg_src == 'lane_profiling':
             if topic == 'lane_profiling_data':
-                r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.name, 'buf': payload}
+                r = {
+                    'type': 'algo_debug',
+                    'source': self.source,
+                    'log_name': self.name,
+                    'buf': payload,
+                    'meta': {
+                        'source': self.source,
+                        'type': self.msg_type,
+                        'parsers': [topic]
+                    }
+                }
                 self.fileHandler.insert_general_bin_raw(r)
                 return 'algo_debug', r
         elif msg_src == 'imu':

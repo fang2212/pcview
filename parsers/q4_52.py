@@ -5,6 +5,8 @@ import math
 import cantools
 import time
 
+from utils import logger
+
 db_q4 = cantools.db.load_file('dbc/q4_52/Hazards.dbc', strict=False)
 db_q4.add_dbc_file('dbc/q4_52/LanesHost.dbc')
 db_q4.add_dbc_file('dbc/q4_52/LanesAdjacent.dbc')
@@ -92,15 +94,15 @@ def parser_q4_52(id, buf, ctx):
                 if not ctx['q4_obj'][i]:
                     continue
                 try:
-                    if ctx['q4_obj'][i]['id'] == ctx['q4_cipv_id']:
+                    if ctx['q4_obj'][i].get('id') == ctx.get('q4_cipv_id'):
                         ctx['q4_obj'][i]['cipo'] = True
                     else:
                         ctx['q4_obj'][i]['cipo'] = False
                     if len(ctx['q4_obj'][i]) >= 17:
                         res.append(ctx['q4_obj'][i].copy())
                 except Exception as e:
-                    print(e)
-                    print('q4_52 parse error', id, ctx['q4_obj'][i])
+                    logger.error(e, exc_info=True)
+                    logger.error('q4_52 parse error', id, ctx['q4_obj'][i])
             ctx['q4_obj'].clear()
             ctx['q4_cipv_id'] = None
             return res

@@ -1,0 +1,18 @@
+{
+  "type": "g1l_collector",
+  "mac": "00:0c:18:ef:ff:d0",
+  "ip": "192.168.98.233",
+  "work_mode": "collector",
+  "force_ip": true,
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": true,
+      "port": 26011,
+      "protocol": null,
+      "dbc": "video_jpeg",
+      "transport": "libflow",
+      "topic": "camera_front"
+    }
+  }
+}

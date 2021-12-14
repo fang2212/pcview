@@ -2,17 +2,19 @@
 # -*- coding:utf8 -*-
 import json
 import os
+import pathlib
 import time
 from datetime import datetime
 from multiprocessing import Queue, Process, Array, Manager, Value
 from turbojpeg import TurboJPEG
 from sink.mmap_queue import MMAPQueue
 from tools.video_writer import MJPEGWriter
+from git import Repo
 import cv2
 import numpy as np
 
 # 限制为单线程，防止竞争占用资源
-from utils import logger
+from utils import logger, get_commit_version
 
 cv2.setNumThreads(0)
 jpeg = TurboJPEG()
@@ -27,6 +29,8 @@ class FileHandler(Process):
         self.ctrl_queue = Queue()                   # 控制事件队列
         self.mq = MMAPQueue(1024*1024*1024)              # 记录数据队列
         self.running = True                         # 是否运行
+        self.running_path = os.getcwd()             # 当前运行路径
+        self.repo = None                            # git仓库对象
 
         self._max_cnt = 1200
         self.__path = Array('c', b'0'*100)
@@ -73,6 +77,13 @@ class FileHandler(Process):
         self.uniconf = uniconf
         self.d = Manager().dict()
         self.d['installs'] = uniconf.installs
+        self.meta = {
+            "versions": {},
+            "signals": {},
+            "devices": {},
+            "tags": []
+        }
+        self.d['meta'] = self.meta               # meta.json的对象
 
     @property
     def is_marking(self):
@@ -119,6 +130,7 @@ class FileHandler(Process):
 
     def run(self):
         logger.warning('{} pid: {}'.format("file handle".ljust(20), self.pid))
+        self.init_meta()
 
         while self.running:
             t0 = time.time()
@@ -171,7 +183,7 @@ class FileHandler(Process):
     def record_general_bin_log(self, msg):
         source = msg['source']
         name = msg['log_name'] + '.bin'
-        self.write_other_log(source, name, msg['buf'], bin=True)
+        self.write_other_log(source, name, msg['buf'], bin=True, meta_info=msg.get("meta"))
 
     def record_mdc_video(self, msg):
         pass
@@ -185,14 +197,17 @@ class FileHandler(Process):
             is_main = res.get('is_main')
             if source not in self.video_streams:
                 if is_main:
+                    relative_path = './video'
                     video_path = os.path.join(self.save_path, 'video')
                 else:
+                    relative_path = './'+source
                     video_path = os.path.join(self.save_path, source)
                 if not os.path.exists(video_path):
                     os.mkdir(video_path)
 
                 self.video_streams[source] = {
                     'video_path': video_path,
+                    'video_relative_path': relative_path,
                     'video_name': "",
                     'frame_cnt': 0,
                     'frame_reset': True,
@@ -204,6 +219,7 @@ class FileHandler(Process):
                 self.video_streams[source]['frame_cnt'] = 0
                 self.video_streams[source]['video_name'] = 'camera_{:08d}.avi'.format(frame_id)
                 video_path = os.path.join(self.video_streams[source]['video_path'], self.video_streams[source]['video_name'])
+                relative_path = os.path.join(self.video_streams[source]['video_relative_path'], self.video_streams[source]['video_name'])
                 img = jpeg.decode(np.fromstring(data, np.uint8))
                 h, w, c = img.shape
                 now_fps = 20
@@ -213,6 +229,13 @@ class FileHandler(Process):
                 self.video_streams[source]['video_writer'] = MJPEGWriter(video_path, w, h, now_fps)
                 self.video_streams[source]['video_writer'].write_header()
                 print("video start over.", self.video_streams[source]['frame_cnt'], video_path)
+
+                kw = 'camera' if msg['is_main'] else source
+                self.meta = self.d['meta']
+                if self.meta['signals'].get(kw):
+                    self.meta['signals'][kw]['paths'].append(relative_path)
+                    self.d['meta'] = self.meta
+                    self.save_meta()
 
             self.video_streams[source]['video_writer'].write_frame(data)
             self.write_video_log(msg)
@@ -225,11 +248,17 @@ class FileHandler(Process):
             data = res['img']
             source = res['source']
             if source not in self.video_streams:
-                video_path = os.path.join(self.save_path, source)
+                if res.get('is_main'):
+                    relative_path = './video'
+                    video_path = os.path.join(self.save_path, 'video')
+                else:
+                    relative_path = './' + source
+                    video_path = os.path.join(self.save_path, source)
                 if not os.path.exists(video_path):
                     os.mkdir(video_path)
                 self.video_streams[source] = {
                     'video_path': video_path,
+                    'video_relative_path': relative_path,
                     'video_name': "",
                     'frame_cnt': 0,
                     'frame_reset': True,
@@ -243,7 +272,17 @@ class FileHandler(Process):
                 self.video_streams[source]['video_name'] = 'camera_{:08d}.avi'.format(frame_id)
                 video_path = os.path.join(self.video_streams[source]['video_path'],
                                           self.video_streams[source]['video_name'])
+                relative_path = os.path.join(self.video_streams[source]['video_relative_path'],
+                                             self.video_streams[source]['video_name'])
                 print("video start over.", self.video_streams[source]['frame_cnt'], video_path)
+
+                kw = 'camera' if msg['is_main'] else source
+                self.meta = self.d['meta']
+                if self.meta['signals'].get(kw):
+                    self.meta['signals'][kw]['paths'].append(relative_path)
+                    self.d['meta'] = self.meta
+                    self.save_meta()
+
                 if self.video_streams[source]['video_writer']:
                     if not self.isheadless:
                         self.video_streams[source]['video_writer'].release()
@@ -260,7 +299,7 @@ class FileHandler(Process):
             self.write_video_log(msg)
             self.video_streams[source]['frame_cnt'] += 1
 
-    def write_other_log(self, source, name, msg, bin=False):
+    def write_other_log(self, source, file_name, msg, bin=False, meta_info=None):
         """记录其他类型的消息日志"""
         if not self.save_path:
             return
@@ -269,11 +308,20 @@ class FileHandler(Process):
             os.mkdir(log_dir)
         if source not in self.other_log_fps:
             self.other_log_fps[source] = {}
-        if not self.other_log_fps[source].get(name):
+        if not self.other_log_fps[source].get(file_name):
             open_mode = 'wb' if bin else 'w+'
-            self.other_log_fps[source][name] = open(os.path.join(log_dir, name), open_mode)
+            self.other_log_fps[source][file_name] = open(os.path.join(log_dir, file_name), open_mode)
 
-        self.other_log_fps[source][name].write(msg)
+            if meta_info:
+                # 是否需要记录到meta.json里面
+                self.meta = self.d['meta']
+                if not self.meta['signals'].get(meta_info['source']):
+                    self.meta['signals'][meta_info['source']] = {'type': meta_info['type'], 'parsers': [meta_info['parsers']], "paths": []}
+                self.meta['signals'][meta_info['source']]['paths'].append(os.path.join('./', source, file_name))
+                self.d['meta'] = self.meta
+                self.save_meta()
+
+        self.other_log_fps[source][file_name].write(msg)
 
     def write_video_log(self, msg):
         """记录视频数据日志"""
@@ -352,6 +400,110 @@ class FileHandler(Process):
     def close(self):
         self.ctrl_queue.put({'act': 'close'})
 
+    def update_meta(self, data):
+        """
+        更新meta.json
+        Returns:
+
+        """
+        self.meta = self.d['meta']
+        self.meta.update(data)
+        self.d['meta'] = self.meta
+        self.save_meta()
+
+    def save_meta(self):
+        """
+        保存到meta.json
+        Returns:
+
+        """
+        if self.is_recording:
+            self.meta = self.d['meta']
+            json.dump(self.meta, open(os.path.join(self.path, 'meta.json'), 'w+'), indent=True)
+
+    def get_git_version(self):
+        """
+        根据git生成版本号
+        Returns:
+
+        """
+        if not self.repo:
+            return
+
+        commit_datatime = time.mktime(self.repo.head.commit.committed_datetime.timetuple())
+        diff_ts = 0
+        change_files = self.repo.index.diff(None)
+        for file in change_files:
+            path_tuple = pathlib.PurePath(file.b_path).parts
+            if path_tuple[0] != "config":
+                file_diff_ts = os.path.getmtime(file.b_path) - commit_datatime
+                if file_diff_ts > diff_ts:
+                    diff_ts = file_diff_ts
+        return f"{self.repo.head.commit.committed_datetime.strftime('%Y.%m.%d')}.{self.repo.head.commit.hexsha[:8]}.{diff_ts}"
+
+    def init_meta(self):
+        """
+        保存meta.json文件
+        Returns:
+
+        """
+        try:
+            # 判断是否git仓库
+            self.repo = Repo(self.running_path)
+            version = self.get_git_version()
+        except Exception as e:
+            version_file = open(os.getcwd()+'version.txt', 'r')
+            version = version_file.read(-1).strip()
+
+        self.meta['versions']['pcc'] = version
+
+        self.meta['versions']['pcc'] = get_commit_version()
+        for idx, cfg in enumerate(self.uniconf.configs):
+            for keyword in cfg['ports']:
+                # can信号映射表
+                if 'can' in keyword:
+                    # log.txt里面映射的字段，优先用topic，这样的话可以在回放的时候自由选择解析方式
+                    topics = cfg['ports'][keyword].get('topic') or cfg['ports'][keyword].get('dbc')
+                    # dbc解析字段是后面加的 如果没有的话说明是老版本字段topic
+                    parser_name = cfg['ports'][keyword].get('dbc') or cfg['ports'][keyword].get('topic')
+                    if not parser_name:
+                        continue
+
+                    if isinstance(topics, list):
+                        topics = topics
+                    else:
+                        topics = [topics]
+
+                    if isinstance(parser_name, list):
+                        parsers = parser_name
+                    else:
+                        parsers = [parser_name]
+
+                    if cfg["type"] == "can_collector":
+                        # 新版本字段仅用来判断是否需要解析
+                        for i, t in enumerate(topics):
+                            log_keyword = '{}.{}.{}.{}'.format(cfg.get('origin_device', cfg['ports'][keyword].get('origin_device')), idx, keyword, t)
+                            self.meta['signals'][log_keyword] = {'type': 'can', 'parsers': parsers, 'idx': idx}
+                    else:
+                        # 旧版本字段需要进行字段映射来寻找解析方法
+                        log_keyword = 'CAN' + '{:01d}'.format(idx * 2) if keyword == 'can0' else 'CAN' + '{:01d}'.format(idx * 2 + 1)
+                        self.meta['signals'][log_keyword] = {'type': 'can', 'parsers': parsers, 'idx': idx}
+                # 视频映射表
+                elif 'video' in keyword:
+                    if cfg["type"] == 'mdc':
+                        log_keyword = "{}.{}.{}.{}".format(
+                            cfg['ports'][keyword].get('origin_device', ""),
+                            idx, keyword,
+                            cfg['ports'][keyword].get('dbc', ""))
+                        parser = cfg['ports'][keyword].get('dbc', "")
+                    else:
+                        log_keyword = 'camera' if cfg.get('is_main') else "{}.{}".format(cfg.get("type"), idx)
+                        parser = "video_jpeg"
+
+                    self.meta['signals'][log_keyword] = {'type': 'video', "parser": [parser], "paths": []}
+        self.d['meta'] = self.meta
+        self.save_meta()
+
     def start_rec(self, rlog=None):
         # 初始化日志保存路径
         date_format = '%Y%m%d%H%M%S'
@@ -383,9 +535,11 @@ class FileHandler(Process):
         # if self.pinpoint:
         #     self.insert_raw(
         #             (time.time(), self.pinpoint.get('source') + '.pinpoint', compose_from_def(ub482_defs, self.pinpoint)))
+        self.update_meta({'cve_start_ts': time.time()})
         logger.info('start recording: {}'.format(self.path))
 
     def stop_rec(self, clean_queue=True):
+        self.update_meta({"cve_end_ts": time.time()})
         self.ctrl_queue.put({'act': 'stop'})
         self.recording_state.value = 0
         self.start_time = 0

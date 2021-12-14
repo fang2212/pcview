@@ -23,3 +23,5 @@ matplotlib
 paho-mqtt
 nnpy
 colorlog
+pybind11
+

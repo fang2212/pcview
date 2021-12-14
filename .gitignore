@@ -61,3 +61,4 @@ dbc/*.ini
 log_sort.txt
 /config/.stignore
 config/runtime/
+version.txt

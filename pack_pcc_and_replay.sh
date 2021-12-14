@@ -7,6 +7,12 @@ if [ -d "build" ]; then
   rm -r build
 fi
 
+commit_id=`git rev-parse HEAD`
+commit_date=`git log --pretty=format:"%cd" $commit_id -1 --date=format:"%Y.%m.%d"`
+code_version="$commit_date.$commit_id.0"
+echo "打包版本：$code_version"
+echo $code_version > version.txt
+
 #python3 tools/build_info.py
 pyinstaller pcc_app.spec --noconfirm
 pyinstaller pcc_replay.spec --noconfirm
