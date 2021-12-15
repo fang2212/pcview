@@ -3,8 +3,8 @@
         "type": "can",
         "ids": ["0x5f0", "0x400", "0x401"],
         "cycle": 50,
-	"height_per": 10,
-	"low_per": 10
+        "height_per": 10,
+        "low_per": 10
     },
     "j2_fusion": {
         "type": "can",
@@ -25,17 +25,17 @@
     },
     "a1j": {
         "type": "can",
-        "ids": ["0x5f0", "0x400", "0x401"],
-        "cycle": 50
-    },
-    "bm.0.can1.a1j": {
-        "type": "can",
-        "ids": ["0x76d", "0x77a", "0x5f0"],
+        "ids": ["0x5f0", "0x400", "0x401", "0x76d", "0x77a"],
         "cycle": 50
     },
     "x1j": {
         "type": "can",
         "ids": ["0x76d", "0x77a", "0x5f0"],
+        "cycle": 50
+    },
+    "huace": {
+        "type": "can",
+        "ids": ["0x388", "0x386"],
         "cycle": 50
     },
     "j2": {
@@ -102,21 +102,41 @@
         "ids": ["0x20", "0x80", "0x3d"],
         "cycle": 50
     },
-    "bm-x4.8.can0.bosch_mrr": {
+    "bosch_mrr": {
         "type": "can",
         "ids": ["0x203","0x205","0x20a"],
         "cycle": 50
     },
-    "bm-x4.8.can1.bosch_r": {
+    "bosch_r": {
         "type": "can",
         "ids": ["0x343","0x339","0x33a","0x344"],
         "cycle": 100
     },
-    "bm-x4.8.can2.bosch_f": {
+    "bosch_rf": {
+        "type": "can",
+        "ids": ["0x343","0x339","0x33a","0x344"],
+        "cycle": 100
+    },
+    "bosch_rr": {
+        "type": "can",
+        "ids": ["0x343","0x339","0x33a","0x344"],
+        "cycle": 100
+    },
+    "bosch_f": {
         "type": "can",
         "ids": ["0x341","0x342","0x32c","0x33d"],
         "cycle": 100
-    },        
+    },
+    "bosch_fr": {
+        "type": "can",
+        "ids": ["0x341","0x342","0x32c","0x33d"],
+        "cycle": 100
+    },
+    "bosch_fl": {
+        "type": "can",
+        "ids": ["0x341","0x342","0x32c","0x33d"],
+        "cycle": 100
+    },
     "gs4": {
         "type": "can",
         "ids": ["0x26a", "0x3b6", "0x186"],
@@ -134,9 +154,7 @@
     },
     "camera": {
         "type": "keyword",
-        "cycle": 50,
-        "height_per": 10,
-        "low_per": 10
+f        "cycle": 20
     },
     "x1_collector.7": {
         "type": "keyword",

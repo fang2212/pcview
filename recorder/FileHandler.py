@@ -14,7 +14,7 @@ import cv2
 import numpy as np
 
 # 限制为单线程，防止竞争占用资源
-from utils import logger, get_commit_version
+from utils import logger
 
 cv2.setNumThreads(0)
 jpeg = TurboJPEG()
@@ -439,7 +439,7 @@ class FileHandler(Process):
                 file_diff_ts = os.path.getmtime(file.b_path) - commit_datatime
                 if file_diff_ts > diff_ts:
                     diff_ts = file_diff_ts
-        return f"{self.repo.head.commit.committed_datetime.strftime('%Y.%m.%d')}.{self.repo.head.commit.hexsha[:8]}.{diff_ts}"
+        return f"{self.repo.head.commit.committed_datetime.strftime('%Y.%m.%d')}.{self.repo.head.commit.hexsha[:8]}.{int(diff_ts)}"
 
     def init_meta(self):
         """
@@ -457,7 +457,6 @@ class FileHandler(Process):
 
         self.meta['versions']['pcc'] = version
 
-        self.meta['versions']['pcc'] = get_commit_version()
         for idx, cfg in enumerate(self.uniconf.configs):
             for keyword in cfg['ports']:
                 # can信号映射表

@@ -1,0 +1,130 @@
+{
+  "type": "mdc",
+  "mac": "5a:31:d3:59:12:06",
+  "force_ip": true,
+  "ip": "192.168.30.42",
+  "work_mode": "collector",
+  "origin_device": "mdc",
+  "repeater": false,
+  "ports": {
+    "video1": {
+      "enable": true,
+      "port": 26011,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "dbc": "video_h265_new",
+      "topic": "camera_front_narrow",
+      "idx": 1
+    },
+    "video2": {
+      "enable": true,
+      "port": 26012,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "dbc": "video_h265_new",
+      "topic": "camera_front_wide",
+      "idx": 2
+    },
+    "video3": {
+      "enable": true,
+      "port": 26013,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "dbc": "video_h265_new",
+      "topic": "camera_left_front",
+      "idx": 3
+    },
+    "video4": {
+      "enable": true,
+      "port": 26014,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "dbc": "video_h265_new",
+      "topic": "camera_left_back",
+      "idx": 4
+    },
+    "video5": {
+      "enable": true,
+      "port": 26015,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "dbc": "video_h265_new",
+      "topic": "camera_right_front",
+      "idx": 5
+    },
+    "video6": {
+      "enable": true,
+      "port": 26016,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "dbc": "video_h265_new",
+      "topic": "camera_right_back",
+      "idx": 6
+    },
+    "video7": {
+      "enable": true,
+      "port": 26017,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "dbc": "video_h265_new",
+      "topic": "camera_back",
+      "idx": 7
+    },
+    "imu_infos": {
+      "enable": true,
+      "port": 24020,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "proto": {
+      "enable": true,
+      "port": 24030,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "gsensor": {
+      "enable": true,
+      "port": 24031,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+     "vehicle": {
+      "enable": true,
+      "port": 24032,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "lane": {
+      "enable": true,
+      "port": 24033,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "autocalib": {
+      "enable": true,
+      "port": 24034,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "roadmark": {
+      "enable": true,
+      "port": 24035,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "*"
+    },
+    "mdc_ts": {
+      "enable": true,
+      "port": 28011,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "MdcTime"
+    }
+  }
+}

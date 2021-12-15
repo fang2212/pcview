@@ -809,6 +809,8 @@ class FlowSink(Sink):
         if self.topic == '*' or self.dbc == "video_h265":   # Q3华为mdc数据
             if 24011 <= self.port <= 24017 or self.dbc == "video_h265":     # h264视频数据
                 self.pkg_handler = self.video_h265
+            elif self.dbc == "video_h265_new":
+                self.pkg_handler = self.video_h265_new
             elif self.port == 28011:
                 self.pkg_handler = self.mdc_ts
             else:
@@ -899,6 +901,44 @@ class FlowSink(Sink):
         img = data[36:]
         return img, head_data
 
+    def decode_mdc(self, data):
+        """
+        mdc视频数据解析
+        Args:
+            data:
+
+        Returns:
+
+        """
+        head_data = {
+            "seq": int.from_bytes(data[:4], byteorder='little', signed=False),                              # 图像序号
+            "frame_type": int.from_bytes(data[4:8], byteorder='little', signed=False),                      # 帧类型
+            "data_size": int.from_bytes(data[8:12], byteorder='little', signed=False),                      # 数据大小
+            "width": int.from_bytes(data[12:16], byteorder='little', signed=False),                         # 宽
+            "height": int.from_bytes(data[16:20], byteorder='little', signed=False),                        # 高
+
+            "fsync_ads_sec": int.from_bytes(data[20:24], byteorder='little', signed=False),                 # Fsync曝光信号触发的时刻，数据面时间，秒
+            "fsync_ads_nsec": int.from_bytes(data[24:28], byteorder='little', signed=False),                # Fsync曝光信号触发的时刻，数据面时间，纳秒
+            "fsync_gnss_sec": int.from_bytes(data[28:32], byteorder='little', signed=False),                # Fsync曝光信号触发的时刻，管理面时间，秒
+            "fsync_gnss_nsec": int.from_bytes(data[32:36], byteorder='little', signed=False),               # Fsync曝光信号触发的时刻，管理面时间，纳秒
+
+            "exp_start_ads_sec": int.from_bytes(data[36:40], byteorder='little', signed=False),             # 图像曝光开始的时刻，数据面时间，秒
+            "exp_start_ads_nsec": int.from_bytes(data[40:44], byteorder='little', signed=False),            # 图像曝光开始的时刻，数据面时间，纳秒
+            "exp_start_gnss_sec": int.from_bytes(data[44:48], byteorder='little', signed=False),            # 图像曝光开始的时刻，管理面时间，秒
+            "exp_start_gnss_nsec": int.from_bytes(data[48:52], byteorder='little', signed=False),           # 图像曝光开始的时刻，管理面时间，纳秒
+
+            "exp_end_ads_sec": int.from_bytes(data[52:56], byteorder='little', signed=False),               # 图像曝光结束的时刻，数据面时间，秒
+            "exp_end_ads_nsec": int.from_bytes(data[56:60], byteorder='little', signed=False),              # 图像曝光结束的时刻，数据面时间，纳秒
+            "exp_end_gnss_sec": int.from_bytes(data[60:64], byteorder='little', signed=False),              # 图像曝光结束的时刻，管理面时间，秒
+            "exp_end_gnss_nsec": int.from_bytes(data[64:68], byteorder='little', signed=False),             # 图像曝光结束的时刻，管理面时间，纳秒
+
+            "shutter1": int.from_bytes(data[68:72], byteorder='little', signed=False),                      # 图像大像素曝光持续时间，微秒
+            "shutter2": int.from_bytes(data[72:76], byteorder='little', signed=False),                      # 图像小像素曝光持续时间，微秒
+            "reserve": int.from_bytes(data[76:128], byteorder='little', signed=False),                      # 数据结构128字节对齐，保留空间
+        }
+        img = data[128:]
+        return img, head_data
+
     def mdc_ts(self, msg):
         data = self.decode_data(msg)
         data = data['data']
@@ -910,6 +950,31 @@ class FlowSink(Sink):
         # print(ads_sec, ads_nsec, gnss_sec, gnss_nsec)
         # print("mdc_ts", "{} {} {} {}".format(ads_sec, ads_nsec, gnss_sec, gnss_nsec))
         self.fileHandler.insert_raw((timestamp, "mdc_ts", "{} {} {} {}".format(ads_sec[0], ads_nsec[0], gnss_sec[0], gnss_nsec[0])))
+
+    def video_h265_new(self, msg):
+        data = self.decode_data(msg)
+        img, head_data = self.decode_mdc(data)
+        timestamp = time.time()
+
+        if self.topic != "*":
+            log_name = self.topic
+        else:
+            log_name = self.port_name
+        r = {
+            "source": self.source,
+            "log_name": log_name,
+            "buf": img,
+            "meta": {
+                "source": self.source,
+                "type": "video",
+                "parser": [self.dbc]
+            }
+        }
+        self.fileHandler.insert_general_bin_raw(r)
+
+        self.fileHandler.insert_raw(
+            (timestamp, "{}.{}.{}.{}".format(self.device, self.index, self.port_name, self.dbc), "{:d} {:d} {} {} {} {} {} {} {}".format(head_data["height"], head_data["width"], head_data["send_time_high"],
+                                                                                                         head_data["send_time_low"], head_data["frame_type"], head_data["data_size"], head_data["seq"], head_data["sec"], head_data["nsec"])))
 
     def video_h265(self, msg):
         data = self.decode_data(msg)

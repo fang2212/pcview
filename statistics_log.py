@@ -137,6 +137,12 @@ class Statistics:
 
         self.init()
 
+    def clear(self):
+        self.can_map.clear()
+        self.topic_map.clear()
+        self.device_map.clear()
+        self.keyword_map.clear()
+
     def init(self):
         if not (self.save_path and os.path.exists(self.save_path) and os.path.isdir(self.save_path)):
             self.save_path = os.path.join(os.path.dirname(self.log_path), "log信号接收统计图表")
@@ -571,4 +577,5 @@ if __name__ == "__main__":
     for path in tqdm(log_path_list):
         task = Statistics(path, save_path=args.save, config=config, cover=args.cover)
         task.run()
-        logger.warning("运行结束")
+        task.clear()
+    logger.warning("运行结束")
