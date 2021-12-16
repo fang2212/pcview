@@ -1061,7 +1061,6 @@ class PCC(object):
                     if ip == msg[device]['ip'] and idx == msg[device]['idx']:
                         for node in msg[device]['ports']:
                             if port == msg[device]['ports'][node]['port']:
-                                print(node)
                                 msg[device]['ports'][node]['enable'] = 'running'
 
         return msg
@@ -1072,18 +1071,18 @@ class PCC(object):
 
         msg = self.hub.online
 
-        if self.hub.sq.full():
-            self.stuck_cnt += 1
-        else:
-            self.stuck_cnt = 0
-
-        signal_list = []
-        while not self.hub.sq.empty():
-            sq = self.hub.sq.get()
-            if sq not in signal_list:
-                signal_list.append(sq)
-
-        msg = self.check_signal(msg, signal_list)
+        # if self.hub.sq.full():
+        #     self.stuck_cnt += 1
+        # else:
+        #     self.stuck_cnt = 0
+        #
+        # signal_list = []
+        # while not self.hub.sq.empty():
+        #     sq = self.hub.sq.get()
+        #     if sq not in signal_list:
+        #         signal_list.append(sq)
+        #
+        # msg = self.check_signal(msg, signal_list)
 
         # self.vs.ws_send('devices', msg)
         if self.o_msg_q and not self.o_msg_q.full():

@@ -139,7 +139,7 @@ class NNSink(Sink):
                 time.sleep(0.001)
                 continue
 
-            self.sq.put([self.ip, self.port, self.index, self.source])
+            # self.sq.put([self.ip, self.port, self.index, self.source])
 
             t0 = time.time()
             r = self.pkg_handler(buf)
@@ -204,7 +204,7 @@ class ZmqSink(Sink):
                 time.sleep(0.001)
                 continue
 
-            self.sq.put([self.ip, self.port, self.index, self.source])
+            # self.sq.put([self.ip, self.port, self.index, self.source])
 
             t0 = time.time()
             msg_cnt += 1
@@ -308,7 +308,7 @@ class UDPSink(Sink):
                 time.sleep(0.001)
                 continue
 
-            self.sq.put([self.ip, self.port, self.index, self.source])
+            # self.sq.put([self.ip, self.port, self.index, self.source])
 
             t0 = time.time()
             r = self.pkg_handler(buf)
@@ -388,7 +388,7 @@ class TCPSink(Sink):
                 time.sleep(0.001)
                 continue
 
-            self.sq.put([self.ip, self.port, self.index, self.source])
+            # self.sq.put([self.ip, self.port, self.index, self.source])
 
             t0 = time.time()
             r = self.pkg_handler(buf)
@@ -838,7 +838,7 @@ class FlowSink(Sink):
                 if self.exit:
                     break
 
-                self.sq.put([self.ip, self.port, self.index, self.source])
+                # self.sq.put([self.ip, self.port, self.index, self.source])
 
                 r = self.pkg_handler(msg)
                 if r is not None:
@@ -967,7 +967,7 @@ class FlowSink(Sink):
             "meta": {
                 "source": self.source,
                 "type": "video",
-                "parser": [self.dbc]
+                "parsers": [self.dbc]
             }
         }
         self.fileHandler.insert_general_bin_raw(r)
@@ -992,7 +992,7 @@ class FlowSink(Sink):
             "meta": {
                 "source": self.source,
                 "type": "video",
-                "parser": [self.dbc]
+                "parsers": [self.dbc]
             }
         }
         self.fileHandler.insert_general_bin_raw(r)

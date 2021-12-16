@@ -13,7 +13,7 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_front_narrow",
       "idx": 1
     },
     "video2": {
@@ -22,7 +22,7 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_front_wide",
       "idx": 2
     },
     "video3": {
@@ -31,7 +31,7 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_left_front",
       "idx": 3
     },
     "video4": {
@@ -40,7 +40,7 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_left_back",
       "idx": 4
     },
     "video5": {
@@ -49,7 +49,7 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_right_front",
       "idx": 5
     },
     "video6": {
@@ -58,7 +58,7 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_right_back",
       "idx": 6
     },
     "video7": {
@@ -67,7 +67,7 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_back",
       "idx": 7
     },
     "imu_infos": {

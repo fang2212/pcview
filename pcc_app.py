@@ -47,6 +47,7 @@ else:
         if not udevs:
             raise FileNotFoundError
         dir_found = False
+        logger.debug("usb devices:{}".format(udevs))
         for udev in udevs:
             save_path = os.path.join(mount_root, udev, 'cve_data')
             if os.path.exists(save_path):
@@ -56,10 +57,12 @@ else:
                 break
         if not dir_found:
             logger.warning('creating cve dir')
+            device_path = os.path.join(mount_root, udevs[0])
             save_path = os.path.join(mount_root, udevs[0], 'cve_data')
+            logger.debug("wait create path:{}，is exits:{}".format(device_path, os.path.exists(device_path)))
             os.mkdir(save_path)
             local_cfg.log_root = save_path
-    except FileNotFoundError:
+    except Exception as e:
         logger.error('no media folder found.')
 
 cve_conf.local_cfg = local_cfg
@@ -74,7 +77,7 @@ else:
     for c in cve_conf.configs:
         if c.get("is_back"):
             show_back = True
-            logger.info("has back camera:{}".format(json.dumps(cfg)))
+            logger.info("has back camera:{}".format(json.dumps(c)))
             break
 
 _startup_cwd = os.getcwd()

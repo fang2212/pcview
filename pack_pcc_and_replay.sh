@@ -9,7 +9,7 @@ fi
 
 commit_id=`git rev-parse HEAD`
 commit_date=`git log --pretty=format:"%cd" $commit_id -1 --date=format:"%Y.%m.%d"`
-code_version="$commit_date.$commit_id.0"
+code_version="$commit_date.${commit_id:0:8}.0"
 echo "打包版本：$code_version"
 echo $code_version > version.txt
 
@@ -44,6 +44,7 @@ python3 tools/build_info.py
 mv build_info.txt dist/pcc_app/
 
 cd dist
+cp ../version.txt pcc_app/
 cp pcc_replay/pcc_replay pcc_app/
 cp split_recorder_data/split_recorder_data pcc_app/
 cp statistics_log/statistics_log -r pcc_app/

@@ -316,7 +316,11 @@ class FileHandler(Process):
                 # 是否需要记录到meta.json里面
                 self.meta = self.d['meta']
                 if not self.meta['signals'].get(meta_info['source']):
-                    self.meta['signals'][meta_info['source']] = {'type': meta_info['type'], 'parsers': [meta_info['parsers']], "paths": []}
+                    try:
+                        self.meta['signals'][meta_info['source']] = {'type': meta_info.get('type', 'none'), 'parsers': [meta_info['parsers']], "paths": []}
+                    except Exception as e:
+                        logger.error(e, exc_info=True)
+                        print(meta_info)
                 self.meta['signals'][meta_info['source']]['paths'].append(os.path.join('./', source, file_name))
                 self.d['meta'] = self.meta
                 self.save_meta()
@@ -452,7 +456,7 @@ class FileHandler(Process):
             self.repo = Repo(self.running_path)
             version = self.get_git_version()
         except Exception as e:
-            version_file = open(os.getcwd()+'version.txt', 'r')
+            version_file = open(os.getcwd()+'/version.txt', 'r')
             version = version_file.read(-1).strip()
 
         self.meta['versions']['pcc'] = version
