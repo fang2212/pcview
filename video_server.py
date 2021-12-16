@@ -42,7 +42,7 @@ socketio = SocketIO(app, async_mode=async_mode)
 ctrl_q = Queue(maxsize=20)
 msg_q = Queue(maxsize=2000)
 img_q = Queue(maxsize=5000)
-filter_q = Queue(maxsize=20)
+# filter_q = Queue(maxsize=20)
 local_path = json.load(open('config/local.json'))['log_root']
 
 no_frame = open('static/img/no_video.jpg', 'rb').read()
@@ -341,7 +341,7 @@ def upgrade():
 def filter():
     signal = request.get_data(as_text=True)
     data = {signal: "filter"}
-    filter_q.put(data)
+    # filter_q.put(data)
 
     return redirect("/")
 
@@ -350,7 +350,7 @@ def filter():
 def display():
     signal = request.get_data(as_text=True)
     data = {signal: "display"}
-    filter_q.put(data)
+    # filter_q.put(data)
 
     return redirect("/")
 

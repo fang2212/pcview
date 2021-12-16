@@ -145,7 +145,7 @@ class Hub(Thread):
             print('index {}'.format(ol['idx']), bcl.OKBL + ip_type + bcl.ENDC, ol.get('mac'))
             print('definition:', ol['defs_path'])
             for iface in ol['ports']:
-                ol['ports'][iface]['display'] = True
+                # ol['ports'][iface]['display'] = True
                 topic = ol['ports'][iface].get('dbc', ol['ports'][iface].get('topic'))
                 if isinstance(topic, list):
                     topic = ','.join(topic)
@@ -165,6 +165,7 @@ class Hub(Thread):
                     if cfg.get('mac', '').lower() == mac.lower():
                         ip_type = "{}@{}".format(ip, cfg['type'])
                         if ip_type not in self.online:
+                            logger.warning("init new collector:{}".format(cfg))
                             self.init_collector(cfg)
             time.sleep(3)
         logger.warning('{} pid:{}'.format("HUB exit".ljust(20), os.getpid()))
@@ -200,6 +201,7 @@ class Hub(Thread):
         install_key = cfg.get("focus_install", "video")
         ip_type = "{}@{}".format(ip, cfg['type'])
         if self.online.get(ip_type) is None:
+            logger.warning("new device add online:{}".format(ip_type))
             self.online[ip_type] = {}
         self.online[ip_type]['msg_types'] = []
 

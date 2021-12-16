@@ -128,7 +128,7 @@ class PCC(object):
         if not eclient:
             if not to_web:
                 self.to_web = False
-                self.o_filter_q = queue.Queue(maxsize=20)
+                # self.o_filter_q = queue.Queue(maxsize=20)
                 cv2.namedWindow('MINIEYE-CVE')
                 cv2.setMouseCallback('MINIEYE-CVE', self.left_click, '1234')
                 cv2.namedWindow('adj')
@@ -142,7 +142,7 @@ class PCC(object):
                 self.to_web = True
                 self.o_msg_q = video_server.msg_q
                 self.o_img_q = video_server.img_q
-                self.o_filter_q = video_server.filter_q
+                # self.o_filter_q = video_server.filter_q
                 logger.warning('{} pid:{}'.format("PCC: web".ljust(20), os.getpid()))
         else:
             # from player import web_ui
@@ -464,7 +464,7 @@ class PCC(object):
         fps = self.player.cal_fps(frame_cnt)
         self.player.show_fps('video', fps)
 
-        self.player.render_text_info(img, self.filter)
+        self.player.render_text_info(img)
 
         if img.shape[1] > 1280:
             fx = 1280 / img.shape[1]
@@ -542,30 +542,30 @@ class PCC(object):
         fps = self.player.cal_fps(frame_cnt)
         self.player.show_fps('video', fps)
 
-        if not self.o_filter_q.empty():
-            data = self.o_filter_q.get()
-
-            for i in data:
-                signal, idx = i.split(".")
-                if data[i] == 'filter':
-                    is_display = False
-                    if i not in self.filter:
-                        self.filter.append(i)
-                else:
-                    is_display = True
-                    if i in self.filter:
-                        self.filter.remove(i)
-
-                for ip in self.hub.online:
-                    if int(idx) == self.hub.online[ip]['idx']:
-                        for node in self.hub.online[ip]['ports']:
-                            if self.hub.online[ip]['ports'][node].get('topic') == signal:
-                                self.hub.online[ip]['ports'][node]['display'] = is_display
-                            if self.hub.online[ip]['ports'][node].get('dbc') == signal:
-                                self.hub.online[ip]['ports'][node]['display'] = is_display
+        # if not self.o_filter_q.empty():
+        #     data = self.o_filter_q.get()
+        #
+        #     for i in data:
+        #         signal, idx = i.split(".")
+        #         if data[i] == 'filter':
+        #             is_display = False
+        #             if i not in self.filter:
+        #                 self.filter.append(i)
+        #         else:
+        #             is_display = True
+        #             if i in self.filter:
+        #                 self.filter.remove(i)
+        #
+        #         for ip in self.hub.online:
+        #             if int(idx) == self.hub.online[ip]['idx']:
+        #                 for node in self.hub.online[ip]['ports']:
+        #                     if self.hub.online[ip]['ports'][node].get('topic') == signal:
+        #                         self.hub.online[ip]['ports'][node]['display'] = is_display
+        #                     if self.hub.online[ip]['ports'][node].get('dbc') == signal:
+        #                         self.hub.online[ip]['ports'][node]['display'] = is_display
 
         # 渲染状态框信息
-        self.player.render_text_info(main_img, self.filter)
+        self.player.render_text_info(main_img)
         # 渲染提示信息
         self.show_alarm_info(main_img)
         
