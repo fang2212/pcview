@@ -212,6 +212,7 @@ class Hub(Thread):
                 if not cfg['ports'][item].get('enable') and not is_main:
                     continue
                 port = cfg['ports'][item]['port']
+                device = cfg['ports'][item].get('origin_device', device)
                 dbc = cfg['ports'][item].get('dbc', '')
                 topic = cfg['ports'][item].get('topic')
                 port_name = item

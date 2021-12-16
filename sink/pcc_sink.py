@@ -1049,7 +1049,7 @@ class FlowSink(Sink):
                 "meta": {
                     "source": '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, topic),
                     "type": self.msg_type,
-                    "parsers": [self.topic]
+                    "parsers": [topic]
                 }
             }
             self.fileHandler.insert_general_bin_raw(r)
