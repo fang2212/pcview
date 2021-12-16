@@ -1047,7 +1047,7 @@ class FlowSink(Sink):
                 "log_name": topic,
                 "buf": payload,
                 "meta": {
-                    "source": self.source,
+                    "source": '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, topic),
                     "type": self.msg_type,
                     "parsers": [self.topic]
                 }

@@ -456,8 +456,9 @@ class FileHandler(Process):
             self.repo = Repo(self.running_path)
             version = self.get_git_version()
         except Exception as e:
+            # 打包版本的话从根目录的version.txt中获取版本号
             version_file = open(os.getcwd()+'/version.txt', 'r')
-            version = version_file.read(-1).strip()
+            version = version_file.readline().strip()
 
         self.meta['versions']['pcc'] = version
 
@@ -550,8 +551,8 @@ class FileHandler(Process):
         # 重置每个设备的path
         self.meta = self.d['meta']
         for signal in self.meta['signals']:
-            if signal.get("paths"):
-                signal.clear()
+            if self.meta['signals'][signal].get("paths"):
+                self.meta['signals'][signal]["paths"].clear()
         self.d['meta'] = self.meta
 
         # 是否清除剩余未处理的日志信号
