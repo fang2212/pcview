@@ -954,7 +954,9 @@ class FlowSink(Sink):
     def video_h265_new(self, msg):
         data = self.decode_data(msg)
         img, head_data = self.decode_mdc(data)
-        timestamp = time.time()
+        sec = head_data['exp_start_gnss_sec']
+        nsec = head_data['exp_start_gnss_nsec']
+        timestamp = sec + nsec/1000000000
 
         if self.topic != "*":
             log_name = self.topic
@@ -979,7 +981,9 @@ class FlowSink(Sink):
     def video_h265(self, msg):
         data = self.decode_data(msg)
         img, head_data = self.decode_video(data)
-        timestamp = time.time()
+        sec = head_data["send_time_high"]
+        nsec = head_data["send_time_low"]
+        timestamp = sec + nsec/1000000000
 
         if self.topic != "*":
             log_name = self.topic
