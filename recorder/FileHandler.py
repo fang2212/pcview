@@ -547,6 +547,13 @@ class FileHandler(Process):
         self.recording_state.value = 0
         self.start_time = 0
 
+        # 重置每个设备的path
+        self.meta = self.d['meta']
+        for signal in self.meta['signals']:
+            if signal.get("paths"):
+                signal.clear()
+        self.d['meta'] = self.meta
+
         # 是否清除剩余未处理的日志信号
         if clean_queue:
             self.ctrl_queue.put({'act': 'clean'})
