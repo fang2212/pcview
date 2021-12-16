@@ -965,7 +965,7 @@ class FlowSink(Sink):
             "log_name": log_name,
             "buf": img,
             "meta": {
-                "source": self.source,
+                "source": '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, self.dbc),
                 "type": "video",
                 "parsers": [self.dbc]
             }
@@ -990,7 +990,7 @@ class FlowSink(Sink):
             "log_name": log_name,
             "buf": img,
             "meta": {
-                "source": self.source,
+                "source": '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, self.dbc),
                 "type": "video",
                 "parsers": [self.dbc]
             }

@@ -10,6 +10,7 @@
     "video1": {
       "enable": true,
       "port": 26011,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265_new",
@@ -19,6 +20,7 @@
     "video2": {
       "enable": true,
       "port": 26012,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265_new",
@@ -28,6 +30,7 @@
     "video3": {
       "enable": true,
       "port": 26013,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265_new",
@@ -37,6 +40,7 @@
     "video4": {
       "enable": true,
       "port": 26014,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265_new",
@@ -46,6 +50,7 @@
     "video5": {
       "enable": true,
       "port": 26015,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265_new",
@@ -55,6 +60,7 @@
     "video6": {
       "enable": true,
       "port": 26016,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265_new",
@@ -64,6 +70,7 @@
     "video7": {
       "enable": true,
       "port": 26017,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265_new",
