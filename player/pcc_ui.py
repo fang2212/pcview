@@ -1,3 +1,4 @@
+# -*- coding: future_fstrings -*-
 import time
 from datetime import datetime
 
@@ -348,7 +349,7 @@ class Player(object):
             return
         self.columns[source]['ts'] = ts
 
-    def render_text_info(self, img):
+    def render_text_info(self, img, filter):
         self.img_height, self.img_width, _ = img.shape
         w = 160
         slots = {}
@@ -356,6 +357,8 @@ class Player(object):
             slots[i] = 0
 
         for idx, col in enumerate(self.columns):
+            if col in filter:
+                continue
             indent = sorted(slots, key=lambda x: slots[x])[0]
             y0 = slots[indent]
             entry = self.columns[col]

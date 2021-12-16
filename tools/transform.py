@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: future_fstrings -*-
 # _*_ coding:utf-8 _*_
 #
 # @Version : 1.0
