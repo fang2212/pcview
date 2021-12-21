@@ -42,6 +42,8 @@ class FileHandler(Process):
         self.video_streams = dict()                 # 视频文件对象
         self.video_path = None                      # 视频保存路径
 
+        self.can_map = dict()                       # can信号映射表
+
         self.control_map = {                        # 控制方法映射表
             "start": self._start,
             "clean": self._clean,
@@ -169,6 +171,11 @@ class FileHandler(Process):
             tv_us = (timestamp - tv_s) * 1000000
             log_line = "%.10d %.6d " % (tv_s, tv_us) + log_type + ' ' + data + "\n"
             self.log_fp.write(log_line)
+            if log_type not in self.d['meta'] and log_type in self.can_map:
+                self.meta = self.d['meta']
+                self.meta['signals'][log_type] = self.can_map[log_type]
+                self.d['meta'] = self.meta
+                self.save_meta()
 
     def record_pcv_log(self, msg):
         source = msg['source']
@@ -230,10 +237,13 @@ class FileHandler(Process):
                 self.video_streams[source]['video_writer'].write_header()
                 print("video start over.", self.video_streams[source]['frame_cnt'], video_path)
 
-                kw = 'camera' if msg['is_main'] else source
-                self.meta = self.d['meta']
-                if self.meta['signals'].get(kw):
-                    self.meta['signals'][kw]['paths'].append(relative_path)
+                if msg.get("meta"):
+                    self.meta = self.d['meta']
+                    meta = msg['meta']
+                    if not self.meta['signals'].get(meta['source']):
+                        self.meta['signals'][meta['source']] = {'type': meta['type'], "parsers": meta['parsers'], "paths": [relative_path]}
+                    else:
+                        self.meta['signals'][meta['source']]['paths'].append(relative_path)
                     self.d['meta'] = self.meta
                     self.save_meta()
 
@@ -276,10 +286,13 @@ class FileHandler(Process):
                                              self.video_streams[source]['video_name'])
                 print("video start over.", self.video_streams[source]['frame_cnt'], video_path)
 
-                kw = 'camera' if msg['is_main'] else source
-                self.meta = self.d['meta']
-                if self.meta['signals'].get(kw):
-                    self.meta['signals'][kw]['paths'].append(relative_path)
+                if msg.get("meta"):
+                    self.meta = self.d['meta']
+                    meta = msg['meta']
+                    if not self.meta['signals'].get(meta['source']):
+                        self.meta['signals'][meta['source']] = {'type': meta['type'], "parsers": meta['parsers'], "paths": [relative_path]}
+                    else:
+                        self.meta['signals'][meta['source']]['paths'].append(relative_path)
                     self.d['meta'] = self.meta
                     self.save_meta()
 
@@ -317,7 +330,7 @@ class FileHandler(Process):
                 self.meta = self.d['meta']
                 if not self.meta['signals'].get(meta_info['source']):
                     try:
-                        self.meta['signals'][meta_info['source']] = {'type': meta_info.get('type', 'none'), 'parsers': [meta_info['parsers']], "paths": []}
+                        self.meta['signals'][meta_info['source']] = {'type': meta_info.get('type', 'none'), 'parsers': meta_info['parsers'], "paths": []}
                     except Exception as e:
                         logger.error(e, exc_info=True)
                         print(meta_info)
@@ -461,6 +474,7 @@ class FileHandler(Process):
             version = version_file.readline().strip()
 
         self.meta['versions']['pcc'] = version
+        self.meta['versions']['pcc_config'] = self.uniconf.version
 
         for idx, cfg in enumerate(self.uniconf.configs):
             for keyword in cfg['ports']:
@@ -487,24 +501,11 @@ class FileHandler(Process):
                         # 新版本字段仅用来判断是否需要解析
                         for i, t in enumerate(topics):
                             log_keyword = '{}.{}.{}.{}'.format(cfg.get('origin_device', cfg['ports'][keyword].get('origin_device')), idx, keyword, t)
-                            self.meta['signals'][log_keyword] = {'type': 'can', 'parsers': parsers, 'idx': idx}
+                            self.can_map[log_keyword] = {'type': 'can', 'parsers': parsers, 'idx': idx}
                     else:
                         # 旧版本字段需要进行字段映射来寻找解析方法
                         log_keyword = 'CAN' + '{:01d}'.format(idx * 2) if keyword == 'can0' else 'CAN' + '{:01d}'.format(idx * 2 + 1)
-                        self.meta['signals'][log_keyword] = {'type': 'can', 'parsers': parsers, 'idx': idx}
-                # 视频映射表
-                elif 'video' in keyword:
-                    if cfg["type"] == 'mdc':
-                        log_keyword = "{}.{}.{}.{}".format(
-                            cfg['ports'][keyword].get('origin_device', ""),
-                            idx, keyword,
-                            cfg['ports'][keyword].get('dbc', ""))
-                        parser = cfg['ports'][keyword].get('dbc', "")
-                    else:
-                        log_keyword = 'camera' if cfg.get('is_main') else "{}.{}".format(cfg.get("type"), idx)
-                        parser = "video_jpeg"
-
-                    self.meta['signals'][log_keyword] = {'type': 'video', "parser": [parser], "paths": []}
+                        self.can_map[log_keyword] = {'type': 'can', 'parsers': parsers, 'idx': idx}
         self.d['meta'] = self.meta
         self.save_meta()
 
