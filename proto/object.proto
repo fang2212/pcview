@@ -4,6 +4,7 @@ import "data_source.proto";
 import "calib_param.proto";
 import "vehicle_signal.proto";
 import "object_warning.proto";
+import "camera.proto";
 // VERSION
 // 0.6
 
@@ -26,6 +27,7 @@ message Object {
         kSmallTrafficSign = 10;
         kBigTrafficSign = 11;
         kTrafficLight = 12;
+		kObjectTypeNum = 16;
     }
 
     // 车辆姿态分类
@@ -44,6 +46,24 @@ message Object {
         kLeftCutOut = 11;                        // 左侧切出
         kRightCutOut = 12;                       // 右侧切出
     }
+
+	// 锚点信息
+	enum AnchorPtInfo {
+		kVehicleHead = 0;
+		kVehicleTail = 1;
+		kVehicleFrontWheel = 2;
+		kVehicleRearWheel = 3;
+		kVehicleSomeWheel = 4;
+        kDetectBottomCenter = 5;
+	}
+
+	enum MeasureType {
+		kVehicleMeasureHeadReg = 0;
+		kVehicleMeasureTailReg = 1;
+		kVehicleMeasureDetect = 2;
+		kVehicleMeasureWheel = 3;
+		kVehicleMeasurePlate = 4;
+	}
 
     // 车型细分类
     enum VehicleClass {
@@ -64,6 +84,16 @@ message Object {
         kVehicleUnknown = 14;                    // 未知车辆
     }
 
+	enum MoveState {
+		kUnknown = 0;                 // 未知
+		kEgoDirectionDriving = 1;     // 跟车流方向一致,向前行驶       
+		kEgoDirectionStopped = 2;     // 跟车流方向一致, 停止
+		kEgoDirectionReversing = 3;   // 跟车流方向一致, 横穿
+		kOnComming = 4;               // 对向来车
+		kCrossing = 5;                // 横穿车辆
+		kStationary = 6;              // 静止
+	}
+
     message ImageInfo {
         perception.common.Rect2f det_rect = 1;               // 检测框
         perception.common.Rect2f reg_rect = 2;               // 回归框(尾部框)
@@ -73,6 +103,7 @@ message Object {
         repeated perception.common.Rect2f wheel_list = 6;    // 车轮踪框
     
         perception.common.Box3D box = 10;                    // 3dbox
+		minieye.CamID camera_id = 11;                        // 对应那个摄像头 
     }
     
     message WorldInfo {
@@ -85,7 +116,7 @@ message Object {
     
         perception.common.Box3D box = 10;               // 3dbox
     
-        int32 id = 11;                                   // 目标id
+        int32 id = 11;                                   // 目标id (deprecated, 以object的id为准)
         int32 cls = 12;                                  // 类型分类, Negative=0, Car=1, MiniBus=2, Bus=3, Truck=4, Special=5, Unknown=6
         float val = 13;                                  // 分类值, 小标牌限高/限重限速/值
         int32 pose = 14;                                 // 姿态分类, Invalid=0, Tail=1, Head=2, Side=3, CutIn=4
@@ -94,21 +125,37 @@ message Object {
         int32 cipv = 17;                                 // 前方目标是否为关键车(CIPV)，关键车为1，非关键车为0
         int32 cipp = 18;                                 // 前方目标是否为关键人(CIPP)，关键人为1，非关键人为0
         perception.common.PoseAngle pose_angle = 19;     // 姿态角，单位：度， 上正，下负，右正，左负
+        int32 motion_state = 20;                         // 运动状态，1=Comming 2=NoComming 3=stopped(趋停) 4=parked(停稳)
+		AnchorPtInfo anchor = 21;                        // 测距对应的锚点信息
+
+		perception.common.Point3D pos_var = 22;          // pos的方差
     }
 
-    int32 hit_id = 1;                            // 目标检测ID
+	message FusionInfo { // fusion要用到的关联信息
+		repeated ImageInfo associated_image_infos = 1;   // 关联到的各个摄像头的检测框
+		repeated WorldInfo associated_world_infos = 2;   // 关联到的各个摄像头的检测框
+		repeated float associated_conf_matrix = 3;       // 关联置信度 num * num
+		WorldInfo fusion_world_info = 4;                 // 多视fusion后的结果
+	}
+
+    int32 hit_id = 1;                            // 目标检测ID (deprecated, 以hit_type为准)
     ObjectType hit_type = 2;                     // 目标检测类别enum
     string hit_type_str = 6;                     // 目标检测类别string
     float confidence = 3;                        // 检测置信度
     int32 frame_cnt = 4;                         // frame count
     int32 life_time = 5;                         // optional live ms 
 
-    ImageInfo image_info = 8;                    // 图像信息
-    WorldInfo world_info = 9;                    // 车辆坐标系下信息
+    ImageInfo image_info = 8;                    // 图像信息 (前视1v专用)
+    WorldInfo world_info = 9;                    // 车辆坐标系下信息 (前视1v专用)
 
     int32 track_status = 10;                     // track状态
     int32 trace_status = 11;                     // trace状态
     int32 select_level = 12;                     // 选择等级
+
+	uint64 id = 15;                              // object id
+	FusionInfo fusion_info = 16;                 // fusion需要信息 
+	MeasureType measure_type = 17;               // 量测类型
+	repeated Object key_components = 20;         // 组件信息
 }
 
 message ObjectList {
@@ -129,4 +176,7 @@ message ObjectList {
 	minieye.DataSource data_source = 15;         // 描述数据源 字节数: 4
     minieye.CalibParam calib_param = 16;         // 标定参数
     minieye.VehicleSignal vehicle_signal = 17;   // 车身信号
+	minieye.CameraParam camera_param = 18;       // 相机内外参数(多v融合结果不适用)
+	minieye.CamID cam_id = 19;                   // 摄像头id(cam_id.id(), 等同instance_id)
+	uint32 cam_prj_id = 20;                      // 用于进行投影变换的id
 }

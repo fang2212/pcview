@@ -6,8 +6,8 @@ import time
 
 from google.protobuf import json_format
 
-from pyproto import vehicle_pb2, pedestrian_pb2, roadmarking_pb2, object_attribute_pb2, object_pb2
-from pyproto import calib_param_pb2, dev_object_pb2, vehicle_signal_pb2
+from pyproto import pedestrian_pb2, roadmarking_pb2, object_pb2, camera_pb2
+from pyproto import calib_param_pb2, vehicle_signal_pb2
 # from multiprocessing import Process
 from threading import Thread
 # from threading import Event as tEvent
@@ -38,6 +38,10 @@ from tools import mytools
 from utils import logger
 
 async_for_sink = False
+
+pb_dict = {
+    "CameraFrameExtendedInfo": camera_pb2.CameraFrameExtendedInfo()
+}
 
 
 class bcl:
@@ -809,14 +813,14 @@ class FlowSink(Sink):
         if self.topic == '*' or self.dbc == "video_h265":   # Q3华为mdc数据
             if 24011 <= self.port <= 24017 or self.dbc == "video_h265":     # h264视频数据
                 self.pkg_handler = self.video_h265
-            elif self.dbc == "video_h265_new":
-                self.pkg_handler = self.video_h265_new
             elif self.port == 28011:
                 self.pkg_handler = self.mdc_ts
             else:
                 self.pkg_handler = self.mdc_data
         elif self.dbc == "video_jpeg":
             self.pkg_handler = self.video_jpeg
+        elif self.topic == "image_extended_info":
+            self.pkg_handler = self.img_ext_info
         elif self.topic == 'MdcTime':
             self.pkg_handler = self.mdc_ts
         elif self.save_type == 'bin':
@@ -901,7 +905,32 @@ class FlowSink(Sink):
         img = data[36:]
         return img, head_data
 
-    def img_ext_info(self, data):
+    def cam_ext_info(self, data):
+        """
+        TODO：摄像头临时添加接口数据采集
+        @param data:
+        @return:
+        """
+        head_data = [
+            int.from_bytes(data[:4], byteorder='little', signed=False),                 # camera id
+            int.from_bytes(data[4:12], byteorder='little', signed=False),               # timestamp 时戳，microseconds
+            int.from_bytes(data[12:20], byteorder='little', signed=False),              # tick 异构设备上的时钟
+            int.from_bytes(data[20:28], byteorder='little', signed=False),              # frame id 帧号
+            int.from_bytes(data[28:36], byteorder='little', signed=False),              # time_exp_api
+            int.from_bytes(data[36:44], byteorder='little', signed=False),              # time_exp_start 开始曝光时间 ms
+            int.from_bytes(data[44:52], byteorder='little', signed=False),              # time_exp_end 结束曝光时间 ms
+            int.from_bytes(data[52:60], byteorder='little', signed=False),              # time_exp_trigger 曝光触发信号的时间 ms
+            int.from_bytes(data[60:68], byteorder='little', signed=False),              # exp_ratio 曝光比
+        ]
+        log = ""
+        for i in head_data:
+            log += "{} ".format(i)
+
+        timestamp = head_data[1] / 1000000
+        self.fileHandler.insert_raw(
+            (timestamp, "{}.{}.{}.{}".format(self.device, self.index, self.port_name, self.dbc), log.strip()))
+
+    def img_ext_info(self, msg):
         """
         额外的图像信息
         Args:
@@ -910,40 +939,17 @@ class FlowSink(Sink):
         Returns:
 
         """
-        head_data = [
-            int.from_bytes(data[:4], byteorder='little', signed=False),                              # 图像序号
-            int.from_bytes(data[4:8], byteorder='little', signed=False),                      # 帧类型 0：MJPEG, 1:H264, 2:H265
-            int.from_bytes(data[8:12], byteorder='little', signed=False),                      # 数据大小
-            int.from_bytes(data[12:16], byteorder='little', signed=False),                         # 宽
-            int.from_bytes(data[16:20], byteorder='little', signed=False),                        # 高
-
-            int.from_bytes(data[20:24], byteorder='little', signed=False),                 # Fsync曝光信号触发的时刻，数据面时间，秒
-            int.from_bytes(data[24:28], byteorder='little', signed=False),                # Fsync曝光信号触发的时刻，数据面时间，纳秒
-            int.from_bytes(data[28:32], byteorder='little', signed=False),                # Fsync曝光信号触发的时刻，管理面时间，秒
-            int.from_bytes(data[32:36], byteorder='little', signed=False),               # Fsync曝光信号触发的时刻，管理面时间，纳秒
-
-            int.from_bytes(data[36:40], byteorder='little', signed=False),             # 图像曝光开始的时刻，数据面时间，秒
-            int.from_bytes(data[40:44], byteorder='little', signed=False),            # 图像曝光开始的时刻，数据面时间，纳秒
-            int.from_bytes(data[44:48], byteorder='little', signed=False),            # 图像曝光开始的时刻，管理面时间，秒
-            int.from_bytes(data[48:52], byteorder='little', signed=False),           # 图像曝光开始的时刻，管理面时间，纳秒
-
-            int.from_bytes(data[52:56], byteorder='little', signed=False),               # 图像曝光结束的时刻，数据面时间，秒
-            int.from_bytes(data[56:60], byteorder='little', signed=False),              # 图像曝光结束的时刻，数据面时间，纳秒
-            int.from_bytes(data[60:64], byteorder='little', signed=False),              # 图像曝光结束的时刻，管理面时间，秒
-            int.from_bytes(data[64:68], byteorder='little', signed=False),             # 图像曝光结束的时刻，管理面时间，纳秒
-
-            int.from_bytes(data[68:72], byteorder='little', signed=False),                      # 图像大像素曝光持续时间，微秒
-            int.from_bytes(data[72:76], byteorder='little', signed=False),                      # 图像小像素曝光持续时间，微秒
-            # "image_supplement": int.from_bytes(data[76:128], byteorder='little', signed=False),             # 图像附加描述信息，跟平台相关
-        ]
-
+        data = self.decode_data(msg)
+        pb = pb_dict["CameraFrameExtendedInfo"]
+        pb.ParseFromString(data)
+        msg = json_format.MessageToDict(pb, preserving_proto_field_name=True, including_default_value_fields=True)
         log = ""
-        for i in head_data:
-            log += "{} ".format(i)
+        for i in msg.keys():
+            log += "{} ".format(msg[i])
 
-        timestamp = head_data[7] + head_data[8]/1000000000
+        timestamp = msg["fsync_gnss_sec"] + msg['fsync_gnss_nsec']/1000000000
         self.fileHandler.insert_raw(
-            (timestamp, "{}.{}.{}.{}".format(self.device, self.index, self.port_name, self.dbc), log.strip()))
+            (timestamp, "{}.{}.{}.{}".format(self.device, self.index, self.port_name, self.topic), log.strip()))
 
     def mdc_ts(self, msg):
         data = self.decode_data(msg)
@@ -986,7 +992,7 @@ class FlowSink(Sink):
     def video_jpeg(self, msg):
         data = self.decode_data(msg)
         img, head_data = self.decode_video(data)
-        r = {'ts': head_data['sec']+head_data['nsec']/1000000000, 'img': img, 'frame_id': head_data['seq'],
+        r = {'ts': head_data['send_time_high']+head_data['send_time_low']/1000000000, 'img': img, 'frame_id': head_data['seq'],
              'type': 'video', 'source': self.source, 'is_main': self.is_main, "is_back": self.is_back,
              'transport': 'libflow', 'install': self.install_key,
              "meta": {

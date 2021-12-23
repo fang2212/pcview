@@ -17,6 +17,7 @@
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "a1j_fusion", "can1": "ars140"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "ars140", "can1": "ars140"}},
                 {"model":  "a1j", "params": {"mac": "5a:31:6e:f3:dd:83","is_main": true}},
+                {"model":  "mdc"},
                 {"model":  "can_gw_nn", "params": {"can1": "bosch_mrr", "can2": "bosch_r", "can3": "bosch_f", "can4": "blank"}},
                 {"model":  "pi_node", "params": {"ip": "192.168.98.180", "force_ip":  true}}
             ],

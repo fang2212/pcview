@@ -3,6 +3,7 @@
 # source: pedestrian.proto
 """Generated protocol buffer code."""
 from google.protobuf import descriptor as _descriptor
+from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
@@ -11,421 +12,18 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+import pyproto.geometry_pb2 as geometry__pb2
+import pyproto.data_source_pb2 as data__source__pb2
 
 
-DESCRIPTOR = _descriptor.FileDescriptor(
-  name='pedestrian.proto',
-  package='perception',
-  syntax='proto3',
-  serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10pedestrian.proto\x12\nperception\"\xde\x07\n\nPedestrian\x12\x10\n\x08\x66rame_id\x18\x01 \x01(\x04\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12\x35\n\x08ped_list\x18\x03 \x03(\x0b\x32#.perception.Pedestrian.PedDetExport\x12<\n\x0bped_warning\x18\x04 \x01(\x0b\x32\'.perception.Pedestrian.PedWarningExport\x12.\n\x05state\x18\x05 \x01(\x0b\x32\x1f.perception.Pedestrian.PedState\x1a\x34\n\x06Rect2f\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01w\x18\x03 \x01(\x02\x12\t\n\x01h\x18\x04 \x01(\x02\x1a\xfc\x04\n\x0cPedDetExport\x12\x31\n\ndetect_box\x18\x01 \x01(\x0b\x32\x1d.perception.Pedestrian.Rect2f\x12.\n\x07reg_box\x18\x02 \x01(\x0b\x32\x1d.perception.Pedestrian.Rect2f\x12\x30\n\ttrack_box\x18\x03 \x01(\x0b\x32\x1d.perception.Pedestrian.Rect2f\x12/\n\x08\x62ike_box\x18\x04 \x01(\x0b\x32\x1d.perception.Pedestrian.Rect2f\x12\x12\n\nconfidence\x18\x05 \x01(\x02\x12\x15\n\rdetect_status\x18\x06 \x01(\x05\x12\x0c\n\x04t_id\x18\x07 \x01(\x05\x12\x11\n\tunique_id\x18\x08 \x01(\x05\x12\x0f\n\x07time_ms\x18\t \x01(\x03\x12\x11\n\tpredicted\x18\n \x01(\x08\x12\x0f\n\x07world_x\x18\x0b \x01(\x02\x12\x0f\n\x07world_y\x18\x0c \x01(\x02\x12\x11\n\tpos_angle\x18\r \x01(\x02\x12\r\n\x05ttc_m\x18\x0e \x01(\x02\x12\x0b\n\x03ttc\x18\x0f \x01(\x02\x12\x1d\n\x15longitudinal_velocity\x18\x10 \x01(\x02\x12\x18\n\x10lateral_velocity\x18\x11 \x01(\x02\x12\x0e\n\x06real_H\x18\x12 \x01(\x02\x12\x0e\n\x06real_W\x18\x13 \x01(\x02\x12\x1d\n\x15is_longitudinal_close\x18\x14 \x01(\x08\x12\x18\n\x10is_lateral_close\x18\x15 \x01(\x08\x12\x1d\n\x15is_measure_not_stable\x18\x16 \x01(\x08\x12\x11\n\thave_bike\x18\x17 \x01(\x08\x12\x0e\n\x06is_key\x18\x18 \x01(\x02\x12\x11\n\tis_danger\x18\x19 \x01(\x08\x1a\x32\n\x10PedWarningExport\x12\x0e\n\x06ped_on\x18\x01 \x01(\x08\x12\x0e\n\x06pcw_on\x18\x02 \x01(\x08\x1a\x1d\n\x08PedState\x12\x11\n\tpcw_state\x18\x01 \x01(\x05\x62\x06proto3'
-)
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10pedestrian.proto\x12\nperception\x1a\x0egeometry.proto\x1a\x11\x64\x61ta_source.proto\"\xf3\x06\n\nPedestrian\x12\x10\n\x08\x66rame_id\x18\x01 \x01(\x04\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12\x35\n\x08ped_list\x18\x03 \x03(\x0b\x32#.perception.Pedestrian.PedDetExport\x12<\n\x0bped_warning\x18\x04 \x01(\x0b\x32\'.perception.Pedestrian.PedWarningExport\x12(\n\x0b\x64\x61ta_source\x18\x05 \x01(\x0e\x32\x13.minieye.DataSource\x1a\xec\x04\n\x0cPedDetExport\x12-\n\ndetect_box\x18\x01 \x01(\x0b\x32\x19.perception.common.Rect2f\x12*\n\x07reg_box\x18\x02 \x01(\x0b\x32\x19.perception.common.Rect2f\x12,\n\ttrack_box\x18\x03 \x01(\x0b\x32\x19.perception.common.Rect2f\x12+\n\x08\x62ike_box\x18\x04 \x01(\x0b\x32\x19.perception.common.Rect2f\x12\x12\n\nconfidence\x18\x05 \x01(\x02\x12\x15\n\rdetect_status\x18\x06 \x01(\x05\x12\x0c\n\x04t_id\x18\x07 \x01(\x05\x12\x11\n\tunique_id\x18\x08 \x01(\x05\x12\x0f\n\x07time_ms\x18\t \x01(\x03\x12\x11\n\tpredicted\x18\n \x01(\x08\x12\x0f\n\x07world_x\x18\x0b \x01(\x02\x12\x0f\n\x07world_y\x18\x0c \x01(\x02\x12\x11\n\tpos_angle\x18\r \x01(\x02\x12\r\n\x05ttc_m\x18\x0e \x01(\x02\x12\x0b\n\x03ttc\x18\x0f \x01(\x02\x12\x1d\n\x15longitudinal_velocity\x18\x10 \x01(\x02\x12\x18\n\x10lateral_velocity\x18\x11 \x01(\x02\x12\x0e\n\x06real_H\x18\x12 \x01(\x02\x12\x0e\n\x06real_W\x18\x13 \x01(\x02\x12\x1d\n\x15is_longitudinal_close\x18\x14 \x01(\x08\x12\x18\n\x10is_lateral_close\x18\x15 \x01(\x08\x12\x1d\n\x15is_measure_not_stable\x18\x16 \x01(\x08\x12\x11\n\thave_bike\x18\x17 \x01(\x08\x12\x0e\n\x06is_key\x18\x18 \x01(\x08\x12\x11\n\tis_danger\x18\x19 \x01(\x08\x1a\x32\n\x10PedWarningExport\x12\x0e\n\x06ped_on\x18\x01 \x01(\x08\x12\x0e\n\x06pcw_on\x18\x02 \x01(\x08\x62\x06proto3')
 
 
 
-
-_PEDESTRIAN_RECT2F = _descriptor.Descriptor(
-  name='Rect2f',
-  full_name='perception.Pedestrian.Rect2f',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='x', full_name='perception.Pedestrian.Rect2f.x', index=0,
-      number=1, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='y', full_name='perception.Pedestrian.Rect2f.y', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='w', full_name='perception.Pedestrian.Rect2f.w', index=2,
-      number=3, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='h', full_name='perception.Pedestrian.Rect2f.h', index=3,
-      number=4, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=249,
-  serialized_end=301,
-)
-
-_PEDESTRIAN_PEDDETEXPORT = _descriptor.Descriptor(
-  name='PedDetExport',
-  full_name='perception.Pedestrian.PedDetExport',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='detect_box', full_name='perception.Pedestrian.PedDetExport.detect_box', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='reg_box', full_name='perception.Pedestrian.PedDetExport.reg_box', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='track_box', full_name='perception.Pedestrian.PedDetExport.track_box', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='bike_box', full_name='perception.Pedestrian.PedDetExport.bike_box', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='confidence', full_name='perception.Pedestrian.PedDetExport.confidence', index=4,
-      number=5, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='detect_status', full_name='perception.Pedestrian.PedDetExport.detect_status', index=5,
-      number=6, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='t_id', full_name='perception.Pedestrian.PedDetExport.t_id', index=6,
-      number=7, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='unique_id', full_name='perception.Pedestrian.PedDetExport.unique_id', index=7,
-      number=8, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='time_ms', full_name='perception.Pedestrian.PedDetExport.time_ms', index=8,
-      number=9, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='predicted', full_name='perception.Pedestrian.PedDetExport.predicted', index=9,
-      number=10, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='world_x', full_name='perception.Pedestrian.PedDetExport.world_x', index=10,
-      number=11, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='world_y', full_name='perception.Pedestrian.PedDetExport.world_y', index=11,
-      number=12, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='pos_angle', full_name='perception.Pedestrian.PedDetExport.pos_angle', index=12,
-      number=13, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='ttc_m', full_name='perception.Pedestrian.PedDetExport.ttc_m', index=13,
-      number=14, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='ttc', full_name='perception.Pedestrian.PedDetExport.ttc', index=14,
-      number=15, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='longitudinal_velocity', full_name='perception.Pedestrian.PedDetExport.longitudinal_velocity', index=15,
-      number=16, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='lateral_velocity', full_name='perception.Pedestrian.PedDetExport.lateral_velocity', index=16,
-      number=17, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='real_H', full_name='perception.Pedestrian.PedDetExport.real_H', index=17,
-      number=18, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='real_W', full_name='perception.Pedestrian.PedDetExport.real_W', index=18,
-      number=19, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='is_longitudinal_close', full_name='perception.Pedestrian.PedDetExport.is_longitudinal_close', index=19,
-      number=20, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='is_lateral_close', full_name='perception.Pedestrian.PedDetExport.is_lateral_close', index=20,
-      number=21, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='is_measure_not_stable', full_name='perception.Pedestrian.PedDetExport.is_measure_not_stable', index=21,
-      number=22, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='have_bike', full_name='perception.Pedestrian.PedDetExport.have_bike', index=22,
-      number=23, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='is_key', full_name='perception.Pedestrian.PedDetExport.is_key', index=23,
-      number=24, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='is_danger', full_name='perception.Pedestrian.PedDetExport.is_danger', index=24,
-      number=25, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=304,
-  serialized_end=940,
-)
-
-_PEDESTRIAN_PEDWARNINGEXPORT = _descriptor.Descriptor(
-  name='PedWarningExport',
-  full_name='perception.Pedestrian.PedWarningExport',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='ped_on', full_name='perception.Pedestrian.PedWarningExport.ped_on', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='pcw_on', full_name='perception.Pedestrian.PedWarningExport.pcw_on', index=1,
-      number=2, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=942,
-  serialized_end=992,
-)
-
-_PEDESTRIAN_PEDSTATE = _descriptor.Descriptor(
-  name='PedState',
-  full_name='perception.Pedestrian.PedState',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='pcw_state', full_name='perception.Pedestrian.PedState.pcw_state', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=994,
-  serialized_end=1023,
-)
-
-_PEDESTRIAN = _descriptor.Descriptor(
-  name='Pedestrian',
-  full_name='perception.Pedestrian',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='frame_id', full_name='perception.Pedestrian.frame_id', index=0,
-      number=1, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='timestamp', full_name='perception.Pedestrian.timestamp', index=1,
-      number=2, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='ped_list', full_name='perception.Pedestrian.ped_list', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='ped_warning', full_name='perception.Pedestrian.ped_warning', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='state', full_name='perception.Pedestrian.state', index=4,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_PEDESTRIAN_RECT2F, _PEDESTRIAN_PEDDETEXPORT, _PEDESTRIAN_PEDWARNINGEXPORT, _PEDESTRIAN_PEDSTATE, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=33,
-  serialized_end=1023,
-)
-
-_PEDESTRIAN_RECT2F.containing_type = _PEDESTRIAN
-_PEDESTRIAN_PEDDETEXPORT.fields_by_name['detect_box'].message_type = _PEDESTRIAN_RECT2F
-_PEDESTRIAN_PEDDETEXPORT.fields_by_name['reg_box'].message_type = _PEDESTRIAN_RECT2F
-_PEDESTRIAN_PEDDETEXPORT.fields_by_name['track_box'].message_type = _PEDESTRIAN_RECT2F
-_PEDESTRIAN_PEDDETEXPORT.fields_by_name['bike_box'].message_type = _PEDESTRIAN_RECT2F
-_PEDESTRIAN_PEDDETEXPORT.containing_type = _PEDESTRIAN
-_PEDESTRIAN_PEDWARNINGEXPORT.containing_type = _PEDESTRIAN
-_PEDESTRIAN_PEDSTATE.containing_type = _PEDESTRIAN
-_PEDESTRIAN.fields_by_name['ped_list'].message_type = _PEDESTRIAN_PEDDETEXPORT
-_PEDESTRIAN.fields_by_name['ped_warning'].message_type = _PEDESTRIAN_PEDWARNINGEXPORT
-_PEDESTRIAN.fields_by_name['state'].message_type = _PEDESTRIAN_PEDSTATE
-DESCRIPTOR.message_types_by_name['Pedestrian'] = _PEDESTRIAN
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
+_PEDESTRIAN = DESCRIPTOR.message_types_by_name['Pedestrian']
+_PEDESTRIAN_PEDDETEXPORT = _PEDESTRIAN.nested_types_by_name['PedDetExport']
+_PEDESTRIAN_PEDWARNINGEXPORT = _PEDESTRIAN.nested_types_by_name['PedWarningExport']
 Pedestrian = _reflection.GeneratedProtocolMessageType('Pedestrian', (_message.Message,), {
-
-  'Rect2f' : _reflection.GeneratedProtocolMessageType('Rect2f', (_message.Message,), {
-    'DESCRIPTOR' : _PEDESTRIAN_RECT2F,
-    '__module__' : 'pedestrian_pb2'
-    # @@protoc_insertion_point(class_scope:perception.Pedestrian.Rect2f)
-    })
-  ,
 
   'PedDetExport' : _reflection.GeneratedProtocolMessageType('PedDetExport', (_message.Message,), {
     'DESCRIPTOR' : _PEDESTRIAN_PEDDETEXPORT,
@@ -440,22 +38,21 @@ Pedestrian = _reflection.GeneratedProtocolMessageType('Pedestrian', (_message.Me
     # @@protoc_insertion_point(class_scope:perception.Pedestrian.PedWarningExport)
     })
   ,
-
-  'PedState' : _reflection.GeneratedProtocolMessageType('PedState', (_message.Message,), {
-    'DESCRIPTOR' : _PEDESTRIAN_PEDSTATE,
-    '__module__' : 'pedestrian_pb2'
-    # @@protoc_insertion_point(class_scope:perception.Pedestrian.PedState)
-    })
-  ,
   'DESCRIPTOR' : _PEDESTRIAN,
   '__module__' : 'pedestrian_pb2'
   # @@protoc_insertion_point(class_scope:perception.Pedestrian)
   })
 _sym_db.RegisterMessage(Pedestrian)
-_sym_db.RegisterMessage(Pedestrian.Rect2f)
 _sym_db.RegisterMessage(Pedestrian.PedDetExport)
 _sym_db.RegisterMessage(Pedestrian.PedWarningExport)
-_sym_db.RegisterMessage(Pedestrian.PedState)
 
+if _descriptor._USE_C_DESCRIPTORS == False:
 
+  DESCRIPTOR._options = None
+  _PEDESTRIAN._serialized_start=68
+  _PEDESTRIAN._serialized_end=951
+  _PEDESTRIAN_PEDDETEXPORT._serialized_start=279
+  _PEDESTRIAN_PEDDETEXPORT._serialized_end=899
+  _PEDESTRIAN_PEDWARNINGEXPORT._serialized_start=901
+  _PEDESTRIAN_PEDWARNINGEXPORT._serialized_end=951
 # @@protoc_insertion_point(module_scope)

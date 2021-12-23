@@ -3,6 +3,7 @@
 # source: vehicle_signal.proto
 """Generated protocol buffer code."""
 from google.protobuf import descriptor as _descriptor
+from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
@@ -14,615 +15,21 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import any_pb2 as google_dot_protobuf_dot_any__pb2
 
 
-DESCRIPTOR = _descriptor.FileDescriptor(
-  name='vehicle_signal.proto',
-  package='minieye',
-  syntax='proto3',
-  serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x14vehicle_signal.proto\x12\x07minieye\x1a\x19google/protobuf/any.proto\"\xfb\x02\n\rVehicleSignal\x12\x34\n\x07signals\x18\x01 \x03(\x0b\x32#.minieye.VehicleSignal.SignalsEntry\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12\x0c\n\x04tick\x18\x03 \x01(\x04\x1a.\n\x0cSignalsEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\x02:\x02\x38\x01\"\xe2\x01\n\nSignalType\x12\r\n\tkCanSpeed\x10\x00\x12\r\n\tkTurnLamp\x10\x01\x12\x16\n\x12kHazardWarningLamp\x10\x02\x12\x0c\n\x08kBraking\x10\x03\x12\x10\n\x0ckAccelerator\x10\x04\x12\x17\n\x13kSteeringWheelAngle\x10\x05\x12\x17\n\x13kHeadingAngularRate\x10\x06\x12\x0f\n\x0bkFrontWiper\x10\x07\x12\x0e\n\nkDriveMode\x10\x08\x12\x0e\n\nkMovingDir\x10\t\x12\x0c\n\x08KYawRate\x10\n\x12\r\n\tKGearMode\x10\x0b\"\xe6\x01\n\rCommandSignal\x12\x31\n\x06signal\x18\x01 \x01(\x0e\x32!.minieye.CommandSignal.SignalType\x12%\n\x07\x64\x65tails\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\"{\n\nSignalType\x12\x0c\n\x08kUnknown\x10\x00\x12\x13\n\x0fkStartAutocalib\x10\x01\x12\x1a\n\x16kStartOfflineCalibrate\x10\x02\x12\x16\n\x12kModLdwSensitivity\x10\x03\x12\x16\n\x12kModFcwSensitivity\x10\x04\"\xf1\x01\n\x15OfflineCalibSigDetail\x12\x11\n\tcamera_id\x18\x01 \x01(\x05\x12\x13\n\x0bmarker_type\x18\x02 \x01(\x05\x12\x14\n\x0c\x63\x61mera_pitch\x18\x03 \x01(\x01\x12\x12\n\ncamera_yaw\x18\x04 \x01(\x01\x12\x13\n\x0b\x63\x61mera_roll\x18\x05 \x01(\x01\x12\x15\n\rcamera_height\x18\x06 \x01(\x01\x12\x1b\n\x13left_dist_to_camera\x18\x07 \x01(\x01\x12\x1c\n\x14right_dist_to_camera\x18\x08 \x01(\x01\x12\x1f\n\x17\x66ront_wheel_camera_dist\x18\t \x01(\x01\"\xac\x01\n\x0fOfflineCalibRsp\x12\x11\n\tcamera_id\x18\x01 \x01(\x05\x12\r\n\x05state\x18\x02 \x01(\x05\x12\x10\n\x08\x65rr_code\x18\x03 \x01(\x05\x12\x14\n\x0c\x63\x61mera_pitch\x18\x04 \x01(\x01\x12\x12\n\ncamera_yaw\x18\x05 \x01(\x01\x12\x13\n\x0b\x63\x61mera_roll\x18\x06 \x01(\x01\x12\x15\n\rcamera_height\x18\x07 \x01(\x01\x12\x0f\n\x07process\x18\x08 \x01(\x01\"\x9a\x01\n\x12\x41utoCalibSigDetail\x12\x11\n\tcamera_id\x18\x01 \x01(\x05\x12\x15\n\rcamera_height\x18\x02 \x01(\x01\x12\x1b\n\x13left_dist_to_camera\x18\x03 \x01(\x01\x12\x1c\n\x14right_dist_to_camera\x18\x04 \x01(\x01\x12\x1f\n\x17\x66ront_wheel_camera_dist\x18\x05 \x01(\x01\"\xa9\x01\n\x0c\x41utoCalibRsp\x12\x11\n\tcamera_id\x18\x01 \x01(\x05\x12\r\n\x05state\x18\x02 \x01(\x05\x12\x10\n\x08\x65rr_code\x18\x03 \x01(\x05\x12\x14\n\x0c\x63\x61mera_pitch\x18\x04 \x01(\x01\x12\x12\n\ncamera_yaw\x18\x05 \x01(\x01\x12\x13\n\x0b\x63\x61mera_roll\x18\x06 \x01(\x01\x12\x15\n\rcamera_height\x18\x07 \x01(\x01\x12\x0f\n\x07process\x18\x08 \x01(\x01\"0\n\x17LDWSensitivitySigDetail\x12\x15\n\rwarning_level\x18\x01 \x01(\x05\x62\x06proto3'
-  ,
-  dependencies=[google_dot_protobuf_dot_any__pb2.DESCRIPTOR,])
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14vehicle_signal.proto\x12\x07minieye\x1a\x19google/protobuf/any.proto\"\xa7\x08\n\rVehicleSignal\x12\x34\n\x07signals\x18\x01 \x03(\x0b\x32#.minieye.VehicleSignal.SignalsEntry\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12\x0c\n\x04tick\x18\x03 \x01(\x04\x1a.\n\x0cSignalsEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\x02:\x02\x38\x01\"\x8e\x07\n\nSignalType\x12\r\n\tkCanSpeed\x10\x00\x12\r\n\tkTurnLamp\x10\x01\x12\x16\n\x12kHazardWarningLamp\x10\x02\x12\x0c\n\x08kBraking\x10\x03\x12\x10\n\x0ckAccelerator\x10\x04\x12\x17\n\x13kSteeringWheelAngle\x10\x05\x12\x1b\n\x17kSteeringWheelAngleRate\x10\x06\x12\x0f\n\x0bkFrontWiper\x10\x07\x12\x0e\n\nkDriveMode\x10\x08\x12\x0e\n\nkMovingDir\x10\t\x12\x0c\n\x08kYawRate\x10\n\x12\r\n\tkGearMode\x10\x0b\x12\x18\n\x14kABSFullyOperational\x10\x0c\x12\x16\n\x12kBrakPedalPosition\x10\r\x12\x16\n\x12kLongiAcceleration\x10\x0e\x12\x18\n\x14kLateralAcceleration\x10\x0f\x12\x19\n\x15kACUCollisionDetected\x10\x10\x12\x14\n\x10kAutoLightSwitch\x10\x11\x12\x12\n\x0ekLowBeanStatus\x10\x12\x12\x0e\n\nkESCStatus\x10\x13\x12\x15\n\x11kFrontWiperHighSt\x10\x14\x12\x10\n\x0ckHBeanStatus\x10\x15\x12\x10\n\x0ckTcsActiveSt\x10\x16\x12\x10\n\x0ckVdcActiveSt\x10\x17\x12\x0b\n\x07kEngSpd\x10\x18\x12\x0f\n\x0bkRLWheelSpd\x10\x19\x12\x12\n\x0ekRLWheelRotate\x10\x1a\x12\x0f\n\x0bkRRWheelSpd\x10\x1b\x12\x12\n\x0ekRRWheelRotate\x10\x1c\x12\x0f\n\x0bkFLWheelSpd\x10\x1d\x12\x12\n\x0ekFLWheelRotate\x10\x1e\x12\x0f\n\x0bkFRWheelSpd\x10\x1f\x12\x12\n\x0ekFRWheelRotate\x10 \x12\x11\n\rkStrngWhlTorq\x10!\x12\x13\n\x0fkSteeringModeSt\x10\"\x12\x12\n\x0ekHandsOffdetSt\x10#\x12\x11\n\rkEpsLkaCtrlSt\x10$\x12\x0e\n\nkAccCtrlSt\x10%\x12\x11\n\rkAccTargetSpd\x10&\x12\x11\n\rkLkaTorqueReq\x10\'\x12\x13\n\x0fkLkaTorqueReqSt\x10(\x12\x0f\n\x0bkEmsEngTorq\x10)\x12\x1c\n\x18kFrontLeftFogLightStatus\x10*\x12\x1d\n\x19kFrontRightFogLightStatus\x10+\x12\x17\n\x13kRearFogLightStatus\x10,\"\xc2\x03\n\rCommandSignal\x12\x31\n\x06signal\x18\x01 \x01(\x0e\x32!.minieye.CommandSignal.SignalType\x12%\n\x07\x64\x65tails\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\"\xd6\x02\n\nSignalType\x12\x0c\n\x08kUnknown\x10\x00\x12\x13\n\x0fkStartAutocalib\x10\x01\x12\x1a\n\x16kStartOfflineCalibrate\x10\x02\x12\x16\n\x12kModLdwSensitivity\x10\x03\x12\x16\n\x12kModFcwSensitivity\x10\x04\x12\x16\n\x12kModTsrSensitivity\x10\x05\x12\x16\n\x12kModPCWSensitivity\x10\x06\x12\x0e\n\nkFCWSwitch\x10\x07\x12\x0f\n\x0bkFVSASwitch\x10\x08\x12\x0e\n\nkHMWSwitch\x10\t\x12\x0e\n\nkIHCSwitch\x10\n\x12\x0e\n\nkLDWSwitch\x10\x0b\x12\x18\n\x14kSroverspdwarnSwitch\x10\x0c\x12\x0e\n\nkTSRSwitch\x10\r\x12\x0e\n\nkPCWSwitch\x10\x0e\x12\x0e\n\nkLKASwitch\x10\x0f\x12\x0e\n\nkESCSwitch\x10\x10\"\xf1\x01\n\x15OfflineCalibSigDetail\x12\x11\n\tcamera_id\x18\x01 \x01(\x05\x12\x13\n\x0bmarker_type\x18\x02 \x01(\x05\x12\x14\n\x0c\x63\x61mera_pitch\x18\x03 \x01(\x01\x12\x12\n\ncamera_yaw\x18\x04 \x01(\x01\x12\x13\n\x0b\x63\x61mera_roll\x18\x05 \x01(\x01\x12\x15\n\rcamera_height\x18\x06 \x01(\x01\x12\x1b\n\x13left_dist_to_camera\x18\x07 \x01(\x01\x12\x1c\n\x14right_dist_to_camera\x18\x08 \x01(\x01\x12\x1f\n\x17\x66ront_wheel_camera_dist\x18\t \x01(\x01\"\xac\x01\n\x0fOfflineCalibRsp\x12\x11\n\tcamera_id\x18\x01 \x01(\x05\x12\r\n\x05state\x18\x02 \x01(\x05\x12\x10\n\x08\x65rr_code\x18\x03 \x01(\x05\x12\x14\n\x0c\x63\x61mera_pitch\x18\x04 \x01(\x01\x12\x12\n\ncamera_yaw\x18\x05 \x01(\x01\x12\x13\n\x0b\x63\x61mera_roll\x18\x06 \x01(\x01\x12\x15\n\rcamera_height\x18\x07 \x01(\x01\x12\x0f\n\x07process\x18\x08 \x01(\x01\"\x9a\x01\n\x12\x41utoCalibSigDetail\x12\x11\n\tcamera_id\x18\x01 \x01(\x05\x12\x15\n\rcamera_height\x18\x02 \x01(\x01\x12\x1b\n\x13left_dist_to_camera\x18\x03 \x01(\x01\x12\x1c\n\x14right_dist_to_camera\x18\x04 \x01(\x01\x12\x1f\n\x17\x66ront_wheel_camera_dist\x18\x05 \x01(\x01\"\xa9\x01\n\x0c\x41utoCalibRsp\x12\x11\n\tcamera_id\x18\x01 \x01(\x05\x12\r\n\x05state\x18\x02 \x01(\x05\x12\x10\n\x08\x65rr_code\x18\x03 \x01(\x05\x12\x14\n\x0c\x63\x61mera_pitch\x18\x04 \x01(\x01\x12\x12\n\ncamera_yaw\x18\x05 \x01(\x01\x12\x13\n\x0b\x63\x61mera_roll\x18\x06 \x01(\x01\x12\x15\n\rcamera_height\x18\x07 \x01(\x01\x12\x0f\n\x07process\x18\x08 \x01(\x01\"-\n\x14SensitivitySigDetail\x12\x15\n\rwarning_level\x18\x01 \x01(\x05\"\'\n\x0fSwitchSigDetail\x12\x14\n\x0cswitch_value\x18\x01 \x01(\x05\x62\x06proto3')
 
 
 
-_VEHICLESIGNAL_SIGNALTYPE = _descriptor.EnumDescriptor(
-  name='SignalType',
-  full_name='minieye.VehicleSignal.SignalType',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='kCanSpeed', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kTurnLamp', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kHazardWarningLamp', index=2, number=2,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kBraking', index=3, number=3,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kAccelerator', index=4, number=4,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kSteeringWheelAngle', index=5, number=5,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kHeadingAngularRate', index=6, number=6,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kFrontWiper', index=7, number=7,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kDriveMode', index=8, number=8,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kMovingDir', index=9, number=9,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='KYawRate', index=10, number=10,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='KGearMode', index=11, number=11,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=214,
-  serialized_end=440,
-)
-_sym_db.RegisterEnumDescriptor(_VEHICLESIGNAL_SIGNALTYPE)
-
-_COMMANDSIGNAL_SIGNALTYPE = _descriptor.EnumDescriptor(
-  name='SignalType',
-  full_name='minieye.CommandSignal.SignalType',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='kUnknown', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kStartAutocalib', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kStartOfflineCalibrate', index=2, number=2,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kModLdwSensitivity', index=3, number=3,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kModFcwSensitivity', index=4, number=4,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=550,
-  serialized_end=673,
-)
-_sym_db.RegisterEnumDescriptor(_COMMANDSIGNAL_SIGNALTYPE)
-
-
-_VEHICLESIGNAL_SIGNALSENTRY = _descriptor.Descriptor(
-  name='SignalsEntry',
-  full_name='minieye.VehicleSignal.SignalsEntry',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='key', full_name='minieye.VehicleSignal.SignalsEntry.key', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='value', full_name='minieye.VehicleSignal.SignalsEntry.value', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=b'8\001',
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=165,
-  serialized_end=211,
-)
-
-_VEHICLESIGNAL = _descriptor.Descriptor(
-  name='VehicleSignal',
-  full_name='minieye.VehicleSignal',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='signals', full_name='minieye.VehicleSignal.signals', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='timestamp', full_name='minieye.VehicleSignal.timestamp', index=1,
-      number=2, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='tick', full_name='minieye.VehicleSignal.tick', index=2,
-      number=3, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_VEHICLESIGNAL_SIGNALSENTRY, ],
-  enum_types=[
-    _VEHICLESIGNAL_SIGNALTYPE,
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=61,
-  serialized_end=440,
-)
-
-
-_COMMANDSIGNAL = _descriptor.Descriptor(
-  name='CommandSignal',
-  full_name='minieye.CommandSignal',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='signal', full_name='minieye.CommandSignal.signal', index=0,
-      number=1, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='details', full_name='minieye.CommandSignal.details', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-    _COMMANDSIGNAL_SIGNALTYPE,
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=443,
-  serialized_end=673,
-)
-
-
-_OFFLINECALIBSIGDETAIL = _descriptor.Descriptor(
-  name='OfflineCalibSigDetail',
-  full_name='minieye.OfflineCalibSigDetail',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='camera_id', full_name='minieye.OfflineCalibSigDetail.camera_id', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='marker_type', full_name='minieye.OfflineCalibSigDetail.marker_type', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_pitch', full_name='minieye.OfflineCalibSigDetail.camera_pitch', index=2,
-      number=3, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_yaw', full_name='minieye.OfflineCalibSigDetail.camera_yaw', index=3,
-      number=4, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_roll', full_name='minieye.OfflineCalibSigDetail.camera_roll', index=4,
-      number=5, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_height', full_name='minieye.OfflineCalibSigDetail.camera_height', index=5,
-      number=6, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='left_dist_to_camera', full_name='minieye.OfflineCalibSigDetail.left_dist_to_camera', index=6,
-      number=7, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='right_dist_to_camera', full_name='minieye.OfflineCalibSigDetail.right_dist_to_camera', index=7,
-      number=8, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='front_wheel_camera_dist', full_name='minieye.OfflineCalibSigDetail.front_wheel_camera_dist', index=8,
-      number=9, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=676,
-  serialized_end=917,
-)
-
-
-_OFFLINECALIBRSP = _descriptor.Descriptor(
-  name='OfflineCalibRsp',
-  full_name='minieye.OfflineCalibRsp',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='camera_id', full_name='minieye.OfflineCalibRsp.camera_id', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='state', full_name='minieye.OfflineCalibRsp.state', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='err_code', full_name='minieye.OfflineCalibRsp.err_code', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_pitch', full_name='minieye.OfflineCalibRsp.camera_pitch', index=3,
-      number=4, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_yaw', full_name='minieye.OfflineCalibRsp.camera_yaw', index=4,
-      number=5, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_roll', full_name='minieye.OfflineCalibRsp.camera_roll', index=5,
-      number=6, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_height', full_name='minieye.OfflineCalibRsp.camera_height', index=6,
-      number=7, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='process', full_name='minieye.OfflineCalibRsp.process', index=7,
-      number=8, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=920,
-  serialized_end=1092,
-)
-
-
-_AUTOCALIBSIGDETAIL = _descriptor.Descriptor(
-  name='AutoCalibSigDetail',
-  full_name='minieye.AutoCalibSigDetail',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='camera_id', full_name='minieye.AutoCalibSigDetail.camera_id', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_height', full_name='minieye.AutoCalibSigDetail.camera_height', index=1,
-      number=2, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='left_dist_to_camera', full_name='minieye.AutoCalibSigDetail.left_dist_to_camera', index=2,
-      number=3, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='right_dist_to_camera', full_name='minieye.AutoCalibSigDetail.right_dist_to_camera', index=3,
-      number=4, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='front_wheel_camera_dist', full_name='minieye.AutoCalibSigDetail.front_wheel_camera_dist', index=4,
-      number=5, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1095,
-  serialized_end=1249,
-)
-
-
-_AUTOCALIBRSP = _descriptor.Descriptor(
-  name='AutoCalibRsp',
-  full_name='minieye.AutoCalibRsp',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='camera_id', full_name='minieye.AutoCalibRsp.camera_id', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='state', full_name='minieye.AutoCalibRsp.state', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='err_code', full_name='minieye.AutoCalibRsp.err_code', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_pitch', full_name='minieye.AutoCalibRsp.camera_pitch', index=3,
-      number=4, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_yaw', full_name='minieye.AutoCalibRsp.camera_yaw', index=4,
-      number=5, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_roll', full_name='minieye.AutoCalibRsp.camera_roll', index=5,
-      number=6, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_height', full_name='minieye.AutoCalibRsp.camera_height', index=6,
-      number=7, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='process', full_name='minieye.AutoCalibRsp.process', index=7,
-      number=8, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1252,
-  serialized_end=1421,
-)
-
-
-_LDWSENSITIVITYSIGDETAIL = _descriptor.Descriptor(
-  name='LDWSensitivitySigDetail',
-  full_name='minieye.LDWSensitivitySigDetail',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='warning_level', full_name='minieye.LDWSensitivitySigDetail.warning_level', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1423,
-  serialized_end=1471,
-)
-
-_VEHICLESIGNAL_SIGNALSENTRY.containing_type = _VEHICLESIGNAL
-_VEHICLESIGNAL.fields_by_name['signals'].message_type = _VEHICLESIGNAL_SIGNALSENTRY
-_VEHICLESIGNAL_SIGNALTYPE.containing_type = _VEHICLESIGNAL
-_COMMANDSIGNAL.fields_by_name['signal'].enum_type = _COMMANDSIGNAL_SIGNALTYPE
-_COMMANDSIGNAL.fields_by_name['details'].message_type = google_dot_protobuf_dot_any__pb2._ANY
-_COMMANDSIGNAL_SIGNALTYPE.containing_type = _COMMANDSIGNAL
-DESCRIPTOR.message_types_by_name['VehicleSignal'] = _VEHICLESIGNAL
-DESCRIPTOR.message_types_by_name['CommandSignal'] = _COMMANDSIGNAL
-DESCRIPTOR.message_types_by_name['OfflineCalibSigDetail'] = _OFFLINECALIBSIGDETAIL
-DESCRIPTOR.message_types_by_name['OfflineCalibRsp'] = _OFFLINECALIBRSP
-DESCRIPTOR.message_types_by_name['AutoCalibSigDetail'] = _AUTOCALIBSIGDETAIL
-DESCRIPTOR.message_types_by_name['AutoCalibRsp'] = _AUTOCALIBRSP
-DESCRIPTOR.message_types_by_name['LDWSensitivitySigDetail'] = _LDWSENSITIVITYSIGDETAIL
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
+_VEHICLESIGNAL = DESCRIPTOR.message_types_by_name['VehicleSignal']
+_VEHICLESIGNAL_SIGNALSENTRY = _VEHICLESIGNAL.nested_types_by_name['SignalsEntry']
+_COMMANDSIGNAL = DESCRIPTOR.message_types_by_name['CommandSignal']
+_OFFLINECALIBSIGDETAIL = DESCRIPTOR.message_types_by_name['OfflineCalibSigDetail']
+_OFFLINECALIBRSP = DESCRIPTOR.message_types_by_name['OfflineCalibRsp']
+_AUTOCALIBSIGDETAIL = DESCRIPTOR.message_types_by_name['AutoCalibSigDetail']
+_AUTOCALIBRSP = DESCRIPTOR.message_types_by_name['AutoCalibRsp']
+_SENSITIVITYSIGDETAIL = DESCRIPTOR.message_types_by_name['SensitivitySigDetail']
+_SWITCHSIGDETAIL = DESCRIPTOR.message_types_by_name['SwitchSigDetail']
+_VEHICLESIGNAL_SIGNALTYPE = _VEHICLESIGNAL.enum_types_by_name['SignalType']
+_COMMANDSIGNAL_SIGNALTYPE = _COMMANDSIGNAL.enum_types_by_name['SignalType']
 VehicleSignal = _reflection.GeneratedProtocolMessageType('VehicleSignal', (_message.Message,), {
 
   'SignalsEntry' : _reflection.GeneratedProtocolMessageType('SignalsEntry', (_message.Message,), {
@@ -673,13 +80,45 @@ AutoCalibRsp = _reflection.GeneratedProtocolMessageType('AutoCalibRsp', (_messag
   })
 _sym_db.RegisterMessage(AutoCalibRsp)
 
-LDWSensitivitySigDetail = _reflection.GeneratedProtocolMessageType('LDWSensitivitySigDetail', (_message.Message,), {
-  'DESCRIPTOR' : _LDWSENSITIVITYSIGDETAIL,
+SensitivitySigDetail = _reflection.GeneratedProtocolMessageType('SensitivitySigDetail', (_message.Message,), {
+  'DESCRIPTOR' : _SENSITIVITYSIGDETAIL,
   '__module__' : 'vehicle_signal_pb2'
-  # @@protoc_insertion_point(class_scope:minieye.LDWSensitivitySigDetail)
+  # @@protoc_insertion_point(class_scope:minieye.SensitivitySigDetail)
   })
-_sym_db.RegisterMessage(LDWSensitivitySigDetail)
+_sym_db.RegisterMessage(SensitivitySigDetail)
 
+SwitchSigDetail = _reflection.GeneratedProtocolMessageType('SwitchSigDetail', (_message.Message,), {
+  'DESCRIPTOR' : _SWITCHSIGDETAIL,
+  '__module__' : 'vehicle_signal_pb2'
+  # @@protoc_insertion_point(class_scope:minieye.SwitchSigDetail)
+  })
+_sym_db.RegisterMessage(SwitchSigDetail)
 
-_VEHICLESIGNAL_SIGNALSENTRY._options = None
+if _descriptor._USE_C_DESCRIPTORS == False:
+
+  DESCRIPTOR._options = None
+  _VEHICLESIGNAL_SIGNALSENTRY._options = None
+  _VEHICLESIGNAL_SIGNALSENTRY._serialized_options = b'8\001'
+  _VEHICLESIGNAL._serialized_start=61
+  _VEHICLESIGNAL._serialized_end=1124
+  _VEHICLESIGNAL_SIGNALSENTRY._serialized_start=165
+  _VEHICLESIGNAL_SIGNALSENTRY._serialized_end=211
+  _VEHICLESIGNAL_SIGNALTYPE._serialized_start=214
+  _VEHICLESIGNAL_SIGNALTYPE._serialized_end=1124
+  _COMMANDSIGNAL._serialized_start=1127
+  _COMMANDSIGNAL._serialized_end=1577
+  _COMMANDSIGNAL_SIGNALTYPE._serialized_start=1235
+  _COMMANDSIGNAL_SIGNALTYPE._serialized_end=1577
+  _OFFLINECALIBSIGDETAIL._serialized_start=1580
+  _OFFLINECALIBSIGDETAIL._serialized_end=1821
+  _OFFLINECALIBRSP._serialized_start=1824
+  _OFFLINECALIBRSP._serialized_end=1996
+  _AUTOCALIBSIGDETAIL._serialized_start=1999
+  _AUTOCALIBSIGDETAIL._serialized_end=2153
+  _AUTOCALIBRSP._serialized_start=2156
+  _AUTOCALIBRSP._serialized_end=2325
+  _SENSITIVITYSIGDETAIL._serialized_start=2327
+  _SENSITIVITYSIGDETAIL._serialized_end=2372
+  _SWITCHSIGDETAIL._serialized_start=2374
+  _SWITCHSIGDETAIL._serialized_end=2413
 # @@protoc_insertion_point(module_scope)

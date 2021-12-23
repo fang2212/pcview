@@ -3,6 +3,7 @@
 # source: object.proto
 """Generated protocol buffer code."""
 from google.protobuf import descriptor as _descriptor
+from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
@@ -15,718 +16,25 @@ import pyproto.geometry_pb2 as geometry__pb2
 import pyproto.data_source_pb2 as data__source__pb2
 import pyproto.calib_param_pb2 as calib__param__pb2
 import pyproto.vehicle_signal_pb2 as vehicle__signal__pb2
+import pyproto.object_warning_pb2 as object__warning__pb2
+import pyproto.camera_pb2 as camera__pb2
 
 
-DESCRIPTOR = _descriptor.FileDescriptor(
-  name='object.proto',
-  package='perception',
-  syntax='proto3',
-  serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0cobject.proto\x12\nperception\x1a\x0egeometry.proto\x1a\x11\x64\x61ta_source.proto\x1a\x11\x63\x61lib_param.proto\x1a\x14vehicle_signal.proto\"\xa7\r\n\x06Object\x12\x0e\n\x06hit_id\x18\x01 \x01(\x05\x12/\n\x08hit_type\x18\x02 \x01(\x0e\x32\x1d.perception.Object.ObjectType\x12\x14\n\x0chit_type_str\x18\x06 \x01(\t\x12\x12\n\nconfidence\x18\x03 \x01(\x02\x12\x11\n\tframe_cnt\x18\x04 \x01(\x05\x12\x11\n\tlife_time\x18\x05 \x01(\x05\x12\x30\n\nimage_info\x18\x08 \x01(\x0b\x32\x1c.perception.Object.ImageInfo\x12\x30\n\nworld_info\x18\t \x01(\x0b\x32\x1c.perception.Object.WorldInfo\x12\x14\n\x0ctrack_status\x18\n \x01(\x05\x12\x14\n\x0ctrace_status\x18\x0b \x01(\x05\x1a\xc9\x02\n\tImageInfo\x12+\n\x08\x64\x65t_rect\x18\x01 \x01(\x0b\x32\x19.perception.common.Rect2f\x12+\n\x08reg_rect\x18\x02 \x01(\x0b\x32\x19.perception.common.Rect2f\x12-\n\ntrack_rect\x18\x03 \x01(\x0b\x32\x19.perception.common.Rect2f\x12.\n\x0bsmooth_rect\x18\x04 \x01(\x0b\x32\x19.perception.common.Rect2f\x12-\n\nplate_rect\x18\x05 \x01(\x0b\x32\x19.perception.common.Rect2f\x12-\n\nwheel_list\x18\x06 \x03(\x0b\x32\x19.perception.common.Rect2f\x12%\n\x03\x62ox\x18\n \x01(\x0b\x32\x18.perception.common.Box3D\x1a\x9c\x03\n\tWorldInfo\x12\'\n\x03vel\x18\x01 \x01(\x0b\x32\x1a.perception.common.Point3D\x12+\n\x07rel_vel\x18\x02 \x01(\x0b\x32\x1a.perception.common.Point3D\x12\'\n\x03\x61\x63\x63\x18\x03 \x01(\x0b\x32\x1a.perception.common.Point3D\x12\'\n\x03pos\x18\x04 \x01(\x0b\x32\x1a.perception.common.Point3D\x12\'\n\x04size\x18\x05 \x01(\x0b\x32\x19.perception.common.Size3D\x12)\n\x05\x61ngle\x18\x06 \x01(\x0b\x32\x1a.perception.common.Angle3f\x12%\n\x03\x62ox\x18\n \x01(\x0b\x32\x18.perception.common.Box3D\x12\n\n\x02id\x18\x0b \x01(\x05\x12\x0b\n\x03\x63ls\x18\x0c \x01(\x05\x12\x0b\n\x03val\x18\r \x01(\x02\x12\x0c\n\x04pose\x18\x0e \x01(\x05\x12\x0b\n\x03ttc\x18\x0f \x01(\x02\x12\x0f\n\x07headway\x18\x10 \x01(\x02\x12\x0c\n\x04\x63ipv\x18\x11 \x01(\x05\x12\x0c\n\x04\x63ipp\x18\x12 \x01(\x05\"\xb8\x01\n\nObjectType\x12\t\n\x05kNone\x10\x00\x12\x0c\n\x08kVehicle\x10\x01\x12\x08\n\x04kPed\x10\x02\x12\t\n\x05kBike\x10\x03\x12\t\n\x05kCone\x10\x04\x12\x11\n\rkVehicleWheel\x10\x05\x12\x11\n\rkVehiclePlate\x10\x06\x12\x0c\n\x08kPedHead\x10\x07\x12\x15\n\x11kSmallTrafficSign\x10\n\x12\x13\n\x0fkBigTrafficSign\x10\x0b\x12\x11\n\rkTrafficLight\x10\x0c\"\xd8\x01\n\x0bVehiclePose\x12\x0c\n\x08kInvalid\x10\x00\x12\r\n\tkLeftTail\x10\x01\x12\x0c\n\x08kMidTail\x10\x02\x12\x0e\n\nkRightTail\x10\x03\x12\r\n\tkLeftHead\x10\x04\x12\x0c\n\x08kMidHead\x10\x05\x12\x0e\n\nkRightHead\x10\x06\x12\r\n\tkLeftSide\x10\x07\x12\x0e\n\nkRightSide\x10\x08\x12\x0e\n\nkLeftCutIn\x10\t\x12\x0f\n\x0bkRightCutIn\x10\n\x12\x0f\n\x0bkLeftCutOut\x10\x0b\x12\x10\n\x0ckRightCutOut\x10\x0c\"\xfa\x01\n\x0cVehicleClass\x12\r\n\tkNegative\x10\x00\x12\x08\n\x04kBus\x10\x01\x12\x08\n\x04kCar\x10\x02\x12\x0c\n\x08kMiniBus\x10\x03\x12\x10\n\x0ckBucketTruck\x10\x04\x12\x13\n\x0fkContainerTruck\x10\x05\x12\r\n\tkTricycle\x10\x06\x12\x0b\n\x07kTanker\x10\x07\x12\x14\n\x10kCementTankTruck\x10\x08\x12\x0b\n\x07kPickup\x10\t\x12\x12\n\x0ekSedimentTruck\x10\n\x12\n\n\x06kIveco\x10\x0b\x12\x0f\n\x0bkSpecialCar\x10\x0c\x12\r\n\tkCityAuto\x10\r\x12\x13\n\x0fkVehicleUnknown\x10\x0e\"\xe6\x02\n\nObjectList\x12 \n\x04list\x18\x01 \x03(\x0b\x32\x12.perception.Object\x12\x36\n\x0bsource_info\x18\x02 \x01(\x0b\x32!.perception.ObjectList.SourceInfo\x12\x0f\n\x07version\x18\x03 \x01(\t\x12\x10\n\x08\x66rame_id\x18\x04 \x01(\x04\x12\x11\n\ttimestamp\x18\x05 \x01(\x04\x12(\n\x0b\x64\x61ta_source\x18\x0f \x01(\x0e\x32\x13.minieye.DataSource\x12(\n\x0b\x63\x61lib_param\x18\x10 \x01(\x0b\x32\x13.minieye.CalibParam\x12.\n\x0evehicle_signal\x18\x11 \x01(\x0b\x32\x16.minieye.VehicleSignal\x1a\x44\n\nSourceInfo\x12\x11\n\tfile_path\x18\x01 \x01(\t\x12\x11\n\tframe_num\x18\x02 \x01(\x05\x12\x10\n\x08\x66rame_id\x18\x03 \x01(\x05\x62\x06proto3'
-  ,
-  dependencies=[geometry__pb2.DESCRIPTOR,data__source__pb2.DESCRIPTOR,calib__param__pb2.DESCRIPTOR,vehicle__signal__pb2.DESCRIPTOR,])
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cobject.proto\x12\nperception\x1a\x0egeometry.proto\x1a\x11\x64\x61ta_source.proto\x1a\x11\x63\x61lib_param.proto\x1a\x14vehicle_signal.proto\x1a\x14object_warning.proto\x1a\x0c\x63\x61mera.proto\"\xe7\x15\n\x06Object\x12\x0e\n\x06hit_id\x18\x01 \x01(\x05\x12/\n\x08hit_type\x18\x02 \x01(\x0e\x32\x1d.perception.Object.ObjectType\x12\x14\n\x0chit_type_str\x18\x06 \x01(\t\x12\x12\n\nconfidence\x18\x03 \x01(\x02\x12\x11\n\tframe_cnt\x18\x04 \x01(\x05\x12\x11\n\tlife_time\x18\x05 \x01(\x05\x12\x30\n\nimage_info\x18\x08 \x01(\x0b\x32\x1c.perception.Object.ImageInfo\x12\x30\n\nworld_info\x18\t \x01(\x0b\x32\x1c.perception.Object.WorldInfo\x12\x14\n\x0ctrack_status\x18\n \x01(\x05\x12\x14\n\x0ctrace_status\x18\x0b \x01(\x05\x12\x14\n\x0cselect_level\x18\x0c \x01(\x05\x12\n\n\x02id\x18\x0f \x01(\x04\x12\x32\n\x0b\x66usion_info\x18\x10 \x01(\x0b\x32\x1d.perception.Object.FusionInfo\x12\x34\n\x0cmeasure_type\x18\x11 \x01(\x0e\x32\x1e.perception.Object.MeasureType\x12*\n\x0ekey_components\x18\x14 \x03(\x0b\x32\x12.perception.Object\x1a\xec\x02\n\tImageInfo\x12+\n\x08\x64\x65t_rect\x18\x01 \x01(\x0b\x32\x19.perception.common.Rect2f\x12+\n\x08reg_rect\x18\x02 \x01(\x0b\x32\x19.perception.common.Rect2f\x12-\n\ntrack_rect\x18\x03 \x01(\x0b\x32\x19.perception.common.Rect2f\x12.\n\x0bsmooth_rect\x18\x04 \x01(\x0b\x32\x19.perception.common.Rect2f\x12-\n\nplate_rect\x18\x05 \x01(\x0b\x32\x19.perception.common.Rect2f\x12-\n\nwheel_list\x18\x06 \x03(\x0b\x32\x19.perception.common.Rect2f\x12%\n\x03\x62ox\x18\n \x01(\x0b\x32\x18.perception.common.Box3D\x12!\n\tcamera_id\x18\x0b \x01(\x0b\x32\x0e.minieye.CamID\x1a\xc2\x04\n\tWorldInfo\x12\'\n\x03vel\x18\x01 \x01(\x0b\x32\x1a.perception.common.Point3D\x12+\n\x07rel_vel\x18\x02 \x01(\x0b\x32\x1a.perception.common.Point3D\x12\'\n\x03\x61\x63\x63\x18\x03 \x01(\x0b\x32\x1a.perception.common.Point3D\x12\'\n\x03pos\x18\x04 \x01(\x0b\x32\x1a.perception.common.Point3D\x12\'\n\x04size\x18\x05 \x01(\x0b\x32\x19.perception.common.Size3D\x12)\n\x05\x61ngle\x18\x06 \x01(\x0b\x32\x1a.perception.common.Angle3f\x12%\n\x03\x62ox\x18\n \x01(\x0b\x32\x18.perception.common.Box3D\x12\n\n\x02id\x18\x0b \x01(\x05\x12\x0b\n\x03\x63ls\x18\x0c \x01(\x05\x12\x0b\n\x03val\x18\r \x01(\x02\x12\x0c\n\x04pose\x18\x0e \x01(\x05\x12\x0b\n\x03ttc\x18\x0f \x01(\x02\x12\x0f\n\x07headway\x18\x10 \x01(\x02\x12\x0c\n\x04\x63ipv\x18\x11 \x01(\x05\x12\x0c\n\x04\x63ipp\x18\x12 \x01(\x05\x12\x30\n\npose_angle\x18\x13 \x01(\x0b\x32\x1c.perception.common.PoseAngle\x12\x14\n\x0cmotion_state\x18\x14 \x01(\x05\x12/\n\x06\x61nchor\x18\x15 \x01(\x0e\x32\x1f.perception.Object.AnchorPtInfo\x12+\n\x07pos_var\x18\x16 \x01(\x0b\x32\x1a.perception.common.Point3D\x1a\xe1\x01\n\nFusionInfo\x12<\n\x16\x61ssociated_image_infos\x18\x01 \x03(\x0b\x32\x1c.perception.Object.ImageInfo\x12<\n\x16\x61ssociated_world_infos\x18\x02 \x03(\x0b\x32\x1c.perception.Object.WorldInfo\x12\x1e\n\x16\x61ssociated_conf_matrix\x18\x03 \x03(\x02\x12\x37\n\x11\x66usion_world_info\x18\x04 \x01(\x0b\x32\x1c.perception.Object.WorldInfo\"\xcc\x01\n\nObjectType\x12\t\n\x05kNone\x10\x00\x12\x0c\n\x08kVehicle\x10\x01\x12\x08\n\x04kPed\x10\x02\x12\t\n\x05kBike\x10\x03\x12\t\n\x05kCone\x10\x04\x12\x11\n\rkVehicleWheel\x10\x05\x12\x11\n\rkVehiclePlate\x10\x06\x12\x0c\n\x08kPedHead\x10\x07\x12\x15\n\x11kSmallTrafficSign\x10\n\x12\x13\n\x0fkBigTrafficSign\x10\x0b\x12\x11\n\rkTrafficLight\x10\x0c\x12\x12\n\x0ekObjectTypeNum\x10\x10\"\xd8\x01\n\x0bVehiclePose\x12\x0c\n\x08kInvalid\x10\x00\x12\r\n\tkLeftTail\x10\x01\x12\x0c\n\x08kMidTail\x10\x02\x12\x0e\n\nkRightTail\x10\x03\x12\r\n\tkLeftHead\x10\x04\x12\x0c\n\x08kMidHead\x10\x05\x12\x0e\n\nkRightHead\x10\x06\x12\r\n\tkLeftSide\x10\x07\x12\x0e\n\nkRightSide\x10\x08\x12\x0e\n\nkLeftCutIn\x10\t\x12\x0f\n\x0bkRightCutIn\x10\n\x12\x0f\n\x0bkLeftCutOut\x10\x0b\x12\x10\n\x0ckRightCutOut\x10\x0c\"\x91\x01\n\x0c\x41nchorPtInfo\x12\x10\n\x0ckVehicleHead\x10\x00\x12\x10\n\x0ckVehicleTail\x10\x01\x12\x16\n\x12kVehicleFrontWheel\x10\x02\x12\x15\n\x11kVehicleRearWheel\x10\x03\x12\x15\n\x11kVehicleSomeWheel\x10\x04\x12\x17\n\x13kDetectBottomCenter\x10\x05\"\x94\x01\n\x0bMeasureType\x12\x1a\n\x16kVehicleMeasureHeadReg\x10\x00\x12\x1a\n\x16kVehicleMeasureTailReg\x10\x01\x12\x19\n\x15kVehicleMeasureDetect\x10\x02\x12\x18\n\x14kVehicleMeasureWheel\x10\x03\x12\x18\n\x14kVehicleMeasurePlate\x10\x04\"\xfa\x01\n\x0cVehicleClass\x12\r\n\tkNegative\x10\x00\x12\x08\n\x04kBus\x10\x01\x12\x08\n\x04kCar\x10\x02\x12\x0c\n\x08kMiniBus\x10\x03\x12\x10\n\x0ckBucketTruck\x10\x04\x12\x13\n\x0fkContainerTruck\x10\x05\x12\r\n\tkTricycle\x10\x06\x12\x0b\n\x07kTanker\x10\x07\x12\x14\n\x10kCementTankTruck\x10\x08\x12\x0b\n\x07kPickup\x10\t\x12\x12\n\x0ekSedimentTruck\x10\n\x12\n\n\x06kIveco\x10\x0b\x12\x0f\n\x0bkSpecialCar\x10\x0c\x12\r\n\tkCityAuto\x10\r\x12\x13\n\x0fkVehicleUnknown\x10\x0e\"\x99\x01\n\tMoveState\x12\x0c\n\x08kUnknown\x10\x00\x12\x18\n\x14kEgoDirectionDriving\x10\x01\x12\x18\n\x14kEgoDirectionStopped\x10\x02\x12\x1a\n\x16kEgoDirectionReversing\x10\x03\x12\x0e\n\nkOnComming\x10\x04\x12\r\n\tkCrossing\x10\x05\x12\x0f\n\x0bkStationary\x10\x06\"\xc7\x03\n\nObjectList\x12 \n\x04list\x18\x01 \x03(\x0b\x32\x12.perception.Object\x12\x0f\n\x07version\x18\x03 \x01(\t\x12\x10\n\x08\x66rame_id\x18\x04 \x01(\x04\x12\x11\n\ttimestamp\x18\x05 \x01(\x04\x12+\n\x07warning\x18\x06 \x01(\x0b\x32\x1a.perception.object.Warning\x12\x0c\n\x04tick\x18\t \x01(\x04\x12\x15\n\rstart_time_us\x18\n \x01(\x04\x12\x13\n\x0b\x65nd_time_us\x18\x0b \x01(\x04\x12\x16\n\x0eprofiling_time\x18\x0c \x03(\x04\x12(\n\x0b\x64\x61ta_source\x18\x0f \x01(\x0e\x32\x13.minieye.DataSource\x12(\n\x0b\x63\x61lib_param\x18\x10 \x01(\x0b\x32\x13.minieye.CalibParam\x12.\n\x0evehicle_signal\x18\x11 \x01(\x0b\x32\x16.minieye.VehicleSignal\x12*\n\x0c\x63\x61mera_param\x18\x12 \x01(\x0b\x32\x14.minieye.CameraParam\x12\x1e\n\x06\x63\x61m_id\x18\x13 \x01(\x0b\x32\x0e.minieye.CamID\x12\x12\n\ncam_prj_id\x18\x14 \x01(\rb\x06proto3')
 
 
 
-_OBJECT_OBJECTTYPE = _descriptor.EnumDescriptor(
-  name='ObjectType',
-  full_name='perception.Object.ObjectType',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='kNone', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kVehicle', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kPed', index=2, number=2,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kBike', index=3, number=3,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kCone', index=4, number=4,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kVehicleWheel', index=5, number=5,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kVehiclePlate', index=6, number=6,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kPedHead', index=7, number=7,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kSmallTrafficSign', index=8, number=10,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kBigTrafficSign', index=9, number=11,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kTrafficLight', index=10, number=12,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=1152,
-  serialized_end=1336,
-)
-_sym_db.RegisterEnumDescriptor(_OBJECT_OBJECTTYPE)
-
-_OBJECT_VEHICLEPOSE = _descriptor.EnumDescriptor(
-  name='VehiclePose',
-  full_name='perception.Object.VehiclePose',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='kInvalid', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kLeftTail', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kMidTail', index=2, number=2,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kRightTail', index=3, number=3,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kLeftHead', index=4, number=4,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kMidHead', index=5, number=5,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kRightHead', index=6, number=6,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kLeftSide', index=7, number=7,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kRightSide', index=8, number=8,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kLeftCutIn', index=9, number=9,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kRightCutIn', index=10, number=10,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kLeftCutOut', index=11, number=11,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kRightCutOut', index=12, number=12,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=1339,
-  serialized_end=1555,
-)
-_sym_db.RegisterEnumDescriptor(_OBJECT_VEHICLEPOSE)
-
-_OBJECT_VEHICLECLASS = _descriptor.EnumDescriptor(
-  name='VehicleClass',
-  full_name='perception.Object.VehicleClass',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='kNegative', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kBus', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kCar', index=2, number=2,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kMiniBus', index=3, number=3,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kBucketTruck', index=4, number=4,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kContainerTruck', index=5, number=5,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kTricycle', index=6, number=6,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kTanker', index=7, number=7,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kCementTankTruck', index=8, number=8,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kPickup', index=9, number=9,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kSedimentTruck', index=10, number=10,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kIveco', index=11, number=11,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kSpecialCar', index=12, number=12,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kCityAuto', index=13, number=13,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='kVehicleUnknown', index=14, number=14,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=1558,
-  serialized_end=1808,
-)
-_sym_db.RegisterEnumDescriptor(_OBJECT_VEHICLECLASS)
-
-
-_OBJECT_IMAGEINFO = _descriptor.Descriptor(
-  name='ImageInfo',
-  full_name='perception.Object.ImageInfo',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='det_rect', full_name='perception.Object.ImageInfo.det_rect', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='reg_rect', full_name='perception.Object.ImageInfo.reg_rect', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='track_rect', full_name='perception.Object.ImageInfo.track_rect', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='smooth_rect', full_name='perception.Object.ImageInfo.smooth_rect', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='plate_rect', full_name='perception.Object.ImageInfo.plate_rect', index=4,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='wheel_list', full_name='perception.Object.ImageInfo.wheel_list', index=5,
-      number=6, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='box', full_name='perception.Object.ImageInfo.box', index=6,
-      number=10, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=405,
-  serialized_end=734,
-)
-
-_OBJECT_WORLDINFO = _descriptor.Descriptor(
-  name='WorldInfo',
-  full_name='perception.Object.WorldInfo',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='vel', full_name='perception.Object.WorldInfo.vel', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='rel_vel', full_name='perception.Object.WorldInfo.rel_vel', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='acc', full_name='perception.Object.WorldInfo.acc', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='pos', full_name='perception.Object.WorldInfo.pos', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='size', full_name='perception.Object.WorldInfo.size', index=4,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='angle', full_name='perception.Object.WorldInfo.angle', index=5,
-      number=6, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='box', full_name='perception.Object.WorldInfo.box', index=6,
-      number=10, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='id', full_name='perception.Object.WorldInfo.id', index=7,
-      number=11, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='cls', full_name='perception.Object.WorldInfo.cls', index=8,
-      number=12, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='val', full_name='perception.Object.WorldInfo.val', index=9,
-      number=13, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='pose', full_name='perception.Object.WorldInfo.pose', index=10,
-      number=14, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='ttc', full_name='perception.Object.WorldInfo.ttc', index=11,
-      number=15, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='headway', full_name='perception.Object.WorldInfo.headway', index=12,
-      number=16, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='cipv', full_name='perception.Object.WorldInfo.cipv', index=13,
-      number=17, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='cipp', full_name='perception.Object.WorldInfo.cipp', index=14,
-      number=18, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=737,
-  serialized_end=1149,
-)
-
-_OBJECT = _descriptor.Descriptor(
-  name='Object',
-  full_name='perception.Object',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='hit_id', full_name='perception.Object.hit_id', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='hit_type', full_name='perception.Object.hit_type', index=1,
-      number=2, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='hit_type_str', full_name='perception.Object.hit_type_str', index=2,
-      number=6, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='confidence', full_name='perception.Object.confidence', index=3,
-      number=3, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='frame_cnt', full_name='perception.Object.frame_cnt', index=4,
-      number=4, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='life_time', full_name='perception.Object.life_time', index=5,
-      number=5, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='image_info', full_name='perception.Object.image_info', index=6,
-      number=8, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='world_info', full_name='perception.Object.world_info', index=7,
-      number=9, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='track_status', full_name='perception.Object.track_status', index=8,
-      number=10, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='trace_status', full_name='perception.Object.trace_status', index=9,
-      number=11, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_OBJECT_IMAGEINFO, _OBJECT_WORLDINFO, ],
-  enum_types=[
-    _OBJECT_OBJECTTYPE,
-    _OBJECT_VEHICLEPOSE,
-    _OBJECT_VEHICLECLASS,
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=105,
-  serialized_end=1808,
-)
-
-
-_OBJECTLIST_SOURCEINFO = _descriptor.Descriptor(
-  name='SourceInfo',
-  full_name='perception.ObjectList.SourceInfo',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='file_path', full_name='perception.ObjectList.SourceInfo.file_path', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='frame_num', full_name='perception.ObjectList.SourceInfo.frame_num', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='frame_id', full_name='perception.ObjectList.SourceInfo.frame_id', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=2101,
-  serialized_end=2169,
-)
-
-_OBJECTLIST = _descriptor.Descriptor(
-  name='ObjectList',
-  full_name='perception.ObjectList',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='list', full_name='perception.ObjectList.list', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='source_info', full_name='perception.ObjectList.source_info', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='version', full_name='perception.ObjectList.version', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='frame_id', full_name='perception.ObjectList.frame_id', index=3,
-      number=4, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='timestamp', full_name='perception.ObjectList.timestamp', index=4,
-      number=5, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='data_source', full_name='perception.ObjectList.data_source', index=5,
-      number=15, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='calib_param', full_name='perception.ObjectList.calib_param', index=6,
-      number=16, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='vehicle_signal', full_name='perception.ObjectList.vehicle_signal', index=7,
-      number=17, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_OBJECTLIST_SOURCEINFO, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1811,
-  serialized_end=2169,
-)
-
-_OBJECT_IMAGEINFO.fields_by_name['det_rect'].message_type = geometry__pb2._RECT2F
-_OBJECT_IMAGEINFO.fields_by_name['reg_rect'].message_type = geometry__pb2._RECT2F
-_OBJECT_IMAGEINFO.fields_by_name['track_rect'].message_type = geometry__pb2._RECT2F
-_OBJECT_IMAGEINFO.fields_by_name['smooth_rect'].message_type = geometry__pb2._RECT2F
-_OBJECT_IMAGEINFO.fields_by_name['plate_rect'].message_type = geometry__pb2._RECT2F
-_OBJECT_IMAGEINFO.fields_by_name['wheel_list'].message_type = geometry__pb2._RECT2F
-_OBJECT_IMAGEINFO.fields_by_name['box'].message_type = geometry__pb2._BOX3D
-_OBJECT_IMAGEINFO.containing_type = _OBJECT
-_OBJECT_WORLDINFO.fields_by_name['vel'].message_type = geometry__pb2._POINT3D
-_OBJECT_WORLDINFO.fields_by_name['rel_vel'].message_type = geometry__pb2._POINT3D
-_OBJECT_WORLDINFO.fields_by_name['acc'].message_type = geometry__pb2._POINT3D
-_OBJECT_WORLDINFO.fields_by_name['pos'].message_type = geometry__pb2._POINT3D
-_OBJECT_WORLDINFO.fields_by_name['size'].message_type = geometry__pb2._SIZE3D
-_OBJECT_WORLDINFO.fields_by_name['angle'].message_type = geometry__pb2._ANGLE3F
-_OBJECT_WORLDINFO.fields_by_name['box'].message_type = geometry__pb2._BOX3D
-_OBJECT_WORLDINFO.containing_type = _OBJECT
-_OBJECT.fields_by_name['hit_type'].enum_type = _OBJECT_OBJECTTYPE
-_OBJECT.fields_by_name['image_info'].message_type = _OBJECT_IMAGEINFO
-_OBJECT.fields_by_name['world_info'].message_type = _OBJECT_WORLDINFO
-_OBJECT_OBJECTTYPE.containing_type = _OBJECT
-_OBJECT_VEHICLEPOSE.containing_type = _OBJECT
-_OBJECT_VEHICLECLASS.containing_type = _OBJECT
-_OBJECTLIST_SOURCEINFO.containing_type = _OBJECTLIST
-_OBJECTLIST.fields_by_name['list'].message_type = _OBJECT
-_OBJECTLIST.fields_by_name['source_info'].message_type = _OBJECTLIST_SOURCEINFO
-_OBJECTLIST.fields_by_name['data_source'].enum_type = data__source__pb2._DATASOURCE
-_OBJECTLIST.fields_by_name['calib_param'].message_type = calib__param__pb2._CALIBPARAM
-_OBJECTLIST.fields_by_name['vehicle_signal'].message_type = vehicle__signal__pb2._VEHICLESIGNAL
-DESCRIPTOR.message_types_by_name['Object'] = _OBJECT
-DESCRIPTOR.message_types_by_name['ObjectList'] = _OBJECTLIST
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
+_OBJECT = DESCRIPTOR.message_types_by_name['Object']
+_OBJECT_IMAGEINFO = _OBJECT.nested_types_by_name['ImageInfo']
+_OBJECT_WORLDINFO = _OBJECT.nested_types_by_name['WorldInfo']
+_OBJECT_FUSIONINFO = _OBJECT.nested_types_by_name['FusionInfo']
+_OBJECTLIST = DESCRIPTOR.message_types_by_name['ObjectList']
+_OBJECT_OBJECTTYPE = _OBJECT.enum_types_by_name['ObjectType']
+_OBJECT_VEHICLEPOSE = _OBJECT.enum_types_by_name['VehiclePose']
+_OBJECT_ANCHORPTINFO = _OBJECT.enum_types_by_name['AnchorPtInfo']
+_OBJECT_MEASURETYPE = _OBJECT.enum_types_by_name['MeasureType']
+_OBJECT_VEHICLECLASS = _OBJECT.enum_types_by_name['VehicleClass']
+_OBJECT_MOVESTATE = _OBJECT.enum_types_by_name['MoveState']
 Object = _reflection.GeneratedProtocolMessageType('Object', (_message.Message,), {
 
   'ImageInfo' : _reflection.GeneratedProtocolMessageType('ImageInfo', (_message.Message,), {
@@ -742,6 +50,13 @@ Object = _reflection.GeneratedProtocolMessageType('Object', (_message.Message,),
     # @@protoc_insertion_point(class_scope:perception.Object.WorldInfo)
     })
   ,
+
+  'FusionInfo' : _reflection.GeneratedProtocolMessageType('FusionInfo', (_message.Message,), {
+    'DESCRIPTOR' : _OBJECT_FUSIONINFO,
+    '__module__' : 'object_pb2'
+    # @@protoc_insertion_point(class_scope:perception.Object.FusionInfo)
+    })
+  ,
   'DESCRIPTOR' : _OBJECT,
   '__module__' : 'object_pb2'
   # @@protoc_insertion_point(class_scope:perception.Object)
@@ -749,21 +64,38 @@ Object = _reflection.GeneratedProtocolMessageType('Object', (_message.Message,),
 _sym_db.RegisterMessage(Object)
 _sym_db.RegisterMessage(Object.ImageInfo)
 _sym_db.RegisterMessage(Object.WorldInfo)
+_sym_db.RegisterMessage(Object.FusionInfo)
 
 ObjectList = _reflection.GeneratedProtocolMessageType('ObjectList', (_message.Message,), {
-
-  'SourceInfo' : _reflection.GeneratedProtocolMessageType('SourceInfo', (_message.Message,), {
-    'DESCRIPTOR' : _OBJECTLIST_SOURCEINFO,
-    '__module__' : 'object_pb2'
-    # @@protoc_insertion_point(class_scope:perception.ObjectList.SourceInfo)
-    })
-  ,
   'DESCRIPTOR' : _OBJECTLIST,
   '__module__' : 'object_pb2'
   # @@protoc_insertion_point(class_scope:perception.ObjectList)
   })
 _sym_db.RegisterMessage(ObjectList)
-_sym_db.RegisterMessage(ObjectList.SourceInfo)
 
+if _descriptor._USE_C_DESCRIPTORS == False:
 
+  DESCRIPTOR._options = None
+  _OBJECT._serialized_start=141
+  _OBJECT._serialized_end=2932
+  _OBJECT_IMAGEINFO._serialized_start=625
+  _OBJECT_IMAGEINFO._serialized_end=989
+  _OBJECT_WORLDINFO._serialized_start=992
+  _OBJECT_WORLDINFO._serialized_end=1570
+  _OBJECT_FUSIONINFO._serialized_start=1573
+  _OBJECT_FUSIONINFO._serialized_end=1798
+  _OBJECT_OBJECTTYPE._serialized_start=1801
+  _OBJECT_OBJECTTYPE._serialized_end=2005
+  _OBJECT_VEHICLEPOSE._serialized_start=2008
+  _OBJECT_VEHICLEPOSE._serialized_end=2224
+  _OBJECT_ANCHORPTINFO._serialized_start=2227
+  _OBJECT_ANCHORPTINFO._serialized_end=2372
+  _OBJECT_MEASURETYPE._serialized_start=2375
+  _OBJECT_MEASURETYPE._serialized_end=2523
+  _OBJECT_VEHICLECLASS._serialized_start=2526
+  _OBJECT_VEHICLECLASS._serialized_end=2776
+  _OBJECT_MOVESTATE._serialized_start=2779
+  _OBJECT_MOVESTATE._serialized_end=2932
+  _OBJECTLIST._serialized_start=2935
+  _OBJECTLIST._serialized_end=3390
 # @@protoc_insertion_point(module_scope)

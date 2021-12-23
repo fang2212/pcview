@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package minieye;
+
+/*
+	{
+	    "topic": "gnssvel",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 100,
+		"buff_num": 100,
+	    "elem_max_size": 1000
+	} 
+*/
+
+message GnssvelData {
+    uint64 id = 1;             // id, 从0累加
+    uint64 seq = 2;            // sequence
+    uint64 timestamp = 3;      // 时戳(毫秒 - gps时间)
+    uint64 tick = 4;           // 硬件tick (数据面时间)
+
+    bool is_valid = 5;         // 数据有效性标志位：true表示是新接收的数据，false表示是历史数据
+    uint32 gps_week = 6;       // GPS时间，周数
+    double gps_sec = 7;        // GPS时间，周内秒(s)
+
+    uint32 sol_status = 8;     // 解算状态
+    uint32 vel_type = 9;       // 速度类型，多普勒或位置平滑
+    float hor_spd = 10;        // (ENU系下)水平速度（m/s）
+    float vert_spd = 11;       // (ENU系下)天向速度（m/s），向上为正
+    float trk_gnd = 12;        // 前进方向与真北夹角（deg， 0~360），北偏东为正
+    float latency = 13;        // 速度延时(s)
+    float vel_x = 14;          // (ECEF坐标系下)，X轴方向速度（m/s）
+    float vel_y = 15;          // (ECEF坐标系下)，Y轴方向速度（m/s）
+    float vel_z = 16;          // (ECEF坐标系下)，Z轴方向速度（m/s）
+    float vel_x_std = 17;      // (ECEF坐标系下)，X轴方向速度标准差（m/s）
+    float vel_y_std = 18;      // (ECEF坐标系下)，Y轴方向速度标准差（m/s）
+    float vel_z_std = 19;      // （ECEF坐标系下)，Z轴方向速度标准差（m/s）
+}

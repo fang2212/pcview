@@ -132,6 +132,69 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "MdcTime"
+    },
+    "video_info1": {
+      "enable": true,
+      "port": 26111,
+      "origin_device": "mdc",
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "image_extended_info",
+      "idx": 1
+    },
+    "video_info2": {
+      "enable": true,
+      "port": 26112,
+      "origin_device": "mdc",
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "image_extended_info",
+      "idx": 2
+    },
+    "video_info3": {
+      "enable": true,
+      "port": 26013,
+      "origin_device": "mdc",
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "image_extended_info",
+      "idx": 3
+    },
+    "video_info4": {
+      "enable": true,
+      "port": 26114,
+      "origin_device": "mdc",
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "image_extended_info",
+      "idx": 4
+    },
+    "video_info5": {
+      "enable": true,
+      "port": 26115,
+      "origin_device": "mdc",
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "image_extended_info",
+      "idx": 5
+    },
+    "video_info6": {
+      "enable": true,
+      "port": 26116,
+      "origin_device": "mdc",
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "image_extended_info",
+      "idx": 6
+    },
+    "video_info7": {
+      "enable": true,
+      "port": 26117,
+      "origin_device": "mdc",
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "image_extended_info",
+      "idx": 7
     }
   }
 }

@@ -1,0 +1,43 @@
+syntax = "proto3";
+// import "google/protobuf/any.proto";
+
+package minieye;
+
+/* NOTE:
+    1、 caninput发给dvr进程的dds消息，如下：
+        {
+            "topic": "dvr_signal",
+            "dds_mode": "shm",
+            "elem_max_size": 10
+        }
+
+    2、 Dvr发给canoutput进程的dds消息，如下：
+        {
+            "topic": "dvr_status_signal"
+            "dds_mode": "shm",
+            "elem_max_size": 10
+        }
+*/
+
+// topic : "dvr_signal"
+// breif : 周期性信号
+message DvrSignal {
+    /*byte 、short 、int32_t 和 float 数据类型都可以使用FloatKeyValue来表示*/
+    message FloatKeyValue {
+        string name = 1;    // 此name必须唯一，发送方与接收方必须确认清楚
+        float value = 2;
+        string descrip = 3; // 描述value表示什么意思，建议给descrip赋值
+    }
+
+    /*int64_t 和 double 都可以使用DoubleKeyValue来表示*/
+    message DoubleKeyValue {
+        string name = 1;    // 此name必须唯一，发送方与接收方必须确认清楚
+        double value = 2;
+        string descrip = 3; // 描述value表示什么意思，建议给descrip赋值
+    }
+
+    repeated FloatKeyValue float_value_list = 1;
+    repeated DoubleKeyValue double_value_list = 2;
+    uint64 timestamp = 3; // 时戳, milliseconds
+    uint64 tick = 4;      // 异构设备上的时钟
+}

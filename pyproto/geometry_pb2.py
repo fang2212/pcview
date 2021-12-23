@@ -3,6 +3,7 @@
 # source: geometry.proto
 """Generated protocol buffer code."""
 from google.protobuf import descriptor as _descriptor
+from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
@@ -13,736 +14,30 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor.FileDescriptor(
-  name='geometry.proto',
-  package='perception.common',
-  syntax='proto3',
-  serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0egeometry.proto\x12\x11perception.common\"\x1f\n\x07Point2D\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\"*\n\x07Point3D\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\x12\t\n\x01z\x18\x03 \x01(\x01\")\n\x06Size3D\x12\t\n\x01w\x18\x01 \x01(\x01\x12\t\n\x01h\x18\x02 \x01(\x01\x12\t\n\x01l\x18\x03 \x01(\x01\"\x1d\n\x05Point\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\"\x1f\n\x07Point2f\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\"*\n\x07Point3f\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\"6\n\x07\x41ngle3f\x12\x0e\n\x06\x63\x65nter\x18\x01 \x01(\x02\x12\x0c\n\x04left\x18\x02 \x01(\x02\x12\r\n\x05right\x18\x03 \x01(\x02\";\n\x0bPoint2fList\x12,\n\x08pts_list\x18\x01 \x03(\x0b\x32\x1a.perception.common.Point2f\";\n\x0bPoint2DList\x12,\n\x08pts_list\x18\x01 \x03(\x0b\x32\x1a.perception.common.Point2D\";\n\x0bPoint3DList\x12,\n\x08pts_list\x18\x01 \x03(\x0b\x32\x1a.perception.common.Point3D\";\n\x0bPoint3fList\x12,\n\x08pts_list\x18\x01 \x03(\x0b\x32\x1a.perception.common.Point3f\"7\n\tPointList\x12*\n\x08pts_list\x18\x01 \x03(\x0b\x32\x18.perception.common.Point\"2\n\x04Rect\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\x12\t\n\x01w\x18\x03 \x01(\x05\x12\t\n\x01h\x18\x04 \x01(\x05\"4\n\x06Rect2f\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01w\x18\x03 \x01(\x02\x12\t\n\x01h\x18\x04 \x01(\x02\"\x85\x03\n\x05\x42ox3D\x12,\n\x08lower_lt\x18\x01 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08lower_lb\x18\x02 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08lower_rb\x18\x03 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08lower_rt\x18\x04 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08upper_lt\x18\x05 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08upper_lb\x18\x06 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08upper_rb\x18\x07 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08upper_rt\x18\x08 \x01(\x0b\x32\x1a.perception.common.Point3D\x12\x0c\n\x04\x63onf\x18\t \x01(\x02\"2\n\x07Polygon\x12\'\n\x03pts\x18\x01 \x03(\x0b\x32\x1a.perception.common.Point3Db\x06proto3'
-)
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0egeometry.proto\x12\x11perception.common\"\x1f\n\x07Point2D\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\"*\n\x07Point3D\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\x12\t\n\x01z\x18\x03 \x01(\x01\")\n\x06Size3D\x12\t\n\x01w\x18\x01 \x01(\x01\x12\t\n\x01h\x18\x02 \x01(\x01\x12\t\n\x01l\x18\x03 \x01(\x01\"\x1d\n\x05Point\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\"\x1f\n\x07Point2f\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\"*\n\x07Point3f\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\";\n\rHafQuaternion\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\x12\t\n\x01z\x18\x03 \x01(\x01\x12\t\n\x01w\x18\x04 \x01(\x01\"6\n\x07\x41ngle3f\x12\x0e\n\x06\x63\x65nter\x18\x01 \x01(\x02\x12\x0c\n\x04left\x18\x02 \x01(\x02\x12\r\n\x05right\x18\x03 \x01(\x02\";\n\x0bPoint2fList\x12,\n\x08pts_list\x18\x01 \x03(\x0b\x32\x1a.perception.common.Point2f\";\n\x0bPoint2DList\x12,\n\x08pts_list\x18\x01 \x03(\x0b\x32\x1a.perception.common.Point2D\";\n\x0bPoint3DList\x12,\n\x08pts_list\x18\x01 \x03(\x0b\x32\x1a.perception.common.Point3D\";\n\x0bPoint3fList\x12,\n\x08pts_list\x18\x01 \x03(\x0b\x32\x1a.perception.common.Point3f\"7\n\tPointList\x12*\n\x08pts_list\x18\x01 \x03(\x0b\x32\x18.perception.common.Point\"2\n\x04Rect\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\x12\t\n\x01w\x18\x03 \x01(\x05\x12\t\n\x01h\x18\x04 \x01(\x05\"4\n\x06Rect2f\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01w\x18\x03 \x01(\x02\x12\t\n\x01h\x18\x04 \x01(\x02\"\xa7\x02\n\x06Rect3D\x12*\n\x06\x63\x65nter\x18\x01 \x01(\x0b\x32\x1a.perception.common.Point3D\x12\x32\n\x0e\x63\x65nter_std_dev\x18\x02 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08size_lwh\x18\x03 \x01(\x0b\x32\x1a.perception.common.Point3D\x12\x30\n\x0csize_std_dev\x18\x04 \x01(\x0b\x32\x1a.perception.common.Point3D\x12\x13\n\x0borientation\x18\x05 \x01(\x01\x12\x1b\n\x13orientation_std_dev\x18\x06 \x01(\x01\x12+\n\x07\x63orners\x18\x07 \x03(\x0b\x32\x1a.perception.common.Point3D\"^\n\x06Rect2D\x12*\n\x06\x63\x65nter\x18\x01 \x01(\x0b\x32\x1a.perception.common.Point2D\x12(\n\x04size\x18\x02 \x01(\x0b\x32\x1a.perception.common.Point2D\"\x85\x03\n\x05\x42ox3D\x12,\n\x08lower_lt\x18\x01 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08lower_lb\x18\x02 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08lower_rb\x18\x03 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08lower_rt\x18\x04 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08upper_lt\x18\x05 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08upper_lb\x18\x06 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08upper_rb\x18\x07 \x01(\x0b\x32\x1a.perception.common.Point3D\x12,\n\x08upper_rt\x18\x08 \x01(\x0b\x32\x1a.perception.common.Point3D\x12\x0c\n\x04\x63onf\x18\t \x01(\x02\"2\n\x07Polygon\x12\'\n\x03pts\x18\x01 \x03(\x0b\x32\x1a.perception.common.Point3D\"5\n\tPoseAngle\x12\r\n\x05pitch\x18\x01 \x01(\x02\x12\x0b\n\x03yaw\x18\x02 \x01(\x02\x12\x0c\n\x04roll\x18\x03 \x01(\x02\x62\x06proto3')
 
 
 
-
-_POINT2D = _descriptor.Descriptor(
-  name='Point2D',
-  full_name='perception.common.Point2D',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='x', full_name='perception.common.Point2D.x', index=0,
-      number=1, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='y', full_name='perception.common.Point2D.y', index=1,
-      number=2, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=37,
-  serialized_end=68,
-)
-
-
-_POINT3D = _descriptor.Descriptor(
-  name='Point3D',
-  full_name='perception.common.Point3D',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='x', full_name='perception.common.Point3D.x', index=0,
-      number=1, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='y', full_name='perception.common.Point3D.y', index=1,
-      number=2, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='z', full_name='perception.common.Point3D.z', index=2,
-      number=3, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=70,
-  serialized_end=112,
-)
-
-
-_SIZE3D = _descriptor.Descriptor(
-  name='Size3D',
-  full_name='perception.common.Size3D',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='w', full_name='perception.common.Size3D.w', index=0,
-      number=1, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='h', full_name='perception.common.Size3D.h', index=1,
-      number=2, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='l', full_name='perception.common.Size3D.l', index=2,
-      number=3, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=114,
-  serialized_end=155,
-)
-
-
-_POINT = _descriptor.Descriptor(
-  name='Point',
-  full_name='perception.common.Point',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='x', full_name='perception.common.Point.x', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='y', full_name='perception.common.Point.y', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=157,
-  serialized_end=186,
-)
-
-
-_POINT2F = _descriptor.Descriptor(
-  name='Point2f',
-  full_name='perception.common.Point2f',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='x', full_name='perception.common.Point2f.x', index=0,
-      number=1, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='y', full_name='perception.common.Point2f.y', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=188,
-  serialized_end=219,
-)
-
-
-_POINT3F = _descriptor.Descriptor(
-  name='Point3f',
-  full_name='perception.common.Point3f',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='x', full_name='perception.common.Point3f.x', index=0,
-      number=1, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='y', full_name='perception.common.Point3f.y', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='z', full_name='perception.common.Point3f.z', index=2,
-      number=3, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=221,
-  serialized_end=263,
-)
-
-
-_ANGLE3F = _descriptor.Descriptor(
-  name='Angle3f',
-  full_name='perception.common.Angle3f',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='center', full_name='perception.common.Angle3f.center', index=0,
-      number=1, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='left', full_name='perception.common.Angle3f.left', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='right', full_name='perception.common.Angle3f.right', index=2,
-      number=3, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=265,
-  serialized_end=319,
-)
-
-
-_POINT2FLIST = _descriptor.Descriptor(
-  name='Point2fList',
-  full_name='perception.common.Point2fList',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='pts_list', full_name='perception.common.Point2fList.pts_list', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=321,
-  serialized_end=380,
-)
-
-
-_POINT2DLIST = _descriptor.Descriptor(
-  name='Point2DList',
-  full_name='perception.common.Point2DList',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='pts_list', full_name='perception.common.Point2DList.pts_list', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=382,
-  serialized_end=441,
-)
-
-
-_POINT3DLIST = _descriptor.Descriptor(
-  name='Point3DList',
-  full_name='perception.common.Point3DList',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='pts_list', full_name='perception.common.Point3DList.pts_list', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=443,
-  serialized_end=502,
-)
-
-
-_POINT3FLIST = _descriptor.Descriptor(
-  name='Point3fList',
-  full_name='perception.common.Point3fList',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='pts_list', full_name='perception.common.Point3fList.pts_list', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=504,
-  serialized_end=563,
-)
-
-
-_POINTLIST = _descriptor.Descriptor(
-  name='PointList',
-  full_name='perception.common.PointList',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='pts_list', full_name='perception.common.PointList.pts_list', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=565,
-  serialized_end=620,
-)
-
-
-_RECT = _descriptor.Descriptor(
-  name='Rect',
-  full_name='perception.common.Rect',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='x', full_name='perception.common.Rect.x', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='y', full_name='perception.common.Rect.y', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='w', full_name='perception.common.Rect.w', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='h', full_name='perception.common.Rect.h', index=3,
-      number=4, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=622,
-  serialized_end=672,
-)
-
-
-_RECT2F = _descriptor.Descriptor(
-  name='Rect2f',
-  full_name='perception.common.Rect2f',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='x', full_name='perception.common.Rect2f.x', index=0,
-      number=1, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='y', full_name='perception.common.Rect2f.y', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='w', full_name='perception.common.Rect2f.w', index=2,
-      number=3, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='h', full_name='perception.common.Rect2f.h', index=3,
-      number=4, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=674,
-  serialized_end=726,
-)
-
-
-_BOX3D = _descriptor.Descriptor(
-  name='Box3D',
-  full_name='perception.common.Box3D',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='lower_lt', full_name='perception.common.Box3D.lower_lt', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='lower_lb', full_name='perception.common.Box3D.lower_lb', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='lower_rb', full_name='perception.common.Box3D.lower_rb', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='lower_rt', full_name='perception.common.Box3D.lower_rt', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='upper_lt', full_name='perception.common.Box3D.upper_lt', index=4,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='upper_lb', full_name='perception.common.Box3D.upper_lb', index=5,
-      number=6, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='upper_rb', full_name='perception.common.Box3D.upper_rb', index=6,
-      number=7, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='upper_rt', full_name='perception.common.Box3D.upper_rt', index=7,
-      number=8, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='conf', full_name='perception.common.Box3D.conf', index=8,
-      number=9, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=729,
-  serialized_end=1118,
-)
-
-
-_POLYGON = _descriptor.Descriptor(
-  name='Polygon',
-  full_name='perception.common.Polygon',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='pts', full_name='perception.common.Polygon.pts', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1120,
-  serialized_end=1170,
-)
-
-_POINT2FLIST.fields_by_name['pts_list'].message_type = _POINT2F
-_POINT2DLIST.fields_by_name['pts_list'].message_type = _POINT2D
-_POINT3DLIST.fields_by_name['pts_list'].message_type = _POINT3D
-_POINT3FLIST.fields_by_name['pts_list'].message_type = _POINT3F
-_POINTLIST.fields_by_name['pts_list'].message_type = _POINT
-_BOX3D.fields_by_name['lower_lt'].message_type = _POINT3D
-_BOX3D.fields_by_name['lower_lb'].message_type = _POINT3D
-_BOX3D.fields_by_name['lower_rb'].message_type = _POINT3D
-_BOX3D.fields_by_name['lower_rt'].message_type = _POINT3D
-_BOX3D.fields_by_name['upper_lt'].message_type = _POINT3D
-_BOX3D.fields_by_name['upper_lb'].message_type = _POINT3D
-_BOX3D.fields_by_name['upper_rb'].message_type = _POINT3D
-_BOX3D.fields_by_name['upper_rt'].message_type = _POINT3D
-_POLYGON.fields_by_name['pts'].message_type = _POINT3D
-DESCRIPTOR.message_types_by_name['Point2D'] = _POINT2D
-DESCRIPTOR.message_types_by_name['Point3D'] = _POINT3D
-DESCRIPTOR.message_types_by_name['Size3D'] = _SIZE3D
-DESCRIPTOR.message_types_by_name['Point'] = _POINT
-DESCRIPTOR.message_types_by_name['Point2f'] = _POINT2F
-DESCRIPTOR.message_types_by_name['Point3f'] = _POINT3F
-DESCRIPTOR.message_types_by_name['Angle3f'] = _ANGLE3F
-DESCRIPTOR.message_types_by_name['Point2fList'] = _POINT2FLIST
-DESCRIPTOR.message_types_by_name['Point2DList'] = _POINT2DLIST
-DESCRIPTOR.message_types_by_name['Point3DList'] = _POINT3DLIST
-DESCRIPTOR.message_types_by_name['Point3fList'] = _POINT3FLIST
-DESCRIPTOR.message_types_by_name['PointList'] = _POINTLIST
-DESCRIPTOR.message_types_by_name['Rect'] = _RECT
-DESCRIPTOR.message_types_by_name['Rect2f'] = _RECT2F
-DESCRIPTOR.message_types_by_name['Box3D'] = _BOX3D
-DESCRIPTOR.message_types_by_name['Polygon'] = _POLYGON
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
+_POINT2D = DESCRIPTOR.message_types_by_name['Point2D']
+_POINT3D = DESCRIPTOR.message_types_by_name['Point3D']
+_SIZE3D = DESCRIPTOR.message_types_by_name['Size3D']
+_POINT = DESCRIPTOR.message_types_by_name['Point']
+_POINT2F = DESCRIPTOR.message_types_by_name['Point2f']
+_POINT3F = DESCRIPTOR.message_types_by_name['Point3f']
+_HAFQUATERNION = DESCRIPTOR.message_types_by_name['HafQuaternion']
+_ANGLE3F = DESCRIPTOR.message_types_by_name['Angle3f']
+_POINT2FLIST = DESCRIPTOR.message_types_by_name['Point2fList']
+_POINT2DLIST = DESCRIPTOR.message_types_by_name['Point2DList']
+_POINT3DLIST = DESCRIPTOR.message_types_by_name['Point3DList']
+_POINT3FLIST = DESCRIPTOR.message_types_by_name['Point3fList']
+_POINTLIST = DESCRIPTOR.message_types_by_name['PointList']
+_RECT = DESCRIPTOR.message_types_by_name['Rect']
+_RECT2F = DESCRIPTOR.message_types_by_name['Rect2f']
+_RECT3D = DESCRIPTOR.message_types_by_name['Rect3D']
+_RECT2D = DESCRIPTOR.message_types_by_name['Rect2D']
+_BOX3D = DESCRIPTOR.message_types_by_name['Box3D']
+_POLYGON = DESCRIPTOR.message_types_by_name['Polygon']
+_POSEANGLE = DESCRIPTOR.message_types_by_name['PoseAngle']
 Point2D = _reflection.GeneratedProtocolMessageType('Point2D', (_message.Message,), {
   'DESCRIPTOR' : _POINT2D,
   '__module__' : 'geometry_pb2'
@@ -784,6 +79,13 @@ Point3f = _reflection.GeneratedProtocolMessageType('Point3f', (_message.Message,
   # @@protoc_insertion_point(class_scope:perception.common.Point3f)
   })
 _sym_db.RegisterMessage(Point3f)
+
+HafQuaternion = _reflection.GeneratedProtocolMessageType('HafQuaternion', (_message.Message,), {
+  'DESCRIPTOR' : _HAFQUATERNION,
+  '__module__' : 'geometry_pb2'
+  # @@protoc_insertion_point(class_scope:perception.common.HafQuaternion)
+  })
+_sym_db.RegisterMessage(HafQuaternion)
 
 Angle3f = _reflection.GeneratedProtocolMessageType('Angle3f', (_message.Message,), {
   'DESCRIPTOR' : _ANGLE3F,
@@ -841,6 +143,20 @@ Rect2f = _reflection.GeneratedProtocolMessageType('Rect2f', (_message.Message,),
   })
 _sym_db.RegisterMessage(Rect2f)
 
+Rect3D = _reflection.GeneratedProtocolMessageType('Rect3D', (_message.Message,), {
+  'DESCRIPTOR' : _RECT3D,
+  '__module__' : 'geometry_pb2'
+  # @@protoc_insertion_point(class_scope:perception.common.Rect3D)
+  })
+_sym_db.RegisterMessage(Rect3D)
+
+Rect2D = _reflection.GeneratedProtocolMessageType('Rect2D', (_message.Message,), {
+  'DESCRIPTOR' : _RECT2D,
+  '__module__' : 'geometry_pb2'
+  # @@protoc_insertion_point(class_scope:perception.common.Rect2D)
+  })
+_sym_db.RegisterMessage(Rect2D)
+
 Box3D = _reflection.GeneratedProtocolMessageType('Box3D', (_message.Message,), {
   'DESCRIPTOR' : _BOX3D,
   '__module__' : 'geometry_pb2'
@@ -855,5 +171,54 @@ Polygon = _reflection.GeneratedProtocolMessageType('Polygon', (_message.Message,
   })
 _sym_db.RegisterMessage(Polygon)
 
+PoseAngle = _reflection.GeneratedProtocolMessageType('PoseAngle', (_message.Message,), {
+  'DESCRIPTOR' : _POSEANGLE,
+  '__module__' : 'geometry_pb2'
+  # @@protoc_insertion_point(class_scope:perception.common.PoseAngle)
+  })
+_sym_db.RegisterMessage(PoseAngle)
 
+if _descriptor._USE_C_DESCRIPTORS == False:
+
+  DESCRIPTOR._options = None
+  _POINT2D._serialized_start=37
+  _POINT2D._serialized_end=68
+  _POINT3D._serialized_start=70
+  _POINT3D._serialized_end=112
+  _SIZE3D._serialized_start=114
+  _SIZE3D._serialized_end=155
+  _POINT._serialized_start=157
+  _POINT._serialized_end=186
+  _POINT2F._serialized_start=188
+  _POINT2F._serialized_end=219
+  _POINT3F._serialized_start=221
+  _POINT3F._serialized_end=263
+  _HAFQUATERNION._serialized_start=265
+  _HAFQUATERNION._serialized_end=324
+  _ANGLE3F._serialized_start=326
+  _ANGLE3F._serialized_end=380
+  _POINT2FLIST._serialized_start=382
+  _POINT2FLIST._serialized_end=441
+  _POINT2DLIST._serialized_start=443
+  _POINT2DLIST._serialized_end=502
+  _POINT3DLIST._serialized_start=504
+  _POINT3DLIST._serialized_end=563
+  _POINT3FLIST._serialized_start=565
+  _POINT3FLIST._serialized_end=624
+  _POINTLIST._serialized_start=626
+  _POINTLIST._serialized_end=681
+  _RECT._serialized_start=683
+  _RECT._serialized_end=733
+  _RECT2F._serialized_start=735
+  _RECT2F._serialized_end=787
+  _RECT3D._serialized_start=790
+  _RECT3D._serialized_end=1085
+  _RECT2D._serialized_start=1087
+  _RECT2D._serialized_end=1181
+  _BOX3D._serialized_start=1184
+  _BOX3D._serialized_end=1573
+  _POLYGON._serialized_start=1575
+  _POLYGON._serialized_end=1625
+  _POSEANGLE._serialized_start=1627
+  _POSEANGLE._serialized_end=1680
 # @@protoc_insertion_point(module_scope)

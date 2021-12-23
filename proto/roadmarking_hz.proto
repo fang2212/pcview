@@ -3,7 +3,7 @@ import "geometry.proto";
 import "data_source.proto";
 import "odometry.proto";
 import "camera.proto";
-package perception;
+package perception.hz;
 
 // 统计项 
 message RoadSysProfiling {                                // 每处理一帧，就给出该帧的资源消耗信息
@@ -69,7 +69,7 @@ message Roadmarking {  // 路面标识 总字节数:(828 ~ 70067)
 		kColorGreen = 4;    // 绿色
 		kColorGray = 5;     // 灰色
 		kColorWhiteYellow = 6;  // 左白右黄
-		kColorYellowWhite = 7;  // 左黄右白\
+		kColorYellowWhite = 7;  // 左黄右白
 		kColorYellowGrayFusion = 8;  // 黄灰混合
 		kColorUnknown = 9;  // 
 	}

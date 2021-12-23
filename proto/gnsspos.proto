@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package minieye;
+
+/*
+	{
+	    "topic": "gnsspos",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 100,
+		"buff_num": 100,
+	    "elem_max_size": 1000
+	} 
+*/
+
+message GnssposData {
+    uint64 id = 1;                // id, 从0累加
+    uint64 seq = 2;               // sequence
+    uint64 timestamp = 3;         // 时戳(毫秒 - gps时间)
+    uint64 tick = 4;              // 硬件tick (数据面时间)
+
+    bool is_valid = 5;            // 数据有效性标志位：true表示是新接收的数据，false表示是历史数据
+    uint32 gps_week = 6;          // GPS时间，周数
+    double gps_sec = 7;           // GPS时间，周内秒(s)
+    uint32 pos_type = 8;	  // 定位状态
+
+    double latitude = 9;          // 纬度（deg）
+    double longitude = 10;        // 经度（deg）
+    float undulation = 11;        // 海拔高度与椭球面高度差（m）
+    float height = 12;            // 海拔高度（m）
+    float lat_std = 13;           // 纬度标准差(m)
+    float lon_std = 14;           // 经度标准差(m)
+    float hgt_std = 15;           // 高度标准差(m)
+    uint32 svs = 16;              // 跟踪卫星数
+    uint32 soln_svs = 17;         // 解算卫星数
+    uint32 diff_age = 18;         // 差分龄期(s)
+    float hdop = 19;              // 水平位置精度因子
+    float pdop = 20;              // 三维位置精度因子
+    float tdop = 21;              // 时间精度因子
+}

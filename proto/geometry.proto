@@ -36,6 +36,13 @@ message Point3f {
 	float z = 3;
 }
 
+message HafQuaternion {                         // 四元数结构体（Hamilton）
+    double x = 1;                               // 四元数矢量部分x
+    double y = 2;                               // 四元数矢量部分y
+    double z = 3;                               // 四元数矢量部分z
+    double w = 4;                               // 四元数标量部分w
+}
+
 message Angle3f {
 	float center = 1;
 	float left = 2;
@@ -74,6 +81,30 @@ message Rect2f {
     float y = 2;
     float w = 3;
     float h = 4;
+}
+
+message Rect3D {
+	Point3D center = 1; // 边框中心点
+	Point3D center_std_dev = 2; // 边框中心点标准差
+	/* 
+	 * 边框大小，长宽高，沿着障碍物航向角方向为长度(Y) 
+	 * 垂直障碍物航向角方向为宽度(X), 遵循右手规则
+	 * 垂直于XY平面的为高度(Z) 
+	 */
+	Point3D size_lwh = 3;   // 边框大小 
+	Point3D size_std_dev = 4; // 边框大小标准差
+	double orientation = 5; // 车辆坐标系下，航向角-弧度 
+	double orientation_std_dev = 6; // 边框航向角标准差
+	/* 边框顶点 : 预留给激光雷达的凸包点
+	* 如果该目标没有被lidar探测，则输出由其他sensor给出的包络点
+	* 凸包点个数范围限制在[6, 32]
+	*/
+	repeated Point3D corners = 7; // 边框顶点
+}
+
+message Rect2D {
+	Point2D center = 1; //边框中心点
+	Point2D size = 2; //边框大小，长宽
 }
 
 message Box3D {

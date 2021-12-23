@@ -3,6 +3,7 @@
 # source: imu.proto
 """Generated protocol buffer code."""
 from google.protobuf import descriptor as _descriptor
+from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
@@ -11,129 +12,37 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+import data_header_pb2 as data__header__pb2
 
 
-DESCRIPTOR = _descriptor.FileDescriptor(
-  name='imu.proto',
-  package='minieye',
-  syntax='proto3',
-  serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\timu.proto\x12\x07minieye\"U\n\x07ImuData\x12\r\n\x05\x61\x63\x63\x65l\x18\x01 \x03(\x05\x12\x0c\n\x04gyro\x18\x02 \x03(\x05\x12\x0c\n\x04temp\x18\x03 \x01(\x05\x12\x11\n\ttimestamp\x18\x04 \x01(\x04\x12\x0c\n\x04tick\x18\x05 \x01(\x04\">\n\x0bImuDataList\x12#\n\timu_datas\x18\x01 \x03(\x0b\x32\x10.minieye.ImuData\x12\n\n\x02id\x18\x02 \x01(\x04\x62\x06proto3'
-)
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\timu.proto\x12\x07minieye\x1a\x11\x64\x61ta_header.proto\"v\n\x07ImuData\x12\r\n\x05\x61\x63\x63\x65l\x18\x01 \x03(\x05\x12\x0c\n\x04gyro\x18\x02 \x03(\x05\x12\x0c\n\x04temp\x18\x03 \x01(\x05\x12\x11\n\ttimestamp\x18\x04 \x01(\x04\x12\x0c\n\x04tick\x18\x05 \x01(\x04\x12\x1f\n\x06header\x18\x06 \x01(\x0b\x32\x0f.minieye.Header\"\xad\x01\n\nImuPhyData\x12\x18\n\x10\x61ngular_velocity\x18\x01 \x03(\x02\x12\x14\n\x0clinear_accel\x18\x02 \x03(\x02\x12\x0c\n\x04temp\x18\x03 \x01(\x02\x12\x12\n\nimu_status\x18\x04 \x01(\x05\x12\x11\n\ttimestamp\x18\x05 \x01(\x04\x12\x0c\n\x04tick\x18\x06 \x01(\x04\x12\x0b\n\x03seq\x18\x07 \x01(\x04\x12\x1f\n\x06header\x18\x08 \x01(\x0b\x32\x0f.minieye.Header\"\xb1\x01\n\x0eImuCorrPhyData\x12\x18\n\x10\x61ngular_velocity\x18\x01 \x03(\x02\x12\x14\n\x0clinear_accel\x18\x02 \x03(\x02\x12\x0c\n\x04temp\x18\x03 \x01(\x02\x12\x12\n\nimu_status\x18\x04 \x01(\x05\x12\x11\n\ttimestamp\x18\x05 \x01(\x04\x12\x0c\n\x04tick\x18\x06 \x01(\x04\x12\x0b\n\x03seq\x18\x07 \x01(\x04\x12\x1f\n\x06header\x18\x08 \x01(\x0b\x32\x0f.minieye.Header\"\xb2\x01\n\x0bImuDataList\x12#\n\timu_datas\x18\x01 \x03(\x0b\x32\x10.minieye.ImuData\x12\n\n\x02id\x18\x02 \x01(\x04\x12*\n\rphy_imu_datas\x18\x03 \x03(\x0b\x32\x13.minieye.ImuPhyData\x12\x33\n\x12phy_corr_imu_datas\x18\x04 \x03(\x0b\x32\x17.minieye.ImuCorrPhyData\x12\x11\n\tdata_type\x18\x05 \x01(\x05\x62\x06proto3')
 
 
 
-
-_IMUDATA = _descriptor.Descriptor(
-  name='ImuData',
-  full_name='minieye.ImuData',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='accel', full_name='minieye.ImuData.accel', index=0,
-      number=1, type=5, cpp_type=1, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='gyro', full_name='minieye.ImuData.gyro', index=1,
-      number=2, type=5, cpp_type=1, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='temp', full_name='minieye.ImuData.temp', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='timestamp', full_name='minieye.ImuData.timestamp', index=3,
-      number=4, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='tick', full_name='minieye.ImuData.tick', index=4,
-      number=5, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=22,
-  serialized_end=107,
-)
-
-
-_IMUDATALIST = _descriptor.Descriptor(
-  name='ImuDataList',
-  full_name='minieye.ImuDataList',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='imu_datas', full_name='minieye.ImuDataList.imu_datas', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='id', full_name='minieye.ImuDataList.id', index=1,
-      number=2, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=109,
-  serialized_end=171,
-)
-
-_IMUDATALIST.fields_by_name['imu_datas'].message_type = _IMUDATA
-DESCRIPTOR.message_types_by_name['ImuData'] = _IMUDATA
-DESCRIPTOR.message_types_by_name['ImuDataList'] = _IMUDATALIST
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
+_IMUDATA = DESCRIPTOR.message_types_by_name['ImuData']
+_IMUPHYDATA = DESCRIPTOR.message_types_by_name['ImuPhyData']
+_IMUCORRPHYDATA = DESCRIPTOR.message_types_by_name['ImuCorrPhyData']
+_IMUDATALIST = DESCRIPTOR.message_types_by_name['ImuDataList']
 ImuData = _reflection.GeneratedProtocolMessageType('ImuData', (_message.Message,), {
   'DESCRIPTOR' : _IMUDATA,
   '__module__' : 'imu_pb2'
   # @@protoc_insertion_point(class_scope:minieye.ImuData)
   })
 _sym_db.RegisterMessage(ImuData)
+
+ImuPhyData = _reflection.GeneratedProtocolMessageType('ImuPhyData', (_message.Message,), {
+  'DESCRIPTOR' : _IMUPHYDATA,
+  '__module__' : 'imu_pb2'
+  # @@protoc_insertion_point(class_scope:minieye.ImuPhyData)
+  })
+_sym_db.RegisterMessage(ImuPhyData)
+
+ImuCorrPhyData = _reflection.GeneratedProtocolMessageType('ImuCorrPhyData', (_message.Message,), {
+  'DESCRIPTOR' : _IMUCORRPHYDATA,
+  '__module__' : 'imu_pb2'
+  # @@protoc_insertion_point(class_scope:minieye.ImuCorrPhyData)
+  })
+_sym_db.RegisterMessage(ImuCorrPhyData)
 
 ImuDataList = _reflection.GeneratedProtocolMessageType('ImuDataList', (_message.Message,), {
   'DESCRIPTOR' : _IMUDATALIST,
@@ -142,5 +51,15 @@ ImuDataList = _reflection.GeneratedProtocolMessageType('ImuDataList', (_message.
   })
 _sym_db.RegisterMessage(ImuDataList)
 
+if _descriptor._USE_C_DESCRIPTORS == False:
 
+  DESCRIPTOR._options = None
+  _IMUDATA._serialized_start=41
+  _IMUDATA._serialized_end=159
+  _IMUPHYDATA._serialized_start=162
+  _IMUPHYDATA._serialized_end=335
+  _IMUCORRPHYDATA._serialized_start=338
+  _IMUCORRPHYDATA._serialized_end=515
+  _IMUDATALIST._serialized_start=518
+  _IMUDATALIST._serialized_end=696
 # @@protoc_insertion_point(module_scope)

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package minieye;
+
+message Time {                               // 时间戳结构体
+    uint32 sec = 1;                             // 秒
+    uint32 nsec = 2;                            // 纳秒
+}
+
+message Header {                                // 通用数据帧头信息
+    uint32 seq = 1;                             // 序号
+    string frame_id = 2;                        // 帧名称
+    Time timestamp = 3;                         // gnss时间(分辨率纳秒)
+    Time tick = 4;                              // 数据面时间(分辨率纳秒)
+}
+

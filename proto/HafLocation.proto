@@ -1,0 +1,68 @@
+syntax = "proto3";
+import "data_header.proto";
+import "geometry.proto";
+
+package location;
+
+/*
+	{
+	    "topic": "haflocation",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 100,
+		"buff_num": 100,
+	    "elem_max_size": 1000
+	} 
+*/
+
+message HafLocation {                               // 融合定位输出信息结构体
+    enum CoordType {                                // 局部坐标系类型   
+        ENU_COORD = 0;                              // ENU
+        SLAM_COORD = 1;                             // SLAM
+    }
+    
+    message HafPose {                               // 位姿信息结构体
+        perception.common.Point3D position_wgs84 = 1;                 // 三维位置，经/纬/高（此处高度为椭球高）
+        perception.common.HafQuaternion quaternion = 2;               // 四元数
+        perception.common.Point3f euler_angle = 3;                    // 欧拉角，车辆坐标系前/左/上，对应欧拉角Roll/Pitch/Yaw，旋转顺序312
+        perception.common.Point3f rotation_vrf = 4;                   // 旋转矢量
+        float heading = 5;                                            // GNSS多普勒测速运动方向
+    }
+    
+    message HafPoseWithCovariance {                 // 位姿信息及其协方差结构体
+        HafPose pose_wgs = 1;                       // WGS84坐标系下，车辆位姿
+        HafPose pose_local = 2;                     // 局部坐标系下，车辆位姿，暂时不提供，保留信息
+        HafPose pose_gcj02 = 3;                     // 加密后的火星坐标系下，车辆位姿
+        repeated float covariance = 4;              // 位置/姿态协方差矩阵(前三维度位置，后三维度姿态，只在对角线填写对应方差，其余为零)，6*6矩阵，先行后列顺序展开，共36维
+    }
+    
+    message HafTwist {                              // 速度信息结构体 
+        perception.common.Point3f linear_vrf = 1;                     // 三维速度信息
+        perception.common.Point3f angular_vrf = 2;                    // 三维角速度信息
+    }
+    
+    message HafTwistWithCovariance {                // 速度信息及其协方差结构体
+        HafTwist twist_vrf = 1;                     // 车辆坐标系(前左上)下，速度/角速度信息
+        repeated float covariance = 2;              // 速度/角速度协方差矩阵(前三维度速度，后三维度角速度，只在对角线填写对应方差，其余为零)，6*6矩阵，先行后列顺序展开，共36维
+    }
+    
+    message HafAccel {                              // 加速度信息结构体 
+        perception.common.Point3f linear_vrf = 1;                     // 三维线加速度信息 
+        perception.common.Point3f angular_vrf = 2;                    // 三维角加速度信息(无法提供，暂时填写零值)
+    }
+    
+    message HafAccelWithCovariance {                // 加速度信息及其协方差结构体
+        HafAccel linear_vrf = 1;                    // 车辆坐标系(前左上)下，三维加速度信息
+        repeated float covariance = 2;              // 加速度协方差矩阵(前三维度加速度，只在对角线填写对应方差，其余为零)，6*6矩阵，先行后列顺序展开，共36维
+    }
+
+	minieye.Header header = 1;                      // 数据帧头信息
+    bool is_valid = 2;                              // 数据有效性标志位(true为新接收数据，false为历史数据)
+    uint32 gps_week = 3;                            // GPS周
+    double gps_sec = 4;                             // GPS周内秒
+    CoordType coordinate_type = 5;                  // 局部坐标系类型
+    HafPoseWithCovariance pose = 6;                 // 位姿信息
+    HafTwistWithCovariance velocity = 7;            // 速度信息
+    HafAccelWithCovariance acceleration = 8;        // 加速度信息
+    uint32 rtk_status = 9;                          // 卫导定位状态（0-5,0--无效解，1--单点，2--伪距差分，4--RTK固定解决，5--RTK浮点解）
+    uint32 location_state = 10;                     // 融合定位状态（0--定位不可用，1--里程计模式（IMU+Odom）,2--IMU+Odom+MM，3--IMU+Odom+RTK，4--IMU+Odom+RTK+MM，其中MM即mapmatching）
+}

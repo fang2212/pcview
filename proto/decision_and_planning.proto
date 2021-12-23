@@ -1,20 +1,18 @@
 syntax = "proto3";
 import "geometry.proto";
-// import "data_source.proto";
-// import "roadmarking.proto";
 
 // VERSION
-// 0.1
+// 0.2
 package perception;
 
 /*
-	{
-	    "topic": "decision_and_planning",
-	    "dds_mode": "shm",
-	    "data_refresh_rate": 20,
-	    "buff_num": 10, 
-	    "elem_max_size": 80000
-	}
+       {
+           "topic": "decision_and_planning",
+           "dds_mode": "shm",
+           "data_refresh_rate": 20,
+           "buff_num": 10,
+           "elem_max_size": 80000
+       }
 */
 
 message DecisionAndPlanning {
@@ -48,9 +46,9 @@ message DecisionAndPlanning {
         kPole = 5;                               // 柱子
         kTree = 6;                               // 树木
         kAnimal = 7;                             // 动物
-	kGod = 8;                                // 上帝
-	kBicycle = 9;                            // 自行车
-	kUnidentifiedVehicle = 10;               // 未知车辆
+        kGod = 8;                                // 上帝
+        kBicycle = 9;                            // 自行车
+        kUnidentifiedVehicle = 10;               // 未知车辆
     }
 
     // 车辆融合源
@@ -64,33 +62,33 @@ message DecisionAndPlanning {
     // 置信度LCK
     enum Conf {
         kConf_Invalid = 0;                              // 无效
-        kConf_Low = 1;                     		// 低
-        kConf_Med = 2;                          	// 中
-        kConf_High = 3;                          	// 高
+        kConf_Low = 1;                     		       // 低
+        kConf_Med = 2;                          	   // 中
+        kConf_High = 3;                          	   // 高
     }
 
 
     // 置信度TJA
     enum TjaConf {
         kTjaConf_Invalid = 0;                              // 无效
-        kTjaConf_Low = 1;                     		   // 低
-        kTjaConf_Med = 2;                          	   // 中
+        kTjaConf_Low = 1;                     		      // 低
+        kTjaConf_Med = 2;                          	      // 中
         kTjaConf_MedHigh = 3;                          	   // 中高
-	kTjaConf_High = 4;                          	   // 高
-	kTjaConf_Higher = 5;                          	   // 高高
-	kTjaConf_Superior = 6;                             // 高高高
+        kTjaConf_High = 4;                          	   // 高
+        kTjaConf_Higher = 5;                          	   // 高高
+        kTjaConf_Superior = 6;                             // 高高高
     }
 
     // 车道线单线类型
     enum LmType {
         kLmType_None = 0;                                  // 无
-        kLmType_Solid = 1;                       	   // 实线
+        kLmType_Solid = 1;                       	       // 实线
         kLmType_Dashed = 2;                          	   // 虚线
         kLmType_BottsDots = 3;                             // 点
-	kLmType_DoubleLm = 4;                              // 减速线
-	kLmType_DecelLm = 5;                          	   // 双线
-	kLmType_Undecided = 6;                             // 未知
-	kLmType_Invalid = 7;                          	   // 无效
+        kLmType_DoubleLm = 4;                              // 减速线
+        kLmType_DecelLm = 5;                          	   // 双线
+        kLmType_Undecided = 6;                             // 未知
+        kLmType_Invalid = 7;                          	   // 无效
     }
 
     // 车道线双线类型
@@ -99,15 +97,15 @@ message DecisionAndPlanning {
         kDlmType_SolidDashed = 1;                          // 实虚
         kDlmType_DashedSolid = 2;                          // 虚实
         kDlmType_SolidSolid = 3;                           // 实实
-	kDlmType_DashedDashed = 4;                         // 虚虚
-	kDlmType_Undecided = 5;                            // 未知
-	kDlmType_Invalid = 6;                          	   // 无效
+        kDlmType_DashedDashed = 4;                         // 虚虚
+        kDlmType_Undecided = 5;                            // 未知
+        kDlmType_Invalid = 6;                          	   // 无效
     }
 
     // 车道线颜色
     enum Color {
         kUnkonwn = 0;                              // 未知
-        kYellow = 1;                     	   // 黄色
+        kYellow = 1;                     	       // 黄色
         kWhite = 2;                          	   // 白色
         kBlue = 3;                          	   // 蓝色
     }    
@@ -135,15 +133,15 @@ message DecisionAndPlanning {
         kPolyType_Invalid = 0;                             // 无效
         kPolyType_LM_Barrier = 1;                          // 视觉护栏
         kPolyType_LM_RoadEdge = 2;                         // 视觉路演
-	kPolyType_RadarGuardrail = 3;                      // 雷达护栏
-	kPolyType_FusedBarrier = 4;                        // 融合护栏
-	kPolyType_PO_Trail = 5;                            // 关键车轨迹
-	kPolyType_Yawrate_Model = 6;                       // 自车运动
-	kPolyType_ETSEL = 7;                          	   // ETSEL
-	kPolyType_LLM = 8;                            	   // LLM
-	kPolyType_RLM = 9;                            	   // RLM
-	kPolyType_BLM = 10;                            	   // BLM
-	kPolyType_Reserved = 11;                           // 预留
+        kPolyType_RadarGuardrail = 3;                      // 雷达护栏
+        kPolyType_FusedBarrier = 4;                        // 融合护栏
+        kPolyType_PO_Trail = 5;                            // 关键车轨迹
+        kPolyType_Yawrate_Model = 6;                       // 自车运动
+        kPolyType_ETSEL = 7;                          	   // ETSEL
+        kPolyType_LLM = 8;                            	   // LLM
+        kPolyType_RLM = 9;                            	   // RLM
+        kPolyType_BLM = 10;                            	   // BLM
+        kPolyType_Reserved = 11;                           // 预留
     }
 
     // Sp类型
@@ -151,101 +149,119 @@ message DecisionAndPlanning {
         kSpType_Invalid = 0;                             // 无效
         kSpType_LLM_Only = 1;                            // 基于左侧线模型
         kSpType_RLM_Only = 2;                            // 基于右侧线模型
-	kSpType_BLM_Only = 3;                            // 基于双侧线模型
-	kSpType_PO_Only = 4;                             // 基于关键车模型
-	kSpType_PO_AND_LLM = 5;                          // 基于关键车和左侧线模型
-	kSpType_PO_AND_RLM = 6;                          // 基于关键车和右侧线模型
-	kSpType_PO_AND_BLM = 7;                          // 基于关键车和双侧线模型
-	kSpType_Reserved = 8;                            // 预留
+        kSpType_BLM_Only = 3;                            // 基于双侧线模型
+        kSpType_PO_Only = 4;                             // 基于关键车模型
+        kSpType_PO_AND_LLM = 5;                          // 基于关键车和左侧线模型
+        kSpType_PO_AND_RLM = 6;                          // 基于关键车和右侧线模型
+        kSpType_PO_AND_BLM = 7;                          // 基于关键车和双侧线模型
+        kSpType_Reserved = 8;                            // 预留
+    }
+
+    // 横向控制模式
+    enum LatCtrMode {
+        kLatCtrMode_IDLE = 0;                             // 无效
+        kLatCtrMode_LnCtrMode = 1;                        // 车道保持模式
+        kLatCtrMode_LnChgMode = 2;                        // 变道模式
+        kLatCtrMode_LnChgRampMode = 3;                    // 匝道车道保持模式
+        kLatCtrMode_LnCtrRampMode = 4;                    // 匝道变道模式
+    }
+
+    // 纵向控制模式
+    enum LonCtrMode {
+        kLonCtrMode_IDLE = 0;                             // 无效
+        kLonCtrMode_ACC = 1;                              // ACC模式
+        kLonCtrMode_AccWithSpdLimit = 2;                  // 带限速的ACC模式
+        kLonCtrMode_LnChgMode = 3;                        // 变道模式
+        kLonCtrMode_LnChgModeWithObj = 4;                 // 带目标的变道模式
     }
 
     message PolynomialModel {
-	float c0 = 1;                            // c0
-	float c1 = 2;                            // c1
-	float c2 = 3;                            // c2
-	float c3 = 4;                            // c3
-	float start_range = 5;                   // start_range
-	float end_range = 6;                     // end_range
+        float c0 = 1;                            // c0
+        float c1 = 2;                            // c1
+        float c2 = 3;                            // c2
+        float c3 = 4;                            // c3
+        float start_range = 5;                   // start_range
+        float end_range = 6;                     // end_range
     }
 
     message RoadPrediction {
-	int32 diverging_lane_marks_prediction = 1;     // Diverging Lane-marks Prediction
-	int32 other_side_based_prediction = 2;         // Other Side Based Prediction
-	int32 merge_prediction = 3;                    // Merge Prediction
-	int32 occluded_lane_mark_extrapolation = 4;    // Occluded Lane-mark Extrapolation
-	int32 headway_oriented_extrapolation = 5;      // Headway Oriented Extrapolation
-	int32 extrapolation = 6;                       // extrapolation
+        int32 diverging_lane_marks_prediction = 1;     // Diverging Lane-marks Prediction
+        int32 other_side_based_prediction = 2;         // Other Side Based Prediction
+        int32 merge_prediction = 3;                    // Merge Prediction
+        int32 occluded_lane_mark_extrapolation = 4;    // Occluded Lane-mark Extrapolation
+        int32 headway_oriented_extrapolation = 5;      // Headway Oriented Extrapolation
+        int32 extrapolation = 6;                       // extrapolation
     }
 
     message SteerPathInfo {
-	float timestamp_us = 1;                        // 时间戳
-	PolynomialModel poly_model = 2;                // 轨迹方程
-	SpType type = 3;                               // 轨迹源
-	TjaConf conf = 4;                              // 置信度
-	Status status = 5;                             // 跟踪状态
-	Status blm_status = 6;                         // 双线模型跟踪状态
-	bool ld_max_lw = 7;                            // 车道宽是否大于最大值
-	bool ld_min_lw = 8;                            // 车道宽是否小于最小值
-	Conf po_blm_similarity = 9;                    // po和blm的轨迹相似度
-	int32 max_po_ret_range = 10;                   // po最大保留距离
-	int32 lw_state = 11;                           // 车道宽度估计状态
-	int32 lm_predicted_status = 12;                // 目标车道宽度状态
-	int32 max_po_acq_range = 13;                   // po最大获取距离
-	float default_lane_width = 14;                 // 默认车道宽度
-	float max_coast_dist = 15;                     // 最大coast嘴里
-	int32 pred_lmrkr_mode = 16;                    // 预测车道线状态
-	int32 type_age = 17;                           // type生命周期
-	Conf rlm_po_similarity = 18;                   // rlm和po轨迹相似度
-	Conf llm_po_similarity = 19;                   // llm和po轨迹相似度
-	Conf llm_rlm_similarity = 20;                  // llm和rlm轨迹相似度
-	float lane_width = 21;                         // 车道宽度
-	bool f_llm_cutin = 22;                         // 左侧cutin
-	bool f_rlm_cutin = 23;                         // 右侧cutin
+        float timestamp_us = 1;                        // 时间戳
+        PolynomialModel poly_model = 2;                // 轨迹方程
+        SpType type = 3;                               // 轨迹源
+        TjaConf conf = 4;                              // 置信度
+        Status status = 5;                             // 跟踪状态
+        Status blm_status = 6;                         // 双线模型跟踪状态
+        bool ld_max_lw = 7;                            // 车道宽是否大于最大值
+        bool ld_min_lw = 8;                            // 车道宽是否小于最小值
+        Conf po_blm_similarity = 9;                    // po和blm的轨迹相似度
+        int32 max_po_ret_range = 10;                   // po最大保留距离
+        int32 lw_state = 11;                           // 车道宽度估计状态
+        int32 lm_predicted_status = 12;                // 目标车道宽度状态
+        int32 max_po_acq_range = 13;                   // po最大获取距离
+        float default_lane_width = 14;                 // 默认车道宽度
+        float max_coast_dist = 15;                     // 最大coast嘴里
+        int32 pred_lmrkr_mode = 16;                    // 预测车道线状态
+        int32 type_age = 17;                           // type生命周期
+        Conf rlm_po_similarity = 18;                   // rlm和po轨迹相似度
+        Conf llm_po_similarity = 19;                   // llm和po轨迹相似度
+        Conf llm_rlm_similarity = 20;                  // llm和rlm轨迹相似度
+        float lane_width = 21;                         // 车道宽度
+        bool f_llm_cutin = 22;                         // 左侧cutin
+        bool f_rlm_cutin = 23;                         // 右侧cutin
     }
 
     message LeftLineModelInfo {
         float timestamp_us = 1;                        // 时间戳
-	PolynomialModel poly_model = 2;                // 轨迹方程
-	RoadPrediction road_prediction = 3;            // 预测源状态
-	Conf conf = 4;                                 // 置信度
-	Status status = 5;                             // 跟踪状态
-	PolyType type = 6;                             // 源类型
-	int32 state_age = 7;                           // 当前状态生命周期
-	int32 age = 8;                                 // 生命周期
+        PolynomialModel poly_model = 2;                // 轨迹方程
+        RoadPrediction road_prediction = 3;            // 预测源状态
+        Conf conf = 4;                                 // 置信度
+        Status status = 5;                             // 跟踪状态
+        PolyType type = 6;                             // 源类型
+        int32 state_age = 7;                           // 当前状态生命周期
+        int32 age = 8;                                 // 生命周期
     }
 
     message RightLineModelInfo {
         float timestamp_us = 1;                        // 时间戳
-	PolynomialModel poly_model = 2;                // 轨迹方程
-	RoadPrediction road_prediction = 3;            // 预测源状态
-	Conf conf = 4;                                 // 置信度
-	Status status = 5;                             // 跟踪状态
-	PolyType type = 6;                             // 源类型
-	int32 state_age = 7;                           // 当前状态生命周期
-	int32 age = 8;                                 // 生命周期
+        PolynomialModel poly_model = 2;                // 轨迹方程
+        RoadPrediction road_prediction = 3;            // 预测源状态
+        Conf conf = 4;                                 // 置信度
+        Status status = 5;                             // 跟踪状态
+        PolyType type = 6;                             // 源类型
+        int32 state_age = 7;                           // 当前状态生命周期
+        int32 age = 8;                                 // 生命周期
     }
 
     message PrimaryObjectInfo {
-	float timestamp_us = 1;                        // 时间戳
-	PolynomialModel poly_model = 2;                // 轨迹方程
-	PoType type = 3;                               // 轨迹源
-	Conf conf = 4;                                 // 置信度
-	Status status = 5;                             // 跟踪状态
-	int32 fus_track_id = 6;                        // fused track id of the closest in path vehicle
-	int32 state_age = 7;                           // 当前状态生命周期
-	int32 age = 8;                                 // 生命周期
-	int32 trail_id = 9;                    	       // trails id of the closest in path vehicle 
-	float poly_correlation_coeff = 10;             // correlation between po trail points and polymonial fit on po trial -blended poly
-	float lat_pos = 11;                            // 车辆坐标系下横向距离
-	float lon_pos = 12;                	       // 车辆坐标系下纵向距离
-	bool f_cutout_check = 13;                      // 是否开启cutout检测
-	bool f_cutout = 14;                 	       // 是否cutout
-	bool f_yawrate_cutout = 15;                    // cutout detected by yawrate
-	bool f_llm_heading_cutout = 16;                // cutout detected by llm_heading
-	bool f_rlm_heading_cutout = 17;                // cutout detected by rlm_heading
-	bool f_llm_extent_cutout = 18;                 // cutout detected by llm_extent
-	bool f_rlm_extent_cutout = 19;                 // cutout detected by rlm_extent
-	float lane_id = 20;			       // 对应的车道id
+        float timestamp_us = 1;                        // 时间戳
+        PolynomialModel poly_model = 2;                // 轨迹方程
+        PoType type = 3;                               // 轨迹源
+        Conf conf = 4;                                 // 置信度
+        Status status = 5;                             // 跟踪状态
+        int32 fus_track_id = 6;                        // fused track id of the closest in path vehicle
+        int32 state_age = 7;                           // 当前状态生命周期
+        int32 age = 8;                                 // 生命周期
+        int32 trail_id = 9;                    	       // trails id of the closest in path vehicle
+        float poly_correlation_coeff = 10;             // correlation between po trail points and polymonial fit on po trial -blended poly
+        float lat_pos = 11;                            // 车辆坐标系下横向距离
+        float lon_pos = 12;                	       // 车辆坐标系下纵向距离
+        bool f_cutout_check = 13;                      // 是否开启cutout检测
+        bool f_cutout = 14;                 	       // 是否cutout
+        bool f_yawrate_cutout = 15;                    // cutout detected by yawrate
+        bool f_llm_heading_cutout = 16;                // cutout detected by llm_heading
+        bool f_rlm_heading_cutout = 17;                // cutout detected by rlm_heading
+        bool f_llm_extent_cutout = 18;                 // cutout detected by llm_extent
+        bool f_rlm_extent_cutout = 19;                 // cutout detected by rlm_extent
+        float lane_id = 20;			       // 对应的车道id
         float vcs_long_vel = 21;		       // 纵向车速
         float vcs_lat_vel = 22;			       // 横向车速	
         float speed = 23;			       //  车速	 
@@ -258,16 +274,16 @@ message DecisionAndPlanning {
     }
 
     message Trl {
-	float timestamp_us = 1;                        // 时间戳
-	PolynomialModel poly_model = 2;                // 轨迹方程
-	Conf conf = 3;                                 // 置信度
-	Status status = 4;                             // 跟踪状态
-	int32 fus_track_id = 5;                        // fused track id of the closest in path vehicle
-	int32 state_age = 6;                           // 当前状态生命周期
-	int32 age = 7;                                 // 生命周期
-	int32 trail_id = 8;                    	       // trails id of the closest in path vehicle 
-	float lat_pos = 9;                             // 车辆坐标系下横向距离
-	float lon_pos = 10;                	       // 车辆坐标系下纵向距离
+        float timestamp_us = 1;                        // 时间戳
+        PolynomialModel poly_model = 2;                // 轨迹方程
+        Conf conf = 3;                                 // 置信度
+        Status status = 4;                             // 跟踪状态
+        int32 fus_track_id = 5;                        // fused track id of the closest in path vehicle
+        int32 state_age = 6;                           // 当前状态生命周期
+        int32 age = 7;                                 // 生命周期
+        int32 trail_id = 8;                    	       // trails id of the closest in path vehicle
+        float lat_pos = 9;                             // 车辆坐标系下横向距离
+        float lon_pos = 10;                	       // 车辆坐标系下纵向距离
         float heading_rad = 11;                	       // most up to date fused track heading in radian
 	float lane_id = 12;			       // 对应的车道id
         float vcs_long_vel = 13;		       // 纵向车速
@@ -276,8 +292,8 @@ message DecisionAndPlanning {
         float veh_width = 16;                          //  车宽
         float coast_distance = 17;                     //  车宽
         int32 num_overlap_points = 18;
-	int32 num_fus_track = 19;                       // number of fused tracks added to a trail
-        int32 last_valid_look_index = 20;               //  the look index at which a fused track corresponding to this trail is OBSERVED, to resolve ambiguity between different trails containing tracks of same ID
+	int32 num_fus_track = 19;                      // number of fused tracks added to a trail
+        int32 last_valid_look_index = 20;              //  the look index at which a fused track corresponding to this trail is OBSERVED, to resolve ambiguity between different trails containing tracks of same ID
         FusionSource fusion_source = 21;               //  源
         bool f_eligible_for_po = 22;                   //  是否可用于PO筛选
         int32 intension = 23;                          //  意图 kHOLD_LANE = 0, kTO_LEFT_LANE = 1, kTO_RIGHT_LANE = 2,
@@ -294,54 +310,54 @@ message DecisionAndPlanning {
     message VisionPlausibilityInfo {
         float timestamp_us = 1;                        // 时间戳
         bool rlm_input_sim_v = 2;                      // 右侧线输入是否有效
-	bool po_input_sim_v = 3;                       // 车辆检测输入是否有效
-	bool llm_input_sim_v = 4;                      // 左侧线输入是否有效
-	bool blm_input_sim_v = 5;                      // 双侧线输入是否有效
-	bool mpc_v = 6;                                // 中点一致性检测是否有效
-	float rlm_rwhl_offset = 7;                     // 右侧线到轮的距离
-	float llm_lwhl_offset = 8;                     // 左侧线到轮的距离
-	bool rlm_valid = 9;                    	       // 右侧线模型有效
-	bool rlm_straddle = 10;                        // rlm_straddle
-	bool rlm_delta_valid = 11;                     // rlm_delta_valid
-	bool pred_lw_valid = 12;                       // 预测车道宽度是否有效
-	float pred_lw = 13;                            // 预测车道宽度
-	bool llm_valid = 14;                 	       // 左侧线模型有效
-	bool llm_straddle = 15;                        // llm_straddle
-	bool llm_delta_valid = 16;                     // llm_delta_valid
-	int32 diverging = 17;                          // diverging
+        bool po_input_sim_v = 3;                       // 车辆检测输入是否有效
+        bool llm_input_sim_v = 4;                      // 左侧线输入是否有效
+        bool blm_input_sim_v = 5;                      // 双侧线输入是否有效
+        bool mpc_v = 6;                                // 中点一致性检测是否有效
+        float rlm_rwhl_offset = 7;                     // 右侧线到轮的距离
+        float llm_lwhl_offset = 8;                     // 左侧线到轮的距离
+        bool rlm_valid = 9;                    	       // 右侧线模型有效
+        bool rlm_straddle = 10;                        // rlm_straddle
+        bool rlm_delta_valid = 11;                     // rlm_delta_valid
+        bool pred_lw_valid = 12;                       // 预测车道宽度是否有效
+        float pred_lw = 13;                            // 预测车道宽度
+        bool llm_valid = 14;                 	       // 左侧线模型有效
+        bool llm_straddle = 15;                        // llm_straddle
+        bool llm_delta_valid = 16;                     // llm_delta_valid
+        int32 diverging = 17;                          // diverging
     }
 
     message LaneWidthInfo {
         float timestamp_us = 1;                        // 时间戳
         int32 right_vre_rlm_sim = 2;                   // 右侧视觉路沿和右侧车道线模型的相似度
-	int32 left_vre_llm_sim = 3;                    // 左侧视觉路沿和左侧车道线模型的相似度
-	int32 right_gr_vre_sim = 4;                    // 右侧视觉路沿和右侧雷达护栏的相似度
-	int32 left_gr_vre_sim = 5;                     // 左侧视觉路沿和左侧雷达护栏的相似度
-	bool right_vre_plaus = 6;                      // 右侧视觉路沿是否有效
-	int32 right_gr_spp_sim = 7;                    // 右侧雷达护栏和spp轨迹的相似度
-	bool left_vre_plaus = 8;                       // 左侧视觉路沿是否有效
-	int32 left_gr_spp_sim = 9;                     // 左侧雷达护栏和spp轨迹的相似度
-	bool right_gr_plaus = 10;                      // 右侧雷达护栏是否有效
-	bool left_gr_plaus = 11;                       // 左侧雷达护栏是否有效
-	int32 right_bound_type = 12;                   // 右侧边界类型
-	int32 left_bound_type = 13;                    // 左侧边界类型
-	float coast_dist_v_meas_lw = 14;               // 预测车道宽度状态下车辆行驶距离
-	int32 slope_to_preset = 15;                    // slope_to_preset
-	int32 slope_to_meas = 16;                      // slope_to_meas
-	float distance_in_state_m = 17;                // 当前状态下行驶距离
-	float filtered_lane_width_m = 18;              // 滤波后车道线宽度
-	float max_coast_distance = 19;                 // 最大预测行驶距离
+        int32 left_vre_llm_sim = 3;                    // 左侧视觉路沿和左侧车道线模型的相似度
+        int32 right_gr_vre_sim = 4;                    // 右侧视觉路沿和右侧雷达护栏的相似度
+        int32 left_gr_vre_sim = 5;                     // 左侧视觉路沿和左侧雷达护栏的相似度
+        bool right_vre_plaus = 6;                      // 右侧视觉路沿是否有效
+        int32 right_gr_spp_sim = 7;                    // 右侧雷达护栏和spp轨迹的相似度
+        bool left_vre_plaus = 8;                       // 左侧视觉路沿是否有效
+        int32 left_gr_spp_sim = 9;                     // 左侧雷达护栏和spp轨迹的相似度
+        bool right_gr_plaus = 10;                      // 右侧雷达护栏是否有效
+        bool left_gr_plaus = 11;                       // 左侧雷达护栏是否有效
+        int32 right_bound_type = 12;                   // 右侧边界类型
+        int32 left_bound_type = 13;                    // 左侧边界类型
+        float coast_dist_v_meas_lw = 14;               // 预测车道宽度状态下车辆行驶距离
+        int32 slope_to_preset = 15;                    // slope_to_preset
+        int32 slope_to_meas = 16;                      // slope_to_meas
+        float distance_in_state_m = 17;                // 当前状态下行驶距离
+        float filtered_lane_width_m = 18;              // 滤波后车道线宽度
+        float max_coast_distance = 19;                 // 最大预测行驶距离
     }
 
     message ObjectST {
         float timestamp_us = 1;                        // 时间戳
-        int32 id = 2;                          
-	int32 zone_id = 3;                             // kNONE = 0, kHOST_FRONT = 1, kHOST_BACK = 2, kHOST_FRONT_FRONT = 3, kHOST_BACK_BACK = 4,
-                                                       //  kTARGET_FRONT = 5, kTARGET_BACK = 6, kTARGET_FRONT_FRONT = 7, kTARGET_BACK_BACK = 8, KOTHER = 9,
-	float t_in = 4;                               
-	float t_out = 5;                              
-	float s_in = 6;                                
-	float s_out = 7;                                
+        int32 id = 2;                                  // 目标id
+        int32 zone_id = 3;                             // kNONE = 0, kHOST_FRONT = 1, kHOST_BACK = 2, kHOST_FRONT_FRONT = 3, kHOST_BACK_BACK = 4,
+                                                       // kTARGET_FRONT = 5, kTARGET_BACK = 6, kTARGET_FRONT_FRONT = 7, kTARGET_BACK_BACK = 8, KOTHER = 9,
+        float t_in = 4;				       // 进入轨迹的时间	                               
+        float t_out = 5;				       // 出去轨迹的时间
+        float s_in = 6;                                // 进入轨迹的s(frenet)
+        float s_out = 7;                               // 出去轨迹的s(frenet)     
     }
 	
     message ObjectSTList {
@@ -350,15 +366,17 @@ message DecisionAndPlanning {
 
     message ObjectSL {
         float timestamp_us = 1;                        // 时间戳
-        int32 id = 2;                                 
-	int32 s = 3;                             
-	float l = 4;                               
-	float vs = 5;                              
-	float vl = 6;                                
-	float width = 7;
-	float length = 8;
-	bool is_stationary = 9;
-	float lane_id = 10;                             
+        int32 id = 2;                                  // 目标id
+        int32 s = 3;                                   // s(frenet)
+        float l = 4;                                   // l(frenet)
+        float vs = 5;                                  // vs(frenet)
+        float vl = 6;                                  // vl(frenet)
+        float as = 7;                                  // as(frenet)
+        float al = 8;                                  // al(frenet)
+        float width = 9;                               // 目标宽度 
+        float length = 10;                             // 目标长度
+        bool is_stationary = 11;                       // 是否静止
+        float lane_id = 12;                            // 所属车道id
     }
 
     message ObjectSLList {
@@ -368,23 +386,32 @@ message DecisionAndPlanning {
     message DriverLaneChangeInfo {
         float timestamp_us = 1;                        // 时间戳
         int32 dlc_trigger = 2;                         // kIDLE = 0, kSTANDBY = 1, kDLC_TO_LEFT = 2, kDLC_TO_RIGHT = 3, kACTION_ABORT = 4, 
-	int32 motion_status = 3;                       // kNONE = 0, kSTANDBY = 1, kPREACTION = 2, kPLAN = 3, kTRACK = 4, kREPLAN = 5, kFINISH = 6, kENMERGENCY = 7,
-	PolynomialModel comand_path = 4;               // 变道轨迹                          
-	ObjectSL host_lane_cipv = 5;                              
-	ObjectSL target_lane_cipv = 6;                                
-	ObjectSTList st_map = 7;
-	ObjectSLList sl_objs = 8;                              
+        int32 motion_status = 3;                       // kNONE = 0, kSTANDBY = 1, kPREACTION = 2, kPLAN = 3, kTRACK = 4, kREPLAN = 5, kFINISH = 6, kENMERGENCY = 7,
+        LatCtrMode lat_control_mode = 4;               // 横向控制模式
+        LonCtrMode lon_control_mode = 5;               // 纵向控制模式
+        float lon_comand_speed = 6;                    // 纵向速度请求
+        float lon_speed_up_limit = 7;                  // 纵向速度上限
+        float lon_comand_acceleration = 8;             // 纵向加速度请求
+        PolynomialModel comand_path = 9;               // 变道轨迹     
+        ObjectSL host_lane_cipv = 10;                  // 自车道关键车    
+        ObjectSL target_lane_cipv = 11;                // 目标车道关键车                
+        ObjectSTList st_map = 12;                      // st图
+        ObjectSLList sl_objs = 13;                     // frenet下的目标
     }
 
-    float timestamp_us = 1;                        			// 时间戳
-    uint64 frame_id = 2;                           			// 帧ID
-    SteerPathInfo sp_info = 3;                           		// SteerPathInfo
-    LeftLineModelInfo llm_info = 4;                           		// LeftLineModelInfo
-    RightLineModelInfo rlm_info = 5;                           	        // RightLineModelInfo
-    PrimaryObjectInfo po_info = 6;                           		// PrimaryObjectInfo
-    VisionPlausibilityInfo vis_plaus = 7;                           	// VisionPlausibilityInfo
-    LaneWidthInfo lane_width_info = 8;                           	// LaneWidthInfo
-    TrlList trl_list = 9;                                               // TrlList
-    DriverLaneChangeInfo dlc_info = 10;                                 // DriverLaneChangeInfo
+    float timestamp_us = 1;                                 // 时间戳
+    uint64 frame_id = 2;                           	    // 帧ID
+    float wheel_real_torque_nm = 3;                         // 轮端扭矩
+    float slope_rad = 4;				    // 坡度
+    float wheel_acceleration_mpss = 5;			    // 轮端加速度
+    float akerman_velocity_mps = 6;                         // 阿克曼车速
+    SteerPathInfo sp_info = 7;                              // SteerPathInfo
+    LeftLineModelInfo llm_info = 8;                         // LeftLineModelInfo
+    RightLineModelInfo rlm_info = 9;                        // RightLineModelInfo
+    PrimaryObjectInfo po_info = 10;                         // PrimaryObjectInfo
+    VisionPlausibilityInfo vis_plaus = 11;                  // VisionPlausibilityInfo
+    LaneWidthInfo lane_width_info = 12;                     // LaneWidthInfo
+    TrlList trl_list = 13;                                  // TrlList
+    DriverLaneChangeInfo dlc_info = 14;                     // DriverLaneChangeInfo
 
 }

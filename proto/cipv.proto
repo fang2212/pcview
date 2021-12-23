@@ -9,7 +9,7 @@ package perception;
 	    "data_refresh_rate": 20,
 	    "buff_num": 10,
 	    "elem_max_size": 2048
-	} 
+	}
 */
 message CIPV {                                  // 关键车输出信息
 	uint64 frame_id = 1;                        // 帧ID
@@ -20,4 +20,5 @@ message CIPV {                                  // 关键车输出信息
     float lateral_dist = 6;                     // 关键车横向距离
     float rel_longitude_speed = 7;              // 关键车车辆纵向相对速度
     float rel_lateral_speed = 8;                // 关键车车辆横向相对速度
+    float ttc = 9;                              // 碰撞时间
 }

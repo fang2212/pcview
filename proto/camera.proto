@@ -2,6 +2,35 @@ syntax = "proto3";
 
 package minieye;
 
+// 图像拓展信息
+message CameraFrameExtendedInfo {
+	uint32 seq                 = 1;   // 图像序号
+	uint32 frame_type          = 2;   // 帧类型，0：MJPEG, 1：H264, 2：H265 3: NV12
+	int32 data_size            = 3;   // 图像数据大小
+	int32 width                = 4;   // 图像宽
+	int32 height               = 5;   // 图像高
+
+	uint32 fsync_ads_sec       = 6;   // Fsync曝光信号触发的时刻，数据面时间，秒
+	uint32 fsync_ads_nsec      = 7;   // Fsync曝光信号触发的时刻，数据面时间，纳秒
+	uint32 fsync_gnss_sec      = 8;   // Fsync曝光信号触发的时刻，管理面时间，秒
+	uint32 fsync_gnss_nsec     = 9;   // Fsync曝光信号触发的时刻，管理面时间，纳秒
+
+	uint32 exp_start_ads_sec   = 10;  // 图像曝光开始的时刻，数据面时间，秒
+	uint32 exp_start_ads_nsec  = 11;  // 图像曝光开始的时刻，数据面时间，纳秒
+	uint32 exp_start_gnss_sec  = 12;  // 图像曝光开始的时刻，管理面时间，秒
+	uint32 exp_start_gnss_nsec = 13;  // 图像曝光开始的时刻，管理面时间，纳秒
+
+	uint32 exp_end_ads_sec     = 14;  // 图像曝光结束的时刻，数据面时间，秒
+	uint32 exp_end_ads_nsec    = 15;  // 图像曝光结束的时刻，数据面时间，纳秒
+	uint32 exp_end_gnss_sec    = 16;  // 图像曝光结束的时刻，管理面时间，秒
+	uint32 exp_end_gnss_nsec   = 17;  // 图像曝光结束的时刻，管理面时间，纳秒
+
+	uint32 shutter_1           = 18;  // 图像大像素曝光持续时间，微秒
+	uint32 shutter_2           = 19;  // 图像小像素曝光持续时间，微秒
+
+	bytes image_supplement     = 20;  // 图像附加描述信息, 跟平台相关, 可强转对应的结构体
+}
+
 /*
    {
      "topic": "camera",
@@ -22,6 +51,7 @@ message CameraFrame {
 	uint32 stride = 8;                          // 单行步长 
 	uint32 image_type = 9;                      // bgr = 0 / rgb = 1 / yuvnv21 = 2
 	bytes image_supplement = 10;                // 图像附加描述信息, e.g image_pyramids 跟平台相关, 可强转对应的结构体 
+	CameraFrameExtendedInfo extended_info = 11; // 图像拓展信息
 }
 
 // 图像格式 
@@ -45,6 +75,26 @@ enum CamDirect {
 	REAR  = 2;
 	LEFT  = 4;
 	RIGHT = 8;
+}
+
+// 摄像头fov角度
+enum CamFov {
+	kFovUnknown = 0;
+	kFov30 = 1;
+	kFov100 = 2;
+}
+
+// 摄像头ID (通过位置和fov表征)
+message CamID {
+	/* 0x1 -> front, 0x2 -> rear, 0x4 -> left, 0x8 -> right
+	 * 0x1 | 0x4 -> left and front
+	 * 0x2 | 0x4 -> left and rear
+	 * 0x1 | 0x8 -> right and front
+	 * 0x2 | 0x8 -> right and rear
+	 */
+	int32 cam_direct = 1; // 安装位置
+	CamFov fov = 2; // fov描述 
+	int32 id = 3;  // 扩展字段(可以直接用此字段表示camera个体)
 }
 
 enum ProjectionModel {

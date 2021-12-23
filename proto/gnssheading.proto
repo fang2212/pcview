@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package minieye;
+
+/*
+	{
+	    "topic": "gnssheading",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 100,
+		"buff_num": 100,
+	    "elem_max_size": 1000
+	} 
+*/
+
+message GnssheadingData {
+    uint64 id = 1;           // id, 从0累加
+    uint64 seq = 2;          // sequence
+    uint64 timestamp = 3;    // 时戳(毫秒 - gps时间)
+    uint64 tick = 4;         // 硬件tick (数据面时间)
+
+    bool is_valid = 5;        // 数据有效性标志位：true表示是新接收的数据，false表示是历史数据
+    uint32 gps_week = 6;      // GPS时间，周数
+    double gps_sec = 7;       // GPS时间，周内秒(s)
+    uint32 svs = 8;          // 定向天线可见卫星数
+    uint32 soln_svs = 9;      // 参与定向的卫星数
+    uint32 pos_type = 10;     //	定向状态
+    float length = 11;       // 定向基线长度（m）
+    float heading = 12;      // 方位角（deg，0~360），北偏东为正
+    float pitch	= 13;        // 俯仰角（deg，-90~90），向上为正
+    float hdg_std = 14;       // 方位角标准差（deg）
+    float pitch_std = 15;     // 俯仰角标准差（deg）
+}
