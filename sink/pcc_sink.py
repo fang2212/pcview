@@ -819,6 +819,8 @@ class FlowSink(Sink):
                 self.pkg_handler = self.mdc_data
         elif self.dbc == "video_jpeg":
             self.pkg_handler = self.video_jpeg
+        elif self.topic == "caminfo":
+            self.pkg_handler = self.cam_ext_info
         elif self.topic == "image_extended_info":
             self.pkg_handler = self.img_ext_info
         elif self.topic == 'MdcTime':
@@ -905,12 +907,14 @@ class FlowSink(Sink):
         img = data[36:]
         return img, head_data
 
-    def cam_ext_info(self, data):
+    def cam_ext_info(self, msg):
         """
         TODO：摄像头临时添加接口数据采集
         @param data:
         @return:
         """
+        msg = self.decode_data(msg)
+        data = msg["data"]
         head_data = [
             int.from_bytes(data[:4], byteorder='little', signed=False),                 # camera id
             int.from_bytes(data[4:12], byteorder='little', signed=False),               # timestamp 时戳，microseconds
@@ -1253,12 +1257,10 @@ class ProtoSink(NNSink):
             # "vehicle": vehicle_pb2.Vehicle,
             "pedestrian": pedestrian_pb2.Pedestrian,
             "roadmarking": roadmarking_pb2.Roadmarking,
-            "object_attribute": object_attribute_pb2.Box3DGroup,
             "vehicle": object_pb2.ObjectList,
             "ped": object_pb2.ObjectList,
             "calib_param": calib_param_pb2.CalibParam,
             "tsr": object_pb2.ObjectList,
-            "dev_object": dev_object_pb2.DevObjectList,
             "vehicle_signal": vehicle_signal_pb2.VehicleSignal,
             "obs": object_pb2.ObjectList
         }
