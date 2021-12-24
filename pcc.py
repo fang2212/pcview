@@ -537,7 +537,7 @@ class PCC(object):
             else:
                 self.player.show_recording(main_img, 0)
         else:
-            self.player.show_replaying(self.player_cache['main']['ts'] - self.ts0)
+            self.player.show_replaying(self.player_cache['main']['ts'] - self.start_ts)
 
         fps = self.player.cal_fps(frame_cnt)
         self.player.show_fps('video', fps)
