@@ -22,6 +22,5 @@
       "topic": "fusion_data,radar_data,lane_data,vehicle_data,drive_data,fusion_inject,calib_params,files,rf_data,corner_radar_data,tsl_data,af_data,7v5r_tsl_data",
       "save": "bin"
     }
-
   }
 }
