@@ -219,9 +219,10 @@ def parse_novatel(msg_type, msg, ctx):
         ret = parse_bestpos(fields)
         r.update(ret)
     elif msg_type == 'bestgnssposa':
+        pass
         # ret = parse_bestpos(fields)
         # r.update({'pos_type': ret['pos_type']})
-        return
+        # return
     if r:
         return r
 
