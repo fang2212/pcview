@@ -196,7 +196,7 @@
       "topic": "image_extended_info",
       "idx": 7
     },
-      "mdc_fusion": {
+    "mdc_fusion": {
       "enable": true,
       "port": 24015,
       "origin_device": "mdc",
