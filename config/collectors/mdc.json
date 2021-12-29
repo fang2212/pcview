@@ -1,5 +1,5 @@
 {
-  "type": "mdc",
+  "type": "mdc_algo",
   "mac": "5a:31:d3:59:12:06",
   "force_ip": true,
   "ip": "192.168.30.42",
@@ -195,6 +195,15 @@
       "protocol": "msgpack",
       "topic": "image_extended_info",
       "idx": 7
+    },
+      "mdc_fusion": {
+      "enable": true,
+      "port": 24015,
+      "origin_device": "mdc",
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "fusion_data,radar_data,lane_data,vehicle_data,drive_data,fusion_inject,calib_params,files,rf_data,corner_radar_data,tsl_data,af_data,7v5r_tsl_data,fusion_ddsflow",
+      "save": "bin"
     }
   }
 }
