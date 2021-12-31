@@ -39,13 +39,12 @@ class MMAPQueue:
             else:
                 return
 
+        self.lock.acquire()
         before_head = self.head.value
         end_index = self.find(b'$MMAPEND$')
         if end_index == -1:
             raise IndexError("未找到结尾数据 MMAPQueue出现异常")
         content_len = self.long(self.head.value, end_index) + 4    # len(b'$MMAPEND$')=9 len(header_info)=4 read_index + end_index + 9 - 1 - 4
-
-        self.lock.acquire()
         head_info = self.remove(4, locking=True)      # 获取数据长度
         data_len = int.from_bytes(head_info, byteorder='big')
         if content_len != data_len:
