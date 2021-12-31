@@ -1,4 +1,3 @@
-
 {
     "version": 1.0,
     "name": "cfg_lab",
@@ -14,12 +13,12 @@
             "enable": true,
             "collectors": [
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "d1_fusion", "can1": "aion_lx"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "lx_debug", "can1": "ars"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "a1j", "can1": "wsk"}},
-                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "blank", "can1": "lhgd"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d1", "can0": "lx_debug", "can1": "ars410"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d2", "can0": "a1j", "can1": "hmi_can"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d3", "can0": "blank", "can1": "blank"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d4", "can0": "blank", "can1": "blank"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d5", "can0": "blank", "can1": "blank"}},
-                {"model":  "can_gw_nn", "params": {"can1": "ars410", "can2": "ars410","can3": "aion_lx","can4": "blank","can5": "d1_fusion","can6": "d1_fusion","can7": "a1j","can8": "a1j"}},
+                {"model":  "can_gw_nn", "params": {"can1": "blank", "can2": "blank","blank": "blank","can4": "blank","can5": "blank","can6": "blank","can7": "blank","can8": "blank"}},
                 {"model":  "a1j", "params": {"mac":  "6a:92:53:b9:97:00", "is_main":  true}},
                 {"model":  "a1j_collector", "params": {"mac": "6a:92:53:b9:97:00", "can0": "a1j"}},
                 {"model":  "q4_100"},
@@ -75,7 +74,7 @@
                       "lon_offset": -1.65,
                       "yaw": 0.0
                  },
-                 "q4_100": {
+                "q4_100": {
                       "roll": 0.0,
                       "lat_offset": 0,
                       "pitch": 0.0,
@@ -83,7 +82,7 @@
                       "lon_offset": -1.6,
                       "yaw": 0
                 },
-                 "mbq4": {
+                "mbq4": {
                       "roll": 0.0,
                       "lat_offset": -0.06,
                       "pitch": 0.0,
@@ -91,7 +90,7 @@
                       "lon_offset": -1.58,
                       "yaw": 0.0
                 },
-                 "j2": {
+                "j2": {
                       "roll": 0.0,
                       "lat_offset": -0.03,
                       "pitch": 0.0,
@@ -99,7 +98,7 @@
                       "lon_offset": -3.53,
                       "yaw": 0
                 },
-                 "d1_fusion": {
+                "d1_fusion": {
                       "roll": 0.0,
                       "lat_offset": 0,
                       "pitch": 0.0,
@@ -107,7 +106,7 @@
                       "lon_offset": 0,
                       "yaw": 0
                 },
-                 "j2_fusion": {
+                "j2_fusion": {
                       "roll": 0.0,
                       "lat_offset": 0,
                       "pitch": 0.0,
@@ -115,7 +114,7 @@
                       "lon_offset": 0,
                       "yaw": 0
                 },
-                 "a1j": {
+                "a1j": {
                       "roll": 0.0,
                       "lat_offset": 0,
                       "pitch": 0.0,
