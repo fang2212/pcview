@@ -59,8 +59,8 @@ def trigger_build(branch=None, local_path='.', ip=None, platform=""):
 
     # retrieve binary
     pcc_app_local = os.path.join(local_path,
-                                 'pcc_app_replay_{}_{}_{}.tar.gz'.format(platform, branch, datetime.now().strftime("%m%d")))
-    sess.download(work_dir + '/dist/pcc_app.tar.gz', pcc_app_local)
+                                 '{}_pcc_app_{}.tar.gz'.format(platform, datetime.now().strftime("%Y_%m_%d")))
+    sess.download(work_dir + f'/dist/pcc_app_{datetime.now().strftime("%Y_%m_%d")}.tar.gz', pcc_app_local)
     return local_path
 
 def trigger_build_1604(branch=None, local_path='.'):

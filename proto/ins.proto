@@ -1,0 +1,38 @@
+syntax = "proto3";
+import "data_header.proto";
+import "geometry.proto";
+
+package minieye;
+
+/*
+	{
+	    "topic": "ins",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 100,
+		"buff_num": 100,
+	    "elem_max_size": 1000
+	} 
+*/
+
+message InsData {
+    Header header = 1;                 // 头部信息
+    bool is_valid = 2;                    // 数据有效性标志位：true表示是新接收的数据，false表示是历史数据    
+    uint32 gps_week = 3;                  // GPS时间，周数
+    double gps_sec = 4;                   // GPS时间，周内秒(s), double
+    double latitude = 5;                  // 纬度(degree，WGS84)
+    double longitude = 6;                 // 经度(degree，WGS84)
+    double elevation = 7;                 // 椭球面以上高度(m)
+    perception.common.Point3f attitude = 8;                 // (导航)坐标系N转至IMU坐标系B的欧拉角（roll/pitch/yaw）,旋转顺序312
+    perception.common.Point3f linear_velocity = 9;          // (导航)坐标系X/Y/Z三轴方向线速度(m/s）
+    perception.common.Point3f sd_position = 10;             // 纬度、经度和高度标准差(m)
+    perception.common.Point3f sd_attitude = 11;             // 三轴欧拉角（roll/pitch/yaw）标准差（degree）
+    perception.common.Point3f sd_velocity = 12;             // (导航)坐标系下，X/Y/Z三轴方向线速度标准差(m/s）
+    uint32 sys_status = 13;               // 系统状态(0~3); 0--初始化;1--卫导模式；2--组合导航；3--纯惯导
+    uint32 gps_status = 14;               // 卫导状态; 0--不定位不定向；1--单点定位定向；2--伪距差分定位定向；
+                                          //           3--组合推算；4--RTK稳定解定位定向；5--RTK浮点解定位定向；
+                                          //           6--单点定位不定向；7--伪距差分定位不定向
+    uint32 warn_info = 15;                // bit0--1表示无GPS消息，0表示正常
+                                          // bit1--1表示无GPS消息，0表示正常
+                                          // bit3--1表示陀螺仪错误，0表示正常
+                                          // bit4--1表示加计错误，0表示正常
+}

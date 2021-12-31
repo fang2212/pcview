@@ -1,7 +1,8 @@
 syntax = "proto3";
 import "geometry.proto";
 import "data_source.proto";
-
+import "odometry.proto";
+import "camera.proto";
 package perception;
 
 // 统计项 
@@ -16,7 +17,17 @@ message RoadSysProfiling {                                // 每处理一帧，�
 
 /*
 	{
-	    "topic": "roadmarking",
+	    "topic": "roadmarkingfront",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 20,
+		"buff_num": 10, 
+	    "elem_max_size": 80000
+	}
+*/
+
+/*
+	{
+	    "topic": "roadmarkingrear",
 	    "dds_mode": "shm",
 	    "data_refresh_rate": 20,
 		"buff_num": 10, 
@@ -37,24 +48,30 @@ message Roadmarking {  // 路面标识 总字节数:(828 ~ 70067)
 	}
 
 	enum LineType { // 线型 类型:int 字节数:4
-		kLineSingleDashed = 0;  // 虚线
-		kLineSingleSolid = 1;   // 实线
-		kLineDoubleSolid = 2;   // 双实线
-		kLineDoubleDashed = 3;  // 双虚线
-		kLineDashedSolid = 4;   // 虚实线
+		kLineSingleSolid = 0;   // 实线
+		kLineSingleDashed = 1;  // 虚线
+		kLineBold = 2;          // 短粗虚线（道路出入口标线）
+		kLineDoubleSolid = 3;   // 双实线
+		kLineDoubleDashed = 4;  // 双虚线
 		kLineSolidDashed = 5;   // 实虚线
-		kLineDeceleration = 6;  // 减速线
-		kLineBold = 7;          // 超宽线 
-		kFence = 8;             // 栅栏
-		kLineUnknown = 9;
+		kLineDashedSolid = 6;   // 虚实线
+		kFence = 7;             // 栅栏
+		kCurb=8;                // 路沿
+		kLineDeceleration = 9;  // 减速线 
+		kLineUnknown = 10;
 	}
 
 	enum ColorType { // 颜色  类型:int 字节数:4
 		kColorWhite = 0;    // 白色
 		kColorYellow = 1;   // 黄色
-		kColorBlue = 2;     // 蓝色
-		kColorGreen = 3;    // 绿色
-		kColorUnknown = 4;  // 
+		kColorOrange = 2;   // 橙色
+		kColorBlue = 3;     // 蓝色
+		kColorGreen = 4;    // 绿色
+		kColorGray = 5;     // 灰色
+		kColorWhiteYellow = 6;  // 左白右黄
+		kColorYellowWhite = 7;  // 左黄右白\
+		kColorYellowGrayFusion = 8;  // 黄灰混合
+		kColorUnknown = 9;  // 
 	}
 
 	enum LineState {  // 车道线运动类型 类型:int 字节数:4
@@ -81,6 +98,10 @@ message Roadmarking {  // 路面标识 总字节数:(828 ~ 70067)
 		double c1 = 4;            // 类型:double 字节数:8 取值范围:(DOUBLE_MIN~DOUBLE_MAX)
 		double c2 = 5;            // 类型:double 字节数:8 取值范围:(DOUBLE_MIN~DOUBLE_MAX)
 		double c3 = 6;            // 类型:double 字节数:8 取值范围:(DOUBLE_MIN~DOUBLE_MAX)
+		double dev_c0 = 7;        // c0的标准差，即，车道线横向位置的标准差
+		double dev_c1 = 8;		  // c1的标准差，即，车道线航向角的标准差
+		double dev_c2 = 9;        // c2的标准差，即，车道线原点处曲率的标准差
+		double dev_c3 = 10;       // c3的标准差，即，车道线原点处曲率变化率的标注差
 	}
 
 	message Laneline { // 车道线属性 总字节数:(116~5936)
@@ -101,6 +122,7 @@ message Roadmarking {  // 路面标识 总字节数:(828 ~ 70067)
 		uint32 age = 14;                                                  // 声明周期 类型:uint32 字节数:4 取值范围:(0~2^32)
 		repeated uint32 point_cam_id = 15;                                // 采样点对应的camera id  字节数: 16*n 取值范围 最大容量:255   
 		perception.common.Point2f centroid_pt = 16;                       // 质心点坐标
+		int32 lane_id = 17;                                               // 车道线位置id(当前车道左侧从0向远处递减，右侧从1向远处递增)
 	}
 
 	message LanelineList { // 车道线信息列表 总字节数:(0~39296)
@@ -135,6 +157,7 @@ message Roadmarking {  // 路面标识 总字节数:(828 ~ 70067)
 			SpaceType type = 7;                                           // 采样点邻近不可同行类型 类型:int 字节数:4 取值范围(0~7)
 			MotionProp motion_prop = 8;                                   // 采样点运动属性 类型:int 字节数:4 取值范围(0~2)
 			uint32 camera_id = 9;                                         // 摄像头id
+			uint32 sensor_type = 10;                                      // (0-camera, 1-radar, 2-LIDAR, 3-Hdmap, 4-LIDAR_CAM_FUSION)
 		}
 		repeated FreeZone freezone = 1;                                   // 采样点集 字节数:64*n 最大容量:100
 		float dist_std = 2;                                               // 采样点距离标准差 类型:float 字节数:4 取值范围(0~FLT_MAX)
@@ -184,8 +207,8 @@ message Roadmarking {  // 路面标识 总字节数:(828 ~ 70067)
 			kOthers = 13;                 // 其他
 			kDecelerationLine = 14;       // 减速标识
 			kTypeNums = 15;               // 总类型数
-            kSpeedBump = 16;              // 减速带
-            kManholeCover = 17;           // 井盖
+			kSpeedBump = 16;              // 减速带
+			kManholeCover = 17;           // 井盖
 		}
 
 		enum Form {
@@ -317,12 +340,16 @@ message Roadmarking {  // 路面标识 总字节数:(828 ~ 70067)
 	MotionEst motion = 10;                                // 运动估计信息 字节数:12
 	PoseEst pose = 11;                                    // 姿态估计信息 字节数:4 (前视摄像头)
 	HppInfo hpp_info = 12;                                // 预测行驶线 字节数:(370-14770）
-	uint64 tick = 13;                                     // tick 字节数: 8
+	uint64 tick = 13;                                     // tick ms 字节数: 8
 	minieye.DataSource data_source = 14;                  // 描述数据源 字节数: 4
 	CurveCoeff slope_equation = 15;                       // 坡度方程 字节数 40
 	uint64 finish_time = 16;                              // 处理结束时间 字节数 8
 	JunctionList junc_list = 17;                          // 交叉点信息 字节数 256 (最多4个交叉点) 
 	RoadSysProfiling profiling_items = 18;                // 统计项
-	uint64 recv_time = 19;                               // 图像接收时间戳ms
+	uint64 recv_time = 19;                                // 图像接收时间戳ms
+	float fps = 20;                                       // 车道线算法fps
+	minieye.EgoMotion ego_motion = 21;                    // 基于imu和can_speed估计两帧之间的运动
+	float ego_lane_width = 22;                            // 自车道宽度（m）
+	minieye.CamID cam_id = 23;                            // 摄像头id
 }
 

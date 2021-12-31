@@ -1,0 +1,74 @@
+syntax = "proto3";
+package perception;
+
+message Prediction{
+    message PredictPoint{
+        float x = 1;
+        float y = 2;
+        float z = 3;
+        //车辆坐标系，障碍物的航向角，弧度
+        float theta = 4;
+        //车辆坐标系下，障碍物在该点沿轨迹方向的速度
+        float speed = 5;
+        //车辆坐标系下，障碍物在该点沿轨迹方向的加速度
+        float acc = 6;
+        //轨迹点的置信度
+        float confidence = 7;
+        //秒[s]
+        //（相对时间0~10s）
+        float timeRelative = 8;
+        
+    }
+
+    message PredictionTrajectory{
+        //车辆坐标系下，障碍物预测轨迹点集
+        repeated PredictPoint pathPointsVRF = 1;
+        float probability = 2;
+    }
+
+    message PredictionObstacle{
+        uint32 id = 1;
+        repeated PredictionTrajectory Trajectory = 2;
+        /*
+        障碍物意图类型：
+        enum ObstaclePreIntent{
+        UNKNOWN = 0;
+        STOP = 1;
+        STATIONARY = 2;
+        MOVING = 3;
+        CHANGE_LANE_LEFT = 4;
+        CHANGE_LANE_RIGHT = 5;
+        CONSTANT_SPEED = 6;
+        LOW_ACCELERATION = 7;
+        HIGH_ACCELERATION = 8;
+        LOW_DECELERATION =9;
+        HIGH_DECELERATION = 10;}
+        */
+        uint32 Intent = 3;
+        float intentProbability = 4;
+        /*
+        障碍物优先级
+        enum ObstaclePriority {
+            CAUTION = 0;
+            NORMAL = 1;
+            IGNORE = 2;
+        }
+        */
+        uint32 Priority = 5;
+        //是否是静止障碍物
+        bool is_static = 6;
+    }
+
+    //header.gnssStamp
+	uint64 timestamp = 1;                              // UTC时戳, 微秒
+    //header.timestamp
+	uint64 tick = 2;                                   // 异构设备上的时钟, 微秒
+    //header.seq
+    uint32 counter = 3;                                // 融合计数，判断融合是否更新
+
+    repeated PredictionObstacle predictionObstacles = 4;             // 融合目标信息
+    bool isValid = 5;
+
+    uint64 startTime = 6;                             //weimiao,预测开始时间
+    uint64 endTime = 7;                               //weimiao,预测结束时间
+}

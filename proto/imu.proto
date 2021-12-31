@@ -1,25 +1,55 @@
 syntax = "proto3";
+import "data_header.proto";
 
 package minieye;
 
 message ImuData { // imu raw data
-	repeated int32 accel = 1;             // 加速度计数据
-	repeated int32 gyro = 2;              // 陀螺仪数据
+	repeated int32 accel = 1;             // 加速度计数据(原始数据)
+	repeated int32 gyro = 2;              // 陀螺仪数据(原始数据)
 	int32 temp = 3;                       // 温度
-	uint64 timestamp = 4;                 // 时戳(毫秒)
-    uint64 tick = 5;                      // 硬件tick
+	uint64 timestamp = 4;                 // 时戳(毫秒 - gps时间)
+    uint64 tick = 5;                      // 硬件tick (数据面时间)
+	Header header = 6;			  	  	  // 头部信息，包含时间信息(分辨率纳秒)
 }
 
+message ImuPhyData { // 转化成物理量的imu数据(raw_data)
+	repeated float angular_velocity = 1;  // 角速度信息, unit: rad/s, size = 3 (X, Y, Z) 
+	repeated float linear_accel = 2;      // 线加速度信息, unit: m/s^2, size = 3 (X, Y, Z)
+	float temp = 3;                       // 温度信息, 无温度时置零
+	int32 imu_status = 4;                 // imu状态, bit0=1 -> 加计故障, bit1 = 1, 陀螺仪故障, 无状态可置零
+	uint64 timestamp = 5;                 // 时戳(毫秒 - gps时间)
+	uint64 tick = 6;                      // 硬件tick (数据面时间)
+	uint64 seq = 7;                       // sequence
+	Header header = 8;			  	  	  // 头部信息，包含时间信息(分辨率纳秒)
+}
+
+message ImuCorrPhyData { // 转化成物理量的imu数据(correct_data)
+	repeated float angular_velocity = 1;  // 角速度信息, unit: rad/s, size = 3 (X, Y, Z) 
+	repeated float linear_accel = 2;      // 线加速度信息, unit: m/s^2, size = 3 (X, Y, Z)
+	float temp = 3;                       // 温度信息, 无温度时置零
+	int32 imu_status = 4;                 // imu状态, bit0=1 -> 加计故障, bit1 = 1, 陀螺仪故障, 无状态可置零
+	uint64 timestamp = 5;                 // 时戳(毫秒 - gps时间)
+	uint64 tick = 6;                      // 硬件tick (数据面时间)
+	uint64 seq = 7;                       // sequence
+	Header header = 8;			  	  	  // 头部信息，包含时间信息(分辨率纳秒)
+}
+
+
 /*
-	{
-	    "topic": "imu",
-	    "dds_mode": "shm",
-	    "data_refresh_rate": 100,
-		"buff_num": 100,
-	    "elem_max_size": 1000
-	} 
+{
+    "topic": "imu",
+    "dds_mode": "shm",
+    "data_refresh_rate": 100,
+	"buff_num": 100,
+    "elem_max_size": 1000
+} 
 */
 message ImuDataList { // imu raw data list
-	repeated ImuData imu_datas = 1;       // imu data list
-	uint64 id = 2;                        // id
+	repeated ImuData imu_datas = 1;          // raw imu data list
+	uint64 id = 2;                           // id
+
+	repeated ImuPhyData phy_imu_datas = 3;   // raw phys imu data list 
+	repeated ImuCorrPhyData phy_corr_imu_datas = 4;   // correct phys imu data list 
+
+	int32 data_type = 5;                     // 0 -> raw data, 1 -> raw physical data, 2 -> correct physical data
 }

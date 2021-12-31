@@ -40,10 +40,18 @@ message PedState {
 }
 
 message TsrWarning {
+    message TrafficLightSignal{
+        bool right_turn_on_red = 1;           // 是否允许红灯右转
+    }
+
     float height_limit = 1;                   // 限高值
     float weight_limit = 2;                   // 限重值
     int32 speed_limit = 3;                    // 限速值
     int32 tsr_warning_level = 4;              // 告警级别
+    int32 no_overtaking_status = 5;           // 禁止超车状态 0: off, 1: on
+    TrafficLightSignal light_signal = 6;      // 交通灯信号
+    int32 removal_speed_limit = 7;            // 解除限速值
+    float speed_limit_distance = 8;           // 观测到限速牌后，车行驶的距离（由车辆组算法积分提供）单位：米
 }
 
 message TsrState {

@@ -1,0 +1,219 @@
+syntax = "proto3";
+package perception;
+import "geometry.proto";
+
+/*
+  {
+	  "topic": "rcfusion",
+	  "dds_mode": "shm",
+	  "data_refresh_rate": 50,
+	  "message_type" : 0, 
+	  "buff_num": 20,
+	  "elem_max_size": 1600
+  }
+*/
+
+message RCFusion {     
+    message RadarSingleTarget{
+        perception.common.Point2D pos = 1;
+        uint32 id = 2;
+    }  
+    message CameraSingleTarget{
+        perception.common.Point3D pos = 1;
+        uint32 id = 2;
+    }                                      
+    message RadarFrame{
+        repeated RadarSingleTarget target= 1;
+    }    
+    message CameraFrame{
+        repeated CameraSingleTarget target=1;
+    }     
+    message Rect3D{
+        perception.common.Point3D Center = 1;
+        perception.common.Point3D CenterStdDev = 2;
+        perception.common.Point3D SizeLWH = 3;
+        perception.common.Point3D SizeStdDev = 4;
+        repeated perception.common.Point3D Corners = 5;
+    }       
+    /*
+        坐标轴原点：后轴中心；xyz：北西天
+    */                                       
+
+    // radar + camera fusion                              
+    message SingleTarget {
+        //ObjectID
+        uint32 id = 1;                                      // 目标ID
+
+        /*
+        "目标的融合维护状态：
+        1-New Created
+        2-Coasted
+        3-Merge
+        4-Tracked，  
+        5-..."
+        */
+        //MaintenanceStatus
+        uint32 status = 2;                                  // 目标更新状态
+
+        /*
+        "目标运动状态：
+        0-UNKNOWN
+        1-MOVING_EGODIRECTION_DRIVING
+        2-MOVING_EGODIRECTION_STOPPED
+        3-MOVING_EGODIRECTION_REVERSING：已经解释。
+        4-MOVING_ONCOMING
+        5-MOVING_CROSSING
+        6-STATIONARY"
+        */
+        //MotionPattern
+        uint32 movement = 3;                                // 目标运动状态
+
+        /*
+        障碍物类别:
+        0-UNKNOWN;           未知障碍物类型;
+        1-UNKNOWN_UNMOVABLE; 未知静止障碍物类型
+        2-PEDESTRIAN;        行人
+        3-BICYCLE;           自行车
+        4-CAR;               小型汽车,比如轿车
+        5-TRUCK;             大型汽车,比如卡车
+        6-BUS;               客车，公交车等
+        7-MOTORCYCLE;        摩托车
+        8-TRICYCLE;          三轮车
+        9-CONE;              锥筒
+        10-BAN;              禁停牌
+        11-STOPBAR;          停车杆
+        12-SPEEDHUMP；       减速带
+
+        */
+        //Class
+        uint32 object_class = 4;                            // 目标分类
+
+        //AccelerationAbs.y
+        float accel_lat_obj = 5;                            // 目标横向加速度
+
+        uint32 vis_track_id = 6;                            // 关联到视觉目标ID
+        uint32 radar_track_id = 7;                          // 关联的雷达目标ID
+
+        //RectInfo.SizeLWH.y
+        float width = 8;                                    // 目标宽度
+
+        //ExistenceProbability
+        float confidence = 9;                               // 目标置信度
+
+        bool cipv = 10;                                     // 目标是否是关键目标        
+        
+        //VelocityAbs.x
+        float v_long_obj = 11;                               // 目标纵向速度
+
+        //VelocityAbs.y
+        float v_lat_obj = 12;                                // 目标横向速度
+
+        //RectInfo.center.x
+        float l_long_rel = 13;                               // 目标纵向距离
+
+        //RectInfo.center.y
+        float l_lat_rel = 14;                                // 目标横向距离
+
+        /*
+        在当前的融合Cycle内，探测到该目标的传感器：
+        Bit0-Camera FrontLongRange
+        Bit1-Camera FrontWideAngle
+        Bit2-Camera RightForwardLooking
+        Bit3-Camera RightBackwardLooking
+        Bit4-Camera LeftForwardLooking
+        Bit5-Camera LeftBackwardLooking
+        Bit6-Camera Rear
+        Bit7-Radar Front
+        Bit8-Radar FrontRight
+        Bit9-Radar FrontLeft
+        Bit10-Radar RearRight
+        Bit11-Radar RearLeft
+        Bit12-Lidar FrontRight
+        Bit13-Lidar FrontLeft
+        Bit14-31: Reserve
+        */
+        //DetectSensor_Current
+        uint32 detection_sensor = 15;                        // 目标由哪个传感器更新
+
+        //AccelerationAbs.x
+        float accel_long_obj = 16;                           // 目标纵向加速度
+
+        //RectInfo.SizeLWH.x
+        float length =17;                                    // 目标长度
+
+        //RectInfo.Orientation
+        float heading_angle=18;                              // 目标航向角
+
+        RadarFrame asso_radar = 19;
+        CameraFrame asso_camera = 20; 
+        /*
+        "在目标的生命周期内，曾经探测到该目标的传感器。
+        位域的定义同detection_sensor。"
+        */
+        //DetectSensor_History
+        uint32 DetectSensor_History = 21;                    
+
+        /*
+        "讨论结果：如果OBJ是Radar Only OBJ时,后续讨论类别置信度输出问题
+        ==>直接赋值100，很危险，所以请Minieye使用更为合理的方式评估。"
+        */
+        float ClassConfidence = 22;
+        /*
+        障碍物被识别的时间戳,us
+        */
+        uint64 TimeCreation = 23;
+        /*
+        障碍物最近更新时间,us
+        */
+        uint64 LastUpdatedTime = 24;
+        /*
+        "记载当该目标被某Sensor识别时，Sensor赋予它的ID号。
+        数组大小32，排序方法与上方DetectSensor使用的位域排序方法一致。预留的元素均填“0”"
+        */
+        repeated uint32 SensorID = 25;
+        /*
+        "目标历史运动状态：
+        */
+        uint32 MotionPatternHistory = 26;
+        /*
+        "刹车灯的状态：
+        0-Unknow
+        1-Off
+        2-On"
+        */
+        uint32 BrakeLightSt = 27;
+        /*
+        "转向信号灯状态：
+        0-Unknow
+        1-Off
+        2-Left_Flash
+        3-Right_Flash
+        4-Left_and_rihgt_Flash"
+        */
+        uint32 TurnLightSt = 28;
+        /*
+        "近边，即传感器探测的目标的面。
+        0-FRONT;
+        1-REAR;
+        2-RIGHTSIDE;
+        3-LEFTSIDE;"
+        */
+        uint32 NearSide = 29;
+
+        Rect3D RectInfo = 30;
+
+        float OrientationStdDev = 31;
+    }
+    //header.gnssStamp
+	uint64 timestamp = 1;                              // UTC时戳, 微秒
+    //header.timestamp
+	uint64 tick = 2;                                   // 异构设备上的时钟, 微秒
+    uint32 frame_id = 3;                               // 融合对应的图像帧号
+    //header.seq
+    uint32 counter = 4;                                // 融合计数，判断融合是否更新
+    //ObjAmount
+	uint32 track_num = 5;                              // 融合目标数量
+    //fusionOut
+    repeated SingleTarget fusion_list = 6;             // 融合目标信息
+    bool isValid = 7;
+}

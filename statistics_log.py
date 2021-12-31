@@ -1,9 +1,12 @@
+# -*- coding: future_fstrings -*-
 import argparse
+import functools
 import json
 import logging
 import math
 import os
 import pathlib
+import threading
 import time
 
 import openpyxl
@@ -23,8 +26,86 @@ logger.addHandler(fh)
 
 other_list = ['gsensor', "camera"]     # 参与统计的其他字段
 
-row_count = 3
-col_count = 4
+row_count = 2
+col_count = 2
+
+
+def sort_big_file(filename, file_splits=4, my_cmp=None):
+    """
+    排序文件
+    @param filename:
+    @param file_splits:
+    @param my_cmp:
+    @return:
+    """
+    idx = 0
+    buf_file = []
+    buf_path = []
+    path = os.path.dirname(filename)
+    with open(filename, 'r') as rf:
+        for line in rf:
+            line = line.strip()
+            if line == '':
+                continue
+            if idx < file_splits:
+                bak_path = os.path.join(path, str(idx)+'.tmp.bak')
+                buf_file.append(open(bak_path, 'w'))
+                buf_path.append(bak_path)
+            print(line, file=buf_file[idx % file_splits])
+            idx += 1
+        for f in buf_file:
+            f.flush()
+            f.close()
+    if my_cmp is None:
+        my_cmp = lambda x, y: -1 if x < y else 1
+
+    def sort_one_file(p):
+        with open(p, 'r') as rrf:
+            lns = rrf.readlines()
+            lns.sort(key=functools.cmp_to_key(my_cmp))
+        with open(p, 'w') as wf:
+            wf.writelines(lns)
+    ths = []
+    for p in buf_path:
+        t = threading.Thread(target=sort_one_file, args=(p,))
+        t.start()
+        ths.append(t)
+    for t in ths:
+        t.join()
+    merge_times = 0
+    while len(buf_path) > 1:
+        now_path = os.path.join(path, 'merge-times-' +
+                                str(merge_times) + '.tmp.bak')
+        now_file = open(now_path, 'w')
+        path_one = buf_path.pop(0)
+        path_two = buf_path.pop(0)
+        file_one = open(path_one, 'r')
+        file_two = open(path_two, 'r')
+        line_one = next(file_one, None)
+        line_two = next(file_two, None)
+        while not line_one is None and not line_two is None:
+            if my_cmp(line_one, line_two) < 0:
+                print(line_one.strip(), file=now_file)
+                line_one = next(file_one, None)
+            else:
+                print(line_two.strip(), file=now_file)
+                line_two = next(file_two, None)
+        while not line_one is None:
+            print(line_one.strip(), file=now_file)
+            line_one = next(file_one, None)
+        while not line_two is None:
+            print(line_two.strip(), file=now_file)
+            line_two = next(file_two, None)
+        file_one.close()
+        file_two.close()
+        now_file.close()
+        buf_path.append(now_path)
+        os.remove(path_one)
+        os.remove(path_two)
+        merge_times += 1
+    new_path = os.path.dirname(buf_path[0]) + '/log_sort.txt'
+    os.rename(buf_path[0], new_path)
+    return new_path
 
 
 class Statistics:
@@ -53,9 +134,15 @@ class Statistics:
         self.excel_ws = self.wb.create_sheet(title="data", index=0)  # Excel工作表对象
         self.excel_row_pos = 1
 
-        self.img_contain = 12
+        self.img_contain = 4
 
         self.init()
+
+    def clear(self):
+        self.can_map.clear()
+        self.topic_map.clear()
+        self.device_map.clear()
+        self.keyword_map.clear()
 
     def init(self):
         if not (self.save_path and os.path.exists(self.save_path) and os.path.isdir(self.save_path)):
@@ -110,15 +197,25 @@ class Statistics:
                                     cfg.get('origin_device', cfg['ports'][i].get('origin_device')), idx, i, t)
                                 if self.config.get(t):
                                     self.config[can_key] = self.config.get(t)
+
             logger.debug(self.config)
             logger.debug(self.topic_map)
 
+    def sort_log(self, source):
+        r_sort = os.path.join(os.path.dirname(source), 'log_sort.txt')
+
+        if not os.path.exists(r_sort):
+            r_sort = sort_big_file(source)
+        return r_sort
+
     def run(self):
         print("start:", self.log_path)
+        self.log_path = self.sort_log(self.log_path)
         with open(self.log_path, encoding='unicode_escape') as f:
             lines = f.readlines()
-
+            read_index = 0
             for line in lines:
+                read_index += 1
                 if line == '':
                     continue
 
@@ -126,11 +223,12 @@ class Statistics:
                 cols = line.strip().split(" ")
 
                 # 记录log开始结束的时间点
-                ts = float(cols[0]) + float(cols[1]) / 1000000
-                if self.log_start_ts == 0 or self.log_start_ts > ts:
-                    self.log_start_ts = ts
-                if self.log_end_ts < ts:
-                    self.log_end_ts = ts
+                try:
+                    ts = float(cols[0]) + float(cols[1]) / 1000000
+                except Exception as e:
+                    logger.error("第{}行 时间戳解析失败：{}".format(read_index, line))
+                    continue
+
 
                 if "CAN" in cols[2] or "can" in cols[2]:
                     self.can_collect(cols, ts)
@@ -138,8 +236,16 @@ class Statistics:
                     self.other_collect(cols, ts)
 
         self.log_long_ts = self.log_end_ts - self.log_start_ts
-        logger.debug("视频开始时间：{} {}".format(self.log_camera_start_ts, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.log_camera_start_ts))))
-        logger.debug("视频结束时间：{} {}".format(self.log_camera_end_ts, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.log_camera_end_ts))))
+        if self.log_camera_start_ts != 0 and self.log_camera_end_ts != 0:
+            logger.debug("视频开始时间：{} {}".format(self.log_camera_start_ts, time.strftime("%Y-%m-%d %H:%M:%S",
+                                                                                       time.localtime(
+                                                                                           self.log_camera_start_ts))))
+            logger.debug("视频结束时间：{} {}".format(self.log_camera_end_ts,
+                                           time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.log_camera_end_ts))))
+        else:
+            self.log_camera_start_ts = self.log_start_ts
+            self.log_camera_end_ts = self.log_end_ts
+
         logger.debug("log.txt开始时间：{} {}".format(self.log_start_ts, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(
             self.log_start_ts))))
         logger.debug("log.txt结束时间：{} {}".format(self.log_end_ts,
@@ -158,10 +264,16 @@ class Statistics:
             if self.config[can_data[2]].get("ids") and can_data[3] not in self.config[can_data[2]].get("ids"):
                 return
 
+        if self.log_start_ts == 0 or self.log_start_ts > ts:
+            self.log_start_ts = ts
+        if self.log_end_ts < ts:
+            self.log_end_ts = ts
+
         data = {
             "ts": ts,
             "name": can_data[2],
-            "id": can_data[3]
+            "id": can_data[3],
+            "interval": self.config[can_data[2]].get("interval")
         }
 
         # 更新CAN数据表
@@ -176,6 +288,16 @@ class Statistics:
             self.can_map[can_data[2]][can_data[3]] = [data]
 
     def other_collect(self, other_data, ts):
+
+        # 如果有指定关键词范围的话进行过滤
+        if self.config and other_data[2] not in self.config:
+            return
+
+        if self.log_start_ts == 0 or self.log_start_ts > ts:
+            self.log_start_ts = ts
+        if self.log_end_ts < ts:
+            self.log_end_ts = ts
+
         # 记录视频开始结尾时间
         if "camera" in other_data[2]:
             if self.log_camera_start_ts == 0 or self.log_camera_start_ts > ts:
@@ -183,13 +305,10 @@ class Statistics:
             if self.log_camera_end_ts < ts:
                 self.log_camera_end_ts = ts
 
-        # 如果有指定关键词范围的话进行过滤
-        if self.config and other_data[2] not in self.config:
-            return
-
         data = {
             "ts": ts,
             "name": other_data[2],
+            "interval": self.config[other_data[2]].get("interval")
         }
 
         # 更新设备数据表
@@ -210,8 +329,8 @@ class Statistics:
 
     def statistics_can(self):
         """
-            统计CAN数据接收情况
-            """
+        统计CAN数据接收情况
+        """
         for can in self.can_map:
             id_list = sorted(list(self.can_map[can].keys()))
             img_num = 1
@@ -270,6 +389,7 @@ class Statistics:
             plt.subplot(render_row_count, render_col_count, count)
             interval_list = []
             timestamp_list = []
+
             prev_timestamp = 0
             for data in can_id_data:
                 timestamp_list.append(data.get("ts"))
@@ -287,12 +407,35 @@ class Statistics:
             min_interval = np.min(interval_list)
             max_interval = np.max(interval_list)
             std_interval = np.std(interval_list)
+
+            interval_chart_list = []
+            timestamp_list = []
+            prev_timestamp = 0
+            for data in can_id_data:
+                timestamp_list.append(data.get("ts"))
+                interval = data.get("interval")
+                if not prev_timestamp:
+                    prev_timestamp = data.get("ts")
+                    continue
+
+                # 计算接收间隔
+                time_interval = data.get("ts") - prev_timestamp
+                prev_timestamp = data.get("ts")
+
+                if interval:
+                    interval = 1 / interval
+                    if time_interval <= interval:
+                        time_interval = avg_interval
+
+                interval_chart_list.append(time_interval)
+
             # 计算周期占比数据
             np_interval = np.array(interval_list)
             height_per = ""     # 高于周期系数
             low_per = ""        # 低于周期系数
             height_per_count = ""   # 高于周期系数的数据量
             low_per_count = ""      # 低于周期系数的数据量
+            cycle_num = ""
 
             if self.config.get(name):
                 topic_config = None
@@ -333,13 +476,16 @@ class Statistics:
             plt.xlabel("timestamp")
             plt.ylabel("interval(s)")
             plt.xlim([self.log_start_ts - self.log_camera_start_ts, self.log_end_ts - self.log_camera_start_ts])
+
+            plt.plot(timestamp_list[1:], interval_chart_list, marker='.', linewidth=1)  # s表示面积，marker表示图形
+
             avg_line = plt.axhline(y=avg_interval, color="r", linestyle="--", linewidth=1)
             min_line = plt.axhline(y=min_interval, color="g", linestyle="--", linewidth=1)
             max_line = plt.axhline(y=max_interval, color="y", linestyle="--", linewidth=1)
             plt.legend([avg_line, min_line, max_line], [f'avg:{"%.8f" % avg_interval}', f'min:{"%.8f" % min_interval}',
-                                                        f'max:{"%.8f" % max_interval}'], bbox_to_anchor=(0, -0.23, 1, 2),
-                       loc="lower left", mode="expand", borderaxespad=0, ncol=3)
-            plt.plot(timestamp_list[1:], interval_list, marker='.', linewidth=1)  # s表示面积，marker表示图形
+                                                        f'max:{"%.8f" % max_interval}'],
+                       bbox_to_anchor=(0, -0.23, 1, 2), loc="lower left", mode="expand", borderaxespad=0, ncol=3)
+
             has_draw = True
 
         if not has_draw:
@@ -432,4 +578,5 @@ if __name__ == "__main__":
     for path in tqdm(log_path_list):
         task = Statistics(path, save_path=args.save, config=config, cover=args.cover)
         task.run()
-        logger.warning("运行结束")
+        task.clear()
+    logger.warning("运行结束")

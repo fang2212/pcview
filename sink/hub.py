@@ -61,6 +61,7 @@ class Hub(Thread):
         self.setName('hub_thread')
         self.msg_queue = Queue(maxsize=3000)
         self.mq = MMAPQueue(1024 * 1024 * 500)
+        self.sq = MMAPQueue(1024 * 1025 * 100)
         self.msg_list = []
         self.cache = {}
         self.time_aligned = True
@@ -144,6 +145,7 @@ class Hub(Thread):
             print('index {}'.format(ol['idx']), bcl.OKBL + ip_type + bcl.ENDC, ol.get('mac'))
             print('definition:', ol['defs_path'])
             for iface in ol['ports']:
+                # ol['ports'][iface]['display'] = True
                 topic = ol['ports'][iface].get('dbc', ol['ports'][iface].get('topic'))
                 if isinstance(topic, list):
                     topic = ','.join(topic)
@@ -163,6 +165,7 @@ class Hub(Thread):
                     if cfg.get('mac', '').lower() == mac.lower():
                         ip_type = "{}@{}".format(ip, cfg['type'])
                         if ip_type not in self.online:
+                            logger.warning("init new collector:{}".format(cfg))
                             self.init_collector(cfg)
             time.sleep(3)
         logger.warning('{} pid:{}'.format("HUB exit".ljust(20), os.getpid()))
@@ -194,8 +197,11 @@ class Hub(Thread):
         ip = cfg['ip']
         idx = cfg['idx']
         is_main = cfg.get('is_main')
+        is_back = cfg.get("is_back")
+        install_key = cfg.get("focus_install", "video")
         ip_type = "{}@{}".format(ip, cfg['type'])
         if self.online.get(ip_type) is None:
+            logger.warning("new device add online:{}".format(ip_type))
             self.online[ip_type] = {}
         self.online[ip_type]['msg_types'] = []
 
@@ -208,6 +214,7 @@ class Hub(Thread):
                 if not cfg['ports'][item].get('enable') and not is_main:
                     continue
                 port = cfg['ports'][item]['port']
+                device = cfg['ports'][item].get('origin_device', device)
                 dbc = cfg['ports'][item].get('dbc', '')
                 topic = cfg['ports'][item].get('topic')
                 port_name = item
@@ -215,12 +222,12 @@ class Hub(Thread):
 
                 if transport == "libflow":
                     sink = FlowSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
-                                    device=device, dbc=dbc, port_name=port_name,
-                                    name=cfg.get("type"), log_name=item, topic=topic, is_main=is_main, mq=self.mq,
-                                    save_type=cfg['ports'][item].get("save"))
+                                    device=device, dbc=dbc, port_name=port_name, sq=self.sq,
+                                    name=cfg.get("type"), log_name=item, topic=topic, is_main=is_main, is_back=is_back,
+                                    mq=self.mq, save_type=cfg['ports'][item].get("save"), install_key=install_key)
                 elif transport == "protoflow":
                     sink = ProtoSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
-                                     name=cfg.get("type"), topic=topic, log_name=item, mq=self.mq)
+                                     name=cfg.get("type"), topic=topic, log_name=item, mq=self.mq, sq=self.sq)
                 else:
                     return
                 self.sinks.append(sink)
@@ -232,7 +239,7 @@ class Hub(Thread):
                     continue
                 port = cfg['ports'][name]['port']
                 pisink = PinodeSink(ip, port, msg_type=name, index=idx, resname=name,
-                                    fileHandler=self.fileHandler, mq=self.mq)
+                                    fileHandler=self.fileHandler, mq=self.mq, sq=self.sq)
                 self.sinks.append(pisink)
                 self.online[ip_type]['msg_types'].append(name + '.{}'.format(idx))
         elif "can_collector" in cfg.get("type"):
@@ -249,12 +256,12 @@ class Hub(Thread):
             if transport == "nanomsg":
                 can_collector = CANCollectSink(ip=ip, port=cfg.get("port"), index=idx, can_list=can_list,
                                                device=cfg.get("origin_device"),
-                                               fileHandler=self.fileHandler, mq=self.mq)
+                                               fileHandler=self.fileHandler, mq=self.mq, sq=self.sq)
                 self.sinks.append(can_collector)
                 self.online[ip_type]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
             elif transport == "mqtt":
                 device = cfg.get('origin_device', cfg['name'])
-                can_collector = MQTTSink(ip=ip, can_list=can_list, index=idx, fileHandler=self.fileHandler, device=device, cid=cfg.get("cid"), mq=self.mq)
+                can_collector = MQTTSink(ip=ip, can_list=can_list, index=idx, fileHandler=self.fileHandler, device=device, cid=cfg.get("cid"), mq=self.mq, sq=self.sq)
                 self.sinks.append(can_collector)
                 self.online[ip_type]['msg_types'].extend([can_list[ch]["dbc"] + '.{}'.format(idx) for ch in can_list])
         elif "collector" in cfg.get('type'):
@@ -265,7 +272,7 @@ class Hub(Thread):
                     chn = cfg['ports'][iface]
                     cansink = CANSink(ip=ip, port=chn['port'], msg_type=iface, topics=chn['topic'],
                                       fileHandler=self.fileHandler,
-                                      index=idx, mq=self.mq)
+                                      index=idx, mq=self.mq, sq=self.sq)
 
                     self.sinks.append(cansink)
                     if isinstance(chn['topic'], list):
@@ -276,15 +283,27 @@ class Hub(Thread):
                 elif 'gsensor' in iface:
                     chn = cfg['ports'][iface]
                     gsink = GsensorSink(ip=ip, port=chn['port'], msg_type=iface, index=idx,
-                                        fileHandler=self.fileHandler, mq=self.mq)
+                                        fileHandler=self.fileHandler, mq=self.mq, sq=self.sq)
                     self.sinks.append(gsink)
                     self.online[ip_type]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
-                elif 'video' in iface:
-                    port = cfg['ports']['video']['port']
-                    vsink = CameraSink(ip=ip, port=port, msg_type='camera', index=idx,
-                                       fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
-                                       devname=cfg.get('type'), mq=self.mq)
-                    self.sinks.append(vsink)
+
+                elif 'video' in iface or 'camera' in iface:
+                    port = cfg['ports'][iface]['port']
+                    dbc = cfg['ports'][iface].get("dbc")
+                    device = cfg.get('origin_device', "")
+                    transport = cfg['ports'][iface].get('transport')
+                    topic = cfg['ports'][iface].get('topic')
+                    if transport == "libflow":
+                        sink = FlowSink(ip=ip, port=port, msg_type=iface, index=idx, fileHandler=self.fileHandler,
+                                        device=device, dbc=dbc, port_name=iface,
+                                        name=cfg.get("type"), log_name=iface, topic=topic, is_main=is_main,
+                                        is_back=is_back, sq=self.sq,
+                                        mq=self.mq, save_type=cfg['ports'][iface].get("save"), install_key=install_key)
+                    else:
+                        sink = CameraSink(ip=ip, port=port, msg_type='camera', index=idx,
+                                           fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
+                                           devname=cfg.get('type'), mq=self.mq, sq=self.sq)
+                    self.sinks.append(sink)
 
         elif cfg.get('type') == 'general':
             for iface in cfg['ports']:
@@ -294,7 +313,7 @@ class Hub(Thread):
                 if 'can' in iface:
                     chn = cfg['ports'][iface]
                     cansink = CANSink(ip=ip, port=port, msg_type=iface, topics=chn['topic'],
-                                      index=idx, fileHandler=self.fileHandler, mq=self.mq)
+                                      index=idx, fileHandler=self.fileHandler, mq=self.mq, sq=self.sq)
                     self.sinks.append(cansink)
                     if isinstance(chn['topic'], list):
                         for t in chn['topic']:
@@ -304,31 +323,31 @@ class Hub(Thread):
                 elif 'gsensor' in iface:
                     chn = cfg['ports'][iface]
                     gsink = GsensorSink(ip=ip, port=port, msg_type=iface, index=idx,
-                                        fileHandler=self.fileHandler, mq=self.mq)
+                                        fileHandler=self.fileHandler, mq=self.mq, sq=self.sq)
                     self.sinks.append(gsink)
                     self.online[ip_type]['msg_types'].append(chn['topic'] + '.{}'.format(idx))
                 elif 'video' in iface:
                     vsink = CameraSink(ip=ip, port=port, msg_type='camera', index=idx,
                                        fileHandler=self.fileHandler, is_main=cfg.get('is_main'),
-                                       devname=cfg.get('name'), mq=self.mq)
+                                       devname=cfg.get('name'), mq=self.mq, sq=self.sq)
                     self.sinks.append(vsink)
                 elif 'rtk' in iface or 'gps' in iface:
                     pisink = PinodeSink(ip, port, msg_type=iface, index=idx, resname=iface,
-                                        fileHandler=self.fileHandler, mq=self.mq)
+                                        fileHandler=self.fileHandler, mq=self.mq, sq=self.sq)
                     self.sinks.append(pisink)
                     self.online[ip_type]['msg_types'].append(iface + '.{}'.format(idx))
                 elif cfg['ports'][iface].get('transport') == 'tcp':
                     proto = cfg['ports'][iface]['protocol']
-                    tcpsink = TCPSink(ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler, mq=self.mq)
+                    tcpsink = TCPSink(ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler, mq=self.mq, sq=self.sq)
                     self.sinks.append(tcpsink)
                     self.online[ip_type]['msg_types'].append(iface + '.{}'.format(idx))
                 elif cfg['ports'][iface].get("transport") == 'udp':
                     proto = cfg['ports'][iface]['protocol']
-                    udpsink = UDPSink(ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler, mq=self.mq)
+                    udpsink = UDPSink(ip, port, cfg['ports'][iface]['topic'], proto, idx, self.fileHandler, mq=self.mq, sq=self.sq)
                     self.sinks.append(udpsink)
                     self.online[ip_type]['msg_types'].append(iface + '.{}'.format(idx))
                 elif cfg['ports'][iface].get("transport") == 'zmq':
-                    zmqSink = ZmqSink(ip, port, cfg['ports'][iface]['topic'], idx, self.fileHandler, mq=self.mq)
+                    zmqSink = ZmqSink(ip, port, cfg['ports'][iface]['topic'], idx, self.fileHandler, mq=self.mq, sq=self.sq)
                     self.sinks.append(zmqSink)
                     self.online[ip_type]['msg_types'].append(iface + '.{}'.format(idx))
 

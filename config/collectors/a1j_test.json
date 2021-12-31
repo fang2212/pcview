@@ -1,0 +1,65 @@
+{
+  "type": "a1j_algo",
+  "mac": "5a:31:d3:59:12:06",
+  "force_ip": false,
+  "ip": "192.168.98.231",
+  "work_mode": "collector",
+  "repeater": false,
+  "ports": {
+    "video": {
+      "enable": true,
+      "port": 24011,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "pcview"
+    },
+    "caminfo": {
+      "enable": true,
+      "port": 24023,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "caminfo"
+    },
+    "a1j_fusion": {
+      "enable": true,
+      "port": 24015,
+      "origin_device": "a1j",
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "fusion_data,radar_data,lane_data,vehicle_data,drive_data,fusion_inject,calib_params,files,rf_data,corner_radar_data,tsl_data,af_data,7v5r_tsl_data",
+      "save": "bin"
+    },
+    "fusion_LaneAccimg": {
+      "enable": true,
+      "port": 10222,
+      "origin_device": "a1j",
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "LaneAccImg",
+      "save": "bin"
+    },
+    "fusion_LanePostimg": {
+      "enable": true,
+      "port": 10224,
+      "origin_device": "a1j",
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "LanePostImg",
+      "save": "bin"
+    },
+    "proto": {
+      "enable": true,
+      "port": 24032,
+      "transport": "protoflow",
+      "protocol": "msgpack",
+      "topic": "roadmarking,vehicle,tsr,obs,vehicle_signal,ped"
+    },
+    "gsensor": {
+      "enable": true,
+      "port": 24099,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "imuinfo"
+    }
+  }
+}

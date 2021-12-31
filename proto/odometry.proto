@@ -52,5 +52,6 @@ message EgoMotion {
 	float dpitch = 5;               // delta pitch, unit : radian
 	bool is_dpitch_valid = 6;       // dpitch 标志位
 	int32 dt_ms = 7;                // time lag between two images
+	uint64 curr_timestamp = 8;      // 当前时戳
 }
 

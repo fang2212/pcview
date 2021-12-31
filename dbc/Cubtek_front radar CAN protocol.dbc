@@ -1,0 +1,1448 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Vehicle Radar
+VAL_TABLE_ RadarObj_TunnelFlag 1 "Valid" 0 "Invalid" ;
+VAL_TABLE_ RadarObj_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_TABLE_ VtDoor_RR_Sta 1 "on" 0 "off" ;
+VAL_TABLE_ VtDoor_RL_Sta 1 "on" 0 "off" ;
+VAL_TABLE_ VtDoor_FR_Sta 1 "on" 0 "off" ;
+VAL_TABLE_ VtDoor_FL_Sta 1 "on" 0 "off" ;
+VAL_TABLE_ VtTurn_Sta 2 "left" 1 "right" 0 "off" ;
+VAL_TABLE_ VtIGN_Sta 1 "on" 0 "off" ;
+VAL_TABLE_ Func_Status 4 "Stack error" 3 "ISM error" 2 "FCCU error" 1 "Abnormal" 0 "Normal" ;
+VAL_TABLE_ FCW 1 "Warning Request" 0 "No Warning" ;
+VAL_TABLE_ Gear_Sta_V 1 "Invalid" 0 "Valid" ;
+VAL_TABLE_ Gear_Sta 7 "Reverse" 6 "6th" 5 "5th" 4 "4th" 3 "3rd" 2 "2nd" 1 "1st" 0 "P/N" ;
+VAL_TABLE_ Str_Angle_V 1 "Valid" 0 "Invalid" ;
+VAL_TABLE_ YawRate_V 1 "Invalid" 0 "Valid" ;
+VAL_TABLE_ RadarObj_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_TABLE_ RadarObj_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_TABLE_ RadarObj_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_TABLE_ RadarObj_ID 128 "invalid" 0 "no object" ;
+VAL_TABLE_ RadarObj_CIPVFlag 1 "active" 0 "inactive" ;
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ FCW_warning : 0|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ FCW_pre : 0|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ FCW_Emergency : 0|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Radar_Sleep_flag : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Bat_Vol_too_low_flag : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ MCU_Temp_too_low_flag : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ MCU_Temp_too_high_flag : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ TurnSta : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ Door_RR_Sta : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Door_RL_Sta : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Door_FR_Sta : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Door_FL_Sta : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 769 VehInfo2: 8 Vehicle
+ SG_ IGN_Sta : 12|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Gear_Sta : 6|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ Gear_Sta_V : 3|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ IGN_Sta_V : 13|1@0+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 768 VehInfo1: 8 Vehicle
+ SG_ Str_Angle_V : 8|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Str_Angle : 39|16@0+ (0.1,-900) [-900|900] "deg" Vector__XXX
+ SG_ YawRate_V : 11|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ YawRate : 23|16@0+ (0.1,-100) [-100|100] "deg/s" Vector__XXX
+ SG_ VehSpeed : 6|11@0+ (0.125,0) [0|255.875] "kph" Vector__XXX
+ SG_ VehSpeed_V : 7|1@0+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1280 Header: 8 Radar
+ SG_ TunnelFlag : 0|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Func_Status : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Radar_Frame : 55|16@0+ (1,0) [0|65535] "" Vector__XXX
+ SG_ AEB_CIPV_ID : 39|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ ACC_CIPV_ID : 31|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ CIPV_ID : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ No_Obj : 7|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1283 Target1_A: 8 Radar
+ SG_ RadarObj1_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj1_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj1_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj1_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj1_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj1_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj1_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj1_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj1_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1284 Target1_B: 8 Radar
+ SG_ RadarObj1_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj1_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj1_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj1_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj1_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj1_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj1_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1285 Target2_A: 8 Radar
+ SG_ RadarObj2_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj2_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj2_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj2_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj2_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj2_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj2_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj2_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj2_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1286 Target2_B: 8 Radar
+ SG_ RadarObj2_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj2_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj2_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj2_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj2_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj2_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj2_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1287 Target3_A: 8 Radar
+ SG_ RadarObj3_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj3_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj3_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj3_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj3_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj3_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj3_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj3_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj3_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1288 Target3_B: 8 Radar
+ SG_ RadarObj3_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj3_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj3_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj3_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj3_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj3_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj3_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1289 Target4_A: 8 Radar
+ SG_ RadarObj4_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj4_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj4_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj4_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj4_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj4_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj4_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj4_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj4_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1290 Target4_B: 8 Radar
+ SG_ RadarObj4_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj4_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj4_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj4_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj4_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj4_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj4_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1291 Target5_A: 8 Radar
+ SG_ RadarObj5_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj5_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj5_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj5_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj5_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj5_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj5_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj5_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj5_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1292 Target5_B: 8 Radar
+ SG_ RadarObj5_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj5_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj5_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj5_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj5_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj5_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj5_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1293 Target6_A: 8 Radar
+ SG_ RadarObj6_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj6_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj6_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj6_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj6_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj6_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj6_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj6_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj6_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1294 Target6_B: 8 Radar
+ SG_ RadarObj6_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj6_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj6_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj6_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj6_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj6_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj6_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1295 Target7_A: 8 Radar
+ SG_ RadarObj7_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj7_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj7_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj7_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj7_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj7_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj7_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj7_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj7_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1296 Target7_B: 8 Radar
+ SG_ RadarObj7_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj7_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj7_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj7_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj7_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj7_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj7_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1297 Target8_A: 8 Radar
+ SG_ RadarObj8_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj8_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj8_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj8_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj8_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj8_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj8_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj8_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj8_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1298 Target8_B: 8 Radar
+ SG_ RadarObj8_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj8_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj8_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj8_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj8_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj8_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj8_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1299 Target9_A: 8 Radar
+ SG_ RadarObj9_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj9_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj9_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj9_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj9_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj9_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj9_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj9_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj9_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1300 Target9_B: 8 Radar
+ SG_ RadarObj9_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj9_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj9_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj9_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj9_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj9_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj9_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1301 Target10_A: 8 Radar
+ SG_ RadarObj10_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj10_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj10_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj10_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj10_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj10_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj10_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj10_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj10_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1302 Target10_B: 8 Radar
+ SG_ RadarObj10_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj10_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj10_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj10_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj10_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj10_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj10_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1304 Target11_B: 8 Radar
+ SG_ RadarObj11_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj11_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj11_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj11_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj11_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj11_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj11_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1305 Target12_A: 8 Radar
+ SG_ RadarObj12_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj12_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj12_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj12_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj12_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj12_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj12_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj12_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj12_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1306 Target12_B: 8 Radar
+ SG_ RadarObj12_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj12_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj12_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj12_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj12_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj12_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj12_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1307 Target13_A: 8 Radar
+ SG_ RadarObj13_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj13_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj13_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj13_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj13_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj13_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj13_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj13_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj13_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1308 Target13_B: 8 Radar
+ SG_ RadarObj13_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj13_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj13_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj13_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj13_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj13_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj13_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1309 Target14_A: 8 Radar
+ SG_ RadarObj14_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj14_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj14_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj14_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj14_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj14_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj14_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj14_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj14_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1310 Target14_B: 8 Radar
+ SG_ RadarObj14_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj14_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj14_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj14_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj14_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj14_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj14_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1311 Target15_A: 8 Radar
+ SG_ RadarObj15_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj15_ACCCIPV : 63|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ RadarObj15_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj15_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj15_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj15_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj15_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj15_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj15_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1312 Target15_B: 8 Radar
+ SG_ RadarObj15_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj15_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj15_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj15_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj15_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj15_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj15_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1313 Target16_A: 8 Radar
+ SG_ RadarObj16_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj16_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj16_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj16_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj16_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj16_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj16_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj16_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj16_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1314 Target16_B: 8 Radar
+ SG_ RadarObj16_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj16_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj16_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj16_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj16_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj16_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj16_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1315 Target17_A: 8 Radar
+ SG_ RadarObj17_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj17_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj17_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj17_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj17_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj17_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj17_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj17_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj17_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1316 Target17_B: 8 Radar
+ SG_ RadarObj17_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj17_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj17_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj17_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj17_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj17_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj17_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1317 Target18_A: 8 Radar
+ SG_ RadarObj18_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj18_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj18_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj18_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj18_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj18_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj18_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj18_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj18_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1318 Target18_B: 8 Radar
+ SG_ RadarObj18_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj18_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj18_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj18_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj18_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj18_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj18_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1319 Target19_A: 8 Radar
+ SG_ RadarObj19_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj19_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj19_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj19_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj19_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj19_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj19_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj19_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj19_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1320 Target19_B: 8 Radar
+ SG_ RadarObj19_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj19_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj19_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj19_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj19_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj19_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj19_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1321 Target20_A: 8 Radar
+ SG_ RadarObj20_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj20_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj20_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj20_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj20_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj20_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj20_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj20_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj20_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1322 Target20_B: 8 Radar
+ SG_ RadarObj20_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj20_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj20_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj20_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj20_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj20_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj20_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1323 Target21_A: 8 Radar
+ SG_ RadarObj21_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj21_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj21_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj21_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj21_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj21_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj21_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj21_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj21_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1324 Target21_B: 8 Radar
+ SG_ RadarObj21_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj21_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj21_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj21_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj21_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj21_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj21_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1325 Target22_A: 8 Radar
+ SG_ RadarObj22_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj22_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj22_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj22_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj22_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj22_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj22_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj22_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj22_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1326 Target22_B: 8 Radar
+ SG_ RadarObj22_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj22_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj22_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj22_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj22_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj22_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj22_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1327 Target23_A: 8 Radar
+ SG_ RadarObj23_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj23_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj23_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj23_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj23_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj23_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj23_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj23_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj23_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1328 Target23_B: 8 Radar
+ SG_ RadarObj23_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj23_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj23_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj23_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj23_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj23_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj23_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1329 Target24_A: 8 Radar
+ SG_ RadarObj24_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj24_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj24_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj24_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj24_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj24_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj24_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj24_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj24_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1330 Target24_B: 8 Radar
+ SG_ RadarObj24_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj24_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj24_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj24_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj24_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj24_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj24_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1331 Target25_A: 8 Radar
+ SG_ RadarObj25_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj25_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj25_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj25_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj25_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj25_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj25_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj25_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj25_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1332 Target25_B: 8 Radar
+ SG_ RadarObj25_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj25_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj25_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj25_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj25_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj25_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj25_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1333 Target26_A: 8 Radar
+ SG_ RadarObj26_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj26_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj26_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj26_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj26_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj26_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj26_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj26_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj26_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1334 Target26_B: 8 Radar
+ SG_ RadarObj26_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj26_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj26_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj26_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj26_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj26_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj26_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1335 Target27_A: 8 Radar
+ SG_ RadarObj27_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj27_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj27_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj27_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj27_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj27_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj27_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj27_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj27_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1336 Target27_B: 8 Radar
+ SG_ RadarObj27_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj27_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj27_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj27_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj27_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj27_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj27_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1337 Target28_A: 8 Radar
+ SG_ RadarObj28_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj28_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj28_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj28_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj28_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj28_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj28_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj28_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj28_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1338 Target28_B: 8 Radar
+ SG_ RadarObj28_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj28_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj28_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj28_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj28_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj28_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj28_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1339 Target29_A: 8 Radar
+ SG_ RadarObj29_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj29_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj29_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj29_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj29_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj29_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj29_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj29_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj29_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1340 Target29_B: 8 Radar
+ SG_ RadarObj29_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj29_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj29_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj29_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj29_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj29_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj29_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1341 Target30_A: 8 Radar
+ SG_ RadarObj30_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj30_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj30_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj30_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj30_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj30_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj30_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj30_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj30_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1342 Target30_B: 8 Radar
+ SG_ RadarObj30_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj30_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj30_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj30_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj30_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj30_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj30_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1343 Target31_A: 8 Radar
+ SG_ RadarObj31_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj31_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj31_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj31_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj31_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj31_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj31_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj31_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj31_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1344 Target31_B: 8 Radar
+ SG_ RadarObj31_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj31_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj31_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj31_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj31_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj31_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj31_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1345 Target32_A: 8 Radar
+ SG_ RadarObj32_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj32_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj32_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj32_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj32_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj32_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj32_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj32_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj32_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1346 Target32_B: 8 Radar
+ SG_ RadarObj32_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj32_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj32_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj32_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj32_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj32_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj32_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1303 Target11_A: 8 Radar
+ SG_ RadarObj11_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj11_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj11_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj11_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj11_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj11_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj11_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj11_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj11_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1347 Target33_A: 8 Radar
+ SG_ RadarObj33_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj33_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj33_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj33_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj33_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj33_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj33_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj33_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj33_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1348 Target33_B: 8 Radar
+ SG_ RadarObj33_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj33_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj33_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj33_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj33_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj33_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj33_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1349 Target34_A: 8 Radar
+ SG_ RadarObj34_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj34_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj34_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj34_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj34_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj34_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj34_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj34_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj34_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1350 Target34_B: 8 Radar
+ SG_ RadarObj34_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj34_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj34_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj34_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj34_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj34_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj34_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1351 Target35_A: 8 Radar
+ SG_ RadarObj35_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj35_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj35_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj35_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj35_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj35_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj35_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj35_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj35_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1352 Target35_B: 8 Radar
+ SG_ RadarObj35_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj35_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj35_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj35_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj35_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj35_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj35_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1353 Target36_A: 8 Radar
+ SG_ RadarObj36_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj36_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj36_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj36_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj36_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj36_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj36_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj36_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj36_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1354 Target36_B: 8 Radar
+ SG_ RadarObj36_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj36_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj36_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj36_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj36_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj36_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj36_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1355 Target37_A: 8 Radar
+ SG_ RadarObj37_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj37_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj37_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj37_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj37_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj37_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj37_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj37_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj37_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1356 Target37_B: 8 Radar
+ SG_ RadarObj37_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj37_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj37_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj37_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj37_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj37_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj37_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1357 Target38_A: 8 Radar
+ SG_ RadarObj38_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj38_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj38_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj38_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj38_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj38_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj38_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj38_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj38_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1358 Target38_B: 8 Radar
+ SG_ RadarObj38_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj38_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj38_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj38_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj38_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj38_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj38_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1359 Target39_A: 8 Radar
+ SG_ RadarObj39_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj39_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj39_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj39_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj39_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj39_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj39_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj39_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj39_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1360 Target39_B: 8 Radar
+ SG_ RadarObj39_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj39_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj39_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj39_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj39_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj39_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj39_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1361 Target40_A: 8 Radar
+ SG_ RadarObj40_AEBCIPV : 62|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj40_ACCCIPV : 63|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj40_MsgCnt_A : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj40_ID_A : 55|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj40_Pos_X : 7|12@0+ (0.125,0) [0|0] "m" Vector__XXX
+ SG_ RadarObj40_Pos_Y : 11|12@0+ (0.125,-128) [0|0] "m" Vector__XXX
+ SG_ RadarObj40_Vel_X : 31|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj40_Vel_Y : 35|12@0+ (0.05,-102) [0|0] "m/s" Vector__XXX
+ SG_ RadarObj40_CIPVFlag : 59|1@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1362 Target40_B: 8 Radar
+ SG_ RadarObj40_MsgCnt_B : 57|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj40_ID_B : 23|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj40_Accel_X : 7|12@0+ (0.04,-40) [0|0] "m/s^2" Vector__XXX
+ SG_ RadarObj40_MeasStat : 31|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj40_DynProp : 26|3@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj40_ProbOfExist : 49|2@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ RadarObj40_Type : 63|6@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1281 Radar_Sta: 8 Radar
+ SG_ Radar_Sleep_Flag : 0|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Communication_Bus_OFF : 1|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Lost_Communication_With_Camera : 2|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ MCU_Temperature_too_high : 3|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ MCU_Temperature_too_low : 4|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ MCU_Voltage_too_high : 5|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ MCU_Voltage_too_low : 6|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ RF_Voltage1_too_low : 7|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ RF_Voltage1_too_high : 8|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ RF_Voltage2_too_low : 9|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ RF_Voltage2_too_high : 10|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Battery_Voltage_too_high : 11|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Battery_Voltage_too_low : 12|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ RF_Temperature_too_high : 13|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ RF_Temperature_too_low : 14|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ MCU_Master_Clock_Error : 15|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ MCU_Error : 16|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ MCU_Memory_Error : 17|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ G_Sensor_fault : 18|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ RF_Sensor_fault : 19|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Missing_Calibration : 20|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Invalid_Vehicle_Speed_signal : 21|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Invalid_Yaw_Rate_signal : 22|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Invalid_Steering_Angle_signal : 23|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Invalid_Gear_position_signal : 24|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Invalid_IGN_Sta_signal : 25|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ Radar_block : 26|1@0+ (1,0) [0|1] "" Vector__XXX
+
+
+
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "cyclicX","spontanX","cyclicIfActiveX","spontanWithDelay","cyclicAndSpontanX","cyclicAndSpontanWithDelay","spontanWithRepitition","cyclicIfActiveAndSpontanWD";
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 100000;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 100000;
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "GenMsgSendType" "cyclicX";
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_ "BusType" "CAN";
+BA_ "GenMsgDelayTime" BO_ 769 0;
+BA_ "GenMsgSendType" BO_ 769 4;
+BA_ "GenMsgCycleTime" BO_ 769 100;
+BA_ "GenMsgDelayTime" BO_ 768 0;
+BA_ "GenMsgSendType" BO_ 768 0;
+BA_ "GenMsgCycleTime" BO_ 768 10;
+BA_ "GenMsgCycleTime" BO_ 1280 50;
+BA_ "GenMsgDelayTime" BO_ 1280 0;
+BA_ "GenMsgSendType" BO_ 1280 0;
+BA_ "GenMsgCycleTime" BO_ 1283 0;
+BA_ "GenMsgDelayTime" BO_ 1283 0;
+BA_ "GenMsgSendType" BO_ 1283 1;
+BA_ "GenMsgCycleTime" BO_ 1284 0;
+BA_ "GenMsgDelayTime" BO_ 1284 0;
+BA_ "GenMsgSendType" BO_ 1284 1;
+BA_ "GenMsgCycleTime" BO_ 1285 0;
+BA_ "GenMsgDelayTime" BO_ 1285 0;
+BA_ "GenMsgSendType" BO_ 1285 1;
+BA_ "GenMsgCycleTime" BO_ 1286 0;
+BA_ "GenMsgDelayTime" BO_ 1286 0;
+BA_ "GenMsgSendType" BO_ 1286 1;
+BA_ "GenMsgCycleTime" BO_ 1287 0;
+BA_ "GenMsgDelayTime" BO_ 1287 0;
+BA_ "GenMsgSendType" BO_ 1287 1;
+BA_ "GenMsgCycleTime" BO_ 1288 0;
+BA_ "GenMsgDelayTime" BO_ 1288 0;
+BA_ "GenMsgSendType" BO_ 1288 1;
+BA_ "GenMsgCycleTime" BO_ 1289 0;
+BA_ "GenMsgDelayTime" BO_ 1289 0;
+BA_ "GenMsgSendType" BO_ 1289 1;
+BA_ "GenMsgCycleTime" BO_ 1290 0;
+BA_ "GenMsgDelayTime" BO_ 1290 0;
+BA_ "GenMsgSendType" BO_ 1290 1;
+BA_ "GenMsgCycleTime" BO_ 1291 0;
+BA_ "GenMsgDelayTime" BO_ 1291 0;
+BA_ "GenMsgSendType" BO_ 1291 1;
+BA_ "GenMsgCycleTime" BO_ 1292 0;
+BA_ "GenMsgDelayTime" BO_ 1292 0;
+BA_ "GenMsgSendType" BO_ 1292 1;
+BA_ "GenMsgCycleTime" BO_ 1293 0;
+BA_ "GenMsgDelayTime" BO_ 1293 0;
+BA_ "GenMsgSendType" BO_ 1293 1;
+BA_ "GenMsgCycleTime" BO_ 1294 0;
+BA_ "GenMsgDelayTime" BO_ 1294 0;
+BA_ "GenMsgSendType" BO_ 1294 1;
+BA_ "GenMsgCycleTime" BO_ 1295 0;
+BA_ "GenMsgDelayTime" BO_ 1295 0;
+BA_ "GenMsgSendType" BO_ 1295 1;
+BA_ "GenMsgCycleTime" BO_ 1296 0;
+BA_ "GenMsgDelayTime" BO_ 1296 0;
+BA_ "GenMsgSendType" BO_ 1296 1;
+BA_ "GenMsgCycleTime" BO_ 1297 0;
+BA_ "GenMsgDelayTime" BO_ 1297 0;
+BA_ "GenMsgSendType" BO_ 1297 1;
+BA_ "GenMsgCycleTime" BO_ 1298 0;
+BA_ "GenMsgDelayTime" BO_ 1298 0;
+BA_ "GenMsgSendType" BO_ 1298 1;
+BA_ "GenMsgCycleTime" BO_ 1299 0;
+BA_ "GenMsgDelayTime" BO_ 1299 0;
+BA_ "GenMsgSendType" BO_ 1299 1;
+BA_ "GenMsgCycleTime" BO_ 1300 0;
+BA_ "GenMsgDelayTime" BO_ 1300 0;
+BA_ "GenMsgSendType" BO_ 1300 1;
+BA_ "GenMsgCycleTime" BO_ 1301 0;
+BA_ "GenMsgDelayTime" BO_ 1301 0;
+BA_ "GenMsgSendType" BO_ 1301 1;
+BA_ "GenMsgCycleTime" BO_ 1302 0;
+BA_ "GenMsgDelayTime" BO_ 1302 0;
+BA_ "GenMsgSendType" BO_ 1302 1;
+BA_ "GenMsgCycleTime" BO_ 1304 0;
+BA_ "GenMsgDelayTime" BO_ 1304 0;
+BA_ "GenMsgSendType" BO_ 1304 1;
+BA_ "GenMsgCycleTime" BO_ 1305 0;
+BA_ "GenMsgDelayTime" BO_ 1305 0;
+BA_ "GenMsgSendType" BO_ 1305 1;
+BA_ "GenMsgCycleTime" BO_ 1306 0;
+BA_ "GenMsgDelayTime" BO_ 1306 0;
+BA_ "GenMsgSendType" BO_ 1306 1;
+BA_ "GenMsgCycleTime" BO_ 1307 0;
+BA_ "GenMsgDelayTime" BO_ 1307 0;
+BA_ "GenMsgSendType" BO_ 1307 1;
+BA_ "GenMsgCycleTime" BO_ 1308 0;
+BA_ "GenMsgDelayTime" BO_ 1308 0;
+BA_ "GenMsgSendType" BO_ 1308 1;
+BA_ "GenMsgCycleTime" BO_ 1309 0;
+BA_ "GenMsgDelayTime" BO_ 1309 0;
+BA_ "GenMsgSendType" BO_ 1309 1;
+BA_ "GenMsgCycleTime" BO_ 1310 0;
+BA_ "GenMsgDelayTime" BO_ 1310 0;
+BA_ "GenMsgSendType" BO_ 1310 1;
+BA_ "GenMsgCycleTime" BO_ 1311 0;
+BA_ "GenMsgDelayTime" BO_ 1311 0;
+BA_ "GenMsgSendType" BO_ 1311 1;
+BA_ "GenMsgCycleTime" BO_ 1312 0;
+BA_ "GenMsgDelayTime" BO_ 1312 0;
+BA_ "GenMsgSendType" BO_ 1312 1;
+BA_ "GenMsgCycleTime" BO_ 1313 0;
+BA_ "GenMsgDelayTime" BO_ 1313 0;
+BA_ "GenMsgSendType" BO_ 1313 1;
+BA_ "GenMsgCycleTime" BO_ 1314 0;
+BA_ "GenMsgDelayTime" BO_ 1314 0;
+BA_ "GenMsgSendType" BO_ 1314 1;
+BA_ "GenMsgCycleTime" BO_ 1315 0;
+BA_ "GenMsgDelayTime" BO_ 1315 0;
+BA_ "GenMsgSendType" BO_ 1315 1;
+BA_ "GenMsgCycleTime" BO_ 1316 0;
+BA_ "GenMsgDelayTime" BO_ 1316 0;
+BA_ "GenMsgSendType" BO_ 1316 1;
+BA_ "GenMsgCycleTime" BO_ 1317 0;
+BA_ "GenMsgDelayTime" BO_ 1317 0;
+BA_ "GenMsgSendType" BO_ 1317 1;
+BA_ "GenMsgCycleTime" BO_ 1318 0;
+BA_ "GenMsgDelayTime" BO_ 1318 0;
+BA_ "GenMsgSendType" BO_ 1318 1;
+BA_ "GenMsgCycleTime" BO_ 1319 0;
+BA_ "GenMsgDelayTime" BO_ 1319 0;
+BA_ "GenMsgSendType" BO_ 1319 1;
+BA_ "GenMsgCycleTime" BO_ 1320 0;
+BA_ "GenMsgDelayTime" BO_ 1320 0;
+BA_ "GenMsgSendType" BO_ 1320 1;
+BA_ "GenMsgCycleTime" BO_ 1321 0;
+BA_ "GenMsgDelayTime" BO_ 1321 0;
+BA_ "GenMsgSendType" BO_ 1321 1;
+BA_ "GenMsgCycleTime" BO_ 1322 0;
+BA_ "GenMsgDelayTime" BO_ 1322 0;
+BA_ "GenMsgSendType" BO_ 1322 1;
+BA_ "GenMsgCycleTime" BO_ 1323 0;
+BA_ "GenMsgDelayTime" BO_ 1323 0;
+BA_ "GenMsgSendType" BO_ 1323 1;
+BA_ "GenMsgCycleTime" BO_ 1324 0;
+BA_ "GenMsgDelayTime" BO_ 1324 0;
+BA_ "GenMsgSendType" BO_ 1324 1;
+BA_ "GenMsgCycleTime" BO_ 1325 0;
+BA_ "GenMsgDelayTime" BO_ 1325 0;
+BA_ "GenMsgSendType" BO_ 1325 1;
+BA_ "GenMsgCycleTime" BO_ 1326 0;
+BA_ "GenMsgDelayTime" BO_ 1326 0;
+BA_ "GenMsgSendType" BO_ 1326 1;
+BA_ "GenMsgCycleTime" BO_ 1327 0;
+BA_ "GenMsgDelayTime" BO_ 1327 0;
+BA_ "GenMsgSendType" BO_ 1327 1;
+BA_ "GenMsgCycleTime" BO_ 1328 0;
+BA_ "GenMsgDelayTime" BO_ 1328 0;
+BA_ "GenMsgSendType" BO_ 1328 1;
+BA_ "GenMsgCycleTime" BO_ 1329 0;
+BA_ "GenMsgDelayTime" BO_ 1329 0;
+BA_ "GenMsgSendType" BO_ 1329 1;
+BA_ "GenMsgCycleTime" BO_ 1330 0;
+BA_ "GenMsgDelayTime" BO_ 1330 0;
+BA_ "GenMsgSendType" BO_ 1330 1;
+BA_ "GenMsgCycleTime" BO_ 1331 0;
+BA_ "GenMsgDelayTime" BO_ 1331 0;
+BA_ "GenMsgSendType" BO_ 1331 1;
+BA_ "GenMsgCycleTime" BO_ 1332 0;
+BA_ "GenMsgDelayTime" BO_ 1332 0;
+BA_ "GenMsgSendType" BO_ 1332 1;
+BA_ "GenMsgCycleTime" BO_ 1333 0;
+BA_ "GenMsgDelayTime" BO_ 1333 0;
+BA_ "GenMsgSendType" BO_ 1333 1;
+BA_ "GenMsgCycleTime" BO_ 1334 0;
+BA_ "GenMsgDelayTime" BO_ 1334 0;
+BA_ "GenMsgSendType" BO_ 1334 1;
+BA_ "GenMsgCycleTime" BO_ 1335 0;
+BA_ "GenMsgDelayTime" BO_ 1335 0;
+BA_ "GenMsgSendType" BO_ 1335 1;
+BA_ "GenMsgCycleTime" BO_ 1336 0;
+BA_ "GenMsgDelayTime" BO_ 1336 0;
+BA_ "GenMsgSendType" BO_ 1336 1;
+BA_ "GenMsgCycleTime" BO_ 1337 0;
+BA_ "GenMsgDelayTime" BO_ 1337 0;
+BA_ "GenMsgSendType" BO_ 1337 1;
+BA_ "GenMsgCycleTime" BO_ 1338 0;
+BA_ "GenMsgDelayTime" BO_ 1338 0;
+BA_ "GenMsgSendType" BO_ 1338 1;
+BA_ "GenMsgCycleTime" BO_ 1339 0;
+BA_ "GenMsgDelayTime" BO_ 1339 0;
+BA_ "GenMsgSendType" BO_ 1339 1;
+BA_ "GenMsgCycleTime" BO_ 1340 0;
+BA_ "GenMsgDelayTime" BO_ 1340 0;
+BA_ "GenMsgSendType" BO_ 1340 1;
+BA_ "GenMsgCycleTime" BO_ 1341 0;
+BA_ "GenMsgDelayTime" BO_ 1341 0;
+BA_ "GenMsgSendType" BO_ 1341 1;
+BA_ "GenMsgCycleTime" BO_ 1342 0;
+BA_ "GenMsgDelayTime" BO_ 1342 0;
+BA_ "GenMsgSendType" BO_ 1342 1;
+BA_ "GenMsgCycleTime" BO_ 1343 0;
+BA_ "GenMsgDelayTime" BO_ 1343 0;
+BA_ "GenMsgSendType" BO_ 1343 1;
+BA_ "GenMsgCycleTime" BO_ 1344 0;
+BA_ "GenMsgDelayTime" BO_ 1344 0;
+BA_ "GenMsgSendType" BO_ 1344 1;
+BA_ "GenMsgCycleTime" BO_ 1345 0;
+BA_ "GenMsgDelayTime" BO_ 1345 0;
+BA_ "GenMsgSendType" BO_ 1345 1;
+BA_ "GenMsgCycleTime" BO_ 1346 0;
+BA_ "GenMsgDelayTime" BO_ 1346 0;
+BA_ "GenMsgSendType" BO_ 1346 1;
+BA_ "GenMsgCycleTime" BO_ 1303 0;
+BA_ "GenMsgDelayTime" BO_ 1303 0;
+BA_ "GenMsgSendType" BO_ 1303 1;
+BA_ "GenMsgCycleTime" BO_ 1347 0;
+BA_ "GenMsgDelayTime" BO_ 1347 0;
+BA_ "GenMsgSendType" BO_ 1347 1;
+BA_ "GenMsgCycleTime" BO_ 1348 0;
+BA_ "GenMsgDelayTime" BO_ 1348 0;
+BA_ "GenMsgSendType" BO_ 1348 1;
+BA_ "GenMsgCycleTime" BO_ 1349 0;
+BA_ "GenMsgDelayTime" BO_ 1349 0;
+BA_ "GenMsgSendType" BO_ 1349 1;
+BA_ "GenMsgCycleTime" BO_ 1350 0;
+BA_ "GenMsgDelayTime" BO_ 1350 0;
+BA_ "GenMsgSendType" BO_ 1350 1;
+BA_ "GenMsgCycleTime" BO_ 1351 0;
+BA_ "GenMsgDelayTime" BO_ 1351 0;
+BA_ "GenMsgSendType" BO_ 1351 1;
+BA_ "GenMsgCycleTime" BO_ 1352 0;
+BA_ "GenMsgDelayTime" BO_ 1352 0;
+BA_ "GenMsgSendType" BO_ 1352 1;
+BA_ "GenMsgCycleTime" BO_ 1353 0;
+BA_ "GenMsgDelayTime" BO_ 1353 0;
+BA_ "GenMsgSendType" BO_ 1353 1;
+BA_ "GenMsgCycleTime" BO_ 1354 0;
+BA_ "GenMsgDelayTime" BO_ 1354 0;
+BA_ "GenMsgSendType" BO_ 1354 1;
+BA_ "GenMsgCycleTime" BO_ 1355 0;
+BA_ "GenMsgDelayTime" BO_ 1355 0;
+BA_ "GenMsgSendType" BO_ 1355 1;
+BA_ "GenMsgCycleTime" BO_ 1356 0;
+BA_ "GenMsgDelayTime" BO_ 1356 0;
+BA_ "GenMsgSendType" BO_ 1356 1;
+BA_ "GenMsgCycleTime" BO_ 1357 0;
+BA_ "GenMsgDelayTime" BO_ 1357 0;
+BA_ "GenMsgSendType" BO_ 1357 1;
+BA_ "GenMsgCycleTime" BO_ 1358 0;
+BA_ "GenMsgDelayTime" BO_ 1358 0;
+BA_ "GenMsgSendType" BO_ 1358 1;
+BA_ "GenMsgCycleTime" BO_ 1359 0;
+BA_ "GenMsgDelayTime" BO_ 1359 0;
+BA_ "GenMsgSendType" BO_ 1359 1;
+BA_ "GenMsgCycleTime" BO_ 1360 0;
+BA_ "GenMsgDelayTime" BO_ 1360 0;
+BA_ "GenMsgSendType" BO_ 1360 1;
+BA_ "GenMsgCycleTime" BO_ 1361 0;
+BA_ "GenMsgDelayTime" BO_ 1361 0;
+BA_ "GenMsgSendType" BO_ 1361 1;
+BA_ "GenMsgCycleTime" BO_ 1362 0;
+BA_ "GenMsgDelayTime" BO_ 1362 0;
+BA_ "GenMsgSendType" BO_ 1362 1;
+BA_ "GenMsgCycleTime" BO_ 1281 50;
+BA_ "GenMsgDelayTime" BO_ 1281 0;
+BA_ "GenMsgSendType" BO_ 1281 0;
+VAL_ 769 IGN_Sta 0 "OFF" 1 "ON" ;
+VAL_ 769 Gear_Sta 7 "Reverse" 6 "6th" 5 "5th" 4 "4th" 3 "3rd" 2 "2nd" 1 "1st" 0 "P/N" ;
+VAL_ 769 Gear_Sta_V 0 "Valid" 1 "Invalid" ;
+VAL_ 769 IGN_Sta_V 0 "Valid" 1 "Invalid" ;
+VAL_ 768 Str_Angle_V 0 "Valid" 1 "Invalid" ;
+VAL_ 768 YawRate_V 0 "Valid" 1 "Invalid" ;
+VAL_ 768 VehSpeed_V 0 "Valid" 1 "Invalid" ;
+VAL_ 1280 TunnelFlag 0 "Inactive" 1 "Active" ;
+VAL_ 1280 Func_Status 4 "Stack error" 3 "ISM error" 2 "FCCU error" 1 "Abnormal" 0 "Normal" ;
+VAL_ 1283 RadarObj1_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1283 RadarObj1_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1283 RadarObj1_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1284 RadarObj1_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1284 RadarObj1_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1284 RadarObj1_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1284 RadarObj1_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1285 RadarObj2_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1285 RadarObj2_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1285 RadarObj2_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1286 RadarObj2_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1286 RadarObj2_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1286 RadarObj2_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1286 RadarObj2_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1287 RadarObj3_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1287 RadarObj3_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1287 RadarObj3_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1288 RadarObj3_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1288 RadarObj3_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1288 RadarObj3_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1288 RadarObj3_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1289 RadarObj4_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1289 RadarObj4_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1289 RadarObj4_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1290 RadarObj4_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1290 RadarObj4_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1290 RadarObj4_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1290 RadarObj4_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1291 RadarObj5_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1291 RadarObj5_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1291 RadarObj5_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1292 RadarObj5_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1292 RadarObj5_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1292 RadarObj5_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1292 RadarObj5_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1293 RadarObj6_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1293 RadarObj6_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1293 RadarObj6_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1294 RadarObj6_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1294 RadarObj6_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1294 RadarObj6_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1294 RadarObj6_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1295 RadarObj7_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1295 RadarObj7_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1295 RadarObj7_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1296 RadarObj7_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1296 RadarObj7_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1296 RadarObj7_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1296 RadarObj7_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1297 RadarObj8_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1297 RadarObj8_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1297 RadarObj8_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1298 RadarObj8_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1298 RadarObj8_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1298 RadarObj8_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1298 RadarObj8_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1299 RadarObj9_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1299 RadarObj9_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1299 RadarObj9_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1300 RadarObj9_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1300 RadarObj9_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1300 RadarObj9_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1300 RadarObj9_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1301 RadarObj10_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1301 RadarObj10_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1301 RadarObj10_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1302 RadarObj10_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1302 RadarObj10_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1302 RadarObj10_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1302 RadarObj10_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1304 RadarObj11_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1304 RadarObj11_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1304 RadarObj11_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1304 RadarObj11_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1305 RadarObj12_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1305 RadarObj12_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1305 RadarObj12_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1306 RadarObj12_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1306 RadarObj12_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1306 RadarObj12_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1306 RadarObj12_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1307 RadarObj13_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1307 RadarObj13_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1307 RadarObj13_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1308 RadarObj13_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1308 RadarObj13_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1308 RadarObj13_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1308 RadarObj13_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1309 RadarObj14_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1309 RadarObj14_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1309 RadarObj14_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1310 RadarObj14_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1310 RadarObj14_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1310 RadarObj14_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1310 RadarObj14_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1311 RadarObj15_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1311 RadarObj15_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1311 RadarObj15_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1312 RadarObj15_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1312 RadarObj15_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1312 RadarObj15_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1312 RadarObj15_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1313 RadarObj16_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1313 RadarObj16_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1313 RadarObj16_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1314 RadarObj16_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1314 RadarObj16_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1314 RadarObj16_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1314 RadarObj16_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1315 RadarObj17_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1315 RadarObj17_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1315 RadarObj17_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1316 RadarObj17_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1316 RadarObj17_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1316 RadarObj17_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1316 RadarObj17_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1317 RadarObj18_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1317 RadarObj18_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1317 RadarObj18_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1318 RadarObj18_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1318 RadarObj18_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1318 RadarObj18_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1318 RadarObj18_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1319 RadarObj19_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1319 RadarObj19_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1319 RadarObj19_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1320 RadarObj19_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1320 RadarObj19_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1320 RadarObj19_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1320 RadarObj19_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1321 RadarObj20_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1321 RadarObj20_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1321 RadarObj20_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1322 RadarObj20_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1322 RadarObj20_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1322 RadarObj20_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1322 RadarObj20_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1323 RadarObj21_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1323 RadarObj21_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1323 RadarObj21_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1324 RadarObj21_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1324 RadarObj21_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1324 RadarObj21_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1324 RadarObj21_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1325 RadarObj22_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1325 RadarObj22_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1325 RadarObj22_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1326 RadarObj22_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1326 RadarObj22_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1326 RadarObj22_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1326 RadarObj22_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1327 RadarObj23_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1327 RadarObj23_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1327 RadarObj23_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1328 RadarObj23_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1328 RadarObj23_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1328 RadarObj23_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1328 RadarObj23_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1329 RadarObj24_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1329 RadarObj24_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1329 RadarObj24_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1330 RadarObj24_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1330 RadarObj24_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1330 RadarObj24_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1330 RadarObj24_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1331 RadarObj25_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1331 RadarObj25_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1331 RadarObj25_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1332 RadarObj25_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1332 RadarObj25_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1332 RadarObj25_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1332 RadarObj25_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1333 RadarObj26_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1333 RadarObj26_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1333 RadarObj26_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1334 RadarObj26_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1334 RadarObj26_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1334 RadarObj26_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1334 RadarObj26_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1335 RadarObj27_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1335 RadarObj27_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1335 RadarObj27_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1336 RadarObj27_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1336 RadarObj27_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1336 RadarObj27_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1336 RadarObj27_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1337 RadarObj28_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1337 RadarObj28_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1337 RadarObj28_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1338 RadarObj28_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1338 RadarObj28_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1338 RadarObj28_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1338 RadarObj28_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1339 RadarObj29_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1339 RadarObj29_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1339 RadarObj29_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1340 RadarObj29_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1340 RadarObj29_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1340 RadarObj29_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1340 RadarObj29_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1341 RadarObj30_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1341 RadarObj30_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1341 RadarObj30_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1342 RadarObj30_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1342 RadarObj30_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1342 RadarObj30_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1342 RadarObj30_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1343 RadarObj31_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1343 RadarObj31_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1343 RadarObj31_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1344 RadarObj31_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1344 RadarObj31_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1344 RadarObj31_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1344 RadarObj31_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1345 RadarObj32_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1345 RadarObj32_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1345 RadarObj32_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1346 RadarObj32_MeasStat 3 "object measured" 4 "invalid" 2 "object predicted" 1 "new object" 0 "no object" ;
+VAL_ 1346 RadarObj32_DynProp 6 "ditchcover" 5 "flyover" 4 "oncoming" 3 "moving" 2 "stopped" 1 "standing" 0 "unclassified" ;
+VAL_ 1346 RadarObj32_ProbOfExist 3 "99%" 2 "75%" 1 "50%" 0 "25%" ;
+VAL_ 1346 RadarObj32_Type 4 "truck" 3 "car" 2 "bike" 1 "pedestrian" 0 "unknow" ;
+VAL_ 1303 RadarObj11_AEBCIPV 1 "active" 0 "inactive" ;
+VAL_ 1303 RadarObj11_ACCCIPV 1 "active" 0 "inactive" ;
+VAL_ 1303 RadarObj11_CIPVFlag 1 "active" 0 "inactive" ;
+VAL_ 1281 Radar_Sleep_Flag 0 "False" 1 "True" ;
+VAL_ 1281 Communication_Bus_OFF 0 "False" 1 "True" ;
+VAL_ 1281 Lost_Communication_With_Camera 0 "False" 1 "True" ;
+VAL_ 1281 MCU_Temperature_too_high 0 "False" 1 "True" ;
+VAL_ 1281 MCU_Temperature_too_low 0 "False" 1 "True" ;
+VAL_ 1281 MCU_Voltage_too_high 0 "False" 1 "True" ;
+VAL_ 1281 MCU_Voltage_too_low 0 "False" 1 "True" ;
+VAL_ 1281 RF_Voltage1_too_low 0 "False" 1 "True" ;
+VAL_ 1281 RF_Voltage1_too_high 0 "False" 1 "True" ;
+VAL_ 1281 RF_Voltage2_too_low 0 "False" 1 "True" ;
+VAL_ 1281 RF_Voltage2_too_high 0 "False" 1 "True" ;
+VAL_ 1281 Battery_Voltage_too_high 0 "False" 1 "True" ;
+VAL_ 1281 Battery_Voltage_too_low 0 "False" 1 "True" ;
+VAL_ 1281 RF_Temperature_too_high 0 "False" 1 "True" ;
+VAL_ 1281 RF_Temperature_too_low 0 "False" 1 "True" ;
+VAL_ 1281 MCU_Master_Clock_Error 0 "False" 1 "True" ;
+VAL_ 1281 MCU_Error 0 "False" 1 "True" ;
+VAL_ 1281 MCU_Memory_Error 0 "False" 1 "True" ;
+VAL_ 1281 G_Sensor_fault 0 "False" 1 "True" ;
+VAL_ 1281 RF_Sensor_fault 0 "False" 1 "True" ;
+VAL_ 1281 Missing_Calibration 0 "False" 1 "True" ;
+VAL_ 1281 Invalid_Vehicle_Speed_signal 0 "False" 1 "True" ;
+VAL_ 1281 Invalid_Yaw_Rate_signal 0 "False" 1 "True" ;
+VAL_ 1281 Invalid_Steering_Angle_signal 0 "False" 1 "True" ;
+VAL_ 1281 Invalid_Gear_position_signal 0 "False" 1 "True" ;
+VAL_ 1281 Invalid_IGN_Sta_signal 0 "False" 1 "True" ;
+VAL_ 1281 Radar_block 0 "False" 1 "True" ;
+

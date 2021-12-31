@@ -14,18 +14,51 @@ package minieye;
 // breif : 周期性信号
 message VehicleSignal {
 	enum SignalType {
-		kCanSpeed = 0;            // 车速 (km/h)
-		kTurnLamp = 1;            // 转向灯信号 0:无，1：左，2 右
-		kHazardWarningLamp = 2;   // 危险报警灯信号 0：无， 1:有
-		kBraking = 3;             // 刹车信号  0：无， 1:有
-		kAccelerator = 4;         // 加速踏板  
-		kSteeringWheelAngle = 5;  // 方向盘转角 (°) 
-		kHeadingAngularRate = 6;  // 航向角速率 (rad/s) 
-		kFrontWiper = 7;          // 雨刮器信号, 0:无, 1:低速，2:中，3:高速，4:间歇1，5:间歇2
-        kDriveMode = 8;           // 驾驶模式　0: 无，1 manual，2 auto，3 steer only，4 speed only，5 emergency mode
-        kMovingDir = 9;           // 移动方向　0 invalid,1 standstill, 2 forward,3 backward
-        KYawRate = 10;            // YawRate  rad
-        KGearMode = 11;           // 档位模式 0 invalid,1 Neutral,2 Driving,2 Reverse 3 Parking
+		kCanSpeed = 0;            // 车速 (km/h)，无效值：-1000；
+		kTurnLamp = 1;            // 转向灯信号 0:无，1：左，2: 右, 3: 左侧灯故障, 4: 右侧灯故障，无效值：-1000；
+		kHazardWarningLamp = 2;   // 危险报警灯信号 0：无， 1:有，无效值：-1000；
+		kBraking = 3;             // 刹车信号  0：无， 1:有，无效值：-1000；
+		kAccelerator = 4;         // 加速踏板位置百分比：[0, 100]，无效值：-1000；
+		kSteeringWheelAngle = 5;  // 方向盘转角 (deg)，车身坐标系下：左负右正，后负前正，无效值：-1000；
+		kSteeringWheelAngleRate = 6;  // 方向盘转角速度 (deg/s)，车身坐标系下：左负右正，后负前正，无效值：-1000；
+		kFrontWiper = 7;          // 雨刮器信号, 0:无, 1:低速, 2:中, 3:高速, 4:间歇1, 5:间歇2，无效值：-1000；
+		kDriveMode = 8;           // 驾驶模式 0: 无, 1 manual, 2 auto, 3 steer only, 4 speed only, 5 emergency mode，无效值：-1000；
+		kMovingDir = 9;           // 移动方向 0 invalid, 1 standstill, 2 forward, 3 backward，无效值：-1000；
+		kYawRate = 10;            // YawRate 横摆角速度,rad/s, 车身坐标系下：左负右正，后负前正；无效值：-1000；ps：若有offset需要处理完后写入
+		kGearMode = 11;           // 档位模式 0 invalid, 1 Neutral, 2 Driving, 3 Reverse, 4 Parking，无效值：-1000；
+		kABSFullyOperational = 12;   // ABS全时工作状态: 0x0:ABS not Fully Operational; 0x1:ABS Fully Operational; 0x2:Reserved; 0x3:Take No Action，无效值：-1000；
+		kBrakPedalPosition = 13;     // 制动踏板位置百分比：[0, 100]，无效值：-1000；
+		kLongiAcceleration = 14;     // 纵向加速度，加速为正，减速为负，无效值：-1000；ps：若有offset需要处理完后写入
+		kLateralAcceleration = 15;   // 侧向加速度，车身坐标系下：左负右正，后负前正，无效值：-1000；ps：若有offset需要处理完后写入
+		kACUCollisionDetected = 16;  // 安全气囊碰撞信号，0: 未检测到碰撞, 1: 检测到碰撞，无效值：-1000；
+		kAutoLightSwitch = 17;       // AUTO灯光开关状态, 0: 关, 1: 开，无效值：-1000；
+		kLowBeanStatus = 18;         // 近光灯信号状态 0: 关, 1: 开，无效值：-1000；
+		kESCStatus = 19;             // ESC工作状态 0: 关, 1: 开，无效值：-1000；
+		kFrontWiperHighSt = 20;      // 前快雨刮状态,3 "Continuous fast" 2 "Continuous slow" 1 "Auto or INT" 0 "OFF" ，无效值：-1000；
+		kHBeanStatus = 21;           // 远光灯状态 0: 关, 1: 开，无效值：-1000；
+		kTcsActiveSt = 22;           // TCS系统是否激活，1 "Active" 0 "Not active" ，无效值：-1000；
+		kVdcActiveSt = 23;           // VDC系统是否激活，1 "Active" 0 "Not active" ，无效值：-1000；
+		kEngSpd = 24;                // 发动机转速，无效值：-1000；
+		kRLWheelSpd = 25;            // 左后轮当前轮速信息，(km/h) 无效值：-1000；
+		kRLWheelRotate = 26;         // 左后车轮旋转方向，1 "Backward" 0 "Forward" ;无效值：-1000；
+		kRRWheelSpd = 27;            // 右后轮当前轮速信息，(km/h) 无效值：-1000；
+		kRRWheelRotate = 28;         // 右后轮旋转方向，1 "Backward" 0 "Forward" ;无效值：-1000；
+		kFLWheelSpd = 29;            // 左前轮当前轮速信息，(km/h) 无效值：-1000；
+		kFLWheelRotate = 30;         // 左前车轮旋转方向，1 "Backward" 0 "Forward" ;无效值：-1000；
+		kFRWheelSpd = 31;            // 右前轮当前轮速信息，(km/h) 无效值：-1000；
+		kFRWheelRotate = 32;         // 右前轮旋转方向，1 "Backward" 0 "Forward" ;无效值：-1000；
+		kStrngWhlTorq = 33;          // 方向盘扭矩，无效值：-1000；
+		kSteeringModeSt = 34;        // EPS转向模式状态，3 "Reserved" 2 "In transition" 1 "Ready" 0 "Not ready" ;无效值：-1000；
+		kHandsOffdetSt = 35;         // 驾驶员干涉状态检测，3 " Reserved" 2 " Hands on" 1 " Hands off" 0 " Not detected" ;无效值：-1000；
+		kEpsLkaCtrlSt = 36;          // EPS反馈的LKA控制状态， 4 "External Require or EPS Permanently Failed" 3 " External Require or EPS Temporary Failed" 2 " EPS External Steering Torque Require Control Active" 1 " EPS External Steering Torque Require Control Ready" 0 "无效值：-1000；
+		kAccCtrlSt = 37;             // ACC控制状态，7 "Failure mode" 6 "Standstill" 5 "Override" 4 "Brake only mode" 3 "Active control mode" 2 "Standby mode" 1 "passive mode" 0 "Off mode" ;无效值：-1000；
+		kAccTargetSpd = 38;          // ACC期望目标速度，无效值：-1000；
+		kLkaTorqueReq = 39;          // 输出LKA扭矩请求，无效值：-1000；
+		kLkaTorqueReqSt = 40;        // 指示LKA控制请求状态，3 "Reserved" 2 "Active" 1 "Ready" 0 "Inhibited" ;无效值：-1000；
+		kEmsEngTorq = 41;            // Ems给出的发送机扭矩，无效值：-1000；
+		kFrontLeftFogLightStatus = 42;   // 左前雾灯状态 0x0:Inactive, 0x1:Active, 0x2:Fault, 0x3:Invalid，无效值：-1000；
+		kFrontRightFogLightStatus = 43;  // 右前雾灯状态，同上
+		kRearFogLightStatus = 44;        // 后雾灯状态，同上
 	}
 	map<int32, float> signals = 1;      // pair : <SignalType, value> 车身信号
 	uint64 timestamp = 2;                           // 时戳, milliseconds
@@ -45,12 +78,12 @@ message VehicleSignal {
 message CommandSignal {
 	enum SignalType {
 		kUnknown = 0;                             // 无意义
-		kStartAutocalib = 1;                      // 开启自标定 
+		kStartAutocalib = 1;                      // 开启自标定
 		kStartOfflineCalibrate = 2;               // 开启下线标定
 		kModLdwSensitivity = 3;                   // 修改LDW灵敏度
 		kModFcwSensitivity = 4;                   // 修改FCW灵敏度
 		kModTsrSensitivity = 5;                   // 修改TSR灵敏度
-		kModPCWSensitivity = 6;                   // 修改PCW灵敏度 
+		kModPCWSensitivity = 6;                   // 修改PCW灵敏度
 		kFCWSwitch = 7;                  	  // FCW开关:0-关,1-开
 		kFVSASwitch = 8;                 	  // FVSA开关:0-关,1-开
 		kHMWSwitch = 9;                  	  // HMW开关:0-关,1-开
@@ -62,7 +95,7 @@ message CommandSignal {
 		kLKASwitch = 15;                  	  // LKA开关:0-关,1-开
 		kESCSwitch = 16;                	  // ESC开关:0-关,1-开
 	}
-	SignalType signal = 1;                        // 信号类别 
+	SignalType signal = 1;                        // 信号类别
 	google.protobuf.Any details = 2;              // 信号详细信息
 }
 
@@ -85,8 +118,8 @@ message OfflineCalibRsp {
 	int32 camera_id = 1;                  // 相机id
 	int32 state = 2;       			      // 0 - 无意义, 1 - 已标定, 2 - 标定中, 3 - 暂停, 4 - 标定成功, 5 - 标定失败
 	int32 err_code = 3;                   // 0 - 检测不到目标, 1 - 目标数量太多, 2 - 车速不符合, 3 - 标定超时, 4 - 标定结果异常 5 - 输入参数异常, 7 - sna
-	double camera_pitch = 4;                      
-	double camera_yaw = 5;                        
+	double camera_pitch = 4;
+	double camera_yaw = 5;
 	double camera_roll = 6;
     double camera_height = 7;
     double process = 8;
@@ -106,14 +139,14 @@ message AutoCalibRsp {
 	int32 camera_id = 1;                  // 相机id
 	int32 state = 2;       			      // 0 - 未标定, 1 - 标定成功, 2 - 标定中, 3 - 标定失败
 	int32 err_code = 3;                   // 0 - 检测不到目标, 1 - 目标数量太多, 2 - 车速不符合, 3 - 标定超时, 4 - 标定结果异常 5 - 输入参数异常, 7 - sna
-	double camera_pitch = 4;                      
-	double camera_yaw = 5;                        
+	double camera_pitch = 4;
+	double camera_yaw = 5;
 	double camera_roll = 6;
     double camera_height = 7;
     double process = 8;
 }
 
-// 修改告警级别命令输入参数 
+// 修改告警级别命令输入参数
 message SensitivitySigDetail {
 	int32 warning_level = 1;                      // 告警级别
 }

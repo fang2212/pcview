@@ -3,6 +3,7 @@
 # source: calib_param.proto
 """Generated protocol buffer code."""
 from google.protobuf import descriptor as _descriptor
+from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
@@ -13,183 +14,11 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor.FileDescriptor(
-  name='calib_param.proto',
-  package='minieye',
-  syntax='proto3',
-  serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11\x63\x61lib_param.proto\x12\x07minieye\"\xc1\x02\n\nCalibParam\x12\x14\n\x0c\x63\x61mera_pitch\x18\x01 \x01(\x01\x12\x12\n\ncamera_yaw\x18\x02 \x01(\x01\x12\x13\n\x0b\x63\x61mera_roll\x18\x03 \x01(\x01\x12\x11\n\tcamera_cu\x18\x04 \x01(\x01\x12\x11\n\tcamera_cv\x18\x05 \x01(\x01\x12\x14\n\x0c\x63\x61mera_fov_h\x18\x06 \x01(\x01\x12\x14\n\x0c\x63\x61mera_fov_w\x18\x07 \x01(\x01\x12\x15\n\rcamera_height\x18\x08 \x01(\x01\x12\x1b\n\x13left_dist_to_camera\x18\t \x01(\x01\x12\x1c\n\x14right_dist_to_camera\x18\n \x01(\x01\x12\x1c\n\x14\x66ront_dist_to_camera\x18\x0b \x01(\x01\x12\x1f\n\x17\x66ront_wheel_camera_dist\x18\x0c \x01(\x01\x12\x11\n\tcamera_id\x18\r \x01(\x04\";\n\nCalibState\x12\x0c\n\x04mode\x18\x01 \x01(\x05\x12\r\n\x05state\x18\x02 \x01(\x05\x12\x10\n\x08\x65rr_code\x18\x03 \x01(\x05\x62\x06proto3'
-)
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11\x63\x61lib_param.proto\x12\x07minieye\"\xc1\x02\n\nCalibParam\x12\x14\n\x0c\x63\x61mera_pitch\x18\x01 \x01(\x01\x12\x12\n\ncamera_yaw\x18\x02 \x01(\x01\x12\x13\n\x0b\x63\x61mera_roll\x18\x03 \x01(\x01\x12\x11\n\tcamera_cu\x18\x04 \x01(\x01\x12\x11\n\tcamera_cv\x18\x05 \x01(\x01\x12\x14\n\x0c\x63\x61mera_fov_h\x18\x06 \x01(\x01\x12\x14\n\x0c\x63\x61mera_fov_w\x18\x07 \x01(\x01\x12\x15\n\rcamera_height\x18\x08 \x01(\x01\x12\x1b\n\x13left_dist_to_camera\x18\t \x01(\x01\x12\x1c\n\x14right_dist_to_camera\x18\n \x01(\x01\x12\x1c\n\x14\x66ront_dist_to_camera\x18\x0b \x01(\x01\x12\x1f\n\x17\x66ront_wheel_camera_dist\x18\x0c \x01(\x01\x12\x11\n\tcamera_id\x18\r \x01(\rb\x06proto3')
 
 
 
-
-_CALIBPARAM = _descriptor.Descriptor(
-  name='CalibParam',
-  full_name='minieye.CalibParam',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='camera_pitch', full_name='minieye.CalibParam.camera_pitch', index=0,
-      number=1, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_yaw', full_name='minieye.CalibParam.camera_yaw', index=1,
-      number=2, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_roll', full_name='minieye.CalibParam.camera_roll', index=2,
-      number=3, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_cu', full_name='minieye.CalibParam.camera_cu', index=3,
-      number=4, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_cv', full_name='minieye.CalibParam.camera_cv', index=4,
-      number=5, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_fov_h', full_name='minieye.CalibParam.camera_fov_h', index=5,
-      number=6, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_fov_w', full_name='minieye.CalibParam.camera_fov_w', index=6,
-      number=7, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_height', full_name='minieye.CalibParam.camera_height', index=7,
-      number=8, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='left_dist_to_camera', full_name='minieye.CalibParam.left_dist_to_camera', index=8,
-      number=9, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='right_dist_to_camera', full_name='minieye.CalibParam.right_dist_to_camera', index=9,
-      number=10, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='front_dist_to_camera', full_name='minieye.CalibParam.front_dist_to_camera', index=10,
-      number=11, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='front_wheel_camera_dist', full_name='minieye.CalibParam.front_wheel_camera_dist', index=11,
-      number=12, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='camera_id', full_name='minieye.CalibParam.camera_id', index=12,
-      number=13, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=31,
-  serialized_end=352,
-)
-
-
-_CALIBSTATE = _descriptor.Descriptor(
-  name='CalibState',
-  full_name='minieye.CalibState',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='mode', full_name='minieye.CalibState.mode', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='state', full_name='minieye.CalibState.state', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='err_code', full_name='minieye.CalibState.err_code', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=354,
-  serialized_end=413,
-)
-
-DESCRIPTOR.message_types_by_name['CalibParam'] = _CALIBPARAM
-DESCRIPTOR.message_types_by_name['CalibState'] = _CALIBSTATE
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
+_CALIBPARAM = DESCRIPTOR.message_types_by_name['CalibParam']
 CalibParam = _reflection.GeneratedProtocolMessageType('CalibParam', (_message.Message,), {
   'DESCRIPTOR' : _CALIBPARAM,
   '__module__' : 'calib_param_pb2'
@@ -197,12 +26,9 @@ CalibParam = _reflection.GeneratedProtocolMessageType('CalibParam', (_message.Me
   })
 _sym_db.RegisterMessage(CalibParam)
 
-CalibState = _reflection.GeneratedProtocolMessageType('CalibState', (_message.Message,), {
-  'DESCRIPTOR' : _CALIBSTATE,
-  '__module__' : 'calib_param_pb2'
-  # @@protoc_insertion_point(class_scope:minieye.CalibState)
-  })
-_sym_db.RegisterMessage(CalibState)
+if _descriptor._USE_C_DESCRIPTORS == False:
 
-
+  DESCRIPTOR._options = None
+  _CALIBPARAM._serialized_start=31
+  _CALIBPARAM._serialized_end=352
 # @@protoc_insertion_point(module_scope)

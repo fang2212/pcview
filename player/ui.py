@@ -82,6 +82,9 @@ class FlatColor(object):  # in BGR
     turquoise = (0x9c, 0xa0, 0x16)
     yellow_green = (112, 255, 202)          # 黄绿色
     yellow = (57, 171, 242)                 # 黄色
+    moccasin = (191, 236, 212)
+    lightcoral = (152, 151, 255)
+    mediumpurple = (189, 134, 158)
     wet_asphalt = (0x5e, 0x49, 0x34)
 
 
@@ -91,14 +94,22 @@ color_dict = {
     "a1j_vision": (193, 182, 255),
     "ars410": FlatColor.peach,
     "bosch_mrr": FlatColor.yellow,
+    "bosch_f": FlatColor.mediumpurple,
+    "bosch_r": FlatColor.mediumpurple,
+    "bosch_fr": FlatColor.mediumpurple,
+    "bosch_fl": FlatColor.mediumpurple,
+    "bosch_rr": FlatColor.mediumpurple,
+    "bosch_rl": FlatColor.mediumpurple,
     "d1_fusion": FlatColor.violet,
     "gs4_debug": FlatColor.pink,
     "j2": FlatColor.carrot,
     "j2_fusion": FlatColor.light_green,
     "q4_100": FlatColor.turquoise,
-    "wsk": FlatColor.pink,
+    "wsk": FlatColor.Green,
+    "wsk_old": FlatColor.pink,
     'anc': FlatColor.carrot,
     'ars': FlatColor.emerald,
+    'ars_back': FlatColor.emerald,
     'ctlrr': FlatColor.alizarin,
     'default': FlatColor.clouds,
     'esr': FlatColor.alizarin,
@@ -107,12 +118,17 @@ color_dict = {
     'ifv300_fusion': CVColor.Blue,
     'ifv300_vision': (255, 144, 30),
     'lmr': FlatColor.emerald,
+    'lhgd': FlatColor.yellow,
     'mbq3': CVColor.Blue,
     'mbq3_fusion': CVColor.Blue,
     'mbq3_vision': (255, 144, 30),
     'mbq4': FlatColor.turquoise,
     "mu_f": CVColor.Aqua,
+    "mu_fr": CVColor.Aqua,
+    "mu_fl": CVColor.Aqua,
     "mu_r": CVColor.Aqua,
+    "mu_rr": CVColor.Aqua,
+    "mu_rl": CVColor.Aqua,
     'q3': CVColor.Blue,
     'rtk': FlatColor.sun_flower,
     'sta77': FlatColor.wet_asphalt,

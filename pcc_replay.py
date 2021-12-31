@@ -154,6 +154,7 @@ class LogPlayer(Process):
         self.jpeg_extractor = {}          # 视频图片提取生成器集合
         self.x1_parser = {}                 # pcv数据字典
         self.log_keyword = {}               #
+        self.focus_install = {}
 
         self.shared = Manager().dict()
         self.shared["ready"] = False  # 播放前的数据是否加载完成
@@ -177,6 +178,7 @@ class LogPlayer(Process):
         self.nosort = nosort
 
         self.main_video = chmain if chmain else 'camera'
+        self.back_video = None
 
     def init_env(self):
         self.shared['init_time'] = time.time()
@@ -243,7 +245,7 @@ class LogPlayer(Process):
                         dir_name = "{}.{}".format(cfg['type'], idx)
                         dir_path = os.path.join(os.path.dirname(self.log_path), dir_name)
                         if cfg['origin_device'] == 'mdc':  # 新版本格式
-                            log_key = "{}.{}.{}.{}".format(device, idx, keyword, self.dbc)
+                            log_key = "{}.{}.{}.{}".format(device, idx, keyword, dbc)
                             filename = "{}.bin".format(keyword)
                         else:
                             log_key = "mdc_video{}".format(cfg['ports'][keyword]['port'] - 24010)
@@ -257,7 +259,10 @@ class LogPlayer(Process):
             if cfg.get("ports", {}).get("video", {}).get("enable"):
                 # 检查是否有视频数据
                 dir_name = "video" if cfg.get("is_main") else "{}.{:d}".format(cfg["type"], idx)
+                if cfg.get("is_back"):
+                    self.back_video = dir_name
                 log_keyword = "camera" if dir_name == 'video' else dir_name
+                self.focus_install[log_keyword] = cfg['ports']['video'].get("focus_install", cfg.get("focus_install")) or 'video'
                 video_path = os.path.dirname(self.log_path) + '/' + dir_name
                 # 初始化视频图片生成器
                 if os.path.exists(video_path):
@@ -275,7 +280,7 @@ class LogPlayer(Process):
 
     def get_veh_role(self, source):
         if not source:
-            return
+            return 'default'
         for cfg in self.cfg.configs:
             msg_types = cfg.get('msg_types')
             if not msg_types:
@@ -345,6 +350,7 @@ class LogPlayer(Process):
             try:
                 ts = float(cols[0]) + float(cols[1]) / 1000000
             except Exception as e:
+                logger.error("can't parser ts:{} {}".format(cols[0], cols[1]))
                 continue
 
             # 视频数据处理
@@ -373,13 +379,17 @@ class LogPlayer(Process):
 
                             cols = line.split(' ')
                             if cols[2] == self.main_video:
-                                frame_id = int(cols[3])
-                                _, jpg = next(self.jpeg_extractor)
-                                if jpg is None:
-                                    self.now_frame_id = frame_id
+                                self.now_frame_id = int(cols[3])
+                                _, jpg = next(self.jpeg_extractor[cols[2]])
+                            elif self.jpeg_extractor.get(cols[2]):
+                                next(self.jpeg_extractor[cols[2]])
+                if jpg is None:
+                    self.now_frame_id = frame_id
+                    continue
 
                 source = "video" if cols[2] == self.main_video else cols[2]
-                r = {'ts': ts, 'img': jpg, 'is_main': cols[2] == self.main_video, 'source': source, 'type': 'video', 'frame_id': frame_id}
+                r = {'ts': ts, 'img': jpg, 'is_main': cols[2] == self.main_video, "is_back": self.back_video == cols[2],
+                     'source': source, 'type': 'video', 'frame_id': frame_id, 'install': self.focus_install[cols[2]]}
                 sink_source = 'camera' if cols[2] == self.main_video else cols[2]
                 self.put_sink((frame_id, r, sink_source))
 
@@ -395,6 +405,9 @@ class LogPlayer(Process):
                     logger.error('log player reached the end frame:'.format(self.end_frame))
                     break
             elif 'CAN' in cols[2]:      # 旧can source数据格式
+                if not self.can_types.get(cols[2]):     # 判断是否需要解析
+                    continue
+
                 msg_type = cols[2]
                 if int(cols[3], 16) == 0xc7 and rtk_dec:
                     continue
@@ -573,6 +586,16 @@ def start_replay(source_path, args):
     chmain = args.chmain
     r_sort, cfg = prep_replay(source_path, ns=ns, chmain=chmain)
 
+    if args.show_back == "yes":
+        show_back = True
+    elif args.show_back == "no":
+        show_back = False
+    else:
+        show_back = False
+        for c in cfg.configs:
+            if c.get("is_back"):
+                show_back = True
+
     replay_hub = LogPlayer(r_sort, cfg, start_frame=args.start_frame, end_frame=args.end_frame,
                          start_time=args.start_time, end_time=args.end_time, loop=args.loop,
                          real_interval=args.real_interval, chmain=chmain)
@@ -583,13 +606,13 @@ def start_replay(source_path, args):
         from video_server import PccServer
         server = PccServer()
         server.start()
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, to_web=server)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, to_web=server, show_back=show_back)
         replay_hub.start()
         pcc.start()
         while True:
             time.sleep(1)
     else:
-        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, eclient=args.eclient)
+        pcc = PCC(replay_hub, replay=True, rlog=r_sort, ipm=True, ipm_bg=args.show_ipm_bg, save_replay_video=save_dir, uniconf=cfg, eclient=args.eclient, show_back=show_back)
         replay_hub.start()
 
         # 控制子进程的退出
@@ -622,6 +645,7 @@ if __name__ == "__main__":
     parser.add_argument('-ri', '--real_interval', action="store_true")
     parser.add_argument('-e', '--eclient', action="store_true")
     parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
+    parser.add_argument('--show_back', default="auto", help="是否显示后视图像，可选参数：auto、yes、no，默认：auto")
     parser.add_argument('-chmain', default=None, help="change main video")
     args = parser.parse_args()
 

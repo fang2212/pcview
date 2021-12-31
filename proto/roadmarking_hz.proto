@@ -1,0 +1,355 @@
+syntax = "proto3";
+import "geometry.proto";
+import "data_source.proto";
+import "odometry.proto";
+import "camera.proto";
+package perception.hz;
+
+// 统计项 
+message RoadSysProfiling {                                // 每处理一帧，就给出该帧的资源消耗信息
+	message Item {
+		string name = 1;                                  // 统计项名称
+		float val = 2;                                    // 统计项的值
+	}
+	repeated Item items = 3;                              // 所有的统计项
+}
+
+
+/*
+	{
+	    "topic": "roadmarkingfront",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 20,
+		"buff_num": 10, 
+	    "elem_max_size": 80000
+	}
+*/
+
+/*
+	{
+	    "topic": "roadmarkingrear",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 20,
+		"buff_num": 10, 
+	    "elem_max_size": 80000
+	}
+*/
+message Roadmarking {  // 路面标识 总字节数:(828 ~ 70067)
+	enum LanelinePositionType { // 位置 类型:int 字节数:4
+		kAdjacentLeft = 0;       // lane marking on the left side next to ego lane 
+		kEgoLeft = 1;            // left lane marking of the ego lane 
+		kEgoRight = 2;           // right lane marking of the ego lane 
+		kAdjacentRight = 3;      // lane marking on the right side next to ego lane 
+		kThirdLeft = 4;
+		kThirdRight = 5; 
+		kFourthLeft = 6;
+		kFourthRight = 7; 
+		kOther = 8;
+	}
+
+	enum LineType { // 线型 类型:int 字节数:4
+		kLineSingleSolid = 0;   // 实线
+		kLineSingleDashed = 1;  // 虚线
+		kLineBold = 2;          // 短粗虚线（道路出入口标线）
+		kLineDoubleSolid = 3;   // 双实线
+		kLineDoubleDashed = 4;  // 双虚线
+		kLineSolidDashed = 5;   // 实虚线
+		kLineDashedSolid = 6;   // 虚实线
+		kFence = 7;             // 栅栏
+		kCurb=8;                // 路沿
+		kLineDeceleration = 9;  // 减速线 
+		kLineUnknown = 10;
+	}
+
+	enum ColorType { // 颜色  类型:int 字节数:4
+		kColorWhite = 0;    // 白色
+		kColorYellow = 1;   // 黄色
+		kColorOrange = 2;   // 橙色
+		kColorBlue = 3;     // 蓝色
+		kColorGreen = 4;    // 绿色
+		kColorGray = 5;     // 灰色
+		kColorWhiteYellow = 6;  // 左白右黄
+		kColorYellowWhite = 7;  // 左黄右白
+		kColorYellowGrayFusion = 8;  // 黄灰混合
+		kColorUnknown = 9;  // 
+	}
+
+	enum LineState {  // 车道线运动类型 类型:int 字节数:4
+		kDetected = 0;      // 检测线
+		kPredicted = 1;     // 预测线
+		kStableTrack = 2;   // 稳定跟踪
+	}
+
+	enum LaneIdx {
+		kLaneIdxUnknown = 0;     // 未知
+		kEgoLane = 1;            // 当前车道
+		kAdjacentLeftLane = 2;   // 左一车道
+		kAdjacentRightLane = 3;  // 右一车道
+		kSecondaryLeftLane = 4;  // 左二车道
+		kSecondaryRightLane = 5; // 右二车道
+		kThirdLeftLane = 6;      // 左三车道
+		kThirdRightLane = 7;     // 右三车道
+	}
+
+	message CurveCoeff { // 曲线方程: y = c0 + c1*x + c2*x^2 + c3*x^3  总字节数:40
+		float longitude_min = 1;  // view range start 类型:float 字节数:4 取值范围:(FLT_MIN~FLT_MAX)
+		float longitude_max = 2;  // view range end   类型:float 字节数:4 取值范围:(FLT_MIN~FLT_MAX)
+		double c0 = 3;            // 类型:double 字节数:8 取值范围:(DOUBLE_MIN~DOUBLE_MAX)
+		double c1 = 4;            // 类型:double 字节数:8 取值范围:(DOUBLE_MIN~DOUBLE_MAX)
+		double c2 = 5;            // 类型:double 字节数:8 取值范围:(DOUBLE_MIN~DOUBLE_MAX)
+		double c3 = 6;            // 类型:double 字节数:8 取值范围:(DOUBLE_MIN~DOUBLE_MAX)
+		double dev_c0 = 7;        // c0的标准差，即，车道线横向位置的标准差
+		double dev_c1 = 8;		  // c1的标准差，即，车道线航向角的标准差
+		double dev_c2 = 9;        // c2的标准差，即，车道线原点处曲率的标准差
+		double dev_c3 = 10;       // c3的标准差，即，车道线原点处曲率变化率的标注差
+	}
+
+	message Laneline { // 车道线属性 总字节数:(116~5936)
+		LineType type = 1;                                                // 线型 类型:int 字节数:4 取值范围:(0~8)
+		LanelinePositionType pos_type = 2;                                // 位置 类型:int 字节数:4 取值范围:(0~8)
+		ColorType color_type = 3;                                         // 颜色 类型:int 字节数:4 取值范围:(0~4)
+		CurveCoeff curve_vehicle_coord = 4;                               // 车身坐标系下曲线方程 字节数:40
+		CurveCoeff curve_image_coord = 5;                                 // 图像坐标下曲线方程   字节数:40
+
+		perception.common.Point2fList points_image_coord = 6;             // 图像坐标系下的点集 (检测)  字节数:16*n 取值范围(w>=x>=0, h>=y>=0) 最大容量:60
+		perception.common.Point3fList points_vehicle_coord = 7;           // 车身坐标系下的点集 (检测) 字节数:24*n 取值范围(100>=x>=0, 20>=y>=-20) 最大容量:60
+		perception.common.Point2fList fit_points_image_coord = 8;         // 图像坐标系下的点集 (拟合抽样) 字节数:16*n 取值范围(w>=x>=0, h>=y>=0) 最大容量:60
+		perception.common.Point3fList fit_points_vehicle_coord = 9;       // 车身坐标系下的点集 (拟合抽样) 字节数:24*n 取值范围(100>=x>=0, 20>=y>=-20) 最大容量:60
+		uint64 id = 10;                                                   // id 类型:uint64 字节数:8 取值范围(0~2^64)
+		LineState line_state = 11;                                        // 线状态 类型:int 字节数:4 取值范围:(0~2)
+		float confidence = 12;                                            // 置信度 类型:float 字节数:4 取值范围:(0~1)
+		float width = 13;                                                 // 车道线宽度(单位:m) 类型:float 字节数:4 取值范围:(0, 0.6)
+		uint32 age = 14;                                                  // 声明周期 类型:uint32 字节数:4 取值范围:(0~2^32)
+		repeated uint32 point_cam_id = 15;                                // 采样点对应的camera id  字节数: 16*n 取值范围 最大容量:255   
+		perception.common.Point2f centroid_pt = 16;                       // 质心点坐标
+		int32 lane_id = 17;                                               // 车道线位置id(当前车道左侧从0向远处递减，右侧从1向远处递增)
+	}
+
+	message LanelineList { // 车道线信息列表 总字节数:(0~39296)
+		repeated Laneline line = 1;                                       // line set 字节数:(112~4912) 最大容量:8
+	}
+
+	enum SpaceType {// 障碍物空间类型 类型:int 字节数:4
+		kBackground = 0;         // 背景
+		kFreeSpace = 1;          // 可通行区域
+		kRoadBoundary = 2;       // 路沿
+		kVehicle = 3;            // 车辆
+		kRoadSign = 4;           // 路面标识
+		kPole = 5;               // 柱杆
+		kGuardrail = 6;          // 栅栏
+		kSpaceTypeNums = 7;     
+	}
+
+	message FreeSpaces { // 可同行区域 总字节数:(12~6412)
+		enum MotionProp { // 运动属性 类型:int 字节数:4
+			kMovable = 0;            // 移动
+			kUnmovable = 1;          // 停止 
+			kStill = 2;              // 静止
+		}
+
+		message FreeZone { // 总字节数:68
+			perception.common.Point2f point_image_coord = 1;              // 采样点图像坐标  字节数:16 取值范围(w>=x>=0, h>=y>=0)
+			perception.common.Point3f point_vehicle_coord = 2;            // 采样点世界坐标  字节数:24 取值范围(100>=x>=0, 20>=y>=-20)
+			float dist = 3;                                               // 采样点与本车距离 类型:float 字节数:4 取值范围(0~100) 
+			float angle = 4;                                              // 采样点与本车前进方向角度(弧度) 类型:float 字节数:4 取值范围(-π/2~π/2)
+			LaneIdx lane_index = 5;                                       // 采样点所属车道 类型:int32 字节数:4 取值范围(0~7)
+			float confidence = 6;                                         // 置信度 类型:float 字节数:4 取值范围(0~1)
+			SpaceType type = 7;                                           // 采样点邻近不可同行类型 类型:int 字节数:4 取值范围(0~7)
+			MotionProp motion_prop = 8;                                   // 采样点运动属性 类型:int 字节数:4 取值范围(0~2)
+			uint32 camera_id = 9;                                         // 摄像头id
+			uint32 sensor_type = 10;                                      // (0-camera, 1-radar, 2-LIDAR, 3-Hdmap, 4-LIDAR_CAM_FUSION)
+		}
+		repeated FreeZone freezone = 1;                                   // 采样点集 字节数:64*n 最大容量:100
+		float dist_std = 2;                                               // 采样点距离标准差 类型:float 字节数:4 取值范围(0~FLT_MAX)
+		float angle_std = 3;                                              // 采样点角度标准差 类型:float 字节数:4 取值范围(0~FLT_MAX)
+		float height_std = 4;                                             // 采样点高度标准差 类型:float 字节数:4 取值范围(0~FLT_MAX)
+	}
+	
+	message RoadEdge { // 路沿 总字节数:(124 ~ 5164)
+		uint32 id = 1;                                                    // id 类型:uint32 字节数:4 取值范围:(0~2^32)
+		uint32 age = 2;				                                      // 检测帧数 类型:uint32 字节数:4 取值范围:(0~2^32)
+		CurveCoeff curve_vehicle_coord = 3;                               // 车身坐标系下曲线方程 字节数:40
+		CurveCoeff curve_image_coord = 4;                                 // 图像坐标系下的曲线方程 字节数:40
+		perception.common.Point3fList points_vehicle_coord = 5;           // 车身坐标系下的采样点 字节数:24*n 取值范围(100>=x>=0, 20>=y>=-20) 最大容量:60
+		perception.common.Point2fList points_image_coord = 6;             // 图像坐标系下的采样点 字节数:16*n 取值范围(w>=x>=0, h>=y>=0) 最大容量:60
+		perception.common.Point2fList fit_points_image_coord = 7;         // 图像坐标系下的点集 (拟合抽样) 字节数:16*n 取值范围(w>=x>=0, h>=y>=0) 最大容量:60
+		perception.common.Point3fList fit_points_vehicle_coord = 8;       // 车身坐标系下的点集 (拟合抽样) 字节数:24*n 取值范围(100>=x>=0, 20>=y>=-20) 最大容量:60
+		LineState state = 9;                                              // 线状态 类型:int 字节数:4 取值范围:(0~2)
+		int32 side = 10;                                                  // 路沿在左侧还是右侧 类型:int32 字节数:4 取值范围(0~1)
+		float confidence = 11;                                            // 置信度 类型:float 字节数:4 取值范围:(0~1)
+		repeated uint32 camera_id = 12;                                   // 摄像头id 
+	}
+
+	message RoadEdgeList {
+		repeated RoadEdge road_edges = 1;                                 // 路沿 字节数:(0~10328)
+	}
+
+	enum DirectPosition { // 类型:int 字节数:4
+		kDirectSame = 0;                 // 同向
+		kDirectOpposite = 1;             // 对向
+	}
+
+	message Roadmarks { // 路面标识 总字节数:(0~3180)
+		enum Type { // 类型:int 字节数:4
+			kBackGround = 0;              // 背景
+			kStraightArrow = 1;           // 直行
+			kLeftArrow = 2;               // 左转
+			kRightArrow = 3;              // 右转
+			kUturnArrow = 4;              // 掉头
+			kDiamond = 5;                 // 菱形 (前方有人行横道)
+			kInvertedTriangle = 6;        // 倒三角 (减速让行)
+			kOppositemarks = 7;           // 对向标识
+			kStopLane = 8;                // 停止线
+			kZebraCrossing = 9;           // 斑马线
+			kNoParkingArea = 10;          // 禁止停车
+			kGoreArea = 11;               // 分道角区
+			kGroundWords = 12;            // 地面文字
+			kOthers = 13;                 // 其他
+			kDecelerationLine = 14;       // 减速标识
+			kTypeNums = 15;               // 总类型数
+			kSpeedBump = 16;              // 减速带
+			kManholeCover = 17;           // 井盖
+		}
+
+		enum Form {
+			kRoadmarkUnknown = 0;    // 未知
+			kRoadmarkPoint = 1;      // 关键点
+			kRoadmarkLine = 2;       // 线段
+			kRoadmarkPolygon = 3;    // 多边形
+		}
+
+		enum State {
+			kStateUnknown = 0;  // 未知
+			kObserved = 1;      // 路面标识纯检测
+			kPredicted = 2;     // 路面标识通过预测得到
+			kUpdated = 3;       // 路面标识检测到并被预测值更新
+		}
+
+		message Roadmark { // 总字节数:232
+			uint32 id = 1;                                                    // id 类型:uint32 字节数:4 取值范围:(0~2^32)
+			Type type = 2;                                                    // 类型 类型:int 字节数:4 取值范围:(0~17)
+			perception.common.Point2fList corner_pt_image_coord = 3;     // 外接矩形角点图像坐标 字节数:64 取值范围(w>=x>=0, h>=y>=0) 容量:4
+			perception.common.Point3fList corner_pt_vehicle_coord = 4;   // 外接矩形角点世界坐标 字节数:96 取值范围(100>=x>=0, 20>=y>=-20) 容量:4
+			perception.common.Point3f centroid_vehicle_coord = 5;             // 质心世界坐标 字节数:24 取值范围(100>=x>=0, 20>=y>=-20)
+			float confidence = 6;                                             // 置信度 类型:float 字节数:4 取值范围:(0~1)
+			uint32 lane_idx = 7;                                              // 路面标识所在的lane id 类型:uint32 字节数:4 取值范围:(0~7)
+			Form form = 8;                                               
+			State state = 9;
+			perception.common.Point2f centroid_image_coord = 10;
+			float width = 11;                                                 // 线型标识世界坐标下的宽度
+			uint32 camera_id = 12;                                            // 摄像头id
+		}
+		repeated Roadmark roadmarks = 1;                                      // 路面标识 字节数:212*n 最大容量:15
+	}
+
+	message LDWInfo { // 告警信息 总字节数:37
+		enum LdwState { // 类型:int 字节数:4
+			kLdwNone = 0;         // 无偏离
+			kLdwLeft = 1;         // 左偏离
+			kLdwRight = 2;        // 右偏离
+		}
+		enum LdwWorkState {
+			kUnavailable = 0;
+			kOff = 1;             // ldw功能关闭
+			kStandby = 2;         // 待机状态
+			kActive = 3;          // 激活状态
+			kNotAvailable = 4;
+			kUnknown = 5;
+		}
+		LdwState ldw_state = 1;                                               // 偏离状态 类型:int 字节数:4 取值范围:(0~2)
+		float left_wheel_dist = 2;                                            // 左轮外沿距离车道线距离 (单位: m) 类型:float 字节数:4 取值范围:(-2~5)
+		float right_wheel_dist = 3;                                           // 左轮外沿距离车道线距离 (单位: m) 类型:float 字节数:4 取值范围:(-2~5)
+		float warning_dist = 4;                                               // 左右两轮距离车道线的最近距离 类型:float 字节数:4 取值范围:(-2~5)
+		float earliest_dist = 5;                                              // 最早报警线 类型:float 字节数:4 取值范围:(-0.4~0.5)
+		float latest_dist = 6;                                                // 最迟报警线 类型:float 字节数:4 取值范围:(-1.2~-0.3)
+		bool ldw_state_changed = 7;                                           // 第一次触发告警 类型:bool 字节数:1 取值范围:(0~1)
+		LdwWorkState ldw_work_state = 8;                                      // LDW 工作状态 类型: int 字节数:4 取值范围:(0~5)
+		float turn_radius = 9;                                                // 转弯半径 单位: m 
+		uint64 nearest_line_id = 10;                                          // 距离最近的车道线id
+		uint32 ldw_level = 11;                                                // ldw_level (1: low, 2: mid, 3: high)
+	}
+
+	message MotionEst { // 运动估计 总字节数:12 
+		float lateral_speed = 1;                                              // 横向速度(单位: m/s) 类型:float 字节数:4 取值范围:[-10 ~ 10]                    
+		float lateral_acc = 2;                                                // 横向加速度(单位: m/s^2) 类型:float 字节数:4 取值范围:[-5g - 5g]
+		float confidence = 3;                                                 // 置信度 类型:float　字节数:4 取值范围:[0 - 1] 
+	} 
+
+	message PoseEst { // 姿态估计 总字节数:34
+		float pitch_est = 1;                                             // 估计pitch(单位: radian) 类型:float 字节数:4 取值范围:[-0.175, 0.175]
+		perception.common.Point2f vanish_pt = 2;                         // 灭点 字节数：8
+		perception.common.Point2f vanish_cov = 3;                        // 灭点协方差 字节数：8
+		bool is_valid = 4;												 // 灭点有效标志 字节数：1
+		uint32 camera_id = 5;                                            // 摄像头id
+		float dpitch = 6;                                                // delta pitch (unit: radian)
+		float confidence = 7;                                            // 置信度
+	}
+
+	message HppInfo { // 预测行驶线 总字节数 (414-14794)
+		enum PlanningSource {
+			kInvalid = 0;
+			kDoubleLaneline = 1;                      // 双侧车道线
+			kLeftLaneline = 2;                        // 左车道线
+			kRightLaneline = 3;                       // 右车道线
+			kLeftRoadEdge = 4;                        // 左侧路沿
+			kRightRoadEdge = 5;                       // 右侧路沿
+			kHeadingVehTrace = 6;                     // 前车行驶轨迹
+			kFreespace = 7;                           // FreeSpace
+			kSelfVehTrace = 8;                        // 本车轨迹预测
+		}
+
+		CurveCoeff path_prediction_coeff = 1;         //  预测行驶线多项式方程 字节数: 40
+		bool is_laneline_valid = 3;                   //  预测行驶线对应的车道线是否可用 字节数 1
+		bool is_valid = 4;                            //  预测行驶线是否可用 字节数：1
+		uint32 planning_source = 5;                   // 规划路径来源 (PlanningSource)
+		float confidence = 6;                         // 置信度 类型:float 字节数: 4
+		float ego_lane_width = 7;                     // 自车道宽度 字节数:4
+		Laneline hpp_line = 8;                        // 字节数:(112~4912) 
+		Laneline virtual_ego_lane_left = 9;           // 左侧虚拟车道线 字节数:(112~4912)
+		Laneline virtual_ego_lane_right = 10;         // 右侧虚拟车道线 字节数:(112~4912)
+		perception.common.Point2f preview_pt = 11;    // 控制预瞄点位置，俯视图坐标 字节数: 8
+		perception.common.Point2f preview_pt_persp = 12;    // 控制预瞄点位置,图像坐标 字节数: 8
+		float ego_lane_radius = 13;                        // 自车道曲率半径，字节数：4
+	}
+
+	message Junction {    // 道路合流分流点, 总字节数64
+		enum Type {
+			kMergingPoints = 0;           // 汇流点
+			kDivergingPoints = 1;         // 分流点
+		}
+		Type type = 1;                    // 类型 字节数:4
+		perception.common.Point2f pt_image_coord = 2;     // 图像坐标 字节数:8 
+		perception.common.Point2f pt_vehicle_coord = 3;   // 车身坐标 字节数:8 
+		repeated uint64 laneline_id = 4;                  // 形成交叉点的车道线id  字节数:32 (最多4个)
+		int32 state = 5;                                  // 状态 字节数:4 
+		float confidence = 6;                             // 置信度 字节数:4
+	}
+
+	message JunctionList { // 道路交叉点列表 
+		repeated Junction junc = 1;                 // 交叉点信息 字节数 256 (最多4个交叉点) 
+	}
+
+	uint64 frame_id = 1;                                  // 帧ID 类型:uint64 字节数:8 取值范围:(0~2^64)
+	uint64 timestamp = 2;                                 // 对应的图像时戳 类型:uint64 字节数:8 取值范围:(0~2^64)
+	LanelineList laneline = 3;                            // 车道线 字节数:(0~39328)
+	FreeSpaces freespaces = 4;                            // 可通行区域 字节数:(12~6412)
+	Roadmarks roadmarkers = 6;                            // 路面标识 字节数:(0~3180)
+	RoadEdgeList road_edges = 7;                          // 路沿 字节数:(0~5080)
+	LDWInfo ldw_info = 8;                                 // 告警信息 字节数:25
+	LanelineList calib_lines = 9;                         // 用于标定的车道线方程 字节数:(0~9824)
+	MotionEst motion = 10;                                // 运动估计信息 字节数:12
+	PoseEst pose = 11;                                    // 姿态估计信息 字节数:4 (前视摄像头)
+	HppInfo hpp_info = 12;                                // 预测行驶线 字节数:(370-14770）
+	uint64 tick = 13;                                     // tick ms 字节数: 8
+	minieye.DataSource data_source = 14;                  // 描述数据源 字节数: 4
+	CurveCoeff slope_equation = 15;                       // 坡度方程 字节数 40
+	uint64 finish_time = 16;                              // 处理结束时间 字节数 8
+	JunctionList junc_list = 17;                          // 交叉点信息 字节数 256 (最多4个交叉点) 
+	RoadSysProfiling profiling_items = 18;                // 统计项
+	uint64 recv_time = 19;                                // 图像接收时间戳ms
+	float fps = 20;                                       // 车道线算法fps
+	minieye.EgoMotion ego_motion = 21;                    // 基于imu和can_speed估计两帧之间的运动
+	float ego_lane_width = 22;                            // 自车道宽度（m）
+	minieye.CamID cam_id = 23;                            // 摄像头id
+}
+

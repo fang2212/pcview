@@ -1,0 +1,153 @@
+syntax = "proto3";
+package perception;
+
+
+message CanRaw {
+	int32 canid = 1;
+	int32 tick = 2;
+	uint64 candata = 3;
+}
+//坐标系：传感器原点，车头向前为x，左为y
+message Radar {                                  
+    message SingleRadarTarget {
+        //id
+        uint32 id = 1;                                  // 目标ID
+        //position.x，默认值为range*cos(angle)
+        float dist_long = 2;                            // 目标纵向距离
+        //position.y,默认值为range*sin(angle)
+        float dist_lat = 3;                             // 目标横向距离
+        //velocity.x,默认值为range_v*cos(angle)
+        float vrel_long = 4;                            // 目标纵向相对速度
+        //velocity.y，默认值为range_v*sin(angle)
+        float vrel_lat = 5;                             // 目标横向相对速度
+        //rcs,默认值为FLT_MAX
+        float rcs = 6;                                  // 目标散射截面，db*m^2
+        /*
+        #define RADAR_DYNPROP_Unknown 0
+        #define RADAR_DYNPROP_Stationary 1
+        #define RADAR_DYNPROP_Stopped 2
+        #define RADAR_DYNPROP_Moving 3
+        #define RADAR_DYNPROP_Crossing 4
+        #define RADAR_DYNPROP_OnComing 5
+        */
+        //movProperty,默认值为RADAR_DYNPROP_Moving
+        uint32 dyn_prop = 7;                            // 目标运动属性
+        //position.rms.x，默认值为1
+        uint32 dist_long_rms = 8;                        // 目标纵向距离均方根误差
+        //velocity.rms.x，默认值为1
+        uint32 vrel_long_rms = 9;                        // 目标纵向相对速度均方根误差
+        //position.rms.y，默认值为1
+        uint32 dist_lat_rms = 10;                        // 目标横向相对距离均方根误差
+        //velocity.rms.y，默认值为1
+        uint32 vrel_lat_rms = 11;                        // 目标横向相对速度均方根误差
+        //acceleration.rms.y，默认值为1
+        uint32 arel_lat_rms = 12;                        // 目标横向相对加速度均方根误差
+        //acceleration.rms.x，默认值为1
+        uint32 arel_long_rms = 13;                       // 目标纵向相对加速度均方根误差
+        //默认值为1
+        uint32 orientation_rms = 14;                     // 目标偏航角均方根误差
+        /*
+        #define RADAR_TRACK_STATUS_MEASURED 0
+        #define RADAR_TRACK_STATUS_EXTRAPOLATED 1
+        #define RADAR_TRACK_STATUS_DELETED 2
+        #define RADAR_TRACK_STATUS_NEW 3
+        #define RADAR_TRACK_STATUS_DELETED_FOR_MERGE 4
+        #define RADAR_TRACK_STATUS_NEW_FROM_MERGE 5
+        默认值为RADAR_TRACK_STATUS_MEASURED
+        */
+        //measState
+        uint32 meas_state = 15;                          // 目标状态，new predicted...
+
+        //0~100，默认值为100
+        //existProbability
+        uint32 prob_of_exist = 16;                       // 目标存在概率
+        //acceleration.x，默认值为FLT_MAX
+        float arel_long = 17;                           // 目标纵向相对加速度
+        /*
+        障碍物类别:
+        0-UNKNOWN;           未知障碍物类型;
+        1-UNKNOWN_UNMOVABLE; 未知静止障碍物类型
+        2-PEDESTRIAN;        行人
+        3-BICYCLE;           自行车
+        4-CAR;               小型汽车,比如轿车
+        5-TRUCK;             大型汽车,比如卡车
+        6-BUS;               客车，公交车等
+        7-MOTORCYCLE;        摩托车
+        8-TRICYCLE;          三轮车
+        9-CONE;              锥筒
+        10-BAN;              禁停牌
+        11-STOPBAR;          停车杆
+        12-SPEEDHUMP；       减速带
+        默认值为CAR
+        */
+        //trackType
+        uint32 obj_class = 18;                          // 目标分类
+        //acceleration.y，默认值为FLT_MAX
+        float arel_lat = 19;                            // 目标横向相对加速度
+        //orientAgl，默认值为0
+        float orientation_angle = 20;                   // 目标偏航角，弧度
+        //sizeLWH.x，默认值为3.5
+        float length = 21;                              // 目标长度
+        //sizeLWH.y，默认值为1.8
+        float width = 22;                               // 目标宽度
+        //默认值为0
+        float elevation = 23;                           // 目标高度（俯仰角），Conti雷达暂时没有，可以填0
+
+        bool is_general_info_valid = 24;                     // 60b 目标通用信息是否有效
+        bool is_quality_info_valid = 25;                      // 60c 目标质量信息是否有效
+        bool is_extended_info_valid = 26;                    // 60d 目标扩展信息是否有效
+
+        //0~100，默认值为100
+        //objObstacleProb
+        float prob_of_obs = 27;                         //障碍物概率
+
+        //0~100 db*mw，默认值为FLT_MAX
+        float power = 28;
+
+        //0~100 db,默认值为FLT_MAX
+        //snr
+        float snr = 29;
+        //默认值为sqrt(dist_long^2+dist_lat^2)
+        float range = 30;
+        //默认值为atan(dist_lat/dist_long)
+        float angle = 31;
+        //默认值为sqrt(vrel_long^2+vrel_lat^2)
+        float range_v = 32;
+    }
+
+    /*
+    角雷达：
+    #define RADAR_POS_FL 1
+
+    #define RADAR_POS_FR 2
+
+    #define RADAR_POS_RL 3
+
+    #define RADAR_POS_RR 4
+    前雷达：0
+    */
+    //sensorID
+    uint32 radartype = 1;                              // 雷达类型
+    //header.gnssStamp
+	uint64 timestamp = 2;                              // UTC时戳, 微秒;
+    //header.timestamp
+	uint64 tick = 3;                                   // 异构设备上的时钟, 毫秒
+    //len(radar_list)
+    uint32 obj_num = 4;                                // 目标数量
+    ////header.seq
+    uint32 meas_counter = 5;                           // cycle counter
+    //
+    uint32 interface_version = 6;                      // 接口版本
+    //trackList
+	repeated SingleRadarTarget radar_list = 7;         // 雷达目标信息
+	repeated CanRaw can_list = 8;
+    //isValid
+    bool isValid = 9;
+    //radarState
+    bool isNormal = 10;
+}
+message RadarFrame{
+    repeated Radar radar=1;
+    uint64 frame_timestamp=2;// UTC时戳, milliseconds,觸發發送的時刻
+    uint64 frame_tick=3;// 异构设备上的时钟, milliseconds,觸發發送的時刻
+}

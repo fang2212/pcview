@@ -9,65 +9,72 @@
   "ports": {
     "video1": {
       "enable": true,
-      "port": 24011,
+      "port": 26011,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_front_narrow",
       "idx": 1
     },
     "video2": {
       "enable": true,
-      "port": 24012,
+      "port": 26012,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_front_wide",
       "idx": 2
     },
     "video3": {
       "enable": true,
-      "port": 24013,
+      "port": 26013,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_left_front",
       "idx": 3
     },
     "video4": {
       "enable": true,
-      "port": 24014,
+      "port": 26014,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_left_back",
       "idx": 4
     },
     "video5": {
       "enable": true,
-      "port": 24015,
+      "port": 26015,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_right_front",
       "idx": 5
     },
     "video6": {
       "enable": true,
-      "port": 24016,
+      "port": 26016,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_right_back",
       "idx": 6
     },
     "video7": {
       "enable": true,
-      "port": 24017,
+      "port": 26017,
+      "origin_device": "mdc",
       "transport": "libflow",
       "protocol": "msgpack",
       "dbc": "video_h265",
-      "topic": "*",
+      "topic": "camera_back",
       "idx": 7
     },
     "imu_infos": {
@@ -121,7 +128,7 @@
     },
     "mdc_ts": {
       "enable": true,
-      "port": 26011,
+      "port": 28011,
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "MdcTime"

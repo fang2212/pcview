@@ -1995,6 +1995,16 @@ def batch_process_3(dir_name, sensors, process, parsers=None, odir=None):
                 process(log, sensors, parsers, False, analysis_dir=odir)
 
 
+def batch_process_common(dir_name, process):
+    for root, dirs, files in os.walk(dir_name):
+        for f in files:
+            if f == 'log.txt':
+                # odir = os.path.join(odir, os.path.basename(root)) if odir else None
+                log = os.path.join(root, f)
+                print('[green bold]' + '\nEntering dir: ' + root + '[/green bold]')
+                process(log)
+
+
 def collect_result(dir_name):
     dirs = os.listdir(dir_name)
     analysis_dir = os.path.join(dir_name, 'analysis')
@@ -2241,6 +2251,40 @@ def calc_cep(data):
     print('cep95:', cep95, 'cep99:', cep99, 'cep100:', cep100, 'stdev:', stdev)
 
 
+def transformLat(x, y):
+    ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * sqrt(abs(x))
+    ret += (20.0 * sin(6.0 * x * pi) + 20.0 * sin(2.0 * x * pi)) * 2.0 / 3.0
+    ret += (20.0 * sin(y * pi) + 40.0 * sin(y / 3.0 * pi)) * 2.0 / 3.0
+    ret += (160.0 * sin(y / 12.0 * pi) + 320 * sin(y * pi / 30.0)) * 2.0 / 3.0
+    return ret
+
+
+def transformLon(x, y):
+    ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * sqrt(abs(x))
+    ret += (20.0 * sin(6.0 * x * pi) + 20.0 * sin(2.0 * x * pi)) * 2.0 / 3.0
+    ret += (20.0 * sin(x * pi) + 40.0 * sin(x / 3.0 * pi)) * 2.0 / 3.0
+    ret += (150.0 * sin(x / 12.0 * pi) + 300.0 * sin(x / 30.0 * pi)) * 2.0 / 3.0
+    return ret
+
+
+def wgs82togcj02(blh):
+    lat = blh[0]
+    lon = blh[1]
+    a = 6378245.0
+    ee = 0.00669342162296594323
+    dLat = transformLat(lon - 105.0, lat - 35.0)
+    dLon = transformLon(lon - 105.0, lat - 35.0)
+    radLat = lat / 180.0 * pi
+    magic = sin(radLat)
+    magic = 1 - ee * magic * magic
+    sqrtMagic = sqrt(magic)
+    dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * pi)
+    dLon = (dLon * 180.0) / (a / sqrtMagic * cos(radLat) * pi)
+    mgLat = lat + dLat
+    mgLon = lon + dLon
+    return mgLat, mgLon, blh[2]
+
+
 def viz_2d_trj(r0, source=None, vis=True):
     from recorder.convert import ub482_defs, decode_with_def
     from tools.geo import gps_bearing, gps_distance
@@ -2369,6 +2413,7 @@ def viz_2d_trj(r0, source=None, vis=True):
                 y = sin(angle * pi / 180.0) * range
                 trjs[src][pos_type]['x'].append(x)
                 trjs[src][pos_type]['y'].append(y)
+                # kmlpnts[src].append(wgs82togcj02((r['lon'], r['lat'], r['hgt'])))
                 kmlpnts[src].append((r['lon'], r['lat'], r['hgt']))
 
     san_map = folium.Map(
@@ -2377,7 +2422,10 @@ def viz_2d_trj(r0, source=None, vis=True):
         max_zoom=19,
         # tiles='http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}',  # 高德街道图
         # tiles='http://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',  # 高德卫星图
-        tiles='https://mt.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',  # google 卫星图
+        # tiles='https://mt.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',  # google 卫星图
+        # tiles = 'http://mt2.google.cn/vt/lyrs=m&scale=2&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}',  # google 矢量
+        # tiles = 'http://rt0.map.gtimg.com/realtimerender?z={z}&x={x}&y={-y}&type=vector&style=0',  # 腾讯矢量
+        tiles = 'http://t7.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=34ab51ba581feb590667a4221ae25730',  # 天地图
         attr='default')
     colors = [simplekml.Color.red, simplekml.Color.green, simplekml.Color.yellow, simplekml.Color.blue]
     colors1 = ['red', 'green', 'yellow', 'blue']
@@ -2394,10 +2442,12 @@ def viz_2d_trj(r0, source=None, vis=True):
         # for lon, lat, hgt in kmlpnts[src]:
         #     folium.Marker([lat, lon], color='red').add_to(marker_cluster)
     san_map.save(os.path.join(os.path.dirname(r0), 'tracks_map.html'))
-    visual.trj_2d_bk(trjs)
+    ofile = os.path.join(os.path.dirname(r0), 'trj.html')
+    visual.trj_2d_bk(trjs, ofile)
 
     # for item in inspect_values:
-    visual.compare_1d_data(inspect_values)
+    ofile = os.path.join(os.path.dirname(r0), 'pva.html')
+    visual.compare_1d_data(inspect_values, ofile)
     for item in inspect_values:
         for src in inspect_values[item]:
             # print(inspect_values[item][src].items())
@@ -2958,7 +3008,10 @@ if __name__ == "__main__":
     elif args.changemain:
         change_main_video(r, args.changemain)
     elif args.trj:
-        viz_2d_trj(r)
+        if r.endswith('log.txt'):
+            viz_2d_trj(r)
+        else:
+            batch_process_common(r, viz_2d_trj)
     else:
         sensors = ['x1']
         if args.q3:

@@ -1,0 +1,90 @@
+syntax = "proto3";
+import "data_header.proto";
+
+package minieye;
+
+/*
+	{
+	    "topic": "gnsspos",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 100,
+		"buff_num": 100,
+	    "elem_max_size": 1000
+	} 
+*/
+
+message GnssposData {
+    Header header = 1;                    // 头部信息
+    bool is_valid = 2;                    // 数据有效性标志位：true表示是新接收的数据，false表示是历史数据
+    uint32 gps_week = 3;                  // GPS时间，周数
+    double gps_sec = 4;                   // GPS时间，周内秒(s)
+    uint32 pos_type = 5;	              // 定位状态
+    double latitude = 6;                  // 纬度（deg）
+    double longitude = 7;                 // 经度（deg）
+    float undulation = 8;                 // 海拔高度与椭球面高度差（m）
+    float height = 9;                     // 海拔高度（m）
+    float lat_std = 10;                   // 纬度标准差(m)
+    float lon_std = 11;                   // 经度标准差(m)
+    float hgt_std = 12;                   // 高度标准差(m)
+    uint32 svs = 13;                      // 跟踪卫星数
+    uint32 soln_svs = 14;                 // 解算卫星数
+    uint32 diff_age = 15;                 // 差分龄期(s)
+    float hdop = 16;                      // 水平位置精度因子
+    float pdop = 17;                      // 三维位置精度因子
+    float tdop = 18;                      // 时间精度因子
+}
+
+
+/*
+	{
+	    "topic": "gnssvel",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 100,
+		"buff_num": 100,
+	    "elem_max_size": 1000
+	} 
+*/
+
+message GnssvelData {
+    Header header = 1;                      // 头部信息
+    bool is_valid = 2;                      // 数据有效性标志位：true表示是新接收的数据，false表示是历史数据
+    uint32 gps_week = 3;                    // GPS时间，周数
+    double gps_sec = 4;                     // GPS时间，周内秒(s)
+    uint32 sol_status = 5;                  // 解算状态
+    uint32 vel_type = 6;                    // 速度类型，多普勒或位置平滑
+    float hor_spd = 7;                      // (ENU系下)水平速度（m/s）
+    float vert_spd = 8;                     // (ENU系下)天向速度（m/s），向上为正
+    float trk_gnd = 9;                      // 前进方向与真北夹角（deg， 0~360），北偏东为正
+    float latency = 10;                     // 速度延时(s)
+    float vel_x = 11;                       // (ECEF坐标系下)，X轴方向速度（m/s）
+    float vel_y = 12;                       // (ECEF坐标系下)，Y轴方向速度（m/s）
+    float vel_z = 13;                       // (ECEF坐标系下)，Z轴方向速度（m/s）
+    float vel_x_std = 14;                   // (ECEF坐标系下)，X轴方向速度标准差（m/s）
+    float vel_y_std = 15;                   // (ECEF坐标系下)，Y轴方向速度标准差（m/s）
+    float vel_z_std = 16;                   // （ECEF坐标系下)，Z轴方向速度标准差（m/s）
+}
+
+/*
+	{
+	    "topic": "gnssheading",
+	    "dds_mode": "shm",
+	    "data_refresh_rate": 100,
+		"buff_num": 100,
+	    "elem_max_size": 1000
+	} 
+*/
+
+message GnssheadingData {
+    Header header = 1;                      // 头部信息
+    bool is_valid = 2;                      // 数据有效性标志位：true表示是新接收的数据，false表示是历史数据
+    uint32 gps_week = 3;                    // GPS时间，周数
+    double gps_sec = 4;                     // GPS时间，周内秒(s)
+    uint32 svs = 5;                         // 定向天线可见卫星数
+    uint32 soln_svs = 6;                    // 参与定向的卫星数
+    uint32 pos_type = 7;                    //	定向状态
+    float length = 8;                       // 定向基线长度（m）
+    float heading = 9;                      // 方位角（deg，0~360），北偏东为正
+    float pitch	= 10;                       // 俯仰角（deg，-90~90），向上为正
+    float hdg_std = 11;                     // 方位角标准差（deg）
+    float pitch_std = 12;                   // 俯仰角标准差（deg）
+}

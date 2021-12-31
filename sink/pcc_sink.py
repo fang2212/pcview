@@ -6,8 +6,8 @@ import time
 
 from google.protobuf import json_format
 
-from pyproto import vehicle_pb2, pedestrian_pb2, roadmarking_pb2, object_attribute_pb2, object_pb2
-from pyproto import calib_param_pb2, dev_object_pb2, vehicle_signal_pb2
+from pyproto import pedestrian_pb2, roadmarking_pb2, object_pb2, camera_pb2
+from pyproto import calib_param_pb2, vehicle_signal_pb2
 # from multiprocessing import Process
 from threading import Thread
 # from threading import Event as tEvent
@@ -39,6 +39,10 @@ from utils import logger
 
 async_for_sink = False
 
+pb_dict = {
+    "CameraFrameExtendedInfo": camera_pb2.CameraFrameExtendedInfo()
+}
+
 
 class bcl:
     HDR = '\033[95m'
@@ -55,7 +59,7 @@ class Sink(Thread):
     """
     信号解析基本类
     """
-    def __init__(self, ip, port, msg_type, index=0, mq=None):
+    def __init__(self, ip, port, msg_type, index=0, mq=None, sq=None):
         super().__init__()
         self.daemon = True  # 设置为守护线程
         self.ip = ip
@@ -66,6 +70,7 @@ class Sink(Thread):
         self.exit = False
 
         self.mq = mq  # mmap内存对象
+        self.sq = sq
 
         self.pid = None  # 进程id
 
@@ -109,8 +114,8 @@ class NNSink(Sink):
     """
     nnpy类型信号处理基类
     """
-    def __init__(self, ip, port, msg_type, index=0, decode_queue=None, result_queue=None, mq=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, mq=mq)
+    def __init__(self, ip, port, msg_type, index=0, decode_queue=None, result_queue=None, mq=None, sq=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, mq=mq, sq=sq)
         self.ip = ip
         self.port = port
         self.type = msg_type
@@ -137,6 +142,9 @@ class NNSink(Sink):
             if not buf:
                 time.sleep(0.001)
                 continue
+
+            # self.sq.put([self.ip, self.port, self.index, self.source])
+
             t0 = time.time()
             r = self.pkg_handler(buf)
             if r is not None:
@@ -151,8 +159,8 @@ class NNSink(Sink):
 
 
 class ZmqSink(Sink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, mq=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, mq=mq)
+    def __init__(self, ip, port, msg_type, index, fileHandler, mq=None, sq=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, mq=mq, sq=sq)
         self.ip = ip
         self.port = port
         self.msg_type = msg_type
@@ -177,7 +185,17 @@ class ZmqSink(Sink):
 
     def pkg_handler(self, msg):
         if self.msg_type == 'j2_zmq':
-            data = {'type': self.msg_type, 'source': self.source, 'log_name': self.msg_type, 'buf': msg}
+            data = {
+                'type': self.msg_type,
+                'source': self.source,
+                'log_name': self.msg_type,
+                'buf': msg,
+                "meta": {
+                    "source": self.source,
+                    "type": "bin",
+                    "parsers": ["j2_zmq"]
+                }
+            }
             self.fileHandler.insert_general_bin_raw(data)
             return data
 
@@ -189,6 +207,9 @@ class ZmqSink(Sink):
             if not buf:
                 time.sleep(0.001)
                 continue
+
+            # self.sq.put([self.ip, self.port, self.index, self.source])
+
             t0 = time.time()
             msg_cnt += 1
             r = self.pkg_handler(buf)
@@ -207,8 +228,8 @@ class ZmqSink(Sink):
 
 
 class UDPSink(Sink):
-    def __init__(self, ip, port, topic, protocol, index, file_andler, mq=None):
-        super(UDPSink, self).__init__(ip=ip, port=port, msg_type=topic, mq=mq)
+    def __init__(self, ip, port, topic, protocol, index, file_andler, mq=None, sq=None):
+        super(UDPSink, self).__init__(ip=ip, port=port, msg_type=topic, mq=mq, sq=sq)
         self.ip = ip
         self.port = port
         self.msg_type = topic
@@ -238,7 +259,17 @@ class UDPSink(Sink):
     def pkg_handler(self, msg):
         if self.msg_type == "d1_udp":
             timestamp = time.time()
-            r = {'type': self.msg_type, 'source': self.source, 'log_name': self.msg_type, 'buf': msg}
+            r = {
+                'type': self.msg_type,
+                'source': self.source,
+                'log_name': self.msg_type,
+                'buf': msg,
+                'meta': {
+                    "source": self.source,
+                    "type": self.msg_type,
+                    "parsers": [self.msg_type]
+                }
+            }
             self.fileHandler.insert_general_bin_raw(r)
             self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
         elif self.msg_type == 'q4_100':
@@ -247,7 +278,17 @@ class UDPSink(Sink):
             timestamp = time.time()
             msg = struct.pack("<d", timestamp) + msg
 
-            r = {'type': self.msg_type, 'source': self.source, 'log_name': self.msg_type, 'buf': msg}
+            r = {
+                'type': self.msg_type,
+                'source': self.source,
+                'log_name': self.msg_type,
+                'buf': msg,
+                'meta': {
+                    'type': self.msg_type,
+                    'source': self.source,
+                    'parsers': [self.msg_type]
+                }
+            }
             self.fileHandler.insert_general_bin_raw(r)
             self.fileHandler.insert_raw((timestamp, self.source, str(len(msg))))
 
@@ -270,6 +311,9 @@ class UDPSink(Sink):
             if not buf:
                 time.sleep(0.001)
                 continue
+
+            # self.sq.put([self.ip, self.port, self.index, self.source])
+
             t0 = time.time()
             r = self.pkg_handler(buf)
             if r is not None:
@@ -286,8 +330,8 @@ class UDPSink(Sink):
 
 
 class TCPSink(Sink):
-    def __init__(self, ip, port, msg_type, protocol, index, fileHandler, mq=None):
-        super(TCPSink, self).__init__(ip=ip, port=port, msg_type=msg_type, mq=mq)
+    def __init__(self, ip, port, msg_type, protocol, index, fileHandler, mq=None, sq=None):
+        super(TCPSink, self).__init__(ip=ip, port=port, msg_type=msg_type, mq=mq, sq=sq)
         self.ip = ip
         self.port = port
         self.msg_type = msg_type
@@ -347,6 +391,9 @@ class TCPSink(Sink):
             if not buf:
                 time.sleep(0.001)
                 continue
+
+            # self.sq.put([self.ip, self.port, self.index, self.source])
+
             t0 = time.time()
             r = self.pkg_handler(buf)
             if r is not None:
@@ -363,8 +410,8 @@ class TCPSink(Sink):
 
 
 class PinodeSink(NNSink):
-    def __init__(self, ip, port, msg_type, index, resname, fileHandler, mq=None):
-        super().__init__(ip=ip, port=port, index=index, msg_type=msg_type, mq=mq)
+    def __init__(self, ip, port, msg_type, index, resname, fileHandler, mq=None, sq=None):
+        super().__init__(ip=ip, port=port, index=index, msg_type=msg_type, mq=mq, sq=sq)
         self.source = '{}.{:d}'.format(msg_type, index)
         self.msg_type = msg_type
         self.index = index
@@ -475,8 +522,8 @@ class CANCollectSink(NNSink):
     """
     can-fd设备有4/8个can端口，需做区分处理
     """
-    def __init__(self, ip, port, can_list, index, fileHandler, device='', mq=None):
-        super(CANCollectSink, self).__init__(ip, port, "can", index, mq=mq)
+    def __init__(self, ip, port, can_list, index, fileHandler, device='', mq=None, sq=None):
+        super(CANCollectSink, self).__init__(ip, port, "can", index, mq=mq, sq=sq)
         self.type = 'can_sink'
         self.fileHandler = fileHandler
         self.can_list = can_list                  # 四个端口的信号类型列表
@@ -552,8 +599,8 @@ class CANCollectSink(NNSink):
 
 class MQTTSink(NNSink):
 
-    def __init__(self, ip, can_list, index, fileHandler, device="", cid="", mq=None):
-        super(MQTTSink, self).__init__(ip, "*", can_list, mq=mq)
+    def __init__(self, ip, can_list, index, fileHandler, device="", cid="", mq=None, sq=None):
+        super(MQTTSink, self).__init__(ip, "*", can_list, mq=mq, sq=sq)
         self.type = 'mqtt_sink'
         self.ip = ip
         self.device = device
@@ -652,8 +699,8 @@ class MQTTSink(NNSink):
 
 
 class CANSink(NNSink):
-    def __init__(self, ip, port, msg_type, topics, index, fileHandler, mq=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
+    def __init__(self, ip, port, msg_type, topics, index, fileHandler, mq=None, sq=None):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq, sq=sq)
         self.fileHandler = fileHandler                          # 日志对象
         self.type = 'can_sink'
         self.log_types = {'can0': 'CAN' + '{:01d}'.format(self.index * 2),
@@ -698,8 +745,8 @@ class CANSink(NNSink):
 
 
 class GsensorSink(NNSink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, mq=None):
-        super(GsensorSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
+    def __init__(self, ip, port, msg_type, index, fileHandler, mq=None, sq=None):
+        super(GsensorSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq, sq=sq)
         self.fileHandler = fileHandler
         self.type = 'gsensor_sink'
 
@@ -716,8 +763,8 @@ class GsensorSink(NNSink):
 
 
 class CameraSink(NNSink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, is_main=False, devname=None, mq=None):
-        super(CameraSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
+    def __init__(self, ip, port, msg_type, index, fileHandler, is_main=False, devname=None, mq=None, sq=None):
+        super(CameraSink, self).__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq, sq=sq)
         self.fileHandler = fileHandler
         self.source = '{:s}.{:d}'.format(devname, index)
         self.is_main = is_main
@@ -738,15 +785,17 @@ class CameraSink(NNSink):
 
 
 class FlowSink(Sink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo', device="", dbc=None, port_name="",
-                 log_name='pcv_log', topic='pcview', is_main=False, mq=None, save_type=None):
-        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq)
+    def __init__(self, ip, port, msg_type, index, fileHandler, name='x1_algo', device="", dbc=None, port_name="", sq=None,
+                 log_name='pcv_log', topic='pcview', is_main=False, is_back=False, mq=None, save_type=None, install_key="video"):
+        super().__init__(ip=ip, port=port, msg_type=msg_type, index=index, mq=mq, sq=sq)
         self.last_fid = 0
         self.fileHandler = fileHandler
         self.ip = ip
         self.port = port
         self.log_name = log_name
         self.is_main = is_main
+        self.is_back = is_back
+        self.install_key = install_key
         self.type = 'flow_sink'
         self.topic = topic
         self.dbc = dbc
@@ -763,11 +812,17 @@ class FlowSink(Sink):
         # 初始化解析流程
         if self.topic == '*' or self.dbc == "video_h265":   # Q3华为mdc数据
             if 24011 <= self.port <= 24017 or self.dbc == "video_h265":     # h264视频数据
-                self.pkg_handler = self.h265_video
-            elif self.port == 26011:
+                self.pkg_handler = self.video_h265
+            elif self.port == 28011:
                 self.pkg_handler = self.mdc_ts
             else:
                 self.pkg_handler = self.mdc_data
+        elif self.dbc == "video_jpeg":
+            self.pkg_handler = self.video_jpeg
+        elif self.topic == "caminfo":
+            self.pkg_handler = self.cam_ext_info
+        elif self.topic == "image_extended_info":
+            self.pkg_handler = self.img_ext_info
         elif self.topic == 'MdcTime':
             self.pkg_handler = self.mdc_ts
         elif self.save_type == 'bin':
@@ -788,6 +843,8 @@ class FlowSink(Sink):
             async for msg in ws:
                 if self.exit:
                     break
+
+                # self.sq.put([self.ip, self.port, self.index, self.source])
 
                 r = self.pkg_handler(msg)
                 if r is not None:
@@ -828,20 +885,14 @@ class FlowSink(Sink):
             data = msg.data
         return data
 
-    def mdc_ts(self, msg):
-        data = self.decode_data(msg)
-        data = data['data']
-        ads_sec = int.from_bytes(data[:8], byteorder='little', signed=False),
-        ads_nsec = int.from_bytes(data[8:16], byteorder='little', signed=False),
-        gnss_sec = int.from_bytes(data[16:24], byteorder='little', signed=False),
-        gnss_nsec = int.from_bytes(data[24:32], byteorder='little', signed=False),
-        timestamp = time.time()
-        # print(ads_sec, ads_nsec, gnss_sec, gnss_nsec)
-        # print("mdc_ts", "{} {} {} {}".format(ads_sec, ads_nsec, gnss_sec, gnss_nsec))
-        self.fileHandler.insert_raw((timestamp, "mdc_ts", "{} {} {} {}".format(ads_sec[0], ads_nsec[0], gnss_sec[0], gnss_nsec[0])))
+    def decode_video(self, data):
+        """
+        解析视频数据，对图像数据跟视频头格式进行解析处理
+        Args:
+            msg:
 
-    def h265_video(self, msg):
-        data = self.decode_data(msg)
+        Returns:
+        """
         head_data = {
             "height": int.from_bytes(data[:4], byteorder='little', signed=False),
             "width": int.from_bytes(data[4:8], byteorder='little', signed=False),
@@ -854,17 +905,108 @@ class FlowSink(Sink):
             "nsec": int.from_bytes(data[32:36], byteorder='little', signed=False)
         }
         img = data[36:]
+        return img, head_data
+
+    def cam_ext_info(self, msg):
+        """
+        TODO：摄像头临时添加接口数据采集
+        @param data:
+        @return:
+        """
+        msg = self.decode_data(msg)
+        data = msg["data"]
+        head_data = [
+            int.from_bytes(data[:4], byteorder='little', signed=False),                 # camera id
+            int.from_bytes(data[4:12], byteorder='little', signed=False),               # timestamp 时戳，microseconds
+            int.from_bytes(data[12:20], byteorder='little', signed=False),              # tick 异构设备上的时钟
+            int.from_bytes(data[20:28], byteorder='little', signed=False),              # frame id 帧号
+            int.from_bytes(data[28:36], byteorder='little', signed=False),              # time_exp_api
+            int.from_bytes(data[36:44], byteorder='little', signed=False),              # time_exp_start 开始曝光时间 ms
+            int.from_bytes(data[44:52], byteorder='little', signed=False),              # time_exp_end 结束曝光时间 ms
+            int.from_bytes(data[52:60], byteorder='little', signed=False),              # time_exp_trigger 曝光触发信号的时间 ms
+            int.from_bytes(data[60:68], byteorder='little', signed=False),              # exp_ratio 曝光比
+        ]
+        log = ""
+        for i in head_data:
+            log += "{} ".format(i)
+
+        timestamp = head_data[1] / 1000000
+        self.fileHandler.insert_raw(
+            (timestamp, "{}.{}.{}.{}".format(self.device, self.index, self.port_name, self.dbc), log.strip()))
+
+    def img_ext_info(self, msg):
+        """
+        额外的图像信息
+        Args:
+            msg:
+
+        Returns:
+
+        """
+        data = self.decode_data(msg)
+        pb = pb_dict["CameraFrameExtendedInfo"]
+        pb.ParseFromString(data)
+        msg = json_format.MessageToDict(pb, preserving_proto_field_name=True, including_default_value_fields=True)
+        log = ""
+        for i in msg.keys():
+            log += "{} ".format(msg[i])
+
+        timestamp = msg["fsync_gnss_sec"] + msg['fsync_gnss_nsec']/1000000000
+        self.fileHandler.insert_raw(
+            (timestamp, "{}.{}.{}.{}".format(self.device, self.index, self.port_name, self.topic), log.strip()))
+
+    def mdc_ts(self, msg):
+        data = self.decode_data(msg)
+        data = data['data']
+        ads_sec = int.from_bytes(data[:8], byteorder='little', signed=False),
+        ads_nsec = int.from_bytes(data[8:16], byteorder='little', signed=False),
+        gnss_sec = int.from_bytes(data[16:24], byteorder='little', signed=False),
+        gnss_nsec = int.from_bytes(data[24:32], byteorder='little', signed=False),
         timestamp = time.time()
+        # print(ads_sec, ads_nsec, gnss_sec, gnss_nsec)
+        # print("mdc_ts", "{} {} {} {}".format(ads_sec, ads_nsec, gnss_sec, gnss_nsec))
+        self.fileHandler.insert_raw((timestamp, "mdc_ts", "{} {} {} {}".format(ads_sec[0], ads_nsec[0], gnss_sec[0], gnss_nsec[0])))
+
+    def video_h265(self, msg):
+        data = self.decode_data(msg)
+        img, head_data = self.decode_video(data)
+        sec = head_data["send_time_high"]
+        nsec = head_data["send_time_low"]
+        timestamp = sec + nsec/1000000000
 
         if self.topic != "*":
             log_name = self.topic
         else:
             log_name = self.port_name
-        r = {"source": self.source, "log_name": log_name, "buf": img}
+        r = {
+            "source": self.source,
+            "log_name": log_name,
+            "buf": img,
+            "meta": {
+                "source": '{}.{}.{}.'.format(self.device, self.index, self.port_name),
+                "type": "video",
+                "parsers": [self.dbc]
+            }
+        }
         self.fileHandler.insert_general_bin_raw(r)
         self.fileHandler.insert_raw(
             (timestamp, "{}.{}.{}.{}".format(self.device, self.index, self.port_name, self.dbc), "{:d} {:d} {} {} {} {} {} {} {}".format(head_data["height"], head_data["width"], head_data["send_time_high"],
                                                                                                          head_data["send_time_low"], head_data["frame_type"], head_data["data_size"], head_data["seq"], head_data["sec"], head_data["nsec"])))
+
+    def video_jpeg(self, msg):
+        data = self.decode_data(msg)
+        img, head_data = self.decode_video(data)
+        r = {'ts': head_data['send_time_high']+head_data['send_time_low']/1000000000, 'img': img, 'frame_id': head_data['seq'],
+             'type': 'video', 'source': self.source, 'is_main': self.is_main, "is_back": self.is_back,
+             'transport': 'libflow', 'install': self.install_key,
+             "meta": {
+                 "source": '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, self.topic),
+                 "type": "video",
+                 "parsers": [self.dbc]
+             }
+        }
+        self.fileHandler.insert_jpg(r)
+        return head_data['seq'], r
 
     def mdc_data(self, msg):
         # Q3华为mdc算法数据
@@ -900,7 +1042,16 @@ class FlowSink(Sink):
                 r.update(calib_params)
                 return 'calib_param', r
         else:
-            r = {"source": self.source, "log_name": topic, "buf": payload}
+            r = {
+                "source": self.source,
+                "log_name": topic,
+                "buf": payload,
+                "meta": {
+                    "source": '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, topic),
+                    "type": self.msg_type,
+                    "parsers": [topic]
+                }
+            }
             self.fileHandler.insert_general_bin_raw(r)
             return
 
@@ -919,7 +1070,13 @@ class FlowSink(Sink):
                 return None
 
             r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
-                 'is_main': self.is_main, 'transport': 'libflow'}
+                 'is_main': self.is_main, 'is_back': self.is_back, 'transport': 'libflow', "install": self.install_key,
+                 'meta': {
+                     'source': 'camera' if self.is_main else self.source,
+                     'type': self.msg_type,
+                     'parsers': [self.topic]
+                 }
+                }
             self.fileHandler.insert_jpg(r)
             return frame_id, r
 
@@ -976,7 +1133,14 @@ class FlowSink(Sink):
                         return None
 
                     r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
-                         'is_main': self.is_main, 'transport': 'libflow'}
+                         'is_main': self.is_main, "is_back": self.is_back, 'transport': 'libflow',
+                         'install': self.install_key,
+                         'meta': {
+                             'source': 'camera' if self.is_main else self.source,
+                             'type': self.msg_type,
+                             'parsers': [topic]
+                         }
+                    }
                     self.fileHandler.insert_jpg(r)
                     return frame_id, r
                 else:
@@ -992,7 +1156,14 @@ class FlowSink(Sink):
                     return None
 
                 r = {'ts': ts, 'img': jpg, 'frame_id': frame_id, 'type': 'video', 'source': self.source,
-                     'is_main': self.is_main, 'transport': 'libflow'}
+                     'is_main': self.is_main, "is_back": self.is_back, 'transport': 'libflow',
+                     'install': self.install_key,
+                     'meta': {
+                         'source': 'camera' if self.is_main else self.source,
+                         'type': self.msg_type,
+                         'parsers': [topic]
+                     }
+                }
                 self.fileHandler.insert_jpg(r)
                 return frame_id, r
             elif topic == 'calib_params':
@@ -1004,7 +1175,17 @@ class FlowSink(Sink):
                     return 'calib_param', r
         elif msg_src == 'lane_profiling':
             if topic == 'lane_profiling_data':
-                r = {'type': 'algo_debug', 'source': self.source, 'log_name': self.name, 'buf': payload}
+                r = {
+                    'type': 'algo_debug',
+                    'source': self.source,
+                    'log_name': self.name,
+                    'buf': payload,
+                    'meta': {
+                        'source': self.source,
+                        'type': self.msg_type,
+                        'parsers': [topic]
+                    }
+                }
                 self.fileHandler.insert_general_bin_raw(r)
                 return 'algo_debug', r
         elif msg_src == 'imu':
@@ -1062,8 +1243,8 @@ class FlowSink(Sink):
 
 class ProtoSink(NNSink):
     def __init__(self, ip, port, msg_type, index, fileHandler, name='proto',
-                 log_name='proto_log', topic='pcview', mq=None):
-        super().__init__(ip, port, msg_type, index, mq=mq)
+                 log_name='proto_log', topic='pcview', mq=None, sq=None):
+        super().__init__(ip, port, msg_type, index, mq=mq, sq=sq)
         self.fileHandler = fileHandler
         self.ip = ip
         self.port = port
@@ -1076,12 +1257,10 @@ class ProtoSink(NNSink):
             # "vehicle": vehicle_pb2.Vehicle,
             "pedestrian": pedestrian_pb2.Pedestrian,
             "roadmarking": roadmarking_pb2.Roadmarking,
-            "object_attribute": object_attribute_pb2.Box3DGroup,
             "vehicle": object_pb2.ObjectList,
             "ped": object_pb2.ObjectList,
             "calib_param": calib_param_pb2.CalibParam,
             "tsr": object_pb2.ObjectList,
-            "dev_object": dev_object_pb2.DevObjectList,
             "vehicle_signal": vehicle_signal_pb2.VehicleSignal,
             "obs": object_pb2.ObjectList
         }
