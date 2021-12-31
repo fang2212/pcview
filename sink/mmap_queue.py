@@ -20,6 +20,7 @@ class MMAPQueue:
 
     def put(self, msg, block=True):
         data = pickle.dumps(msg)
+        data = data + b'$MMAPEND$'
         content = len(data).to_bytes(4, byteorder='big') + data
         content_len = len(content)
         while block and self.count.value + content_len > self.mmap_size:
@@ -39,9 +40,18 @@ class MMAPQueue:
                 return
 
         before_head = self.head.value
+        end_index = self.find(b'$MMAPEND$')
+        if end_index == -1:
+            raise IndexError("未找到结尾数据 MMAPQueue出现异常")
+        content_len = self.long(self.head.value, end_index) + 4    # len(b'$MMAPEND$')=9 len(header_info)=4 read_index + end_index + 9 - 1 - 4
+
         self.lock.acquire()
         head_info = self.remove(4, locking=True)      # 获取数据长度
         data_len = int.from_bytes(head_info, byteorder='big')
+        if content_len != data_len:
+            logger.error("content 长度 != head_info长度 content len:{} head_len:{}".format(content_len, data_len))
+            data_len = content_len
+        # print(f"offset:{content_len - data_len} content len:{content_len} data_len:{data_len}")
         msg = self.remove(data_len, locking=True)
         self.lock.release()
         try:
@@ -49,7 +59,8 @@ class MMAPQueue:
             return data
         except Exception as e:
             logger.error("开始位置：{}, 准备取数据长度：{}, 取到的数据长度：{}, 数据内容：{}".format(before_head, data_len, len(msg), f'{msg[:30]}...{msg[-30:]}' if len(msg) > 100 else msg))
-            raise ValueError("无法正常解析数据 MMAPQueue出现异常")
+            logger.error("无法正常解析数据 MMAPQueue出现异常")
+            return
 
     def write(self, content):
         if self.count.value + len(content) > self.mmap_size:
@@ -140,6 +151,7 @@ class MMAPQueue:
         self.mmap.seek(self.head.value)
         find_index = self.mmap.find(content)
         if find_index == -1:
+            # 如果从队列头开始到内存空间结尾都没找到，进行拼接后循环数据查找
             content_len = len(content)
             bytes_str = self.mmap[-content_len:]
             bytes_str += self.mmap[:content_len]
