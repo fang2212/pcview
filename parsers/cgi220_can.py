@@ -19,6 +19,7 @@ def parse_cgi220pro(id, buf, ctx=None):
         week = r['RawIMU_GpsWeek']
         tow = r['RawIMU_GpsTime']
         imu['ts'] = week * 604800.0 + tow + 315964800.0 - bds_offset
+
         imu['gyro_x'] = r['RawIMU_GyroX']
         imu['gyro_y'] = r['RawIMU_GyroY']
         imu['gyro_z'] = r['RawIMU_GyroZ']

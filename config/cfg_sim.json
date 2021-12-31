@@ -13,7 +13,8 @@
             "enable": true,
             "collectors": [
                 {"model": "x1_fusion", "params": {"mac": "5a:31:6e:f3:dd:83", "is_main": true}},
-                {"model": "can_gw_mqtt", "params": {"can1": "a1j","can2": "ars","can3": "a1j", "can4":"a1j", "can5": "ars410", "can6": "ars410", "can7": "ars410"}}
+                {"model": "can_gw_mqtt", "params": {"can1": "a1j","can2": "ars","can3": "a1j", "can4":"a1j", "can5": "ars410", "can6": "ars410", "can7": "ars410"}},
+                {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d0", "can0": "d1_fusion", "can1": "ars410"}}
 
             ],
             "installation": {
