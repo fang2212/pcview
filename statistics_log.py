@@ -197,6 +197,17 @@ class Statistics:
                                     cfg.get('origin_device', cfg['ports'][i].get('origin_device')), idx, i, t)
                                 if self.config.get(t):
                                     self.config[can_key] = self.config.get(t)
+                    else:
+                        msg_type = cfg['ports'][i].get('dbc') or cfg['ports'][i].get('topic')
+                        if isinstance(msg_type, list):
+                            topic = msg_type
+                        else:
+                            topic = [msg_type]
+                        for t in topic:
+                            log_key = '{}.{}.{}.{}'.format(
+                                cfg.get('origin_device', cfg['ports'][i].get('origin_device')), idx, i, t)
+                            if self.config.get(t):
+                                self.config[log_key] = self.config.get(t)
 
             logger.debug(self.config)
             logger.debug(self.topic_map)

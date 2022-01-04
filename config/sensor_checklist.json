@@ -160,6 +160,10 @@
         "type": "keyword",
         "cycle": 20
     },
+    "video_h265": {
+        "type": "keyword",
+        "cycle": 30
+    },
     "x1_collector.7": {
         "type": "keyword",
         "cycle": 30,

@@ -871,7 +871,7 @@ class FlowSink(Sink):
         try:
             self.client.run_until_complete(self._run())
         except Exception as e:
-            logger.error(f'error when initiating flow sink on {self.ip}:{self.port}, {e}')
+            logger.error(f'error when initiating flow sink on {self.ip}:{self.port} topic:{self.topic}, {e}')
 
     def decode_data(self, msg):
         # 判断是否新的a1j设备，如果是新a1j设备的话不需要进行解码处理
