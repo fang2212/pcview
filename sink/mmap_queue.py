@@ -11,22 +11,29 @@ class MMAPQueue:
 
     def __init__(self, size):
         self.mmap = mmap.mmap(-1, size, access=os.O_RDWR)       # mmap内存对象
-        self.head = Value('L', 0)       # 头指针
-        self.tail = Value('L', 0)       # 尾指针
-        self.mmap_size = size                # 队列大小
-        self.count = Value('L', 0)      # 数据大小
+        self.head = Value('L', 0)           # 头指针
+        self.tail = Value('L', 0)           # 尾指针
+        self.mmap_size = size               # 队列大小
+        self.count = Value('L', 0)          # 队列中已写字节量
         self.lock = Lock()
-        self.queue_size = Value('L', 0)     # 队列数据数量
+        self.queue_size = Value('L', 0)     # 队列消息数量
+
+        self.msg_end_tag = b'$MMAPEND$'     # 消息结尾标记
+        self.msg_end_tag_len = len(self.msg_end_tag)    # 消息结尾标记长度
 
     def put(self, msg, block=True):
         data = pickle.dumps(msg)
-        data = data + b'$MMAPEND$'
-        content = len(data).to_bytes(4, byteorder='big') + data
+        data_len_info = len(data).to_bytes(4, byteorder='big')
+        content = data_len_info + data + data_len_info + self.msg_end_tag       # 完整的消息组成：内容长度(4byte)+内容+内容长度(4byte)+结尾标记
         content_len = len(content)
+
         while block and self.count.value + content_len > self.mmap_size:
-            # print("full sleep")
             time.sleep(0.001)
-        return self.write(content)
+
+        self.lock.acquire()
+        write_result = self.write(content)
+        self.lock.release()
+        return write_result
 
     def get(self, block=True, time_out=None):
         if self.count.value == 0:
@@ -40,13 +47,19 @@ class MMAPQueue:
                 return
 
         self.lock.acquire()
-        before_head = self.head.value
-        end_index = self.find(b'$MMAPEND$')
-        if end_index == -1:
-            raise IndexError("未找到结尾数据 MMAPQueue出现异常")
-        content_len = self.long(self.head.value, end_index) + 4    # len(b'$MMAPEND$')=9 len(header_info)=4 read_index + end_index + 9 - 1 - 4
-        head_info = self.remove(4, locking=True)      # 获取数据长度
-        data_len = int.from_bytes(head_info, byteorder='big')
+        # before_head = self.head.value
+        # end_index = self.find(b'$MMAPEND$')
+        # if end_index == -1:
+        #     raise IndexError("未找到结尾数据 MMAPQueue出现异常")
+        # content_len = self.long(self.head.value, end_index) + 4    # len(b'$MMAPEND$')=9 len(header_info)=4 read_index + end_index + 9 - 1 - 4
+        head_info = self.remove(4)      # 获取消息头部数据（消息长度）
+        data_len_head = int.from_bytes(head_info, byteorder='big')
+        msg = self.remove(data_len_head)
+        end_info = self.remove(4)
+        data_len_end = int.from_bytes(end_info, byteorder='big')
+        if data_len_head != data_len_end:
+            logger.error("head info not equal to end info, head info:{} end info:{}".format(data_len_head, data_len_end))
+
         if content_len != data_len:
             logger.error("content 长度 != head_info长度 content len:{} head_len:{}".format(content_len, data_len))
             data_len = content_len
@@ -62,69 +75,63 @@ class MMAPQueue:
             return
 
     def write(self, content):
-        if self.count.value + len(content) > self.mmap_size:
-            # print("mmap queue full")
-            # print("full", self.mmap[:])
+        write_len = len(content)
+        if self.count.value + write_len > self.mmap_size:
             return False
+
+        if self.tail.value + write_len >= self.mmap_size:
+            end_num = (self.tail.value + write_len) % self.mmap_size
+            front_num = write_len - end_num
+
+            self.mmap.seek(self.tail.value)
+            self.mmap.write(content[:front_num])
+            self.mmap.seek(0)
+            self.mmap.write(content[front_num:])
+            self.tail.value = end_num
         else:
-            write_len = len(content)
-            self.lock.acquire()
-            if self.tail.value + write_len >= self.mmap_size:
-                end_num = (self.tail.value + write_len) % self.mmap_size
-                front_num = write_len - end_num
+            self.mmap.seek(self.tail.value)
+            self.mmap.write(content)
+            self.tail.value += write_len
+        self.queue_size.value += 1
+        self.count.value += write_len
 
-                self.mmap.seek(self.tail.value)
-                self.mmap.write(content[:front_num])
-                self.mmap.seek(0)
-                self.mmap.write(content[front_num:])
-                self.tail.value = end_num
-            else:
-                self.mmap.seek(self.tail.value)
-                self.mmap.write(content)
-                self.tail.value += write_len
-            self.queue_size.value += 1
-            self.count.value += len(content)
-            self.lock.release()
-            # print("put tail:{} count:{} len:{}".format(self.tail.value, self.count.value, write_len))
-            # print(self.mmap[:])
-            return True
+        return True
 
-    def remove(self, num, locking=False):
+    def remove(self, num):
         if self.count.value <= 0:
-            # print("mmap queue empty")
             return False
         else:
-            if not locking:
-                self.lock.acquire()
             if num > self.count.value:
-                print("lost data, num:{}, count:{}".format(num, self.count.value))
+                logger.error("lost data, num:{}, count:{}".format(num, self.count.value))
                 num = self.count.value
             if self.head.value + num >= self.mmap_size:     # 获取长度超出循环，进行模运算获取剩余数据的数量
-                end_num = (self.head.value + num) % self.mmap_size
+                end_num = (self.head.value + num - 1) % self.mmap_size
                 content = self.mmap[self.head.value:]
-                # self.mmap.seek(self.head.value)
-                # for i in content:
-                #     self.mmap.write(b'*')
-                content += self.mmap[:end_num]
-                # self.mmap.seek(0)
-                # for i in range(end_num):
-                #     self.mmap.write(b'*')
+                if end_num > 0:
+                    content += self.mmap[:end_num]
                 self.head.value = end_num
-                # print(content)
             else:
                 content = self.mmap[self.head.value:self.head.value+num]
-                # self.mmap.seek(self.head.value)
-                # for i in content:
-                #     self.mmap.write(b'*')
                 self.head.value += num
-                # print(content)
+                if self.head.value == self.mmap_size - 1:
+                    self.head.value = 0
             self.count.value -= num
             self.queue_size.value -= 1
-            if not locking:
-                self.lock.release()
-            # print("get head:{} count:{} len:{}".format(self.head.value, self.count.value, num))
-            # print(self.mmap[:])
             return content
+
+    def reset(self, num):
+        """
+        回滚固定长度的数据
+        @param num:
+        @return:
+        """
+        if self.full():
+            return
+        if self.count.value + num > self.mmap_size:
+            return
+
+        if self.head.value - num < 0:
+            end_num =
 
     def full(self):
         return self.count.value >= self.mmap_size
