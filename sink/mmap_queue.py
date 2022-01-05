@@ -2,7 +2,7 @@ import mmap
 import os
 import time
 import pickle
-from multiprocessing import Value, Lock
+from multiprocessing import Value, Lock, Process
 
 from utils import logger
 
@@ -27,31 +27,37 @@ class MMAPQueue:
         content = data_len_info + data + data_len_info + self.msg_end_tag       # 完整的消息组成：内容长度(4byte)+内容+内容长度(4byte)+结尾标记
         content_len = len(content)
 
-        while block and self.count.value + content_len > self.mmap_size:
-            time.sleep(0.001)
-
         self.lock.acquire()
+        while block and self.count.value + content_len > self.mmap_size:
+            self.lock.release()
+            time.sleep(0.001)
+            self.lock.acquire()
+
         write_result = self.write(content)
         self.lock.release()
         return write_result
 
     def get(self, block=True, time_out=None):
+        self.lock.acquire()
         if self.count.value == 0:
             if block:       # 是否阻塞
                 st = time.time()
                 while self.count.value == 0:
                     if time_out and time.time() - st < time_out:  # 是否设置超时时间
+                        self.lock.release()
                         return
+                    self.lock.release()
+                    print("get sleep")
                     time.sleep(0.001)
+                    self.lock.acquire()
             else:
+                self.lock.release()
                 return
 
-        self.lock.acquire()
         # 保存队列索引
         before_head = self.head.value
         before_count = self.count.value
         before_queue_size = self.queue_size.value
-
         head_info = self.remove(4)      # 获取消息头部数据（消息长度）
         data_len_head = int.from_bytes(head_info, byteorder='big')
         msg = self.remove(data_len_head)
@@ -134,7 +140,7 @@ class MMAPQueue:
         return self.count.value == 0
 
     def size(self):
-        return self.count
+        return self.count.value
 
     def qsize(self):
         return self.queue_size.value
@@ -189,20 +195,52 @@ if __name__ == "__main__":
     m = MMAPQueue(500)
     n = 0
 
-    while True:
-        if n % 2 == 0:
-            m.put(b'abc', block=False)
-        m.put(b'1234', block=False)
-        msg = m.get()
-        if msg:
-            content = m.mmap[:]
-            # print(content)
-            print('get:', msg, "head:", m.head.value, "tail:", m.tail.value, "count:", m.count.value)
+    class Test(Process):
 
-        # m.get(3)
-        print("operation：", n)
-        n += 1
-        if n > 1000:
-            break
-        # if not m.get(2):
-        #     break
+        def __init__(self, mp, k=None):
+            super(Test, self).__init__()
+            self.mp = mp
+            self.k = k
+
+        def run(self) -> None:
+            st = time.time()
+            num = 0
+            while time.time() - st < 20:
+                if self.k:
+                    self.mp.put(f"{self.k} num:{num}")
+                else:
+                    self.mp.get()
+                #     print("get:", self.mp.get(), "count:", self.mp.size())
+                time.sleep(0.001)
+                num += 1
+            print("{} is end".format(self.k))
+
+    p_list = []
+    for i in range(8):
+        if i > 1:
+            p_list.append(Test(m))
+        else:
+            p_list.append(Test(m, k="from p:{}".format(i)))
+
+    for p in p_list:
+        p.start()
+
+    #
+    #
+    # while True:
+    #     if n % 2 == 0:
+    #         m.put(b'abc', block=False)
+    #     m.put(b'1234', block=False)
+    #     msg = m.get()
+    #     if msg:
+    #         content = m.mmap[:]
+    #         # print(content)
+    #         print('get:', msg, "head:", m.head.value, "tail:", m.tail.value, "count:", m.count.value)
+    #
+    #     # m.get(3)
+    #     print("operation：", n)
+    #     n += 1
+    #     if n > 1000:
+    #         break
+    #     # if not m.get(2):
+    #     #     break
