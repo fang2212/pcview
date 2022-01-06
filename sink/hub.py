@@ -55,7 +55,7 @@ class Hub(Thread):
     """
     信号接受进程
     """
-    def __init__(self, uniconf=None, decode_queue=None, result_queue=None):
+    def __init__(self, uniconf=None):
         Thread.__init__(self)
         self.exit = False
         self.setName('hub_thread')
