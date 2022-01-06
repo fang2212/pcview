@@ -45,8 +45,8 @@ class MMAPQueue:
                     time.sleep(0.001)
             else:
                 return
-
         self.lock.acquire()
+
         # 保存队列索引
         before_head = self.head.value
         before_count = self.count.value
@@ -54,7 +54,8 @@ class MMAPQueue:
         head_info = self.remove(4)      # 获取消息头部数据（消息长度）
         data_len_head = int.from_bytes(head_info, byteorder='big')
         msg = self.remove(data_len_head)
-        end_info = self.remove(4)
+        end_info = self.remove(4+self.msg_end_tag_len)
+        end_info = end_info[:4]
         if head_info != end_info:
             # 如果头尾保存的数据长度信息不一致，则以结尾标记的方式去寻找
             logger.error("head info not equal to end info, head info:{} end info:{}".format(head_info, end_info))
@@ -70,7 +71,7 @@ class MMAPQueue:
             msg = self.remove(content_len)
             msg = msg[4:-(self.msg_end_tag_len + 4)]        # 去除头尾信息
         else:
-            self.remove(self.msg_end_tag_len)       # 跳过结尾标记数据
+            # self.remove(self.msg_end_tag_len)       # 跳过结尾标记数据
             content_len = data_len_head
 
         self.queue_size.value -= 1
@@ -198,19 +199,28 @@ if __name__ == "__main__":
         def run(self) -> None:
             st = time.time()
             num = 0
+            all_ts = 0
+            ts_num = 0
+
             while time.time() - st < 20:
                 if self.k:
-                    self.mp.put(f"{self.k} num:{num}")
+                    self.mp.put(f"{self.k} num:{num}", block=False)
+                    # time.sleep(0.001)
                 else:
+                    now = time.time()
                     self.mp.get()
-                #     print("get:", self.mp.get(), "count:", self.mp.size())
-                time.sleep(0.001)
+                    # print("get:", self.mp.get(block=False), "count:", self.mp.size())
+                    diff = now -st
+                    all_ts += diff
+                    ts_num += 1
+                    print(all_ts/ts_num, self.mp.size())
+                    st = now
                 num += 1
             print("{} is end".format(self.k))
 
     p_list = []
-    for i in range(8):
-        if i > 1:
+    for i in range(9):
+        if i < 1:
             p_list.append(Test(m))
         else:
             p_list.append(Test(m, k="from p:{}".format(i)))

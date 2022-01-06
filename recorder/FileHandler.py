@@ -232,10 +232,10 @@ class FileHandler(Process):
                 now_fps = 20
                 if self.video_streams[source].get('video_writer'):
                     self.video_streams[source]['video_writer'].finish_video()
-                print("fps:", now_fps)
+                logger.warning("fps:{}".format(now_fps))
                 self.video_streams[source]['video_writer'] = MJPEGWriter(video_path, w, h, now_fps)
                 self.video_streams[source]['video_writer'].write_header()
-                print("video start over.", self.video_streams[source]['frame_cnt'], video_path)
+                logger.warning(f"video start over. {self.video_streams[source]['frame_cnt']} {video_path} type:jpeg")
 
                 if msg.get("meta"):
                     self.meta = self.d['meta']
@@ -247,6 +247,7 @@ class FileHandler(Process):
                     self.d['meta'] = self.meta
                     self.save_meta()
 
+            logger.warning(f"save fid:{frame_id} save cnt:{self.video_streams[source]['frame_cnt']}")
             self.video_streams[source]['video_writer'].write_frame(data)
             self.write_video_log(msg)
             self.video_streams[source]['frame_cnt'] += 1
@@ -284,7 +285,7 @@ class FileHandler(Process):
                                           self.video_streams[source]['video_name'])
                 relative_path = os.path.join(self.video_streams[source]['video_relative_path'],
                                              self.video_streams[source]['video_name'])
-                print("video start over.", self.video_streams[source]['frame_cnt'], video_path)
+                logger.warning(f"video start over. {self.video_streams[source]['frame_cnt']} {video_path} type:video")
 
                 if msg.get("meta"):
                     self.meta = self.d['meta']
