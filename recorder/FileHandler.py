@@ -143,7 +143,6 @@ class FileHandler(Process):
                 self.start_rec()
 
             msg = self.mq.get(block=False)
-            print(self.mq.qsize())
             if not msg:
                 time.sleep(0.01)
                 continue
