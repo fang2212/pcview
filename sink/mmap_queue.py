@@ -21,16 +21,18 @@ class MMAPQueue:
         self.msg_end_tag = b'$END$'     # 消息结尾标记
         self.msg_end_tag_len = len(self.msg_end_tag)    # 消息结尾标记长度
 
-    def put(self, msg, block=False):
+    def put(self, msg, block=True):
         data = pickle.dumps(msg)
         data_len_info = len(data).to_bytes(4, byteorder='big')
         content = data_len_info + data + data_len_info + self.msg_end_tag       # 完整的消息组成：内容长度(4byte)+内容+内容长度(4byte)+结尾标记
         content_len = len(content)
 
-        while block and self.count.value + content_len > self.mmap_size:
-            time.sleep(0.001)
-
         self.lock.acquire()
+        while block and self.count.value + content_len > self.mmap_size:
+            self.lock.release()
+            time.sleep(0.001)
+            self.lock.acquire()
+
         write_result = self.write(content)
         self.lock.release()
         return write_result
@@ -46,6 +48,9 @@ class MMAPQueue:
             else:
                 return
         self.lock.acquire()
+        if self.count.value == 0:
+            self.lock.release()
+            return
 
         # 保存队列索引
         before_head = self.head.value

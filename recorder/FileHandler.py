@@ -143,6 +143,7 @@ class FileHandler(Process):
                 self.start_rec()
 
             msg = self.mq.get(block=False)
+            print(self.mq.qsize())
             if not msg:
                 time.sleep(0.01)
                 continue
@@ -171,7 +172,7 @@ class FileHandler(Process):
             tv_us = (timestamp - tv_s) * 1000000
             log_line = "%.10d %.6d " % (tv_s, tv_us) + log_type + ' ' + data + "\n"
             self.log_fp.write(log_line)
-            if log_type not in self.d['meta'] and log_type in self.can_map:
+            if log_type not in self.meta['signals'] and log_type in self.can_map:   # tip: 这里不要直接用self.d['meta']['signals']判断，会消耗额外的性能
                 self.meta = self.d['meta']
                 self.meta['signals'][log_type] = self.can_map[log_type]
                 self.d['meta'] = self.meta
@@ -238,19 +239,19 @@ class FileHandler(Process):
                 logger.warning(f"video start over. {self.video_streams[source]['frame_cnt']} {video_path} type:jpeg")
 
                 if msg.get("meta"):
-                    self.meta = self.d['meta']
                     meta = msg['meta']
                     if not self.meta['signals'].get(meta['source']):
+                        self.meta = self.d['meta']
                         self.meta['signals'][meta['source']] = {'type': meta['type'], "parsers": meta['parsers'], "paths": [relative_path]}
                     else:
                         self.meta['signals'][meta['source']]['paths'].append(relative_path)
                     self.d['meta'] = self.meta
                     self.save_meta()
 
-            logger.warning(f"save fid:{frame_id} save cnt:{self.video_streams[source]['frame_cnt']}")
             self.video_streams[source]['video_writer'].write_frame(data)
             self.write_video_log(msg)
             self.video_streams[source]['frame_cnt'] += 1
+            # print(f"save fid:{frame_id} save cnt:{self.video_streams[source]['frame_cnt']}")
 
     def record_video_log(self, msg):
         if self.save_path:
