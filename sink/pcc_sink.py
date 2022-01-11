@@ -1242,13 +1242,15 @@ class FlowSink(Sink):
 
 
 class ProtoSink(NNSink):
-    def __init__(self, ip, port, msg_type, index, fileHandler, name='proto',
-                 log_name='proto_log', topic='pcview', mq=None, sq=None):
+    def __init__(self, ip, port, msg_type, index, fileHandler, name='proto', device="", port_name="proto_log",
+                 topic='pcview', mq=None, sq=None):
         super().__init__(ip, port, msg_type, index, mq=mq, sq=sq)
         self.fileHandler = fileHandler
         self.ip = ip
         self.port = port
-        self.log_name = log_name
+        self.port_name = port_name
+        self.device = device
+        self.log_name = topic
         self.type = 'prote_sink'
         self.topic = topic
         self.source = name + '.{:d}'.format(index)
@@ -1264,6 +1266,12 @@ class ProtoSink(NNSink):
             "vehicle_signal": vehicle_signal_pb2.VehicleSignal,
             "obs": object_pb2.ObjectList
         }
+
+        if self.topic == "roadmarking":
+            if self.port == 24020:
+                self.log_name = "roadmarking_front"
+            elif self.port == 24021:
+                self.log_name = "roadmarking_rear"
 
     async def _run(self):
         print("ProtoSink Initialized", self.ip, self.port, self.topic)
@@ -1300,7 +1308,6 @@ class ProtoSink(NNSink):
 
     def pkg_handler(self, msg):
         data = msgpack.unpackb(msg.data)
-        # print('-----', data[b'topic'])
         if b'data' in data:
             payload = data[b'data']
             topic = data[b'topic'].decode()
@@ -1309,6 +1316,20 @@ class ProtoSink(NNSink):
             topic = data['topic']
         else:
             return
+
+        source = '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, topic)
+        r = {
+            "source": self.source,
+            "log_name": self.log_name,
+            "buf": payload,
+            "meta": {
+                "source": source,
+                "type": self.msg_type,
+                "parsers": [topic]
+            }
+        }
+        self.fileHandler.insert_general_bin_raw(r)
+        self.fileHandler.insert_raw((time.time(), source, str(len(payload))))
 
         if topic in self.key_pb:
             pb = self.key_pb.get(topic)
@@ -1322,6 +1343,7 @@ class ProtoSink(NNSink):
                 frame_id = v.frame_id
             try:
                 data = json_format.MessageToDict(v, preserving_proto_field_name=True)
+
                 self.fileHandler.insert_pcv_raw(
                     {"source": self.source, "frame_id": frame_id, "type": topic, topic: data,
                      "rec_ts": time.time()})

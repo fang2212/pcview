@@ -165,7 +165,7 @@ class Hub(Thread):
                     if cfg.get('mac', '').lower() == mac.lower():
                         ip_type = "{}@{}".format(ip, cfg['type'])
                         if ip_type not in self.online:
-                            logger.warning("init new collector:{}".format(cfg))
+                            logger.warning("init new collector:{} {}".format(ip_type, cfg))
                             self.init_collector(cfg)
             time.sleep(3)
         logger.warning('{} pid:{}'.format("HUB exit".ljust(20), os.getpid()))
@@ -227,7 +227,8 @@ class Hub(Thread):
                                     mq=self.mq, save_type=cfg['ports'][item].get("save"), install_key=install_key)
                 elif transport == "protoflow":
                     sink = ProtoSink(ip=ip, port=port, msg_type=item, index=idx, fileHandler=self.fileHandler,
-                                     name=cfg.get("type"), topic=topic, log_name=item, mq=self.mq, sq=self.sq)
+                                     name=cfg.get("type"), topic=topic, mq=self.mq, sq=self.sq,
+                                     device=device, port_name=port_name)
                 else:
                     return
                 self.sinks.append(sink)

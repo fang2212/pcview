@@ -77,13 +77,6 @@
       "topic": "*",
       "idx": 7
     },
-    "imu_infos": {
-      "enable": true,
-      "port": 24020,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "*"
-    },
     "proto": {
       "enable": true,
       "port": 24030,
@@ -213,6 +206,22 @@
       "protocol": "msgpack",
       "topic": "gnsspos,gnssvel,haflocation,imu,ins,node_info_ins,node_info_wo,node_info_vio,vehicle_signal,amap_local",
       "save": "bin"
+    },
+    "roadmarking_front": {
+      "enable": true,
+      "port": 24020,
+      "origin_device": "mdc",
+      "transport": "protoflow",
+      "protocol": "proto",
+      "topic": "roadmarking"
+    },
+    "roadmarking_rear": {
+      "enable": true,
+      "port": 24021,
+      "origin_device": "mdc",
+      "transport": "protoflow",
+      "protocol": "proto",
+      "topic": "roadmarking"
     }
   }
 }
