@@ -1250,7 +1250,7 @@ class ProtoSink(NNSink):
         self.port = port
         self.port_name = port_name
         self.device = device
-        self.log_name = topic
+        self.log_name = None
         self.type = 'prote_sink'
         self.topic = topic
         self.source = name + '.{:d}'.format(index)
@@ -1320,7 +1320,7 @@ class ProtoSink(NNSink):
         source = '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, topic)
         r = {
             "source": self.source,
-            "log_name": self.log_name,
+            "log_name": self.log_name or topic,
             "buf": payload,
             "meta": {
                 "source": source,
