@@ -78,7 +78,7 @@ class Hub(Thread):
         self.sinks = []
 
         self.nodes = []
-        self.nodes_num = 4
+        self.nodes_num = 6
 
         self.network = self.uniconf.runtime['modules'].get('network') or '192.168.98.0/24'
         self.finder = CollectorFinder(self.network)

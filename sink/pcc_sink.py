@@ -1317,19 +1317,20 @@ class ProtoSink(NNSink):
         else:
             return
 
-        source = '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, topic)
-        r = {
-            "source": self.source,
-            "log_name": self.log_name or topic,
-            "buf": payload,
-            "meta": {
-                "source": source,
-                "type": self.msg_type,
-                "parsers": [topic]
+        if topic == "roadmarking":
+            source = '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, topic)
+            r = {
+                "source": self.source,
+                "log_name": self.log_name or topic,
+                "buf": payload,
+                "meta": {
+                    "source": source,
+                    "type": self.msg_type,
+                    "parsers": [topic]
+                }
             }
-        }
-        self.fileHandler.insert_general_bin_raw(r)
-        self.fileHandler.insert_raw((time.time(), source, str(len(payload))))
+            self.fileHandler.insert_general_bin_raw(r)
+            self.fileHandler.insert_raw((time.time(), source, str(len(payload))))
 
         if topic in self.key_pb:
             pb = self.key_pb.get(topic)

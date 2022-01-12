@@ -21,8 +21,8 @@ parser.add_argument('cfg_path', nargs='?', default='config/cfg_lab.json')
 parser.add_argument('-o', '--output', default=None, help="保存路径")
 parser.add_argument('-d', '--debug', action="store_true", help="调试模式，可看调试信息")
 parser.add_argument('-c', '--config', default=None)
-parser.add_argument('-a', '--auto', help='auto recording', action="store_true")
 parser.add_argument('-w', '--web', help='web ui', action="store_true")
+parser.add_argument('-r', help='启动自动录制', action="store_true")
 parser.add_argument('-da', '--draw_algo', help='show algo data', action="store_true")
 parser.add_argument('--show_back', default="auto", help="是否显示后视图像，可选参数：auto、yes、no，默认：auto")
 
@@ -123,7 +123,7 @@ if args.web:  # 网页版启动方式
 
     # 初始化信号加载进程
     hub = Hub(uniconf=cve_conf)
-    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server, draw_algo=args.draw_algo, show_back=show_back)
+    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=args.r, to_web=server, draw_algo=args.draw_algo, show_back=show_back)
     pcc_thread = Thread(target=pcc.start, name='pcc_thread')
     hub.start()
 
@@ -147,7 +147,7 @@ if args.web:  # 网页版启动方式
                 elif ctrl.get('cmd') == 'reset':
                     pcc.control(ord('q'))
                     # hub = Hub(uniconf=cve_conf)
-                    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=False, to_web=server)
+                    pcc = PCC(hub, ipm=True, replay=False, uniconf=cve_conf, auto_rec=args.r, to_web=server)
                     pcc_thread = Thread(target=pcc.start, name='pcc_thread')
                     pcc_thread.start()
                 elif ctrl.get('cmd') == 'respawn':
@@ -199,7 +199,7 @@ if args.web:  # 网页版启动方式
 
 else:  # normal standalone PCC
     logger.warning('{} pid:{}'.format("PCC: normal".ljust(20), os.getpid()))
-    if args.auto:
+    if args.r:
         auto_rec = True
     else:
         auto_rec = False
