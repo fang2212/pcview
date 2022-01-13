@@ -15,6 +15,15 @@
       "dbc": "video_h265",
       "topic": "camera_front",
       "idx": 1
+    },
+    "video2": {
+      "enable": true,
+      "port": 26012,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "dbc": "video_h265",
+      "topic": "camera_back",
+      "idx": 2
     }
   }
 }

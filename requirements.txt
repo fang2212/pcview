@@ -24,4 +24,5 @@ paho-mqtt
 nnpy
 colorlog
 pybind11
-
+GitPython
+future_fstrings
