@@ -153,7 +153,7 @@ class Statistics:
             os.makedirs(self.save_path)
 
         # 初始化表头
-        excel_header = ["名称", "id", "统计量", '平均间隔', '最小间隔', '最大间隔', '间隔标准差', "周期(ms)", "高于周期系数(%)", "高占比(%)", "低于周期系数(%)", "低占比(%)"]
+        excel_header = ["名称", "id", "统计量", '掉线时长(s)', '平均间隔', '最小间隔', '最大间隔', '间隔标准差', "周期(ms)", "高于周期系数(%)", "高占比(%)", "低于周期系数(%)", "低占比(%)"]
         for i, h in enumerate(excel_header):
             self.excel_ws.cell(column=i + 1, row=self.excel_row_pos, value=h)
         self.excel_row_pos += 1
@@ -284,7 +284,7 @@ class Statistics:
             "ts": ts,
             "name": can_data[2],
             "id": can_data[3],
-            "interval": self.config[can_data[2]].get("interval")
+            "interval": self.config[can_data[2]].get("cycle")
         }
 
         # 更新CAN数据表
@@ -319,7 +319,7 @@ class Statistics:
         data = {
             "ts": ts,
             "name": other_data[2],
-            "interval": self.config[other_data[2]].get("interval")
+            "interval": self.config[other_data[2]].get("cycle")
         }
 
         # 更新设备数据表
@@ -422,6 +422,7 @@ class Statistics:
             interval_chart_list = []
             timestamp_list = []
             prev_timestamp = 0
+            lost_time = 0
             for data in can_id_data:
                 timestamp_list.append(data.get("ts"))
                 interval = data.get("interval")
@@ -435,6 +436,8 @@ class Statistics:
 
                 if interval:
                     interval = 1 / interval
+                    if time_interval > interval * 5:    # 如果大于5倍周期视为掉线，进行统计掉线时长
+                        lost_time += time_interval
                     if time_interval <= interval:
                         time_interval = avg_interval
 
@@ -477,7 +480,7 @@ class Statistics:
             timestamp_list = [i-self.log_camera_start_ts for i in timestamp_list]
 
             # 写入到表格对象中
-            col_data = [topic or self.topic_map.get(name, name), can_id_data[0].get('id', ""), data_count, int(avg_interval*1000), int(min_interval*1000), int(max_interval*1000), int(std_interval*1000), cycle_num, height_per, height_per_count, low_per, low_per_count]
+            col_data = [topic or self.topic_map.get(name, name), can_id_data[0].get('id', ""), data_count, lost_time, int(avg_interval*1000), int(min_interval*1000), int(max_interval*1000), int(std_interval*1000), cycle_num, height_per, height_per_count, low_per, low_per_count]
             for i, d in enumerate(col_data):
                 self.excel_ws.cell(column=i + 1, row=self.excel_row_pos, value=d)
             self.excel_row_pos += 1
