@@ -50,7 +50,8 @@
     },
     "q4_52": {
         "type": "can",
-        "cycle": 30
+        "cycle": 30,
+        "time_out": 1,
     },
     "mbq3": {
         "type": "can",

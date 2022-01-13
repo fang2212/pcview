@@ -284,7 +284,8 @@ class Statistics:
             "ts": ts,
             "name": can_data[2],
             "id": can_data[3],
-            "interval": self.config[can_data[2]].get("cycle")
+            "interval": self.config[can_data[2]].get("cycle"),
+            "time_out": self.config[can_data[2]].get("time_out")
         }
 
         # 更新CAN数据表
@@ -319,7 +320,8 @@ class Statistics:
         data = {
             "ts": ts,
             "name": other_data[2],
-            "interval": self.config[other_data[2]].get("cycle")
+            "interval": self.config[other_data[2]].get("cycle"),
+            "time_out": self.config[other_data[2]].get("time_out")
         }
 
         # 更新设备数据表
@@ -426,6 +428,8 @@ class Statistics:
             for data in can_id_data:
                 timestamp_list.append(data.get("ts"))
                 interval = data.get("interval")
+                interval_time = 1 / interval
+                time_out = data.get("time_out")
                 if not prev_timestamp:
                     prev_timestamp = data.get("ts")
                     continue
@@ -434,11 +438,15 @@ class Statistics:
                 time_interval = data.get("ts") - prev_timestamp
                 prev_timestamp = data.get("ts")
 
-                if interval:
-                    interval = 1 / interval
-                    if time_interval > interval * 5:    # 如果大于5倍周期视为掉线，进行统计掉线时长
+                if time_out:
+                    if time_interval > time_out:    # 如果大于5倍周期视为掉线，进行统计掉线时长
                         lost_time += time_interval
-                    if time_interval <= interval:
+                elif interval:
+                    if time_interval > interval_time * 5:    # 如果大于5倍周期视为掉线，进行统计掉线时长
+                        lost_time += time_interval
+
+                if interval:
+                    if time_interval <= interval_time:
                         time_interval = avg_interval
 
                 interval_chart_list.append(time_interval)
