@@ -77,12 +77,13 @@
       "topic": "*",
       "idx": 7
     },
-    "proto": {
+    "perception": {
       "enable": true,
       "port": 24030,
-      "transport": "libflow",
-      "protocol": "msgpack",
-      "topic": "*"
+      "origin_device": "mdc",
+      "transport": "protoflow",
+      "protocol": "proto",
+      "topic": "ObjectPerceptionObjectList,ObjectPerceptionObjectListDebug"
     },
     "gsensor": {
       "enable": true,

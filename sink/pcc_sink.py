@@ -1304,7 +1304,7 @@ class ProtoSink(NNSink):
         try:
             loop.run_until_complete(self._run())
         except Exception as e:
-            print(bcl.FAIL+'error:'+ str(e) + ' when initiating proto flow sink on'+bcl.ENDC, self.ip, self.port)
+            print(bcl.FAIL+'error:' + str(e) + ' when initiating proto flow sink on'+bcl.ENDC, self.ip, self.port)
 
     def pkg_handler(self, msg):
         data = msgpack.unpackb(msg.data)
@@ -1317,36 +1317,35 @@ class ProtoSink(NNSink):
         else:
             return
 
-        if topic == "roadmarking":
-            source = '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, topic)
-            r = {
-                "source": self.source,
-                "log_name": self.log_name or topic,
-                "buf": payload,
-                "meta": {
-                    "source": source,
-                    "type": self.msg_type,
-                    "parsers": [topic]
-                }
+        source = '{}.{}.{}.{}'.format(self.device, self.index, self.port_name, topic)
+        r = {
+            "source": self.source,
+            "log_name": self.log_name or topic,
+            "buf": payload,
+            "meta": {
+                "source": source,
+                "type": self.msg_type,
+                "parsers": [topic]
             }
-            self.fileHandler.insert_general_bin_raw(r)
-            self.fileHandler.insert_raw((time.time(), source, str(len(payload))))
-
-        if topic in self.key_pb:
-            pb = self.key_pb.get(topic)
-            if pb is None:
-                return
-            v = pb()
-            v.ParseFromString(payload)
-            if topic == "calib_param" or topic == "vehicle_signal":
-                frame_id = self.fileHandler.fid
-            else:
-                frame_id = v.frame_id
-            try:
-                data = json_format.MessageToDict(v, preserving_proto_field_name=True)
-
-                self.fileHandler.insert_pcv_raw(
-                    {"source": self.source, "frame_id": frame_id, "type": topic, topic: data,
-                     "rec_ts": time.time()})
-            except Exception as e:
-                print("protobuf decode error:", e)
+        }
+        self.fileHandler.insert_general_bin_raw(r)
+        self.fileHandler.insert_raw((time.time(), source, str(len(payload))))
+        #
+        # if topic in self.key_pb:
+        #     pb = self.key_pb.get(topic)
+        #     if pb is None:
+        #         return
+        #     v = pb()
+        #     v.ParseFromString(payload)
+        #     if topic == "calib_param" or topic == "vehicle_signal":
+        #         frame_id = self.fileHandler.fid
+        #     else:
+        #         frame_id = v.frame_id
+        #     try:
+        #         data = json_format.MessageToDict(v, preserving_proto_field_name=True)
+        #
+        #         self.fileHandler.insert_pcv_raw(
+        #             {"source": self.source, "frame_id": frame_id, "type": topic, topic: data,
+        #              "rec_ts": time.time()})
+        #     except Exception as e:
+        #         print("protobuf decode error:", e)
