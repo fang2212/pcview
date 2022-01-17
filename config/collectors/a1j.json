@@ -53,6 +53,14 @@
       "transport": "libflow",
       "protocol": "msgpack",
       "topic": "imuinfo"
+    },
+    "dnp": {
+      "enable": true,
+      "port": 24088,
+      "transport": "libflow",
+      "protocol": "msgpack",
+      "topic": "dnp",
+      "save":"bin"
     }
   }
 }
