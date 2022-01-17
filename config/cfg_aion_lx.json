@@ -19,8 +19,8 @@
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d4", "can0": "a_can_asdm", "can1": "blank"}},
                 {"model":  "x1_collector_novid", "params": {"mac": "00:0c:18:ef:ff:d5", "can0": "blank", "can1": "blank"}},
                 {"model":  "can_gw_nn", "params": {"can1": "aptiv_fl", "can2": "aptiv_fr","blank": "aptiv_rl","can4": "aptiv_rr","can5": "blank","can6": "blank","can7": "blank","can8": "blank"}},
-                {"model":  "a1j", "params": {"mac":  "6a:92:53:b9:97:00", "is_main":  true}},
-                {"model":  "a1j_collector", "params": {"mac": "6a:92:53:b9:97:00", "can0": "a1j"}},
+                {"model":  "a1j", "params": {"mac":  "6a:92:52:7e:97:00", "is_main":  true}},
+                {"model":  "a1j_collector", "params": {"mac": "6a:92:52:7e:97:00", "can0": "a1j"}},
                 {"model":  "q4_100"},
                 {"model":  "d1_udp"},
                 {"model":  "bynav"}
