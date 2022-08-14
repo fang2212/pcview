@@ -19,7 +19,7 @@ from parsers.novatel import parse_novatel
 from parsers.pim222 import parse_pim222
 from parsers.j2 import parser_j2
 from parsers.rt_range import parser_rt
-from parsers.q4_100 import parser_q4_100
+from parsers.q4_100 import parser_q4_100,parser_arc_soft,parser_rt_can
 from parsers.gs4_debug import parser_gs4
 from parsers.x1_jac import parse_x1_jac
 from parsers.cgi220_can import parse_cgi220pro
@@ -90,7 +90,11 @@ parsers_dict = {
     "x1j":      parse_x1j,
     "x1l":      parse_x1l,
     "xyd2":     parse_xyd2,
-    "huace":    parse_cgi220pro
+    "huace":    parse_cgi220pro,
+    "arc_soft":   parser_arc_soft,
+    # "pb_can": parser_pb_can,
+    # "ce_can": parser_ce_can,
+    "rt3003": parser_rt_can
     # "mbq4_lane": parser_mbq4_lane_tsr,
 }
 

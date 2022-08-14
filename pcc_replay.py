@@ -446,6 +446,10 @@ class LogPlayer(Process):
                 }
                 data = can_decode(decode_msg)
                 if data:
+                    path_out_name =self.log_path.replace('log_sort.txt','result_'+cols[2].split('.')[-1]+'.txt')
+                    with open(path_out_name, 'a+', encoding='utf-8') as txt:
+                        txt.write(str(data) + '\n')
+                        txt.close()
                     self.put_sink(data)
             elif 'rtk' in cols[2] and 'sol' in cols[2]:  # old d-rtk
                 rtk_dec = True
@@ -518,6 +522,10 @@ class LogPlayer(Process):
                 }
                 data = q4_decode(decode_msg)
                 if data:
+                    path_out_name =self.log_path.replace('log_sort.txt','result_q4_100.txt')
+                    with open(path_out_name, 'a+', encoding='utf-8') as txt:
+                        txt.write(str(data) + '\n')
+                        txt.close()
                     self.put_sink(data)
 
         logger.debug(bcl.OKBL + 'log.txt reached the end.' + bcl.ENDC)

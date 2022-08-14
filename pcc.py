@@ -211,7 +211,8 @@ class PCC(object):
         except Exception as e:
             print(e, d)
             return
-
+        if 'arc_soft' in source or 'rt3003' in source:
+            return
         if source not in self.player_cache['misc']:
             self.player_cache['misc'][source] = {}
         if isinstance(data, list):
