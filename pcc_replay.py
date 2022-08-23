@@ -10,6 +10,7 @@ import argparse
 import logging
 import os.path
 import signal
+import time
 from multiprocessing import Process, Manager, freeze_support, Event
 from turbojpeg import TurboJPEG
 
@@ -425,6 +426,10 @@ class LogPlayer(Process):
                 }
                 data = can_decode(decode_msg)
                 if data:
+                    path_out_name =self.log_path.replace('log_sort.txt','result_'+cols[2].split('.')[-1]+'.txt')
+                    with open(path_out_name, 'a+', encoding='utf-8') as txt:
+                        txt.write(str(data) + '\n')
+                        txt.close()
                     self.put_sink(data)
             elif 'can' in cols[2]:      # 新can source数据格式
                 if not self.can_types.get(cols[2]):     # 判断是否需要解析
@@ -677,6 +682,12 @@ if __name__ == "__main__":
     logger.debug("待回放的log路径：{}".format(log_path_list))
     try:
         for path in log_path_list:
+            # import subprocess
+            # h264_path = path.replace('log.txt','result.h264')
+            # ffmpeger = subprocess.Popen('/usr/local/ffmpeg/bin/ffmpeg -rtsp_transport tcp -y -i rtsp://172.17.186.17/adas -c copy -f h264 {}'.format(h264_path),shell=True,stdin=subprocess.PIPE,stderr=subprocess.PIPE,encoding='utf-8')
+            # start_replay(path, args)
+            # ffmpeger.stdin.write('q')
+            # ffmpeger.communicate()
             start_replay(path, args)
     except Exception as e:
         logger.exception(e)

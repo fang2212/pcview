@@ -18,7 +18,7 @@ from parsers.x1d3 import parse_x1d3
 from parsers.novatel import parse_novatel
 from parsers.pim222 import parse_pim222
 from parsers.j2 import parser_j2
-from parsers.rt_range import parser_rt
+from parsers.rt_range import parser_rt,parser_rt_new
 from parsers.q4_100 import parser_q4_100,parser_arc_soft,parser_rt_can
 from parsers.gs4_debug import parser_gs4
 from parsers.x1_jac import parse_x1_jac
@@ -76,6 +76,7 @@ parsers_dict = {
     "q4_52":    parser_q4_52,
     "q3":       parse_q3,
     "rt_range": parser_rt,
+    "rt_range_new": parser_rt_new,
     "sta77":    parse_sta77,
     "sta77_3":  parse_sta77_3,
     "vfr":      parse_vfr,

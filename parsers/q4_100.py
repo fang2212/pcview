@@ -190,29 +190,27 @@ import cantools
 from cantools import database
 db_rt = cantools.database.load_file('dbc/RT-Range_User.dbc', strict=False)
 
-db_arc_soft = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/arc_soft/ArcSoft_Objects_List.dbc',strict=False)
+db_arc_soft1 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/arc_soft/ArcSoft_Objects_List.dbc',strict=False)
 db_arc_soft2 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/arc_soft/ArcSoft_Lane_List.dbc',strict=False)
 
-# db_RT_can1 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/RT_DBC/Hunter.dbc', strict=False)
-# db_RT_can2 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/RT_DBC/RTrange.dbc', strict=False)
-# db_RT_can3 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/RT_DBC/Target1.dbc', strict=False)
-db_RT_can1 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/RT_DBC/Lane.dbc', strict=False)
-db_RT_can2 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/RT_DBC/Lane_status.dbc', strict=False)
-db_RT_can3 = db_RT_can2
+db_RT_can1 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/RT_DBC/Hunter.dbc', strict=False)
+db_RT_can2 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/RT_DBC/RTrange.dbc', strict=False)
+db_RT_can3 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/RT_DBC/Target1.dbc', strict=False)
+db_RT_can4 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/RT_DBC/Lane.dbc', strict=False)
+db_RT_can5 = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/RT_DBC/Lane_status.dbc', strict=False)
 
 db_pb_can = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/MY20_PB_V20.20.dbc', strict=False)
 db_ce_can = cantools.database.load_file('/home/fyq/Desktop/pcview/q4_data/dbc/MY20_CB_V20.20.dbc', strict=False)
 
 
-
 def parser_arc_soft(id, buf, ctx=None):
-    ids1 = [m.frame_id for m in db_arc_soft.messages]
+    ids1 = [m.frame_id for m in db_arc_soft1.messages]
     ids2 = [m.frame_id for m in db_arc_soft2.messages]
     ids = ids1 + ids2
     if id not in ids:
         return None
     elif id in ids1:
-        r = db_arc_soft.decode_message(id, buf, decode_choices=False)
+        r = db_arc_soft1.decode_message(id, buf, decode_choices=False)
     elif id in ids2:
         r = db_arc_soft2.decode_message(id, buf, decode_choices=False)
     return r
@@ -237,14 +235,20 @@ def parser_arc_soft(id, buf, ctx=None):
 def parser_rt_can(id, buf, ctx=None):
     ids1 = [m.frame_id for m in db_RT_can1.messages]
     ids2 = [m.frame_id for m in db_RT_can2.messages]
-    ids3 = [m.frame_id for m in db_RT_can2.messages]
-    ids = ids1 + ids2 + ids3
+    ids3 = [m.frame_id for m in db_RT_can3.messages]
+    ids4 = [m.frame_id for m in db_RT_can4.messages]
+    ids5 = [m.frame_id for m in db_RT_can5.messages]
+    ids = ids1 + ids2 + ids3+ ids4+ ids5
     if id not in ids:
         return None
     elif id in ids1:
         r = db_RT_can1.decode_message(id, buf, decode_choices=False)
     elif id in ids2:
         r = db_RT_can2.decode_message(id, buf, decode_choices=False)
-    else:
+    elif id in ids3:
         r = db_RT_can3.decode_message(id, buf, decode_choices=False)
+    elif id in ids4:
+        r = db_RT_can4.decode_message(id, buf, decode_choices=False)
+    else:
+        r = db_RT_can5.decode_message(id, buf, decode_choices=False)
     return r
