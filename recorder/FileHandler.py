@@ -541,8 +541,10 @@ class FileHandler(Process):
         import subprocess
         read_file = json.load(open(r'./config/collectors/westlake.json'))
         westlake_ip = read_file['ip']
-        h264_path = self.video_path + str(self.start_time)
-        self.ffmpeger = subprocess.Popen('/usr/local/ffmpeg/bin/ffmpeg -rtsp_transport tcp -y -i rtsp://{}/adas -c copy -f segment -segment_time 60 h264 {}%d_.h264'.format(westlake_ip,h264_path),shell=True,stdin=subprocess.PIPE,encoding='utf-8')
+        h264_path = self.video_path +'/'+ str(int(self.start_time))
+        # h264_path = "/home/fyq/Desktop/pcview/~/cve_data/"
+        # print (westlake_ip,h264_path,'ffmpeg -rtsp_transport tcp -y -i rtsp://{}/adas -c copy -f segment -segment_time 60 h264 {}_%d.h264'.format(westlake_ip,h264_path))
+        self.ffmpeger = subprocess.Popen('ffmpeg -rtsp_transport tcp -y -i rtsp://{}/adas -c copy -f segment -segment_time 60 {}_%d.h264'.format(westlake_ip,h264_path),shell=True,stdin=subprocess.PIPE,encoding='utf-8')
 
         # 初始化定位标签，防止自动分割处理的时候无法后续处理
         # if self.pinpoint:
@@ -565,8 +567,13 @@ class FileHandler(Process):
         self.d['meta'] = self.meta
 
         # stop预控取流
-        self.ffmpeger.stdin.write('q')
-        self.ffmpeger.communicate()
+        import psutil
+        self.PROCNAME = "ffmpeg"
+        for proc in psutil.process_iter():
+            if proc.name() == self.PROCNAME:
+                proc.kill()
+        # self.ffmpeger.stdin.write('q')
+        # self.ffmpeger.communicate()
 
         # 是否清除剩余未处理的日志信号
         if clean_queue:
